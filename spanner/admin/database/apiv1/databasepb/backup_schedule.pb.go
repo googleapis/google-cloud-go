@@ -707,45 +707,45 @@ const file_google_spanner_admin_database_v1_backup_schedule_proto_rawDesc = "" +
 	"6google/spanner/admin/database/v1/backup_schedule.proto\x12 google.spanner.admin.database.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-google/spanner/admin/database/v1/backup.proto\"s\n" +
 	"\x12BackupScheduleSpec\x12L\n" +
 	"\tcron_spec\x18\x01 \x01(\v2-.google.spanner.admin.database.v1.CrontabSpecH\x00R\bcronSpecB\x0f\n" +
-	"\rschedule_spec\"\x88\x06\n" +
-	"\x0eBackupSchedule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12M\n" +
-	"\x04spec\x18\x06 \x01(\v24.google.spanner.admin.database.v1.BackupScheduleSpecB\x03\xe0A\x01R\x04spec\x12M\n" +
-	"\x12retention_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x11retentionDuration\x12p\n" +
-	"\x11encryption_config\x18\x04 \x01(\v2>.google.spanner.admin.database.v1.CreateBackupEncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12\\\n" +
+	"\rschedule_spec\"\x8d\x06\n" +
+	"\x0eBackupSchedule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12N\n" +
+	"\x04spec\x18\x06 \x01(\v24.google.spanner.admin.database.v1.BackupScheduleSpecB\x04\xe2A\x01\x01R\x04spec\x12N\n" +
+	"\x12retention_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x11retentionDuration\x12q\n" +
+	"\x11encryption_config\x18\x04 \x01(\v2>.google.spanner.admin.database.v1.CreateBackupEncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12\\\n" +
 	"\x10full_backup_spec\x18\a \x01(\v20.google.spanner.admin.database.v1.FullBackupSpecH\x00R\x0efullBackupSpec\x12q\n" +
-	"\x17incremental_backup_spec\x18\b \x01(\v27.google.spanner.admin.database.v1.IncrementalBackupSpecH\x00R\x15incrementalBackupSpec\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x17incremental_backup_spec\x18\b \x01(\v27.google.spanner.admin.database.v1.IncrementalBackupSpecH\x00R\x15incrementalBackupSpec\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\xa5\x01\xeaA\xa1\x01\n" +
 	"%spanner.googleapis.com/BackupSchedule\x12Wprojects/{project}/instances/{instance}/databases/{database}/backupSchedules/{schedule}*\x0fbackupSchedules2\x0ebackupScheduleB\x12\n" +
-	"\x10backup_type_spec\"\x91\x01\n" +
-	"\vCrontabSpec\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x12 \n" +
-	"\ttime_zone\x18\x02 \x01(\tB\x03\xe0A\x03R\btimeZone\x12G\n" +
-	"\x0fcreation_window\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x0ecreationWindow\"\xf1\x01\n" +
-	"\x1bCreateBackupScheduleRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\x06parent\x121\n" +
-	"\x12backup_schedule_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10backupScheduleId\x12^\n" +
-	"\x0fbackup_schedule\x18\x03 \x01(\v20.google.spanner.admin.database.v1.BackupScheduleB\x03\xe0A\x02R\x0ebackupSchedule\"]\n" +
-	"\x18GetBackupScheduleRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%spanner.googleapis.com/BackupScheduleR\x04name\"`\n" +
-	"\x1bDeleteBackupScheduleRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%spanner.googleapis.com/BackupScheduleR\x04name\"\xa3\x01\n" +
-	"\x1aListBackupSchedulesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x10backup_type_spec\"\x94\x01\n" +
+	"\vCrontabSpec\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\x12!\n" +
+	"\ttime_zone\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\btimeZone\x12H\n" +
+	"\x0fcreation_window\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x0ecreationWindow\"\xf4\x01\n" +
+	"\x1bCreateBackupScheduleRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\x06parent\x122\n" +
+	"\x12backup_schedule_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10backupScheduleId\x12_\n" +
+	"\x0fbackup_schedule\x18\x03 \x01(\v20.google.spanner.admin.database.v1.BackupScheduleB\x04\xe2A\x01\x02R\x0ebackupSchedule\"^\n" +
+	"\x18GetBackupScheduleRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%spanner.googleapis.com/BackupScheduleR\x04name\"a\n" +
+	"\x1bDeleteBackupScheduleRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%spanner.googleapis.com/BackupScheduleR\x04name\"\xa6\x01\n" +
+	"\x1aListBackupSchedulesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa2\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa2\x01\n" +
 	"\x1bListBackupSchedulesResponse\x12[\n" +
 	"\x10backup_schedules\x18\x01 \x03(\v20.google.spanner.admin.database.v1.BackupScheduleR\x0fbackupSchedules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbf\x01\n" +
-	"\x1bUpdateBackupScheduleRequest\x12^\n" +
-	"\x0fbackup_schedule\x18\x01 \x01(\v20.google.spanner.admin.database.v1.BackupScheduleB\x03\xe0A\x02R\x0ebackupSchedule\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc1\x01\n" +
+	"\x1bUpdateBackupScheduleRequest\x12_\n" +
+	"\x0fbackup_schedule\x18\x01 \x01(\v20.google.spanner.admin.database.v1.BackupScheduleB\x04\xe2A\x01\x02R\x0ebackupSchedule\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMaskB\x85\x02\n" +
 	"$com.google.spanner.admin.database.v1B\x13BackupScheduleProtoP\x01ZFcloud.google.com/go/spanner/admin/database/apiv1/databasepb;databasepb\xaa\x02&Google.Cloud.Spanner.Admin.Database.V1\xca\x02&Google\\Cloud\\Spanner\\Admin\\Database\\V1\xea\x02+Google::Cloud::Spanner::Admin::Database::V1b\x06proto3"
 

@@ -244,17 +244,17 @@ var File_google_chat_v1_space_read_state_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_space_read_state_proto_rawDesc = "" +
 	"\n" +
-	"%google/chat/v1/space_read_state.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd0\x01\n" +
+	"%google/chat/v1/space_read_state.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd1\x01\n" +
 	"\x0eSpaceReadState\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12E\n" +
-	"\x0elast_read_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\flastReadTime:c\xeaA`\n" +
-	"\"chat.googleapis.com/SpaceReadState\x12*users/{user}/spaces/{space}/spaceReadState2\x0espaceReadState\"Z\n" +
-	"\x18GetSpaceReadStateRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"chat.googleapis.com/SpaceReadStateR\x04name\"\xae\x01\n" +
-	"\x1bUpdateSpaceReadStateRequest\x12M\n" +
-	"\x10space_read_state\x18\x01 \x01(\v2\x1e.google.chat.v1.SpaceReadStateB\x03\xe0A\x02R\x0espaceReadState\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12F\n" +
+	"\x0elast_read_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\flastReadTime:c\xeaA`\n" +
+	"\"chat.googleapis.com/SpaceReadState\x12*users/{user}/spaces/{space}/spaceReadState2\x0espaceReadState\"[\n" +
+	"\x18GetSpaceReadStateRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"chat.googleapis.com/SpaceReadStateR\x04name\"\xb0\x01\n" +
+	"\x1bUpdateSpaceReadStateRequest\x12N\n" +
+	"\x10space_read_state\x18\x01 \x01(\v2\x1e.google.chat.v1.SpaceReadStateB\x04\xe2A\x01\x02R\x0espaceReadState\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMaskB\xac\x01\n" +
 	"\x12com.google.chat.v1B\x13SpaceReadStateProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 

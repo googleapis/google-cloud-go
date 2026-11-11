@@ -406,31 +406,31 @@ var File_google_shopping_merchant_products_v1beta_products_proto protoreflect.Fi
 
 const file_google_shopping_merchant_products_v1beta_products_proto_rawDesc = "" +
 	"\n" +
-	"7google/shopping/merchant/products/v1beta/products.proto\x12(google.shopping.merchant.products.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/shopping/merchant/products/v1beta/products_common.proto\x1a google/shopping/type/types.proto\"\xa2\x06\n" +
+	"7google/shopping/merchant/products/v1beta/products.proto\x12(google.shopping.merchant.products.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/shopping/merchant/products/v1beta/products_common.proto\x1a google/shopping/type/types.proto\"\xac\x06\n" +
 	"\aProduct\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12H\n" +
-	"\achannel\x18\x02 \x01(\x0e2).google.shopping.type.Channel.ChannelEnumB\x03\xe0A\x03R\achannel\x12\x1e\n" +
-	"\boffer_id\x18\x03 \x01(\tB\x03\xe0A\x03R\aofferId\x12.\n" +
-	"\x10content_language\x18\x04 \x01(\tB\x03\xe0A\x03R\x0fcontentLanguage\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12I\n" +
+	"\achannel\x18\x02 \x01(\x0e2).google.shopping.type.Channel.ChannelEnumB\x04\xe2A\x01\x03R\achannel\x12\x1f\n" +
+	"\boffer_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\aofferId\x12/\n" +
+	"\x10content_language\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0fcontentLanguage\x12#\n" +
 	"\n" +
-	"feed_label\x18\x05 \x01(\tB\x03\xe0A\x03R\tfeedLabel\x12$\n" +
-	"\vdata_source\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"dataSource\x12/\n" +
-	"\x0eversion_number\x18\a \x01(\x03B\x03\xe0A\x03H\x00R\rversionNumber\x88\x01\x01\x12Y\n" +
+	"feed_label\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\tfeedLabel\x12%\n" +
+	"\vdata_source\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"dataSource\x120\n" +
+	"\x0eversion_number\x18\a \x01(\x03B\x04\xe2A\x01\x03H\x00R\rversionNumber\x88\x01\x01\x12Z\n" +
 	"\n" +
-	"attributes\x18\b \x01(\v24.google.shopping.merchant.products.v1beta.AttributesB\x03\xe0A\x03R\n" +
-	"attributes\x12W\n" +
-	"\x11custom_attributes\x18\t \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x03R\x10customAttributes\x12c\n" +
+	"attributes\x18\b \x01(\v24.google.shopping.merchant.products.v1beta.AttributesB\x04\xe2A\x01\x03R\n" +
+	"attributes\x12X\n" +
+	"\x11custom_attributes\x18\t \x03(\v2%.google.shopping.type.CustomAttributeB\x04\xe2A\x01\x03R\x10customAttributes\x12d\n" +
 	"\x0eproduct_status\x18\n" +
-	" \x01(\v27.google.shopping.merchant.products.v1beta.ProductStatusB\x03\xe0A\x03R\rproductStatus\x12r\n" +
-	"\x13automated_discounts\x18\f \x01(\v2<.google.shopping.merchant.products.v1beta.AutomatedDiscountsB\x03\xe0A\x03R\x12automatedDiscounts:N\xeaAK\n" +
+	" \x01(\v27.google.shopping.merchant.products.v1beta.ProductStatusB\x04\xe2A\x01\x03R\rproductStatus\x12s\n" +
+	"\x13automated_discounts\x18\f \x01(\v2<.google.shopping.merchant.products.v1beta.AutomatedDiscountsB\x04\xe2A\x01\x03R\x12automatedDiscounts:N\xeaAK\n" +
 	"\"merchantapi.googleapis.com/Product\x12%accounts/{account}/products/{product}B\x11\n" +
-	"\x0f_version_number\"S\n" +
-	"\x11GetProductRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/ProductR\x04name\"\x95\x01\n" +
-	"\x13ListProductsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"merchantapi.googleapis.com/ProductR\x06parent\x12\x1b\n" +
+	"\x0f_version_number\"T\n" +
+	"\x11GetProductRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/ProductR\x04name\"\x96\x01\n" +
+	"\x13ListProductsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"merchantapi.googleapis.com/ProductR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8d\x01\n" +

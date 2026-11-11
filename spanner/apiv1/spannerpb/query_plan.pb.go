@@ -544,16 +544,16 @@ const file_google_spanner_v1_query_plan_proto_rawDesc = "" +
 	"\n" +
 	"RELATIONAL\x10\x01\x12\n" +
 	"\n" +
-	"\x06SCALAR\x10\x02\"\xc9\x01\n" +
-	"\x12QueryAdvisorResult\x12Y\n" +
-	"\findex_advice\x18\x01 \x03(\v21.google.spanner.v1.QueryAdvisorResult.IndexAdviceB\x03\xe0A\x01R\vindexAdvice\x1aX\n" +
-	"\vIndexAdvice\x12\x15\n" +
-	"\x03ddl\x18\x01 \x03(\tB\x03\xe0A\x01R\x03ddl\x122\n" +
-	"\x12improvement_factor\x18\x02 \x01(\x01B\x03\xe0A\x01R\x11improvementFactor\"\x96\x01\n" +
+	"\x06SCALAR\x10\x02\"\xcc\x01\n" +
+	"\x12QueryAdvisorResult\x12Z\n" +
+	"\findex_advice\x18\x01 \x03(\v21.google.spanner.v1.QueryAdvisorResult.IndexAdviceB\x04\xe2A\x01\x01R\vindexAdvice\x1aZ\n" +
+	"\vIndexAdvice\x12\x16\n" +
+	"\x03ddl\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x03ddl\x123\n" +
+	"\x12improvement_factor\x18\x02 \x01(\x01B\x04\xe2A\x01\x01R\x11improvementFactor\"\x97\x01\n" +
 	"\tQueryPlan\x12:\n" +
 	"\n" +
-	"plan_nodes\x18\x01 \x03(\v2\x1b.google.spanner.v1.PlanNodeR\tplanNodes\x12M\n" +
-	"\fquery_advice\x18\x02 \x01(\v2%.google.spanner.v1.QueryAdvisorResultB\x03\xe0A\x01R\vqueryAdviceB\xb1\x01\n" +
+	"plan_nodes\x18\x01 \x03(\v2\x1b.google.spanner.v1.PlanNodeR\tplanNodes\x12N\n" +
+	"\fquery_advice\x18\x02 \x01(\v2%.google.spanner.v1.QueryAdvisorResultB\x04\xe2A\x01\x01R\vqueryAdviceB\xb1\x01\n" +
 	"\x15com.google.spanner.v1B\x0eQueryPlanProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
 
 var (

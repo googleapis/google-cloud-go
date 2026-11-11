@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -658,29 +659,29 @@ var File_google_cloud_discoveryengine_v1_data_store_service_proto protoreflect.F
 
 const file_google_cloud_discoveryengine_v1_data_store_service_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/discoveryengine/v1/data_store_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1/data_store.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\x03\n" +
+	"8google/cloud/discoveryengine/v1/data_store_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1/data_store.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf0\x03\n" +
 	"\x16CreateDataStoreRequest\x12Z\n" +
 	"\x10cmek_config_name\x18\x05 \x01(\tB.\xfaA+\n" +
 	")discoveryengine.googleapis.com/CmekConfigH\x00R\x0ecmekConfigName\x12#\n" +
-	"\fdisable_cmek\x18\x06 \x01(\bH\x00R\vdisableCmek\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")discoveryengine.googleapis.com/CollectionR\x06parent\x12N\n" +
+	"\fdisable_cmek\x18\x06 \x01(\bH\x00R\vdisableCmek\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")discoveryengine.googleapis.com/CollectionR\x06parent\x12O\n" +
 	"\n" +
-	"data_store\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1.DataStoreB\x03\xe0A\x02R\tdataStore\x12'\n" +
-	"\rdata_store_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vdataStoreId\x12=\n" +
+	"data_store\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1.DataStoreB\x04\xe2A\x01\x02R\tdataStore\x12(\n" +
+	"\rdata_store_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdataStoreId\x12=\n" +
 	"\x1bcreate_advanced_site_search\x18\x04 \x01(\bR\x18createAdvancedSiteSearch\x12?\n" +
 	"\x1cskip_default_schema_creation\x18\a \x01(\bR\x19skipDefaultSchemaCreationB\x0e\n" +
-	"\fcmek_options\"[\n" +
-	"\x13GetDataStoreRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\fcmek_options\"\\\n" +
+	"\x13GetDataStoreRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x04name\"\x93\x01\n" +
 	"\x17CreateDataStoreMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\xb6\x01\n" +
-	"\x15ListDataStoresRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"updateTime\"\xb7\x01\n" +
+	"\x15ListDataStoresRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")discoveryengine.googleapis.com/CollectionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -689,20 +690,20 @@ const file_google_cloud_discoveryengine_v1_data_store_service_proto_rawDesc = ""
 	"\x16ListDataStoresResponse\x12K\n" +
 	"\vdata_stores\x18\x01 \x03(\v2*.google.cloud.discoveryengine.v1.DataStoreR\n" +
 	"dataStores\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x16DeleteDataStoreRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x04name\"\xa5\x01\n" +
-	"\x16UpdateDataStoreRequest\x12N\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x16DeleteDataStoreRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x04name\"\xa6\x01\n" +
+	"\x16UpdateDataStoreRequest\x12O\n" +
 	"\n" +
-	"data_store\x18\x01 \x01(\v2*.google.cloud.discoveryengine.v1.DataStoreB\x03\xe0A\x02R\tdataStore\x12;\n" +
+	"data_store\x18\x01 \x01(\v2*.google.cloud.discoveryengine.v1.DataStoreB\x04\xe2A\x01\x02R\tdataStore\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"\x93\x01\n" +
 	"\x17DeleteDataStoreMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime2\xdd\f\n" +
+	"updateTime2\xce\x11\n" +
 	"\x10DataStoreService\x12\x84\x03\n" +
 	"\x0fCreateDataStore\x127.google.cloud.discoveryengine.v1.CreateDataStoreRequest\x1a\x1d.google.longrunning.Operation\"\x98\x02\xcaAd\n" +
 	")google.cloud.discoveryengine.v1.DataStore\x127google.cloud.discoveryengine.v1.CreateDataStoreMetadata\xdaA\x1fparent,data_store,data_store_id\x82\xd3\xe4\x93\x02\x88\x01:\n" +
@@ -714,7 +715,9 @@ const file_google_cloud_discoveryengine_v1_data_store_service_proto_rawDesc = ""
 	"\x15google.protobuf.Empty\x127google.cloud.discoveryengine.v1.DeleteDataStoreMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02pZ>*</v1/{name=projects/*/locations/*/collections/*/dataStores/*}*./v1/{name=projects/*/locations/*/dataStores/*}\x12\xb7\x02\n" +
 	"\x0fUpdateDataStore\x127.google.cloud.discoveryengine.v1.UpdateDataStoreRequest\x1a*.google.cloud.discoveryengine.v1.DataStore\"\xbe\x01\xdaA\x16data_store,update_mask\x82\xd3\xe4\x93\x02\x9e\x01:\n" +
 	"data_storeZU:\n" +
-	"data_store2G/v1/{data_store.name=projects/*/locations/*/collections/*/dataStores/*}29/v1/{data_store.name=projects/*/locations/*/dataStores/*}\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x88\x02\n" +
+	"data_store2G/v1/{data_store.name=projects/*/locations/*/collections/*/dataStores/*}29/v1/{data_store.name=projects/*/locations/*/dataStores/*}\x12\xf0\x01\n" +
+	"\fGetIamPolicy\x12\".google.iam.v1.GetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"\xa4\x01\xdaA\bresource\x82\xd3\xe4\x93\x02\x92\x01ZA\x12?/v1/{resource=projects/*/locations/*/dataStores/*}:getIamPolicy\x12M/v1/{resource=projects/*/locations/*/collections/*/dataStores/*}:getIamPolicy\x12\xfd\x01\n" +
+	"\fSetIamPolicy\x12\".google.iam.v1.SetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"\xb1\x01\xdaA\x0fresource,policy\x82\xd3\xe4\x93\x02\x98\x01:\x01*ZD:\x01*\"?/v1/{resource=projects/*/locations/*/dataStores/*}:setIamPolicy\"M/v1/{resource=projects/*/locations/*/collections/*/dataStores/*}:setIamPolicy\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x88\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x15DataStoreServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (
@@ -731,18 +734,21 @@ func file_google_cloud_discoveryengine_v1_data_store_service_proto_rawDescGZIP()
 
 var file_google_cloud_discoveryengine_v1_data_store_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_google_cloud_discoveryengine_v1_data_store_service_proto_goTypes = []any{
-	(*CreateDataStoreRequest)(nil),  // 0: google.cloud.discoveryengine.v1.CreateDataStoreRequest
-	(*GetDataStoreRequest)(nil),     // 1: google.cloud.discoveryengine.v1.GetDataStoreRequest
-	(*CreateDataStoreMetadata)(nil), // 2: google.cloud.discoveryengine.v1.CreateDataStoreMetadata
-	(*ListDataStoresRequest)(nil),   // 3: google.cloud.discoveryengine.v1.ListDataStoresRequest
-	(*ListDataStoresResponse)(nil),  // 4: google.cloud.discoveryengine.v1.ListDataStoresResponse
-	(*DeleteDataStoreRequest)(nil),  // 5: google.cloud.discoveryengine.v1.DeleteDataStoreRequest
-	(*UpdateDataStoreRequest)(nil),  // 6: google.cloud.discoveryengine.v1.UpdateDataStoreRequest
-	(*DeleteDataStoreMetadata)(nil), // 7: google.cloud.discoveryengine.v1.DeleteDataStoreMetadata
-	(*DataStore)(nil),               // 8: google.cloud.discoveryengine.v1.DataStore
-	(*timestamppb.Timestamp)(nil),   // 9: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),   // 10: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil), // 11: google.longrunning.Operation
+	(*CreateDataStoreRequest)(nil),    // 0: google.cloud.discoveryengine.v1.CreateDataStoreRequest
+	(*GetDataStoreRequest)(nil),       // 1: google.cloud.discoveryengine.v1.GetDataStoreRequest
+	(*CreateDataStoreMetadata)(nil),   // 2: google.cloud.discoveryengine.v1.CreateDataStoreMetadata
+	(*ListDataStoresRequest)(nil),     // 3: google.cloud.discoveryengine.v1.ListDataStoresRequest
+	(*ListDataStoresResponse)(nil),    // 4: google.cloud.discoveryengine.v1.ListDataStoresResponse
+	(*DeleteDataStoreRequest)(nil),    // 5: google.cloud.discoveryengine.v1.DeleteDataStoreRequest
+	(*UpdateDataStoreRequest)(nil),    // 6: google.cloud.discoveryengine.v1.UpdateDataStoreRequest
+	(*DeleteDataStoreMetadata)(nil),   // 7: google.cloud.discoveryengine.v1.DeleteDataStoreMetadata
+	(*DataStore)(nil),                 // 8: google.cloud.discoveryengine.v1.DataStore
+	(*timestamppb.Timestamp)(nil),     // 9: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),     // 10: google.protobuf.FieldMask
+	(*iampb.GetIamPolicyRequest)(nil), // 11: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil), // 12: google.iam.v1.SetIamPolicyRequest
+	(*longrunningpb.Operation)(nil),   // 13: google.longrunning.Operation
+	(*iampb.Policy)(nil),              // 14: google.iam.v1.Policy
 }
 var file_google_cloud_discoveryengine_v1_data_store_service_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.discoveryengine.v1.CreateDataStoreRequest.data_store:type_name -> google.cloud.discoveryengine.v1.DataStore
@@ -758,13 +764,17 @@ var file_google_cloud_discoveryengine_v1_data_store_service_proto_depIdxs = []in
 	3,  // 10: google.cloud.discoveryengine.v1.DataStoreService.ListDataStores:input_type -> google.cloud.discoveryengine.v1.ListDataStoresRequest
 	5,  // 11: google.cloud.discoveryengine.v1.DataStoreService.DeleteDataStore:input_type -> google.cloud.discoveryengine.v1.DeleteDataStoreRequest
 	6,  // 12: google.cloud.discoveryengine.v1.DataStoreService.UpdateDataStore:input_type -> google.cloud.discoveryengine.v1.UpdateDataStoreRequest
-	11, // 13: google.cloud.discoveryengine.v1.DataStoreService.CreateDataStore:output_type -> google.longrunning.Operation
-	8,  // 14: google.cloud.discoveryengine.v1.DataStoreService.GetDataStore:output_type -> google.cloud.discoveryengine.v1.DataStore
-	4,  // 15: google.cloud.discoveryengine.v1.DataStoreService.ListDataStores:output_type -> google.cloud.discoveryengine.v1.ListDataStoresResponse
-	11, // 16: google.cloud.discoveryengine.v1.DataStoreService.DeleteDataStore:output_type -> google.longrunning.Operation
-	8,  // 17: google.cloud.discoveryengine.v1.DataStoreService.UpdateDataStore:output_type -> google.cloud.discoveryengine.v1.DataStore
-	13, // [13:18] is the sub-list for method output_type
-	8,  // [8:13] is the sub-list for method input_type
+	11, // 13: google.cloud.discoveryengine.v1.DataStoreService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	12, // 14: google.cloud.discoveryengine.v1.DataStoreService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	13, // 15: google.cloud.discoveryengine.v1.DataStoreService.CreateDataStore:output_type -> google.longrunning.Operation
+	8,  // 16: google.cloud.discoveryengine.v1.DataStoreService.GetDataStore:output_type -> google.cloud.discoveryengine.v1.DataStore
+	4,  // 17: google.cloud.discoveryengine.v1.DataStoreService.ListDataStores:output_type -> google.cloud.discoveryengine.v1.ListDataStoresResponse
+	13, // 18: google.cloud.discoveryengine.v1.DataStoreService.DeleteDataStore:output_type -> google.longrunning.Operation
+	8,  // 19: google.cloud.discoveryengine.v1.DataStoreService.UpdateDataStore:output_type -> google.cloud.discoveryengine.v1.DataStore
+	14, // 20: google.cloud.discoveryengine.v1.DataStoreService.GetIamPolicy:output_type -> google.iam.v1.Policy
+	14, // 21: google.cloud.discoveryengine.v1.DataStoreService.SetIamPolicy:output_type -> google.iam.v1.Policy
+	15, // [15:22] is the sub-list for method output_type
+	8,  // [8:15] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
 	8,  // [8:8] is the sub-list for extension extendee
 	0,  // [0:8] is the sub-list for field type_name

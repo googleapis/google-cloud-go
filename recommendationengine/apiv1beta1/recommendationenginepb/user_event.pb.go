@@ -812,52 +812,52 @@ var File_google_cloud_recommendationengine_v1beta1_user_event_proto protoreflect
 
 const file_google_cloud_recommendationengine_v1beta1_user_event_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/recommendationengine/v1beta1/user_event.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a7google/cloud/recommendationengine/v1beta1/catalog.proto\x1a6google/cloud/recommendationengine/v1beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x04\n" +
-	"\tUserEvent\x12\"\n" +
+	":google/cloud/recommendationengine/v1beta1/user_event.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a7google/cloud/recommendationengine/v1beta1/catalog.proto\x1a6google/cloud/recommendationengine/v1beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe6\x04\n" +
+	"\tUserEvent\x12#\n" +
 	"\n" +
-	"event_type\x18\x01 \x01(\tB\x03\xe0A\x02R\teventType\x12U\n" +
-	"\tuser_info\x18\x02 \x01(\v23.google.cloud.recommendationengine.v1beta1.UserInfoB\x03\xe0A\x02R\buserInfo\x12^\n" +
-	"\fevent_detail\x18\x03 \x01(\v26.google.cloud.recommendationengine.v1beta1.EventDetailB\x03\xe0A\x01R\veventDetail\x12t\n" +
-	"\x14product_event_detail\x18\x04 \x01(\v2=.google.cloud.recommendationengine.v1beta1.ProductEventDetailB\x03\xe0A\x01R\x12productEventDetail\x12>\n" +
+	"event_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\teventType\x12V\n" +
+	"\tuser_info\x18\x02 \x01(\v23.google.cloud.recommendationengine.v1beta1.UserInfoB\x04\xe2A\x01\x02R\buserInfo\x12_\n" +
+	"\fevent_detail\x18\x03 \x01(\v26.google.cloud.recommendationengine.v1beta1.EventDetailB\x04\xe2A\x01\x01R\veventDetail\x12u\n" +
+	"\x14product_event_detail\x18\x04 \x01(\v2=.google.cloud.recommendationengine.v1beta1.ProductEventDetailB\x04\xe2A\x01\x01R\x12productEventDetail\x12?\n" +
 	"\n" +
-	"event_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\teventTime\x12h\n" +
-	"\fevent_source\x18\x06 \x01(\x0e2@.google.cloud.recommendationengine.v1beta1.UserEvent.EventSourceB\x03\xe0A\x01R\veventSource\"X\n" +
+	"event_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\teventTime\x12i\n" +
+	"\fevent_source\x18\x06 \x01(\x0e2@.google.cloud.recommendationengine.v1beta1.UserEvent.EventSourceB\x04\xe2A\x01\x01R\veventSource\"X\n" +
 	"\vEventSource\x12\x1c\n" +
 	"\x18EVENT_SOURCE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06AUTOML\x10\x01\x12\r\n" +
 	"\tECOMMERCE\x10\x02\x12\x10\n" +
-	"\fBATCH_UPLOAD\x10\x03\"\xc9\x01\n" +
-	"\bUserInfo\x12\"\n" +
+	"\fBATCH_UPLOAD\x10\x03\"\xce\x01\n" +
+	"\bUserInfo\x12#\n" +
 	"\n" +
-	"visitor_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tvisitorId\x12\x1c\n" +
-	"\auser_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06userId\x12\"\n" +
+	"visitor_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tvisitorId\x12\x1d\n" +
+	"\auser_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06userId\x12#\n" +
 	"\n" +
-	"ip_address\x18\x03 \x01(\tB\x03\xe0A\x01R\tipAddress\x12\"\n" +
+	"ip_address\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tipAddress\x12#\n" +
 	"\n" +
-	"user_agent\x18\x04 \x01(\tB\x03\xe0A\x01R\tuserAgent\x123\n" +
-	"\x13direct_user_request\x18\x05 \x01(\bB\x03\xe0A\x01R\x11directUserRequest\"\xbe\x02\n" +
-	"\vEventDetail\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x01R\x03uri\x12&\n" +
-	"\freferrer_uri\x18\x06 \x01(\tB\x03\xe0A\x01R\vreferrerUri\x12%\n" +
-	"\fpage_view_id\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"pageViewId\x12*\n" +
-	"\x0eexperiment_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\rexperimentIds\x126\n" +
-	"\x14recommendation_token\x18\x04 \x01(\tB\x03\xe0A\x01R\x13recommendationToken\x12e\n" +
-	"\x10event_attributes\x18\x05 \x01(\v25.google.cloud.recommendationengine.v1beta1.FeatureMapB\x03\xe0A\x01R\x0feventAttributes\"\xbc\x03\n" +
+	"user_agent\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tuserAgent\x124\n" +
+	"\x13direct_user_request\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x11directUserRequest\"\xc4\x02\n" +
+	"\vEventDetail\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x03uri\x12'\n" +
+	"\freferrer_uri\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vreferrerUri\x12&\n" +
+	"\fpage_view_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"pageViewId\x12+\n" +
+	"\x0eexperiment_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\rexperimentIds\x127\n" +
+	"\x14recommendation_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x13recommendationToken\x12f\n" +
+	"\x10event_attributes\x18\x05 \x01(\v25.google.cloud.recommendationengine.v1beta1.FeatureMapB\x04\xe2A\x01\x01R\x0feventAttributes\"\xbe\x03\n" +
 	"\x12ProductEventDetail\x12!\n" +
 	"\fsearch_query\x18\x01 \x01(\tR\vsearchQuery\x12q\n" +
 	"\x0fpage_categories\x18\x02 \x03(\v2H.google.cloud.recommendationengine.v1beta1.CatalogItem.CategoryHierarchyR\x0epageCategories\x12a\n" +
 	"\x0fproduct_details\x18\x03 \x03(\v28.google.cloud.recommendationengine.v1beta1.ProductDetailR\x0eproductDetails\x12\x17\n" +
-	"\alist_id\x18\x04 \x01(\tR\x06listId\x12\x1c\n" +
-	"\acart_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x06cartId\x12v\n" +
-	"\x14purchase_transaction\x18\x06 \x01(\v2>.google.cloud.recommendationengine.v1beta1.PurchaseTransactionB\x03\xe0A\x01R\x13purchaseTransaction\"\xb3\x03\n" +
-	"\x13PurchaseTransaction\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x12\x1d\n" +
-	"\arevenue\x18\x02 \x01(\x02B\x03\xe0A\x02R\arevenue\x12d\n" +
-	"\x05taxes\x18\x03 \x03(\v2I.google.cloud.recommendationengine.v1beta1.PurchaseTransaction.TaxesEntryB\x03\xe0A\x01R\x05taxes\x12d\n" +
-	"\x05costs\x18\x04 \x03(\v2I.google.cloud.recommendationengine.v1beta1.PurchaseTransaction.CostsEntryB\x03\xe0A\x01R\x05costs\x12(\n" +
-	"\rcurrency_code\x18\x06 \x01(\tB\x03\xe0A\x02R\fcurrencyCode\x1a8\n" +
+	"\alist_id\x18\x04 \x01(\tR\x06listId\x12\x1d\n" +
+	"\acart_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06cartId\x12w\n" +
+	"\x14purchase_transaction\x18\x06 \x01(\v2>.google.cloud.recommendationengine.v1beta1.PurchaseTransactionB\x04\xe2A\x01\x01R\x13purchaseTransaction\"\xb8\x03\n" +
+	"\x13PurchaseTransaction\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12\x1e\n" +
+	"\arevenue\x18\x02 \x01(\x02B\x04\xe2A\x01\x02R\arevenue\x12e\n" +
+	"\x05taxes\x18\x03 \x03(\v2I.google.cloud.recommendationengine.v1beta1.PurchaseTransaction.TaxesEntryB\x04\xe2A\x01\x01R\x05taxes\x12e\n" +
+	"\x05costs\x18\x04 \x03(\v2I.google.cloud.recommendationengine.v1beta1.PurchaseTransaction.CostsEntryB\x04\xe2A\x01\x01R\x05costs\x12)\n" +
+	"\rcurrency_code\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\fcurrencyCode\x1a8\n" +
 	"\n" +
 	"TaxesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -865,17 +865,17 @@ const file_google_cloud_recommendationengine_v1beta1_user_event_proto_rawDesc = 
 	"\n" +
 	"CostsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\"\xce\x03\n" +
-	"\rProductDetail\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12(\n" +
-	"\rcurrency_code\x18\x02 \x01(\tB\x03\xe0A\x01R\fcurrencyCode\x12*\n" +
-	"\x0eoriginal_price\x18\x03 \x01(\x02B\x03\xe0A\x01R\roriginalPrice\x12(\n" +
-	"\rdisplay_price\x18\x04 \x01(\x02B\x03\xe0A\x01R\fdisplayPrice\x12n\n" +
-	"\vstock_state\x18\x05 \x01(\x0e2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.StockStateB\x03\xe0A\x01R\n" +
-	"stockState\x12\x1f\n" +
-	"\bquantity\x18\x06 \x01(\x05B\x03\xe0A\x01R\bquantity\x122\n" +
-	"\x12available_quantity\x18\a \x01(\x05B\x03\xe0A\x01R\x11availableQuantity\x12c\n" +
-	"\x0fitem_attributes\x18\b \x01(\v25.google.cloud.recommendationengine.v1beta1.FeatureMapB\x03\xe0A\x01R\x0eitemAttributesB\xa3\x02\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\"\xd6\x03\n" +
+	"\rProductDetail\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12)\n" +
+	"\rcurrency_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fcurrencyCode\x12+\n" +
+	"\x0eoriginal_price\x18\x03 \x01(\x02B\x04\xe2A\x01\x01R\roriginalPrice\x12)\n" +
+	"\rdisplay_price\x18\x04 \x01(\x02B\x04\xe2A\x01\x01R\fdisplayPrice\x12o\n" +
+	"\vstock_state\x18\x05 \x01(\x0e2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.StockStateB\x04\xe2A\x01\x01R\n" +
+	"stockState\x12 \n" +
+	"\bquantity\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\bquantity\x123\n" +
+	"\x12available_quantity\x18\a \x01(\x05B\x04\xe2A\x01\x01R\x11availableQuantity\x12d\n" +
+	"\x0fitem_attributes\x18\b \x01(\v25.google.cloud.recommendationengine.v1beta1.FeatureMapB\x04\xe2A\x01\x01R\x0eitemAttributesB\xa3\x02\n" +
 	"-com.google.cloud.recommendationengine.v1beta1P\x01Zacloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb;recommendationenginepb\xa2\x02\x05RECAI\xaa\x02)Google.Cloud.RecommendationEngine.V1Beta1\xca\x02)Google\\Cloud\\RecommendationEngine\\V1beta1\xea\x02,Google::Cloud::RecommendationEngine::V1beta1b\x06proto3"
 
 var (

@@ -2473,7 +2473,7 @@ const file_google_dataflow_v1beta3_templates_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\n" +
 	"\n" +
-	"\btemplate\"\x8d\f\n" +
+	"\btemplate\"\x8f\f\n" +
 	"\x1eFlexTemplateRuntimeEnvironment\x12\x1f\n" +
 	"\vnum_workers\x18\x01 \x01(\x05R\n" +
 	"numWorkers\x12\x1f\n" +
@@ -2507,9 +2507,9 @@ const file_google_dataflow_v1beta3_templates_proto_rawDesc = "" +
 	"\x10dump_heap_on_oom\x18\x16 \x01(\bR\rdumpHeapOnOom\x12;\n" +
 	"\x1bsave_heap_dumps_to_gcs_path\x18\x17 \x01(\tR\x16saveHeapDumpsToGcsPath\x122\n" +
 	"\x15launcher_machine_type\x18\x18 \x01(\tR\x13launcherMachineType\x12Q\n" +
-	"&enable_launcher_vm_serial_port_logging\x18\x19 \x01(\bR!enableLauncherVmSerialPortLogging\x12W\n" +
-	"\x0estreaming_mode\x18\x1a \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01H\x00R\rstreamingMode\x88\x01\x01\x12C\n" +
-	"\x1badditional_pipeline_options\x18\x1b \x03(\tB\x03\xe0A\x01R\x19additionalPipelineOptions\x1aG\n" +
+	"&enable_launcher_vm_serial_port_logging\x18\x19 \x01(\bR!enableLauncherVmSerialPortLogging\x12X\n" +
+	"\x0estreaming_mode\x18\x1a \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x04\xe2A\x01\x01H\x00R\rstreamingMode\x88\x01\x01\x12D\n" +
+	"\x1badditional_pipeline_options\x18\x1b \x03(\tB\x04\xe2A\x01\x01R\x19additionalPipelineOptions\x1aG\n" +
 	"\x19AdditionalUserLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x11\n" +
@@ -2519,7 +2519,7 @@ const file_google_dataflow_v1beta3_templates_proto_rawDesc = "" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12_\n" +
 	"\x10launch_parameter\x18\x02 \x01(\v24.google.dataflow.v1beta3.LaunchFlexTemplateParameterR\x0flaunchParameter\x12\x1a\n" +
 	"\blocation\x18\x03 \x01(\tR\blocation\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xaf\b\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xb1\b\n" +
 	"\x12RuntimeEnvironment\x12\x1f\n" +
 	"\vnum_workers\x18\v \x01(\x05R\n" +
 	"numWorkers\x12\x1f\n" +
@@ -2545,17 +2545,17 @@ const file_google_dataflow_v1beta3_templates_proto_rawDesc = "" +
 	"workerZone\x126\n" +
 	"\x17enable_streaming_engine\x18\x11 \x01(\bR\x15enableStreamingEngine\x12 \n" +
 	"\fdisk_size_gb\x18\x12 \x01(\x05R\n" +
-	"diskSizeGb\x12W\n" +
-	"\x0estreaming_mode\x18\x13 \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01H\x00R\rstreamingMode\x88\x01\x01\x12C\n" +
-	"\x1badditional_pipeline_options\x18\x14 \x03(\tB\x03\xe0A\x01R\x19additionalPipelineOptions\x1aG\n" +
+	"diskSizeGb\x12X\n" +
+	"\x0estreaming_mode\x18\x13 \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x04\xe2A\x01\x01H\x00R\rstreamingMode\x88\x01\x01\x12D\n" +
+	"\x1badditional_pipeline_options\x18\x14 \x03(\tB\x04\xe2A\x01\x01R\x19additionalPipelineOptions\x1aG\n" +
 	"\x19AdditionalUserLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x11\n" +
-	"\x0f_streaming_mode\"z\n" +
-	"\x1bParameterMetadataEnumOption\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\tB\x03\xe0A\x02R\x05value\x12\x19\n" +
-	"\x05label\x18\x02 \x01(\tB\x03\xe0A\x01R\x05label\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\"\x97\x05\n" +
+	"\x0f_streaming_mode\"}\n" +
+	"\x1bParameterMetadataEnumOption\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05value\x12\x1a\n" +
+	"\x05label\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05label\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\"\x97\x05\n" +
 	"\x11ParameterMetadata\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05label\x18\x02 \x01(\tR\x05label\x12\x1b\n" +

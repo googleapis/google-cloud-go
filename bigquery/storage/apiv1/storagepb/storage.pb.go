@@ -2227,19 +2227,19 @@ var File_google_cloud_bigquery_storage_v1_storage_proto protoreflect.FileDescrip
 
 const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/bigquery/storage/v1/storage.proto\x12 google.cloud.bigquery.storage.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/bigquery/storage/v1/arrow.proto\x1a+google/cloud/bigquery/storage/v1/avro.proto\x1a/google/cloud/bigquery/storage/v1/protobuf.proto\x1a-google/cloud/bigquery/storage/v1/stream.proto\x1a,google/cloud/bigquery/storage/v1/table.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xa5\x02\n" +
-	"\x18CreateReadSessionRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12U\n" +
-	"\fread_session\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1.ReadSessionB\x03\xe0A\x02R\vreadSession\x12(\n" +
+	".google/cloud/bigquery/storage/v1/storage.proto\x12 google.cloud.bigquery.storage.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/bigquery/storage/v1/arrow.proto\x1a+google/cloud/bigquery/storage/v1/avro.proto\x1a/google/cloud/bigquery/storage/v1/protobuf.proto\x1a-google/cloud/bigquery/storage/v1/stream.proto\x1a,google/cloud/bigquery/storage/v1/table.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xa7\x02\n" +
+	"\x18CreateReadSessionRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12V\n" +
+	"\fread_session\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1.ReadSessionB\x04\xe2A\x01\x02R\vreadSession\x12(\n" +
 	"\x10max_stream_count\x18\x03 \x01(\x05R\x0emaxStreamCount\x12;\n" +
-	"\x1apreferred_min_stream_count\x18\x04 \x01(\x05R\x17preferredMinStreamCount\"\xa9\x02\n" +
-	"\x0fReadRowsRequest\x12R\n" +
-	"\vread_stream\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x1apreferred_min_stream_count\x18\x04 \x01(\x05R\x17preferredMinStreamCount\"\xab\x02\n" +
+	"\x0fReadRowsRequest\x12S\n" +
+	"\vread_stream\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")bigquerystorage.googleapis.com/ReadStreamR\n" +
 	"readStream\x12\x16\n" +
-	"\x06offset\x18\x02 \x01(\x03R\x06offset\x12\x82\x01\n" +
-	"\x1barrow_serialization_options\x18\x05 \x01(\v2;.google.cloud.bigquery.storage.v1.ArrowSerializationOptionsB\x03\xe0A\x01H\x00R\x19arrowSerializationOptionsB%\n" +
+	"\x06offset\x18\x02 \x01(\x03R\x06offset\x12\x83\x01\n" +
+	"\x1barrow_serialization_options\x18\x05 \x01(\v2;.google.cloud.bigquery.storage.v1.ArrowSerializationOptionsB\x04\xe2A\x01\x01H\x00R\x19arrowSerializationOptionsB%\n" +
 	"#output_format_serialization_options\":\n" +
 	"\rThrottleState\x12)\n" +
 	"\x10throttle_percent\x18\x01 \x01(\x05R\x0fthrottlePercent\"\xc1\x01\n" +
@@ -2247,37 +2247,37 @@ const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"\bprogress\x18\x02 \x01(\v26.google.cloud.bigquery.storage.v1.StreamStats.ProgressR\bprogress\x1a^\n" +
 	"\bProgress\x12*\n" +
 	"\x11at_response_start\x18\x01 \x01(\x01R\x0fatResponseStart\x12&\n" +
-	"\x0fat_response_end\x18\x02 \x01(\x01R\ratResponseEnd\"\xfa\x05\n" +
+	"\x0fat_response_end\x18\x02 \x01(\x01R\ratResponseEnd\"\xfe\x05\n" +
 	"\x10ReadRowsResponse\x12I\n" +
 	"\tavro_rows\x18\x03 \x01(\v2*.google.cloud.bigquery.storage.v1.AvroRowsH\x00R\bavroRows\x12b\n" +
 	"\x12arrow_record_batch\x18\x04 \x01(\v22.google.cloud.bigquery.storage.v1.ArrowRecordBatchH\x00R\x10arrowRecordBatch\x12\x1b\n" +
 	"\trow_count\x18\x06 \x01(\x03R\browCount\x12C\n" +
 	"\x05stats\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1.StreamStatsR\x05stats\x12V\n" +
-	"\x0ethrottle_state\x18\x05 \x01(\v2/.google.cloud.bigquery.storage.v1.ThrottleStateR\rthrottleState\x12T\n" +
-	"\vavro_schema\x18\a \x01(\v2,.google.cloud.bigquery.storage.v1.AvroSchemaB\x03\xe0A\x03H\x01R\n" +
-	"avroSchema\x12W\n" +
-	"\farrow_schema\x18\b \x01(\v2-.google.cloud.bigquery.storage.v1.ArrowSchemaB\x03\xe0A\x03H\x01R\varrowSchema\x12>\n" +
-	"\x16uncompressed_byte_size\x18\t \x01(\x03B\x03\xe0A\x01H\x02R\x14uncompressedByteSize\x88\x01\x01\x12C\n" +
+	"\x0ethrottle_state\x18\x05 \x01(\v2/.google.cloud.bigquery.storage.v1.ThrottleStateR\rthrottleState\x12U\n" +
+	"\vavro_schema\x18\a \x01(\v2,.google.cloud.bigquery.storage.v1.AvroSchemaB\x04\xe2A\x01\x03H\x01R\n" +
+	"avroSchema\x12X\n" +
+	"\farrow_schema\x18\b \x01(\v2-.google.cloud.bigquery.storage.v1.ArrowSchemaB\x04\xe2A\x01\x03H\x01R\varrowSchema\x12?\n" +
+	"\x16uncompressed_byte_size\x18\t \x01(\x03B\x04\xe2A\x01\x01H\x02R\x14uncompressedByteSize\x88\x01\x01\x12D\n" +
 	"\x19total_estimated_row_count\x18\n" +
-	" \x01(\x03B\x03\xe0A\x03H\x03R\x16totalEstimatedRowCount\x88\x01\x01B\x06\n" +
+	" \x01(\x03B\x04\xe2A\x01\x03H\x03R\x16totalEstimatedRowCount\x88\x01\x01B\x06\n" +
 	"\x04rowsB\b\n" +
 	"\x06schemaB\x19\n" +
 	"\x17_uncompressed_byte_sizeB\x1c\n" +
-	"\x1a_total_estimated_row_count\"{\n" +
-	"\x16SplitReadStreamRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x1a_total_estimated_row_count\"|\n" +
+	"\x16SplitReadStreamRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")bigquerystorage.googleapis.com/ReadStreamR\x04name\x12\x1a\n" +
 	"\bfraction\x18\x02 \x01(\x01R\bfraction\"\xc7\x01\n" +
 	"\x17SplitReadStreamResponse\x12S\n" +
 	"\x0eprimary_stream\x18\x01 \x01(\v2,.google.cloud.bigquery.storage.v1.ReadStreamR\rprimaryStream\x12W\n" +
-	"\x10remainder_stream\x18\x02 \x01(\v2,.google.cloud.bigquery.storage.v1.ReadStreamR\x0fremainderStream\"\xb0\x01\n" +
-	"\x18CreateWriteStreamRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x06parent\x12U\n" +
-	"\fwrite_stream\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1.WriteStreamB\x03\xe0A\x02R\vwriteStream\"\xf8\n" +
+	"\x10remainder_stream\x18\x02 \x01(\v2,.google.cloud.bigquery.storage.v1.ReadStreamR\x0fremainderStream\"\xb2\x01\n" +
+	"\x18CreateWriteStreamRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x06parent\x12V\n" +
+	"\fwrite_stream\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1.WriteStreamB\x04\xe2A\x01\x02R\vwriteStream\"\xfb\n" +
 	"\n" +
-	"\x11AppendRowsRequest\x12U\n" +
-	"\fwrite_stream\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x11AppendRowsRequest\x12V\n" +
+	"\fwrite_stream\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*bigquerystorage.googleapis.com/WriteStreamR\vwriteStream\x123\n" +
 	"\x06offset\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueR\x06offset\x12^\n" +
 	"\n" +
@@ -2285,9 +2285,9 @@ const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"\n" +
 	"arrow_rows\x18\x05 \x01(\v2=.google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowDataH\x00R\tarrowRows\x12\x19\n" +
 	"\btrace_id\x18\x06 \x01(\tR\atraceId\x12\x98\x01\n" +
-	"\x1dmissing_value_interpretations\x18\a \x03(\v2T.google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationsEntryR\x1bmissingValueInterpretations\x12\xa4\x01\n" +
-	"$default_missing_value_interpretation\x18\b \x01(\x0e2N.google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationB\x03\xe0A\x01R!defaultMissingValueInterpretation\x12U\n" +
-	"\fclient_stats\x18\t \x01(\v2-.google.cloud.bigquery.storage.v1.ClientStatsB\x03\xe0A\x01R\vclientStats\x1a\xa7\x01\n" +
+	"\x1dmissing_value_interpretations\x18\a \x03(\v2T.google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationsEntryR\x1bmissingValueInterpretations\x12\xa5\x01\n" +
+	"$default_missing_value_interpretation\x18\b \x01(\x0e2N.google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationB\x04\xe2A\x01\x01R!defaultMissingValueInterpretation\x12V\n" +
+	"\fclient_stats\x18\t \x01(\v2-.google.cloud.bigquery.storage.v1.ClientStatsB\x04\xe2A\x01\x01R\vclientStats\x1a\xa7\x01\n" +
 	"\tArrowData\x12R\n" +
 	"\rwriter_schema\x18\x01 \x01(\v2-.google.cloud.bigquery.storage.v1.ArrowSchemaR\fwriterSchema\x12F\n" +
 	"\x04rows\x18\x02 \x01(\v22.google.cloud.bigquery.storage.v1.ArrowRecordBatchR\x04rows\x1a\xa0\x01\n" +
@@ -2313,26 +2313,26 @@ const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"\fAppendResult\x123\n" +
 	"\x06offset\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueR\x06offsetB\n" +
 	"\n" +
-	"\bresponse\"\xa6\x01\n" +
-	"\x15GetWriteStreamRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\bresponse\"\xa7\x01\n" +
+	"\x15GetWriteStreamRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*bigquerystorage.googleapis.com/WriteStreamR\x04name\x12E\n" +
-	"\x04view\x18\x03 \x01(\x0e21.google.cloud.bigquery.storage.v1.WriteStreamViewR\x04view\"\x89\x01\n" +
-	"\x1eBatchCommitWriteStreamsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x06parent\x12(\n" +
-	"\rwrite_streams\x18\x02 \x03(\tB\x03\xe0A\x02R\fwriteStreams\"\xb3\x01\n" +
+	"\x04view\x18\x03 \x01(\x0e21.google.cloud.bigquery.storage.v1.WriteStreamViewR\x04view\"\x8b\x01\n" +
+	"\x1eBatchCommitWriteStreamsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x06parent\x12)\n" +
+	"\rwrite_streams\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\fwriteStreams\"\xb3\x01\n" +
 	"\x1fBatchCommitWriteStreamsResponse\x12;\n" +
 	"\vcommit_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"commitTime\x12S\n" +
-	"\rstream_errors\x18\x02 \x03(\v2..google.cloud.bigquery.storage.v1.StorageErrorR\fstreamErrors\"d\n" +
-	"\x1aFinalizeWriteStreamRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\rstream_errors\x18\x02 \x03(\v2..google.cloud.bigquery.storage.v1.StorageErrorR\fstreamErrors\"e\n" +
+	"\x1aFinalizeWriteStreamRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*bigquerystorage.googleapis.com/WriteStreamR\x04name\":\n" +
 	"\x1bFinalizeWriteStreamResponse\x12\x1b\n" +
-	"\trow_count\x18\x01 \x01(\x03R\browCount\"\x9e\x01\n" +
-	"\x10FlushRowsRequest\x12U\n" +
-	"\fwrite_stream\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\trow_count\x18\x01 \x01(\x03R\browCount\"\x9f\x01\n" +
+	"\x10FlushRowsRequest\x12V\n" +
+	"\fwrite_stream\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*bigquerystorage.googleapis.com/WriteStreamR\vwriteStream\x123\n" +
 	"\x06offset\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueR\x06offset\"+\n" +
 	"\x11FlushRowsResponse\x12\x16\n" +
@@ -2364,24 +2364,24 @@ const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"\amessage\x18\x03 \x01(\tR\amessage\"@\n" +
 	"\fRowErrorCode\x12\x1e\n" +
 	"\x1aROW_ERROR_CODE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fFIELDS_ERROR\x10\x01\"\x8c\t\n" +
-	"\vClientStats\x12d\n" +
-	"\rrequest_stats\x18\x01 \x01(\v2:.google.cloud.bigquery.storage.v1.ClientStats.RequestStatsB\x03\xe0A\x01R\frequestStats\x12a\n" +
-	"\fwindow_stats\x18\x02 \x01(\v29.google.cloud.bigquery.storage.v1.ClientStats.WindowStatsB\x03\xe0A\x01R\vwindowStats\x1a\xaf\x01\n" +
-	"\fRequestStats\x122\n" +
-	"\x10send_time_millis\x18\x01 \x01(\x03B\x03\xe0A\x01H\x00R\x0esendTimeMillis\x88\x01\x01\x12<\n" +
-	"\x15queued_requests_count\x18\x02 \x01(\x03B\x03\xe0A\x01H\x01R\x13queuedRequestsCount\x88\x01\x01B\x13\n" +
+	"\fFIELDS_ERROR\x10\x01\"\x98\t\n" +
+	"\vClientStats\x12e\n" +
+	"\rrequest_stats\x18\x01 \x01(\v2:.google.cloud.bigquery.storage.v1.ClientStats.RequestStatsB\x04\xe2A\x01\x01R\frequestStats\x12b\n" +
+	"\fwindow_stats\x18\x02 \x01(\v29.google.cloud.bigquery.storage.v1.ClientStats.WindowStatsB\x04\xe2A\x01\x01R\vwindowStats\x1a\xb1\x01\n" +
+	"\fRequestStats\x123\n" +
+	"\x10send_time_millis\x18\x01 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x0esendTimeMillis\x88\x01\x01\x12=\n" +
+	"\x15queued_requests_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x01R\x13queuedRequestsCount\x88\x01\x01B\x13\n" +
 	"\x11_send_time_millisB\x18\n" +
-	"\x16_queued_requests_count\x1a\x81\x06\n" +
-	"\vWindowStats\x12G\n" +
-	"\x1bmax_response_latency_millis\x18\x01 \x01(\x03B\x03\xe0A\x01H\x00R\x18maxResponseLatencyMillis\x88\x01\x01\x12G\n" +
-	"\x1bavg_response_latency_millis\x18\x02 \x01(\x03B\x03\xe0A\x01H\x01R\x18avgResponseLatencyMillis\x88\x01\x01\x12N\n" +
-	"\x1flongest_wait_no_response_millis\x18\x03 \x01(\x03B\x03\xe0A\x01H\x02R\x1blongestWaitNoResponseMillis\x88\x01\x01\x128\n" +
-	"\x13requests_sent_count\x18\x04 \x01(\x03B\x03\xe0A\x01H\x03R\x11requestsSentCount\x88\x01\x01\x12B\n" +
-	"\x18responses_received_count\x18\x05 \x01(\x03B\x03\xe0A\x01H\x04R\x16responsesReceivedCount\x88\x01\x01\x122\n" +
-	"\x10bytes_sent_count\x18\x06 \x01(\x03B\x03\xe0A\x01H\x05R\x0ebytesSentCount\x88\x01\x01\x12L\n" +
-	"\x1ewindow_start_time_epoch_millis\x18\a \x01(\x03B\x03\xe0A\x01H\x06R\x1awindowStartTimeEpochMillis\x88\x01\x01\x12-\n" +
-	"\rwindow_millis\x18\b \x01(\x03B\x03\xe0A\x01H\aR\fwindowMillis\x88\x01\x01B\x1e\n" +
+	"\x16_queued_requests_count\x1a\x89\x06\n" +
+	"\vWindowStats\x12H\n" +
+	"\x1bmax_response_latency_millis\x18\x01 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x18maxResponseLatencyMillis\x88\x01\x01\x12H\n" +
+	"\x1bavg_response_latency_millis\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x01R\x18avgResponseLatencyMillis\x88\x01\x01\x12O\n" +
+	"\x1flongest_wait_no_response_millis\x18\x03 \x01(\x03B\x04\xe2A\x01\x01H\x02R\x1blongestWaitNoResponseMillis\x88\x01\x01\x129\n" +
+	"\x13requests_sent_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x01H\x03R\x11requestsSentCount\x88\x01\x01\x12C\n" +
+	"\x18responses_received_count\x18\x05 \x01(\x03B\x04\xe2A\x01\x01H\x04R\x16responsesReceivedCount\x88\x01\x01\x123\n" +
+	"\x10bytes_sent_count\x18\x06 \x01(\x03B\x04\xe2A\x01\x01H\x05R\x0ebytesSentCount\x88\x01\x01\x12M\n" +
+	"\x1ewindow_start_time_epoch_millis\x18\a \x01(\x03B\x04\xe2A\x01\x01H\x06R\x1awindowStartTimeEpochMillis\x88\x01\x01\x12.\n" +
+	"\rwindow_millis\x18\b \x01(\x03B\x04\xe2A\x01\x01H\aR\fwindowMillis\x88\x01\x01B\x1e\n" +
 	"\x1c_max_response_latency_millisB\x1e\n" +
 	"\x1c_avg_response_latency_millisB\"\n" +
 	" _longest_wait_no_response_millisB\x16\n" +

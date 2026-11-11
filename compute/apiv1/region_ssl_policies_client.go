@@ -354,6 +354,13 @@ func (c *regionSslPoliciesRESTClient) Delete(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSslPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslPolicies/%v", req.GetProject(), req.GetRegion(), req.GetSslPolicy())
 
 	params := url.Values{}
@@ -418,6 +425,13 @@ func (c *regionSslPoliciesRESTClient) Get(ctx context.Context, req *computepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSslPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslPolicies/%v", req.GetProject(), req.GetRegion(), req.GetSslPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -473,6 +487,12 @@ func (c *regionSslPoliciesRESTClient) Insert(ctx context.Context, req *computepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslPolicies", req.GetProject(), req.GetRegion())
@@ -553,6 +573,12 @@ func (c *regionSslPoliciesRESTClient) List(ctx context.Context, req *computepb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslPolicies", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -622,6 +648,12 @@ func (c *regionSslPoliciesRESTClient) List(ctx context.Context, req *computepb.L
 func (c *regionSslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *computepb.ListAvailableFeaturesRegionSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslPolicies/listAvailableFeatures", req.GetProject(), req.GetRegion())
@@ -694,6 +726,13 @@ func (c *regionSslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSslPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslPolicies/%v", req.GetProject(), req.GetRegion(), req.GetSslPolicy())

@@ -3414,6 +3414,11 @@ func (c *cloudDeployRESTClient) ListDeliveryPipelines(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deliveryPipelines", req.GetParent())
 
 		params := url.Values{}
@@ -3485,6 +3490,11 @@ func (c *cloudDeployRESTClient) GetDeliveryPipeline(ctx context.Context, req *de
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3544,6 +3554,11 @@ func (c *cloudDeployRESTClient) CreateDeliveryPipeline(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/deliveryPipelines", req.GetParent())
@@ -3621,6 +3636,11 @@ func (c *cloudDeployRESTClient) UpdateDeliveryPipeline(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDeliveryPipeline().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeliveryPipeline().GetName())
 
 	params := url.Values{}
@@ -3696,6 +3716,11 @@ func (c *cloudDeployRESTClient) UpdateDeliveryPipeline(ctx context.Context, req 
 func (c *cloudDeployRESTClient) DeleteDeliveryPipeline(ctx context.Context, req *deploypb.DeleteDeliveryPipelineRequest, opts ...gax.CallOption) (*DeleteDeliveryPipelineOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3787,6 +3812,11 @@ func (c *cloudDeployRESTClient) ListTargets(ctx context.Context, req *deploypb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/targets", req.GetParent())
 
 		params := url.Values{}
@@ -3864,6 +3894,11 @@ func (c *cloudDeployRESTClient) RollbackTarget(ctx context.Context, req *deployp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rollbackTarget", req.GetName())
 
 	params := url.Values{}
@@ -3916,6 +3951,11 @@ func (c *cloudDeployRESTClient) RollbackTarget(ctx context.Context, req *deployp
 func (c *cloudDeployRESTClient) GetTarget(ctx context.Context, req *deploypb.GetTargetRequest, opts ...gax.CallOption) (*deploypb.Target, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3977,6 +4017,11 @@ func (c *cloudDeployRESTClient) CreateTarget(ctx context.Context, req *deploypb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/targets", req.GetParent())
@@ -4054,6 +4099,11 @@ func (c *cloudDeployRESTClient) UpdateTarget(ctx context.Context, req *deploypb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTarget().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTarget().GetName())
 
 	params := url.Values{}
@@ -4129,6 +4179,11 @@ func (c *cloudDeployRESTClient) UpdateTarget(ctx context.Context, req *deploypb.
 func (c *cloudDeployRESTClient) DeleteTarget(ctx context.Context, req *deploypb.DeleteTargetRequest, opts ...gax.CallOption) (*DeleteTargetOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4217,6 +4272,11 @@ func (c *cloudDeployRESTClient) ListCustomTargetTypes(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/customTargetTypes", req.GetParent())
 
 		params := url.Values{}
@@ -4288,6 +4348,11 @@ func (c *cloudDeployRESTClient) GetCustomTargetType(ctx context.Context, req *de
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4347,6 +4412,11 @@ func (c *cloudDeployRESTClient) CreateCustomTargetType(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/customTargetTypes", req.GetParent())
@@ -4424,6 +4494,11 @@ func (c *cloudDeployRESTClient) UpdateCustomTargetType(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomTargetType().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCustomTargetType().GetName())
 
 	params := url.Values{}
@@ -4499,6 +4574,11 @@ func (c *cloudDeployRESTClient) UpdateCustomTargetType(ctx context.Context, req 
 func (c *cloudDeployRESTClient) DeleteCustomTargetType(ctx context.Context, req *deploypb.DeleteCustomTargetTypeRequest, opts ...gax.CallOption) (*DeleteCustomTargetTypeOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4587,6 +4667,11 @@ func (c *cloudDeployRESTClient) ListReleases(ctx context.Context, req *deploypb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/releases", req.GetParent())
 
 		params := url.Values{}
@@ -4658,6 +4743,11 @@ func (c *cloudDeployRESTClient) GetRelease(ctx context.Context, req *deploypb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4717,6 +4807,11 @@ func (c *cloudDeployRESTClient) CreateRelease(ctx context.Context, req *deploypb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/releases", req.GetParent())
@@ -4798,6 +4893,11 @@ func (c *cloudDeployRESTClient) AbandonRelease(ctx context.Context, req *deployp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:abandon", req.GetName())
 
 	params := url.Values{}
@@ -4857,6 +4957,11 @@ func (c *cloudDeployRESTClient) CreateDeployPolicy(ctx context.Context, req *dep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/deployPolicies", req.GetParent())
@@ -4934,6 +5039,11 @@ func (c *cloudDeployRESTClient) UpdateDeployPolicy(ctx context.Context, req *dep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDeployPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeployPolicy().GetName())
 
 	params := url.Values{}
@@ -5009,6 +5119,11 @@ func (c *cloudDeployRESTClient) UpdateDeployPolicy(ctx context.Context, req *dep
 func (c *cloudDeployRESTClient) DeleteDeployPolicy(ctx context.Context, req *deploypb.DeleteDeployPolicyRequest, opts ...gax.CallOption) (*DeleteDeployPolicyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5097,6 +5212,11 @@ func (c *cloudDeployRESTClient) ListDeployPolicies(ctx context.Context, req *dep
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deployPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -5168,6 +5288,11 @@ func (c *cloudDeployRESTClient) GetDeployPolicy(ctx context.Context, req *deploy
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5226,6 +5351,11 @@ func (c *cloudDeployRESTClient) ApproveRollout(ctx context.Context, req *deployp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:approve", req.GetName())
@@ -5288,6 +5418,11 @@ func (c *cloudDeployRESTClient) AdvanceRollout(ctx context.Context, req *deployp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:advance", req.GetName())
 
 	params := url.Values{}
@@ -5346,6 +5481,11 @@ func (c *cloudDeployRESTClient) CancelRollout(ctx context.Context, req *deploypb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
@@ -5413,6 +5553,11 @@ func (c *cloudDeployRESTClient) ListRollouts(ctx context.Context, req *deploypb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/rollouts", req.GetParent())
@@ -5486,6 +5631,11 @@ func (c *cloudDeployRESTClient) GetRollout(ctx context.Context, req *deploypb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5545,6 +5695,11 @@ func (c *cloudDeployRESTClient) CreateRollout(ctx context.Context, req *deploypb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/rollouts", req.GetParent())
@@ -5629,6 +5784,11 @@ func (c *cloudDeployRESTClient) IgnoreJob(ctx context.Context, req *deploypb.Ign
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:ignoreJob", req.GetRollout())
 
 	params := url.Values{}
@@ -5687,6 +5847,11 @@ func (c *cloudDeployRESTClient) RetryJob(ctx context.Context, req *deploypb.Retr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRollout(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:retryJob", req.GetRollout())
@@ -5754,6 +5919,11 @@ func (c *cloudDeployRESTClient) ListJobRuns(ctx context.Context, req *deploypb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/jobRuns", req.GetParent())
@@ -5827,6 +5997,11 @@ func (c *cloudDeployRESTClient) GetJobRun(ctx context.Context, req *deploypb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5887,6 +6062,11 @@ func (c *cloudDeployRESTClient) TerminateJobRun(ctx context.Context, req *deploy
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:terminate", req.GetName())
 
 	params := url.Values{}
@@ -5939,6 +6119,11 @@ func (c *cloudDeployRESTClient) TerminateJobRun(ctx context.Context, req *deploy
 func (c *cloudDeployRESTClient) GetConfig(ctx context.Context, req *deploypb.GetConfigRequest, opts ...gax.CallOption) (*deploypb.Config, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6000,6 +6185,11 @@ func (c *cloudDeployRESTClient) CreateAutomation(ctx context.Context, req *deplo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/automations", req.GetParent())
@@ -6075,6 +6265,11 @@ func (c *cloudDeployRESTClient) UpdateAutomation(ctx context.Context, req *deplo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAutomation().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAutomation().GetName())
@@ -6154,6 +6349,11 @@ func (c *cloudDeployRESTClient) DeleteAutomation(ctx context.Context, req *deplo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6227,6 +6427,11 @@ func (c *cloudDeployRESTClient) GetAutomation(ctx context.Context, req *deploypb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6292,6 +6497,11 @@ func (c *cloudDeployRESTClient) ListAutomations(ctx context.Context, req *deploy
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/automations", req.GetParent())
@@ -6365,6 +6575,11 @@ func (c *cloudDeployRESTClient) GetAutomationRun(ctx context.Context, req *deplo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6430,6 +6645,11 @@ func (c *cloudDeployRESTClient) ListAutomationRuns(ctx context.Context, req *dep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/automationRuns", req.GetParent())
@@ -6512,6 +6732,11 @@ func (c *cloudDeployRESTClient) CancelAutomationRun(ctx context.Context, req *de
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -6564,6 +6789,11 @@ func (c *cloudDeployRESTClient) CancelAutomationRun(ctx context.Context, req *de
 func (c *cloudDeployRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6631,6 +6861,11 @@ func (c *cloudDeployRESTClient) ListLocations(ctx context.Context, req *location
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -6702,6 +6937,11 @@ func (c *cloudDeployRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -6767,6 +7007,11 @@ func (c *cloudDeployRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -6835,6 +7080,11 @@ func (c *cloudDeployRESTClient) TestIamPermissions(ctx context.Context, req *iam
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -6895,6 +7145,11 @@ func (c *cloudDeployRESTClient) CancelOperation(ctx context.Context, req *longru
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -6934,6 +7189,11 @@ func (c *cloudDeployRESTClient) DeleteOperation(ctx context.Context, req *longru
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6971,6 +7231,11 @@ func (c *cloudDeployRESTClient) DeleteOperation(ctx context.Context, req *longru
 func (c *cloudDeployRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7038,6 +7303,11 @@ func (c *cloudDeployRESTClient) ListOperations(ctx context.Context, req *longrun
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

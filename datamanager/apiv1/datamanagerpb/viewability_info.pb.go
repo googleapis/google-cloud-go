@@ -271,16 +271,16 @@ var File_google_ads_datamanager_v1_viewability_info_proto protoreflect.FileDescr
 
 const file_google_ads_datamanager_v1_viewability_info_proto_rawDesc = "" +
 	"\n" +
-	"0google/ads/datamanager/v1/viewability_info.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\"\xa4\x04\n" +
-	"\x0fViewabilityInfo\x12E\n" +
-	"\tview_type\x18\x01 \x01(\x0e2#.google.ads.datamanager.v1.ViewTypeB\x03\xe0A\x02R\bviewType\x12.\n" +
-	"\x10viewable_percent\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0fviewablePercent\x12K\n" +
-	"\x11viewable_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10viewableDuration\x12,\n" +
-	"\x0fmedia_skippable\x18\x04 \x01(\bB\x03\xe0A\x01R\x0emediaSkippable\x12T\n" +
-	"\x0emedia_quartile\x18\x05 \x01(\x0e2(.google.ads.datamanager.v1.MediaQuartileB\x03\xe0A\x01R\rmediaQuartile\x12E\n" +
-	"\x0emedia_duration\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\rmediaDuration\x125\n" +
-	"\x14media_volume_percent\x18\a \x01(\x05B\x03\xe0A\x01R\x12mediaVolumePercent\x12K\n" +
-	"\x11playback_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10playbackDuration*[\n" +
+	"0google/ads/datamanager/v1/viewability_info.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\"\xac\x04\n" +
+	"\x0fViewabilityInfo\x12F\n" +
+	"\tview_type\x18\x01 \x01(\x0e2#.google.ads.datamanager.v1.ViewTypeB\x04\xe2A\x01\x02R\bviewType\x12/\n" +
+	"\x10viewable_percent\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0fviewablePercent\x12L\n" +
+	"\x11viewable_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x10viewableDuration\x12-\n" +
+	"\x0fmedia_skippable\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x0emediaSkippable\x12U\n" +
+	"\x0emedia_quartile\x18\x05 \x01(\x0e2(.google.ads.datamanager.v1.MediaQuartileB\x04\xe2A\x01\x01R\rmediaQuartile\x12F\n" +
+	"\x0emedia_duration\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\rmediaDuration\x126\n" +
+	"\x14media_volume_percent\x18\a \x01(\x05B\x04\xe2A\x01\x01R\x12mediaVolumePercent\x12L\n" +
+	"\x11playback_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x10playbackDuration*[\n" +
 	"\bViewType\x12\x19\n" +
 	"\x15VIEW_TYPE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14VIEW_TYPE_MRC_VIEWED\x10\x01\x12\x1a\n" +

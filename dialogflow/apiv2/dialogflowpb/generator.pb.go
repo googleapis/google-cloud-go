@@ -181,9 +181,10 @@ const (
 	// "N/A" otherwise.
 	// Section name: "reason_for_cancellation".
 	SummarizationSection_REASON_FOR_CANCELLATION SummarizationSection_Type = 4
-	// "Unsatisfied" or "Satisfied" depending on the customer's feelings at
-	// the end of the conversation.
-	// Section name: "customer_satisfaction".
+	// Customer satisfaction derived from the text transcript only (not audio).
+	// Categorized based on customer statements by the end of the conversation.
+	// `D` for dissatisfied and `N` for neutral or satisfied (default).
+	// Section name: `customer_satisfaction`.
 	SummarizationSection_CUSTOMER_SATISFACTION SummarizationSection_Type = 5
 	// Key entities extracted from the conversation, such as ticket number,
 	// order number, dollar amount, etc.
@@ -2437,78 +2438,78 @@ var File_google_cloud_dialogflow_v2_generator_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_generator_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/dialogflow/v2/generator.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a;google/cloud/dialogflow/v2/agent_coaching_instruction.proto\x1a(google/cloud/dialogflow/v2/ces_app.proto\x1a)google/cloud/dialogflow/v2/ces_tool.proto\x1a*google/cloud/dialogflow/v2/tool_call.proto\x1a(google/cloud/dialogflow/v2/toolset.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd7\x01\n" +
-	"\x16CreateGeneratorRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12H\n" +
-	"\tgenerator\x18\x02 \x01(\v2%.google.cloud.dialogflow.v2.GeneratorB\x03\xe0A\x02R\tgenerator\x12&\n" +
-	"\fgenerator_id\x18\x03 \x01(\tB\x03\xe0A\x01R\vgeneratorId\"V\n" +
-	"\x13GetGeneratorRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dialogflow.googleapis.com/GeneratorR\x04name\"\xaa\x01\n" +
-	"\x15ListGeneratorsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"*google/cloud/dialogflow/v2/generator.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a;google/cloud/dialogflow/v2/agent_coaching_instruction.proto\x1a(google/cloud/dialogflow/v2/ces_app.proto\x1a)google/cloud/dialogflow/v2/ces_tool.proto\x1a*google/cloud/dialogflow/v2/tool_call.proto\x1a(google/cloud/dialogflow/v2/toolset.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xda\x01\n" +
+	"\x16CreateGeneratorRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12I\n" +
+	"\tgenerator\x18\x02 \x01(\v2%.google.cloud.dialogflow.v2.GeneratorB\x04\xe2A\x01\x02R\tgenerator\x12'\n" +
+	"\fgenerator_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vgeneratorId\"W\n" +
+	"\x13GetGeneratorRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dialogflow.googleapis.com/GeneratorR\x04name\"\xad\x01\n" +
+	"\x15ListGeneratorsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x87\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x87\x01\n" +
 	"\x16ListGeneratorsResponse\x12E\n" +
 	"\n" +
 	"generators\x18\x01 \x03(\v2%.google.cloud.dialogflow.v2.GeneratorR\n" +
 	"generators\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
-	"\x16DeleteGeneratorRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dialogflow.googleapis.com/GeneratorR\x04name\"\xa4\x01\n" +
-	"\x16UpdateGeneratorRequest\x12H\n" +
-	"\tgenerator\x18\x01 \x01(\v2%.google.cloud.dialogflow.v2.GeneratorB\x03\xe0A\x02R\tgenerator\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xad\x02\n" +
-	"\fMessageEntry\x12F\n" +
-	"\x04role\x18\x01 \x01(\x0e2-.google.cloud.dialogflow.v2.MessageEntry.RoleB\x03\xe0A\x01R\x04role\x12\x17\n" +
-	"\x04text\x18\x02 \x01(\tB\x03\xe0A\x01R\x04text\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\x16DeleteGeneratorRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dialogflow.googleapis.com/GeneratorR\x04name\"\xa6\x01\n" +
+	"\x16UpdateGeneratorRequest\x12I\n" +
+	"\tgenerator\x18\x01 \x01(\v2%.google.cloud.dialogflow.v2.GeneratorB\x04\xe2A\x01\x02R\tgenerator\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xb1\x02\n" +
+	"\fMessageEntry\x12G\n" +
+	"\x04role\x18\x01 \x01(\x0e2-.google.cloud.dialogflow.v2.MessageEntry.RoleB\x04\xe2A\x01\x01R\x04role\x12\x18\n" +
+	"\x04text\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04text\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\n" +
 	"createTime\"P\n" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vHUMAN_AGENT\x10\x01\x12\x13\n" +
 	"\x0fAUTOMATED_AGENT\x10\x02\x12\f\n" +
-	"\bEND_USER\x10\x03\"m\n" +
-	"\x13ConversationContext\x12V\n" +
-	"\x0fmessage_entries\x18\x01 \x03(\v2(.google.cloud.dialogflow.v2.MessageEntryB\x03\xe0A\x01R\x0emessageEntries\"\x88\x01\n" +
-	"\x18SummarizationSectionList\x12l\n" +
-	"\x16summarization_sections\x18\x01 \x03(\v20.google.cloud.dialogflow.v2.SummarizationSectionB\x03\xe0A\x01R\x15summarizationSections\"\xee\x03\n" +
-	"\x0eFewShotExample\x12g\n" +
-	"\x14conversation_context\x18\x03 \x01(\v2/.google.cloud.dialogflow.v2.ConversationContextB\x03\xe0A\x01R\x13conversationContext\x12]\n" +
+	"\bEND_USER\x10\x03\"n\n" +
+	"\x13ConversationContext\x12W\n" +
+	"\x0fmessage_entries\x18\x01 \x03(\v2(.google.cloud.dialogflow.v2.MessageEntryB\x04\xe2A\x01\x01R\x0emessageEntries\"\x89\x01\n" +
+	"\x18SummarizationSectionList\x12m\n" +
+	"\x16summarization_sections\x18\x01 \x03(\v20.google.cloud.dialogflow.v2.SummarizationSectionB\x04\xe2A\x01\x01R\x15summarizationSections\"\xf1\x03\n" +
+	"\x0eFewShotExample\x12h\n" +
+	"\x14conversation_context\x18\x03 \x01(\v2/.google.cloud.dialogflow.v2.ConversationContextB\x04\xe2A\x01\x01R\x13conversationContext\x12^\n" +
 	"\n" +
-	"extra_info\x18\x04 \x03(\v29.google.cloud.dialogflow.v2.FewShotExample.ExtraInfoEntryB\x03\xe0A\x01R\textraInfo\x12t\n" +
-	"\x1asummarization_section_list\x18\x06 \x01(\v24.google.cloud.dialogflow.v2.SummarizationSectionListH\x00R\x18summarizationSectionList\x12L\n" +
-	"\x06output\x18\a \x01(\v2/.google.cloud.dialogflow.v2.GeneratorSuggestionB\x03\xe0A\x02R\x06output\x1a<\n" +
+	"extra_info\x18\x04 \x03(\v29.google.cloud.dialogflow.v2.FewShotExample.ExtraInfoEntryB\x04\xe2A\x01\x01R\textraInfo\x12t\n" +
+	"\x1asummarization_section_list\x18\x06 \x01(\v24.google.cloud.dialogflow.v2.SummarizationSectionListH\x00R\x18summarizationSectionList\x12M\n" +
+	"\x06output\x18\a \x01(\v2/.google.cloud.dialogflow.v2.GeneratorSuggestionB\x04\xe2A\x01\x02R\x06output\x1a<\n" +
 	"\x0eExtraInfoEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x12\n" +
-	"\x10instruction_list\"\xee\x01\n" +
-	"\x12InferenceParameter\x124\n" +
-	"\x11max_output_tokens\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\x0fmaxOutputTokens\x88\x01\x01\x12*\n" +
-	"\vtemperature\x18\x02 \x01(\x01B\x03\xe0A\x01H\x01R\vtemperature\x88\x01\x01\x12\x1d\n" +
-	"\x05top_k\x18\x03 \x01(\x05B\x03\xe0A\x01H\x02R\x04topK\x88\x01\x01\x12\x1d\n" +
-	"\x05top_p\x18\x04 \x01(\x01B\x03\xe0A\x01H\x03R\x04topP\x88\x01\x01B\x14\n" +
+	"\x10instruction_list\"\xf2\x01\n" +
+	"\x12InferenceParameter\x125\n" +
+	"\x11max_output_tokens\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x0fmaxOutputTokens\x88\x01\x01\x12+\n" +
+	"\vtemperature\x18\x02 \x01(\x01B\x04\xe2A\x01\x01H\x01R\vtemperature\x88\x01\x01\x12\x1e\n" +
+	"\x05top_k\x18\x03 \x01(\x05B\x04\xe2A\x01\x01H\x02R\x04topK\x88\x01\x01\x12\x1e\n" +
+	"\x05top_p\x18\x04 \x01(\x01B\x04\xe2A\x01\x01H\x03R\x04topP\x88\x01\x01B\x14\n" +
 	"\x12_max_output_tokensB\x0e\n" +
 	"\f_temperatureB\b\n" +
 	"\x06_top_kB\b\n" +
-	"\x06_top_p\"\x83\x02\n" +
-	"\x14AgentCoachingContext\x126\n" +
-	"\x14overarching_guidance\x18\a \x01(\tB\x03\xe0A\x01R\x13overarchingGuidance\x12]\n" +
-	"\finstructions\x18\x01 \x03(\v24.google.cloud.dialogflow.v2.AgentCoachingInstructionB\x03\xe0A\x01R\finstructions\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x01R\aversion\x125\n" +
-	"\x14output_language_code\x18\t \x01(\tB\x03\xe0A\x01R\x12outputLanguageCode\"\xf3\x02\n" +
-	"\x14SummarizationSection\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x01R\x03key\x12#\n" +
+	"\x06_top_p\"\x87\x02\n" +
+	"\x14AgentCoachingContext\x127\n" +
+	"\x14overarching_guidance\x18\a \x01(\tB\x04\xe2A\x01\x01R\x13overarchingGuidance\x12^\n" +
+	"\finstructions\x18\x01 \x03(\v24.google.cloud.dialogflow.v2.AgentCoachingInstructionB\x04\xe2A\x01\x01R\finstructions\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aversion\x126\n" +
+	"\x14output_language_code\x18\t \x01(\tB\x04\xe2A\x01\x01R\x12outputLanguageCode\"\xf6\x02\n" +
+	"\x14SummarizationSection\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x03key\x12$\n" +
 	"\n" +
-	"definition\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"definition\x12N\n" +
-	"\x04type\x18\x03 \x01(\x0e25.google.cloud.dialogflow.v2.SummarizationSection.TypeB\x03\xe0A\x01R\x04type\"\xce\x01\n" +
+	"definition\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"definition\x12O\n" +
+	"\x04type\x18\x03 \x01(\x0e25.google.cloud.dialogflow.v2.SummarizationSection.TypeB\x04\xe2A\x01\x01R\x04type\"\xce\x01\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSITUATION\x10\x01\x12\n" +
@@ -2522,84 +2523,84 @@ const file_google_cloud_dialogflow_v2_generator_proto_rawDesc = "" +
 	"\x10CUSTOMER_DEFINED\x10\a\x12\x15\n" +
 	"\x11SITUATION_CONCISE\x10\t\x12\x12\n" +
 	"\x0eACTION_CONCISE\x10\n" +
-	"\"\xb7\x02\n" +
-	"\x14SummarizationContext\x12l\n" +
-	"\x16summarization_sections\x18\x01 \x03(\v20.google.cloud.dialogflow.v2.SummarizationSectionB\x03\xe0A\x01R\x15summarizationSections\x12[\n" +
-	"\x11few_shot_examples\x18\x02 \x03(\v2*.google.cloud.dialogflow.v2.FewShotExampleB\x03\xe0A\x01R\x0ffewShotExamples\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x01R\aversion\x125\n" +
-	"\x14output_language_code\x18\x06 \x01(\tB\x03\xe0A\x01R\x12outputLanguageCode\"*\n" +
-	"\x0fFreeFormContext\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01R\x04text\"\xbb\n" +
+	"\"\xbb\x02\n" +
+	"\x14SummarizationContext\x12m\n" +
+	"\x16summarization_sections\x18\x01 \x03(\v20.google.cloud.dialogflow.v2.SummarizationSectionB\x04\xe2A\x01\x01R\x15summarizationSections\x12\\\n" +
+	"\x11few_shot_examples\x18\x02 \x03(\v2*.google.cloud.dialogflow.v2.FewShotExampleB\x04\xe2A\x01\x01R\x0ffewShotExamples\x12\x1e\n" +
+	"\aversion\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\aversion\x126\n" +
+	"\x14output_language_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x12outputLanguageCode\"+\n" +
+	"\x0fFreeFormContext\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04text\"\xc5\n" +
 	"\n" +
-	"\tGenerator\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12Y\n" +
+	"\tGenerator\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Y\n" +
 	"\x11free_form_context\x18\v \x01(\v2+.google.cloud.dialogflow.v2.FreeFormContextH\x00R\x0ffreeFormContext\x12h\n" +
 	"\x16agent_coaching_context\x18\f \x01(\v20.google.cloud.dialogflow.v2.AgentCoachingContextH\x00R\x14agentCoachingContext\x12g\n" +
-	"\x15summarization_context\x18\r \x01(\v20.google.cloud.dialogflow.v2.SummarizationContextH\x00R\x14summarizationContext\x12d\n" +
-	"\x13inference_parameter\x18\x04 \x01(\v2..google.cloud.dialogflow.v2.InferenceParameterB\x03\xe0A\x01R\x12inferenceParameter\x12R\n" +
-	"\rtrigger_event\x18\x05 \x01(\x0e2(.google.cloud.dialogflow.v2.TriggerEventB\x03\xe0A\x01R\ftriggerEvent\x12.\n" +
-	"\x0fpublished_model\x18\x0f \x01(\tB\x03\xe0A\x01H\x01R\x0epublishedModel\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12<\n" +
-	"\x05tools\x18\x0e \x03(\tB&\xe0A\x01\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolR\x05tools\x12w\n" +
-	"\x1asuggestion_deduping_config\x18\x17 \x01(\v24.google.cloud.dialogflow.v2.SuggestionDedupingConfigB\x03\xe0A\x01R\x18suggestionDedupingConfig\x12Q\n" +
-	"\rtoolset_tools\x18\x1b \x03(\v2'.google.cloud.dialogflow.v2.ToolsetToolB\x03\xe0A\x01R\ftoolsetTools\x12R\n" +
-	"\x0eces_tool_specs\x18\x1c \x03(\v2'.google.cloud.dialogflow.v2.CesToolSpecB\x03\xe0A\x01R\fcesToolSpecs\x12Q\n" +
-	"\rces_app_specs\x18\x1d \x03(\v2&.google.cloud.dialogflow.v2.CesAppSpecB\x05\xe0A\x01\x18\x01R\vcesAppSpecs:\x7f\xeaA|\n" +
+	"\x15summarization_context\x18\r \x01(\v20.google.cloud.dialogflow.v2.SummarizationContextH\x00R\x14summarizationContext\x12e\n" +
+	"\x13inference_parameter\x18\x04 \x01(\v2..google.cloud.dialogflow.v2.InferenceParameterB\x04\xe2A\x01\x01R\x12inferenceParameter\x12S\n" +
+	"\rtrigger_event\x18\x05 \x01(\x0e2(.google.cloud.dialogflow.v2.TriggerEventB\x04\xe2A\x01\x01R\ftriggerEvent\x12/\n" +
+	"\x0fpublished_model\x18\x0f \x01(\tB\x04\xe2A\x01\x01H\x01R\x0epublishedModel\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12=\n" +
+	"\x05tools\x18\x0e \x03(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolR\x05tools\x12x\n" +
+	"\x1asuggestion_deduping_config\x18\x17 \x01(\v24.google.cloud.dialogflow.v2.SuggestionDedupingConfigB\x04\xe2A\x01\x01R\x18suggestionDedupingConfig\x12R\n" +
+	"\rtoolset_tools\x18\x1b \x03(\v2'.google.cloud.dialogflow.v2.ToolsetToolB\x04\xe2A\x01\x01R\ftoolsetTools\x12S\n" +
+	"\x0eces_tool_specs\x18\x1c \x03(\v2'.google.cloud.dialogflow.v2.CesToolSpecB\x04\xe2A\x01\x01R\fcesToolSpecs\x12R\n" +
+	"\rces_app_specs\x18\x1d \x03(\v2&.google.cloud.dialogflow.v2.CesAppSpecB\x06\xe2A\x01\x01\x18\x01R\vcesAppSpecs:\x7f\xeaA|\n" +
 	"#dialogflow.googleapis.com/Generator\x12>projects/{project}/locations/{location}/generators/{generator}*\n" +
 	"generators2\tgeneratorB\t\n" +
 	"\acontextB\x12\n" +
-	"\x10foundation_model\"5\n" +
-	"\x12FreeFormSuggestion\x12\x1f\n" +
-	"\bresponse\x18\x01 \x01(\tB\x03\xe0A\x02R\bresponse\"\xd1\x01\n" +
-	"\x11SummarySuggestion\x12l\n" +
-	"\x10summary_sections\x18\x01 \x03(\v2<.google.cloud.dialogflow.v2.SummarySuggestion.SummarySectionB\x03\xe0A\x02R\x0fsummarySections\x1aN\n" +
-	"\x0eSummarySection\x12\x1d\n" +
-	"\asection\x18\x01 \x01(\tB\x03\xe0A\x02R\asection\x12\x1d\n" +
-	"\asummary\x18\x02 \x01(\tB\x03\xe0A\x02R\asummary\"\xc0\v\n" +
-	"\x17AgentCoachingSuggestion\x12r\n" +
-	"\x17applicable_instructions\x18\x01 \x03(\v24.google.cloud.dialogflow.v2.AgentCoachingInstructionB\x03\xe0A\x01R\x16applicableInstructions\x12\x88\x01\n" +
-	"\x18agent_action_suggestions\x18\x02 \x03(\v2I.google.cloud.dialogflow.v2.AgentCoachingSuggestion.AgentActionSuggestionB\x03\xe0A\x01R\x16agentActionSuggestions\x12r\n" +
-	"\x10sample_responses\x18\x03 \x03(\v2B.google.cloud.dialogflow.v2.AgentCoachingSuggestion.SampleResponseB\x03\xe0A\x01R\x0fsampleResponses\x1a?\n" +
-	"\aSources\x124\n" +
-	"\x13instruction_indexes\x18\x02 \x03(\x05B\x03\xe0A\x03R\x12instructionIndexes\x1a\xad\x03\n" +
-	"\x14DuplicateCheckResult\x12\x96\x01\n" +
-	"\x15duplicate_suggestions\x18\x01 \x03(\v2\\.google.cloud.dialogflow.v2.AgentCoachingSuggestion.DuplicateCheckResult.DuplicateSuggestionB\x03\xe0A\x03R\x14duplicateSuggestions\x1a\xfb\x01\n" +
-	"\x13DuplicateSuggestion\x12(\n" +
-	"\ranswer_record\x18\x01 \x01(\tB\x03\xe0A\x03R\fanswerRecord\x12Z\n" +
-	"\asources\x18\x02 \x01(\v2;.google.cloud.dialogflow.v2.AgentCoachingSuggestion.SourcesB\x03\xe0A\x03R\asources\x12.\n" +
-	"\x10suggestion_index\x18\x03 \x01(\x05B\x03\xe0A\x03R\x0fsuggestionIndex\x12.\n" +
-	"\x10similarity_score\x18\x04 \x01(\x02B\x03\xe0A\x03R\x0fsimilarityScore\x1a\xa1\x02\n" +
-	"\x15AgentActionSuggestion\x12&\n" +
-	"\fagent_action\x18\x01 \x01(\tB\x03\xe0A\x01R\vagentAction\x12Z\n" +
-	"\asources\x18\x02 \x01(\v2;.google.cloud.dialogflow.v2.AgentCoachingSuggestion.SourcesB\x03\xe0A\x03R\asources\x12\x83\x01\n" +
-	"\x16duplicate_check_result\x18\x03 \x01(\v2H.google.cloud.dialogflow.v2.AgentCoachingSuggestion.DuplicateCheckResultB\x03\xe0A\x03R\x14duplicateCheckResult\x1a\x9c\x02\n" +
-	"\x0eSampleResponse\x12(\n" +
-	"\rresponse_text\x18\x01 \x01(\tB\x03\xe0A\x01R\fresponseText\x12Z\n" +
-	"\asources\x18\x02 \x01(\v2;.google.cloud.dialogflow.v2.AgentCoachingSuggestion.SourcesB\x03\xe0A\x03R\asources\x12\x83\x01\n" +
-	"\x16duplicate_check_result\x18\x03 \x01(\v2H.google.cloud.dialogflow.v2.AgentCoachingSuggestion.DuplicateCheckResultB\x03\xe0A\x03R\x14duplicateCheckResult\"\x86\x05\n" +
-	"\x13GeneratorSuggestion\x12g\n" +
-	"\x14free_form_suggestion\x18\x01 \x01(\v2..google.cloud.dialogflow.v2.FreeFormSuggestionB\x03\xe0A\x01H\x00R\x12freeFormSuggestion\x12c\n" +
-	"\x12summary_suggestion\x18\x02 \x01(\v2-.google.cloud.dialogflow.v2.SummarySuggestionB\x03\xe0A\x01H\x00R\x11summarySuggestion\x12v\n" +
-	"\x19agent_coaching_suggestion\x18\x03 \x01(\v23.google.cloud.dialogflow.v2.AgentCoachingSuggestionB\x03\xe0A\x01H\x00R\x17agentCoachingSuggestion\x12g\n" +
-	"\x0etool_call_info\x18\t \x03(\v2<.google.cloud.dialogflow.v2.GeneratorSuggestion.ToolCallInfoB\x03\xe0A\x01R\ftoolCallInfo\x1a\xb1\x01\n" +
-	"\fToolCallInfo\x12F\n" +
-	"\ttool_call\x18\x01 \x01(\v2$.google.cloud.dialogflow.v2.ToolCallB\x03\xe0A\x02R\btoolCall\x12Y\n" +
-	"\x10tool_call_result\x18\x02 \x01(\v2*.google.cloud.dialogflow.v2.ToolCallResultB\x03\xe0A\x02R\x0etoolCallResultB\f\n" +
+	"\x10foundation_model\"6\n" +
+	"\x12FreeFormSuggestion\x12 \n" +
+	"\bresponse\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bresponse\"\xd4\x01\n" +
+	"\x11SummarySuggestion\x12m\n" +
+	"\x10summary_sections\x18\x01 \x03(\v2<.google.cloud.dialogflow.v2.SummarySuggestion.SummarySectionB\x04\xe2A\x01\x02R\x0fsummarySections\x1aP\n" +
+	"\x0eSummarySection\x12\x1e\n" +
+	"\asection\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\asection\x12\x1e\n" +
+	"\asummary\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\asummary\"\xcf\v\n" +
+	"\x17AgentCoachingSuggestion\x12s\n" +
+	"\x17applicable_instructions\x18\x01 \x03(\v24.google.cloud.dialogflow.v2.AgentCoachingInstructionB\x04\xe2A\x01\x01R\x16applicableInstructions\x12\x89\x01\n" +
+	"\x18agent_action_suggestions\x18\x02 \x03(\v2I.google.cloud.dialogflow.v2.AgentCoachingSuggestion.AgentActionSuggestionB\x04\xe2A\x01\x01R\x16agentActionSuggestions\x12s\n" +
+	"\x10sample_responses\x18\x03 \x03(\v2B.google.cloud.dialogflow.v2.AgentCoachingSuggestion.SampleResponseB\x04\xe2A\x01\x01R\x0fsampleResponses\x1a@\n" +
+	"\aSources\x125\n" +
+	"\x13instruction_indexes\x18\x02 \x03(\x05B\x04\xe2A\x01\x03R\x12instructionIndexes\x1a\xb2\x03\n" +
+	"\x14DuplicateCheckResult\x12\x97\x01\n" +
+	"\x15duplicate_suggestions\x18\x01 \x03(\v2\\.google.cloud.dialogflow.v2.AgentCoachingSuggestion.DuplicateCheckResult.DuplicateSuggestionB\x04\xe2A\x01\x03R\x14duplicateSuggestions\x1a\xff\x01\n" +
+	"\x13DuplicateSuggestion\x12)\n" +
+	"\ranswer_record\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fanswerRecord\x12[\n" +
+	"\asources\x18\x02 \x01(\v2;.google.cloud.dialogflow.v2.AgentCoachingSuggestion.SourcesB\x04\xe2A\x01\x03R\asources\x12/\n" +
+	"\x10suggestion_index\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x0fsuggestionIndex\x12/\n" +
+	"\x10similarity_score\x18\x04 \x01(\x02B\x04\xe2A\x01\x03R\x0fsimilarityScore\x1a\xa4\x02\n" +
+	"\x15AgentActionSuggestion\x12'\n" +
+	"\fagent_action\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vagentAction\x12[\n" +
+	"\asources\x18\x02 \x01(\v2;.google.cloud.dialogflow.v2.AgentCoachingSuggestion.SourcesB\x04\xe2A\x01\x03R\asources\x12\x84\x01\n" +
+	"\x16duplicate_check_result\x18\x03 \x01(\v2H.google.cloud.dialogflow.v2.AgentCoachingSuggestion.DuplicateCheckResultB\x04\xe2A\x01\x03R\x14duplicateCheckResult\x1a\x9f\x02\n" +
+	"\x0eSampleResponse\x12)\n" +
+	"\rresponse_text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fresponseText\x12[\n" +
+	"\asources\x18\x02 \x01(\v2;.google.cloud.dialogflow.v2.AgentCoachingSuggestion.SourcesB\x04\xe2A\x01\x03R\asources\x12\x84\x01\n" +
+	"\x16duplicate_check_result\x18\x03 \x01(\v2H.google.cloud.dialogflow.v2.AgentCoachingSuggestion.DuplicateCheckResultB\x04\xe2A\x01\x03R\x14duplicateCheckResult\"\x8c\x05\n" +
+	"\x13GeneratorSuggestion\x12h\n" +
+	"\x14free_form_suggestion\x18\x01 \x01(\v2..google.cloud.dialogflow.v2.FreeFormSuggestionB\x04\xe2A\x01\x01H\x00R\x12freeFormSuggestion\x12d\n" +
+	"\x12summary_suggestion\x18\x02 \x01(\v2-.google.cloud.dialogflow.v2.SummarySuggestionB\x04\xe2A\x01\x01H\x00R\x11summarySuggestion\x12w\n" +
+	"\x19agent_coaching_suggestion\x18\x03 \x01(\v23.google.cloud.dialogflow.v2.AgentCoachingSuggestionB\x04\xe2A\x01\x01H\x00R\x17agentCoachingSuggestion\x12h\n" +
+	"\x0etool_call_info\x18\t \x03(\v2<.google.cloud.dialogflow.v2.GeneratorSuggestion.ToolCallInfoB\x04\xe2A\x01\x01R\ftoolCallInfo\x1a\xb3\x01\n" +
+	"\fToolCallInfo\x12G\n" +
+	"\ttool_call\x18\x01 \x01(\v2$.google.cloud.dialogflow.v2.ToolCallB\x04\xe2A\x01\x02R\btoolCall\x12Z\n" +
+	"\x10tool_call_result\x18\x02 \x01(\v2*.google.cloud.dialogflow.v2.ToolCallResultB\x04\xe2A\x01\x02R\x0etoolCallResultB\f\n" +
 	"\n" +
-	"suggestion\"\x80\x01\n" +
-	"\x18SuggestionDedupingConfig\x12,\n" +
-	"\x0fenable_deduping\x18\x01 \x01(\bB\x03\xe0A\x01R\x0eenableDeduping\x126\n" +
-	"\x14similarity_threshold\x18\x02 \x01(\x02B\x03\xe0A\x01R\x13similarityThreshold\"\xe8\x04\n" +
+	"suggestion\"\x82\x01\n" +
+	"\x18SuggestionDedupingConfig\x12-\n" +
+	"\x0fenable_deduping\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0eenableDeduping\x127\n" +
+	"\x14similarity_threshold\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x13similarityThreshold\"\xea\x04\n" +
 	"\vRaiSettings\x12k\n" +
-	"\x14rai_category_configs\x18\x01 \x03(\v29.google.cloud.dialogflow.v2.RaiSettings.RaiCategoryConfigR\x12raiCategoryConfigs\x1a\xeb\x03\n" +
-	"\x11RaiCategoryConfig\x12f\n" +
-	"\bcategory\x18\x01 \x01(\x0e2E.google.cloud.dialogflow.v2.RaiSettings.RaiCategoryConfig.RaiCategoryB\x03\xe0A\x01R\bcategory\x12|\n" +
-	"\x11sensitivity_level\x18\x02 \x01(\x0e2J.google.cloud.dialogflow.v2.RaiSettings.RaiCategoryConfig.SensitivityLevelB\x03\xe0A\x01R\x10sensitivityLevel\"z\n" +
+	"\x14rai_category_configs\x18\x01 \x03(\v29.google.cloud.dialogflow.v2.RaiSettings.RaiCategoryConfigR\x12raiCategoryConfigs\x1a\xed\x03\n" +
+	"\x11RaiCategoryConfig\x12g\n" +
+	"\bcategory\x18\x01 \x01(\x0e2E.google.cloud.dialogflow.v2.RaiSettings.RaiCategoryConfig.RaiCategoryB\x04\xe2A\x01\x01R\bcategory\x12}\n" +
+	"\x11sensitivity_level\x18\x02 \x01(\x0e2J.google.cloud.dialogflow.v2.RaiSettings.RaiCategoryConfig.SensitivityLevelB\x04\xe2A\x01\x01R\x10sensitivityLevel\"z\n" +
 	"\vRaiCategory\x12\x1c\n" +
 	"\x18RAI_CATEGORY_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11DANGEROUS_CONTENT\x10\x01\x12\x15\n" +

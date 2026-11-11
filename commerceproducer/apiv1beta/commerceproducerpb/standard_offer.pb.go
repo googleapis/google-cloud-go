@@ -508,38 +508,38 @@ var File_google_cloud_commerceproducer_v1beta_standard_offer_proto protoreflect.
 
 const file_google_cloud_commerceproducer_v1beta_standard_offer_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/commerceproducer/v1beta/standard_offer.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\v\n" +
-	"\rStandardOffer\x127\n" +
-	"\x14term_duration_months\x18\a \x01(\x05B\x03\xe0A\x03H\x00R\x12termDurationMonths\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12F\n" +
-	"\x0eeffective_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\reffectiveTime\x12@\n" +
-	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12(\n" +
-	"\rservice_level\x18\x06 \x01(\tB\x03\xe0A\x03R\fserviceLevel\x123\n" +
-	"\x13service_level_title\x18\t \x01(\tB\x03\xe0A\x03R\x11serviceLevelTitle\x12d\n" +
-	"\vprice_model\x18\b \x01(\v2>.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModelB\x03\xe0A\x03R\n" +
-	"priceModel\x1a\xec\x05\n" +
+	"9google/cloud/commerceproducer/v1beta/standard_offer.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xec\v\n" +
+	"\rStandardOffer\x128\n" +
+	"\x14term_duration_months\x18\a \x01(\x05B\x04\xe2A\x01\x03H\x00R\x12termDurationMonths\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12G\n" +
+	"\x0eeffective_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\reffectiveTime\x12A\n" +
+	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12)\n" +
+	"\rservice_level\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\fserviceLevel\x124\n" +
+	"\x13service_level_title\x18\t \x01(\tB\x04\xe2A\x01\x03R\x11serviceLevelTitle\x12e\n" +
+	"\vprice_model\x18\b \x01(\v2>.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModelB\x04\xe2A\x01\x03R\n" +
+	"priceModel\x1a\xf3\x05\n" +
 	"\n" +
-	"PriceModel\x12t\n" +
-	"\bflat_fee\x18\x02 \x01(\v2R.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModel.FlatFeeSubscriptionB\x03\xe0A\x03H\x00R\aflatFee\x12_\n" +
-	"\x05usage\x18\x01 \x01(\v2D.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModel.UsageB\x03\xe0A\x03R\x05usage\x1aJ\n" +
-	"\aSkuList\x12?\n" +
-	"\x04skus\x18\x01 \x03(\tB+\xe0A\x03\xfaA%\n" +
-	"#commerceproducer.googleapis.com/SkuR\x04skus\x1a_\n" +
-	"\fSkuGroupList\x12O\n" +
+	"PriceModel\x12u\n" +
+	"\bflat_fee\x18\x02 \x01(\v2R.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModel.FlatFeeSubscriptionB\x04\xe2A\x01\x03H\x00R\aflatFee\x12`\n" +
+	"\x05usage\x18\x01 \x01(\v2D.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModel.UsageB\x04\xe2A\x01\x03R\x05usage\x1aK\n" +
+	"\aSkuList\x12@\n" +
+	"\x04skus\x18\x01 \x03(\tB,\xe2A\x01\x03\xfaA%\n" +
+	"#commerceproducer.googleapis.com/SkuR\x04skus\x1a`\n" +
+	"\fSkuGroupList\x12P\n" +
 	"\n" +
-	"sku_groups\x18\x01 \x03(\tB0\xe0A\x03\xfaA*\n" +
-	"(commerceproducer.googleapis.com/SkuGroupR\tskuGroups\x1a\xf3\x01\n" +
-	"\x05Usage\x12h\n" +
-	"\bsku_list\x18\x01 \x01(\v2F.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModel.SkuListB\x03\xe0A\x03H\x00R\askuList\x12x\n" +
-	"\x0esku_group_list\x18\x02 \x01(\v2K.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModel.SkuGroupListB\x03\xe0A\x03H\x00R\fskuGroupListB\x06\n" +
-	"\x04skus\x1aT\n" +
-	"\x13FlatFeeSubscription\x12=\n" +
-	"\x03sku\x18\x01 \x01(\tB+\xe0A\x03\xfaA%\n" +
+	"sku_groups\x18\x01 \x03(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(commerceproducer.googleapis.com/SkuGroupR\tskuGroups\x1a\xf5\x01\n" +
+	"\x05Usage\x12i\n" +
+	"\bsku_list\x18\x01 \x01(\v2F.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModel.SkuListB\x04\xe2A\x01\x03H\x00R\askuList\x12y\n" +
+	"\x0esku_group_list\x18\x02 \x01(\v2K.google.cloud.commerceproducer.v1beta.StandardOffer.PriceModel.SkuGroupListB\x04\xe2A\x01\x03H\x00R\fskuGroupListB\x06\n" +
+	"\x04skus\x1aU\n" +
+	"\x13FlatFeeSubscription\x12>\n" +
+	"\x03sku\x18\x01 \x01(\tB,\xe2A\x01\x03\xfaA%\n" +
 	"#commerceproducer.googleapis.com/SkuR\x03skuB\x0e\n" +
 	"\fsubscription:\xae\x01\xeaA\xaa\x01\n" +
 	"-commerceproducer.googleapis.com/StandardOffer\x12Zprojects/{project}/locations/{location}/services/{service}/standardOffers/{standard_offer}*\x0estandardOffers2\rstandardOfferB\x06\n" +

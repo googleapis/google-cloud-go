@@ -1862,48 +1862,48 @@ var File_google_cloud_bigquery_biglake_v1_metastore_proto protoreflect.FileDescr
 
 const file_google_cloud_bigquery_biglake_v1_metastore_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/bigquery/biglake/v1/metastore.proto\x12 google.cloud.bigquery.biglake.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xae\x03\n" +
-	"\aCatalog\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"0google/cloud/bigquery/biglake/v1/metastore.proto\x12 google.cloud.bigquery.biglake.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\x03\n" +
+	"\aCatalog\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime:_\xeaA\\\n" +
-	"\x1ebiglake.googleapis.com/Catalog\x12:projects/{project}/locations/{location}/catalogs/{catalog}\"\x9a\x05\n" +
+	"\x1ebiglake.googleapis.com/Catalog\x12:projects/{project}/locations/{location}/catalogs/{catalog}\"\x9f\x05\n" +
 	"\bDatabase\x12Z\n" +
-	"\fhive_options\x18\a \x01(\v25.google.cloud.bigquery.biglake.v1.HiveDatabaseOptionsH\x00R\vhiveOptions\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fbiglake.googleapis.com/DatabaseR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\fhive_options\x18\a \x01(\v25.google.cloud.bigquery.biglake.v1.HiveDatabaseOptionsH\x00R\vhiveOptions\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fbiglake.googleapis.com/DatabaseR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\x12C\n" +
 	"\x04type\x18\x06 \x01(\x0e2/.google.cloud.bigquery.biglake.v1.Database.TypeR\x04type\"&\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04HIVE\x10\x01:u\xeaAr\n" +
 	"\x1fbiglake.googleapis.com/Database\x12Oprojects/{project}/locations/{location}/catalogs/{catalog}/databases/{database}B\t\n" +
-	"\aoptions\"\xaf\x05\n" +
+	"\aoptions\"\xb4\x05\n" +
 	"\x05Table\x12W\n" +
-	"\fhive_options\x18\a \x01(\v22.google.cloud.bigquery.biglake.v1.HiveTableOptionsH\x00R\vhiveOptions\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\fhive_options\x18\a \x01(\v22.google.cloud.bigquery.biglake.v1.HiveTableOptionsH\x00R\vhiveOptions\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\x12@\n" +
 	"\x04type\x18\x06 \x01(\x0e2,.google.cloud.bigquery.biglake.v1.Table.TypeR\x04type\x12\x12\n" +
 	"\x04etag\x18\b \x01(\tR\x04etag\"&\n" +
@@ -1911,75 +1911,75 @@ const file_google_cloud_bigquery_biglake_v1_metastore_proto_rawDesc = "" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04HIVE\x10\x01:\x81\x01\xeaA~\n" +
 	"\x1cbiglake.googleapis.com/Table\x12^projects/{project}/locations/{location}/catalogs/{catalog}/databases/{database}/tables/{table}B\t\n" +
-	"\aoptions\"\xc7\x01\n" +
-	"\x14CreateCatalogRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12H\n" +
-	"\acatalog\x18\x02 \x01(\v2).google.cloud.bigquery.biglake.v1.CatalogB\x03\xe0A\x02R\acatalog\x12\"\n" +
+	"\aoptions\"\xca\x01\n" +
+	"\x14CreateCatalogRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12I\n" +
+	"\acatalog\x18\x02 \x01(\v2).google.cloud.bigquery.biglake.v1.CatalogB\x04\xe2A\x01\x02R\acatalog\x12#\n" +
 	"\n" +
-	"catalog_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tcatalogId\"R\n" +
-	"\x14DeleteCatalogRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\"O\n" +
-	"\x11GetCatalogRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\x94\x01\n" +
-	"\x13ListCatalogsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"catalog_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tcatalogId\"S\n" +
+	"\x14DeleteCatalogRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\"P\n" +
+	"\x11GetCatalogRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\x95\x01\n" +
+	"\x13ListCatalogsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x85\x01\n" +
 	"\x14ListCatalogsResponse\x12E\n" +
 	"\bcatalogs\x18\x01 \x03(\v2).google.cloud.bigquery.biglake.v1.CatalogR\bcatalogs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xca\x01\n" +
-	"\x15CreateDatabaseRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12K\n" +
-	"\bdatabase\x18\x02 \x01(\v2*.google.cloud.bigquery.biglake.v1.DatabaseB\x03\xe0A\x02R\bdatabase\x12$\n" +
-	"\vdatabase_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\"T\n" +
-	"\x15DeleteDatabaseRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fbiglake.googleapis.com/DatabaseR\x04name\"\xa1\x01\n" +
-	"\x15UpdateDatabaseRequest\x12K\n" +
-	"\bdatabase\x18\x01 \x01(\v2*.google.cloud.bigquery.biglake.v1.DatabaseB\x03\xe0A\x02R\bdatabase\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcd\x01\n" +
+	"\x15CreateDatabaseRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12L\n" +
+	"\bdatabase\x18\x02 \x01(\v2*.google.cloud.bigquery.biglake.v1.DatabaseB\x04\xe2A\x01\x02R\bdatabase\x12%\n" +
+	"\vdatabase_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\"U\n" +
+	"\x15DeleteDatabaseRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fbiglake.googleapis.com/DatabaseR\x04name\"\xa2\x01\n" +
+	"\x15UpdateDatabaseRequest\x12L\n" +
+	"\bdatabase\x18\x01 \x01(\v2*.google.cloud.bigquery.biglake.v1.DatabaseB\x04\xe2A\x01\x02R\bdatabase\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Q\n" +
-	"\x12GetDatabaseRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fbiglake.googleapis.com/DatabaseR\x04name\"\x92\x01\n" +
-	"\x14ListDatabasesRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"updateMask\"R\n" +
+	"\x12GetDatabaseRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fbiglake.googleapis.com/DatabaseR\x04name\"\x93\x01\n" +
+	"\x14ListDatabasesRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x89\x01\n" +
 	"\x15ListDatabasesResponse\x12H\n" +
 	"\tdatabases\x18\x01 \x03(\v2*.google.cloud.bigquery.biglake.v1.DatabaseR\tdatabases\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb9\x01\n" +
-	"\x12CreateTableRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fbiglake.googleapis.com/DatabaseR\x06parent\x12B\n" +
-	"\x05table\x18\x02 \x01(\v2'.google.cloud.bigquery.biglake.v1.TableB\x03\xe0A\x02R\x05table\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\"N\n" +
-	"\x12DeleteTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\"\x95\x01\n" +
-	"\x12UpdateTableRequest\x12B\n" +
-	"\x05table\x18\x01 \x01(\v2'.google.cloud.bigquery.biglake.v1.TableB\x03\xe0A\x02R\x05table\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbc\x01\n" +
+	"\x12CreateTableRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fbiglake.googleapis.com/DatabaseR\x06parent\x12C\n" +
+	"\x05table\x18\x02 \x01(\v2'.google.cloud.bigquery.biglake.v1.TableB\x04\xe2A\x01\x02R\x05table\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\"O\n" +
+	"\x12DeleteTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\"\x96\x01\n" +
+	"\x12UpdateTableRequest\x12C\n" +
+	"\x05table\x18\x01 \x01(\v2'.google.cloud.bigquery.biglake.v1.TableB\x04\xe2A\x01\x02R\x05table\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x8f\x01\n" +
-	"\x12RenameTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\x12?\n" +
-	"\bnew_name\x18\x02 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\anewName\"K\n" +
-	"\x0fGetTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\"\xd1\x01\n" +
-	"\x11ListTablesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"updateMask\"\x91\x01\n" +
+	"\x12RenameTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\x12@\n" +
+	"\bnew_name\x18\x02 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\anewName\"L\n" +
+	"\x0fGetTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\"\xd2\x01\n" +
+	"\x11ListTablesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fbiglake.googleapis.com/DatabaseR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

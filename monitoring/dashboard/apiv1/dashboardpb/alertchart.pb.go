@@ -89,10 +89,10 @@ var File_google_monitoring_dashboard_v1_alertchart_proto protoreflect.FileDescri
 
 const file_google_monitoring_dashboard_v1_alertchart_proto_rawDesc = "" +
 	"\n" +
-	"/google/monitoring/dashboard/v1/alertchart.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x82\x01\n" +
+	"/google/monitoring/dashboard/v1/alertchart.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x83\x01\n" +
 	"\n" +
-	"AlertChart\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name:[\xeaAX\n" +
+	"AlertChart\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name:[\xeaAX\n" +
 	"%monitoring.googleapis.com/AlertPolicy\x12/projects/{project}/alertPolicies/{alert_policy}B\xf8\x01\n" +
 	"\"com.google.monitoring.dashboard.v1B\x0fAlertChartProtoP\x01ZFcloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb;dashboardpb\xaa\x02$Google.Cloud.Monitoring.Dashboard.V1\xca\x02$Google\\Cloud\\Monitoring\\Dashboard\\V1\xea\x02(Google::Cloud::Monitoring::Dashboard::V1b\x06proto3"
 

@@ -1080,6 +1080,11 @@ func (c *dataAccessControlRESTClient) CreateDataAccessLabel(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataAccessLabels", req.GetParent())
 
 	params := url.Values{}
@@ -1133,6 +1138,11 @@ func (c *dataAccessControlRESTClient) CreateDataAccessLabel(ctx context.Context,
 func (c *dataAccessControlRESTClient) GetDataAccessLabel(ctx context.Context, req *chroniclepb.GetDataAccessLabelRequest, opts ...gax.CallOption) (*chroniclepb.DataAccessLabel, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1200,6 +1210,11 @@ func (c *dataAccessControlRESTClient) ListDataAccessLabels(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataAccessLabels", req.GetParent())
@@ -1277,6 +1292,11 @@ func (c *dataAccessControlRESTClient) UpdateDataAccessLabel(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataAccessLabel().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataAccessLabel().GetName())
 
 	params := url.Values{}
@@ -1340,6 +1360,11 @@ func (c *dataAccessControlRESTClient) DeleteDataAccessLabel(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1389,6 +1414,11 @@ func (c *dataAccessControlRESTClient) CreateDataAccessScope(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataAccessScopes", req.GetParent())
@@ -1444,6 +1474,11 @@ func (c *dataAccessControlRESTClient) CreateDataAccessScope(ctx context.Context,
 func (c *dataAccessControlRESTClient) GetDataAccessScope(ctx context.Context, req *chroniclepb.GetDataAccessScopeRequest, opts ...gax.CallOption) (*chroniclepb.DataAccessScope, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1511,6 +1546,11 @@ func (c *dataAccessControlRESTClient) ListDataAccessScopes(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataAccessScopes", req.GetParent())
@@ -1588,6 +1628,11 @@ func (c *dataAccessControlRESTClient) UpdateDataAccessScope(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataAccessScope().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataAccessScope().GetName())
 
 	params := url.Values{}
@@ -1649,6 +1694,11 @@ func (c *dataAccessControlRESTClient) DeleteDataAccessScope(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1694,6 +1744,11 @@ func (c *dataAccessControlRESTClient) CancelOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1733,6 +1788,11 @@ func (c *dataAccessControlRESTClient) DeleteOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1770,6 +1830,11 @@ func (c *dataAccessControlRESTClient) DeleteOperation(ctx context.Context, req *
 func (c *dataAccessControlRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1837,6 +1902,11 @@ func (c *dataAccessControlRESTClient) ListOperations(ctx context.Context, req *l
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

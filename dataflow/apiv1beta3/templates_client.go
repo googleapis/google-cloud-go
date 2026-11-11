@@ -519,6 +519,12 @@ func (c *templatesRESTClient) CreateJobFromTemplate(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/templates", req.GetProjectId(), req.GetLocation())
 
 	params := url.Values{}
@@ -584,6 +590,12 @@ func (c *templatesRESTClient) LaunchTemplate(ctx context.Context, req *dataflowp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/templates:launch", req.GetProjectId(), req.GetLocation())
@@ -656,6 +668,12 @@ func (c *templatesRESTClient) LaunchTemplate(ctx context.Context, req *dataflowp
 func (c *templatesRESTClient) GetTemplate(ctx context.Context, req *dataflowpb.GetTemplateRequest, opts ...gax.CallOption) (*dataflowpb.GetTemplateResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/templates:get", req.GetProjectId(), req.GetLocation())

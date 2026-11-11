@@ -117,6 +117,8 @@ type internalSqlUsersClient interface {
 
 // SqlUsersClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Cloud SQL users service.
 type SqlUsersClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlUsersClient
@@ -194,6 +196,8 @@ type sqlUsersGRPCClient struct {
 
 // NewSqlUsersClient creates a new sql users service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Cloud SQL users service.
 func NewSqlUsersClient(ctx context.Context, opts ...option.ClientOption) (*SqlUsersClient, error) {
 	clientOpts := defaultSqlUsersGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -329,6 +333,8 @@ type sqlUsersRESTClient struct {
 }
 
 // NewSqlUsersRESTClient creates a new sql users service rest client.
+//
+// Cloud SQL users service.
 func NewSqlUsersRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlUsersClient, error) {
 	clientOpts := append(defaultSqlUsersRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -560,6 +566,12 @@ func (c *sqlUsersRESTClient) Delete(ctx context.Context, req *sqlpb.SqlUsersDele
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/users", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -621,6 +633,13 @@ func (c *sqlUsersRESTClient) Delete(ctx context.Context, req *sqlpb.SqlUsersDele
 func (c *sqlUsersRESTClient) Get(ctx context.Context, req *sqlpb.SqlUsersGetRequest, opts ...gax.CallOption) (*sqlpb.User, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/users/%v", req.GetProject(), req.GetInstance(), req.GetName())
@@ -690,6 +709,12 @@ func (c *sqlUsersRESTClient) Insert(ctx context.Context, req *sqlpb.SqlUsersInse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/users", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -745,6 +770,12 @@ func (c *sqlUsersRESTClient) Insert(ctx context.Context, req *sqlpb.SqlUsersInse
 func (c *sqlUsersRESTClient) List(ctx context.Context, req *sqlpb.SqlUsersListRequest, opts ...gax.CallOption) (*sqlpb.UsersListResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/users", req.GetProject(), req.GetInstance())
@@ -809,6 +840,12 @@ func (c *sqlUsersRESTClient) Update(ctx context.Context, req *sqlpb.SqlUsersUpda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/users", req.GetProject(), req.GetInstance())

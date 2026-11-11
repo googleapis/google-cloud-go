@@ -725,9 +725,9 @@ var File_google_cloud_netapp_v1_active_directory_proto protoreflect.FileDescript
 
 const file_google_cloud_netapp_v1_active_directory_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/netapp/v1/active_directory.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd4\x01\n" +
-	"\x1cListActiveDirectoriesRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%netapp.googleapis.com/ActiveDirectoryR\x06parent\x12\x1b\n" +
+	"-google/cloud/netapp/v1/active_directory.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x01\n" +
+	"\x1cListActiveDirectoriesRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%netapp.googleapis.com/ActiveDirectoryR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -736,47 +736,47 @@ const file_google_cloud_netapp_v1_active_directory_proto_rawDesc = "" +
 	"\x1dListActiveDirectoriesResponse\x12V\n" +
 	"\x12active_directories\x18\x01 \x03(\v2'.google.cloud.netapp.v1.ActiveDirectoryR\x11activeDirectories\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
-	"\x19GetActiveDirectoryRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%netapp.googleapis.com/ActiveDirectoryR\x04name\"\xf3\x01\n" +
-	"\x1cCreateActiveDirectoryRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%netapp.googleapis.com/ActiveDirectoryR\x06parent\x12W\n" +
-	"\x10active_directory\x18\x02 \x01(\v2'.google.cloud.netapp.v1.ActiveDirectoryB\x03\xe0A\x02R\x0factiveDirectory\x123\n" +
-	"\x13active_directory_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x11activeDirectoryId\"\xb9\x01\n" +
-	"\x1cUpdateActiveDirectoryRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12W\n" +
-	"\x10active_directory\x18\x02 \x01(\v2'.google.cloud.netapp.v1.ActiveDirectoryB\x03\xe0A\x02R\x0factiveDirectory\"a\n" +
-	"\x1cDeleteActiveDirectoryRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%netapp.googleapis.com/ActiveDirectoryR\x04name\"\x88\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
+	"\x19GetActiveDirectoryRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%netapp.googleapis.com/ActiveDirectoryR\x04name\"\xf6\x01\n" +
+	"\x1cCreateActiveDirectoryRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%netapp.googleapis.com/ActiveDirectoryR\x06parent\x12X\n" +
+	"\x10active_directory\x18\x02 \x01(\v2'.google.cloud.netapp.v1.ActiveDirectoryB\x04\xe2A\x01\x02R\x0factiveDirectory\x124\n" +
+	"\x13active_directory_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x11activeDirectoryId\"\xbb\x01\n" +
+	"\x1cUpdateActiveDirectoryRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12X\n" +
+	"\x10active_directory\x18\x02 \x01(\v2'.google.cloud.netapp.v1.ActiveDirectoryB\x04\xe2A\x01\x02R\x0factiveDirectory\"b\n" +
+	"\x1cDeleteActiveDirectoryRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%netapp.googleapis.com/ActiveDirectoryR\x04name\"\x94\n" +
 	"\n" +
-	"\x0fActiveDirectory\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12H\n" +
-	"\x05state\x18\x03 \x01(\x0e2-.google.cloud.netapp.v1.ActiveDirectory.StateB\x03\xe0A\x03R\x05state\x12\x1b\n" +
-	"\x06domain\x18\x04 \x01(\tB\x03\xe0A\x02R\x06domain\x12\x12\n" +
-	"\x04site\x18\x05 \x01(\tR\x04site\x12\x15\n" +
-	"\x03dns\x18\x06 \x01(\tB\x03\xe0A\x02R\x03dns\x12+\n" +
-	"\x0fnet_bios_prefix\x18\a \x01(\tB\x03\xe0A\x02R\rnetBiosPrefix\x12/\n" +
+	"\x0fActiveDirectory\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12I\n" +
+	"\x05state\x18\x03 \x01(\x0e2-.google.cloud.netapp.v1.ActiveDirectory.StateB\x04\xe2A\x01\x03R\x05state\x12\x1c\n" +
+	"\x06domain\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x06domain\x12\x12\n" +
+	"\x04site\x18\x05 \x01(\tR\x04site\x12\x16\n" +
+	"\x03dns\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x03dns\x12,\n" +
+	"\x0fnet_bios_prefix\x18\a \x01(\tB\x04\xe2A\x01\x02R\rnetBiosPrefix\x12/\n" +
 	"\x13organizational_unit\x18\b \x01(\tR\x12organizationalUnit\x12%\n" +
-	"\x0eaes_encryption\x18\t \x01(\bR\raesEncryption\x12\x1f\n" +
+	"\x0eaes_encryption\x18\t \x01(\bR\raesEncryption\x12 \n" +
 	"\busername\x18\n" +
-	" \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\v \x01(\tB\x03\xe0A\x02R\bpassword\x12.\n" +
-	"\x10backup_operators\x18\f \x03(\tB\x03\xe0A\x01R\x0fbackupOperators\x12+\n" +
-	"\x0eadministrators\x18\x16 \x03(\tB\x03\xe0A\x01R\x0eadministrators\x122\n" +
-	"\x12security_operators\x18\r \x03(\tB\x03\xe0A\x01R\x11securityOperators\x12!\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\v \x01(\tB\x04\xe2A\x01\x02R\bpassword\x12/\n" +
+	"\x10backup_operators\x18\f \x03(\tB\x04\xe2A\x01\x01R\x0fbackupOperators\x12,\n" +
+	"\x0eadministrators\x18\x16 \x03(\tB\x04\xe2A\x01\x01R\x0eadministrators\x123\n" +
+	"\x12security_operators\x18\r \x03(\tB\x04\xe2A\x01\x01R\x11securityOperators\x12!\n" +
 	"\fkdc_hostname\x18\x0e \x01(\tR\vkdcHostname\x12\x15\n" +
 	"\x06kdc_ip\x18\x0f \x01(\tR\x05kdcIp\x12-\n" +
 	"\x13nfs_users_with_ldap\x18\x10 \x01(\bR\x10nfsUsersWithLdap\x12 \n" +
 	"\vdescription\x18\x11 \x01(\tR\vdescription\x12!\n" +
 	"\fldap_signing\x18\x12 \x01(\bR\vldapSigning\x124\n" +
 	"\x16encrypt_dc_connections\x18\x13 \x01(\bR\x14encryptDcConnections\x12K\n" +
-	"\x06labels\x18\x14 \x03(\v23.google.cloud.netapp.v1.ActiveDirectory.LabelsEntryR\x06labels\x12(\n" +
-	"\rstate_details\x18\x15 \x01(\tB\x03\xe0A\x03R\fstateDetails\x1a9\n" +
+	"\x06labels\x18\x14 \x03(\v23.google.cloud.netapp.v1.ActiveDirectory.LabelsEntryR\x06labels\x12)\n" +
+	"\rstate_details\x18\x15 \x01(\tB\x04\xe2A\x01\x03R\fstateDetails\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"z\n" +

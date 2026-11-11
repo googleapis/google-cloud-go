@@ -1050,11 +1050,18 @@ func (c *jobsRESTClient) CreateJob(ctx context.Context, req *runpb.CreateJobRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/jobs", req.GetParent())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("jobId", fmt.Sprintf("%v", req.GetJobId()))
+	if req.GetJobId() != "" {
+		params.Add("jobId", fmt.Sprintf("%v", req.GetJobId()))
+	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
 	}
@@ -1122,6 +1129,11 @@ func (c *jobsRESTClient) CreateJob(ctx context.Context, req *runpb.CreateJobRequ
 func (c *jobsRESTClient) GetJob(ctx context.Context, req *runpb.GetJobRequest, opts ...gax.CallOption) (*runpb.Job, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1200,6 +1212,11 @@ func (c *jobsRESTClient) ListJobs(ctx context.Context, req *runpb.ListJobsReques
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/jobs", req.GetParent())
 
 		params := url.Values{}
@@ -1273,6 +1290,11 @@ func (c *jobsRESTClient) UpdateJob(ctx context.Context, req *runpb.UpdateJobRequ
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetJob().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetJob().GetName())
@@ -1349,6 +1371,11 @@ func (c *jobsRESTClient) UpdateJob(ctx context.Context, req *runpb.UpdateJobRequ
 func (c *jobsRESTClient) DeleteJob(ctx context.Context, req *runpb.DeleteJobRequest, opts ...gax.CallOption) (*DeleteJobOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1433,6 +1460,11 @@ func (c *jobsRESTClient) RunJob(ctx context.Context, req *runpb.RunJobRequest, o
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:run", req.GetName())
 
 	params := url.Values{}
@@ -1504,6 +1536,11 @@ func (c *jobsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPoli
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1568,6 +1605,11 @@ func (c *jobsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPoli
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1630,6 +1672,11 @@ func (c *jobsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.Test
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1684,6 +1731,11 @@ func (c *jobsRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1721,6 +1773,11 @@ func (c *jobsRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 func (c *jobsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1788,6 +1845,11 @@ func (c *jobsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())
@@ -1865,6 +1927,11 @@ func (c *jobsRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.W
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:wait", req.GetName())

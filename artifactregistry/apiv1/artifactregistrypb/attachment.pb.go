@@ -465,45 +465,45 @@ var File_google_devtools_artifactregistry_v1_attachment_proto protoreflect.FileD
 
 const file_google_devtools_artifactregistry_v1_attachment_proto_rawDesc = "" +
 	"\n" +
-	"4google/devtools/artifactregistry/v1/attachment.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\x05\n" +
+	"4google/devtools/artifactregistry/v1/attachment.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb9\x05\n" +
 	"\n" +
 	"Attachment\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
-	"\x06target\x18\x02 \x01(\tB\x03\xe0A\x02R\x06target\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1c\n" +
+	"\x06target\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06target\x12\x12\n" +
 	"\x04type\x18\x03 \x01(\tR\x04type\x121\n" +
-	"\x14attachment_namespace\x18\x04 \x01(\tR\x13attachmentNamespace\x12g\n" +
-	"\vannotations\x18\x05 \x03(\v2@.google.devtools.artifactregistry.v1.Attachment.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12B\n" +
-	"\x05files\x18\b \x03(\tB,\xe0A\x02\xfaA&\n" +
-	"$artifactregistry.googleapis.com/FileR\x05files\x12-\n" +
-	"\x10oci_version_name\x18\t \x01(\tB\x03\xe0A\x03R\x0eociVersionName\x1a>\n" +
+	"\x14attachment_namespace\x18\x04 \x01(\tR\x13attachmentNamespace\x12h\n" +
+	"\vannotations\x18\x05 \x03(\v2@.google.devtools.artifactregistry.v1.Attachment.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12C\n" +
+	"\x05files\x18\b \x03(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$artifactregistry.googleapis.com/FileR\x05files\x12.\n" +
+	"\x10oci_version_name\x18\t \x01(\tB\x04\xe2A\x01\x03R\x0eociVersionName\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8c\x01\xeaA\x88\x01\n" +
-	"*artifactregistry.googleapis.com/Attachment\x12Zprojects/{project}/locations/{location}/repositories/{repository}/attachments/{attachment}\"\xbd\x01\n" +
-	"\x16ListAttachmentsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*artifactregistry.googleapis.com/AttachmentR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1b\n" +
+	"*artifactregistry.googleapis.com/Attachment\x12Zprojects/{project}/locations/{location}/repositories/{repository}/attachments/{attachment}\"\xbf\x01\n" +
+	"\x16ListAttachmentsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*artifactregistry.googleapis.com/AttachmentR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x94\x01\n" +
 	"\x17ListAttachmentsResponse\x12Q\n" +
 	"\vattachments\x18\x01 \x03(\v2/.google.devtools.artifactregistry.v1.AttachmentR\vattachments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x14GetAttachmentRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*artifactregistry.googleapis.com/AttachmentR\x04name\"\xe5\x01\n" +
-	"\x17CreateAttachmentRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*artifactregistry.googleapis.com/AttachmentR\x06parent\x12(\n" +
-	"\rattachment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fattachmentId\x12T\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x14GetAttachmentRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*artifactregistry.googleapis.com/AttachmentR\x04name\"\xe8\x01\n" +
+	"\x17CreateAttachmentRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*artifactregistry.googleapis.com/AttachmentR\x06parent\x12)\n" +
+	"\rattachment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fattachmentId\x12U\n" +
 	"\n" +
-	"attachment\x18\x03 \x01(\v2/.google.devtools.artifactregistry.v1.AttachmentB\x03\xe0A\x02R\n" +
-	"attachment\"a\n" +
-	"\x17DeleteAttachmentRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"attachment\x18\x03 \x01(\v2/.google.devtools.artifactregistry.v1.AttachmentB\x04\xe2A\x01\x02R\n" +
+	"attachment\"b\n" +
+	"\x17DeleteAttachmentRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*artifactregistry.googleapis.com/AttachmentR\x04nameB\xfa\x01\n" +
 	"'com.google.devtools.artifactregistry.v1B\x0fAttachmentProtoP\x01ZPcloud.google.com/go/artifactregistry/apiv1/artifactregistrypb;artifactregistrypb\xaa\x02 Google.Cloud.ArtifactRegistry.V1\xca\x02 Google\\Cloud\\ArtifactRegistry\\V1\xea\x02#Google::Cloud::ArtifactRegistry::V1b\x06proto3"
 

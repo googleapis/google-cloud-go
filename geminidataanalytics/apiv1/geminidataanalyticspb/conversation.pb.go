@@ -548,50 +548,50 @@ var File_google_cloud_geminidataanalytics_v1_conversation_proto protoreflect.Fil
 
 const file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/geminidataanalytics/v1/conversation.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\x04\n" +
-	"\fConversation\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\bR\x04name\x12\x1b\n" +
-	"\x06agents\x18\x02 \x03(\tB\x03\xe0A\x02R\x06agents\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12E\n" +
-	"\x0elast_used_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\flastUsedTime\x12Z\n" +
-	"\x06labels\x18\t \x03(\v2=.google.cloud.geminidataanalytics.v1.Conversation.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x19\n" +
-	"\x05title\x18\x06 \x01(\tB\x03\xe0A\x01R\x05title\x12G\n" +
+	"6google/cloud/geminidataanalytics/v1/conversation.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf7\x04\n" +
+	"\fConversation\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x01\bR\x04name\x12\x1c\n" +
+	"\x06agents\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x06agents\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12F\n" +
+	"\x0elast_used_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\flastUsedTime\x12[\n" +
+	"\x06labels\x18\t \x03(\v2=.google.cloud.geminidataanalytics.v1.Conversation.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x1a\n" +
+	"\x05title\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12H\n" +
 	"\akms_key\x18\n" +
-	" \x01(\tB)\xe0A\x01\xfaA#\n" +
+	" \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyH\x00R\x06kmsKey\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x98\x01\xeaA\x94\x01\n" +
 	"/geminidataanalytics.googleapis.com/Conversation\x12Dprojects/{project}/locations/{location}/conversations/{conversation}*\rconversations2\fconversationB\n" +
 	"\n" +
-	"\b_kms_key\"\xa2\x02\n" +
-	"\x19CreateConversationRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/geminidataanalytics.googleapis.com/ConversationR\x06parent\x12,\n" +
-	"\x0fconversation_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x0econversationId\x12Z\n" +
-	"\fconversation\x18\x03 \x01(\v21.google.cloud.geminidataanalytics.v1.ConversationB\x03\xe0A\x02R\fconversation\x12*\n" +
+	"\b_kms_key\"\xa6\x02\n" +
+	"\x19CreateConversationRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/geminidataanalytics.googleapis.com/ConversationR\x06parent\x12-\n" +
+	"\x0fconversation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0econversationId\x12[\n" +
+	"\fconversation\x18\x03 \x01(\v21.google.cloud.geminidataanalytics.v1.ConversationB\x04\xe2A\x01\x02R\fconversation\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe5\x01\n" +
-	"\x19UpdateConversationRequest\x12Z\n" +
-	"\fconversation\x18\x01 \x01(\v21.google.cloud.geminidataanalytics.v1.ConversationB\x03\xe0A\x02R\fconversation\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe8\x01\n" +
+	"\x19UpdateConversationRequest\x12[\n" +
+	"\fconversation\x18\x01 \x01(\v21.google.cloud.geminidataanalytics.v1.ConversationB\x04\xe2A\x01\x02R\fconversation\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"e\n" +
-	"\x16GetConversationRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/geminidataanalytics.googleapis.com/ConversationR\x04name\"\xce\x01\n" +
-	"\x18ListConversationsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/geminidataanalytics.googleapis.com/ConversationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"f\n" +
+	"\x16GetConversationRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/geminidataanalytics.googleapis.com/ConversationR\x04name\"\xd2\x01\n" +
+	"\x18ListConversationsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/geminidataanalytics.googleapis.com/ConversationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x9c\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x9c\x01\n" +
 	"\x19ListConversationsResponse\x12W\n" +
 	"\rconversations\x18\x01 \x03(\v21.google.cloud.geminidataanalytics.v1.ConversationR\rconversations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"h\n" +
-	"\x19DeleteConversationRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"i\n" +
+	"\x19DeleteConversationRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/geminidataanalytics.googleapis.com/ConversationR\x04nameB\xa1\x03\xeaA\x8f\x01\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}*\n" +
 	"cryptoKeys2\tcryptoKey\n" +

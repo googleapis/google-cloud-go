@@ -825,6 +825,11 @@ func (c *usageRESTClient) QueryUsageHistories(ctx context.Context, req *capacity
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/usageHistories:query", req.GetParent())
 
 	params := url.Values{}
@@ -886,6 +891,11 @@ func (c *usageRESTClient) QueryForecasts(ctx context.Context, req *capacityplann
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/forecasts:query", req.GetParent())
 
 	params := url.Values{}
@@ -939,6 +949,11 @@ func (c *usageRESTClient) QueryForecasts(ctx context.Context, req *capacityplann
 func (c *usageRESTClient) QueryReservations(ctx context.Context, req *capacityplannerpb.QueryReservationsRequest, opts ...gax.CallOption) (*capacityplannerpb.QueryReservationsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/reservations:query", req.GetParent())
@@ -1080,6 +1095,11 @@ func (c *usageRESTClient) ExportUsageHistories(ctx context.Context, req *capacit
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/usageHistories:export", req.GetParent())
 
 	params := url.Values{}
@@ -1148,6 +1168,11 @@ func (c *usageRESTClient) ExportForecasts(ctx context.Context, req *capacityplan
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/forecasts:export", req.GetParent())
 
 	params := url.Values{}
@@ -1214,6 +1239,11 @@ func (c *usageRESTClient) ExportReservationsUsage(ctx context.Context, req *capa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/reservationsUsage:export", req.GetParent())

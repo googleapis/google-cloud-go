@@ -253,12 +253,12 @@ var File_google_cloud_oracledatabase_v1_entitlement_proto protoreflect.FileDescr
 
 const file_google_cloud_oracledatabase_v1_entitlement_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/oracledatabase/v1/entitlement.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xb7\x04\n" +
-	"\vEntitlement\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12g\n" +
-	"\x15cloud_account_details\x18\x02 \x01(\v23.google.cloud.oracledatabase.v1.CloudAccountDetailsR\x13cloudAccountDetails\x12*\n" +
-	"\x0eentitlement_id\x18\x03 \x01(\tB\x03\xe0A\x03R\rentitlementId\x12L\n" +
-	"\x05state\x18\x04 \x01(\x0e21.google.cloud.oracledatabase.v1.Entitlement.StateB\x03\xe0A\x03R\x05state\"\x9a\x01\n" +
+	"0google/cloud/oracledatabase/v1/entitlement.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xba\x04\n" +
+	"\vEntitlement\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12g\n" +
+	"\x15cloud_account_details\x18\x02 \x01(\v23.google.cloud.oracledatabase.v1.CloudAccountDetailsR\x13cloudAccountDetails\x12+\n" +
+	"\x0eentitlement_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rentitlementId\x12M\n" +
+	"\x05state\x18\x04 \x01(\x0e21.google.cloud.oracledatabase.v1.Entitlement.StateB\x04\xe2A\x01\x03R\x05state\"\x9a\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12ACCOUNT_NOT_LINKED\x10\x01\x12\x16\n" +
@@ -267,12 +267,12 @@ const file_google_cloud_oracledatabase_v1_entitlement_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x03\x12\x15\n" +
 	"\x11ACCOUNT_SUSPENDED\x10\x04\x12'\n" +
 	"#NOT_APPROVED_IN_PRIVATE_MARKETPLACE\x10\x05:\x8e\x01\xeaA\x8a\x01\n" +
-	")oracledatabase.googleapis.com/Entitlement\x12Bprojects/{project}/locations/{location}/entitlements/{entitlement}*\fentitlements2\ventitlement\"\xb7\x02\n" +
-	"\x13CloudAccountDetails\x12(\n" +
-	"\rcloud_account\x18\x01 \x01(\tB\x03\xe0A\x03R\fcloudAccount\x12>\n" +
-	"\x19cloud_account_home_region\x18\x02 \x01(\tB\x03\xe0A\x03R\x16cloudAccountHomeRegion\x12C\n" +
-	"\x19link_existing_account_uri\x18\x03 \x01(\tB\x03\xe0A\x03H\x00R\x16linkExistingAccountUri\x88\x01\x01\x12:\n" +
-	"\x14account_creation_uri\x18\x04 \x01(\tB\x03\xe0A\x03H\x01R\x12accountCreationUri\x88\x01\x01B\x1c\n" +
+	")oracledatabase.googleapis.com/Entitlement\x12Bprojects/{project}/locations/{location}/entitlements/{entitlement}*\fentitlements2\ventitlement\"\xbb\x02\n" +
+	"\x13CloudAccountDetails\x12)\n" +
+	"\rcloud_account\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fcloudAccount\x12?\n" +
+	"\x19cloud_account_home_region\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x16cloudAccountHomeRegion\x12D\n" +
+	"\x19link_existing_account_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03H\x00R\x16linkExistingAccountUri\x88\x01\x01\x12;\n" +
+	"\x14account_creation_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03H\x01R\x12accountCreationUri\x88\x01\x01B\x1c\n" +
 	"\x1a_link_existing_account_uriB\x17\n" +
 	"\x15_account_creation_uriB\xea\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x10EntitlementProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"

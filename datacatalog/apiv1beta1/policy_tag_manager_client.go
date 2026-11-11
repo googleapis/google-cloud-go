@@ -950,6 +950,11 @@ func (c *policyTagManagerRESTClient) CreateTaxonomy(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -1000,6 +1005,11 @@ func (c *policyTagManagerRESTClient) DeleteTaxonomy(ctx context.Context, req *da
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1039,6 +1049,11 @@ func (c *policyTagManagerRESTClient) UpdateTaxonomy(ctx context.Context, req *da
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTaxonomy().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTaxonomy().GetName())
@@ -1115,6 +1130,11 @@ func (c *policyTagManagerRESTClient) ListTaxonomies(ctx context.Context, req *da
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies", req.GetParent())
 
 		params := url.Values{}
@@ -1182,6 +1202,11 @@ func (c *policyTagManagerRESTClient) GetTaxonomy(ctx context.Context, req *datac
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1238,6 +1263,11 @@ func (c *policyTagManagerRESTClient) CreatePolicyTag(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/policyTags", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -1287,6 +1317,11 @@ func (c *policyTagManagerRESTClient) DeletePolicyTag(ctx context.Context, req *d
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1326,6 +1361,11 @@ func (c *policyTagManagerRESTClient) UpdatePolicyTag(ctx context.Context, req *d
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPolicyTag().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetPolicyTag().GetName())
@@ -1401,6 +1441,11 @@ func (c *policyTagManagerRESTClient) ListPolicyTags(ctx context.Context, req *da
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/policyTags", req.GetParent())
 
 		params := url.Values{}
@@ -1465,6 +1510,11 @@ func (c *policyTagManagerRESTClient) GetPolicyTag(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1518,6 +1568,11 @@ func (c *policyTagManagerRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
@@ -1575,6 +1630,11 @@ func (c *policyTagManagerRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1629,6 +1689,11 @@ func (c *policyTagManagerRESTClient) TestIamPermissions(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())

@@ -484,6 +484,11 @@ func (c *termsOfServiceAgreementStateRESTClient) GetTermsOfServiceAgreementState
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -540,6 +545,11 @@ func (c *termsOfServiceAgreementStateRESTClient) GetTermsOfServiceAgreementState
 func (c *termsOfServiceAgreementStateRESTClient) RetrieveForApplicationTermsOfServiceAgreementState(ctx context.Context, req *accountspb.RetrieveForApplicationTermsOfServiceAgreementStateRequest, opts ...gax.CallOption) (*accountspb.TermsOfServiceAgreementState, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/termsOfServiceAgreementStates:retrieveForApplication", req.GetParent())

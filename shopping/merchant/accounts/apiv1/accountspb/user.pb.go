@@ -576,42 +576,42 @@ var File_google_shopping_merchant_accounts_v1_user_proto protoreflect.FileDescri
 
 const file_google_shopping_merchant_accounts_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"/google/shopping/merchant/accounts/v1/user.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a6google/shopping/merchant/accounts/v1/accessright.proto\"\xd9\x02\n" +
-	"\x04User\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12K\n" +
-	"\x05state\x18\x02 \x01(\x0e20.google.shopping.merchant.accounts.v1.User.StateB\x03\xe0A\x03R\x05state\x12[\n" +
-	"\raccess_rights\x18\x04 \x03(\x0e21.google.shopping.merchant.accounts.v1.AccessRightB\x03\xe0A\x02R\faccessRights\"9\n" +
+	"/google/shopping/merchant/accounts/v1/user.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a6google/shopping/merchant/accounts/v1/accessright.proto\"\xdc\x02\n" +
+	"\x04User\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12L\n" +
+	"\x05state\x18\x02 \x01(\x0e20.google.shopping.merchant.accounts.v1.User.StateB\x04\xe2A\x01\x03R\x05state\x12\\\n" +
+	"\raccess_rights\x18\x04 \x03(\x0e21.google.shopping.merchant.accounts.v1.AccessRightB\x04\xe2A\x01\x02R\faccessRights\"9\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\f\n" +
 	"\bVERIFIED\x10\x02:S\xeaAP\n" +
-	"\x1fmerchantapi.googleapis.com/User\x12 accounts/{account}/users/{email}*\x05users2\x04user\"M\n" +
-	"\x0eGetUserRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fmerchantapi.googleapis.com/UserR\x04name\"\xba\x01\n" +
-	"\x11CreateUserRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12\x1c\n" +
-	"\auser_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06userId\x12C\n" +
-	"\x04user\x18\x03 \x01(\v2*.google.shopping.merchant.accounts.v1.UserB\x03\xe0A\x01R\x04user\"P\n" +
-	"\x11DeleteUserRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fmerchantapi.googleapis.com/UserR\x04name\"\x9a\x01\n" +
-	"\x11UpdateUserRequest\x12C\n" +
-	"\x04user\x18\x01 \x01(\v2*.google.shopping.merchant.accounts.v1.UserB\x03\xe0A\x02R\x04user\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x9c\x01\n" +
-	"\x10ListUsersRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1fmerchantapi.googleapis.com/User\x12 accounts/{account}/users/{email}*\x05users2\x04user\"N\n" +
+	"\x0eGetUserRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fmerchantapi.googleapis.com/UserR\x04name\"\xbd\x01\n" +
+	"\x11CreateUserRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12\x1d\n" +
+	"\auser_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06userId\x12D\n" +
+	"\x04user\x18\x03 \x01(\v2*.google.shopping.merchant.accounts.v1.UserB\x04\xe2A\x01\x01R\x04user\"Q\n" +
+	"\x11DeleteUserRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fmerchantapi.googleapis.com/UserR\x04name\"\x9c\x01\n" +
+	"\x11UpdateUserRequest\x12D\n" +
+	"\x04user\x18\x01 \x01(\v2*.google.shopping.merchant.accounts.v1.UserB\x04\xe2A\x01\x02R\x04user\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x9f\x01\n" +
+	"\x10ListUsersRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"}\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"}\n" +
 	"\x11ListUsersResponse\x12@\n" +
 	"\x05users\x18\x01 \x03(\v2*.google.shopping.merchant.accounts.v1.UserR\x05users\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
-	"\x11VerifySelfRequest\x12D\n" +
-	"\aaccount\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\x11VerifySelfRequest\x12E\n" +
+	"\aaccount\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"merchantapi.googleapis.com/AccountR\aaccount2\x8c\t\n" +
 	"\vUserService\x12\xa2\x01\n" +
 	"\aGetUser\x124.google.shopping.merchant.accounts.v1.GetUserRequest\x1a*.google.shopping.merchant.accounts.v1.User\"5\xdaA\x04name\x82\xd3\xe4\x93\x02(\x12&/accounts/v1/{name=accounts/*/users/*}\x12\xbd\x01\n" +

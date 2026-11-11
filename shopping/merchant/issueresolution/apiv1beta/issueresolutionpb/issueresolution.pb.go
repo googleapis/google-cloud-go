@@ -2991,26 +2991,26 @@ const file_google_shopping_merchant_issueresolution_v1beta_issueresolution_proto
 	"\n" +
 	"Egoogle/shopping/merchant/issueresolution/v1beta/issueresolution.proto\x12/google.shopping.merchant.issueresolution.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x86\x01\n" +
 	"\x1bRenderAccountIssuesResponse\x12g\n" +
-	"\x0frendered_issues\x18\x01 \x03(\v2>.google.shopping.merchant.issueresolution.v1beta.RenderedIssueR\x0erenderedIssues\"\x94\x02\n" +
-	"\x1aRenderAccountIssuesRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x04name\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12 \n" +
-	"\ttime_zone\x18\x03 \x01(\tB\x03\xe0A\x01R\btimeZone\x12j\n" +
-	"\apayload\x18\x04 \x01(\v2K.google.shopping.merchant.issueresolution.v1beta.RenderIssuesRequestPayloadB\x03\xe0A\x01R\apayload\"\xd2\x02\n" +
-	"\x1aRenderIssuesRequestPayload\x12o\n" +
-	"\x0econtent_option\x18\x01 \x01(\x0e2>.google.shopping.merchant.issueresolution.v1beta.ContentOptionB\x03\xe0A\x01H\x00R\rcontentOption\x88\x01\x01\x12\x92\x01\n" +
-	"\x18user_input_action_option\x18\x02 \x01(\x0e2O.google.shopping.merchant.issueresolution.v1beta.UserInputActionRenderingOptionB\x03\xe0A\x01H\x01R\x15userInputActionOption\x88\x01\x01B\x11\n" +
+	"\x0frendered_issues\x18\x01 \x03(\v2>.google.shopping.merchant.issueresolution.v1beta.RenderedIssueR\x0erenderedIssues\"\x98\x02\n" +
+	"\x1aRenderAccountIssuesRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x04name\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12!\n" +
+	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12k\n" +
+	"\apayload\x18\x04 \x01(\v2K.google.shopping.merchant.issueresolution.v1beta.RenderIssuesRequestPayloadB\x04\xe2A\x01\x01R\apayload\"\xd4\x02\n" +
+	"\x1aRenderIssuesRequestPayload\x12p\n" +
+	"\x0econtent_option\x18\x01 \x01(\x0e2>.google.shopping.merchant.issueresolution.v1beta.ContentOptionB\x04\xe2A\x01\x01H\x00R\rcontentOption\x88\x01\x01\x12\x93\x01\n" +
+	"\x18user_input_action_option\x18\x02 \x01(\x0e2O.google.shopping.merchant.issueresolution.v1beta.UserInputActionRenderingOptionB\x04\xe2A\x01\x01H\x01R\x15userInputActionOption\x88\x01\x01B\x11\n" +
 	"\x0f_content_optionB\x1b\n" +
 	"\x19_user_input_action_option\"\x86\x01\n" +
 	"\x1bRenderProductIssuesResponse\x12g\n" +
-	"\x0frendered_issues\x18\x01 \x03(\v2>.google.shopping.merchant.issueresolution.v1beta.RenderedIssueR\x0erenderedIssues\"\x94\x02\n" +
-	"\x1aRenderProductIssuesRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/ProductR\x04name\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12 \n" +
-	"\ttime_zone\x18\x03 \x01(\tB\x03\xe0A\x01R\btimeZone\x12j\n" +
-	"\apayload\x18\x04 \x01(\v2K.google.shopping.merchant.issueresolution.v1beta.RenderIssuesRequestPayloadB\x03\xe0A\x01R\apayload\"\x89\x03\n" +
+	"\x0frendered_issues\x18\x01 \x03(\v2>.google.shopping.merchant.issueresolution.v1beta.RenderedIssueR\x0erenderedIssues\"\x98\x02\n" +
+	"\x1aRenderProductIssuesRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/ProductR\x04name\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12!\n" +
+	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12k\n" +
+	"\apayload\x18\x04 \x01(\v2K.google.shopping.merchant.issueresolution.v1beta.RenderIssuesRequestPayloadB\x04\xe2A\x01\x01R\apayload\"\x89\x03\n" +
 	"\rRenderedIssue\x121\n" +
 	"\x13prerendered_content\x18\x03 \x01(\tH\x00R\x12prerenderedContent\x12]\n" +
 	"+prerendered_out_of_court_dispute_settlement\x18\x05 \x01(\tH\x01R&prerenderedOutOfCourtDisputeSettlement\x12\x14\n" +
@@ -3018,9 +3018,9 @@ const file_google_shopping_merchant_issueresolution_v1beta_issueresolution_proto
 	"\x06impact\x18\x02 \x01(\v27.google.shopping.merchant.issueresolution.v1beta.ImpactR\x06impact\x12Q\n" +
 	"\aactions\x18\x04 \x03(\v27.google.shopping.merchant.issueresolution.v1beta.ActionR\aactionsB\t\n" +
 	"\acontentB!\n" +
-	"\x1fout_of_court_dispute_settlement\"\xda\x01\n" +
-	"\x06Impact\x12\x1d\n" +
-	"\amessage\x18\x01 \x01(\tB\x03\xe0A\x01R\amessage\x12U\n" +
+	"\x1fout_of_court_dispute_settlement\"\xdb\x01\n" +
+	"\x06Impact\x12\x1e\n" +
+	"\amessage\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\amessage\x12U\n" +
 	"\bseverity\x18\x02 \x01(\x0e29.google.shopping.merchant.issueresolution.v1beta.SeverityR\bseverity\x12Z\n" +
 	"\n" +
 	"breakdowns\x18\x03 \x03(\v2:.google.shopping.merchant.issueresolution.v1beta.BreakdownR\n" +
@@ -3030,18 +3030,18 @@ const file_google_shopping_merchant_issueresolution_v1beta_issueresolution_proto
 	"\adetails\x18\x04 \x03(\tR\adetails\x1a0\n" +
 	"\x06Region\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\xd4\x05\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\xd5\x05\n" +
 	"\x06Action\x12z\n" +
 	"\x15builtin_simple_action\x18\x02 \x01(\v2D.google.shopping.merchant.issueresolution.v1beta.BuiltInSimpleActionH\x00R\x13builtinSimpleAction\x12j\n" +
 	"\x0fexternal_action\x18\x03 \x01(\v2?.google.shopping.merchant.issueresolution.v1beta.ExternalActionH\x00R\x0eexternalAction\x12\x84\x01\n" +
 	"\x19builtin_user_input_action\x18\a \x01(\v2G.google.shopping.merchant.issueresolution.v1beta.BuiltInUserInputActionH\x00R\x16builtinUserInputAction\x12!\n" +
 	"\fbutton_label\x18\x04 \x01(\tR\vbuttonLabel\x12!\n" +
 	"\fis_available\x18\x05 \x01(\bR\visAvailable\x12X\n" +
-	"\areasons\x18\x06 \x03(\v2>.google.shopping.merchant.issueresolution.v1beta.Action.ReasonR\areasons\x1a\xb0\x01\n" +
+	"\areasons\x18\x06 \x03(\v2>.google.shopping.merchant.issueresolution.v1beta.Action.ReasonR\areasons\x1a\xb1\x01\n" +
 	"\x06Reason\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12\x1b\n" +
-	"\x06detail\x18\x02 \x01(\tH\x00R\x06detail\x88\x01\x01\x12Y\n" +
-	"\x06action\x18\x03 \x01(\v27.google.shopping.merchant.issueresolution.v1beta.ActionB\x03\xe0A\x01H\x01R\x06action\x88\x01\x01B\t\n" +
+	"\x06detail\x18\x02 \x01(\tH\x00R\x06detail\x88\x01\x01\x12Z\n" +
+	"\x06action\x18\x03 \x01(\v27.google.shopping.merchant.issueresolution.v1beta.ActionB\x04\xe2A\x01\x01H\x01R\x06action\x88\x01\x01B\t\n" +
 	"\a_detailB\t\n" +
 	"\a_actionB\b\n" +
 	"\x06action\"\xd4\x05\n" +
@@ -3141,32 +3141,32 @@ const file_google_shopping_merchant_issueresolution_v1beta_issueresolution_proto
 	"'REVIEW_PRODUCT_ISSUE_IN_MERCHANT_CENTER\x10\x01\x12+\n" +
 	"'REVIEW_ACCOUNT_ISSUE_IN_MERCHANT_CENTER\x10\x02\x12\x1f\n" +
 	"\x1bLEGAL_APPEAL_IN_HELP_CENTER\x10\x03\x12&\n" +
-	"\"VERIFY_IDENTITY_IN_MERCHANT_CENTER\x10\x04\"\xe6\x01\n" +
-	"\x14TriggerActionRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x04name\x12d\n" +
-	"\apayload\x18\x02 \x01(\v2E.google.shopping.merchant.issueresolution.v1beta.TriggerActionPayloadB\x03\xe0A\x02R\apayload\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\"\xa8\x01\n" +
-	"\x14TriggerActionPayload\x12*\n" +
-	"\x0eaction_context\x18\x01 \x01(\tB\x03\xe0A\x02R\ractionContext\x12d\n" +
-	"\faction_input\x18\x02 \x01(\v2<.google.shopping.merchant.issueresolution.v1beta.ActionInputB\x03\xe0A\x02R\vactionInput\"1\n" +
+	"\"VERIFY_IDENTITY_IN_MERCHANT_CENTER\x10\x04\"\xe9\x01\n" +
+	"\x14TriggerActionRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x04name\x12e\n" +
+	"\apayload\x18\x02 \x01(\v2E.google.shopping.merchant.issueresolution.v1beta.TriggerActionPayloadB\x04\xe2A\x01\x02R\apayload\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"\xaa\x01\n" +
+	"\x14TriggerActionPayload\x12+\n" +
+	"\x0eaction_context\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ractionContext\x12e\n" +
+	"\faction_input\x18\x02 \x01(\v2<.google.shopping.merchant.issueresolution.v1beta.ActionInputB\x04\xe2A\x01\x02R\vactionInput\"1\n" +
 	"\x15TriggerActionResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"\x9d\x01\n" +
-	"\vActionInput\x12)\n" +
-	"\x0eaction_flow_id\x18\x01 \x01(\tB\x03\xe0A\x02R\factionFlowId\x12c\n" +
-	"\finput_values\x18\x02 \x03(\v2;.google.shopping.merchant.issueresolution.v1beta.InputValueB\x03\xe0A\x02R\vinputValues\"\xe7\x04\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\x9f\x01\n" +
+	"\vActionInput\x12*\n" +
+	"\x0eaction_flow_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\factionFlowId\x12d\n" +
+	"\finput_values\x18\x02 \x03(\v2;.google.shopping.merchant.issueresolution.v1beta.InputValueB\x04\xe2A\x01\x02R\vinputValues\"\xeb\x04\n" +
 	"\n" +
 	"InputValue\x12v\n" +
 	"\x10text_input_value\x18\x02 \x01(\v2J.google.shopping.merchant.issueresolution.v1beta.InputValue.TextInputValueH\x00R\x0etextInputValue\x12|\n" +
 	"\x12choice_input_value\x18\x03 \x01(\v2L.google.shopping.merchant.issueresolution.v1beta.InputValue.ChoiceInputValueH\x00R\x10choiceInputValue\x12\x82\x01\n" +
-	"\x14checkbox_input_value\x18\x04 \x01(\v2N.google.shopping.merchant.issueresolution.v1beta.InputValue.CheckboxInputValueH\x00R\x12checkboxInputValue\x12)\n" +
-	"\x0einput_field_id\x18\x01 \x01(\tB\x03\xe0A\x02R\finputFieldId\x1a+\n" +
-	"\x0eTextInputValue\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\tB\x03\xe0A\x02R\x05value\x1aL\n" +
-	"\x10ChoiceInputValue\x128\n" +
-	"\x16choice_input_option_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x13choiceInputOptionId\x1a/\n" +
-	"\x12CheckboxInputValue\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\bB\x03\xe0A\x02R\x05valueB\a\n" +
+	"\x14checkbox_input_value\x18\x04 \x01(\v2N.google.shopping.merchant.issueresolution.v1beta.InputValue.CheckboxInputValueH\x00R\x12checkboxInputValue\x12*\n" +
+	"\x0einput_field_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\finputFieldId\x1a,\n" +
+	"\x0eTextInputValue\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05value\x1aM\n" +
+	"\x10ChoiceInputValue\x129\n" +
+	"\x16choice_input_option_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x13choiceInputOptionId\x1a0\n" +
+	"\x12CheckboxInputValue\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\x05valueB\a\n" +
 	"\x05value*F\n" +
 	"\bSeverity\x12\x18\n" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\t\n" +

@@ -560,6 +560,11 @@ func (c *conversationalSearchRESTClient) ConversationalSearch(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPlacement(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:conversationalSearch", req.GetPlacement())
 
 	params := url.Values{}
@@ -660,6 +665,11 @@ func (c *conversationalSearchRESTClient) GetOperation(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -725,6 +735,11 @@ func (c *conversationalSearchRESTClient) ListOperations(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())

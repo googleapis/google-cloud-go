@@ -1260,6 +1260,11 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrence(ctx context.Context, req *grafe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1325,6 +1330,11 @@ func (c *grafeasV1Beta1RESTClient) ListOccurrences(ctx context.Context, req *gra
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences", req.GetParent())
@@ -1397,6 +1407,11 @@ func (c *grafeasV1Beta1RESTClient) DeleteOccurrence(ctx context.Context, req *gr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1441,6 +1456,11 @@ func (c *grafeasV1Beta1RESTClient) CreateOccurrence(ctx context.Context, req *gr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences", req.GetParent())
@@ -1503,6 +1523,11 @@ func (c *grafeasV1Beta1RESTClient) BatchCreateOccurrences(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1562,6 +1587,11 @@ func (c *grafeasV1Beta1RESTClient) UpdateOccurrence(ctx context.Context, req *gr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -1626,6 +1656,11 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrenceNote(ctx context.Context, req *g
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/notes", req.GetName())
 
 	params := url.Values{}
@@ -1678,6 +1713,11 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrenceNote(ctx context.Context, req *g
 func (c *grafeasV1Beta1RESTClient) GetNote(ctx context.Context, req *grafeaspb.GetNoteRequest, opts ...gax.CallOption) (*grafeaspb.Note, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -1745,6 +1785,11 @@ func (c *grafeasV1Beta1RESTClient) ListNotes(ctx context.Context, req *grafeaspb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/notes", req.GetParent())
@@ -1815,6 +1860,11 @@ func (c *grafeasV1Beta1RESTClient) DeleteNote(ctx context.Context, req *grafeasp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1859,6 +1909,11 @@ func (c *grafeasV1Beta1RESTClient) CreateNote(ctx context.Context, req *grafeasp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/notes", req.GetParent())
@@ -1924,6 +1979,11 @@ func (c *grafeasV1Beta1RESTClient) BatchCreateNotes(ctx context.Context, req *gr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/notes:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1983,6 +2043,11 @@ func (c *grafeasV1Beta1RESTClient) UpdateNote(ctx context.Context, req *grafeasp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2061,6 +2126,11 @@ func (c *grafeasV1Beta1RESTClient) ListNoteOccurrences(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences", req.GetName())
 
 		params := url.Values{}
@@ -2127,6 +2197,11 @@ func (c *grafeasV1Beta1RESTClient) ListNoteOccurrences(ctx context.Context, req 
 func (c *grafeasV1Beta1RESTClient) GetVulnerabilityOccurrencesSummary(ctx context.Context, req *grafeaspb.GetVulnerabilityOccurrencesSummaryRequest, opts ...gax.CallOption) (*grafeaspb.VulnerabilityOccurrencesSummary, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences:vulnerabilitySummary", req.GetParent())

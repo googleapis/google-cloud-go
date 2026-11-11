@@ -136,12 +136,12 @@ var File_google_cloud_chronicle_v1_instance_proto protoreflect.FileDescriptor
 
 const file_google_cloud_chronicle_v1_instance_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/chronicle/v1/instance.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9e\x01\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name:y\xeaAv\n" +
-	"!chronicle.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}*\tinstances2\binstance\"S\n" +
-	"\x12GetInstanceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"(google/cloud/chronicle/v1/instance.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9f\x01\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name:y\xeaAv\n" +
+	"!chronicle.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}*\tinstances2\binstance\"T\n" +
+	"\x12GetInstanceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!chronicle.googleapis.com/InstanceR\x04name2\x81\x02\n" +
 	"\x0fInstanceService\x12\x9f\x01\n" +
 	"\vGetInstance\x12-.google.cloud.chronicle.v1.GetInstanceRequest\x1a#.google.cloud.chronicle.v1.Instance\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/\x12-/v1/{name=projects/*/locations/*/instances/*}\x1aL\xcaA\x18chronicle.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xc4\x01\n" +

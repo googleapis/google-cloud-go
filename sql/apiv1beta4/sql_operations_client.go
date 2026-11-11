@@ -102,6 +102,8 @@ type internalSqlOperationsClient interface {
 
 // SqlOperationsClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to fetch operations for database instances.
 type SqlOperationsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlOperationsClient
@@ -171,6 +173,8 @@ type sqlOperationsGRPCClient struct {
 
 // NewSqlOperationsClient creates a new sql operations service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service to fetch operations for database instances.
 func NewSqlOperationsClient(ctx context.Context, opts ...option.ClientOption) (*SqlOperationsClient, error) {
 	clientOpts := defaultSqlOperationsGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -300,6 +304,8 @@ type sqlOperationsRESTClient struct {
 }
 
 // NewSqlOperationsRESTClient creates a new sql operations service rest client.
+//
+// Service to fetch operations for database instances.
 func NewSqlOperationsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlOperationsClient, error) {
 	clientOpts := append(defaultSqlOperationsRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -507,6 +513,12 @@ func (c *sqlOperationsRESTClient) Get(ctx context.Context, req *sqlpb.SqlOperati
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetOperation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/operations/%v", req.GetProject(), req.GetOperation())
 
 	params := url.Values{}
@@ -576,6 +588,11 @@ func (c *sqlOperationsRESTClient) List(ctx context.Context, req *sqlpb.SqlOperat
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/operations", req.GetProject())
@@ -648,6 +665,12 @@ func (c *sqlOperationsRESTClient) List(ctx context.Context, req *sqlpb.SqlOperat
 func (c *sqlOperationsRESTClient) Cancel(ctx context.Context, req *sqlpb.SqlOperationsCancelRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetOperation(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/operations/%v/cancel", req.GetProject(), req.GetOperation())

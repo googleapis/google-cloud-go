@@ -2171,6 +2171,11 @@ func (c *instanceAdminRESTClient) ListInstanceConfigs(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instanceConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -2234,6 +2239,11 @@ func (c *instanceAdminRESTClient) ListInstanceConfigs(ctx context.Context, req *
 func (c *instanceAdminRESTClient) GetInstanceConfig(ctx context.Context, req *instancepb.GetInstanceConfigRequest, opts ...gax.CallOption) (*instancepb.InstanceConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2336,6 +2346,11 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/instanceConfigs", req.GetParent())
@@ -2452,6 +2467,11 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfig(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstanceConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInstanceConfig().GetName())
 
 	params := url.Values{}
@@ -2520,6 +2540,11 @@ func (c *instanceAdminRESTClient) DeleteInstanceConfig(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2586,6 +2611,11 @@ func (c *instanceAdminRESTClient) ListInstanceConfigOperations(ctx context.Conte
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instanceConfigOperations", req.GetParent())
@@ -2667,6 +2697,11 @@ func (c *instanceAdminRESTClient) ListInstances(ctx context.Context, req *instan
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
@@ -2757,6 +2792,11 @@ func (c *instanceAdminRESTClient) ListInstancePartitions(ctx context.Context, re
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instancePartitions", req.GetParent())
 
 		params := url.Values{}
@@ -2827,6 +2867,11 @@ func (c *instanceAdminRESTClient) ListInstancePartitions(ctx context.Context, re
 func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instancepb.GetInstanceRequest, opts ...gax.CallOption) (*instancepb.Instance, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2932,6 +2977,11 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
@@ -3043,6 +3093,11 @@ func (c *instanceAdminRESTClient) UpdateInstance(ctx context.Context, req *insta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInstance().GetName())
 
 	params := url.Values{}
@@ -3114,6 +3169,11 @@ func (c *instanceAdminRESTClient) DeleteInstance(ctx context.Context, req *insta
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3161,6 +3221,11 @@ func (c *instanceAdminRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -3225,6 +3290,11 @@ func (c *instanceAdminRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -3292,6 +3362,11 @@ func (c *instanceAdminRESTClient) TestIamPermissions(ctx context.Context, req *i
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -3344,6 +3419,11 @@ func (c *instanceAdminRESTClient) TestIamPermissions(ctx context.Context, req *i
 func (c *instanceAdminRESTClient) GetInstancePartition(ctx context.Context, req *instancepb.GetInstancePartitionRequest, opts ...gax.CallOption) (*instancepb.InstancePartition, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3447,6 +3527,11 @@ func (c *instanceAdminRESTClient) CreateInstancePartition(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/instancePartitions", req.GetParent())
 
 	params := url.Values{}
@@ -3512,6 +3597,11 @@ func (c *instanceAdminRESTClient) CreateInstancePartition(ctx context.Context, r
 func (c *instanceAdminRESTClient) DeleteInstancePartition(ctx context.Context, req *instancepb.DeleteInstancePartitionRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3608,6 +3698,11 @@ func (c *instanceAdminRESTClient) UpdateInstancePartition(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstancePartition().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInstancePartition().GetName())
 
 	params := url.Values{}
@@ -3693,6 +3788,11 @@ func (c *instanceAdminRESTClient) ListInstancePartitionOperations(ctx context.Co
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instancePartitionOperations", req.GetParent())
@@ -3847,6 +3947,11 @@ func (c *instanceAdminRESTClient) MoveInstance(ctx context.Context, req *instanc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
 
 	params := url.Values{}
@@ -3908,6 +4013,11 @@ func (c *instanceAdminRESTClient) CancelOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3947,6 +4057,11 @@ func (c *instanceAdminRESTClient) DeleteOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3984,6 +4099,11 @@ func (c *instanceAdminRESTClient) DeleteOperation(ctx context.Context, req *long
 func (c *instanceAdminRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4051,6 +4171,11 @@ func (c *instanceAdminRESTClient) ListOperations(ctx context.Context, req *longr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

@@ -8,9 +8,101 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/developerconnect/apiv1",
-    "version": "1.2.0"
+    "version": "1.4.0"
   },
   "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.developerconnect.v1.Client.AddGitRepositoryLinkPullRequestComment",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.AddGitRepositoryLinkPullRequestComment",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "AddGitRepositoryLinkPullRequestComment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.AddGitRepositoryLinkPullRequestCommentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerconnectpb.PullRequestComment",
+        "shortName": "AddGitRepositoryLinkPullRequestComment"
+      },
+      "description": "AddGitRepositoryLinkPullRequestComment add a comment to a Pull Request.",
+      "file": "Client/AddGitRepositoryLinkPullRequestComment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_AddGitRepositoryLinkPullRequestComment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect AddGitRepositoryLinkPullRequestComment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.developerconnect.v1.Client.AddGitRepositoryLinkPullRequestReviewComment",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.AddGitRepositoryLinkPullRequestReviewComment",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "AddGitRepositoryLinkPullRequestReviewComment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.AddGitRepositoryLinkPullRequestReviewCommentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerconnectpb.PullRequestReviewComment",
+        "shortName": "AddGitRepositoryLinkPullRequestReviewComment"
+      },
+      "description": "AddGitRepositoryLinkPullRequestReviewComment add a review comment (inline on diff) to a Pull Request.",
+      "file": "Client/AddGitRepositoryLinkPullRequestReviewComment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_AddGitRepositoryLinkPullRequestReviewComment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect AddGitRepositoryLinkPullRequestReviewComment Sample"
+    },
     {
       "clientMethod": {
         "client": {
@@ -475,6 +567,52 @@
           "fullName": "google.cloud.developerconnect.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.developerconnect.v1.Client.DiffGitRepositoryLinkCommit",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.DiffGitRepositoryLinkCommit",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "DiffGitRepositoryLinkCommit"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.DiffGitRepositoryLinkCommitRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerconnectpb.DiffGitRepositoryLinkCommitResponse",
+        "shortName": "DiffGitRepositoryLinkCommit"
+      },
+      "description": "DiffGitRepositoryLinkCommit diff commits for a GitRepositoryLink.",
+      "file": "Client/DiffGitRepositoryLinkCommit/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_DiffGitRepositoryLinkCommit_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect DiffGitRepositoryLinkCommit Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.developerconnect.v1.Client.FetchAccessToken",
         "method": {
           "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.FetchAccessToken",
@@ -606,6 +744,236 @@
         }
       ],
       "title": "developerconnect FetchGitRefs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.developerconnect.v1.Client.FetchGitRepositoryLinkCommit",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkCommit",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "FetchGitRepositoryLinkCommit"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.FetchGitRepositoryLinkCommitRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerconnectpb.FetchGitRepositoryLinkCommitResponse",
+        "shortName": "FetchGitRepositoryLinkCommit"
+      },
+      "description": "FetchGitRepositoryLinkCommit fetch Commit details from a Git repository link.",
+      "file": "Client/FetchGitRepositoryLinkCommit/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchGitRepositoryLinkCommit_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect FetchGitRepositoryLinkCommit Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.developerconnect.v1.Client.FetchGitRepositoryLinkCommitList",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkCommitList",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "FetchGitRepositoryLinkCommitList"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.FetchGitRepositoryLinkCommitListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SCMCommitIterator",
+        "shortName": "FetchGitRepositoryLinkCommitList"
+      },
+      "description": "FetchGitRepositoryLinkCommitList fetch a list of Commits from a Git repository link.",
+      "file": "Client/FetchGitRepositoryLinkCommitList/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchGitRepositoryLinkCommitList_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect FetchGitRepositoryLinkCommitList Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.developerconnect.v1.Client.FetchGitRepositoryLinkFileBlame",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkFileBlame",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "FetchGitRepositoryLinkFileBlame"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.FetchGitRepositoryLinkFileBlameRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerconnectpb.FetchGitRepositoryLinkFileBlameResponse",
+        "shortName": "FetchGitRepositoryLinkFileBlame"
+      },
+      "description": "FetchGitRepositoryLinkFileBlame fetches blame information for a file or line range in a file.",
+      "file": "Client/FetchGitRepositoryLinkFileBlame/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchGitRepositoryLinkFileBlame_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect FetchGitRepositoryLinkFileBlame Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.developerconnect.v1.Client.FetchGitRepositoryLinkPullRequest",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkPullRequest",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "FetchGitRepositoryLinkPullRequest"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.FetchGitRepositoryLinkPullRequestRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerconnectpb.PullRequest",
+        "shortName": "FetchGitRepositoryLinkPullRequest"
+      },
+      "description": "FetchGitRepositoryLinkPullRequest fetch Pull Request details from a Git repository link.",
+      "file": "Client/FetchGitRepositoryLinkPullRequest/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchGitRepositoryLinkPullRequest_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect FetchGitRepositoryLinkPullRequest Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.developerconnect.v1.Client.FetchGitRepositoryLinkPullRequestList",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkPullRequestList",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "FetchGitRepositoryLinkPullRequestList"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.FetchGitRepositoryLinkPullRequestListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "PullRequestIterator",
+        "shortName": "FetchGitRepositoryLinkPullRequestList"
+      },
+      "description": "FetchGitRepositoryLinkPullRequestList fetches a list of Pull Requests from the remote repository.",
+      "file": "Client/FetchGitRepositoryLinkPullRequestList/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchGitRepositoryLinkPullRequestList_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect FetchGitRepositoryLinkPullRequestList Sample"
     },
     {
       "clientMethod": {
@@ -1342,6 +1710,98 @@
         }
       ],
       "title": "developerconnect ListUsers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.developerconnect.v1.Client.ModifyGitRepositoryLinkPullRequest",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.ModifyGitRepositoryLinkPullRequest",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "ModifyGitRepositoryLinkPullRequest"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.ModifyGitRepositoryLinkPullRequestRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerconnectpb.PullRequest",
+        "shortName": "ModifyGitRepositoryLinkPullRequest"
+      },
+      "description": "ModifyGitRepositoryLinkPullRequest modifies a Pull Request in the remote SCM repository associated with a\nGitRepositoryLink.",
+      "file": "Client/ModifyGitRepositoryLinkPullRequest/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_ModifyGitRepositoryLinkPullRequest_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect ModifyGitRepositoryLinkPullRequest Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.developerconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.developerconnect.v1.Client.OpenGitRepositoryLinkPullRequest",
+        "method": {
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.OpenGitRepositoryLinkPullRequest",
+          "service": {
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect",
+            "shortName": "DeveloperConnect"
+          },
+          "shortName": "OpenGitRepositoryLinkPullRequest"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerconnectpb.OpenGitRepositoryLinkPullRequestRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerconnectpb.PullRequest",
+        "shortName": "OpenGitRepositoryLinkPullRequest"
+      },
+      "description": "OpenGitRepositoryLinkPullRequest opens a Pull Request in the remote SCM repository associated with a\nGitRepositoryLink.",
+      "file": "Client/OpenGitRepositoryLinkPullRequest/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_OpenGitRepositoryLinkPullRequest_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerconnect OpenGitRepositoryLinkPullRequest Sample"
     },
     {
       "clientMethod": {

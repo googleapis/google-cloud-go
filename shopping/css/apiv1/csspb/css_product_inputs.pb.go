@@ -406,31 +406,31 @@ var File_google_shopping_css_v1_css_product_inputs_proto protoreflect.FileDescri
 
 const file_google_shopping_css_v1_css_product_inputs_proto_rawDesc = "" +
 	"\n" +
-	"/google/shopping/css/v1/css_product_inputs.proto\x12\x16google.shopping.css.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a/google/shopping/css/v1/css_product_common.proto\x1a google/shopping/type/types.proto\"\x90\x04\n" +
-	"\x0fCssProductInput\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
+	"/google/shopping/css/v1/css_product_inputs.proto\x12\x16google.shopping.css.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a/google/shopping/css/v1/css_product_common.proto\x1a google/shopping/type/types.proto\"\x95\x04\n" +
+	"\x0fCssProductInput\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12#\n" +
 	"\n" +
-	"final_name\x18\x02 \x01(\tB\x03\xe0A\x03R\tfinalName\x12+\n" +
-	"\x0fraw_provided_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rrawProvidedId\x12.\n" +
-	"\x10content_language\x18\x04 \x01(\tB\x03\xe0A\x02R\x0fcontentLanguage\x12\"\n" +
+	"final_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tfinalName\x12,\n" +
+	"\x0fraw_provided_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rrawProvidedId\x12/\n" +
+	"\x10content_language\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0fcontentLanguage\x12#\n" +
 	"\n" +
-	"feed_label\x18\x05 \x01(\tB\x03\xe0A\x02R\tfeedLabel\x12E\n" +
+	"feed_label\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\tfeedLabel\x12E\n" +
 	"\x0efreshness_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x02\x18\x01R\rfreshnessTime\x12B\n" +
 	"\n" +
 	"attributes\x18\a \x01(\v2\".google.shopping.css.v1.AttributesR\n" +
 	"attributes\x12R\n" +
 	"\x11custom_attributes\x18\b \x03(\v2%.google.shopping.type.CustomAttributeR\x10customAttributes:`\xeaA]\n" +
-	"\"css.googleapis.com/CssProductInput\x127accounts/{account}/cssProductInputs/{css_product_input}\"\xdc\x01\n" +
-	"\x1cInsertCssProductInputRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"css.googleapis.com/CssProductInputR\x06parent\x12X\n" +
-	"\x11css_product_input\x18\x02 \x01(\v2'.google.shopping.css.v1.CssProductInputB\x03\xe0A\x02R\x0fcssProductInput\x12\x1e\n" +
-	"\afeed_id\x18\x03 \x01(\x03B\x05\xe0A\x01\x18\x01R\x06feedId\"\xb5\x01\n" +
-	"\x1cUpdateCssProductInputRequest\x12X\n" +
-	"\x11css_product_input\x18\x01 \x01(\v2'.google.shopping.css.v1.CssProductInputB\x03\xe0A\x02R\x0fcssProductInput\x12;\n" +
+	"\"css.googleapis.com/CssProductInput\x127accounts/{account}/cssProductInputs/{css_product_input}\"\xdf\x01\n" +
+	"\x1cInsertCssProductInputRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"css.googleapis.com/CssProductInputR\x06parent\x12Y\n" +
+	"\x11css_product_input\x18\x02 \x01(\v2'.google.shopping.css.v1.CssProductInputB\x04\xe2A\x01\x02R\x0fcssProductInput\x12\x1f\n" +
+	"\afeed_id\x18\x03 \x01(\x03B\x06\xe2A\x01\x01\x18\x01R\x06feedId\"\xb6\x01\n" +
+	"\x1cUpdateCssProductInputRequest\x12Y\n" +
+	"\x11css_product_input\x18\x01 \x01(\v2'.google.shopping.css.v1.CssProductInputB\x04\xe2A\x01\x02R\x0fcssProductInput\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xae\x01\n" +
-	"\x1cDeleteCssProductInputRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"updateMask\"\xaf\x01\n" +
+	"\x1cDeleteCssProductInputRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"css.googleapis.com/CssProductInputR\x04name\x125\n" +
 	"\x14supplemental_feed_id\x18\x02 \x01(\x03H\x00R\x12supplementalFeedId\x88\x01\x01B\x17\n" +
 	"\x15_supplemental_feed_id2\xb0\x05\n" +

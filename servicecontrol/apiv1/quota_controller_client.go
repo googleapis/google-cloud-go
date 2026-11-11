@@ -436,6 +436,11 @@ func (c *quotaControllerRESTClient) AllocateQuota(ctx context.Context, req *serv
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v:allocateQuota", req.GetServiceName())
 
 	params := url.Values{}

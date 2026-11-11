@@ -1039,6 +1039,11 @@ func (c *projectRESTClient) GetProject(ctx context.Context, req *retailpb.GetPro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1100,6 +1105,11 @@ func (c *projectRESTClient) AcceptTerms(ctx context.Context, req *retailpb.Accep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:acceptTerms", req.GetProject())
@@ -1169,6 +1179,11 @@ func (c *projectRESTClient) EnrollSolution(ctx context.Context, req *retailpb.En
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:enrollSolution", req.GetProject())
 
 	params := url.Values{}
@@ -1230,6 +1245,11 @@ func (c *projectRESTClient) ListEnrolledSolutions(ctx context.Context, req *reta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:enrolledSolutions", req.GetParent())
 
 	params := url.Values{}
@@ -1283,6 +1303,11 @@ func (c *projectRESTClient) ListEnrolledSolutions(ctx context.Context, req *reta
 func (c *projectRESTClient) GetLoggingConfig(ctx context.Context, req *retailpb.GetLoggingConfigRequest, opts ...gax.CallOption) (*retailpb.LoggingConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1347,6 +1372,11 @@ func (c *projectRESTClient) UpdateLoggingConfig(ctx context.Context, req *retail
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLoggingConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetLoggingConfig().GetName())
 
 	params := url.Values{}
@@ -1407,6 +1437,11 @@ func (c *projectRESTClient) UpdateLoggingConfig(ctx context.Context, req *retail
 func (c *projectRESTClient) GetAlertConfig(ctx context.Context, req *retailpb.GetAlertConfigRequest, opts ...gax.CallOption) (*retailpb.AlertConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1470,6 +1505,11 @@ func (c *projectRESTClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAlertConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetAlertConfig().GetName())
 
 	params := url.Values{}
@@ -1529,6 +1569,11 @@ func (c *projectRESTClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 func (c *projectRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1596,6 +1641,11 @@ func (c *projectRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())

@@ -51,6 +51,9 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 // requestParamsHeader is routing header required to access named databases
 const reqParamsHeader = "x-goog-request-params"
 
+// isTransactionHeader indicates whether an RPC is part of a transaction.
+const isTransactionHeader = "x-goog-is-transaction"
+
 // reqParamsHeaderVal constructs header from dbPath.
 // dbPath is of the form projects/{project_id}/databases/{database_id}
 func reqParamsHeaderVal(dbPath string) string {
@@ -199,6 +202,19 @@ func withResourceHeader(ctx context.Context, resource string) context.Context {
 	}
 	md = md.Copy()
 	md[resourcePrefixHeader] = []string{resource}
+	if _, exists := md[isTransactionHeader]; !exists {
+		md[isTransactionHeader] = []string{"false"}
+	}
+	return metadata.NewOutgoingContext(ctx, md)
+}
+
+func withTransactionHeader(ctx context.Context) context.Context {
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.New(nil)
+	}
+	md = md.Copy()
+	md[isTransactionHeader] = []string{"true"}
 	return metadata.NewOutgoingContext(ctx, md)
 }
 

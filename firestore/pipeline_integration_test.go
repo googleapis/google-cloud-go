@@ -888,14 +888,11 @@ func testIntegrationPipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Insert", func(t *testing.T) {
-		wantBook0Data := map[string]any{
-			"title":     "The Hitchhiker's Guide to the Galaxy",
-			"author":    map[string]any{"name": "Douglas Adams", "country": "UK"},
-			"genre":     "Science Fiction",
-			"published": int64(1979),
-			"rating":    float64(4.2),
-			"tags":      []any{"comedy", "space", "adventure"},
+		doc0Snap, err := docRefs[0].Get(ctx)
+		if err != nil {
+			t.Fatalf("Failed to get source document: %v", err)
 		}
+		wantBook0Data := doc0Snap.Data()
 
 		t.Run("Basic", func(t *testing.T) {
 			dmlCol := client.Collection(collectionIDs.New())
@@ -940,7 +937,7 @@ func testIntegrationPipelineStages(t *testing.T) {
 				Where(Equal(FieldOf(DocumentID).GetDocumentID(), ConstantOf(docRefs[0].ID))).
 				RemoveFields(Fields(DocumentID)).
 				Insert(WithInsertCollection(targetCol.ID)).
-				Execute(ctx).Results()
+				Execute(ctx, WithAtomic(true)).Results()
 			defer insertIter.Stop()
 			res, err := insertIter.GetAll()
 			if err != nil {
@@ -982,7 +979,7 @@ func testIntegrationPipelineStages(t *testing.T) {
 					WithInsertCollection(coll.ID),
 					WithInsertDocumentIDExpression(ConstantOf(docRefs[1].ID)),
 				).
-				Execute(ctx).Results()
+				Execute(ctx, WithAtomic(true)).Results()
 			defer insertIter.Stop()
 			_, err := insertIter.GetAll()
 			if err == nil {
@@ -997,7 +994,7 @@ func testIntegrationPipelineStages(t *testing.T) {
 			insertIter := client.Pipeline().Collection(coll.ID).
 				Where(Equal(FieldOf(DocumentID).GetDocumentID(), ConstantOf(docRefs[0].ID))).
 				Insert(WithInsertCollection(targetCol.ID)).
-				Execute(ctx).Results()
+				Execute(ctx, WithAtomic(true)).Results()
 			defer insertIter.Stop()
 			res, err := insertIter.GetAll()
 			if err != nil {
@@ -1067,14 +1064,11 @@ func testIntegrationPipelineStages(t *testing.T) {
 		})
 	})
 	t.Run("Upsert", func(t *testing.T) {
-		wantBook0Data := map[string]any{
-			"title":     "The Hitchhiker's Guide to the Galaxy",
-			"author":    map[string]any{"name": "Douglas Adams", "country": "UK"},
-			"genre":     "Science Fiction",
-			"published": int64(1979),
-			"rating":    float64(4.2),
-			"tags":      []any{"comedy", "space", "adventure"},
+		doc0Snap, err := docRefs[0].Get(ctx)
+		if err != nil {
+			t.Fatalf("Failed to get source document: %v", err)
 		}
+		wantBook0Data := doc0Snap.Data()
 
 		t.Run("WithAdditionalFields", func(t *testing.T) {
 			dmlCol := client.Collection(collectionIDs.New())
@@ -1087,7 +1081,7 @@ func testIntegrationPipelineStages(t *testing.T) {
 				WithUpsertCollection(dmlCol.ID),
 				WithUpsertDocumentIDExpression(ConstantOf("upsertBook_1")),
 				WithUpsertAdditionalFields(Add(FieldOf("count"), ConstantOf(1)).As("count")),
-			).Execute(ctx).Results()
+			).Execute(ctx, WithAtomic(true)).Results()
 			defer upsertIter.Stop()
 			res, err := upsertIter.GetAll()
 			if err != nil {
@@ -1130,7 +1124,7 @@ func testIntegrationPipelineStages(t *testing.T) {
 						Add(FieldOf("rating"), ConstantOf(0.5)).As("rating"),
 					),
 				).
-				Execute(ctx).Results()
+				Execute(ctx, WithAtomic(true)).Results()
 			defer upsertIter.Stop()
 			res, err := upsertIter.GetAll()
 			if err != nil {
@@ -1171,7 +1165,7 @@ func testIntegrationPipelineStages(t *testing.T) {
 					WithUpsertCollection(targetCol.ID),
 					WithUpsertDocumentIDExpression(ConstantOf("target_doc_2")),
 				).
-				Execute(ctx).Results()
+				Execute(ctx, WithAtomic(true)).Results()
 			defer upsertIter.Stop()
 			res, err := upsertIter.GetAll()
 			if err != nil {

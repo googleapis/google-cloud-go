@@ -655,43 +655,43 @@ var File_google_cloud_recommendationengine_v1beta1_catalog_proto protoreflect.Fi
 
 const file_google_cloud_recommendationengine_v1beta1_catalog_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/recommendationengine/v1beta1/catalog.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a6google/cloud/recommendationengine/v1beta1/common.proto\"\xfa\x04\n" +
-	"\vCatalogItem\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\x80\x01\n" +
-	"\x14category_hierarchies\x18\x02 \x03(\v2H.google.cloud.recommendationengine.v1beta1.CatalogItem.CategoryHierarchyB\x03\xe0A\x02R\x13categoryHierarchies\x12\x19\n" +
-	"\x05title\x18\x03 \x01(\tB\x03\xe0A\x02R\x05title\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12c\n" +
-	"\x0fitem_attributes\x18\x05 \x01(\v25.google.cloud.recommendationengine.v1beta1.FeatureMapB\x03\xe0A\x01R\x0eitemAttributes\x12(\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12\x17\n" +
-	"\x04tags\x18\b \x03(\tB\x03\xe0A\x01R\x04tags\x12'\n" +
-	"\ritem_group_id\x18\t \x01(\tB\x03\xe0A\x01R\vitemGroupId\x12o\n" +
+	"7google/cloud/recommendationengine/v1beta1/catalog.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a6google/cloud/recommendationengine/v1beta1/common.proto\"\x84\x05\n" +
+	"\vCatalogItem\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12\x81\x01\n" +
+	"\x14category_hierarchies\x18\x02 \x03(\v2H.google.cloud.recommendationengine.v1beta1.CatalogItem.CategoryHierarchyB\x04\xe2A\x01\x02R\x13categoryHierarchies\x12\x1a\n" +
+	"\x05title\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05title\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12d\n" +
+	"\x0fitem_attributes\x18\x05 \x01(\v25.google.cloud.recommendationengine.v1beta1.FeatureMapB\x04\xe2A\x01\x01R\x0eitemAttributes\x12)\n" +
+	"\rlanguage_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12\x18\n" +
+	"\x04tags\x18\b \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12(\n" +
+	"\ritem_group_id\x18\t \x01(\tB\x04\xe2A\x01\x01R\vitemGroupId\x12p\n" +
 	"\x10product_metadata\x18\n" +
-	" \x01(\v2=.google.cloud.recommendationengine.v1beta1.ProductCatalogItemB\x03\xe0A\x01H\x00R\x0fproductMetadata\x1a8\n" +
-	"\x11CategoryHierarchy\x12#\n" +
+	" \x01(\v2=.google.cloud.recommendationengine.v1beta1.ProductCatalogItemB\x04\xe2A\x01\x01H\x00R\x0fproductMetadata\x1a9\n" +
+	"\x11CategoryHierarchy\x12$\n" +
 	"\n" +
-	"categories\x18\x01 \x03(\tB\x03\xe0A\x02R\n" +
+	"categories\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\n" +
 	"categoriesB\x15\n" +
-	"\x13recommendation_type\"\x82\b\n" +
-	"\x12ProductCatalogItem\x12p\n" +
-	"\vexact_price\x18\x01 \x01(\v2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.ExactPriceB\x03\xe0A\x01H\x00R\n" +
-	"exactPrice\x12p\n" +
-	"\vprice_range\x18\x02 \x01(\v2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.PriceRangeB\x03\xe0A\x01H\x00R\n" +
-	"priceRange\x12c\n" +
-	"\x05costs\x18\x03 \x03(\v2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.CostsEntryB\x03\xe0A\x01R\x05costs\x12(\n" +
-	"\rcurrency_code\x18\x04 \x01(\tB\x03\xe0A\x01R\fcurrencyCode\x12n\n" +
-	"\vstock_state\x18\x05 \x01(\x0e2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.StockStateB\x03\xe0A\x01R\n" +
-	"stockState\x122\n" +
-	"\x12available_quantity\x18\x06 \x01(\x03B\x03\xe0A\x01R\x11availableQuantity\x127\n" +
-	"\x15canonical_product_uri\x18\a \x01(\tB\x03\xe0A\x01R\x13canonicalProductUri\x12M\n" +
-	"\x06images\x18\b \x03(\v20.google.cloud.recommendationengine.v1beta1.ImageB\x03\xe0A\x01R\x06images\x1ab\n" +
+	"\x13recommendation_type\"\x8e\b\n" +
+	"\x12ProductCatalogItem\x12q\n" +
+	"\vexact_price\x18\x01 \x01(\v2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.ExactPriceB\x04\xe2A\x01\x01H\x00R\n" +
+	"exactPrice\x12q\n" +
+	"\vprice_range\x18\x02 \x01(\v2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.PriceRangeB\x04\xe2A\x01\x01H\x00R\n" +
+	"priceRange\x12d\n" +
+	"\x05costs\x18\x03 \x03(\v2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.CostsEntryB\x04\xe2A\x01\x01R\x05costs\x12)\n" +
+	"\rcurrency_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fcurrencyCode\x12o\n" +
+	"\vstock_state\x18\x05 \x01(\x0e2H.google.cloud.recommendationengine.v1beta1.ProductCatalogItem.StockStateB\x04\xe2A\x01\x01R\n" +
+	"stockState\x123\n" +
+	"\x12available_quantity\x18\x06 \x01(\x03B\x04\xe2A\x01\x01R\x11availableQuantity\x128\n" +
+	"\x15canonical_product_uri\x18\a \x01(\tB\x04\xe2A\x01\x01R\x13canonicalProductUri\x12N\n" +
+	"\x06images\x18\b \x03(\v20.google.cloud.recommendationengine.v1beta1.ImageB\x04\xe2A\x01\x01R\x06images\x1ad\n" +
 	"\n" +
-	"ExactPrice\x12(\n" +
-	"\rdisplay_price\x18\x01 \x01(\x02B\x03\xe0A\x01R\fdisplayPrice\x12*\n" +
-	"\x0eoriginal_price\x18\x02 \x01(\x02B\x03\xe0A\x01R\roriginalPrice\x1a:\n" +
+	"ExactPrice\x12)\n" +
+	"\rdisplay_price\x18\x01 \x01(\x02B\x04\xe2A\x01\x01R\fdisplayPrice\x12+\n" +
+	"\x0eoriginal_price\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\roriginalPrice\x1a<\n" +
 	"\n" +
-	"PriceRange\x12\x15\n" +
-	"\x03min\x18\x01 \x01(\x02B\x03\xe0A\x02R\x03min\x12\x15\n" +
-	"\x03max\x18\x02 \x01(\x02B\x03\xe0A\x02R\x03max\x1a8\n" +
+	"PriceRange\x12\x16\n" +
+	"\x03min\x18\x01 \x01(\x02B\x04\xe2A\x01\x02R\x03min\x12\x16\n" +
+	"\x03max\x18\x02 \x01(\x02B\x04\xe2A\x01\x02R\x03max\x1a8\n" +
 	"\n" +
 	"CostsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -703,11 +703,11 @@ const file_google_cloud_recommendationengine_v1beta1_catalog_proto_rawDesc = "" 
 	"\fOUT_OF_STOCK\x10\x01\x12\f\n" +
 	"\bPREORDER\x10\x02\x12\r\n" +
 	"\tBACKORDER\x10\x03\x1a\x02\x10\x01B\a\n" +
-	"\x05price\"V\n" +
-	"\x05Image\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12\x1b\n" +
-	"\x06height\x18\x02 \x01(\x05B\x03\xe0A\x01R\x06height\x12\x19\n" +
-	"\x05width\x18\x03 \x01(\x05B\x03\xe0A\x01R\x05widthB\xa3\x02\n" +
+	"\x05price\"Y\n" +
+	"\x05Image\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12\x1c\n" +
+	"\x06height\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x06height\x12\x1a\n" +
+	"\x05width\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x05widthB\xa3\x02\n" +
 	"-com.google.cloud.recommendationengine.v1beta1P\x01Zacloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb;recommendationenginepb\xa2\x02\x05RECAI\xaa\x02)Google.Cloud.RecommendationEngine.V1Beta1\xca\x02)Google\\Cloud\\RecommendationEngine\\V1beta1\xea\x02,Google::Cloud::RecommendationEngine::V1beta1b\x06proto3"
 
 var (

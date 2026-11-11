@@ -3746,39 +3746,39 @@ var File_google_cloud_bigquery_reservation_v1_reservation_proto protoreflect.Fil
 
 const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/bigquery/reservation/v1/reservation.proto\x12$google.cloud.bigquery.reservation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/expr.proto\"\xa6\x10\n" +
-	"\vReservation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
-	"\rslot_capacity\x18\x02 \x01(\x03B\x03\xe0A\x01R\fslotCapacity\x12/\n" +
-	"\x11ignore_idle_slots\x18\x04 \x01(\bB\x03\xe0A\x01R\x0fignoreIdleSlots\x12^\n" +
-	"\tautoscale\x18\a \x01(\v2;.google.cloud.bigquery.reservation.v1.Reservation.AutoscaleB\x03\xe0A\x01R\tautoscale\x12%\n" +
-	"\vconcurrency\x18\x10 \x01(\x03B\x03\xe0A\x01R\vconcurrency\x12D\n" +
-	"\rcreation_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcreationTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"6google/cloud/bigquery/reservation/v1/reservation.proto\x12$google.cloud.bigquery.reservation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/expr.proto\"\xbe\x10\n" +
+	"\vReservation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12)\n" +
+	"\rslot_capacity\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\fslotCapacity\x120\n" +
+	"\x11ignore_idle_slots\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x0fignoreIdleSlots\x12_\n" +
+	"\tautoscale\x18\a \x01(\v2;.google.cloud.bigquery.reservation.v1.Reservation.AutoscaleB\x04\xe2A\x01\x01R\tautoscale\x12&\n" +
+	"\vconcurrency\x18\x10 \x01(\x03B\x04\xe2A\x01\x01R\vconcurrency\x12E\n" +
+	"\rcreation_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcreationTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x128\n" +
-	"\x16multi_region_auxiliary\x18\x0e \x01(\bB\x02\x18\x01R\x14multiRegionAuxiliary\x12L\n" +
-	"\aedition\x18\x11 \x01(\x0e2-.google.cloud.bigquery.reservation.v1.EditionB\x03\xe0A\x01R\aedition\x12T\n" +
-	"\x10primary_location\x18\x12 \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x0fprimaryLocation\x12X\n" +
-	"\x12secondary_location\x18\x13 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x11secondaryLocation\x12e\n" +
-	"\x19original_primary_location\x18\x14 \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x17originalPrimaryLocation\x12%\n" +
-	"\tmax_slots\x18\x15 \x01(\x03B\x03\xe0A\x01H\x00R\bmaxSlots\x88\x01\x01\x12e\n" +
-	"\fscaling_mode\x18\x16 \x01(\x0e2=.google.cloud.bigquery.reservation.v1.Reservation.ScalingModeB\x03\xe0A\x01R\vscalingMode\x12Z\n" +
-	"\x06labels\x18\x17 \x03(\v2=.google.cloud.bigquery.reservation.v1.Reservation.LabelsEntryB\x03\xe0A\x01R\x06labels\x120\n" +
-	"\x11reservation_group\x18\x19 \x01(\tB\x03\xe0A\x01R\x10reservationGroup\x12w\n" +
-	"\x12replication_status\x18\x18 \x01(\v2C.google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatusB\x03\xe0A\x03R\x11replicationStatus\x12h\n" +
-	"\x11scheduling_policy\x18\x1b \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x03\xe0A\x01R\x10schedulingPolicy\x129\n" +
-	"\x16reservation_group_path\x18\x1c \x03(\tB\x03\xe0A\x03R\x14reservationGroupPath\x1aW\n" +
-	"\tAutoscale\x12(\n" +
-	"\rcurrent_slots\x18\x01 \x01(\x03B\x03\xe0A\x03R\fcurrentSlots\x12 \n" +
-	"\tmax_slots\x18\x02 \x01(\x03B\x03\xe0A\x01R\bmaxSlots\x1a\xba\x02\n" +
-	"\x11ReplicationStatus\x12-\n" +
-	"\x05error\x18\x01 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12G\n" +
-	"\x0flast_error_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rlastErrorTime\x12S\n" +
-	"\x15last_replication_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13lastReplicationTime\x12X\n" +
-	"\x18soft_failover_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x15softFailoverStartTime\x1a9\n" +
+	"\x16multi_region_auxiliary\x18\x0e \x01(\bB\x02\x18\x01R\x14multiRegionAuxiliary\x12M\n" +
+	"\aedition\x18\x11 \x01(\x0e2-.google.cloud.bigquery.reservation.v1.EditionB\x04\xe2A\x01\x01R\aedition\x12U\n" +
+	"\x10primary_location\x18\x12 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x0fprimaryLocation\x12Y\n" +
+	"\x12secondary_location\x18\x13 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x11secondaryLocation\x12f\n" +
+	"\x19original_primary_location\x18\x14 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x17originalPrimaryLocation\x12&\n" +
+	"\tmax_slots\x18\x15 \x01(\x03B\x04\xe2A\x01\x01H\x00R\bmaxSlots\x88\x01\x01\x12f\n" +
+	"\fscaling_mode\x18\x16 \x01(\x0e2=.google.cloud.bigquery.reservation.v1.Reservation.ScalingModeB\x04\xe2A\x01\x01R\vscalingMode\x12[\n" +
+	"\x06labels\x18\x17 \x03(\v2=.google.cloud.bigquery.reservation.v1.Reservation.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x121\n" +
+	"\x11reservation_group\x18\x19 \x01(\tB\x04\xe2A\x01\x01R\x10reservationGroup\x12x\n" +
+	"\x12replication_status\x18\x18 \x01(\v2C.google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatusB\x04\xe2A\x01\x03R\x11replicationStatus\x12i\n" +
+	"\x11scheduling_policy\x18\x1b \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x04\xe2A\x01\x01R\x10schedulingPolicy\x12:\n" +
+	"\x16reservation_group_path\x18\x1c \x03(\tB\x04\xe2A\x01\x03R\x14reservationGroupPath\x1aY\n" +
+	"\tAutoscale\x12)\n" +
+	"\rcurrent_slots\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\fcurrentSlots\x12!\n" +
+	"\tmax_slots\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\bmaxSlots\x1a\xbe\x02\n" +
+	"\x11ReplicationStatus\x12.\n" +
+	"\x05error\x18\x01 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12H\n" +
+	"\x0flast_error_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rlastErrorTime\x12T\n" +
+	"\x15last_replication_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13lastReplicationTime\x12Y\n" +
+	"\x18soft_failover_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x15softFailoverStartTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"c\n" +
@@ -3789,34 +3789,34 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\tALL_SLOTS\x10\x03:w\xeaAt\n" +
 	".bigqueryreservation.googleapis.com/Reservation\x12Bprojects/{project}/locations/{location}/reservations/{reservation}B\f\n" +
 	"\n" +
-	"_max_slots\"\x83\x01\n" +
-	"\x10SchedulingPolicy\x12*\n" +
-	"\vconcurrency\x18\x01 \x01(\x03B\x03\xe0A\x01H\x00R\vconcurrency\x88\x01\x01\x12%\n" +
-	"\tmax_slots\x18\x02 \x01(\x03B\x03\xe0A\x01H\x01R\bmaxSlots\x88\x01\x01B\x0e\n" +
+	"_max_slots\"\x85\x01\n" +
+	"\x10SchedulingPolicy\x12+\n" +
+	"\vconcurrency\x18\x01 \x01(\x03B\x04\xe2A\x01\x01H\x00R\vconcurrency\x88\x01\x01\x12&\n" +
+	"\tmax_slots\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x01R\bmaxSlots\x88\x01\x01B\x0e\n" +
 	"\f_concurrencyB\f\n" +
 	"\n" +
-	"_max_slots\"\xc3\x03\n" +
-	"\x10ReservationGroup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12^\n" +
-	"\fparent_group\x18\x02 \x01(\tB;\xe0A\x01\xfaA5\x123bigqueryreservation.googleapis.com/ReservationGroupR\vparentGroup\x12D\n" +
-	"\rcreation_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcreationTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"_max_slots\"\xc7\x03\n" +
+	"\x10ReservationGroup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12_\n" +
+	"\fparent_group\x18\x02 \x01(\tB<\xe2A\x01\x01\xfaA5\x123bigqueryreservation.googleapis.com/ReservationGroupR\vparentGroup\x12E\n" +
+	"\rcreation_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcreationTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\xad\x01\xeaA\xa9\x01\n" +
-	"3bigqueryreservation.googleapis.com/ReservationGroup\x12Mprojects/{project}/locations/{location}/reservationGroups/{reservation_group}*\x11reservationGroups2\x10reservationGroup\"\xbb\t\n" +
-	"\x12CapacityCommitment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
+	"3bigqueryreservation.googleapis.com/ReservationGroup\x12Mprojects/{project}/locations/{location}/reservationGroups/{reservation_group}*\x11reservationGroups2\x10reservationGroup\"\xc5\t\n" +
+	"\x12CapacityCommitment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12#\n" +
 	"\n" +
-	"slot_count\x18\x02 \x01(\x03B\x03\xe0A\x01R\tslotCount\x12`\n" +
-	"\x04plan\x18\x03 \x01(\x0e2G.google.cloud.bigquery.reservation.v1.CapacityCommitment.CommitmentPlanB\x03\xe0A\x01R\x04plan\x12Y\n" +
-	"\x05state\x18\x04 \x01(\x0e2>.google.cloud.bigquery.reservation.v1.CapacityCommitment.StateB\x03\xe0A\x03R\x05state\x12S\n" +
-	"\x15commitment_start_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13commitmentStartTime\x12O\n" +
-	"\x13commitment_end_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11commitmentEndTime\x12>\n" +
-	"\x0efailure_status\x18\a \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\rfailureStatus\x12o\n" +
-	"\frenewal_plan\x18\b \x01(\x0e2G.google.cloud.bigquery.reservation.v1.CapacityCommitment.CommitmentPlanB\x03\xe0A\x01R\vrenewalPlan\x128\n" +
+	"slot_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\tslotCount\x12a\n" +
+	"\x04plan\x18\x03 \x01(\x0e2G.google.cloud.bigquery.reservation.v1.CapacityCommitment.CommitmentPlanB\x04\xe2A\x01\x01R\x04plan\x12Z\n" +
+	"\x05state\x18\x04 \x01(\x0e2>.google.cloud.bigquery.reservation.v1.CapacityCommitment.StateB\x04\xe2A\x01\x03R\x05state\x12T\n" +
+	"\x15commitment_start_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13commitmentStartTime\x12P\n" +
+	"\x13commitment_end_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11commitmentEndTime\x12?\n" +
+	"\x0efailure_status\x18\a \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\rfailureStatus\x12p\n" +
+	"\frenewal_plan\x18\b \x01(\x0e2G.google.cloud.bigquery.reservation.v1.CapacityCommitment.CommitmentPlanB\x04\xe2A\x01\x01R\vrenewalPlan\x128\n" +
 	"\x16multi_region_auxiliary\x18\n" +
-	" \x01(\bB\x02\x18\x01R\x14multiRegionAuxiliary\x12L\n" +
-	"\aedition\x18\f \x01(\x0e2-.google.cloud.bigquery.reservation.v1.EditionB\x03\xe0A\x01R\aedition\x12%\n" +
-	"\fis_flat_rate\x18\x0e \x01(\bB\x03\xe0A\x03R\n" +
+	" \x01(\bB\x02\x18\x01R\x14multiRegionAuxiliary\x12M\n" +
+	"\aedition\x18\f \x01(\x0e2-.google.cloud.bigquery.reservation.v1.EditionB\x04\xe2A\x01\x01R\aedition\x12&\n" +
+	"\fis_flat_rate\x18\x0e \x01(\bB\x04\xe2A\x01\x03R\n" +
 	"isFlatRate\"\xce\x01\n" +
 	"\x0eCommitmentPlan\x12\x1f\n" +
 	"\x1bCOMMITMENT_PLAN_UNSPECIFIED\x10\x00\x12\f\n" +
@@ -3839,105 +3839,105 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03:\x8e\x01\xeaA\x8a\x01\n" +
-	"5bigqueryreservation.googleapis.com/CapacityCommitment\x12Qprojects/{project}/locations/{location}/capacityCommitments/{capacity_commitment}\"\xe6\x01\n" +
-	"\x18CreateReservationRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.bigqueryreservation.googleapis.com/ReservationR\x06parent\x12%\n" +
+	"5bigqueryreservation.googleapis.com/CapacityCommitment\x12Qprojects/{project}/locations/{location}/capacityCommitments/{capacity_commitment}\"\xe7\x01\n" +
+	"\x18CreateReservationRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.bigqueryreservation.googleapis.com/ReservationR\x06parent\x12%\n" +
 	"\x0ereservation_id\x18\x02 \x01(\tR\rreservationId\x12S\n" +
-	"\vreservation\x18\x03 \x01(\v21.google.cloud.bigquery.reservation.v1.ReservationR\vreservation\"\xa5\x01\n" +
-	"\x17ListReservationsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.bigqueryreservation.googleapis.com/ReservationR\x06parent\x12\x1b\n" +
+	"\vreservation\x18\x03 \x01(\v21.google.cloud.bigquery.reservation.v1.ReservationR\vreservation\"\xa6\x01\n" +
+	"\x17ListReservationsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.bigqueryreservation.googleapis.com/ReservationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x99\x01\n" +
 	"\x18ListReservationsResponse\x12U\n" +
 	"\freservations\x18\x01 \x03(\v21.google.cloud.bigquery.reservation.v1.ReservationR\freservations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"c\n" +
-	"\x15GetReservationRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".bigqueryreservation.googleapis.com/ReservationR\x04name\"f\n" +
-	"\x18DeleteReservationRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
+	"\x15GetReservationRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".bigqueryreservation.googleapis.com/ReservationR\x04name\"g\n" +
+	"\x18DeleteReservationRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".bigqueryreservation.googleapis.com/ReservationR\x04name\"\xac\x01\n" +
 	"\x18UpdateReservationRequest\x12S\n" +
 	"\vreservation\x18\x01 \x01(\v21.google.cloud.bigquery.reservation.v1.ReservationR\vreservation\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xc6\x01\n" +
-	"\x1aFailoverReservationRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".bigqueryreservation.googleapis.com/ReservationR\x04name\x12\\\n" +
-	"\rfailover_mode\x18\x02 \x01(\x0e22.google.cloud.bigquery.reservation.v1.FailoverModeB\x03\xe0A\x01R\ffailoverMode\"\x95\x02\n" +
-	"\x1dCreateReservationGroupRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123bigqueryreservation.googleapis.com/ReservationGroupR\x06parent\x125\n" +
-	"\x14reservation_group_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12reservationGroupId\x12h\n" +
-	"\x11reservation_group\x18\x03 \x01(\v26.google.cloud.bigquery.reservation.v1.ReservationGroupB\x03\xe0A\x02R\x10reservationGroup\"m\n" +
-	"\x1aGetReservationGroupRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3bigqueryreservation.googleapis.com/ReservationGroupR\x04name\"\xaf\x01\n" +
-	"\x1cListReservationGroupsRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123bigqueryreservation.googleapis.com/ReservationGroupR\x06parent\x12\x1b\n" +
+	"updateMask\"\xc8\x01\n" +
+	"\x1aFailoverReservationRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".bigqueryreservation.googleapis.com/ReservationR\x04name\x12]\n" +
+	"\rfailover_mode\x18\x02 \x01(\x0e22.google.cloud.bigquery.reservation.v1.FailoverModeB\x04\xe2A\x01\x01R\ffailoverMode\"\x98\x02\n" +
+	"\x1dCreateReservationGroupRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123bigqueryreservation.googleapis.com/ReservationGroupR\x06parent\x126\n" +
+	"\x14reservation_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12reservationGroupId\x12i\n" +
+	"\x11reservation_group\x18\x03 \x01(\v26.google.cloud.bigquery.reservation.v1.ReservationGroupB\x04\xe2A\x01\x02R\x10reservationGroup\"n\n" +
+	"\x1aGetReservationGroupRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3bigqueryreservation.googleapis.com/ReservationGroupR\x04name\"\xb0\x01\n" +
+	"\x1cListReservationGroupsRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123bigqueryreservation.googleapis.com/ReservationGroupR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xae\x01\n" +
 	"\x1dListReservationGroupsResponse\x12e\n" +
 	"\x12reservation_groups\x18\x01 \x03(\v26.google.cloud.bigquery.reservation.v1.ReservationGroupR\x11reservationGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"p\n" +
-	"\x1dDeleteReservationGroupRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3bigqueryreservation.googleapis.com/ReservationGroupR\x04name\"\xcb\x01\n" +
-	"\x1dUpdateReservationGroupRequest\x12h\n" +
-	"\x11reservation_group\x18\x01 \x01(\v26.google.cloud.bigquery.reservation.v1.ReservationGroupB\x03\xe0A\x02R\x10reservationGroup\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xe8\x02\n" +
-	"\x1fCreateCapacityCommitmentRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125bigqueryreservation.googleapis.com/CapacityCommitmentR\x06parent\x12i\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"q\n" +
+	"\x1dDeleteReservationGroupRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3bigqueryreservation.googleapis.com/ReservationGroupR\x04name\"\xcd\x01\n" +
+	"\x1dUpdateReservationGroupRequest\x12i\n" +
+	"\x11reservation_group\x18\x01 \x01(\v26.google.cloud.bigquery.reservation.v1.ReservationGroupB\x04\xe2A\x01\x02R\x10reservationGroup\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xe9\x02\n" +
+	"\x1fCreateCapacityCommitmentRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125bigqueryreservation.googleapis.com/CapacityCommitmentR\x06parent\x12i\n" +
 	"\x13capacity_commitment\x18\x02 \x01(\v28.google.cloud.bigquery.reservation.v1.CapacityCommitmentR\x12capacityCommitment\x12M\n" +
 	"$enforce_single_admin_project_per_org\x18\x04 \x01(\bR\x1fenforceSingleAdminProjectPerOrg\x124\n" +
-	"\x16capacity_commitment_id\x18\x05 \x01(\tR\x14capacityCommitmentId\"\xb3\x01\n" +
-	"\x1eListCapacityCommitmentsRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125bigqueryreservation.googleapis.com/CapacityCommitmentR\x06parent\x12\x1b\n" +
+	"\x16capacity_commitment_id\x18\x05 \x01(\tR\x14capacityCommitmentId\"\xb4\x01\n" +
+	"\x1eListCapacityCommitmentsRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125bigqueryreservation.googleapis.com/CapacityCommitmentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb6\x01\n" +
 	"\x1fListCapacityCommitmentsResponse\x12k\n" +
 	"\x14capacity_commitments\x18\x01 \x03(\v28.google.cloud.bigquery.reservation.v1.CapacityCommitmentR\x13capacityCommitments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"q\n" +
-	"\x1cGetCapacityCommitmentRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5bigqueryreservation.googleapis.com/CapacityCommitmentR\x04name\"\x8a\x01\n" +
-	"\x1fDeleteCapacityCommitmentRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"r\n" +
+	"\x1cGetCapacityCommitmentRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5bigqueryreservation.googleapis.com/CapacityCommitmentR\x04name\"\x8b\x01\n" +
+	"\x1fDeleteCapacityCommitmentRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
 	"5bigqueryreservation.googleapis.com/CapacityCommitmentR\x04name\x12\x14\n" +
 	"\x05force\x18\x03 \x01(\bR\x05force\"\xc9\x01\n" +
 	"\x1fUpdateCapacityCommitmentRequest\x12i\n" +
 	"\x13capacity_commitment\x18\x01 \x01(\v28.google.cloud.bigquery.reservation.v1.CapacityCommitmentR\x12capacityCommitment\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x92\x01\n" +
-	"\x1eSplitCapacityCommitmentRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
+	"updateMask\"\x93\x01\n" +
+	"\x1eSplitCapacityCommitmentRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
 	"5bigqueryreservation.googleapis.com/CapacityCommitmentR\x04name\x12\x1d\n" +
 	"\n" +
 	"slot_count\x18\x02 \x01(\x03R\tslotCount\"\xc3\x01\n" +
 	"\x1fSplitCapacityCommitmentResponse\x12N\n" +
 	"\x05first\x18\x01 \x01(\v28.google.cloud.bigquery.reservation.v1.CapacityCommitmentR\x05first\x12P\n" +
-	"\x06second\x18\x02 \x01(\v28.google.cloud.bigquery.reservation.v1.CapacityCommitmentR\x06second\"\xe8\x01\n" +
+	"\x06second\x18\x02 \x01(\v28.google.cloud.bigquery.reservation.v1.CapacityCommitmentR\x06second\"\xe9\x01\n" +
 	"\x1fMergeCapacityCommitmentsRequest\x12R\n" +
 	"\x06parent\x18\x01 \x01(\tB:\xfaA7\x125bigqueryreservation.googleapis.com/CapacityCommitmentR\x06parent\x126\n" +
-	"\x17capacity_commitment_ids\x18\x02 \x03(\tR\x15capacityCommitmentIds\x129\n" +
-	"\x16capacity_commitment_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x14capacityCommitmentId\"\x8a\b\n" +
+	"\x17capacity_commitment_ids\x18\x02 \x03(\tR\x15capacityCommitmentIds\x12:\n" +
+	"\x16capacity_commitment_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x14capacityCommitmentId\"\x93\b\n" +
 	"\n" +
-	"Assignment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
-	"\bassignee\x18\x04 \x01(\tB\x03\xe0A\x01R\bassignee\x12X\n" +
-	"\bjob_type\x18\x03 \x01(\x0e28.google.cloud.bigquery.reservation.v1.Assignment.JobTypeB\x03\xe0A\x01R\ajobType\x12Q\n" +
-	"\x05state\x18\x06 \x01(\x0e26.google.cloud.bigquery.reservation.v1.Assignment.StateB\x03\xe0A\x03R\x05state\x12@\n" +
+	"Assignment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12 \n" +
+	"\bassignee\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bassignee\x12Y\n" +
+	"\bjob_type\x18\x03 \x01(\x0e28.google.cloud.bigquery.reservation.v1.Assignment.JobTypeB\x04\xe2A\x01\x01R\ajobType\x12R\n" +
+	"\x05state\x18\x06 \x01(\x0e26.google.cloud.bigquery.reservation.v1.Assignment.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
 	"\x19enable_gemini_in_bigquery\x18\n" +
-	" \x01(\bB\x05\xe0A\x01\x18\x01R\x16enableGeminiInBigquery\x12h\n" +
-	"\x11scheduling_policy\x18\v \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x03\xe0A\x01R\x10schedulingPolicy\x12!\n" +
-	"\tprincipal\x18\f \x01(\tB\x03\xe0A\x01R\tprincipal\x12#\n" +
+	" \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x16enableGeminiInBigquery\x12i\n" +
+	"\x11scheduling_policy\x18\v \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x04\xe2A\x01\x01R\x10schedulingPolicy\x12\"\n" +
+	"\tprincipal\x18\f \x01(\tB\x04\xe2A\x01\x01R\tprincipal\x12$\n" +
 	"\n" +
-	"precedence\x18\r \x01(\x03B\x03\xe0A\x01R\n" +
-	"precedence\x124\n" +
-	"\tcondition\x18\x0e \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\tcondition\"\x85\x02\n" +
+	"precedence\x18\r \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"precedence\x125\n" +
+	"\tcondition\x18\x0e \x01(\v2\x11.google.type.ExprB\x04\xe2A\x01\x01R\tcondition\"\x85\x02\n" +
 	"\aJobType\x12\x18\n" +
 	"\x14JOB_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bPIPELINE\x10\x01\x12\t\n" +
@@ -3958,33 +3958,33 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x02:\xa9\x01\xeaA\xa5\x01\n" +
 	"-bigqueryreservation.googleapis.com/Assignment\x12[projects/{project}/locations/{location}/reservations/{reservation}/assignments/{assignment}*\vassignments2\n" +
-	"assignment\"\xdf\x01\n" +
-	"\x17CreateAssignmentRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-bigqueryreservation.googleapis.com/AssignmentR\x06parent\x12P\n" +
+	"assignment\"\xe0\x01\n" +
+	"\x17CreateAssignmentRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-bigqueryreservation.googleapis.com/AssignmentR\x06parent\x12P\n" +
 	"\n" +
 	"assignment\x18\x02 \x01(\v20.google.cloud.bigquery.reservation.v1.AssignmentR\n" +
 	"assignment\x12#\n" +
-	"\rassignment_id\x18\x04 \x01(\tR\fassignmentId\"\xa3\x01\n" +
-	"\x16ListAssignmentsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-bigqueryreservation.googleapis.com/AssignmentR\x06parent\x12\x1b\n" +
+	"\rassignment_id\x18\x04 \x01(\tR\fassignmentId\"\xa4\x01\n" +
+	"\x16ListAssignmentsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-bigqueryreservation.googleapis.com/AssignmentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x95\x01\n" +
 	"\x17ListAssignmentsResponse\x12R\n" +
 	"\vassignments\x18\x01 \x03(\v20.google.cloud.bigquery.reservation.v1.AssignmentR\vassignments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
-	"\x17DeleteAssignmentRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-bigqueryreservation.googleapis.com/AssignmentR\x04name\"\xaf\x01\n" +
-	"\x18SearchAssignmentsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"e\n" +
+	"\x17DeleteAssignmentRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-bigqueryreservation.googleapis.com/AssignmentR\x04name\"\xb0\x01\n" +
+	"\x18SearchAssignmentsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x14\n" +
 	"\x05query\x18\x02 \x01(\tR\x05query\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tR\tpageToken\"\xb2\x01\n" +
-	"\x1bSearchAllAssignmentsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"page_token\x18\x04 \x01(\tR\tpageToken\"\xb3\x01\n" +
+	"\x1bSearchAllAssignmentsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x14\n" +
 	"\x05query\x18\x02 \x01(\tR\x05query\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -3995,9 +3995,9 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9a\x01\n" +
 	"\x1cSearchAllAssignmentsResponse\x12R\n" +
 	"\vassignments\x18\x01 \x03(\v20.google.cloud.bigquery.reservation.v1.AssignmentR\vassignments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe2\x01\n" +
-	"\x15MoveAssignmentRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe3\x01\n" +
+	"\x15MoveAssignmentRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-bigqueryreservation.googleapis.com/AssignmentR\x04name\x12Y\n" +
 	"\x0edestination_id\x18\x03 \x01(\tB2\xfaA/\x12-bigqueryreservation.googleapis.com/AssignmentR\rdestinationId\x12#\n" +
 	"\rassignment_id\x18\x05 \x01(\tR\fassignmentId\"\xa8\x01\n" +
@@ -4006,22 +4006,22 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"assignment\x18\x01 \x01(\v20.google.cloud.bigquery.reservation.v1.AssignmentR\n" +
 	"assignment\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"x\n" +
-	"\x0eTableReference\x12\"\n" +
+	"updateMask\"{\n" +
+	"\x0eTableReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x01R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x01R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x01R\atableId\"\xd7\x02\n" +
-	"\rBiReservation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04size\x18\x04 \x01(\x03B\x03\xe0A\x01R\x04size\x12d\n" +
-	"\x10preferred_tables\x18\x05 \x03(\v24.google.cloud.bigquery.reservation.v1.TableReferenceB\x03\xe0A\x01R\x0fpreferredTables:l\xeaAi\n" +
-	"0bigqueryreservation.googleapis.com/BiReservation\x125projects/{project}/locations/{location}/biReservation\"g\n" +
-	"\x17GetBiReservationRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\atableId\"\xdb\x02\n" +
+	"\rBiReservation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04size\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\x04size\x12e\n" +
+	"\x10preferred_tables\x18\x05 \x03(\v24.google.cloud.bigquery.reservation.v1.TableReferenceB\x04\xe2A\x01\x01R\x0fpreferredTables:l\xeaAi\n" +
+	"0bigqueryreservation.googleapis.com/BiReservation\x125projects/{project}/locations/{location}/biReservation\"h\n" +
+	"\x17GetBiReservationRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0bigqueryreservation.googleapis.com/BiReservationR\x04name\"\xb5\x01\n" +
 	"\x1aUpdateBiReservationRequest\x12Z\n" +
 	"\x0ebi_reservation\x18\x01 \x01(\v23.google.cloud.bigquery.reservation.v1.BiReservationR\rbiReservation\x12;\n" +

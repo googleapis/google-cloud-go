@@ -6480,9 +6480,9 @@ var File_google_cloud_optimization_v1_fleet_routing_proto protoreflect.FileDescr
 
 const file_google_cloud_optimization_v1_fleet_routing_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/optimization/v1/fleet_routing.proto\x12\x1cgoogle.cloud.optimization.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/cloud/optimization/v1/async_model.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18google/type/latlng.proto\"\xa3\f\n" +
-	"\x14OptimizeToursRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x123\n" +
+	"0google/cloud/optimization/v1/fleet_routing.proto\x12\x1cgoogle.cloud.optimization.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/cloud/optimization/v1/async_model.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18google/type/latlng.proto\"\xa4\f\n" +
+	"\x14OptimizeToursRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x123\n" +
 	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12A\n" +
 	"\x05model\x18\x03 \x01(\v2+.google.cloud.optimization.v1.ShipmentModelR\x05model\x12a\n" +
 	"\fsolving_mode\x18\x04 \x01(\x0e2>.google.cloud.optimization.v1.OptimizeToursRequest.SolvingModeR\vsolvingMode\x12^\n" +
@@ -6534,16 +6534,16 @@ const file_google_cloud_optimization_v1_fleet_routing_proto_rawDesc = "" +
 	"\n" +
 	"CostsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\xbc\x03\n" +
-	"\x19BatchOptimizeToursRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12r\n" +
-	"\rmodel_configs\x18\x02 \x03(\v2H.google.cloud.optimization.v1.BatchOptimizeToursRequest.AsyncModelConfigB\x03\xe0A\x02R\fmodelConfigs\x1a\x8d\x02\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\xc0\x03\n" +
+	"\x19BatchOptimizeToursRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12s\n" +
+	"\rmodel_configs\x18\x02 \x03(\v2H.google.cloud.optimization.v1.BatchOptimizeToursRequest.AsyncModelConfigB\x04\xe2A\x01\x02R\fmodelConfigs\x1a\x8f\x02\n" +
 	"\x10AsyncModelConfig\x12!\n" +
-	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12Q\n" +
-	"\finput_config\x18\x02 \x01(\v2).google.cloud.optimization.v1.InputConfigB\x03\xe0A\x02R\vinputConfig\x12T\n" +
-	"\routput_config\x18\x03 \x01(\v2*.google.cloud.optimization.v1.OutputConfigB\x03\xe0A\x02R\foutputConfig\x12-\n" +
+	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12R\n" +
+	"\finput_config\x18\x02 \x01(\v2).google.cloud.optimization.v1.InputConfigB\x04\xe2A\x01\x02R\vinputConfig\x12U\n" +
+	"\routput_config\x18\x03 \x01(\v2*.google.cloud.optimization.v1.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\x12-\n" +
 	"\x12enable_checkpoints\x18\x04 \x01(\bR\x11enableCheckpoints\"\x1c\n" +
-	"\x1aBatchOptimizeToursResponse\"\xb8\x13\n" +
+	"\x1aBatchOptimizeToursResponse\"\xbd\x13\n" +
 	"\rShipmentModel\x12D\n" +
 	"\tshipments\x18\x01 \x03(\v2&.google.cloud.optimization.v1.ShipmentR\tshipments\x12A\n" +
 	"\bvehicles\x18\x02 \x03(\v2%.google.cloud.optimization.v1.VehicleR\bvehicles\x123\n" +
@@ -6575,17 +6575,17 @@ const file_google_cloud_optimization_v1_fleet_routing_proto_rawDesc = "" +
 	"\x12second_is_delivery\x18\x04 \x01(\bR\x10secondIsDelivery\x12B\n" +
 	"\x0foffset_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\x0eoffsetDurationB\x0e\n" +
 	"\f_first_indexB\x0f\n" +
-	"\r_second_index\x1a\xab\x05\n" +
+	"\r_second_index\x1a\xb0\x05\n" +
 	"\tBreakRule\x12i\n" +
 	"\x0ebreak_requests\x18\x01 \x03(\v2B.google.cloud.optimization.v1.ShipmentModel.BreakRule.BreakRequestR\rbreakRequests\x12~\n" +
-	"\x15frequency_constraints\x18\x02 \x03(\v2I.google.cloud.optimization.v1.ShipmentModel.BreakRule.FrequencyConstraintR\x14frequencyConstraints\x1a\xef\x01\n" +
-	"\fBreakRequest\x12O\n" +
-	"\x13earliest_start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x11earliestStartTime\x12K\n" +
-	"\x11latest_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x0flatestStartTime\x12A\n" +
-	"\fmin_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\vminDuration\x1a\xbc\x01\n" +
-	"\x13FrequencyConstraint\x12L\n" +
-	"\x12min_break_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x10minBreakDuration\x12W\n" +
-	"\x18max_inter_break_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x15maxInterBreakDuration:\x02\x18\x01B\x16\n" +
+	"\x15frequency_constraints\x18\x02 \x03(\v2I.google.cloud.optimization.v1.ShipmentModel.BreakRule.FrequencyConstraintR\x14frequencyConstraints\x1a\xf2\x01\n" +
+	"\fBreakRequest\x12P\n" +
+	"\x13earliest_start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x11earliestStartTime\x12L\n" +
+	"\x11latest_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x0flatestStartTime\x12B\n" +
+	"\fmin_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\vminDuration\x1a\xbe\x01\n" +
+	"\x13FrequencyConstraint\x12M\n" +
+	"\x12min_break_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x10minBreakDuration\x12X\n" +
+	"\x18max_inter_break_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x15maxInterBreakDuration:\x02\x18\x01B\x16\n" +
 	"\x14_max_active_vehicles\"\xae\x0f\n" +
 	"\bShipment\x12M\n" +
 	"\apickups\x18\x01 \x03(\v23.google.cloud.optimization.v1.Shipment.VisitRequestR\apickups\x12S\n" +
@@ -6645,17 +6645,17 @@ const file_google_cloud_optimization_v1_fleet_routing_proto_rawDesc = "" +
 	"\x1cREQUIREMENT_MODE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19PERFORMED_BY_SAME_VEHICLE\x10\x01\x12\"\n" +
 	"\x1eIN_SAME_VEHICLE_AT_PICKUP_TIME\x10\x02\x12$\n" +
-	" IN_SAME_VEHICLE_AT_DELIVERY_TIME\x10\x03\"\xa5\x01\n" +
+	" IN_SAME_VEHICLE_AT_DELIVERY_TIME\x10\x03\"\xa6\x01\n" +
 	"\x0eRouteModifiers\x12\x1f\n" +
 	"\vavoid_tolls\x18\x02 \x01(\bR\n" +
 	"avoidTolls\x12%\n" +
 	"\x0eavoid_highways\x18\x03 \x01(\bR\ravoidHighways\x12#\n" +
-	"\ravoid_ferries\x18\x04 \x01(\bR\favoidFerries\x12&\n" +
-	"\favoid_indoor\x18\x05 \x01(\bB\x03\xe0A\x01R\vavoidIndoor\"\xd6\x1a\n" +
+	"\ravoid_ferries\x18\x04 \x01(\bR\favoidFerries\x12'\n" +
+	"\favoid_indoor\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\vavoidIndoor\"\xd7\x1a\n" +
 	"\aVehicle\x12Q\n" +
 	"\vtravel_mode\x18\x01 \x01(\x0e20.google.cloud.optimization.v1.Vehicle.TravelModeR\n" +
-	"travelMode\x12Z\n" +
-	"\x0froute_modifiers\x18\x02 \x01(\v2,.google.cloud.optimization.v1.RouteModifiersB\x03\xe0A\x01R\x0erouteModifiers\x12:\n" +
+	"travelMode\x12[\n" +
+	"\x0froute_modifiers\x18\x02 \x01(\v2,.google.cloud.optimization.v1.RouteModifiersB\x04\xe2A\x01\x01R\x0erouteModifiers\x12:\n" +
 	"\x0estart_location\x18\x03 \x01(\v2\x13.google.type.LatLngR\rstartLocation\x12M\n" +
 	"\x0estart_waypoint\x18\x04 \x01(\v2&.google.cloud.optimization.v1.WaypointR\rstartWaypoint\x126\n" +
 	"\fend_location\x18\x05 \x01(\v2\x13.google.type.LatLngR\vendLocation\x12I\n" +
@@ -6776,17 +6776,17 @@ const file_google_cloud_optimization_v1_fleet_routing_proto_rawDesc = "" +
 	"\alat_lng\x18\x01 \x01(\v2\x13.google.type.LatLngR\x06latLng\x12\x1d\n" +
 	"\aheading\x18\x02 \x01(\x05H\x00R\aheading\x88\x01\x01B\n" +
 	"\n" +
-	"\b_heading\"\x8b\x05\n" +
+	"\b_heading\"\x90\x05\n" +
 	"\tBreakRule\x12[\n" +
 	"\x0ebreak_requests\x18\x01 \x03(\v24.google.cloud.optimization.v1.BreakRule.BreakRequestR\rbreakRequests\x12p\n" +
-	"\x15frequency_constraints\x18\x02 \x03(\v2;.google.cloud.optimization.v1.BreakRule.FrequencyConstraintR\x14frequencyConstraints\x1a\xef\x01\n" +
-	"\fBreakRequest\x12O\n" +
-	"\x13earliest_start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x11earliestStartTime\x12K\n" +
-	"\x11latest_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x0flatestStartTime\x12A\n" +
-	"\fmin_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\vminDuration\x1a\xbc\x01\n" +
-	"\x13FrequencyConstraint\x12L\n" +
-	"\x12min_break_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x10minBreakDuration\x12W\n" +
-	"\x18max_inter_break_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x15maxInterBreakDuration\"\x81\x1c\n" +
+	"\x15frequency_constraints\x18\x02 \x03(\v2;.google.cloud.optimization.v1.BreakRule.FrequencyConstraintR\x14frequencyConstraints\x1a\xf2\x01\n" +
+	"\fBreakRequest\x12P\n" +
+	"\x13earliest_start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x11earliestStartTime\x12L\n" +
+	"\x11latest_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x0flatestStartTime\x12B\n" +
+	"\fmin_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\vminDuration\x1a\xbe\x01\n" +
+	"\x13FrequencyConstraint\x12M\n" +
+	"\x12min_break_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x10minBreakDuration\x12X\n" +
+	"\x18max_inter_break_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x15maxInterBreakDuration\"\x81\x1c\n" +
 	"\rShipmentRoute\x12#\n" +
 	"\rvehicle_index\x18\x01 \x01(\x05R\fvehicleIndex\x12#\n" +
 	"\rvehicle_label\x18\x02 \x01(\tR\fvehicleLabel\x12H\n" +

@@ -2260,6 +2260,11 @@ func (c *firestoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/indexes", req.GetParent())
 
 	params := url.Values{}
@@ -2334,6 +2339,11 @@ func (c *firestoreAdminRESTClient) ListIndexes(ctx context.Context, req *adminpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/indexes", req.GetParent())
 
 		params := url.Values{}
@@ -2402,6 +2412,11 @@ func (c *firestoreAdminRESTClient) GetIndex(ctx context.Context, req *adminpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2456,6 +2471,11 @@ func (c *firestoreAdminRESTClient) DeleteIndex(ctx context.Context, req *adminpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2493,6 +2513,11 @@ func (c *firestoreAdminRESTClient) DeleteIndex(ctx context.Context, req *adminpb
 func (c *firestoreAdminRESTClient) GetField(ctx context.Context, req *adminpb.GetFieldRequest, opts ...gax.CallOption) (*adminpb.Field, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2568,6 +2593,11 @@ func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *adminpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetField().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetField().GetName())
@@ -2659,6 +2689,11 @@ func (c *firestoreAdminRESTClient) ListFields(ctx context.Context, req *adminpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/fields", req.GetParent())
 
 		params := url.Values{}
@@ -2743,6 +2778,11 @@ func (c *firestoreAdminRESTClient) ExportDocuments(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportDocuments", req.GetName())
 
 	params := url.Values{}
@@ -2812,6 +2852,11 @@ func (c *firestoreAdminRESTClient) ImportDocuments(ctx context.Context, req *adm
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:importDocuments", req.GetName())
@@ -2888,6 +2933,11 @@ func (c *firestoreAdminRESTClient) BulkDeleteDocuments(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:bulkDeleteDocuments", req.GetName())
 
 	params := url.Values{}
@@ -2956,6 +3006,11 @@ func (c *firestoreAdminRESTClient) CreateDatabase(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
 
 	params := url.Values{}
@@ -3018,6 +3073,11 @@ func (c *firestoreAdminRESTClient) GetDatabase(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3070,6 +3130,11 @@ func (c *firestoreAdminRESTClient) GetDatabase(ctx context.Context, req *adminpb
 func (c *firestoreAdminRESTClient) ListDatabases(ctx context.Context, req *adminpb.ListDatabasesRequest, opts ...gax.CallOption) (*adminpb.ListDatabasesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
@@ -3134,6 +3199,11 @@ func (c *firestoreAdminRESTClient) UpdateDatabase(ctx context.Context, req *admi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDatabase().GetName())
@@ -3202,6 +3272,11 @@ func (c *firestoreAdminRESTClient) UpdateDatabase(ctx context.Context, req *admi
 func (c *firestoreAdminRESTClient) DeleteDatabase(ctx context.Context, req *adminpb.DeleteDatabaseRequest, opts ...gax.CallOption) (*DeleteDatabaseOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3275,6 +3350,11 @@ func (c *firestoreAdminRESTClient) CreateUserCreds(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userCreds", req.GetParent())
 
 	params := url.Values{}
@@ -3331,6 +3411,11 @@ func (c *firestoreAdminRESTClient) GetUserCreds(ctx context.Context, req *adminp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3384,6 +3469,11 @@ func (c *firestoreAdminRESTClient) GetUserCreds(ctx context.Context, req *adminp
 func (c *firestoreAdminRESTClient) ListUserCreds(ctx context.Context, req *adminpb.ListUserCredsRequest, opts ...gax.CallOption) (*adminpb.ListUserCredsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userCreds", req.GetParent())
@@ -3446,6 +3536,11 @@ func (c *firestoreAdminRESTClient) EnableUserCreds(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enable", req.GetName())
 
 	params := url.Values{}
@@ -3504,6 +3599,11 @@ func (c *firestoreAdminRESTClient) DisableUserCreds(ctx context.Context, req *ad
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:disable", req.GetName())
@@ -3566,6 +3666,11 @@ func (c *firestoreAdminRESTClient) ResetUserPassword(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resetPassword", req.GetName())
 
 	params := url.Values{}
@@ -3620,6 +3725,11 @@ func (c *firestoreAdminRESTClient) DeleteUserCreds(ctx context.Context, req *adm
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3657,6 +3767,11 @@ func (c *firestoreAdminRESTClient) DeleteUserCreds(ctx context.Context, req *adm
 func (c *firestoreAdminRESTClient) GetBackup(ctx context.Context, req *adminpb.GetBackupRequest, opts ...gax.CallOption) (*adminpb.Backup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3711,6 +3826,11 @@ func (c *firestoreAdminRESTClient) GetBackup(ctx context.Context, req *adminpb.G
 func (c *firestoreAdminRESTClient) ListBackups(ctx context.Context, req *adminpb.ListBackupsRequest, opts ...gax.CallOption) (*adminpb.ListBackupsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
@@ -3768,6 +3888,11 @@ func (c *firestoreAdminRESTClient) ListBackups(ctx context.Context, req *adminpb
 func (c *firestoreAdminRESTClient) DeleteBackup(ctx context.Context, req *adminpb.DeleteBackupRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3829,6 +3954,11 @@ func (c *firestoreAdminRESTClient) RestoreDatabase(ctx context.Context, req *adm
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases:restore", req.GetParent())
@@ -3901,6 +4031,11 @@ func (c *firestoreAdminRESTClient) CreateBackupSchedule(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backupSchedules", req.GetParent())
 
 	params := url.Values{}
@@ -3955,6 +4090,11 @@ func (c *firestoreAdminRESTClient) GetBackupSchedule(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4007,6 +4147,11 @@ func (c *firestoreAdminRESTClient) GetBackupSchedule(ctx context.Context, req *a
 func (c *firestoreAdminRESTClient) ListBackupSchedules(ctx context.Context, req *adminpb.ListBackupSchedulesRequest, opts ...gax.CallOption) (*adminpb.ListBackupSchedulesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backupSchedules", req.GetParent())
@@ -4070,6 +4215,11 @@ func (c *firestoreAdminRESTClient) UpdateBackupSchedule(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackupSchedule().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupSchedule().GetName())
 
 	params := url.Values{}
@@ -4131,6 +4281,11 @@ func (c *firestoreAdminRESTClient) DeleteBackupSchedule(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4190,6 +4345,11 @@ func (c *firestoreAdminRESTClient) CloneDatabase(ctx context.Context, req *admin
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases:clone", req.GetParent())
@@ -4276,6 +4436,11 @@ func (c *firestoreAdminRESTClient) CancelOperation(ctx context.Context, req *lon
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4315,6 +4480,11 @@ func (c *firestoreAdminRESTClient) DeleteOperation(ctx context.Context, req *lon
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4352,6 +4522,11 @@ func (c *firestoreAdminRESTClient) DeleteOperation(ctx context.Context, req *lon
 func (c *firestoreAdminRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4419,6 +4594,11 @@ func (c *firestoreAdminRESTClient) ListOperations(ctx context.Context, req *long
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

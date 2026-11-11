@@ -4411,20 +4411,20 @@ var File_google_cloud_video_livestream_v1_resources_proto protoreflect.FileDescr
 
 const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/video/livestream/v1/resources.proto\x12 google.cloud.video.livestream.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/video/livestream/v1/outputs.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x9e\b\n" +
+	"0google/cloud/video/livestream/v1/resources.proto\x12 google.cloud.video.livestream.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/video/livestream/v1/outputs.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xa2\b\n" +
 	"\x05Input\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12K\n" +
 	"\x06labels\x18\x04 \x03(\v23.google.cloud.video.livestream.v1.Input.LabelsEntryR\x06labels\x12@\n" +
 	"\x04type\x18\x05 \x01(\x0e2,.google.cloud.video.livestream.v1.Input.TypeR\x04type\x12@\n" +
-	"\x04tier\x18\x0e \x01(\x0e2,.google.cloud.video.livestream.v1.Input.TierR\x04tier\x12\x15\n" +
-	"\x03uri\x18\x06 \x01(\tB\x03\xe0A\x03R\x03uri\x12h\n" +
+	"\x04tier\x18\x0e \x01(\x0e2,.google.cloud.video.livestream.v1.Input.TierR\x04tier\x12\x16\n" +
+	"\x03uri\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12h\n" +
 	"\x14preprocessing_config\x18\t \x01(\v25.google.cloud.video.livestream.v1.PreprocessingConfigR\x13preprocessingConfig\x12[\n" +
-	"\x0esecurity_rules\x18\f \x01(\v24.google.cloud.video.livestream.v1.Input.SecurityRuleR\rsecurityRules\x12n\n" +
-	"\x15input_stream_property\x18\x0f \x01(\v25.google.cloud.video.livestream.v1.InputStreamPropertyB\x03\xe0A\x03R\x13inputStreamProperty\x1a+\n" +
+	"\x0esecurity_rules\x18\f \x01(\v24.google.cloud.video.livestream.v1.Input.SecurityRuleR\rsecurityRules\x12o\n" +
+	"\x15input_stream_property\x18\x0f \x01(\v25.google.cloud.video.livestream.v1.InputStreamPropertyB\x04\xe2A\x01\x03R\x13inputStreamProperty\x1a+\n" +
 	"\fSecurityRule\x12\x1b\n" +
 	"\tip_ranges\x18\x01 \x03(\tR\bipRanges\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
@@ -4442,35 +4442,35 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\aSD_H265\x10\x04\x12\v\n" +
 	"\aHD_H265\x10\x05\x12\f\n" +
 	"\bUHD_H265\x10\x06:\\\xeaAY\n" +
-	"\x1flivestream.googleapis.com/Input\x126projects/{project}/locations/{location}/inputs/{input}\"\xfd\x10\n" +
+	"\x1flivestream.googleapis.com/Input\x126projects/{project}/locations/{location}/inputs/{input}\"\x89\x11\n" +
 	"\aChannel\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12M\n" +
 	"\x06labels\x18\x04 \x03(\v25.google.cloud.video.livestream.v1.Channel.LabelsEntryR\x06labels\x12^\n" +
-	"\x11input_attachments\x18\x10 \x03(\v21.google.cloud.video.livestream.v1.InputAttachmentR\x10inputAttachments\x12&\n" +
-	"\factive_input\x18\x06 \x01(\tB\x03\xe0A\x03R\vactiveInput\x12M\n" +
-	"\x06output\x18\t \x01(\v20.google.cloud.video.livestream.v1.Channel.OutputB\x03\xe0A\x02R\x06output\x12a\n" +
+	"\x11input_attachments\x18\x10 \x03(\v21.google.cloud.video.livestream.v1.InputAttachmentR\x10inputAttachments\x12'\n" +
+	"\factive_input\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vactiveInput\x12N\n" +
+	"\x06output\x18\t \x01(\v20.google.cloud.video.livestream.v1.Channel.OutputB\x04\xe2A\x01\x02R\x06output\x12a\n" +
 	"\x12elementary_streams\x18\n" +
 	" \x03(\v22.google.cloud.video.livestream.v1.ElementaryStreamR\x11elementaryStreams\x12L\n" +
 	"\vmux_streams\x18\v \x03(\v2+.google.cloud.video.livestream.v1.MuxStreamR\n" +
 	"muxStreams\x12H\n" +
-	"\tmanifests\x18\f \x03(\v2*.google.cloud.video.livestream.v1.ManifestR\tmanifests\x12l\n" +
-	"\x14distribution_streams\x18\x1c \x03(\v24.google.cloud.video.livestream.v1.DistributionStreamB\x03\xe0A\x01R\x13distributionStreams\x12Y\n" +
-	"\rdistributions\x18\x1d \x03(\v2..google.cloud.video.livestream.v1.DistributionB\x03\xe0A\x01R\rdistributions\x12R\n" +
-	"\rsprite_sheets\x18\r \x03(\v2-.google.cloud.video.livestream.v1.SpriteSheetR\fspriteSheets\x12f\n" +
-	"\x0fstreaming_state\x18\x0e \x01(\x0e28.google.cloud.video.livestream.v1.Channel.StreamingStateB\x03\xe0A\x03R\x0estreamingState\x12@\n" +
-	"\x0fstreaming_error\x18\x12 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x0estreamingError\x12J\n" +
+	"\tmanifests\x18\f \x03(\v2*.google.cloud.video.livestream.v1.ManifestR\tmanifests\x12m\n" +
+	"\x14distribution_streams\x18\x1c \x03(\v24.google.cloud.video.livestream.v1.DistributionStreamB\x04\xe2A\x01\x01R\x13distributionStreams\x12Z\n" +
+	"\rdistributions\x18\x1d \x03(\v2..google.cloud.video.livestream.v1.DistributionB\x04\xe2A\x01\x01R\rdistributions\x12R\n" +
+	"\rsprite_sheets\x18\r \x03(\v2-.google.cloud.video.livestream.v1.SpriteSheetR\fspriteSheets\x12g\n" +
+	"\x0fstreaming_state\x18\x0e \x01(\x0e28.google.cloud.video.livestream.v1.Channel.StreamingStateB\x04\xe2A\x01\x03R\x0estreamingState\x12A\n" +
+	"\x0fstreaming_error\x18\x12 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x0estreamingError\x12J\n" +
 	"\n" +
 	"log_config\x18\x13 \x01(\v2+.google.cloud.video.livestream.v1.LogConfigR\tlogConfig\x12Y\n" +
-	"\x0ftimecode_config\x18\x15 \x01(\v20.google.cloud.video.livestream.v1.TimecodeConfigR\x0etimecodeConfig\x12S\n" +
-	"\vencryptions\x18\x18 \x03(\v2,.google.cloud.video.livestream.v1.EncryptionB\x03\xe0A\x01R\vencryptions\x12P\n" +
-	"\finput_config\x18\x19 \x01(\v2-.google.cloud.video.livestream.v1.InputConfigR\vinputConfig\x12a\n" +
-	"\x10retention_config\x18\x1a \x01(\v21.google.cloud.video.livestream.v1.RetentionConfigB\x03\xe0A\x01R\x0fretentionConfig\x12]\n" +
-	"\x0fstatic_overlays\x18\x1b \x03(\v2/.google.cloud.video.livestream.v1.StaticOverlayB\x03\xe0A\x01R\x0estaticOverlays\x12z\n" +
-	"\x19auto_transcription_config\x18\x1e \x01(\v29.google.cloud.video.livestream.v1.AutoTranscriptionConfigB\x03\xe0A\x01R\x17autoTranscriptionConfig\x1a\x1a\n" +
+	"\x0ftimecode_config\x18\x15 \x01(\v20.google.cloud.video.livestream.v1.TimecodeConfigR\x0etimecodeConfig\x12T\n" +
+	"\vencryptions\x18\x18 \x03(\v2,.google.cloud.video.livestream.v1.EncryptionB\x04\xe2A\x01\x01R\vencryptions\x12P\n" +
+	"\finput_config\x18\x19 \x01(\v2-.google.cloud.video.livestream.v1.InputConfigR\vinputConfig\x12b\n" +
+	"\x10retention_config\x18\x1a \x01(\v21.google.cloud.video.livestream.v1.RetentionConfigB\x04\xe2A\x01\x01R\x0fretentionConfig\x12^\n" +
+	"\x0fstatic_overlays\x18\x1b \x03(\v2/.google.cloud.video.livestream.v1.StaticOverlayB\x04\xe2A\x01\x01R\x0estaticOverlays\x12{\n" +
+	"\x19auto_transcription_config\x18\x1e \x01(\v29.google.cloud.video.livestream.v1.AutoTranscriptionConfigB\x04\xe2A\x01\x01R\x17autoTranscriptionConfig\x1a\x1a\n" +
 	"\x06Output\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
@@ -4485,21 +4485,21 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\aSTOPPED\x10\x06\x12\f\n" +
 	"\bSTARTING\x10\a\x12\f\n" +
 	"\bSTOPPING\x10\b:b\xeaA_\n" +
-	"!livestream.googleapis.com/Channel\x12:projects/{project}/locations/{location}/channels/{channel}\"<\n" +
-	"\x14NormalizedCoordinate\x12\x11\n" +
-	"\x01x\x18\x01 \x01(\x01B\x03\xe0A\x01R\x01x\x12\x11\n" +
-	"\x01y\x18\x02 \x01(\x01B\x03\xe0A\x01R\x01y\"<\n" +
-	"\x14NormalizedResolution\x12\x11\n" +
-	"\x01w\x18\x01 \x01(\x01B\x03\xe0A\x01R\x01w\x12\x11\n" +
-	"\x01h\x18\x02 \x01(\x01B\x03\xe0A\x01R\x01h\"\xa3\x02\n" +
-	"\rStaticOverlay\x12=\n" +
-	"\x05asset\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1flivestream.googleapis.com/AssetR\x05asset\x12[\n" +
+	"!livestream.googleapis.com/Channel\x12:projects/{project}/locations/{location}/channels/{channel}\">\n" +
+	"\x14NormalizedCoordinate\x12\x12\n" +
+	"\x01x\x18\x01 \x01(\x01B\x04\xe2A\x01\x01R\x01x\x12\x12\n" +
+	"\x01y\x18\x02 \x01(\x01B\x04\xe2A\x01\x01R\x01y\">\n" +
+	"\x14NormalizedResolution\x12\x12\n" +
+	"\x01w\x18\x01 \x01(\x01B\x04\xe2A\x01\x01R\x01w\x12\x12\n" +
+	"\x01h\x18\x02 \x01(\x01B\x04\xe2A\x01\x01R\x01h\"\xa7\x02\n" +
+	"\rStaticOverlay\x12>\n" +
+	"\x05asset\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1flivestream.googleapis.com/AssetR\x05asset\x12\\\n" +
 	"\n" +
-	"resolution\x18\x02 \x01(\v26.google.cloud.video.livestream.v1.NormalizedResolutionB\x03\xe0A\x01R\n" +
-	"resolution\x12W\n" +
-	"\bposition\x18\x03 \x01(\v26.google.cloud.video.livestream.v1.NormalizedCoordinateB\x03\xe0A\x01R\bposition\x12\x1d\n" +
-	"\aopacity\x18\x04 \x01(\x01B\x03\xe0A\x01R\aopacity\"\xd7\x01\n" +
+	"resolution\x18\x02 \x01(\v26.google.cloud.video.livestream.v1.NormalizedResolutionB\x04\xe2A\x01\x01R\n" +
+	"resolution\x12X\n" +
+	"\bposition\x18\x03 \x01(\v26.google.cloud.video.livestream.v1.NormalizedCoordinateB\x04\xe2A\x01\x01R\bposition\x12\x1e\n" +
+	"\aopacity\x18\x04 \x01(\x01B\x04\xe2A\x01\x01R\aopacity\"\xd7\x01\n" +
 	"\vInputConfig\x12i\n" +
 	"\x11input_switch_mode\x18\x01 \x01(\x0e2=.google.cloud.video.livestream.v1.InputConfig.InputSwitchModeR\x0finputSwitchMode\"]\n" +
 	"\x0fInputSwitchMode\x12!\n" +
@@ -4546,10 +4546,10 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\x12automatic_failover\x18\x03 \x01(\v2C.google.cloud.video.livestream.v1.InputAttachment.AutomaticFailoverR\x11automaticFailover\x1a2\n" +
 	"\x11AutomaticFailover\x12\x1d\n" +
 	"\n" +
-	"input_keys\x18\x01 \x03(\tR\tinputKeys\"\xb7\x03\n" +
-	"\x17AutoTranscriptionConfig\x12s\n" +
-	"\x0edisplay_timing\x18\x01 \x01(\x0e2G.google.cloud.video.livestream.v1.AutoTranscriptionConfig.DisplayTimingB\x03\xe0A\x01R\rdisplayTiming\x12s\n" +
-	"\x0equality_preset\x18\x02 \x01(\x0e2G.google.cloud.video.livestream.v1.AutoTranscriptionConfig.QualityPresetB\x03\xe0A\x01R\rqualityPreset\"D\n" +
+	"input_keys\x18\x01 \x03(\tR\tinputKeys\"\xb9\x03\n" +
+	"\x17AutoTranscriptionConfig\x12t\n" +
+	"\x0edisplay_timing\x18\x01 \x01(\x0e2G.google.cloud.video.livestream.v1.AutoTranscriptionConfig.DisplayTimingB\x04\xe2A\x01\x01R\rdisplayTiming\x12t\n" +
+	"\x0equality_preset\x18\x02 \x01(\x0e2G.google.cloud.video.livestream.v1.AutoTranscriptionConfig.QualityPresetB\x04\xe2A\x01\x01R\rqualityPreset\"D\n" +
 	"\rDisplayTiming\x12\x1e\n" +
 	"\x1aDISPLAY_TIMING_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ASYNC\x10\x01\x12\b\n" +
@@ -4558,12 +4558,12 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\x1aQUALITY_PRESET_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vLOW_LATENCY\x10\x01\x12\x14\n" +
 	"\x10BALANCED_QUALITY\x10\x02\x12\x14\n" +
-	"\x10IMPROVED_QUALITY\x10\x03\"\xac\x0e\n" +
+	"\x10IMPROVED_QUALITY\x10\x03\"\xb1\x0e\n" +
 	"\x05Event\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12K\n" +
 	"\x06labels\x18\x04 \x03(\v23.google.cloud.video.livestream.v1.Event.LabelsEntryR\x06labels\x12\\\n" +
 	"\finput_switch\x18\x05 \x01(\v27.google.cloud.video.livestream.v1.Event.InputSwitchTaskH\x00R\vinputSwitch\x12P\n" +
@@ -4576,9 +4576,9 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\vexecute_now\x18\t \x01(\bR\n" +
 	"executeNow\x12A\n" +
 	"\x0eexecution_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\rexecutionTime\x12H\n" +
-	"\x05state\x18\v \x01(\x0e2-.google.cloud.video.livestream.v1.Event.StateB\x03\xe0A\x03R\x05state\x12-\n" +
-	"\x05error\x18\f \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x1a.\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\rexecutionTime\x12I\n" +
+	"\x05state\x18\v \x01(\x0e2-.google.cloud.video.livestream.v1.Event.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x05error\x18\f \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x1a.\n" +
 	"\x0fInputSwitchTask\x12\x1b\n" +
 	"\tinput_key\x18\x01 \x01(\tR\binputKey\x1aD\n" +
 	"\vAdBreakTask\x125\n" +
@@ -4591,9 +4591,9 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\bMuteTask\x125\n" +
 	"\bduration\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\bduration\x1a\f\n" +
 	"\n" +
-	"UnmuteTask\x1ar\n" +
-	"\x15UpdateEncryptionsTask\x12Y\n" +
-	"\vencryptions\x18\x01 \x03(\v22.google.cloud.video.livestream.v1.EncryptionUpdateB\x03\xe0A\x02R\vencryptions\x1a9\n" +
+	"UnmuteTask\x1as\n" +
+	"\x15UpdateEncryptionsTask\x12Z\n" +
+	"\vencryptions\x18\x01 \x03(\v22.google.cloud.video.livestream.v1.EncryptionUpdateB\x04\xe2A\x01\x02R\vencryptions\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"o\n" +
@@ -4607,25 +4607,25 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\aPENDING\x10\x05\x12\v\n" +
 	"\aSTOPPED\x10\x06:o\xeaAl\n" +
 	"\x1flivestream.googleapis.com/Event\x12Iprojects/{project}/locations/{location}/channels/{channel}/events/{event}B\x06\n" +
-	"\x04task\"\xcc\n" +
+	"\x04task\"\xd5\n" +
 	"\n" +
 	"\x04Clip\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12>\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12J\n" +
-	"\x06labels\x18\x05 \x03(\v22.google.cloud.video.livestream.v1.Clip.LabelsEntryR\x06labels\x12G\n" +
-	"\x05state\x18\x06 \x01(\x0e2,.google.cloud.video.livestream.v1.Clip.StateB\x03\xe0A\x03R\x05state\x12\x1d\n" +
+	"\x06labels\x18\x05 \x03(\v22.google.cloud.video.livestream.v1.Clip.LabelsEntryR\x06labels\x12H\n" +
+	"\x05state\x18\x06 \x01(\x0e2,.google.cloud.video.livestream.v1.Clip.StateB\x04\xe2A\x01\x03R\x05state\x12\x1d\n" +
 	"\n" +
-	"output_uri\x18\a \x01(\tR\toutputUri\x12-\n" +
-	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12D\n" +
+	"output_uri\x18\a \x01(\tR\toutputUri\x12.\n" +
+	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12D\n" +
 	"\x06slices\x18\n" +
-	" \x03(\v2,.google.cloud.video.livestream.v1.Clip.SliceR\x06slices\x12_\n" +
-	"\x0eclip_manifests\x18\f \x03(\v23.google.cloud.video.livestream.v1.Clip.ClipManifestB\x03\xe0A\x02R\rclipManifests\x12W\n" +
-	"\voutput_type\x18\r \x01(\x0e21.google.cloud.video.livestream.v1.Clip.OutputTypeB\x03\xe0A\x01R\n" +
+	" \x03(\v2,.google.cloud.video.livestream.v1.Clip.SliceR\x06slices\x12`\n" +
+	"\x0eclip_manifests\x18\f \x03(\v23.google.cloud.video.livestream.v1.Clip.ClipManifestB\x04\xe2A\x01\x02R\rclipManifests\x12X\n" +
+	"\voutput_type\x18\r \x01(\x0e21.google.cloud.video.livestream.v1.Clip.OutputTypeB\x04\xe2A\x01\x01R\n" +
 	"outputType\x1a\x87\x01\n" +
 	"\tTimeSlice\x12;\n" +
 	"\vmarkin_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -4634,11 +4634,11 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\x05Slice\x12Q\n" +
 	"\n" +
 	"time_slice\x18\x01 \x01(\v20.google.cloud.video.livestream.v1.Clip.TimeSliceH\x00R\ttimeSliceB\x06\n" +
-	"\x04kind\x1aZ\n" +
-	"\fClipManifest\x12&\n" +
-	"\fmanifest_key\x18\x01 \x01(\tB\x03\xe0A\x02R\vmanifestKey\x12\"\n" +
+	"\x04kind\x1a\\\n" +
+	"\fClipManifest\x12'\n" +
+	"\fmanifest_key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vmanifestKey\x12#\n" +
 	"\n" +
-	"output_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\toutputUri\x1a9\n" +
+	"output_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\toutputUri\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"T\n" +
@@ -4654,28 +4654,28 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\x17OUTPUT_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bMANIFEST\x10\x01\x12\a\n" +
 	"\x03MP4\x10\x02:l\xeaAi\n" +
-	"\x1elivestream.googleapis.com/Clip\x12Gprojects/{project}/locations/{location}/channels/{channel}/clips/{clip}\"\x8a\x01\n" +
-	"\fTimeInterval\x12>\n" +
+	"\x1elivestream.googleapis.com/Clip\x12Gprojects/{project}/locations/{location}/channels/{channel}/clips/{clip}\"\x8c\x01\n" +
+	"\fTimeInterval\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime\"\x8c\t\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\aendTime\"\x96\t\n" +
 	"\n" +
-	"DvrSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12U\n" +
-	"\x06labels\x18\x04 \x03(\v28.google.cloud.video.livestream.v1.DvrSession.LabelsEntryB\x03\xe0A\x01R\x06labels\x12M\n" +
-	"\x05state\x18\x05 \x01(\x0e22.google.cloud.video.livestream.v1.DvrSession.StateB\x03\xe0A\x03R\x05state\x12-\n" +
-	"\x05error\x18\x06 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12b\n" +
-	"\rdvr_manifests\x18\a \x03(\v28.google.cloud.video.livestream.v1.DvrSession.DvrManifestB\x03\xe0A\x02R\fdvrManifests\x12\\\n" +
-	"\vdvr_windows\x18\b \x03(\v26.google.cloud.video.livestream.v1.DvrSession.DvrWindowB\x03\xe0A\x02R\n" +
-	"dvrWindows\x1aY\n" +
-	"\vDvrManifest\x12&\n" +
-	"\fmanifest_key\x18\x01 \x01(\tB\x03\xe0A\x02R\vmanifestKey\x12\"\n" +
+	"DvrSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12V\n" +
+	"\x06labels\x18\x04 \x03(\v28.google.cloud.video.livestream.v1.DvrSession.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12N\n" +
+	"\x05state\x18\x05 \x01(\x0e22.google.cloud.video.livestream.v1.DvrSession.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x05error\x18\x06 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12c\n" +
+	"\rdvr_manifests\x18\a \x03(\v28.google.cloud.video.livestream.v1.DvrSession.DvrManifestB\x04\xe2A\x01\x02R\fdvrManifests\x12]\n" +
+	"\vdvr_windows\x18\b \x03(\v26.google.cloud.video.livestream.v1.DvrSession.DvrWindowB\x04\xe2A\x01\x02R\n" +
+	"dvrWindows\x1a[\n" +
+	"\vDvrManifest\x12'\n" +
+	"\fmanifest_key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vmanifestKey\x12#\n" +
 	"\n" +
-	"output_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\toutputUri\x1aj\n" +
+	"output_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\toutputUri\x1aj\n" +
 	"\tDvrWindow\x12U\n" +
 	"\rtime_interval\x18\x01 \x01(\v2..google.cloud.video.livestream.v1.TimeIntervalH\x00R\ftimeIntervalB\x06\n" +
 	"\x04kind\x1a9\n" +
@@ -4697,19 +4697,19 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\bSTOPPING\x10\n" +
 	":\x99\x01\xeaA\x95\x01\n" +
 	"$livestream.googleapis.com/DvrSession\x12Tprojects/{project}/locations/{location}/channels/{channel}/dvrSessions/{dvr_session}*\vdvrSessions2\n" +
-	"dvrSession\"\xcd\x06\n" +
+	"dvrSession\"\xd1\x06\n" +
 	"\x05Asset\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12K\n" +
 	"\x06labels\x18\x04 \x03(\v23.google.cloud.video.livestream.v1.Asset.LabelsEntryR\x06labels\x12J\n" +
 	"\x05video\x18\x05 \x01(\v22.google.cloud.video.livestream.v1.Asset.VideoAssetH\x00R\x05video\x12J\n" +
 	"\x05image\x18\x06 \x01(\v22.google.cloud.video.livestream.v1.Asset.ImageAssetH\x00R\x05image\x12\x16\n" +
-	"\x06crc32c\x18\a \x01(\tR\x06crc32c\x12H\n" +
-	"\x05state\x18\b \x01(\x0e2-.google.cloud.video.livestream.v1.Asset.StateB\x03\xe0A\x03R\x05state\x12-\n" +
-	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x1a\x1e\n" +
+	"\x06crc32c\x18\a \x01(\tR\x06crc32c\x12I\n" +
+	"\x05state\x18\b \x01(\x0e2-.google.cloud.video.livestream.v1.Asset.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x1a\x1e\n" +
 	"\n" +
 	"VideoAsset\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x1a\x1e\n" +
@@ -4728,19 +4728,19 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\x05ERROR\x10\x04:\\\xeaAY\n" +
 	"\x1flivestream.googleapis.com/Asset\x126projects/{project}/locations/{location}/assets/{asset}B\n" +
 	"\n" +
-	"\bresource\"\xb6\t\n" +
+	"\bresource\"\xbe\t\n" +
 	"\n" +
-	"Encryption\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12}\n" +
-	"\x19secret_manager_key_source\x18\a \x01(\v2@.google.cloud.video.livestream.v1.Encryption.SecretManagerSourceH\x00R\x16secretManagerKeySource\x12]\n" +
-	"\vdrm_systems\x18\x03 \x01(\v27.google.cloud.video.livestream.v1.Encryption.DrmSystemsB\x03\xe0A\x02R\n" +
+	"Encryption\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12}\n" +
+	"\x19secret_manager_key_source\x18\a \x01(\v2@.google.cloud.video.livestream.v1.Encryption.SecretManagerSourceH\x00R\x16secretManagerKeySource\x12^\n" +
+	"\vdrm_systems\x18\x03 \x01(\v27.google.cloud.video.livestream.v1.Encryption.DrmSystemsB\x04\xe2A\x01\x02R\n" +
 	"drmSystems\x12W\n" +
 	"\x06aes128\x18\x04 \x01(\v2=.google.cloud.video.livestream.v1.Encryption.Aes128EncryptionH\x01R\x06aes128\x12a\n" +
 	"\n" +
 	"sample_aes\x18\x05 \x01(\v2@.google.cloud.video.livestream.v1.Encryption.SampleAesEncryptionH\x01R\tsampleAes\x12`\n" +
-	"\tmpeg_cenc\x18\x06 \x01(\v2A.google.cloud.video.livestream.v1.Encryption.MpegCommonEncryptionH\x01R\bmpegCenc\x1ap\n" +
-	"\x13SecretManagerSource\x12Y\n" +
-	"\x0esecret_version\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\tmpeg_cenc\x18\x06 \x01(\v2A.google.cloud.video.livestream.v1.Encryption.MpegCommonEncryptionH\x01R\bmpegCenc\x1aq\n" +
+	"\x13SecretManagerSource\x12Z\n" +
+	"\x0esecret_version\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\rsecretVersion\x1a\n" +
 	"\n" +
 	"\bWidevine\x1a\n" +
@@ -4748,28 +4748,28 @@ const file_google_cloud_video_livestream_v1_resources_proto_rawDesc = "" +
 	"\bFairplay\x1a\v\n" +
 	"\tPlayready\x1a\n" +
 	"\n" +
-	"\bClearkey\x1a\xef\x02\n" +
+	"\bClearkey\x1a\xf3\x02\n" +
 	"\n" +
-	"DrmSystems\x12V\n" +
-	"\bwidevine\x18\x01 \x01(\v25.google.cloud.video.livestream.v1.Encryption.WidevineB\x03\xe0A\x01R\bwidevine\x12V\n" +
-	"\bfairplay\x18\x02 \x01(\v25.google.cloud.video.livestream.v1.Encryption.FairplayB\x03\xe0A\x01R\bfairplay\x12Y\n" +
-	"\tplayready\x18\x03 \x01(\v26.google.cloud.video.livestream.v1.Encryption.PlayreadyB\x03\xe0A\x01R\tplayready\x12V\n" +
-	"\bclearkey\x18\x04 \x01(\v25.google.cloud.video.livestream.v1.Encryption.ClearkeyB\x03\xe0A\x01R\bclearkey\x1a\x12\n" +
+	"DrmSystems\x12W\n" +
+	"\bwidevine\x18\x01 \x01(\v25.google.cloud.video.livestream.v1.Encryption.WidevineB\x04\xe2A\x01\x01R\bwidevine\x12W\n" +
+	"\bfairplay\x18\x02 \x01(\v25.google.cloud.video.livestream.v1.Encryption.FairplayB\x04\xe2A\x01\x01R\bfairplay\x12Z\n" +
+	"\tplayready\x18\x03 \x01(\v26.google.cloud.video.livestream.v1.Encryption.PlayreadyB\x04\xe2A\x01\x01R\tplayready\x12W\n" +
+	"\bclearkey\x18\x04 \x01(\v25.google.cloud.video.livestream.v1.Encryption.ClearkeyB\x04\xe2A\x01\x01R\bclearkey\x1a\x12\n" +
 	"\x10Aes128Encryption\x1a\x15\n" +
-	"\x13SampleAesEncryption\x1a3\n" +
-	"\x14MpegCommonEncryption\x12\x1b\n" +
-	"\x06scheme\x18\x01 \x01(\tB\x03\xe0A\x02R\x06schemeB\x0f\n" +
+	"\x13SampleAesEncryption\x1a4\n" +
+	"\x14MpegCommonEncryption\x12\x1c\n" +
+	"\x06scheme\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06schemeB\x0f\n" +
 	"\rsecret_sourceB\x11\n" +
-	"\x0fencryption_mode\"\xb7\x01\n" +
-	"\x10EncryptionUpdate\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12}\n" +
+	"\x0fencryption_mode\"\xb8\x01\n" +
+	"\x10EncryptionUpdate\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12}\n" +
 	"\x19secret_manager_key_source\x18\x02 \x01(\v2@.google.cloud.video.livestream.v1.Encryption.SecretManagerSourceH\x00R\x16secretManagerKeySourceB\x0f\n" +
-	"\rsecret_source\"\xba\x04\n" +
+	"\rsecret_source\"\xbc\x04\n" +
 	"\x04Pool\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12J\n" +
 	"\x06labels\x18\x04 \x03(\v22.google.cloud.video.livestream.v1.Pool.LabelsEntryR\x06labels\x12[\n" +
 	"\x0enetwork_config\x18\x05 \x01(\v24.google.cloud.video.livestream.v1.Pool.NetworkConfigR\rnetworkConfig\x1a[\n" +

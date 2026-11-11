@@ -266,6 +266,14 @@ func (c *regionMultiMigMembersRESTClient) Get(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetMultiMig(),
+		req.GetMultiMigMember(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/multiMigs/%v/multiMigMembers/%v", req.GetProject(), req.GetRegion(), req.GetMultiMig(), req.GetMultiMigMember())
 
 	// Build HTTP headers from client and context metadata.
@@ -326,6 +334,13 @@ func (c *regionMultiMigMembersRESTClient) List(ctx context.Context, req *compute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetMultiMig(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/multiMigs/%v/multiMigMembers", req.GetProject(), req.GetRegion(), req.GetMultiMig())

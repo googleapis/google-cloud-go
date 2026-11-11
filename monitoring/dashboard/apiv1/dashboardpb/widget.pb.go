@@ -338,9 +338,9 @@ var File_google_monitoring_dashboard_v1_widget_proto protoreflect.FileDescriptor
 
 const file_google_monitoring_dashboard_v1_widget_proto_rawDesc = "" +
 	"\n" +
-	"+google/monitoring/dashboard/v1/widget.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a/google/monitoring/dashboard/v1/alertchart.proto\x1a6google/monitoring/dashboard/v1/collapsible_group.proto\x1a:google/monitoring/dashboard/v1/error_reporting_panel.proto\x1a2google/monitoring/dashboard/v1/incident_list.proto\x1a/google/monitoring/dashboard/v1/logs_panel.proto\x1a-google/monitoring/dashboard/v1/piechart.proto\x1a.google/monitoring/dashboard/v1/scorecard.proto\x1a3google/monitoring/dashboard/v1/section_header.proto\x1a6google/monitoring/dashboard/v1/single_view_group.proto\x1a*google/monitoring/dashboard/v1/table.proto\x1a)google/monitoring/dashboard/v1/text.proto\x1a,google/monitoring/dashboard/v1/xychart.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xdb\b\n" +
-	"\x06Widget\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x01R\x05title\x12D\n" +
+	"+google/monitoring/dashboard/v1/widget.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a/google/monitoring/dashboard/v1/alertchart.proto\x1a6google/monitoring/dashboard/v1/collapsible_group.proto\x1a:google/monitoring/dashboard/v1/error_reporting_panel.proto\x1a2google/monitoring/dashboard/v1/incident_list.proto\x1a/google/monitoring/dashboard/v1/logs_panel.proto\x1a-google/monitoring/dashboard/v1/piechart.proto\x1a.google/monitoring/dashboard/v1/scorecard.proto\x1a3google/monitoring/dashboard/v1/section_header.proto\x1a6google/monitoring/dashboard/v1/single_view_group.proto\x1a*google/monitoring/dashboard/v1/table.proto\x1a)google/monitoring/dashboard/v1/text.proto\x1a,google/monitoring/dashboard/v1/xychart.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xdd\b\n" +
+	"\x06Widget\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12D\n" +
 	"\bxy_chart\x18\x02 \x01(\v2'.google.monitoring.dashboard.v1.XyChartH\x00R\axyChart\x12I\n" +
 	"\tscorecard\x18\x03 \x01(\v2).google.monitoring.dashboard.v1.ScorecardH\x00R\tscorecard\x12:\n" +
 	"\x04text\x18\x04 \x01(\v2$.google.monitoring.dashboard.v1.TextH\x00R\x04text\x12.\n" +
@@ -356,8 +356,8 @@ const file_google_monitoring_dashboard_v1_widget_proto_rawDesc = "" +
 	"\tpie_chart\x18\x0e \x01(\v2(.google.monitoring.dashboard.v1.PieChartH\x00R\bpieChart\x12i\n" +
 	"\x15error_reporting_panel\x18\x13 \x01(\v23.google.monitoring.dashboard.v1.ErrorReportingPanelH\x00R\x13errorReportingPanel\x12V\n" +
 	"\x0esection_header\x18\x15 \x01(\v2-.google.monitoring.dashboard.v1.SectionHeaderH\x00R\rsectionHeader\x12]\n" +
-	"\x11single_view_group\x18\x16 \x01(\v2/.google.monitoring.dashboard.v1.SingleViewGroupH\x00R\x0fsingleViewGroup\x12\x13\n" +
-	"\x02id\x18\x11 \x01(\tB\x03\xe0A\x01R\x02idB\t\n" +
+	"\x11single_view_group\x18\x16 \x01(\v2/.google.monitoring.dashboard.v1.SingleViewGroupH\x00R\x0fsingleViewGroup\x12\x14\n" +
+	"\x02id\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\x02idB\t\n" +
 	"\acontentB\xf4\x01\n" +
 	"\"com.google.monitoring.dashboard.v1B\vWidgetProtoP\x01ZFcloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb;dashboardpb\xaa\x02$Google.Cloud.Monitoring.Dashboard.V1\xca\x02$Google\\Cloud\\Monitoring\\Dashboard\\V1\xea\x02(Google::Cloud::Monitoring::Dashboard::V1b\x06proto3"
 

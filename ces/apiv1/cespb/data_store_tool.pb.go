@@ -1122,56 +1122,56 @@ var File_google_cloud_ces_v1_data_store_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_data_store_tool_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/ces/v1/data_store_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/cloud/ces/v1/common.proto\x1a$google/cloud/ces/v1/data_store.proto\"\xce\x18\n" +
-	"\rDataStoreTool\x12e\n" +
-	"\x11data_store_source\x18\x03 \x01(\v22.google.cloud.ces.v1.DataStoreTool.DataStoreSourceB\x03\xe0A\x01H\x00R\x0fdataStoreSource\x12[\n" +
-	"\rengine_source\x18\x04 \x01(\v2/.google.cloud.ces.v1.DataStoreTool.EngineSourceB\x03\xe0A\x01H\x00R\fengineSource\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12S\n" +
-	"\vboost_specs\x18\b \x03(\v2-.google.cloud.ces.v1.DataStoreTool.BoostSpecsB\x03\xe0A\x01R\n" +
-	"boostSpecs\x12a\n" +
-	"\x10modality_configs\x18\t \x03(\v21.google.cloud.ces.v1.DataStoreTool.ModalityConfigB\x03\xe0A\x01R\x0fmodalityConfigs\x12{\n" +
+	")google/cloud/ces/v1/data_store_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/cloud/ces/v1/common.proto\x1a$google/cloud/ces/v1/data_store.proto\"\xf2\x18\n" +
+	"\rDataStoreTool\x12f\n" +
+	"\x11data_store_source\x18\x03 \x01(\v22.google.cloud.ces.v1.DataStoreTool.DataStoreSourceB\x04\xe2A\x01\x01H\x00R\x0fdataStoreSource\x12\\\n" +
+	"\rengine_source\x18\x04 \x01(\v2/.google.cloud.ces.v1.DataStoreTool.EngineSourceB\x04\xe2A\x01\x01H\x00R\fengineSource\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12T\n" +
+	"\vboost_specs\x18\b \x03(\v2-.google.cloud.ces.v1.DataStoreTool.BoostSpecsB\x04\xe2A\x01\x01R\n" +
+	"boostSpecs\x12b\n" +
+	"\x10modality_configs\x18\t \x03(\v21.google.cloud.ces.v1.DataStoreTool.ModalityConfigB\x04\xe2A\x01\x01R\x0fmodalityConfigs\x12|\n" +
 	"\x19filter_parameter_behavior\x18\n" +
-	" \x01(\x0e2:.google.cloud.ces.v1.DataStoreTool.FilterParameterBehaviorB\x03\xe0A\x01R\x17filterParameterBehavior\x1a\x9e\x01\n" +
-	"\x0eRewriterConfig\x12N\n" +
-	"\x0emodel_settings\x18\x01 \x01(\v2\".google.cloud.ces.v1.ModelSettingsB\x03\xe0A\x02R\rmodelSettings\x12\x1b\n" +
-	"\x06prompt\x18\x02 \x01(\tB\x03\xe0A\x01R\x06prompt\x12\x1f\n" +
-	"\bdisabled\x18\x03 \x01(\bB\x03\xe0A\x01R\bdisabled\x1a\xa3\x01\n" +
-	"\x13SummarizationConfig\x12N\n" +
-	"\x0emodel_settings\x18\x01 \x01(\v2\".google.cloud.ces.v1.ModelSettingsB\x03\xe0A\x01R\rmodelSettings\x12\x1b\n" +
-	"\x06prompt\x18\x02 \x01(\tB\x03\xe0A\x01R\x06prompt\x12\x1f\n" +
-	"\bdisabled\x18\x03 \x01(\bB\x03\xe0A\x01R\bdisabled\x1a`\n" +
-	"\x0fGroundingConfig\x12,\n" +
-	"\x0fgrounding_level\x18\x01 \x01(\x02B\x03\xe0A\x01R\x0egroundingLevel\x12\x1f\n" +
-	"\bdisabled\x18\x02 \x01(\bB\x03\xe0A\x01R\bdisabled\x1ar\n" +
-	"\x0fDataStoreSource\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12B\n" +
+	" \x01(\x0e2:.google.cloud.ces.v1.DataStoreTool.FilterParameterBehaviorB\x04\xe2A\x01\x01R\x17filterParameterBehavior\x1a\xa1\x01\n" +
+	"\x0eRewriterConfig\x12O\n" +
+	"\x0emodel_settings\x18\x01 \x01(\v2\".google.cloud.ces.v1.ModelSettingsB\x04\xe2A\x01\x02R\rmodelSettings\x12\x1c\n" +
+	"\x06prompt\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06prompt\x12 \n" +
+	"\bdisabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x1a\xa6\x01\n" +
+	"\x13SummarizationConfig\x12O\n" +
+	"\x0emodel_settings\x18\x01 \x01(\v2\".google.cloud.ces.v1.ModelSettingsB\x04\xe2A\x01\x01R\rmodelSettings\x12\x1c\n" +
+	"\x06prompt\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06prompt\x12 \n" +
+	"\bdisabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x1ab\n" +
+	"\x0fGroundingConfig\x12-\n" +
+	"\x0fgrounding_level\x18\x01 \x01(\x02B\x04\xe2A\x01\x01R\x0egroundingLevel\x12 \n" +
+	"\bdisabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x1at\n" +
+	"\x0fDataStoreSource\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12C\n" +
 	"\n" +
-	"data_store\x18\x04 \x01(\v2\x1e.google.cloud.ces.v1.DataStoreB\x03\xe0A\x01R\tdataStore\x1a\xaf\x01\n" +
-	"\fEngineSource\x12\x1b\n" +
-	"\x06engine\x18\x01 \x01(\tB\x03\xe0A\x02R\x06engine\x12e\n" +
-	"\x12data_store_sources\x18\x02 \x03(\v22.google.cloud.ces.v1.DataStoreTool.DataStoreSourceB\x03\xe0A\x01R\x10dataStoreSources\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x1ay\n" +
+	"data_store\x18\x04 \x01(\v2\x1e.google.cloud.ces.v1.DataStoreB\x04\xe2A\x01\x01R\tdataStore\x1a\xb2\x01\n" +
+	"\fEngineSource\x12\x1c\n" +
+	"\x06engine\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06engine\x12f\n" +
+	"\x12data_store_sources\x18\x02 \x03(\v22.google.cloud.ces.v1.DataStoreTool.DataStoreSourceB\x04\xe2A\x01\x01R\x10dataStoreSources\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x1a{\n" +
 	"\n" +
-	"BoostSpecs\x12$\n" +
-	"\vdata_stores\x18\x01 \x03(\tB\x03\xe0A\x02R\n" +
-	"dataStores\x12E\n" +
-	"\x04spec\x18\x02 \x03(\v2,.google.cloud.ces.v1.DataStoreTool.BoostSpecB\x03\xe0A\x02R\x04spec\x1a\xc5\b\n" +
-	"\tBoostSpec\x12x\n" +
-	"\x15condition_boost_specs\x18\x01 \x03(\v2?.google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpecB\x03\xe0A\x02R\x13conditionBoostSpecs\x1a\xbd\a\n" +
-	"\x12ConditionBoostSpec\x12!\n" +
-	"\tcondition\x18\x01 \x01(\tB\x03\xe0A\x02R\tcondition\x12\x19\n" +
-	"\x05boost\x18\x02 \x01(\x02B\x03\xe0A\x01R\x05boost\x12\x83\x01\n" +
-	"\x12boost_control_spec\x18\x04 \x01(\v2P.google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpecB\x03\xe0A\x01R\x10boostControlSpec\x1a\xe2\x05\n" +
-	"\x10BoostControlSpec\x12\"\n" +
+	"BoostSpecs\x12%\n" +
+	"\vdata_stores\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\n" +
+	"dataStores\x12F\n" +
+	"\x04spec\x18\x02 \x03(\v2,.google.cloud.ces.v1.DataStoreTool.BoostSpecB\x04\xe2A\x01\x02R\x04spec\x1a\xcf\b\n" +
+	"\tBoostSpec\x12y\n" +
+	"\x15condition_boost_specs\x18\x01 \x03(\v2?.google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpecB\x04\xe2A\x01\x02R\x13conditionBoostSpecs\x1a\xc6\a\n" +
+	"\x12ConditionBoostSpec\x12\"\n" +
+	"\tcondition\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tcondition\x12\x1a\n" +
+	"\x05boost\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x05boost\x12\x84\x01\n" +
+	"\x12boost_control_spec\x18\x04 \x01(\v2P.google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpecB\x04\xe2A\x01\x01R\x10boostControlSpec\x1a\xe8\x05\n" +
+	"\x10BoostControlSpec\x12#\n" +
 	"\n" +
-	"field_name\x18\x01 \x01(\tB\x03\xe0A\x01R\tfieldName\x12\x8a\x01\n" +
-	"\x0eattribute_type\x18\x02 \x01(\x0e2^.google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeTypeB\x03\xe0A\x01R\rattributeType\x12\x96\x01\n" +
-	"\x12interpolation_type\x18\x03 \x01(\x0e2b.google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationTypeB\x03\xe0A\x01R\x11interpolationType\x12\x89\x01\n" +
-	"\x0econtrol_points\x18\x04 \x03(\v2].google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPointB\x03\xe0A\x01R\rcontrolPoints\x1ad\n" +
-	"\fControlPoint\x12,\n" +
-	"\x0fattribute_value\x18\x01 \x01(\tB\x03\xe0A\x01R\x0eattributeValue\x12&\n" +
-	"\fboost_amount\x18\x02 \x01(\x02B\x03\xe0A\x01R\vboostAmount\"M\n" +
+	"field_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tfieldName\x12\x8b\x01\n" +
+	"\x0eattribute_type\x18\x02 \x01(\x0e2^.google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeTypeB\x04\xe2A\x01\x01R\rattributeType\x12\x97\x01\n" +
+	"\x12interpolation_type\x18\x03 \x01(\x0e2b.google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationTypeB\x04\xe2A\x01\x01R\x11interpolationType\x12\x8a\x01\n" +
+	"\x0econtrol_points\x18\x04 \x03(\v2].google.cloud.ces.v1.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPointB\x04\xe2A\x01\x01R\rcontrolPoints\x1af\n" +
+	"\fControlPoint\x12-\n" +
+	"\x0fattribute_value\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0eattributeValue\x12'\n" +
+	"\fboost_amount\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\vboostAmount\"M\n" +
 	"\rAttributeType\x12\x1e\n" +
 	"\x1aATTRIBUTE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNUMERICAL\x10\x01\x12\r\n" +
@@ -1179,12 +1179,12 @@ const file_google_cloud_ces_v1_data_store_tool_proto_rawDesc = "" +
 	"\x11InterpolationType\x12\"\n" +
 	"\x1eINTERPOLATION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06LINEAR\x10\x01\x1a\xf3\x03\n" +
-	"\x0eModalityConfig\x12h\n" +
-	"\rmodality_type\x18\x01 \x01(\x0e2>.google.cloud.ces.v1.DataStoreTool.ModalityConfig.ModalityTypeB\x03\xe0A\x02R\fmodalityType\x12_\n" +
-	"\x0frewriter_config\x18\x02 \x01(\v21.google.cloud.ces.v1.DataStoreTool.RewriterConfigB\x03\xe0A\x01R\x0erewriterConfig\x12n\n" +
-	"\x14summarization_config\x18\x03 \x01(\v26.google.cloud.ces.v1.DataStoreTool.SummarizationConfigB\x03\xe0A\x01R\x13summarizationConfig\x12b\n" +
-	"\x10grounding_config\x18\x04 \x01(\v22.google.cloud.ces.v1.DataStoreTool.GroundingConfigB\x03\xe0A\x01R\x0fgroundingConfig\"B\n" +
+	"\x06LINEAR\x10\x01\x1a\xf7\x03\n" +
+	"\x0eModalityConfig\x12i\n" +
+	"\rmodality_type\x18\x01 \x01(\x0e2>.google.cloud.ces.v1.DataStoreTool.ModalityConfig.ModalityTypeB\x04\xe2A\x01\x02R\fmodalityType\x12`\n" +
+	"\x0frewriter_config\x18\x02 \x01(\v21.google.cloud.ces.v1.DataStoreTool.RewriterConfigB\x04\xe2A\x01\x01R\x0erewriterConfig\x12o\n" +
+	"\x14summarization_config\x18\x03 \x01(\v26.google.cloud.ces.v1.DataStoreTool.SummarizationConfigB\x04\xe2A\x01\x01R\x13summarizationConfig\x12c\n" +
+	"\x10grounding_config\x18\x04 \x01(\v22.google.cloud.ces.v1.DataStoreTool.GroundingConfigB\x04\xe2A\x01\x01R\x0fgroundingConfig\"B\n" +
 	"\fModalityType\x12\x1d\n" +
 	"\x19MODALITY_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TEXT\x10\x01\x12\t\n" +

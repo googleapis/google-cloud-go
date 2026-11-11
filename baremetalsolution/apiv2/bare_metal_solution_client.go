@@ -2774,6 +2774,11 @@ func (c *restClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/instances", req.GetParent())
 
 		params := url.Values{}
@@ -2842,6 +2847,11 @@ func (c *restClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -2901,6 +2911,11 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetInstance().GetName())
@@ -2978,6 +2993,11 @@ func (c *restClient) RenameInstance(ctx context.Context, req *baremetalsolutionp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
 
 	params := url.Values{}
@@ -3037,6 +3057,11 @@ func (c *restClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:reset", req.GetName())
@@ -3106,6 +3131,11 @@ func (c *restClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:start", req.GetName())
 
 	params := url.Values{}
@@ -3171,6 +3201,11 @@ func (c *restClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:stop", req.GetName())
@@ -3240,6 +3275,11 @@ func (c *restClient) EnableInteractiveSerialConsole(ctx context.Context, req *ba
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:enableInteractiveSerialConsole", req.GetName())
 
 	params := url.Values{}
@@ -3307,6 +3347,11 @@ func (c *restClient) DisableInteractiveSerialConsole(ctx context.Context, req *b
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:disableInteractiveSerialConsole", req.GetName())
 
 	params := url.Values{}
@@ -3372,6 +3417,11 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:detachLun", req.GetInstance())
@@ -3449,6 +3499,11 @@ func (c *restClient) ListSSHKeys(ctx context.Context, req *baremetalsolutionpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/sshKeys", req.GetParent())
 
 		params := url.Values{}
@@ -3522,6 +3577,11 @@ func (c *restClient) CreateSSHKey(ctx context.Context, req *baremetalsolutionpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/sshKeys", req.GetParent())
 
 	params := url.Values{}
@@ -3577,6 +3637,11 @@ func (c *restClient) DeleteSSHKey(ctx context.Context, req *baremetalsolutionpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3627,6 +3692,11 @@ func (c *restClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/volumes", req.GetParent())
@@ -3697,6 +3767,11 @@ func (c *restClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3756,6 +3831,11 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetVolume().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetVolume().GetName())
@@ -3833,6 +3913,11 @@ func (c *restClient) RenameVolume(ctx context.Context, req *baremetalsolutionpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
 
 	params := url.Values{}
@@ -3892,6 +3977,11 @@ func (c *restClient) EvictVolume(ctx context.Context, req *baremetalsolutionpb.E
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:evict", req.GetName())
@@ -3959,6 +4049,11 @@ func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetVolume(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:resize", req.GetVolume())
@@ -4035,6 +4130,11 @@ func (c *restClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/networks", req.GetParent())
 
 		params := url.Values{}
@@ -4104,6 +4204,11 @@ func (c *restClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLocation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/networks:listNetworkUsage", req.GetLocation())
 
 	params := url.Values{}
@@ -4156,6 +4261,11 @@ func (c *restClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 func (c *restClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.GetNetworkRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -4217,6 +4327,11 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetNetwork().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetNetwork().GetName())
@@ -4295,6 +4410,11 @@ func (c *restClient) CreateVolumeSnapshot(ctx context.Context, req *baremetalsol
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/snapshots", req.GetParent())
 
 	params := url.Values{}
@@ -4354,6 +4474,11 @@ func (c *restClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalso
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetVolumeSnapshot(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:restoreVolumeSnapshot", req.GetVolumeSnapshot())
@@ -4418,6 +4543,11 @@ func (c *restClient) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsol
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -4456,6 +4586,11 @@ func (c *restClient) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsol
 func (c *restClient) GetVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.GetVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -4527,6 +4662,11 @@ func (c *restClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolu
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/snapshots", req.GetParent())
 
 		params := url.Values{}
@@ -4590,6 +4730,11 @@ func (c *restClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolu
 func (c *restClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLunRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Lun, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -4657,6 +4802,11 @@ func (c *restClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/luns", req.GetParent())
@@ -4731,6 +4881,11 @@ func (c *restClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.Evic
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:evict", req.GetName())
 
 	params := url.Values{}
@@ -4790,6 +4945,11 @@ func (c *restClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.Evic
 func (c *restClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.GetNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -4857,6 +5017,11 @@ func (c *restClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/nfsShares", req.GetParent())
@@ -4934,6 +5099,11 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetNfsShare().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetNfsShare().GetName())
 
 	params := url.Values{}
@@ -5009,6 +5179,11 @@ func (c *restClient) CreateNfsShare(ctx context.Context, req *baremetalsolutionp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/nfsShares", req.GetParent())
 
 	params := url.Values{}
@@ -5077,6 +5252,11 @@ func (c *restClient) RenameNfsShare(ctx context.Context, req *baremetalsolutionp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
 
 	params := url.Values{}
@@ -5129,6 +5309,11 @@ func (c *restClient) RenameNfsShare(ctx context.Context, req *baremetalsolutionp
 func (c *restClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionpb.DeleteNfsShareRequest, opts ...gax.CallOption) (*DeleteNfsShareOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -5205,6 +5390,11 @@ func (c *restClient) ListProvisioningQuotas(ctx context.Context, req *baremetals
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/provisioningQuotas", req.GetParent())
 
 		params := url.Values{}
@@ -5276,6 +5466,11 @@ func (c *restClient) SubmitProvisioningConfig(ctx context.Context, req *baremeta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/provisioningConfigs:submit", req.GetParent())
 
 	params := url.Values{}
@@ -5328,6 +5523,11 @@ func (c *restClient) SubmitProvisioningConfig(ctx context.Context, req *baremeta
 func (c *restClient) GetProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.GetProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -5389,6 +5589,11 @@ func (c *restClient) CreateProvisioningConfig(ctx context.Context, req *baremeta
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/provisioningConfigs", req.GetParent())
@@ -5453,6 +5658,11 @@ func (c *restClient) UpdateProvisioningConfig(ctx context.Context, req *baremeta
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProvisioningConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetProvisioningConfig().GetName())
@@ -5526,6 +5736,11 @@ func (c *restClient) RenameNetwork(ctx context.Context, req *baremetalsolutionpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
 
 	params := url.Values{}
@@ -5593,6 +5808,11 @@ func (c *restClient) ListOSImages(ctx context.Context, req *baremetalsolutionpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/osImages", req.GetParent())
 
 		params := url.Values{}
@@ -5656,6 +5876,11 @@ func (c *restClient) ListOSImages(ctx context.Context, req *baremetalsolutionpb.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -5723,6 +5948,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/locations", req.GetName())

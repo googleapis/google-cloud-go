@@ -1147,72 +1147,72 @@ var File_google_ads_datamanager_v1_ingestion_service_proto protoreflect.FileDesc
 
 const file_google_ads_datamanager_v1_ingestion_service_proto_rawDesc = "" +
 	"\n" +
-	"1google/ads/datamanager/v1/ingestion_service.proto\x12\x19google.ads.datamanager.v1\x1a(google/ads/datamanager/v1/ad_event.proto\x1a(google/ads/datamanager/v1/audience.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/destination.proto\x1a/google/ads/datamanager/v1/encryption_info.proto\x1a%google/ads/datamanager/v1/event.proto\x1a1google/ads/datamanager/v1/processing_errors.proto\x1a>google/ads/datamanager/v1/request_status_per_destination.proto\x1a0google/ads/datamanager/v1/terms_of_service.proto\x1a$google/ads/datamanager/v1/user.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x04\n" +
-	"\x1cIngestAudienceMembersRequest\x12O\n" +
-	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12Y\n" +
-	"\x10audience_members\x18\x02 \x03(\v2).google.ads.datamanager.v1.AudienceMemberB\x03\xe0A\x02R\x0faudienceMembers\x12A\n" +
-	"\aconsent\x18\x03 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x03\xe0A\x01R\aconsent\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12D\n" +
-	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x03\xe0A\x01R\bencoding\x12W\n" +
-	"\x0fencryption_info\x18\x06 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\x12X\n" +
-	"\x10terms_of_service\x18\a \x01(\v2).google.ads.datamanager.v1.TermsOfServiceB\x03\xe0A\x01R\x0etermsOfService\"\x8e\x01\n" +
+	"1google/ads/datamanager/v1/ingestion_service.proto\x12\x19google.ads.datamanager.v1\x1a(google/ads/datamanager/v1/ad_event.proto\x1a(google/ads/datamanager/v1/audience.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/destination.proto\x1a/google/ads/datamanager/v1/encryption_info.proto\x1a%google/ads/datamanager/v1/event.proto\x1a1google/ads/datamanager/v1/processing_errors.proto\x1a>google/ads/datamanager/v1/request_status_per_destination.proto\x1a0google/ads/datamanager/v1/terms_of_service.proto\x1a$google/ads/datamanager/v1/user.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\x04\n" +
+	"\x1cIngestAudienceMembersRequest\x12P\n" +
+	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x04\xe2A\x01\x02R\fdestinations\x12Z\n" +
+	"\x10audience_members\x18\x02 \x03(\v2).google.ads.datamanager.v1.AudienceMemberB\x04\xe2A\x01\x02R\x0faudienceMembers\x12B\n" +
+	"\aconsent\x18\x03 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x04\xe2A\x01\x01R\aconsent\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12E\n" +
+	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x04\xe2A\x01\x01R\bencoding\x12X\n" +
+	"\x0fencryption_info\x18\x06 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x04\xe2A\x01\x01R\x0eencryptionInfo\x12Y\n" +
+	"\x10terms_of_service\x18\a \x01(\v2).google.ads.datamanager.v1.TermsOfServiceB\x04\xe2A\x01\x01R\x0etermsOfService\"\x8e\x01\n" +
 	"\x1dIngestAudienceMembersResponse\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId\x12N\n" +
-	"\x0efield_warnings\x18\x02 \x03(\v2'.google.ads.datamanager.v1.FieldWarningR\rfieldWarnings\"\x93\x03\n" +
-	"\x1cRemoveAudienceMembersRequest\x12O\n" +
-	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12Y\n" +
-	"\x10audience_members\x18\x02 \x03(\v2).google.ads.datamanager.v1.AudienceMemberB\x03\xe0A\x02R\x0faudienceMembers\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12D\n" +
-	"\bencoding\x18\x04 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x03\xe0A\x01R\bencoding\x12W\n" +
-	"\x0fencryption_info\x18\x05 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\">\n" +
+	"\x0efield_warnings\x18\x02 \x03(\v2'.google.ads.datamanager.v1.FieldWarningR\rfieldWarnings\"\x98\x03\n" +
+	"\x1cRemoveAudienceMembersRequest\x12P\n" +
+	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x04\xe2A\x01\x02R\fdestinations\x12Z\n" +
+	"\x10audience_members\x18\x02 \x03(\v2).google.ads.datamanager.v1.AudienceMemberB\x04\xe2A\x01\x02R\x0faudienceMembers\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12E\n" +
+	"\bencoding\x18\x04 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x04\xe2A\x01\x01R\bencoding\x12X\n" +
+	"\x0fencryption_info\x18\x05 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x04\xe2A\x01\x01R\x0eencryptionInfo\">\n" +
 	"\x1dRemoveAudienceMembersResponse\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\"\xe8\x01\n" +
-	"\x1fRemoveAllAudienceMembersRequest\x12O\n" +
-	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12J\n" +
-	"\x11remove_as_of_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x0eremoveAsOfTime\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"A\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\"\xeb\x01\n" +
+	"\x1fRemoveAllAudienceMembersRequest\x12P\n" +
+	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x04\xe2A\x01\x02R\fdestinations\x12K\n" +
+	"\x11remove_as_of_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x0eremoveAsOfTime\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"A\n" +
 	" RemoveAllAudienceMembersResponse\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\"\xb1\x03\n" +
-	"\x13IngestEventsRequest\x12O\n" +
-	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12=\n" +
-	"\x06events\x18\x02 \x03(\v2 .google.ads.datamanager.v1.EventB\x03\xe0A\x02R\x06events\x12A\n" +
-	"\aconsent\x18\x03 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x03\xe0A\x01R\aconsent\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12D\n" +
-	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x03\xe0A\x01R\bencoding\x12W\n" +
-	"\x0fencryption_info\x18\x06 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\"\x85\x01\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\"\xb7\x03\n" +
+	"\x13IngestEventsRequest\x12P\n" +
+	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x04\xe2A\x01\x02R\fdestinations\x12>\n" +
+	"\x06events\x18\x02 \x03(\v2 .google.ads.datamanager.v1.EventB\x04\xe2A\x01\x02R\x06events\x12B\n" +
+	"\aconsent\x18\x03 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x04\xe2A\x01\x01R\aconsent\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12E\n" +
+	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x04\xe2A\x01\x01R\bencoding\x12X\n" +
+	"\x0fencryption_info\x18\x06 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x04\xe2A\x01\x01R\x0eencryptionInfo\"\x85\x01\n" +
 	"\x14IngestEventsResponse\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId\x12N\n" +
-	"\x0efield_warnings\x18\x02 \x03(\v2'.google.ads.datamanager.v1.FieldWarningR\rfieldWarnings\"\xea\x02\n" +
-	"\x12IngestUsersRequest\x12O\n" +
-	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12:\n" +
-	"\x05users\x18\x02 \x03(\v2\x1f.google.ads.datamanager.v1.UserB\x03\xe0A\x02R\x05users\x12W\n" +
-	"\x0fencryption_info\x18\x03 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12D\n" +
-	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x03\xe0A\x02R\bencoding\"4\n" +
+	"\x0efield_warnings\x18\x02 \x03(\v2'.google.ads.datamanager.v1.FieldWarningR\rfieldWarnings\"\xef\x02\n" +
+	"\x12IngestUsersRequest\x12P\n" +
+	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x04\xe2A\x01\x02R\fdestinations\x12;\n" +
+	"\x05users\x18\x02 \x03(\v2\x1f.google.ads.datamanager.v1.UserB\x04\xe2A\x01\x02R\x05users\x12X\n" +
+	"\x0fencryption_info\x18\x03 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x04\xe2A\x01\x01R\x0eencryptionInfo\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12E\n" +
+	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x04\xe2A\x01\x02R\bencoding\"4\n" +
 	"\x13IngestUsersResponse\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\"\xf5\x02\n" +
-	"\x12RemoveUsersRequest\x12O\n" +
-	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12E\n" +
-	"\tuser_data\x18\x02 \x03(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x02R\buserData\x12W\n" +
-	"\x0fencryption_info\x18\x03 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12D\n" +
-	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x03\xe0A\x02R\bencoding\"4\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\"\xfa\x02\n" +
+	"\x12RemoveUsersRequest\x12P\n" +
+	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x04\xe2A\x01\x02R\fdestinations\x12F\n" +
+	"\tuser_data\x18\x02 \x03(\v2#.google.ads.datamanager.v1.UserDataB\x04\xe2A\x01\x02R\buserData\x12X\n" +
+	"\x0fencryption_info\x18\x03 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x04\xe2A\x01\x01R\x0eencryptionInfo\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12E\n" +
+	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x04\xe2A\x01\x02R\bencoding\"4\n" +
 	"\x13RemoveUsersResponse\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\"\xe2\x01\n" +
-	"\x15IngestAdEventsRequest\x12D\n" +
-	"\tad_events\x18\x01 \x03(\v2\".google.ads.datamanager.v1.AdEventB\x03\xe0A\x02R\badEvents\x12W\n" +
-	"\x0fencryption_info\x18\x02 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\x12*\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x05\xe0A\x01\x18\x01R\fvalidateOnly\"\x18\n" +
-	"\x16IngestAdEventsResponse\"B\n" +
-	"\x1cRetrieveRequestStatusRequest\x12\"\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\"\xe5\x01\n" +
+	"\x15IngestAdEventsRequest\x12E\n" +
+	"\tad_events\x18\x01 \x03(\v2\".google.ads.datamanager.v1.AdEventB\x04\xe2A\x01\x02R\badEvents\x12X\n" +
+	"\x0fencryption_info\x18\x02 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x04\xe2A\x01\x01R\x0eencryptionInfo\x12+\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\fvalidateOnly\"\x18\n" +
+	"\x16IngestAdEventsResponse\"C\n" +
+	"\x1cRetrieveRequestStatusRequest\x12#\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tB\x03\xe0A\x02R\trequestId\"\x9c\x01\n" +
+	"request_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\trequestId\"\x9c\x01\n" +
 	"\x1dRetrieveRequestStatusResponse\x12{\n" +
 	"\x1erequest_status_per_destination\x18\x01 \x03(\v26.google.ads.datamanager.v1.RequestStatusPerDestinationR\x1brequestStatusPerDestination*9\n" +
 	"\bEncoding\x12\x18\n" +

@@ -622,6 +622,11 @@ func (c *analyticsRESTClient) ExportAnalyticsMetrics(ctx context.Context, req *r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCatalog(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:exportAnalyticsMetrics", req.GetCatalog())
 
 	params := url.Values{}
@@ -681,6 +686,11 @@ func (c *analyticsRESTClient) ExportAnalyticsMetrics(ctx context.Context, req *r
 func (c *analyticsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -748,6 +758,11 @@ func (c *analyticsRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())

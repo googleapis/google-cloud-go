@@ -1960,6 +1960,11 @@ func (c *restClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasets", req.GetParent())
 
 	params := url.Values{}
@@ -2012,6 +2017,11 @@ func (c *restClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 func (c *restClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2079,6 +2089,11 @@ func (c *restClient) ListDatasets(ctx context.Context, req *automlpb.ListDataset
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasets", req.GetParent())
@@ -2156,6 +2171,11 @@ func (c *restClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataset().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDataset().GetName())
 
 	params := url.Values{}
@@ -2219,6 +2239,11 @@ func (c *restClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 func (c *restClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2297,6 +2322,11 @@ func (c *restClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:importData", req.GetName())
 
 	params := url.Values{}
@@ -2366,6 +2396,11 @@ func (c *restClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportData", req.GetName())
 
 	params := url.Values{}
@@ -2427,6 +2462,11 @@ func (c *restClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2479,6 +2519,11 @@ func (c *restClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 func (c *restClient) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpecRequest, opts ...gax.CallOption) (*automlpb.TableSpec, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2553,6 +2598,11 @@ func (c *restClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/tableSpecs", req.GetParent())
@@ -2637,6 +2687,11 @@ func (c *restClient) UpdateTableSpec(ctx context.Context, req *automlpb.UpdateTa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTableSpec().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTableSpec().GetName())
 
 	params := url.Values{}
@@ -2696,6 +2751,11 @@ func (c *restClient) UpdateTableSpec(ctx context.Context, req *automlpb.UpdateTa
 func (c *restClient) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnSpecRequest, opts ...gax.CallOption) (*automlpb.ColumnSpec, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2770,6 +2830,11 @@ func (c *restClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/columnSpecs", req.GetParent())
@@ -2854,6 +2919,11 @@ func (c *restClient) UpdateColumnSpec(ctx context.Context, req *automlpb.UpdateC
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetColumnSpec().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetColumnSpec().GetName())
 
 	params := url.Values{}
@@ -2926,6 +2996,11 @@ func (c *restClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/models", req.GetParent())
 
 	params := url.Values{}
@@ -2985,6 +3060,11 @@ func (c *restClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 func (c *restClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest, opts ...gax.CallOption) (*automlpb.Model, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -3052,6 +3132,11 @@ func (c *restClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/models", req.GetParent())
@@ -3124,6 +3209,11 @@ func (c *restClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 func (c *restClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -3204,6 +3294,11 @@ func (c *restClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deploy", req.GetName())
 
 	params := url.Values{}
@@ -3275,6 +3370,11 @@ func (c *restClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:undeploy", req.GetName())
@@ -3349,6 +3449,11 @@ func (c *restClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:export", req.GetName())
@@ -3431,6 +3536,11 @@ func (c *restClient) ExportEvaluatedExamples(ctx context.Context, req *automlpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportEvaluatedExamples", req.GetName())
 
 	params := url.Values{}
@@ -3490,6 +3600,11 @@ func (c *restClient) ExportEvaluatedExamples(ctx context.Context, req *automlpb.
 func (c *restClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetModelEvaluationRequest, opts ...gax.CallOption) (*automlpb.ModelEvaluation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -3557,6 +3672,11 @@ func (c *restClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/modelEvaluations", req.GetParent())

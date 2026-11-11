@@ -5408,47 +5408,47 @@ var File_google_cloud_dataproc_v1_clusters_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/dataproc/v1/clusters.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/dataproc/v1/operations.proto\x1a%google/cloud/dataproc/v1/shared.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x1agoogle/type/interval.proto\"\x99\x05\n" +
-	"\aCluster\x12\"\n" +
+	"'google/cloud/dataproc/v1/clusters.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/dataproc/v1/operations.proto\x1a%google/cloud/dataproc/v1/shared.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x1agoogle/type/interval.proto\"\xa2\x05\n" +
+	"\aCluster\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12&\n" +
-	"\fcluster_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vclusterName\x12D\n" +
-	"\x06config\x18\x03 \x01(\v2'.google.cloud.dataproc.v1.ClusterConfigB\x03\xe0A\x01R\x06config\x12i\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12'\n" +
+	"\fcluster_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vclusterName\x12E\n" +
+	"\x06config\x18\x03 \x01(\v2'.google.cloud.dataproc.v1.ClusterConfigB\x04\xe2A\x01\x01R\x06config\x12j\n" +
 	"\x16virtual_cluster_config\x18\n" +
-	" \x01(\v2..google.cloud.dataproc.v1.VirtualClusterConfigB\x03\xe0A\x01R\x14virtualClusterConfig\x12J\n" +
-	"\x06labels\x18\b \x03(\v2-.google.cloud.dataproc.v1.Cluster.LabelsEntryB\x03\xe0A\x01R\x06labels\x12D\n" +
-	"\x06status\x18\x04 \x01(\v2'.google.cloud.dataproc.v1.ClusterStatusB\x03\xe0A\x03R\x06status\x12S\n" +
-	"\x0estatus_history\x18\a \x03(\v2'.google.cloud.dataproc.v1.ClusterStatusB\x03\xe0A\x03R\rstatusHistory\x12&\n" +
-	"\fcluster_uuid\x18\x06 \x01(\tB\x03\xe0A\x03R\vclusterUuid\x12G\n" +
-	"\ametrics\x18\t \x01(\v2(.google.cloud.dataproc.v1.ClusterMetricsB\x03\xe0A\x03R\ametrics\x1a9\n" +
+	" \x01(\v2..google.cloud.dataproc.v1.VirtualClusterConfigB\x04\xe2A\x01\x01R\x14virtualClusterConfig\x12K\n" +
+	"\x06labels\x18\b \x03(\v2-.google.cloud.dataproc.v1.Cluster.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12E\n" +
+	"\x06status\x18\x04 \x01(\v2'.google.cloud.dataproc.v1.ClusterStatusB\x04\xe2A\x01\x03R\x06status\x12T\n" +
+	"\x0estatus_history\x18\a \x03(\v2'.google.cloud.dataproc.v1.ClusterStatusB\x04\xe2A\x01\x03R\rstatusHistory\x12'\n" +
+	"\fcluster_uuid\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vclusterUuid\x12H\n" +
+	"\ametrics\x18\t \x01(\v2(.google.cloud.dataproc.v1.ClusterMetricsB\x04\xe2A\x01\x03R\ametrics\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x88\x12\n" +
-	"\rClusterConfig\x12[\n" +
-	"\fcluster_type\x18\x1b \x01(\x0e23.google.cloud.dataproc.v1.ClusterConfig.ClusterTypeB\x03\xe0A\x01R\vclusterType\x12[\n" +
-	"\fcluster_tier\x18\x1d \x01(\x0e23.google.cloud.dataproc.v1.ClusterConfig.ClusterTierB\x03\xe0A\x01R\vclusterTier\x12K\n" +
-	"\x06engine\x18\x1e \x01(\x0e2..google.cloud.dataproc.v1.ClusterConfig.EngineB\x03\xe0A\x01R\x06engine\x12(\n" +
-	"\rconfig_bucket\x18\x01 \x01(\tB\x03\xe0A\x01R\fconfigBucket\x12$\n" +
-	"\vtemp_bucket\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"tempBucket\x12]\n" +
-	"\x12gce_cluster_config\x18\b \x01(\v2*.google.cloud.dataproc.v1.GceClusterConfigB\x03\xe0A\x01R\x10gceClusterConfig\x12W\n" +
-	"\rmaster_config\x18\t \x01(\v2-.google.cloud.dataproc.v1.InstanceGroupConfigB\x03\xe0A\x01R\fmasterConfig\x12W\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9e\x12\n" +
+	"\rClusterConfig\x12\\\n" +
+	"\fcluster_type\x18\x1b \x01(\x0e23.google.cloud.dataproc.v1.ClusterConfig.ClusterTypeB\x04\xe2A\x01\x01R\vclusterType\x12\\\n" +
+	"\fcluster_tier\x18\x1d \x01(\x0e23.google.cloud.dataproc.v1.ClusterConfig.ClusterTierB\x04\xe2A\x01\x01R\vclusterTier\x12L\n" +
+	"\x06engine\x18\x1e \x01(\x0e2..google.cloud.dataproc.v1.ClusterConfig.EngineB\x04\xe2A\x01\x01R\x06engine\x12)\n" +
+	"\rconfig_bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fconfigBucket\x12%\n" +
+	"\vtemp_bucket\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"tempBucket\x12^\n" +
+	"\x12gce_cluster_config\x18\b \x01(\v2*.google.cloud.dataproc.v1.GceClusterConfigB\x04\xe2A\x01\x01R\x10gceClusterConfig\x12X\n" +
+	"\rmaster_config\x18\t \x01(\v2-.google.cloud.dataproc.v1.InstanceGroupConfigB\x04\xe2A\x01\x01R\fmasterConfig\x12X\n" +
 	"\rworker_config\x18\n" +
-	" \x01(\v2-.google.cloud.dataproc.v1.InstanceGroupConfigB\x03\xe0A\x01R\fworkerConfig\x12j\n" +
-	"\x17secondary_worker_config\x18\f \x01(\v2-.google.cloud.dataproc.v1.InstanceGroupConfigB\x03\xe0A\x01R\x15secondaryWorkerConfig\x12V\n" +
-	"\x0fsoftware_config\x18\r \x01(\v2(.google.cloud.dataproc.v1.SoftwareConfigB\x03\xe0A\x01R\x0esoftwareConfig\x12n\n" +
-	"\x16initialization_actions\x18\v \x03(\v22.google.cloud.dataproc.v1.NodeInitializationActionB\x03\xe0A\x01R\x15initializationActions\x12\\\n" +
-	"\x11encryption_config\x18\x0f \x01(\v2*.google.cloud.dataproc.v1.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12_\n" +
-	"\x12autoscaling_config\x18\x12 \x01(\v2+.google.cloud.dataproc.v1.AutoscalingConfigB\x03\xe0A\x01R\x11autoscalingConfig\x12V\n" +
-	"\x0fsecurity_config\x18\x10 \x01(\v2(.google.cloud.dataproc.v1.SecurityConfigB\x03\xe0A\x01R\x0esecurityConfig\x12Y\n" +
-	"\x10lifecycle_config\x18\x11 \x01(\v2).google.cloud.dataproc.v1.LifecycleConfigB\x03\xe0A\x01R\x0flifecycleConfig\x12V\n" +
-	"\x0fendpoint_config\x18\x13 \x01(\v2(.google.cloud.dataproc.v1.EndpointConfigB\x03\xe0A\x01R\x0eendpointConfig\x12Y\n" +
-	"\x10metastore_config\x18\x14 \x01(\v2).google.cloud.dataproc.v1.MetastoreConfigB\x03\xe0A\x01R\x0fmetastoreConfig\x12i\n" +
-	"\x16dataproc_metric_config\x18\x17 \x01(\v2..google.cloud.dataproc.v1.DataprocMetricConfigB\x03\xe0A\x01R\x14dataprocMetricConfig\x12e\n" +
-	"\x15auxiliary_node_groups\x18\x19 \x03(\v2,.google.cloud.dataproc.v1.AuxiliaryNodeGroupB\x03\xe0A\x01R\x13auxiliaryNodeGroups\x12p\n" +
-	"\x16master_flexible_config\x18\x1f \x01(\v25.google.cloud.dataproc.v1.FlexibleInstanceGroupConfigB\x03\xe0A\x01R\x14masterFlexibleConfig\x12p\n" +
-	"\x16worker_flexible_config\x18  \x01(\v25.google.cloud.dataproc.v1.FlexibleInstanceGroupConfigB\x03\xe0A\x01R\x14workerFlexibleConfig\x12\x83\x01\n" +
-	" secondary_worker_flexible_config\x18! \x01(\v25.google.cloud.dataproc.v1.FlexibleInstanceGroupConfigB\x03\xe0A\x01R\x1dsecondaryWorkerFlexibleConfig\"Z\n" +
+	" \x01(\v2-.google.cloud.dataproc.v1.InstanceGroupConfigB\x04\xe2A\x01\x01R\fworkerConfig\x12k\n" +
+	"\x17secondary_worker_config\x18\f \x01(\v2-.google.cloud.dataproc.v1.InstanceGroupConfigB\x04\xe2A\x01\x01R\x15secondaryWorkerConfig\x12W\n" +
+	"\x0fsoftware_config\x18\r \x01(\v2(.google.cloud.dataproc.v1.SoftwareConfigB\x04\xe2A\x01\x01R\x0esoftwareConfig\x12o\n" +
+	"\x16initialization_actions\x18\v \x03(\v22.google.cloud.dataproc.v1.NodeInitializationActionB\x04\xe2A\x01\x01R\x15initializationActions\x12]\n" +
+	"\x11encryption_config\x18\x0f \x01(\v2*.google.cloud.dataproc.v1.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12`\n" +
+	"\x12autoscaling_config\x18\x12 \x01(\v2+.google.cloud.dataproc.v1.AutoscalingConfigB\x04\xe2A\x01\x01R\x11autoscalingConfig\x12W\n" +
+	"\x0fsecurity_config\x18\x10 \x01(\v2(.google.cloud.dataproc.v1.SecurityConfigB\x04\xe2A\x01\x01R\x0esecurityConfig\x12Z\n" +
+	"\x10lifecycle_config\x18\x11 \x01(\v2).google.cloud.dataproc.v1.LifecycleConfigB\x04\xe2A\x01\x01R\x0flifecycleConfig\x12W\n" +
+	"\x0fendpoint_config\x18\x13 \x01(\v2(.google.cloud.dataproc.v1.EndpointConfigB\x04\xe2A\x01\x01R\x0eendpointConfig\x12Z\n" +
+	"\x10metastore_config\x18\x14 \x01(\v2).google.cloud.dataproc.v1.MetastoreConfigB\x04\xe2A\x01\x01R\x0fmetastoreConfig\x12j\n" +
+	"\x16dataproc_metric_config\x18\x17 \x01(\v2..google.cloud.dataproc.v1.DataprocMetricConfigB\x04\xe2A\x01\x01R\x14dataprocMetricConfig\x12f\n" +
+	"\x15auxiliary_node_groups\x18\x19 \x03(\v2,.google.cloud.dataproc.v1.AuxiliaryNodeGroupB\x04\xe2A\x01\x01R\x13auxiliaryNodeGroups\x12q\n" +
+	"\x16master_flexible_config\x18\x1f \x01(\v25.google.cloud.dataproc.v1.FlexibleInstanceGroupConfigB\x04\xe2A\x01\x01R\x14masterFlexibleConfig\x12q\n" +
+	"\x16worker_flexible_config\x18  \x01(\v25.google.cloud.dataproc.v1.FlexibleInstanceGroupConfigB\x04\xe2A\x01\x01R\x14workerFlexibleConfig\x12\x84\x01\n" +
+	" secondary_worker_flexible_config\x18! \x01(\v25.google.cloud.dataproc.v1.FlexibleInstanceGroupConfigB\x04\xe2A\x01\x01R\x1dsecondaryWorkerFlexibleConfig\"Z\n" +
 	"\vClusterType\x12\x1c\n" +
 	"\x18CLUSTER_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\x0f\n" +
@@ -5462,46 +5462,46 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\x06Engine\x12\x16\n" +
 	"\x12ENGINE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aDEFAULT\x10\x01\x12\r\n" +
-	"\tLIGHTNING\x10\x02\"\xc5\x02\n" +
-	"\x14VirtualClusterConfig\x12*\n" +
-	"\x0estaging_bucket\x18\x01 \x01(\tB\x03\xe0A\x01R\rstagingBucket\x12t\n" +
-	"\x19kubernetes_cluster_config\x18\x06 \x01(\v21.google.cloud.dataproc.v1.KubernetesClusterConfigB\x03\xe0A\x02H\x00R\x17kubernetesClusterConfig\x12r\n" +
-	"\x19auxiliary_services_config\x18\a \x01(\v21.google.cloud.dataproc.v1.AuxiliaryServicesConfigB\x03\xe0A\x01R\x17auxiliaryServicesConfigB\x17\n" +
-	"\x15infrastructure_config\"\xec\x01\n" +
-	"\x17AuxiliaryServicesConfig\x12Y\n" +
-	"\x10metastore_config\x18\x01 \x01(\v2).google.cloud.dataproc.v1.MetastoreConfigB\x03\xe0A\x01R\x0fmetastoreConfig\x12v\n" +
-	"\x1bspark_history_server_config\x18\x02 \x01(\v22.google.cloud.dataproc.v1.SparkHistoryServerConfigB\x03\xe0A\x01R\x18sparkHistoryServerConfig\"\xe7\x01\n" +
-	"\x0eEndpointConfig\x12[\n" +
+	"\tLIGHTNING\x10\x02\"\xc8\x02\n" +
+	"\x14VirtualClusterConfig\x12+\n" +
+	"\x0estaging_bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rstagingBucket\x12u\n" +
+	"\x19kubernetes_cluster_config\x18\x06 \x01(\v21.google.cloud.dataproc.v1.KubernetesClusterConfigB\x04\xe2A\x01\x02H\x00R\x17kubernetesClusterConfig\x12s\n" +
+	"\x19auxiliary_services_config\x18\a \x01(\v21.google.cloud.dataproc.v1.AuxiliaryServicesConfigB\x04\xe2A\x01\x01R\x17auxiliaryServicesConfigB\x17\n" +
+	"\x15infrastructure_config\"\xee\x01\n" +
+	"\x17AuxiliaryServicesConfig\x12Z\n" +
+	"\x10metastore_config\x18\x01 \x01(\v2).google.cloud.dataproc.v1.MetastoreConfigB\x04\xe2A\x01\x01R\x0fmetastoreConfig\x12w\n" +
+	"\x1bspark_history_server_config\x18\x02 \x01(\v22.google.cloud.dataproc.v1.SparkHistoryServerConfigB\x04\xe2A\x01\x01R\x18sparkHistoryServerConfig\"\xe9\x01\n" +
+	"\x0eEndpointConfig\x12\\\n" +
 	"\n" +
-	"http_ports\x18\x01 \x03(\v27.google.cloud.dataproc.v1.EndpointConfig.HttpPortsEntryB\x03\xe0A\x03R\thttpPorts\x12:\n" +
-	"\x17enable_http_port_access\x18\x02 \x01(\bB\x03\xe0A\x01R\x14enableHttpPortAccess\x1a<\n" +
+	"http_ports\x18\x01 \x03(\v27.google.cloud.dataproc.v1.EndpointConfig.HttpPortsEntryB\x04\xe2A\x01\x03R\thttpPorts\x12;\n" +
+	"\x17enable_http_port_access\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x14enableHttpPortAccess\x1a<\n" +
 	"\x0eHttpPortsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"7\n" +
-	"\x11AutoscalingConfig\x12\"\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"8\n" +
+	"\x11AutoscalingConfig\x12#\n" +
 	"\n" +
-	"policy_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\tpolicyUri\"\x89\x01\n" +
-	"\x10EncryptionConfig\x121\n" +
-	"\x13gce_pd_kms_key_name\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fgcePdKmsKeyName\x12B\n" +
-	"\akms_key\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\"\xc8\v\n" +
-	"\x10GceClusterConfig\x12\x1e\n" +
-	"\bzone_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\azoneUri\x12Z\n" +
-	"\x11multi_zone_config\x18\x13 \x01(\v2).google.cloud.dataproc.v1.MultiZoneConfigB\x03\xe0A\x01R\x0fmultiZoneConfig\x12$\n" +
-	"\vnetwork_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"networkUri\x12*\n" +
-	"\x0esubnetwork_uri\x18\x06 \x01(\tB\x03\xe0A\x01R\rsubnetworkUri\x122\n" +
-	"\x10internal_ip_only\x18\a \x01(\bB\x03\xe0A\x01H\x00R\x0einternalIpOnly\x88\x01\x01\x12\x84\x01\n" +
-	"\x1aprivate_ipv6_google_access\x18\f \x01(\x0e2B.google.cloud.dataproc.v1.GceClusterConfig.PrivateIpv6GoogleAccessB\x03\xe0A\x01R\x17privateIpv6GoogleAccess\x12,\n" +
-	"\x0fservice_account\x18\b \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x129\n" +
-	"\x16service_account_scopes\x18\x03 \x03(\tB\x03\xe0A\x01R\x14serviceAccountScopes\x12\x12\n" +
-	"\x04tags\x18\x04 \x03(\tR\x04tags\x12Y\n" +
-	"\bmetadata\x18\x05 \x03(\v28.google.cloud.dataproc.v1.GceClusterConfig.MetadataEntryB\x03\xe0A\x01R\bmetadata\x12e\n" +
-	"\x14reservation_affinity\x18\v \x01(\v2-.google.cloud.dataproc.v1.ReservationAffinityB\x03\xe0A\x01R\x13reservationAffinity\x12`\n" +
-	"\x13node_group_affinity\x18\r \x01(\v2+.google.cloud.dataproc.v1.NodeGroupAffinityB\x03\xe0A\x01R\x11nodeGroupAffinity\x12o\n" +
-	"\x18shielded_instance_config\x18\x0e \x01(\v20.google.cloud.dataproc.v1.ShieldedInstanceConfigB\x03\xe0A\x01R\x16shieldedInstanceConfig\x12{\n" +
-	"\x1cconfidential_instance_config\x18\x0f \x01(\v24.google.cloud.dataproc.v1.ConfidentialInstanceConfigB\x03\xe0A\x01R\x1aconfidentialInstanceConfig\x12|\n" +
-	"\x15resource_manager_tags\x18\x10 \x03(\v2C.google.cloud.dataproc.v1.GceClusterConfig.ResourceManagerTagsEntryB\x03\xe0A\x01R\x13resourceManagerTags\x1a;\n" +
+	"policy_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tpolicyUri\"\x8b\x01\n" +
+	"\x10EncryptionConfig\x122\n" +
+	"\x13gce_pd_kms_key_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fgcePdKmsKeyName\x12C\n" +
+	"\akms_key\x18\x02 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\"\xd6\v\n" +
+	"\x10GceClusterConfig\x12\x1f\n" +
+	"\bzone_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\azoneUri\x12[\n" +
+	"\x11multi_zone_config\x18\x13 \x01(\v2).google.cloud.dataproc.v1.MultiZoneConfigB\x04\xe2A\x01\x01R\x0fmultiZoneConfig\x12%\n" +
+	"\vnetwork_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"networkUri\x12+\n" +
+	"\x0esubnetwork_uri\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\rsubnetworkUri\x123\n" +
+	"\x10internal_ip_only\x18\a \x01(\bB\x04\xe2A\x01\x01H\x00R\x0einternalIpOnly\x88\x01\x01\x12\x85\x01\n" +
+	"\x1aprivate_ipv6_google_access\x18\f \x01(\x0e2B.google.cloud.dataproc.v1.GceClusterConfig.PrivateIpv6GoogleAccessB\x04\xe2A\x01\x01R\x17privateIpv6GoogleAccess\x12-\n" +
+	"\x0fservice_account\x18\b \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12:\n" +
+	"\x16service_account_scopes\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x14serviceAccountScopes\x12\x12\n" +
+	"\x04tags\x18\x04 \x03(\tR\x04tags\x12Z\n" +
+	"\bmetadata\x18\x05 \x03(\v28.google.cloud.dataproc.v1.GceClusterConfig.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x12f\n" +
+	"\x14reservation_affinity\x18\v \x01(\v2-.google.cloud.dataproc.v1.ReservationAffinityB\x04\xe2A\x01\x01R\x13reservationAffinity\x12a\n" +
+	"\x13node_group_affinity\x18\r \x01(\v2+.google.cloud.dataproc.v1.NodeGroupAffinityB\x04\xe2A\x01\x01R\x11nodeGroupAffinity\x12p\n" +
+	"\x18shielded_instance_config\x18\x0e \x01(\v20.google.cloud.dataproc.v1.ShieldedInstanceConfigB\x04\xe2A\x01\x01R\x16shieldedInstanceConfig\x12|\n" +
+	"\x1cconfidential_instance_config\x18\x0f \x01(\v24.google.cloud.dataproc.v1.ConfidentialInstanceConfigB\x04\xe2A\x01\x01R\x1aconfidentialInstanceConfig\x12}\n" +
+	"\x15resource_manager_tags\x18\x10 \x03(\v2C.google.cloud.dataproc.v1.GceClusterConfig.ResourceManagerTagsEntryB\x04\xe2A\x01\x01R\x13resourceManagerTags\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aF\n" +
@@ -5513,54 +5513,54 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\x17INHERIT_FROM_SUBNETWORK\x10\x01\x12\f\n" +
 	"\bOUTBOUND\x10\x02\x12\x11\n" +
 	"\rBIDIRECTIONAL\x10\x03B\x13\n" +
-	"\x11_internal_ip_only\"\xa6\x01\n" +
-	"\x0fMultiZoneConfig\x12]\n" +
-	"\ftarget_shape\x18\x01 \x01(\x0e25.google.cloud.dataproc.v1.MultiZoneConfig.TargetShapeB\x03\xe0A\x01R\vtargetShape\"4\n" +
+	"\x11_internal_ip_only\"\xa7\x01\n" +
+	"\x0fMultiZoneConfig\x12^\n" +
+	"\ftarget_shape\x18\x01 \x01(\x0e25.google.cloud.dataproc.v1.MultiZoneConfig.TargetShapeB\x04\xe2A\x01\x01R\vtargetShape\"4\n" +
 	"\vTargetShape\x12\x1c\n" +
 	"\x18TARGET_SHAPE_UNSPECIFIED\x10\x00\x12\a\n" +
-	"\x03ANY\x10\x01\">\n" +
-	"\x11NodeGroupAffinity\x12)\n" +
-	"\x0enode_group_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\fnodeGroupUri\"\x8c\x02\n" +
-	"\x16ShieldedInstanceConfig\x126\n" +
-	"\x12enable_secure_boot\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\x10enableSecureBoot\x88\x01\x01\x12)\n" +
-	"\venable_vtpm\x18\x02 \x01(\bB\x03\xe0A\x01H\x01R\n" +
-	"enableVtpm\x88\x01\x01\x12H\n" +
-	"\x1benable_integrity_monitoring\x18\x03 \x01(\bB\x03\xe0A\x01H\x02R\x19enableIntegrityMonitoring\x88\x01\x01B\x15\n" +
+	"\x03ANY\x10\x01\"?\n" +
+	"\x11NodeGroupAffinity\x12*\n" +
+	"\x0enode_group_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fnodeGroupUri\"\x8f\x02\n" +
+	"\x16ShieldedInstanceConfig\x127\n" +
+	"\x12enable_secure_boot\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\x10enableSecureBoot\x88\x01\x01\x12*\n" +
+	"\venable_vtpm\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x01R\n" +
+	"enableVtpm\x88\x01\x01\x12I\n" +
+	"\x1benable_integrity_monitoring\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x02R\x19enableIntegrityMonitoring\x88\x01\x01B\x15\n" +
 	"\x13_enable_secure_bootB\x0e\n" +
 	"\f_enable_vtpmB\x1e\n" +
-	"\x1c_enable_integrity_monitoring\"\xdd\x02\n" +
-	"\x1aConfidentialInstanceConfig\x12E\n" +
-	"\x1benable_confidential_compute\x18\x01 \x01(\bB\x05\xe0A\x01\x18\x01R\x19enableConfidentialCompute\x12\x90\x01\n" +
-	"\x1aconfidential_instance_type\x18\x02 \x01(\x0e2M.google.cloud.dataproc.v1.ConfidentialInstanceConfig.ConfidentialInstanceTypeB\x03\xe0A\x01R\x18confidentialInstanceType\"e\n" +
+	"\x1c_enable_integrity_monitoring\"\xdf\x02\n" +
+	"\x1aConfidentialInstanceConfig\x12F\n" +
+	"\x1benable_confidential_compute\x18\x01 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x19enableConfidentialCompute\x12\x91\x01\n" +
+	"\x1aconfidential_instance_type\x18\x02 \x01(\x0e2M.google.cloud.dataproc.v1.ConfidentialInstanceConfig.ConfidentialInstanceTypeB\x04\xe2A\x01\x01R\x18confidentialInstanceType\"e\n" +
 	"\x18ConfidentialInstanceType\x12*\n" +
 	"&CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03SEV\x10\x01\x12\v\n" +
 	"\aSEV_SNP\x10\x02\x12\a\n" +
-	"\x03TDX\x10\x03\"\xce\b\n" +
-	"\x13InstanceGroupConfig\x12(\n" +
-	"\rnum_instances\x18\x01 \x01(\x05B\x03\xe0A\x01R\fnumInstances\x12*\n" +
-	"\x0einstance_names\x18\x02 \x03(\tB\x03\xe0A\x03R\rinstanceNames\x12a\n" +
-	"\x13instance_references\x18\v \x03(\v2+.google.cloud.dataproc.v1.InstanceReferenceB\x03\xe0A\x03R\x12instanceReferences\x12 \n" +
-	"\timage_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\bimageUri\x12-\n" +
-	"\x10machine_type_uri\x18\x04 \x01(\tB\x03\xe0A\x01R\x0emachineTypeUri\x12J\n" +
-	"\vdisk_config\x18\x05 \x01(\v2$.google.cloud.dataproc.v1.DiskConfigB\x03\xe0A\x01R\n" +
-	"diskConfig\x12*\n" +
-	"\x0eis_preemptible\x18\x06 \x01(\bB\x03\xe0A\x03R\risPreemptible\x12i\n" +
+	"\x03TDX\x10\x03\"\xdc\b\n" +
+	"\x13InstanceGroupConfig\x12)\n" +
+	"\rnum_instances\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\fnumInstances\x12+\n" +
+	"\x0einstance_names\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\rinstanceNames\x12b\n" +
+	"\x13instance_references\x18\v \x03(\v2+.google.cloud.dataproc.v1.InstanceReferenceB\x04\xe2A\x01\x03R\x12instanceReferences\x12!\n" +
+	"\timage_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bimageUri\x12.\n" +
+	"\x10machine_type_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0emachineTypeUri\x12K\n" +
+	"\vdisk_config\x18\x05 \x01(\v2$.google.cloud.dataproc.v1.DiskConfigB\x04\xe2A\x01\x01R\n" +
+	"diskConfig\x12+\n" +
+	"\x0eis_preemptible\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\risPreemptible\x12j\n" +
 	"\x0epreemptibility\x18\n" +
-	" \x01(\x0e2<.google.cloud.dataproc.v1.InstanceGroupConfig.PreemptibilityB\x03\xe0A\x01R\x0epreemptibility\x12c\n" +
-	"\x14managed_group_config\x18\a \x01(\v2,.google.cloud.dataproc.v1.ManagedGroupConfigB\x03\xe0A\x03R\x12managedGroupConfig\x12T\n" +
-	"\faccelerators\x18\b \x03(\v2+.google.cloud.dataproc.v1.AcceleratorConfigB\x03\xe0A\x01R\faccelerators\x12-\n" +
-	"\x10min_cpu_platform\x18\t \x01(\tB\x03\xe0A\x01R\x0eminCpuPlatform\x12/\n" +
-	"\x11min_num_instances\x18\f \x01(\x05B\x03\xe0A\x01R\x0fminNumInstances\x12x\n" +
-	"\x1binstance_flexibility_policy\x18\r \x01(\v23.google.cloud.dataproc.v1.InstanceFlexibilityPolicyB\x03\xe0A\x01R\x19instanceFlexibilityPolicy\x12S\n" +
-	"\x0estartup_config\x18\x0e \x01(\v2'.google.cloud.dataproc.v1.StartupConfigB\x03\xe0A\x01R\rstartupConfig\"`\n" +
+	" \x01(\x0e2<.google.cloud.dataproc.v1.InstanceGroupConfig.PreemptibilityB\x04\xe2A\x01\x01R\x0epreemptibility\x12d\n" +
+	"\x14managed_group_config\x18\a \x01(\v2,.google.cloud.dataproc.v1.ManagedGroupConfigB\x04\xe2A\x01\x03R\x12managedGroupConfig\x12U\n" +
+	"\faccelerators\x18\b \x03(\v2+.google.cloud.dataproc.v1.AcceleratorConfigB\x04\xe2A\x01\x01R\faccelerators\x12.\n" +
+	"\x10min_cpu_platform\x18\t \x01(\tB\x04\xe2A\x01\x01R\x0eminCpuPlatform\x120\n" +
+	"\x11min_num_instances\x18\f \x01(\x05B\x04\xe2A\x01\x01R\x0fminNumInstances\x12y\n" +
+	"\x1binstance_flexibility_policy\x18\r \x01(\v23.google.cloud.dataproc.v1.InstanceFlexibilityPolicyB\x04\xe2A\x01\x01R\x19instanceFlexibilityPolicy\x12T\n" +
+	"\x0estartup_config\x18\x0e \x01(\v2'.google.cloud.dataproc.v1.StartupConfigB\x04\xe2A\x01\x01R\rstartupConfig\"`\n" +
 	"\x0ePreemptibility\x12\x1e\n" +
 	"\x1aPREEMPTIBILITY_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fNON_PREEMPTIBLE\x10\x01\x12\x0f\n" +
 	"\vPREEMPTIBLE\x10\x02\x12\b\n" +
-	"\x04SPOT\x10\x03\"\x82\x01\n" +
-	"\rStartupConfig\x12N\n" +
-	"\x1erequired_registration_fraction\x18\x01 \x01(\x01B\x03\xe0A\x01H\x00R\x1crequiredRegistrationFraction\x88\x01\x01B!\n" +
+	"\x04SPOT\x10\x03\"\x83\x01\n" +
+	"\rStartupConfig\x12O\n" +
+	"\x1erequired_registration_fraction\x18\x01 \x01(\x01B\x04\xe2A\x01\x01H\x00R\x1crequiredRegistrationFraction\x88\x01\x01B!\n" +
 	"\x1f_required_registration_fraction\"\xa2\x01\n" +
 	"\x11InstanceReference\x12#\n" +
 	"\rinstance_name\x18\x01 \x01(\tR\finstanceName\x12\x1f\n" +
@@ -5568,60 +5568,60 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"instanceId\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x03 \x01(\tR\tpublicKey\x12(\n" +
-	"\x10public_ecies_key\x18\x04 \x01(\tR\x0epublicEciesKey\"\xd5\x01\n" +
-	"\x12ManagedGroupConfig\x129\n" +
-	"\x16instance_template_name\x18\x01 \x01(\tB\x03\xe0A\x03R\x14instanceTemplateName\x12B\n" +
-	"\x1binstance_group_manager_name\x18\x02 \x01(\tB\x03\xe0A\x03R\x18instanceGroupManagerName\x12@\n" +
-	"\x1ainstance_group_manager_uri\x18\x03 \x01(\tB\x03\xe0A\x03R\x17instanceGroupManagerUri\"\xdf\a\n" +
-	"\x19InstanceFlexibilityPolicy\x12\x83\x01\n" +
-	"\x16provisioning_model_mix\x18\x01 \x01(\v2H.google.cloud.dataproc.v1.InstanceFlexibilityPolicy.ProvisioningModelMixB\x03\xe0A\x01R\x14provisioningModelMix\x12\x82\x01\n" +
-	"\x17instance_selection_list\x18\x02 \x03(\v2E.google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelectionB\x03\xe0A\x01R\x15instanceSelectionList\x12\x8e\x01\n" +
-	"\x1ainstance_selection_results\x18\x03 \x03(\v2K.google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelectionResultB\x03\xe0A\x03R\x18instanceSelectionResults\x1a\xf4\x01\n" +
-	"\x14ProvisioningModelMix\x12>\n" +
-	"\x16standard_capacity_base\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\x14standardCapacityBase\x88\x01\x01\x12X\n" +
-	"$standard_capacity_percent_above_base\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R standardCapacityPercentAboveBase\x88\x01\x01B\x19\n" +
+	"\x10public_ecies_key\x18\x04 \x01(\tR\x0epublicEciesKey\"\xd8\x01\n" +
+	"\x12ManagedGroupConfig\x12:\n" +
+	"\x16instance_template_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x14instanceTemplateName\x12C\n" +
+	"\x1binstance_group_manager_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x18instanceGroupManagerName\x12A\n" +
+	"\x1ainstance_group_manager_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x17instanceGroupManagerUri\"\xe9\a\n" +
+	"\x19InstanceFlexibilityPolicy\x12\x84\x01\n" +
+	"\x16provisioning_model_mix\x18\x01 \x01(\v2H.google.cloud.dataproc.v1.InstanceFlexibilityPolicy.ProvisioningModelMixB\x04\xe2A\x01\x01R\x14provisioningModelMix\x12\x83\x01\n" +
+	"\x17instance_selection_list\x18\x02 \x03(\v2E.google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelectionB\x04\xe2A\x01\x01R\x15instanceSelectionList\x12\x8f\x01\n" +
+	"\x1ainstance_selection_results\x18\x03 \x03(\v2K.google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelectionResultB\x04\xe2A\x01\x03R\x18instanceSelectionResults\x1a\xf6\x01\n" +
+	"\x14ProvisioningModelMix\x12?\n" +
+	"\x16standard_capacity_base\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x14standardCapacityBase\x88\x01\x01\x12Y\n" +
+	"$standard_capacity_percent_above_base\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R standardCapacityPercentAboveBase\x88\x01\x01B\x19\n" +
 	"\x17_standard_capacity_baseB'\n" +
-	"%_standard_capacity_percent_above_base\x1a\xa2\x01\n" +
-	"\x11InstanceSelection\x12(\n" +
-	"\rmachine_types\x18\x01 \x03(\tB\x03\xe0A\x01R\fmachineTypes\x12\x17\n" +
-	"\x04rank\x18\x02 \x01(\x05B\x03\xe0A\x01R\x04rank\x12J\n" +
-	"\vdisk_config\x18\x03 \x01(\v2$.google.cloud.dataproc.v1.DiskConfigB\x03\xe0A\x01R\n" +
-	"diskConfig\x1a\x89\x01\n" +
-	"\x17InstanceSelectionResult\x12+\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x03H\x00R\vmachineType\x88\x01\x01\x12#\n" +
-	"\bvm_count\x18\x02 \x01(\x05B\x03\xe0A\x03H\x01R\avmCount\x88\x01\x01B\x0f\n" +
+	"%_standard_capacity_percent_above_base\x1a\xa5\x01\n" +
+	"\x11InstanceSelection\x12)\n" +
+	"\rmachine_types\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\fmachineTypes\x12\x18\n" +
+	"\x04rank\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x04rank\x12K\n" +
+	"\vdisk_config\x18\x03 \x01(\v2$.google.cloud.dataproc.v1.DiskConfigB\x04\xe2A\x01\x01R\n" +
+	"diskConfig\x1a\x8b\x01\n" +
+	"\x17InstanceSelectionResult\x12,\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x03H\x00R\vmachineType\x88\x01\x01\x12$\n" +
+	"\bvm_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03H\x01R\avmCount\x88\x01\x01B\x0f\n" +
 	"\r_machine_typeB\v\n" +
-	"\t_vm_count\"\xdc\x02\n" +
-	"\x1bFlexibleInstanceGroupConfig\x12(\n" +
-	"\rnum_instances\x18\x01 \x01(\x05B\x03\xe0A\x01R\fnumInstances\x12\"\n" +
+	"\t_vm_count\"\xe0\x02\n" +
+	"\x1bFlexibleInstanceGroupConfig\x12)\n" +
+	"\rnum_instances\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\fnumInstances\x12#\n" +
 	"\n" +
-	"core_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\tcoreCount\x12.\n" +
-	"\x11boot_disk_size_gb\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0ebootDiskSizeGb\x12o\n" +
-	"\x0ehardware_class\x18\x04 \x01(\x0e2C.google.cloud.dataproc.v1.FlexibleInstanceGroupConfig.HardwareClassB\x03\xe0A\x01R\rhardwareClass\"N\n" +
+	"core_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\tcoreCount\x12/\n" +
+	"\x11boot_disk_size_gb\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x0ebootDiskSizeGb\x12p\n" +
+	"\x0ehardware_class\x18\x04 \x01(\x0e2C.google.cloud.dataproc.v1.FlexibleInstanceGroupConfig.HardwareClassB\x04\xe2A\x01\x01R\rhardwareClass\"N\n" +
 	"\rHardwareClass\x12\x1e\n" +
 	"\x1aHARDWARE_CLASS_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\x0f\n" +
 	"\vPERFORMANCE\x10\x02\"r\n" +
 	"\x11AcceleratorConfig\x120\n" +
 	"\x14accelerator_type_uri\x18\x01 \x01(\tR\x12acceleratorTypeUri\x12+\n" +
-	"\x11accelerator_count\x18\x02 \x01(\x05R\x10acceleratorCount\"\x8c\x04\n" +
+	"\x11accelerator_count\x18\x02 \x01(\x05R\x10acceleratorCount\"\x93\x04\n" +
 	"\n" +
-	"DiskConfig\x12)\n" +
-	"\x0eboot_disk_type\x18\x03 \x01(\tB\x03\xe0A\x01R\fbootDiskType\x12.\n" +
-	"\x11boot_disk_size_gb\x18\x01 \x01(\x05B\x03\xe0A\x01R\x0ebootDiskSizeGb\x12)\n" +
-	"\x0enum_local_ssds\x18\x02 \x01(\x05B\x03\xe0A\x01R\fnumLocalSsds\x123\n" +
-	"\x13local_ssd_interface\x18\x04 \x01(\tB\x03\xe0A\x01R\x11localSsdInterface\x12E\n" +
-	"\x1aboot_disk_provisioned_iops\x18\x05 \x01(\x03B\x03\xe0A\x01H\x00R\x17bootDiskProvisionedIops\x88\x01\x01\x12Q\n" +
-	" boot_disk_provisioned_throughput\x18\x06 \x01(\x03B\x03\xe0A\x01H\x01R\x1dbootDiskProvisionedThroughput\x88\x01\x01\x12e\n" +
-	"\x15attached_disk_configs\x18\a \x03(\v2,.google.cloud.dataproc.v1.AttachedDiskConfigB\x03\xe0A\x01R\x13attachedDiskConfigsB\x1d\n" +
+	"DiskConfig\x12*\n" +
+	"\x0eboot_disk_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fbootDiskType\x12/\n" +
+	"\x11boot_disk_size_gb\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x0ebootDiskSizeGb\x12*\n" +
+	"\x0enum_local_ssds\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\fnumLocalSsds\x124\n" +
+	"\x13local_ssd_interface\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x11localSsdInterface\x12F\n" +
+	"\x1aboot_disk_provisioned_iops\x18\x05 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x17bootDiskProvisionedIops\x88\x01\x01\x12R\n" +
+	" boot_disk_provisioned_throughput\x18\x06 \x01(\x03B\x04\xe2A\x01\x01H\x01R\x1dbootDiskProvisionedThroughput\x88\x01\x01\x12f\n" +
+	"\x15attached_disk_configs\x18\a \x03(\v2,.google.cloud.dataproc.v1.AttachedDiskConfigB\x04\xe2A\x01\x01R\x13attachedDiskConfigsB\x1d\n" +
 	"\x1b_boot_disk_provisioned_iopsB#\n" +
-	"!_boot_disk_provisioned_throughput\"\xbd\x03\n" +
-	"\x12AttachedDiskConfig\x12W\n" +
-	"\tdisk_type\x18\x01 \x01(\x0e25.google.cloud.dataproc.v1.AttachedDiskConfig.DiskTypeB\x03\xe0A\x01R\bdiskType\x12%\n" +
-	"\fdisk_size_gb\x18\x02 \x01(\x05B\x03\xe0A\x01R\n" +
-	"diskSizeGb\x123\n" +
-	"\x10provisioned_iops\x18\x03 \x01(\x03B\x03\xe0A\x01H\x00R\x0fprovisionedIops\x88\x01\x01\x12?\n" +
-	"\x16provisioned_throughput\x18\x04 \x01(\x03B\x03\xe0A\x01H\x01R\x15provisionedThroughput\x88\x01\x01\"\x80\x01\n" +
+	"!_boot_disk_provisioned_throughput\"\xc1\x03\n" +
+	"\x12AttachedDiskConfig\x12X\n" +
+	"\tdisk_type\x18\x01 \x01(\x0e25.google.cloud.dataproc.v1.AttachedDiskConfig.DiskTypeB\x04\xe2A\x01\x01R\bdiskType\x12&\n" +
+	"\fdisk_size_gb\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"diskSizeGb\x124\n" +
+	"\x10provisioned_iops\x18\x03 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x0fprovisionedIops\x88\x01\x01\x12@\n" +
+	"\x16provisioned_throughput\x18\x04 \x01(\x03B\x04\xe2A\x01\x01H\x01R\x15provisionedThroughput\x88\x01\x01\"\x80\x01\n" +
 	"\bDiskType\x12\x19\n" +
 	"\x15DISK_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12HYPERDISK_BALANCED\x10\x01\x12\x15\n" +
@@ -5629,16 +5629,16 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\fHYPERDISK_ML\x10\x03\x12\x18\n" +
 	"\x14HYPERDISK_THROUGHPUT\x10\x04B\x13\n" +
 	"\x11_provisioned_iopsB\x19\n" +
-	"\x17_provisioned_throughput\"\x86\x01\n" +
-	"\x12AuxiliaryNodeGroup\x12G\n" +
+	"\x17_provisioned_throughput\"\x88\x01\n" +
+	"\x12AuxiliaryNodeGroup\x12H\n" +
 	"\n" +
-	"node_group\x18\x01 \x01(\v2#.google.cloud.dataproc.v1.NodeGroupB\x03\xe0A\x02R\tnodeGroup\x12'\n" +
-	"\rnode_group_id\x18\x02 \x01(\tB\x03\xe0A\x01R\vnodeGroupId\"\xef\x03\n" +
+	"node_group\x18\x01 \x01(\v2#.google.cloud.dataproc.v1.NodeGroupB\x04\xe2A\x01\x02R\tnodeGroup\x12(\n" +
+	"\rnode_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vnodeGroupId\"\xf2\x03\n" +
 	"\tNodeGroup\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12C\n" +
-	"\x05roles\x18\x02 \x03(\x0e2(.google.cloud.dataproc.v1.NodeGroup.RoleB\x03\xe0A\x02R\x05roles\x12^\n" +
-	"\x11node_group_config\x18\x03 \x01(\v2-.google.cloud.dataproc.v1.InstanceGroupConfigB\x03\xe0A\x01R\x0fnodeGroupConfig\x12L\n" +
-	"\x06labels\x18\x04 \x03(\v2/.google.cloud.dataproc.v1.NodeGroup.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12D\n" +
+	"\x05roles\x18\x02 \x03(\x0e2(.google.cloud.dataproc.v1.NodeGroup.RoleB\x04\xe2A\x01\x02R\x05roles\x12_\n" +
+	"\x11node_group_config\x18\x03 \x01(\v2-.google.cloud.dataproc.v1.InstanceGroupConfigB\x04\xe2A\x01\x01R\x0fnodeGroupConfig\x12M\n" +
+	"\x06labels\x18\x04 \x03(\v2/.google.cloud.dataproc.v1.NodeGroup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"(\n" +
@@ -5646,15 +5646,15 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06DRIVER\x10\x01:v\xeaAs\n" +
-	"!dataproc.googleapis.com/NodeGroup\x12Nprojects/{project}/regions/{region}/clusters/{cluster}/nodeGroups/{node_group}\"\x95\x01\n" +
-	"\x18NodeInitializationAction\x12,\n" +
-	"\x0fexecutable_file\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eexecutableFile\x12K\n" +
-	"\x11execution_timeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10executionTimeout\"\xff\x03\n" +
-	"\rClusterStatus\x12H\n" +
-	"\x05state\x18\x01 \x01(\x0e2-.google.cloud.dataproc.v1.ClusterStatus.StateB\x03\xe0A\x03R\x05state\x12\x1e\n" +
-	"\x06detail\x18\x02 \x01(\tB\x06\xe0A\x03\xe0A\x01R\x06detail\x12I\n" +
-	"\x10state_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0estateStartTime\x12Q\n" +
-	"\bsubstate\x18\x04 \x01(\x0e20.google.cloud.dataproc.v1.ClusterStatus.SubstateB\x03\xe0A\x03R\bsubstate\"\xa7\x01\n" +
+	"!dataproc.googleapis.com/NodeGroup\x12Nprojects/{project}/regions/{region}/clusters/{cluster}/nodeGroups/{node_group}\"\x97\x01\n" +
+	"\x18NodeInitializationAction\x12-\n" +
+	"\x0fexecutable_file\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eexecutableFile\x12L\n" +
+	"\x11execution_timeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x10executionTimeout\"\x81\x04\n" +
+	"\rClusterStatus\x12I\n" +
+	"\x05state\x18\x01 \x01(\x0e2-.google.cloud.dataproc.v1.ClusterStatus.StateB\x04\xe2A\x01\x03R\x05state\x12\x1d\n" +
+	"\x06detail\x18\x02 \x01(\tB\x05\xe2A\x02\x03\x01R\x06detail\x12J\n" +
+	"\x10state_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0estateStartTime\x12R\n" +
+	"\bsubstate\x18\x04 \x01(\x0e20.google.cloud.dataproc.v1.ClusterStatus.SubstateB\x04\xe2A\x01\x03R\bsubstate\"\xa7\x01\n" +
 	"\x05State\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\v\n" +
@@ -5671,54 +5671,54 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\bSubstate\x12\x0f\n" +
 	"\vUNSPECIFIED\x10\x00\x12\r\n" +
 	"\tUNHEALTHY\x10\x01\x12\x10\n" +
-	"\fSTALE_STATUS\x10\x02\"\xc0\x01\n" +
-	"\x0eSecurityConfig\x12V\n" +
-	"\x0fkerberos_config\x18\x01 \x01(\v2(.google.cloud.dataproc.v1.KerberosConfigB\x03\xe0A\x01R\x0ekerberosConfig\x12V\n" +
-	"\x0fidentity_config\x18\x02 \x01(\v2(.google.cloud.dataproc.v1.IdentityConfigB\x03\xe0A\x01R\x0eidentityConfig\"\xab\x06\n" +
-	"\x0eKerberosConfig\x12,\n" +
-	"\x0fenable_kerberos\x18\x01 \x01(\bB\x03\xe0A\x01R\x0eenableKerberos\x12B\n" +
-	"\x1broot_principal_password_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\x18rootPrincipalPasswordUri\x12#\n" +
-	"\vkms_key_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\tkmsKeyUri\x12&\n" +
-	"\fkeystore_uri\x18\x04 \x01(\tB\x03\xe0A\x01R\vkeystoreUri\x12*\n" +
-	"\x0etruststore_uri\x18\x05 \x01(\tB\x03\xe0A\x01R\rtruststoreUri\x127\n" +
-	"\x15keystore_password_uri\x18\x06 \x01(\tB\x03\xe0A\x01R\x13keystorePasswordUri\x12-\n" +
-	"\x10key_password_uri\x18\a \x01(\tB\x03\xe0A\x01R\x0ekeyPasswordUri\x12;\n" +
-	"\x17truststore_password_uri\x18\b \x01(\tB\x03\xe0A\x01R\x15truststorePasswordUri\x12:\n" +
-	"\x17cross_realm_trust_realm\x18\t \x01(\tB\x03\xe0A\x01R\x14crossRealmTrustRealm\x126\n" +
+	"\fSTALE_STATUS\x10\x02\"\xc2\x01\n" +
+	"\x0eSecurityConfig\x12W\n" +
+	"\x0fkerberos_config\x18\x01 \x01(\v2(.google.cloud.dataproc.v1.KerberosConfigB\x04\xe2A\x01\x01R\x0ekerberosConfig\x12W\n" +
+	"\x0fidentity_config\x18\x02 \x01(\v2(.google.cloud.dataproc.v1.IdentityConfigB\x04\xe2A\x01\x01R\x0eidentityConfig\"\xba\x06\n" +
+	"\x0eKerberosConfig\x12-\n" +
+	"\x0fenable_kerberos\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0eenableKerberos\x12C\n" +
+	"\x1broot_principal_password_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x18rootPrincipalPasswordUri\x12$\n" +
+	"\vkms_key_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tkmsKeyUri\x12'\n" +
+	"\fkeystore_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vkeystoreUri\x12+\n" +
+	"\x0etruststore_uri\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\rtruststoreUri\x128\n" +
+	"\x15keystore_password_uri\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x13keystorePasswordUri\x12.\n" +
+	"\x10key_password_uri\x18\a \x01(\tB\x04\xe2A\x01\x01R\x0ekeyPasswordUri\x12<\n" +
+	"\x17truststore_password_uri\x18\b \x01(\tB\x04\xe2A\x01\x01R\x15truststorePasswordUri\x12;\n" +
+	"\x17cross_realm_trust_realm\x18\t \x01(\tB\x04\xe2A\x01\x01R\x14crossRealmTrustRealm\x127\n" +
 	"\x15cross_realm_trust_kdc\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x12crossRealmTrustKdc\x12G\n" +
-	"\x1ecross_realm_trust_admin_server\x18\v \x01(\tB\x03\xe0A\x01R\x1acrossRealmTrustAdminServer\x12T\n" +
-	"%cross_realm_trust_shared_password_uri\x18\f \x01(\tB\x03\xe0A\x01R crossRealmTrustSharedPasswordUri\x12(\n" +
-	"\x0ekdc_db_key_uri\x18\r \x01(\tB\x03\xe0A\x01R\vkdcDbKeyUri\x121\n" +
-	"\x12tgt_lifetime_hours\x18\x0e \x01(\x05B\x03\xe0A\x01R\x10tgtLifetimeHours\x12\x19\n" +
-	"\x05realm\x18\x0f \x01(\tB\x03\xe0A\x01R\x05realm\"\xee\x01\n" +
-	"\x0eIdentityConfig\x12\x8d\x01\n" +
-	"\x1cuser_service_account_mapping\x18\x01 \x03(\v2G.google.cloud.dataproc.v1.IdentityConfig.UserServiceAccountMappingEntryB\x03\xe0A\x02R\x19userServiceAccountMapping\x1aL\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x12crossRealmTrustKdc\x12H\n" +
+	"\x1ecross_realm_trust_admin_server\x18\v \x01(\tB\x04\xe2A\x01\x01R\x1acrossRealmTrustAdminServer\x12U\n" +
+	"%cross_realm_trust_shared_password_uri\x18\f \x01(\tB\x04\xe2A\x01\x01R crossRealmTrustSharedPasswordUri\x12)\n" +
+	"\x0ekdc_db_key_uri\x18\r \x01(\tB\x04\xe2A\x01\x01R\vkdcDbKeyUri\x122\n" +
+	"\x12tgt_lifetime_hours\x18\x0e \x01(\x05B\x04\xe2A\x01\x01R\x10tgtLifetimeHours\x12\x1a\n" +
+	"\x05realm\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\x05realm\"\xef\x01\n" +
+	"\x0eIdentityConfig\x12\x8e\x01\n" +
+	"\x1cuser_service_account_mapping\x18\x01 \x03(\v2G.google.cloud.dataproc.v1.IdentityConfig.UserServiceAccountMappingEntryB\x04\xe2A\x01\x02R\x19userServiceAccountMapping\x1aL\n" +
 	"\x1eUserServiceAccountMappingEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb3\x02\n" +
-	"\x0eSoftwareConfig\x12(\n" +
-	"\rimage_version\x18\x01 \x01(\tB\x03\xe0A\x01R\fimageVersion\x12]\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb6\x02\n" +
+	"\x0eSoftwareConfig\x12)\n" +
+	"\rimage_version\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fimageVersion\x12^\n" +
 	"\n" +
-	"properties\x18\x02 \x03(\v28.google.cloud.dataproc.v1.SoftwareConfig.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12Y\n" +
-	"\x13optional_components\x18\x03 \x03(\x0e2#.google.cloud.dataproc.v1.ComponentB\x03\xe0A\x01R\x12optionalComponents\x1a=\n" +
+	"properties\x18\x02 \x03(\v28.google.cloud.dataproc.v1.SoftwareConfig.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12Z\n" +
+	"\x13optional_components\x18\x03 \x03(\x0e2#.google.cloud.dataproc.v1.ComponentB\x04\xe2A\x01\x01R\x12optionalComponents\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9f\x04\n" +
-	"\x0fLifecycleConfig\x12F\n" +
-	"\x0fidle_delete_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\ridleDeleteTtl\x12K\n" +
-	"\x10auto_delete_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x00R\x0eautoDeleteTime\x12H\n" +
-	"\x0fauto_delete_ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01H\x00R\rautoDeleteTtl\x12B\n" +
-	"\ridle_stop_ttl\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\vidleStopTtl\x12G\n" +
-	"\x0eauto_stop_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x01R\fautoStopTime\x12D\n" +
-	"\rauto_stop_ttl\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01H\x01R\vautoStopTtl\x12G\n" +
-	"\x0fidle_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\ridleStartTimeB\x05\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa6\x04\n" +
+	"\x0fLifecycleConfig\x12G\n" +
+	"\x0fidle_delete_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\ridleDeleteTtl\x12L\n" +
+	"\x10auto_delete_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\x00R\x0eautoDeleteTime\x12I\n" +
+	"\x0fauto_delete_ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01H\x00R\rautoDeleteTtl\x12C\n" +
+	"\ridle_stop_ttl\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\vidleStopTtl\x12H\n" +
+	"\x0eauto_stop_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\x01R\fautoStopTime\x12E\n" +
+	"\rauto_stop_ttl\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01H\x01R\vautoStopTtl\x12H\n" +
+	"\x0fidle_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\ridleStartTimeB\x05\n" +
 	"\x03ttlB\n" +
 	"\n" +
-	"\bstop_ttl\"y\n" +
-	"\x0fMetastoreConfig\x12f\n" +
-	"\x1adataproc_metastore_service\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\bstop_ttl\"z\n" +
+	"\x0fMetastoreConfig\x12g\n" +
+	"\x1adataproc_metastore_service\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" metastore.googleapis.com/ServiceR\x18dataprocMetastoreService\"\xcc\x02\n" +
 	"\x0eClusterMetrics\x12\\\n" +
 	"\fhdfs_metrics\x18\x01 \x03(\v29.google.cloud.dataproc.v1.ClusterMetrics.HdfsMetricsEntryR\vhdfsMetrics\x12\\\n" +
@@ -5728,12 +5728,12 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a>\n" +
 	"\x10YarnMetricsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\"\xc5\x03\n" +
-	"\x14DataprocMetricConfig\x12T\n" +
-	"\ametrics\x18\x01 \x03(\v25.google.cloud.dataproc.v1.DataprocMetricConfig.MetricB\x03\xe0A\x02R\ametrics\x1a\x9f\x01\n" +
-	"\x06Metric\x12e\n" +
-	"\rmetric_source\x18\x01 \x01(\x0e2;.google.cloud.dataproc.v1.DataprocMetricConfig.MetricSourceB\x03\xe0A\x02R\fmetricSource\x12.\n" +
-	"\x10metric_overrides\x18\x02 \x03(\tB\x03\xe0A\x01R\x0fmetricOverrides\"\xb4\x01\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\"\xc8\x03\n" +
+	"\x14DataprocMetricConfig\x12U\n" +
+	"\ametrics\x18\x01 \x03(\v25.google.cloud.dataproc.v1.DataprocMetricConfig.MetricB\x04\xe2A\x01\x02R\ametrics\x1a\xa1\x01\n" +
+	"\x06Metric\x12f\n" +
+	"\rmetric_source\x18\x01 \x01(\x0e2;.google.cloud.dataproc.v1.DataprocMetricConfig.MetricSourceB\x04\xe2A\x01\x02R\fmetricSource\x12/\n" +
+	"\x10metric_overrides\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0fmetricOverrides\"\xb4\x01\n" +
 	"\fMetricSource\x12\x1d\n" +
 	"\x19METRIC_SOURCE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19MONITORING_AGENT_DEFAULTS\x10\x01\x12\b\n" +
@@ -5743,88 +5743,88 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\x14SPARK_HISTORY_SERVER\x10\x05\x12\x0f\n" +
 	"\vHIVESERVER2\x10\x06\x12\x11\n" +
 	"\rHIVEMETASTORE\x10\a\x12\t\n" +
-	"\x05FLINK\x10\b\"\xb3\x02\n" +
-	"\x14CreateClusterRequest\x12\"\n" +
+	"\x05FLINK\x10\b\"\xb8\x02\n" +
+	"\x14CreateClusterRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x12@\n" +
-	"\acluster\x18\x02 \x01(\v2!.google.cloud.dataproc.v1.ClusterB\x03\xe0A\x02R\acluster\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12A\n" +
+	"\acluster\x18\x02 \x01(\v2!.google.cloud.dataproc.v1.ClusterB\x04\xe2A\x01\x02R\acluster\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12t\n" +
-	" action_on_failed_primary_workers\x18\x05 \x01(\x0e2'.google.cloud.dataproc.v1.FailureActionB\x03\xe0A\x01R\x1cactionOnFailedPrimaryWorkers\"\x8b\x03\n" +
-	"\x14UpdateClusterRequest\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12u\n" +
+	" action_on_failed_primary_workers\x18\x05 \x01(\x0e2'.google.cloud.dataproc.v1.FailureActionB\x04\xe2A\x01\x01R\x1cactionOnFailedPrimaryWorkers\"\x92\x03\n" +
+	"\x14UpdateClusterRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x05 \x01(\tB\x03\xe0A\x02R\x06region\x12&\n" +
-	"\fcluster_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vclusterName\x12@\n" +
-	"\acluster\x18\x03 \x01(\v2!.google.cloud.dataproc.v1.ClusterB\x03\xe0A\x02R\acluster\x12b\n" +
-	"\x1dgraceful_decommission_timeout\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x1bgracefulDecommissionTimeout\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12'\n" +
+	"\fcluster_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vclusterName\x12A\n" +
+	"\acluster\x18\x03 \x01(\v2!.google.cloud.dataproc.v1.ClusterB\x04\xe2A\x01\x02R\acluster\x12c\n" +
+	"\x1dgraceful_decommission_timeout\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x1bgracefulDecommissionTimeout\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\a \x01(\tB\x03\xe0A\x01R\trequestId\"\xc9\x01\n" +
-	"\x12StopClusterRequest\x12\"\n" +
+	"request_id\x18\a \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xce\x01\n" +
+	"\x12StopClusterRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x02 \x01(\tB\x03\xe0A\x02R\x06region\x12&\n" +
-	"\fcluster_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vclusterName\x12&\n" +
-	"\fcluster_uuid\x18\x04 \x01(\tB\x03\xe0A\x01R\vclusterUuid\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12'\n" +
+	"\fcluster_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vclusterName\x12'\n" +
+	"\fcluster_uuid\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vclusterUuid\x12#\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\x03\xe0A\x01R\trequestId\"\xca\x01\n" +
-	"\x13StartClusterRequest\x12\"\n" +
+	"request_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xcf\x01\n" +
+	"\x13StartClusterRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x02 \x01(\tB\x03\xe0A\x02R\x06region\x12&\n" +
-	"\fcluster_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vclusterName\x12&\n" +
-	"\fcluster_uuid\x18\x04 \x01(\tB\x03\xe0A\x01R\vclusterUuid\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12'\n" +
+	"\fcluster_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vclusterName\x12'\n" +
+	"\fcluster_uuid\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vclusterUuid\x12#\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\x03\xe0A\x01R\trequestId\"\xcb\x01\n" +
-	"\x14DeleteClusterRequest\x12\"\n" +
+	"request_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd0\x01\n" +
+	"\x14DeleteClusterRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x12&\n" +
-	"\fcluster_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vclusterName\x12&\n" +
-	"\fcluster_uuid\x18\x04 \x01(\tB\x03\xe0A\x01R\vclusterUuid\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12'\n" +
+	"\fcluster_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vclusterName\x12'\n" +
+	"\fcluster_uuid\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vclusterUuid\x12#\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\x03\xe0A\x01R\trequestId\"|\n" +
-	"\x11GetClusterRequest\x12\"\n" +
+	"request_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x7f\n" +
+	"\x11GetClusterRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x12&\n" +
-	"\fcluster_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vclusterName\"\xb9\x01\n" +
-	"\x13ListClustersRequest\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12'\n" +
+	"\fcluster_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vclusterName\"\xbe\x01\n" +
+	"\x13ListClustersRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x04 \x01(\tB\x03\xe0A\x02R\x06region\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x87\x01\n" +
-	"\x14ListClustersResponse\x12B\n" +
-	"\bclusters\x18\x01 \x03(\v2!.google.cloud.dataproc.v1.ClusterB\x03\xe0A\x03R\bclusters\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\x9e\x04\n" +
-	"\x16DiagnoseClusterRequest\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x89\x01\n" +
+	"\x14ListClustersResponse\x12C\n" +
+	"\bclusters\x18\x01 \x03(\v2!.google.cloud.dataproc.v1.ClusterB\x04\xe2A\x01\x03R\bclusters\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xa6\x04\n" +
+	"\x16DiagnoseClusterRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x12&\n" +
-	"\fcluster_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vclusterName\x12+\n" +
-	"\x0ftarball_gcs_dir\x18\x04 \x01(\tB\x03\xe0A\x01R\rtarballGcsDir\x12j\n" +
-	"\x0etarball_access\x18\x05 \x01(\x0e2>.google.cloud.dataproc.v1.DiagnoseClusterRequest.TarballAccessB\x03\xe0A\x01R\rtarballAccess\x12I\n" +
-	"\x12diagnosis_interval\x18\x06 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x01R\x11diagnosisInterval\x12\x17\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12'\n" +
+	"\fcluster_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vclusterName\x12,\n" +
+	"\x0ftarball_gcs_dir\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\rtarballGcsDir\x12k\n" +
+	"\x0etarball_access\x18\x05 \x01(\x0e2>.google.cloud.dataproc.v1.DiagnoseClusterRequest.TarballAccessB\x04\xe2A\x01\x01R\rtarballAccess\x12J\n" +
+	"\x12diagnosis_interval\x18\x06 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x01R\x11diagnosisInterval\x12\x18\n" +
 	"\x04jobs\x18\n" +
-	" \x03(\tB\x03\xe0A\x01R\x04jobs\x125\n" +
-	"\x14yarn_application_ids\x18\v \x03(\tB\x03\xe0A\x01R\x12yarnApplicationIds\"g\n" +
+	" \x03(\tB\x04\xe2A\x01\x01R\x04jobs\x126\n" +
+	"\x14yarn_application_ids\x18\v \x03(\tB\x04\xe2A\x01\x01R\x12yarnApplicationIds\"g\n" +
 	"\rTarballAccess\x12\x1e\n" +
 	"\x1aTARBALL_ACCESS_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14GOOGLE_CLOUD_SUPPORT\x10\x01\x12\x1c\n" +
-	"\x18GOOGLE_DATAPROC_DIAGNOSE\x10\x02\"<\n" +
-	"\x16DiagnoseClusterResults\x12\"\n" +
+	"\x18GOOGLE_DATAPROC_DIAGNOSE\x10\x02\"=\n" +
+	"\x16DiagnoseClusterResults\x12#\n" +
 	"\n" +
-	"output_uri\x18\x01 \x01(\tB\x03\xe0A\x03R\toutputUri\"\x9d\x02\n" +
-	"\x13ReservationAffinity\x12q\n" +
-	"\x18consume_reservation_type\x18\x01 \x01(\x0e22.google.cloud.dataproc.v1.ReservationAffinity.TypeB\x03\xe0A\x01R\x16consumeReservationType\x12\x15\n" +
-	"\x03key\x18\x02 \x01(\tB\x03\xe0A\x01R\x03key\x12\x1b\n" +
-	"\x06values\x18\x03 \x03(\tB\x03\xe0A\x01R\x06values\"_\n" +
+	"output_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\toutputUri\"\xa0\x02\n" +
+	"\x13ReservationAffinity\x12r\n" +
+	"\x18consume_reservation_type\x18\x01 \x01(\x0e22.google.cloud.dataproc.v1.ReservationAffinity.TypeB\x04\xe2A\x01\x01R\x16consumeReservationType\x12\x16\n" +
+	"\x03key\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03key\x12\x1c\n" +
+	"\x06values\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x06values\"_\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eNO_RESERVATION\x10\x01\x12\x13\n" +

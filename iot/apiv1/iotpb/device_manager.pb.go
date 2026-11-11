@@ -1490,48 +1490,48 @@ var File_google_cloud_iot_v1_device_manager_proto protoreflect.FileDescriptor
 
 const file_google_cloud_iot_v1_device_manager_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/iot/v1/device_manager.proto\x12\x13google.cloud.iot.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/iot/v1/resources.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xb3\x01\n" +
-	"\x1bCreateDeviceRegistryRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12Q\n" +
-	"\x0fdevice_registry\x18\x02 \x01(\v2#.google.cloud.iot.v1.DeviceRegistryB\x03\xe0A\x02R\x0edeviceRegistry\"X\n" +
-	"\x18GetDeviceRegistryRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" cloudiot.googleapis.com/RegistryR\x04name\"[\n" +
-	"\x1bDeleteDeviceRegistryRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" cloudiot.googleapis.com/RegistryR\x04name\"\xb2\x01\n" +
-	"\x1bUpdateDeviceRegistryRequest\x12Q\n" +
-	"\x0fdevice_registry\x18\x01 \x01(\v2#.google.cloud.iot.v1.DeviceRegistryB\x03\xe0A\x02R\x0edeviceRegistry\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x9c\x01\n" +
-	"\x1bListDeviceRegistriesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"(google/cloud/iot/v1/device_manager.proto\x12\x13google.cloud.iot.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/iot/v1/resources.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xb5\x01\n" +
+	"\x1bCreateDeviceRegistryRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12R\n" +
+	"\x0fdevice_registry\x18\x02 \x01(\v2#.google.cloud.iot.v1.DeviceRegistryB\x04\xe2A\x01\x02R\x0edeviceRegistry\"Y\n" +
+	"\x18GetDeviceRegistryRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" cloudiot.googleapis.com/RegistryR\x04name\"\\\n" +
+	"\x1bDeleteDeviceRegistryRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" cloudiot.googleapis.com/RegistryR\x04name\"\xb4\x01\n" +
+	"\x1bUpdateDeviceRegistryRequest\x12R\n" +
+	"\x0fdevice_registry\x18\x01 \x01(\v2#.google.cloud.iot.v1.DeviceRegistryB\x04\xe2A\x01\x02R\x0edeviceRegistry\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x9d\x01\n" +
+	"\x1bListDeviceRegistriesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x98\x01\n" +
 	"\x1cListDeviceRegistriesResponse\x12P\n" +
 	"\x11device_registries\x18\x01 \x03(\v2#.google.cloud.iot.v1.DeviceRegistryR\x10deviceRegistries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x91\x01\n" +
-	"\x13CreateDeviceRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" cloudiot.googleapis.com/RegistryR\x06parent\x128\n" +
-	"\x06device\x18\x02 \x01(\v2\x1b.google.cloud.iot.v1.DeviceB\x03\xe0A\x02R\x06device\"\x89\x01\n" +
-	"\x10GetDeviceRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x93\x01\n" +
+	"\x13CreateDeviceRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" cloudiot.googleapis.com/RegistryR\x06parent\x129\n" +
+	"\x06device\x18\x02 \x01(\v2\x1b.google.cloud.iot.v1.DeviceB\x04\xe2A\x01\x02R\x06device\"\x8a\x01\n" +
+	"\x10GetDeviceRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1ecloudiot.googleapis.com/DeviceR\x04name\x129\n" +
 	"\n" +
-	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\tfieldMask\"\x91\x01\n" +
-	"\x13UpdateDeviceRequest\x128\n" +
-	"\x06device\x18\x02 \x01(\v2\x1b.google.cloud.iot.v1.DeviceB\x03\xe0A\x02R\x06device\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"Q\n" +
-	"\x13DeleteDeviceRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecloudiot.googleapis.com/DeviceR\x04name\"\xed\x02\n" +
-	"\x12ListDevicesRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\tfieldMask\"\x93\x01\n" +
+	"\x13UpdateDeviceRequest\x129\n" +
+	"\x06device\x18\x02 \x01(\v2\x1b.google.cloud.iot.v1.DeviceB\x04\xe2A\x01\x02R\x06device\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"R\n" +
+	"\x13DeleteDeviceRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecloudiot.googleapis.com/DeviceR\x04name\"\xee\x02\n" +
+	"\x12ListDevicesRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" cloudiot.googleapis.com/RegistryR\x06parent\x12$\n" +
 	"\x0edevice_num_ids\x18\x02 \x03(\x04R\fdeviceNumIds\x12\x1d\n" +
 	"\n" +
@@ -1549,46 +1549,46 @@ const file_google_cloud_iot_v1_device_manager_proto_rawDesc = "" +
 	"\x06filter\"t\n" +
 	"\x13ListDevicesResponse\x125\n" +
 	"\adevices\x18\x01 \x03(\v2\x1b.google.cloud.iot.v1.DeviceR\adevices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb0\x01\n" +
-	" ModifyCloudToDeviceConfigRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2\x01\n" +
+	" ModifyCloudToDeviceConfigRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1ecloudiot.googleapis.com/DeviceR\x04name\x12*\n" +
-	"\x11version_to_update\x18\x02 \x01(\x03R\x0fversionToUpdate\x12$\n" +
-	"\vbinary_data\x18\x03 \x01(\fB\x03\xe0A\x02R\n" +
-	"binaryData\"\x80\x01\n" +
-	"\x1fListDeviceConfigVersionsRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x11version_to_update\x18\x02 \x01(\x03R\x0fversionToUpdate\x12%\n" +
+	"\vbinary_data\x18\x03 \x01(\fB\x04\xe2A\x01\x02R\n" +
+	"binaryData\"\x81\x01\n" +
+	"\x1fListDeviceConfigVersionsRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1ecloudiot.googleapis.com/DeviceR\x04name\x12!\n" +
 	"\fnum_versions\x18\x02 \x01(\x05R\vnumVersions\"l\n" +
 	" ListDeviceConfigVersionsResponse\x12H\n" +
-	"\x0edevice_configs\x18\x01 \x03(\v2!.google.cloud.iot.v1.DeviceConfigR\rdeviceConfigs\"t\n" +
-	"\x17ListDeviceStatesRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x0edevice_configs\x18\x01 \x03(\v2!.google.cloud.iot.v1.DeviceConfigR\rdeviceConfigs\"u\n" +
+	"\x17ListDeviceStatesRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1ecloudiot.googleapis.com/DeviceR\x04name\x12\x1d\n" +
 	"\n" +
 	"num_states\x18\x02 \x01(\x05R\tnumStates\"a\n" +
 	"\x18ListDeviceStatesResponse\x12E\n" +
-	"\rdevice_states\x18\x01 \x03(\v2 .google.cloud.iot.v1.DeviceStateR\fdeviceStates\"\x9c\x01\n" +
-	"\x1aSendCommandToDeviceRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecloudiot.googleapis.com/DeviceR\x04name\x12$\n" +
-	"\vbinary_data\x18\x02 \x01(\fB\x03\xe0A\x02R\n" +
+	"\rdevice_states\x18\x01 \x03(\v2 .google.cloud.iot.v1.DeviceStateR\fdeviceStates\"\x9e\x01\n" +
+	"\x1aSendCommandToDeviceRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecloudiot.googleapis.com/DeviceR\x04name\x12%\n" +
+	"\vbinary_data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\n" +
 	"binaryData\x12\x1c\n" +
 	"\tsubfolder\x18\x03 \x01(\tR\tsubfolder\"\x1d\n" +
-	"\x1bSendCommandToDeviceResponse\"\xa4\x01\n" +
-	"\x1aBindDeviceToGatewayRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" cloudiot.googleapis.com/RegistryR\x06parent\x12\"\n" +
+	"\x1bSendCommandToDeviceResponse\"\xa7\x01\n" +
+	"\x1aBindDeviceToGatewayRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" cloudiot.googleapis.com/RegistryR\x06parent\x12#\n" +
 	"\n" +
-	"gateway_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tgatewayId\x12 \n" +
-	"\tdevice_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bdeviceId\"\x1d\n" +
-	"\x1bBindDeviceToGatewayResponse\"\xa8\x01\n" +
-	"\x1eUnbindDeviceFromGatewayRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" cloudiot.googleapis.com/RegistryR\x06parent\x12\"\n" +
+	"gateway_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tgatewayId\x12!\n" +
+	"\tdevice_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bdeviceId\"\x1d\n" +
+	"\x1bBindDeviceToGatewayResponse\"\xab\x01\n" +
+	"\x1eUnbindDeviceFromGatewayRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" cloudiot.googleapis.com/RegistryR\x06parent\x12#\n" +
 	"\n" +
-	"gateway_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tgatewayId\x12 \n" +
-	"\tdevice_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bdeviceId\"!\n" +
+	"gateway_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tgatewayId\x12!\n" +
+	"\tdevice_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bdeviceId\"!\n" +
 	"\x1fUnbindDeviceFromGatewayResponse2\xa6&\n" +
 	"\rDeviceManager\x12\xcf\x01\n" +
 	"\x14CreateDeviceRegistry\x120.google.cloud.iot.v1.CreateDeviceRegistryRequest\x1a#.google.cloud.iot.v1.DeviceRegistry\"`\xdaA\x16parent,device_registry\x82\xd3\xe4\x93\x02A:\x0fdevice_registry\"./v1/{parent=projects/*/locations/*}/registries\x12\xa6\x01\n" +

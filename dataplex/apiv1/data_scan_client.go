@@ -1287,6 +1287,11 @@ func (c *dataScanRESTClient) CreateDataScan(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataScans", req.GetParent())
 
 	params := url.Values{}
@@ -1361,6 +1366,11 @@ func (c *dataScanRESTClient) UpdateDataScan(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataScan().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataScan().GetName())
 
 	params := url.Values{}
@@ -1432,6 +1442,11 @@ func (c *dataScanRESTClient) DeleteDataScan(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1494,6 +1509,11 @@ func (c *dataScanRESTClient) DeleteDataScan(ctx context.Context, req *dataplexpb
 func (c *dataScanRESTClient) GetDataScan(ctx context.Context, req *dataplexpb.GetDataScanRequest, opts ...gax.CallOption) (*dataplexpb.DataScan, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1564,6 +1584,11 @@ func (c *dataScanRESTClient) ListDataScans(ctx context.Context, req *dataplexpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataScans", req.GetParent())
@@ -1643,6 +1668,11 @@ func (c *dataScanRESTClient) RunDataScan(ctx context.Context, req *dataplexpb.Ru
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:run", req.GetName())
 
 	params := url.Values{}
@@ -1695,6 +1725,11 @@ func (c *dataScanRESTClient) RunDataScan(ctx context.Context, req *dataplexpb.Ru
 func (c *dataScanRESTClient) GetDataScanJob(ctx context.Context, req *dataplexpb.GetDataScanJobRequest, opts ...gax.CallOption) (*dataplexpb.DataScanJob, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1765,6 +1800,11 @@ func (c *dataScanRESTClient) ListDataScanJobs(ctx context.Context, req *dataplex
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/jobs", req.GetParent())
@@ -1841,6 +1881,11 @@ func (c *dataScanRESTClient) CancelDataScanJob(ctx context.Context, req *dataple
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1904,6 +1949,11 @@ func (c *dataScanRESTClient) GenerateDataQualityRules(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateDataQualityRules", req.GetName())
 
 	params := url.Values{}
@@ -1956,6 +2006,11 @@ func (c *dataScanRESTClient) GenerateDataQualityRules(ctx context.Context, req *
 func (c *dataScanRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2040,6 +2095,11 @@ func (c *dataScanRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2109,6 +2169,11 @@ func (c *dataScanRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2174,6 +2239,11 @@ func (c *dataScanRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -2242,6 +2312,11 @@ func (c *dataScanRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2302,6 +2377,11 @@ func (c *dataScanRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2341,6 +2421,11 @@ func (c *dataScanRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2378,6 +2463,11 @@ func (c *dataScanRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 func (c *dataScanRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2445,6 +2535,11 @@ func (c *dataScanRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

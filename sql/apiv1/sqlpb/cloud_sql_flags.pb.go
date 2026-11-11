@@ -480,11 +480,11 @@ var File_google_cloud_sql_v1_cloud_sql_flags_proto protoreflect.FileDescriptor
 
 const file_google_cloud_sql_v1_cloud_sql_flags_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/sql/v1/cloud_sql_flags.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x9b\x01\n" +
+	")google/cloud/sql/v1/cloud_sql_flags.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x9c\x01\n" +
 	"\x13SqlFlagsListRequest\x12)\n" +
-	"\x10database_version\x18\x01 \x01(\tR\x0fdatabaseVersion\x12J\n" +
+	"\x10database_version\x18\x01 \x01(\tR\x0fdatabaseVersion\x12K\n" +
 	"\n" +
-	"flag_scope\x18\x03 \x01(\x0e2!.google.cloud.sql.v1.SqlFlagScopeB\x03\xe0A\x01H\x00R\tflagScope\x88\x01\x01B\r\n" +
+	"flag_scope\x18\x03 \x01(\x0e2!.google.cloud.sql.v1.SqlFlagScopeB\x04\xe2A\x01\x01H\x00R\tflagScope\x88\x01\x01B\r\n" +
 	"\v_flag_scope\"X\n" +
 	"\x11FlagsListResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12/\n" +

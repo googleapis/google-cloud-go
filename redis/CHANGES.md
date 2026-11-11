@@ -1,5 +1,26 @@
 # Changes
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.28.1...redis/v1.29.0) (2026-10-29)
+
+
+### Features
+
+* Update API sources and regenerate ([#20773](https://github.com/googleapis/google-cloud-go/issues/20773)) ([f5f113a](https://github.com/googleapis/google-cloud-go/commit/f5f113a0432b80df2608417c8a496198f5a0c026))
+
+## [1.28.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.28.0...redis/v1.28.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.27.0...redis/v1.28.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.26.0...redis/v1.27.0) (2026-10-15)
 
 

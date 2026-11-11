@@ -297,15 +297,15 @@ var File_google_cloud_datacatalog_v1_search_proto protoreflect.FileDescriptor
 
 const file_google_cloud_datacatalog_v1_search_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/datacatalog/v1/search.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a(google/cloud/datacatalog/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x04\n" +
+	"(google/cloud/datacatalog/v1/search.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a(google/cloud/datacatalog/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x04\n" +
 	"\x13SearchCatalogResult\x12[\n" +
 	"\x12search_result_type\x18\x01 \x01(\x0e2-.google.cloud.datacatalog.v1.SearchResultTypeR\x10searchResultType\x122\n" +
 	"\x15search_result_subtype\x18\x02 \x01(\tR\x13searchResultSubtype\x124\n" +
 	"\x16relative_resource_name\x18\x03 \x01(\tR\x14relativeResourceName\x12'\n" +
 	"\x0flinked_resource\x18\x04 \x01(\tR\x0elinkedResource\x12;\n" +
 	"\vmodify_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"modifyTime\x12a\n" +
-	"\x11integrated_system\x18\b \x01(\x0e2-.google.cloud.datacatalog.v1.IntegratedSystemB\x03\xe0A\x03H\x00R\x10integratedSystem\x124\n" +
+	"modifyTime\x12b\n" +
+	"\x11integrated_system\x18\b \x01(\x0e2-.google.cloud.datacatalog.v1.IntegratedSystemB\x04\xe2A\x01\x03H\x00R\x10integratedSystem\x124\n" +
 	"\x15user_specified_system\x18\t \x01(\tH\x00R\x13userSpecifiedSystem\x120\n" +
 	"\x14fully_qualified_name\x18\n" +
 	" \x01(\tR\x12fullyQualifiedName\x12!\n" +

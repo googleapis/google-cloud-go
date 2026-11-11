@@ -1439,16 +1439,16 @@ const file_google_cloud_discoveryengine_v1beta_common_proto_rawDesc = "" +
 	"\x03max\"?\n" +
 	"\x0fCustomAttribute\x12\x12\n" +
 	"\x04text\x18\x01 \x03(\tR\x04text\x12\x18\n" +
-	"\anumbers\x18\x02 \x03(\x01R\anumbers\"\xc8\x02\n" +
+	"\anumbers\x18\x02 \x03(\x01R\anumbers\"\xca\x02\n" +
 	"\bUserInfo\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
-	"user_agent\x18\x02 \x01(\tR\tuserAgent\x12 \n" +
-	"\ttime_zone\x18\x03 \x01(\tB\x03\xe0A\x01R\btimeZone\x12p\n" +
-	"\x10precise_location\x18\x04 \x01(\v2=.google.cloud.discoveryengine.v1beta.UserInfo.PreciseLocationB\x06\xe0A\x04\xe0A\x01R\x0fpreciseLocation\x1ap\n" +
-	"\x0fPreciseLocation\x120\n" +
-	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x01H\x00R\x05point\x12\x1f\n" +
-	"\aaddress\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\aaddressB\n" +
+	"user_agent\x18\x02 \x01(\tR\tuserAgent\x12!\n" +
+	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12o\n" +
+	"\x10precise_location\x18\x04 \x01(\v2=.google.cloud.discoveryengine.v1beta.UserInfo.PreciseLocationB\x05\xe2A\x02\x04\x01R\x0fpreciseLocation\x1ar\n" +
+	"\x0fPreciseLocation\x121\n" +
+	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x01H\x00R\x05point\x12 \n" +
+	"\aaddress\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\aaddressB\n" +
 	"\n" +
 	"\blocation\"0\n" +
 	"\x0fEmbeddingConfig\x12\x1d\n" +
@@ -1471,19 +1471,19 @@ const file_google_cloud_discoveryengine_v1beta_common_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\tH\x00R\x06userId\x12\x1b\n" +
 	"\bgroup_id\x18\x02 \x01(\tH\x00R\agroupId\x12.\n" +
 	"\x12external_entity_id\x18\x03 \x01(\tH\x00R\x10externalEntityIdB\v\n" +
-	"\tprincipal\"\xe8\x01\n" +
+	"\tprincipal\"\xe9\x01\n" +
 	"\x14HealthcareFhirConfig\x12<\n" +
 	"\x1aenable_configurable_schema\x18\x01 \x01(\bR\x18enableConfigurableSchema\x12Y\n" +
-	"*enable_static_indexing_for_batch_ingestion\x18\x02 \x01(\bR%enableStaticIndexingForBatchIngestion\x127\n" +
-	"\x15initial_filter_groups\x18\x04 \x03(\tB\x03\xe0A\x01R\x13initialFilterGroups\"\xfc\x01\n" +
-	"\x13SearchLinkPromotion\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x02R\x05title\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x01R\x03uri\x12K\n" +
-	"\bdocument\x18\x06 \x01(\tB/\xe0A\x01\xfaA)\n" +
-	"'discoveryengine.googleapis.com/DocumentR\bdocument\x12 \n" +
-	"\timage_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\bimageUri\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1d\n" +
-	"\aenabled\x18\x05 \x01(\bB\x03\xe0A\x01R\aenabled*b\n" +
+	"*enable_static_indexing_for_batch_ingestion\x18\x02 \x01(\bR%enableStaticIndexingForBatchIngestion\x128\n" +
+	"\x15initial_filter_groups\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x13initialFilterGroups\"\x82\x02\n" +
+	"\x13SearchLinkPromotion\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05title\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03uri\x12L\n" +
+	"\bdocument\x18\x06 \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'discoveryengine.googleapis.com/DocumentR\bdocument\x12!\n" +
+	"\timage_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bimageUri\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1e\n" +
+	"\aenabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\aenabled*b\n" +
 	"\x10IndustryVertical\x12!\n" +
 	"\x1dINDUSTRY_VERTICAL_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERIC\x10\x01\x12\t\n" +

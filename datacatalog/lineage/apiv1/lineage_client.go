@@ -1859,6 +1859,11 @@ func (c *restClient) ProcessOpenLineageRunEvent(ctx context.Context, req *lineag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:processOpenLineageRunEvent", req.GetParent())
 
 	params := url.Values{}
@@ -1924,6 +1929,11 @@ func (c *restClient) CreateProcess(ctx context.Context, req *lineagepb.CreatePro
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/processes", req.GetParent())
@@ -1993,6 +2003,11 @@ func (c *restClient) UpdateProcess(ctx context.Context, req *lineagepb.UpdatePro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProcess().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetProcess().GetName())
 
 	params := url.Values{}
@@ -2058,6 +2073,11 @@ func (c *restClient) UpdateProcess(ctx context.Context, req *lineagepb.UpdatePro
 func (c *restClient) GetProcess(ctx context.Context, req *lineagepb.GetProcessRequest, opts ...gax.CallOption) (*lineagepb.Process, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2128,6 +2148,11 @@ func (c *restClient) ListProcesses(ctx context.Context, req *lineagepb.ListProce
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/processes", req.GetParent())
 
 		params := url.Values{}
@@ -2191,6 +2216,11 @@ func (c *restClient) ListProcesses(ctx context.Context, req *lineagepb.ListProce
 func (c *restClient) DeleteProcess(ctx context.Context, req *lineagepb.DeleteProcessRequest, opts ...gax.CallOption) (*DeleteProcessOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2267,6 +2297,11 @@ func (c *restClient) CreateRun(ctx context.Context, req *lineagepb.CreateRunRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/runs", req.GetParent())
 
 	params := url.Values{}
@@ -2331,6 +2366,11 @@ func (c *restClient) UpdateRun(ctx context.Context, req *lineagepb.UpdateRunRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRun().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRun().GetName())
 
 	params := url.Values{}
@@ -2393,6 +2433,11 @@ func (c *restClient) UpdateRun(ctx context.Context, req *lineagepb.UpdateRunRequ
 func (c *restClient) GetRun(ctx context.Context, req *lineagepb.GetRunRequest, opts ...gax.CallOption) (*lineagepb.Run, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2463,6 +2508,11 @@ func (c *restClient) ListRuns(ctx context.Context, req *lineagepb.ListRunsReques
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/runs", req.GetParent())
 
 		params := url.Values{}
@@ -2526,6 +2576,11 @@ func (c *restClient) ListRuns(ctx context.Context, req *lineagepb.ListRunsReques
 func (c *restClient) DeleteRun(ctx context.Context, req *lineagepb.DeleteRunRequest, opts ...gax.CallOption) (*DeleteRunOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2602,6 +2657,11 @@ func (c *restClient) CreateLineageEvent(ctx context.Context, req *lineagepb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/lineageEvents", req.GetParent())
 
 	params := url.Values{}
@@ -2657,6 +2717,11 @@ func (c *restClient) CreateLineageEvent(ctx context.Context, req *lineagepb.Crea
 func (c *restClient) GetLineageEvent(ctx context.Context, req *lineagepb.GetLineageEventRequest, opts ...gax.CallOption) (*lineagepb.LineageEvent, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2727,6 +2792,11 @@ func (c *restClient) ListLineageEvents(ctx context.Context, req *lineagepb.ListL
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/lineageEvents", req.GetParent())
 
 		params := url.Values{}
@@ -2790,6 +2860,11 @@ func (c *restClient) ListLineageEvents(ctx context.Context, req *lineagepb.ListL
 func (c *restClient) DeleteLineageEvent(ctx context.Context, req *lineagepb.DeleteLineageEventRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2859,6 +2934,11 @@ func (c *restClient) SearchLinks(ctx context.Context, req *lineagepb.SearchLinks
 
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchLinks", req.GetParent())
@@ -2952,6 +3032,11 @@ func (c *restClient) BatchSearchLinkProcesses(ctx context.Context, req *lineagep
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:batchSearchLinkProcesses", req.GetParent())
 
 		params := url.Values{}
@@ -3042,6 +3127,11 @@ func (c *restClient) SearchLineageStreaming(ctx context.Context, req *lineagepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:searchLineageStreaming", req.GetParent())
@@ -3150,6 +3240,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3189,6 +3284,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3226,6 +3326,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3293,6 +3398,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

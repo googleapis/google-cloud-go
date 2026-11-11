@@ -17,7 +17,7 @@
 // Package navconnect is an auto-generated package for the
 // Navigation Connect API.
 //
-// Navigation Connect API.
+// Navigate and track trips seamlessly with Google Maps or Waze.
 //
 // # General documentation
 //

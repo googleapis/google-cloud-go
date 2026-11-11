@@ -263,11 +263,11 @@ const file_google_cloud_datacatalog_v1_usage_proto_rawDesc = "" +
 	"\x10CommonUsageStats\x12\"\n" +
 	"\n" +
 	"view_count\x18\x01 \x01(\x03H\x00R\tviewCount\x88\x01\x01B\r\n" +
-	"\v_view_count\"\x88\x05\n" +
+	"\v_view_count\"\x89\x05\n" +
 	"\vUsageSignal\x12;\n" +
 	"\vupdate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\x12~\n" +
-	"\x17usage_within_time_range\x18\x02 \x03(\v2B.google.cloud.datacatalog.v1.UsageSignal.UsageWithinTimeRangeEntryB\x03\xe0A\x03R\x14usageWithinTimeRange\x12\x8c\x01\n" +
+	"updateTime\x12\x7f\n" +
+	"\x17usage_within_time_range\x18\x02 \x03(\v2B.google.cloud.datacatalog.v1.UsageSignal.UsageWithinTimeRangeEntryB\x04\xe2A\x01\x03R\x14usageWithinTimeRange\x12\x8c\x01\n" +
 	"\x1ecommon_usage_within_time_range\x18\x03 \x03(\v2H.google.cloud.datacatalog.v1.UsageSignal.CommonUsageWithinTimeRangeEntryR\x1acommonUsageWithinTimeRange\x12*\n" +
 	"\x0efavorite_count\x18\x04 \x01(\x03H\x00R\rfavoriteCount\x88\x01\x01\x1ap\n" +
 	"\x19UsageWithinTimeRangeEntry\x12\x10\n" +

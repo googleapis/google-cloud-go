@@ -110,13 +110,13 @@ var File_google_cloud_bigquery_v2_table_reference_proto protoreflect.FileDescrip
 
 const file_google_cloud_bigquery_v2_table_reference_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/bigquery/v2/table_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"x\n" +
-	"\x0eTableReference\x12\"\n" +
+	".google/cloud/bigquery/v2/table_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"{\n" +
+	"\x0eTableReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableIdBp\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableIdBp\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x13TableReferenceProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

@@ -363,24 +363,24 @@ var File_google_cloud_datacatalog_v1beta1_table_spec_proto protoreflect.FileDesc
 
 const file_google_cloud_datacatalog_v1beta1_table_spec_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/datacatalog/v1beta1/table_spec.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9d\x02\n" +
-	"\x11BigQueryTableSpec\x12b\n" +
-	"\x11table_source_type\x18\x01 \x01(\x0e21.google.cloud.datacatalog.v1beta1.TableSourceTypeB\x03\xe0A\x03R\x0ftableSourceType\x12I\n" +
+	"1google/cloud/datacatalog/v1beta1/table_spec.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9e\x02\n" +
+	"\x11BigQueryTableSpec\x12c\n" +
+	"\x11table_source_type\x18\x01 \x01(\x0e21.google.cloud.datacatalog.v1beta1.TableSourceTypeB\x04\xe2A\x01\x03R\x0ftableSourceType\x12I\n" +
 	"\tview_spec\x18\x02 \x01(\v2*.google.cloud.datacatalog.v1beta1.ViewSpecH\x00R\bviewSpec\x12L\n" +
 	"\n" +
 	"table_spec\x18\x03 \x01(\v2+.google.cloud.datacatalog.v1beta1.TableSpecH\x00R\ttableSpecB\v\n" +
-	"\ttype_spec\".\n" +
-	"\bViewSpec\x12\"\n" +
+	"\ttype_spec\"/\n" +
+	"\bViewSpec\x12#\n" +
 	"\n" +
-	"view_query\x18\x01 \x01(\tB\x03\xe0A\x03R\tviewQuery\"Z\n" +
-	"\tTableSpec\x12M\n" +
-	"\rgrouped_entry\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" datacatalog.googleapis.com/EntryR\fgroupedEntry\"\xab\x01\n" +
-	"\x17BigQueryDateShardedSpec\x12B\n" +
-	"\adataset\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" datacatalog.googleapis.com/EntryR\adataset\x12&\n" +
-	"\ftable_prefix\x18\x02 \x01(\tB\x03\xe0A\x03R\vtablePrefix\x12$\n" +
-	"\vshard_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\n" +
+	"view_query\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tviewQuery\"[\n" +
+	"\tTableSpec\x12N\n" +
+	"\rgrouped_entry\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" datacatalog.googleapis.com/EntryR\fgroupedEntry\"\xae\x01\n" +
+	"\x17BigQueryDateShardedSpec\x12C\n" +
+	"\adataset\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" datacatalog.googleapis.com/EntryR\adataset\x12'\n" +
+	"\ftable_prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vtablePrefix\x12%\n" +
+	"\vshard_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\n" +
 	"shardCount*{\n" +
 	"\x0fTableSourceType\x12!\n" +
 	"\x1dTABLE_SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +

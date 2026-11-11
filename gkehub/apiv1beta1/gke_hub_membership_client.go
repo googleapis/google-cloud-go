@@ -1389,6 +1389,11 @@ func (c *gkeHubMembershipRESTClient) ListMemberships(ctx context.Context, req *g
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/memberships", req.GetParent())
 
 		params := url.Values{}
@@ -1460,6 +1465,11 @@ func (c *gkeHubMembershipRESTClient) GetMembership(ctx context.Context, req *gke
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1523,6 +1533,11 @@ func (c *gkeHubMembershipRESTClient) CreateMembership(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/memberships", req.GetParent())
@@ -1592,6 +1607,11 @@ func (c *gkeHubMembershipRESTClient) CreateMembership(ctx context.Context, req *
 func (c *gkeHubMembershipRESTClient) DeleteMembership(ctx context.Context, req *gkehubpb.DeleteMembershipRequest, opts ...gax.CallOption) (*DeleteMembershipOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -1668,6 +1688,11 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1740,6 +1765,11 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 func (c *gkeHubMembershipRESTClient) GenerateConnectManifest(ctx context.Context, req *gkehubpb.GenerateConnectManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateConnectManifestResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generateConnectManifest", req.GetName())
@@ -1818,6 +1848,11 @@ func (c *gkeHubMembershipRESTClient) ValidateExclusivity(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/memberships:validateExclusivity", req.GetParent())
 
 	params := url.Values{}
@@ -1887,6 +1922,11 @@ func (c *gkeHubMembershipRESTClient) GenerateExclusivityManifest(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generateExclusivityManifest", req.GetName())
 
 	params := url.Values{}
@@ -1945,6 +1985,11 @@ func (c *gkeHubMembershipRESTClient) GenerateExclusivityManifest(ctx context.Con
 func (c *gkeHubMembershipRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2012,6 +2057,11 @@ func (c *gkeHubMembershipRESTClient) ListLocations(ctx context.Context, req *loc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())
@@ -2083,6 +2133,11 @@ func (c *gkeHubMembershipRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2148,6 +2203,11 @@ func (c *gkeHubMembershipRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
@@ -2216,6 +2276,11 @@ func (c *gkeHubMembershipRESTClient) TestIamPermissions(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2276,6 +2341,11 @@ func (c *gkeHubMembershipRESTClient) CancelOperation(ctx context.Context, req *l
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2315,6 +2385,11 @@ func (c *gkeHubMembershipRESTClient) DeleteOperation(ctx context.Context, req *l
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2352,6 +2427,11 @@ func (c *gkeHubMembershipRESTClient) DeleteOperation(ctx context.Context, req *l
 func (c *gkeHubMembershipRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2419,6 +2499,11 @@ func (c *gkeHubMembershipRESTClient) ListOperations(ctx context.Context, req *lo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/operations", req.GetName())

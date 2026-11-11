@@ -178,14 +178,14 @@ var File_google_cloud_ces_v1_fakes_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_fakes_proto_rawDesc = "" +
 	"\n" +
-	"\x1fgoogle/cloud/ces/v1/fakes.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\"1\n" +
-	"\tCodeBlock\x12$\n" +
-	"\vpython_code\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"pythonCode\"\x96\x01\n" +
-	"\x0eToolFakeConfig\x12D\n" +
+	"\x1fgoogle/cloud/ces/v1/fakes.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\"2\n" +
+	"\tCodeBlock\x12%\n" +
+	"\vpython_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"pythonCode\"\x98\x01\n" +
+	"\x0eToolFakeConfig\x12E\n" +
 	"\n" +
-	"code_block\x18\x01 \x01(\v2\x1e.google.cloud.ces.v1.CodeBlockB\x03\xe0A\x01H\x00R\tcodeBlock\x12-\n" +
-	"\x10enable_fake_mode\x18\x02 \x01(\bB\x03\xe0A\x01R\x0eenableFakeModeB\x0f\n" +
+	"code_block\x18\x01 \x01(\v2\x1e.google.cloud.ces.v1.CodeBlockB\x04\xe2A\x01\x01H\x00R\tcodeBlock\x12.\n" +
+	"\x10enable_fake_mode\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0eenableFakeModeB\x0f\n" +
 	"\rtool_responseBR\n" +
 	"\x17com.google.cloud.ces.v1B\n" +
 	"FakesProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"

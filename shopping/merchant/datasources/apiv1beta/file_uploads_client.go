@@ -425,6 +425,11 @@ func (c *fileUploadsRESTClient) GetFileUpload(ctx context.Context, req *datasour
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/datasources/v1beta/%v", req.GetName())
 
 	params := url.Values{}

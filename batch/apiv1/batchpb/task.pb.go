@@ -1447,13 +1447,13 @@ const file_google_cloud_batch_v1_task_proto_rawDesc = "" +
 	"\x06FAILED\x10\x04\x12\r\n" +
 	"\tSUCCEEDED\x10\x05\x12\x0e\n" +
 	"\n" +
-	"UNEXECUTED\x10\x06\"\x9e\b\n" +
+	"UNEXECUTED\x10\x06\"\xa0\b\n" +
 	"\bRunnable\x12I\n" +
 	"\tcontainer\x18\x01 \x01(\v2).google.cloud.batch.v1.Runnable.ContainerH\x00R\tcontainer\x12@\n" +
 	"\x06script\x18\x02 \x01(\v2&.google.cloud.batch.v1.Runnable.ScriptH\x00R\x06script\x12C\n" +
-	"\abarrier\x18\x06 \x01(\v2'.google.cloud.batch.v1.Runnable.BarrierH\x00R\abarrier\x12&\n" +
+	"\abarrier\x18\x06 \x01(\v2'.google.cloud.batch.v1.Runnable.BarrierH\x00R\abarrier\x12'\n" +
 	"\fdisplay_name\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\vdisplayName\x12,\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12,\n" +
 	"\x12ignore_exit_status\x18\x03 \x01(\bR\x10ignoreExitStatus\x12\x1e\n" +
 	"\n" +
 	"background\x18\x04 \x01(\bR\n" +
@@ -1462,7 +1462,7 @@ const file_google_cloud_batch_v1_task_proto_rawDesc = "" +
 	"always_run\x18\x05 \x01(\bR\talwaysRun\x12D\n" +
 	"\venvironment\x18\a \x01(\v2\".google.cloud.batch.v1.EnvironmentR\venvironment\x123\n" +
 	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12C\n" +
-	"\x06labels\x18\t \x03(\v2+.google.cloud.batch.v1.Runnable.LabelsEntryR\x06labels\x1a\xc1\x02\n" +
+	"\x06labels\x18\t \x03(\v2+.google.cloud.batch.v1.Runnable.LabelsEntryR\x06labels\x1a\xc2\x02\n" +
 	"\tContainer\x12\x1b\n" +
 	"\timage_uri\x18\x01 \x01(\tR\bimageUri\x12\x1a\n" +
 	"\bcommands\x18\x02 \x03(\tR\bcommands\x12\x1e\n" +
@@ -1474,8 +1474,8 @@ const file_google_cloud_batch_v1_task_proto_rawDesc = "" +
 	"\x16block_external_network\x18\t \x01(\bR\x14blockExternalNetwork\x12\x1a\n" +
 	"\busername\x18\n" +
 	" \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\v \x01(\tR\bpassword\x129\n" +
-	"\x16enable_image_streaming\x18\f \x01(\bB\x03\xe0A\x01R\x14enableImageStreaming\x1a?\n" +
+	"\bpassword\x18\v \x01(\tR\bpassword\x12:\n" +
+	"\x16enable_image_streaming\x18\f \x01(\bB\x04\xe2A\x01\x01R\x14enableImageStreaming\x1a?\n" +
 	"\x06Script\x12\x14\n" +
 	"\x04path\x18\x01 \x01(\tH\x00R\x04path\x12\x14\n" +
 	"\x04text\x18\x02 \x01(\tH\x00R\x04textB\t\n" +

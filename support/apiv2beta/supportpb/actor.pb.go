@@ -131,12 +131,12 @@ var File_google_cloud_support_v2beta_actor_proto protoreflect.FileDescriptor
 
 const file_google_cloud_support_v2beta_actor_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/support/v2beta/actor.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\"\x91\x01\n" +
+	"'google/cloud/support/v2beta/actor.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\"\x93\x01\n" +
 	"\x05Actor\x12!\n" +
 	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12\x18\n" +
-	"\x05email\x18\x02 \x01(\tB\x02\x18\x01R\x05email\x12*\n" +
-	"\x0egoogle_support\x18\x04 \x01(\bB\x03\xe0A\x03R\rgoogleSupport\x12\x1f\n" +
-	"\busername\x18\x05 \x01(\tB\x03\xe0A\x03R\busernameB\xc7\x01\n" +
+	"\x05email\x18\x02 \x01(\tB\x02\x18\x01R\x05email\x12+\n" +
+	"\x0egoogle_support\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\rgoogleSupport\x12 \n" +
+	"\busername\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\busernameB\xc7\x01\n" +
 	"\x1fcom.google.cloud.support.v2betaB\n" +
 	"ActorProtoP\x01Z9cloud.google.com/go/support/apiv2beta/supportpb;supportpb\xaa\x02\x1bGoogle.Cloud.Support.V2Beta\xca\x02\x1bGoogle\\Cloud\\Support\\V2beta\xea\x02\x1eGoogle::Cloud::Support::V2betab\x06proto3"
 

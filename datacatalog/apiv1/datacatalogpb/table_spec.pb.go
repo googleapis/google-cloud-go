@@ -378,26 +378,26 @@ var File_google_cloud_datacatalog_v1_table_spec_proto protoreflect.FileDescripto
 
 const file_google_cloud_datacatalog_v1_table_spec_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/datacatalog/v1/table_spec.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x8e\x02\n" +
-	"\x11BigQueryTableSpec\x12]\n" +
-	"\x11table_source_type\x18\x01 \x01(\x0e2,.google.cloud.datacatalog.v1.TableSourceTypeB\x03\xe0A\x03R\x0ftableSourceType\x12D\n" +
+	",google/cloud/datacatalog/v1/table_spec.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x8f\x02\n" +
+	"\x11BigQueryTableSpec\x12^\n" +
+	"\x11table_source_type\x18\x01 \x01(\x0e2,.google.cloud.datacatalog.v1.TableSourceTypeB\x04\xe2A\x01\x03R\x0ftableSourceType\x12D\n" +
 	"\tview_spec\x18\x02 \x01(\v2%.google.cloud.datacatalog.v1.ViewSpecH\x00R\bviewSpec\x12G\n" +
 	"\n" +
 	"table_spec\x18\x03 \x01(\v2&.google.cloud.datacatalog.v1.TableSpecH\x00R\ttableSpecB\v\n" +
-	"\ttype_spec\".\n" +
-	"\bViewSpec\x12\"\n" +
+	"\ttype_spec\"/\n" +
+	"\bViewSpec\x12#\n" +
 	"\n" +
-	"view_query\x18\x01 \x01(\tB\x03\xe0A\x03R\tviewQuery\"Z\n" +
-	"\tTableSpec\x12M\n" +
-	"\rgrouped_entry\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" datacatalog.googleapis.com/EntryR\fgroupedEntry\"\xe4\x01\n" +
-	"\x17BigQueryDateShardedSpec\x12B\n" +
-	"\adataset\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" datacatalog.googleapis.com/EntryR\adataset\x12&\n" +
-	"\ftable_prefix\x18\x02 \x01(\tB\x03\xe0A\x03R\vtablePrefix\x12$\n" +
-	"\vshard_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\n" +
-	"shardCount\x127\n" +
-	"\x15latest_shard_resource\x18\x04 \x01(\tB\x03\xe0A\x03R\x13latestShardResource*{\n" +
+	"view_query\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tviewQuery\"[\n" +
+	"\tTableSpec\x12N\n" +
+	"\rgrouped_entry\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" datacatalog.googleapis.com/EntryR\fgroupedEntry\"\xe8\x01\n" +
+	"\x17BigQueryDateShardedSpec\x12C\n" +
+	"\adataset\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" datacatalog.googleapis.com/EntryR\adataset\x12'\n" +
+	"\ftable_prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vtablePrefix\x12%\n" +
+	"\vshard_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"shardCount\x128\n" +
+	"\x15latest_shard_resource\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x13latestShardResource*{\n" +
 	"\x0fTableSourceType\x12!\n" +
 	"\x1dTABLE_SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rBIGQUERY_VIEW\x10\x02\x12\x12\n" +

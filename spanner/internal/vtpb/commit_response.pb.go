@@ -229,13 +229,13 @@ var File_google_spanner_v1_vtinternal_commit_response_proto protoreflect.FileDes
 
 const file_google_spanner_v1_vtinternal_commit_response_proto_rawDesc = "" +
 	"\n" +
-	"2google/spanner/v1/vtinternal/commit_response.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a+google/spanner/v1/vtinternal/location.proto\x1a.google/spanner/v1/vtinternal/transaction.proto\"\xe7\x05\n" +
+	"2google/spanner/v1/vtinternal/commit_response.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a+google/spanner/v1/vtinternal/location.proto\x1a.google/spanner/v1/vtinternal/transaction.proto\"\xe8\x05\n" +
 	"\x0eCommitResponse\x12E\n" +
 	"\x10commit_timestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x0fcommitTimestamp\x12[\n" +
 	"\fcommit_stats\x18\x02 \x01(\v28.google.spanner.v1.vtinternal.CommitResponse.CommitStatsR\vcommitStats\x12i\n" +
 	"\x0fprecommit_token\x18\x04 \x01(\v2>.google.spanner.v1.vtinternal.MultiplexedSessionPrecommitTokenH\x00R\x0eprecommitToken\x12I\n" +
-	"\x12snapshot_timestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x11snapshotTimestamp\x12Q\n" +
-	"\fcache_update\x18\x06 \x01(\v2).google.spanner.v1.vtinternal.CacheUpdateB\x03\xe0A\x01R\vcacheUpdate\x12h\n" +
+	"\x12snapshot_timestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x11snapshotTimestamp\x12R\n" +
+	"\fcache_update\x18\x06 \x01(\v2).google.spanner.v1.vtinternal.CacheUpdateB\x04\xe2A\x01\x01R\vcacheUpdate\x12h\n" +
 	"\x0fisolation_level\x18\a \x01(\x0e2?.google.spanner.v1.vtinternal.TransactionOptions.IsolationLevelR\x0eisolationLevel\x12m\n" +
 	"\x0eread_lock_mode\x18\b \x01(\x0e2G.google.spanner.v1.vtinternal.TransactionOptions.ReadWrite.ReadLockModeR\freadLockMode\x1a4\n" +
 	"\vCommitStats\x12%\n" +

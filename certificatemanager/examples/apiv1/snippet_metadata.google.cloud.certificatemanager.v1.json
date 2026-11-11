@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/certificatemanager/apiv1",
-    "version": "1.16.0"
+    "version": "1.17.1"
   },
   "snippets": [
     {
@@ -1283,7 +1283,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1434,6 +1434,52 @@
         }
       ],
       "title": "certificatemanager UpdateCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.certificatemanager.v1.Client.UpdateCertificateIssuanceConfig",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateIssuanceConfig",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "UpdateCertificateIssuanceConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "certificatemanagerpb.UpdateCertificateIssuanceConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateCertificateIssuanceConfigOperation",
+        "shortName": "UpdateCertificateIssuanceConfig"
+      },
+      "description": "UpdateCertificateIssuanceConfig updates a CertificateIssuanceConfig.",
+      "file": "Client/UpdateCertificateIssuanceConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateCertificateIssuanceConfig_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "certificatemanager UpdateCertificateIssuanceConfig Sample"
     },
     {
       "clientMethod": {

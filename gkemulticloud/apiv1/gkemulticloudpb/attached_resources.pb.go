@@ -1241,37 +1241,37 @@ var File_google_cloud_gkemulticloud_v1_attached_resources_proto protoreflect.Fil
 
 const file_google_cloud_gkemulticloud_v1_attached_resources_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/gkemulticloud/v1/attached_resources.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\x93\x11\n" +
+	"6google/cloud/gkemulticloud/v1/attached_resources.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xa8\x11\n" +
 	"\x0fAttachedCluster\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12W\n" +
-	"\voidc_config\x18\x03 \x01(\v21.google.cloud.gkemulticloud.v1.AttachedOidcConfigB\x03\xe0A\x02R\n" +
-	"oidcConfig\x12.\n" +
-	"\x10platform_version\x18\x04 \x01(\tB\x03\xe0A\x02R\x0fplatformVersion\x12'\n" +
-	"\fdistribution\x18\x10 \x01(\tB\x03\xe0A\x02R\fdistribution\x12*\n" +
-	"\x0ecluster_region\x18\x16 \x01(\tB\x03\xe0A\x03R\rclusterRegion\x12?\n" +
-	"\x05fleet\x18\x05 \x01(\v2$.google.cloud.gkemulticloud.v1.FleetB\x03\xe0A\x02R\x05fleet\x12O\n" +
-	"\x05state\x18\x06 \x01(\x0e24.google.cloud.gkemulticloud.v1.AttachedCluster.StateB\x03\xe0A\x03R\x05state\x12\x15\n" +
-	"\x03uid\x18\a \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12X\n" +
+	"\voidc_config\x18\x03 \x01(\v21.google.cloud.gkemulticloud.v1.AttachedOidcConfigB\x04\xe2A\x01\x02R\n" +
+	"oidcConfig\x12/\n" +
+	"\x10platform_version\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0fplatformVersion\x12(\n" +
+	"\fdistribution\x18\x10 \x01(\tB\x04\xe2A\x01\x02R\fdistribution\x12+\n" +
+	"\x0ecluster_region\x18\x16 \x01(\tB\x04\xe2A\x01\x03R\rclusterRegion\x12@\n" +
+	"\x05fleet\x18\x05 \x01(\v2$.google.cloud.gkemulticloud.v1.FleetB\x04\xe2A\x01\x02R\x05fleet\x12P\n" +
+	"\x05state\x18\x06 \x01(\x0e24.google.cloud.gkemulticloud.v1.AttachedCluster.StateB\x04\xe2A\x01\x03R\x05state\x12\x16\n" +
+	"\x03uid\x18\a \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x12\n" +
-	"\x04etag\x18\v \x01(\tR\x04etag\x122\n" +
-	"\x12kubernetes_version\x18\f \x01(\tB\x03\xe0A\x03R\x11kubernetesVersion\x12f\n" +
-	"\vannotations\x18\r \x03(\v2?.google.cloud.gkemulticloud.v1.AttachedCluster.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12t\n" +
-	"\x18workload_identity_config\x18\x0e \x01(\v25.google.cloud.gkemulticloud.v1.WorkloadIdentityConfigB\x03\xe0A\x03R\x16workloadIdentityConfig\x12X\n" +
-	"\x0elogging_config\x18\x0f \x01(\v2,.google.cloud.gkemulticloud.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x12P\n" +
-	"\x06errors\x18\x14 \x03(\v23.google.cloud.gkemulticloud.v1.AttachedClusterErrorB\x03\xe0A\x03R\x06errors\x12g\n" +
-	"\rauthorization\x18\x15 \x01(\v2<.google.cloud.gkemulticloud.v1.AttachedClustersAuthorizationB\x03\xe0A\x01R\rauthorization\x12a\n" +
-	"\x11monitoring_config\x18\x17 \x01(\v2/.google.cloud.gkemulticloud.v1.MonitoringConfigB\x03\xe0A\x01R\x10monitoringConfig\x12Z\n" +
-	"\fproxy_config\x18\x18 \x01(\v22.google.cloud.gkemulticloud.v1.AttachedProxyConfigB\x03\xe0A\x01R\vproxyConfig\x12j\n" +
-	"\x14binary_authorization\x18\x19 \x01(\v22.google.cloud.gkemulticloud.v1.BinaryAuthorizationB\x03\xe0A\x01R\x13binaryAuthorization\x12q\n" +
-	"\x17security_posture_config\x18\x1a \x01(\v24.google.cloud.gkemulticloud.v1.SecurityPostureConfigB\x03\xe0A\x01R\x15securityPostureConfig\x12T\n" +
-	"\x04tags\x18\x1b \x03(\v28.google.cloud.gkemulticloud.v1.AttachedCluster.TagsEntryB\x06\xe0A\x01\xe0A\x04R\x04tags\x12t\n" +
-	"\x18system_components_config\x18\x1c \x01(\v25.google.cloud.gkemulticloud.v1.SystemComponentsConfigB\x03\xe0A\x01R\x16systemComponentsConfig\x1a>\n" +
+	"\x04etag\x18\v \x01(\tR\x04etag\x123\n" +
+	"\x12kubernetes_version\x18\f \x01(\tB\x04\xe2A\x01\x03R\x11kubernetesVersion\x12g\n" +
+	"\vannotations\x18\r \x03(\v2?.google.cloud.gkemulticloud.v1.AttachedCluster.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12u\n" +
+	"\x18workload_identity_config\x18\x0e \x01(\v25.google.cloud.gkemulticloud.v1.WorkloadIdentityConfigB\x04\xe2A\x01\x03R\x16workloadIdentityConfig\x12Y\n" +
+	"\x0elogging_config\x18\x0f \x01(\v2,.google.cloud.gkemulticloud.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x12Q\n" +
+	"\x06errors\x18\x14 \x03(\v23.google.cloud.gkemulticloud.v1.AttachedClusterErrorB\x04\xe2A\x01\x03R\x06errors\x12h\n" +
+	"\rauthorization\x18\x15 \x01(\v2<.google.cloud.gkemulticloud.v1.AttachedClustersAuthorizationB\x04\xe2A\x01\x01R\rauthorization\x12b\n" +
+	"\x11monitoring_config\x18\x17 \x01(\v2/.google.cloud.gkemulticloud.v1.MonitoringConfigB\x04\xe2A\x01\x01R\x10monitoringConfig\x12[\n" +
+	"\fproxy_config\x18\x18 \x01(\v22.google.cloud.gkemulticloud.v1.AttachedProxyConfigB\x04\xe2A\x01\x01R\vproxyConfig\x12k\n" +
+	"\x14binary_authorization\x18\x19 \x01(\v22.google.cloud.gkemulticloud.v1.BinaryAuthorizationB\x04\xe2A\x01\x01R\x13binaryAuthorization\x12r\n" +
+	"\x17security_posture_config\x18\x1a \x01(\v24.google.cloud.gkemulticloud.v1.SecurityPostureConfigB\x04\xe2A\x01\x01R\x15securityPostureConfig\x12S\n" +
+	"\x04tags\x18\x1b \x03(\v28.google.cloud.gkemulticloud.v1.AttachedCluster.TagsEntryB\x05\xe2A\x02\x01\x04R\x04tags\x12u\n" +
+	"\x18system_components_config\x18\x1c \x01(\v25.google.cloud.gkemulticloud.v1.SystemComponentsConfigB\x04\xe2A\x01\x01R\x16systemComponentsConfig\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
@@ -1286,29 +1286,29 @@ const file_google_cloud_gkemulticloud_v1_attached_resources_proto_rawDesc = "" +
 	"\bSTOPPING\x10\x04\x12\t\n" +
 	"\x05ERROR\x10\x05\x12\f\n" +
 	"\bDEGRADED\x10\x06:~\xeaA{\n" +
-	",gkemulticloud.googleapis.com/AttachedCluster\x12Kprojects/{project}/locations/{location}/attachedClusters/{attached_cluster}\"\xd6\x01\n" +
-	"\x1dAttachedClustersAuthorization\x12X\n" +
-	"\vadmin_users\x18\x01 \x03(\v22.google.cloud.gkemulticloud.v1.AttachedClusterUserB\x03\xe0A\x01R\n" +
-	"adminUsers\x12[\n" +
-	"\fadmin_groups\x18\x02 \x03(\v23.google.cloud.gkemulticloud.v1.AttachedClusterGroupB\x03\xe0A\x01R\vadminGroups\"6\n" +
-	"\x13AttachedClusterUser\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\"1\n" +
-	"\x14AttachedClusterGroup\x12\x19\n" +
-	"\x05group\x18\x01 \x01(\tB\x03\xe0A\x02R\x05group\"L\n" +
+	",gkemulticloud.googleapis.com/AttachedCluster\x12Kprojects/{project}/locations/{location}/attachedClusters/{attached_cluster}\"\xd8\x01\n" +
+	"\x1dAttachedClustersAuthorization\x12Y\n" +
+	"\vadmin_users\x18\x01 \x03(\v22.google.cloud.gkemulticloud.v1.AttachedClusterUserB\x04\xe2A\x01\x01R\n" +
+	"adminUsers\x12\\\n" +
+	"\fadmin_groups\x18\x02 \x03(\v23.google.cloud.gkemulticloud.v1.AttachedClusterGroupB\x04\xe2A\x01\x01R\vadminGroups\"7\n" +
+	"\x13AttachedClusterUser\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername\"2\n" +
+	"\x14AttachedClusterGroup\x12\x1a\n" +
+	"\x05group\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05group\"M\n" +
 	"\x12AttachedOidcConfig\x12\x1d\n" +
 	"\n" +
-	"issuer_url\x18\x01 \x01(\tR\tissuerUrl\x12\x17\n" +
-	"\x04jwks\x18\x02 \x01(\fB\x03\xe0A\x01R\x04jwks\"\x83\x02\n" +
+	"issuer_url\x18\x01 \x01(\tR\tissuerUrl\x12\x18\n" +
+	"\x04jwks\x18\x02 \x01(\fB\x04\xe2A\x01\x01R\x04jwks\"\x83\x02\n" +
 	"\x14AttachedServerConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12a\n" +
 	"\x0evalid_versions\x18\x02 \x03(\v2:.google.cloud.gkemulticloud.v1.AttachedPlatformVersionInfoR\rvalidVersions:t\xeaAq\n" +
-	"1gkemulticloud.googleapis.com/AttachedServerConfig\x12<projects/{project}/locations/{location}/attachedServerConfig\"\xf7\x01\n" +
+	"1gkemulticloud.googleapis.com/AttachedServerConfig\x12<projects/{project}/locations/{location}/attachedServerConfig\"\xfb\x01\n" +
 	"\x1bAttachedPlatformVersionInfo\x12\x18\n" +
-	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1d\n" +
-	"\aenabled\x18\x03 \x01(\bB\x03\xe0A\x01R\aenabled\x12#\n" +
-	"\vend_of_life\x18\x04 \x01(\bB\x03\xe0A\x01R\tendOfLife\x12?\n" +
-	"\x10end_of_life_date\x18\x05 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\rendOfLifeDate\x129\n" +
-	"\frelease_date\x18\x06 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\vreleaseDate\"0\n" +
+	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1e\n" +
+	"\aenabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12$\n" +
+	"\vend_of_life\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\tendOfLife\x12@\n" +
+	"\x10end_of_life_date\x18\x05 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\rendOfLifeDate\x12:\n" +
+	"\frelease_date\x18\x06 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\vreleaseDate\"0\n" +
 	"\x14AttachedClusterError\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\"s\n" +
 	"\x13AttachedProxyConfig\x12\\\n" +

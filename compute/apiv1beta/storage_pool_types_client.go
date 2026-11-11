@@ -309,6 +309,11 @@ func (c *storagePoolTypesRESTClient) AggregatedList(ctx context.Context, req *co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/storagePoolTypes", req.GetProject())
 
 		params := url.Values{}
@@ -395,6 +400,13 @@ func (c *storagePoolTypesRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetStoragePoolType(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePoolTypes/%v", req.GetProject(), req.GetZone(), req.GetStoragePoolType())
 
 	// Build HTTP headers from client and context metadata.
@@ -456,6 +468,12 @@ func (c *storagePoolTypesRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePoolTypes", req.GetProject(), req.GetZone())

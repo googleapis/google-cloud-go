@@ -4418,55 +4418,55 @@ const file_google_storagetransfer_v1_transfer_types_proto_rawDesc = "" +
 	"\x14GoogleServiceAccount\x12#\n" +
 	"\raccount_email\x18\x01 \x01(\tR\faccountEmail\x12\x1d\n" +
 	"\n" +
-	"subject_id\x18\x02 \x01(\tR\tsubjectId\"h\n" +
-	"\fAwsAccessKey\x12'\n" +
-	"\raccess_key_id\x18\x01 \x01(\tB\x03\xe0A\x02R\vaccessKeyId\x12/\n" +
-	"\x11secret_access_key\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fsecretAccessKey\"4\n" +
-	"\x10AzureCredentials\x12 \n" +
-	"\tsas_token\x18\x02 \x01(\tB\x03\xe0A\x02R\bsasToken\"\xe6\x03\n" +
+	"subject_id\x18\x02 \x01(\tR\tsubjectId\"j\n" +
+	"\fAwsAccessKey\x12(\n" +
+	"\raccess_key_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vaccessKeyId\x120\n" +
+	"\x11secret_access_key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fsecretAccessKey\"5\n" +
+	"\x10AzureCredentials\x12!\n" +
+	"\tsas_token\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bsasToken\"\xe6\x03\n" +
 	"\x10ObjectConditions\x12p\n" +
 	"(min_time_elapsed_since_last_modification\x18\x01 \x01(\v2\x19.google.protobuf.DurationR#minTimeElapsedSinceLastModification\x12p\n" +
 	"(max_time_elapsed_since_last_modification\x18\x02 \x01(\v2\x19.google.protobuf.DurationR#maxTimeElapsedSinceLastModification\x12)\n" +
 	"\x10include_prefixes\x18\x03 \x03(\tR\x0fincludePrefixes\x12)\n" +
 	"\x10exclude_prefixes\x18\x04 \x03(\tR\x0fexcludePrefixes\x12J\n" +
 	"\x13last_modified_since\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x11lastModifiedSince\x12L\n" +
-	"\x14last_modified_before\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x12lastModifiedBefore\"\x8a\x01\n" +
-	"\aGcsData\x12$\n" +
-	"\vbucket_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x14last_modified_before\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x12lastModifiedBefore\"\x8b\x01\n" +
+	"\aGcsData\x12%\n" +
+	"\vbucket_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"bucketName\x12\x12\n" +
 	"\x04path\x18\x03 \x01(\tR\x04path\x12E\n" +
-	"\x1fmanaged_folder_transfer_enabled\x18\x04 \x01(\bR\x1cmanagedFolderTransferEnabled\"\xe7\x02\n" +
-	"\tAwsS3Data\x12$\n" +
-	"\vbucket_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"bucketName\x12R\n" +
-	"\x0eaws_access_key\x18\x02 \x01(\v2'.google.storagetransfer.v1.AwsAccessKeyB\x03\xe0A\x04R\fawsAccessKey\x12\x12\n" +
+	"\x1fmanaged_folder_transfer_enabled\x18\x04 \x01(\bR\x1cmanagedFolderTransferEnabled\"\xeb\x02\n" +
+	"\tAwsS3Data\x12%\n" +
+	"\vbucket_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"bucketName\x12S\n" +
+	"\x0eaws_access_key\x18\x02 \x01(\v2'.google.storagetransfer.v1.AwsAccessKeyB\x04\xe2A\x01\x04R\fawsAccessKey\x12\x12\n" +
 	"\x04path\x18\x03 \x01(\tR\x04path\x12\x19\n" +
-	"\brole_arn\x18\x04 \x01(\tR\aroleArn\x120\n" +
-	"\x11cloudfront_domain\x18\x06 \x01(\tB\x03\xe0A\x01R\x10cloudfrontDomain\x122\n" +
-	"\x12credentials_secret\x18\a \x01(\tB\x03\xe0A\x01R\x11credentialsSecret\x128\n" +
+	"\brole_arn\x18\x04 \x01(\tR\aroleArn\x121\n" +
+	"\x11cloudfront_domain\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10cloudfrontDomain\x123\n" +
+	"\x12credentials_secret\x18\a \x01(\tB\x04\xe2A\x01\x01R\x11credentialsSecret\x128\n" +
 	"\x17managed_private_network\x18\b \x01(\bH\x00R\x15managedPrivateNetworkB\x11\n" +
-	"\x0fprivate_network\"\xfb\x03\n" +
-	"\x14AzureBlobStorageData\x12,\n" +
-	"\x0fstorage_account\x18\x01 \x01(\tB\x03\xe0A\x02R\x0estorageAccount\x12`\n" +
-	"\x11azure_credentials\x18\x02 \x01(\v2+.google.storagetransfer.v1.AzureCredentialsB\x06\xe0A\x02\xe0A\x04R\x10azureCredentials\x12!\n" +
-	"\tcontainer\x18\x04 \x01(\tB\x03\xe0A\x02R\tcontainer\x12\x12\n" +
-	"\x04path\x18\x05 \x01(\tR\x04path\x122\n" +
-	"\x12credentials_secret\x18\a \x01(\tB\x03\xe0A\x01R\x11credentialsSecret\x12\x88\x01\n" +
-	"\x19federated_identity_config\x18\b \x01(\v2G.google.storagetransfer.v1.AzureBlobStorageData.FederatedIdentityConfigB\x03\xe0A\x01R\x17federatedIdentityConfig\x1a]\n" +
-	"\x17FederatedIdentityConfig\x12 \n" +
-	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12 \n" +
-	"\ttenant_id\x18\x02 \x01(\tB\x03\xe0A\x02R\btenantId\"*\n" +
-	"\bHttpData\x12\x1e\n" +
-	"\blist_url\x18\x01 \x01(\tB\x03\xe0A\x02R\alistUrl\"8\n" +
+	"\x0fprivate_network\"\x80\x04\n" +
+	"\x14AzureBlobStorageData\x12-\n" +
+	"\x0fstorage_account\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0estorageAccount\x12_\n" +
+	"\x11azure_credentials\x18\x02 \x01(\v2+.google.storagetransfer.v1.AzureCredentialsB\x05\xe2A\x02\x02\x04R\x10azureCredentials\x12\"\n" +
+	"\tcontainer\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\tcontainer\x12\x12\n" +
+	"\x04path\x18\x05 \x01(\tR\x04path\x123\n" +
+	"\x12credentials_secret\x18\a \x01(\tB\x04\xe2A\x01\x01R\x11credentialsSecret\x12\x89\x01\n" +
+	"\x19federated_identity_config\x18\b \x01(\v2G.google.storagetransfer.v1.AzureBlobStorageData.FederatedIdentityConfigB\x04\xe2A\x01\x01R\x17federatedIdentityConfig\x1a_\n" +
+	"\x17FederatedIdentityConfig\x12!\n" +
+	"\tclient_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12!\n" +
+	"\ttenant_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\btenantId\"+\n" +
+	"\bHttpData\x12\x1f\n" +
+	"\blist_url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\alistUrl\"8\n" +
 	"\x0fPosixFilesystem\x12%\n" +
 	"\x0eroot_directory\x18\x01 \x01(\tR\rrootDirectory\"\x1e\n" +
 	"\bHdfsData\x12\x12\n" +
-	"\x04path\x18\x01 \x01(\tR\x04path\"\xed\x01\n" +
-	"\x13AwsS3CompatibleData\x12$\n" +
-	"\vbucket_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\"\xef\x01\n" +
+	"\x13AwsS3CompatibleData\x12%\n" +
+	"\vbucket_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"bucketName\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\x12\x1f\n" +
-	"\bendpoint\x18\x03 \x01(\tB\x03\xe0A\x02R\bendpoint\x12\x16\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\x12 \n" +
+	"\bendpoint\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bendpoint\x12\x16\n" +
 	"\x06region\x18\x05 \x01(\tR\x06region\x12R\n" +
 	"\vs3_metadata\x18\x04 \x01(\v2/.google.storagetransfer.v1.S3CompatibleMetadataH\x00R\n" +
 	"s3MetadataB\x0f\n" +
@@ -4493,11 +4493,11 @@ const file_google_storagetransfer_v1_transfer_types_proto_rawDesc = "" +
 	"\aListApi\x12\x18\n" +
 	"\x14LIST_API_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fLIST_OBJECTS_V2\x10\x01\x12\x10\n" +
-	"\fLIST_OBJECTS\x10\x02\"\xc8\x03\n" +
-	"\tAgentPool\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x02R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12E\n" +
-	"\x05state\x18\x04 \x01(\x0e2*.google.storagetransfer.v1.AgentPool.StateB\x03\xe0A\x03R\x05state\x12\\\n" +
+	"\fLIST_OBJECTS\x10\x02\"\xca\x03\n" +
+	"\tAgentPool\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12F\n" +
+	"\x05state\x18\x04 \x01(\x0e2*.google.storagetransfer.v1.AgentPool.StateB\x04\xe2A\x01\x03R\x05state\x12\\\n" +
 	"\x0fbandwidth_limit\x18\x05 \x01(\v23.google.storagetransfer.v1.AgentPool.BandwidthLimitR\x0ebandwidthLimit\x1a/\n" +
 	"\x0eBandwidthLimit\x12\x1d\n" +
 	"\n" +
@@ -4600,46 +4600,46 @@ const file_google_storagetransfer_v1_transfer_types_proto_rawDesc = "" +
 	"\x11TIME_CREATED_SKIP\x10\x01\x12(\n" +
 	"$TIME_CREATED_PRESERVE_AS_CUSTOM_TIME\x10\x02\".\n" +
 	"\x10TransferManifest\x12\x1a\n" +
-	"\blocation\x18\x01 \x01(\tR\blocation\"\xd7\x02\n" +
-	"\bSchedule\x12F\n" +
-	"\x13schedule_start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\x11scheduleStartDate\x12=\n" +
+	"\blocation\x18\x01 \x01(\tR\blocation\"\xd8\x02\n" +
+	"\bSchedule\x12G\n" +
+	"\x13schedule_start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\x11scheduleStartDate\x12=\n" +
 	"\x11schedule_end_date\x18\x02 \x01(\v2\x11.google.type.DateR\x0fscheduleEndDate\x12A\n" +
 	"\x11start_time_of_day\x18\x03 \x01(\v2\x16.google.type.TimeOfDayR\x0estartTimeOfDay\x12=\n" +
 	"\x0fend_time_of_day\x18\x04 \x01(\v2\x16.google.type.TimeOfDayR\fendTimeOfDay\x12B\n" +
-	"\x0frepeat_interval\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\x0erepeatInterval\"\xd6\x01\n" +
-	"\vEventStream\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12Q\n" +
+	"\x0frepeat_interval\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\x0erepeatInterval\"\xd7\x01\n" +
+	"\vEventStream\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12Q\n" +
 	"\x17event_stream_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x14eventStreamStartTime\x12[\n" +
-	"\x1cevent_stream_expiration_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x19eventStreamExpirationTime\"\x9a\b\n" +
+	"\x1cevent_stream_expiration_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x19eventStreamExpirationTime\"\x9e\b\n" +
 	"\vTransferJob\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x03 \x01(\tR\tprojectId\x12,\n" +
-	"\x0fservice_account\x18\x12 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12L\n" +
+	"project_id\x18\x03 \x01(\tR\tprojectId\x12-\n" +
+	"\x0fservice_account\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12L\n" +
 	"\rtransfer_spec\x18\x04 \x01(\v2'.google.storagetransfer.v1.TransferSpecR\ftransferSpec\x12U\n" +
 	"\x10replication_spec\x18\x11 \x01(\v2*.google.storagetransfer.v1.ReplicationSpecR\x0freplicationSpec\x12^\n" +
 	"\x13notification_config\x18\v \x01(\v2-.google.storagetransfer.v1.NotificationConfigR\x12notificationConfig\x12O\n" +
 	"\x0elogging_config\x18\x0e \x01(\v2(.google.storagetransfer.v1.LoggingConfigR\rloggingConfig\x12?\n" +
 	"\bschedule\x18\x05 \x01(\v2#.google.storagetransfer.v1.ScheduleR\bschedule\x12I\n" +
 	"\fevent_stream\x18\x0f \x01(\v2&.google.storagetransfer.v1.EventStreamR\veventStream\x12E\n" +
-	"\x06status\x18\x06 \x01(\x0e2-.google.storagetransfer.v1.TransferJob.StatusR\x06status\x12D\n" +
-	"\rcreation_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcreationTime\x12U\n" +
-	"\x16last_modification_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14lastModificationTime\x12D\n" +
-	"\rdeletion_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fdeletionTime\x122\n" +
+	"\x06status\x18\x06 \x01(\x0e2-.google.storagetransfer.v1.TransferJob.StatusR\x06status\x12E\n" +
+	"\rcreation_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcreationTime\x12V\n" +
+	"\x16last_modification_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14lastModificationTime\x12E\n" +
+	"\rdeletion_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fdeletionTime\x122\n" +
 	"\x15latest_operation_name\x18\f \x01(\tR\x13latestOperationName\"H\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
 	"\bDISABLED\x10\x02\x12\v\n" +
-	"\aDELETED\x10\x03\"K\n" +
-	"\rErrorLogEntry\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12#\n" +
-	"\rerror_details\x18\x03 \x03(\tR\ferrorDetails\"\xc0\x01\n" +
-	"\fErrorSummary\x124\n" +
+	"\aDELETED\x10\x03\"L\n" +
+	"\rErrorLogEntry\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03url\x12#\n" +
+	"\rerror_details\x18\x03 \x03(\tR\ferrorDetails\"\xc2\x01\n" +
+	"\fErrorSummary\x125\n" +
 	"\n" +
-	"error_code\x18\x01 \x01(\x0e2\x10.google.rpc.CodeB\x03\xe0A\x02R\terrorCode\x12$\n" +
-	"\verror_count\x18\x02 \x01(\x03B\x03\xe0A\x02R\n" +
+	"error_code\x18\x01 \x01(\x0e2\x10.google.rpc.CodeB\x04\xe2A\x01\x02R\terrorCode\x12%\n" +
+	"\verror_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\n" +
 	"errorCount\x12T\n" +
 	"\x11error_log_entries\x18\x03 \x03(\v2(.google.storagetransfer.v1.ErrorLogEntryR\x0ferrorLogEntries\"\xff\n" +
 	"\n" +
@@ -4665,12 +4665,12 @@ const file_google_storagetransfer_v1_transfer_types_proto_rawDesc = "" +
 	"&directories_failed_to_list_from_source\x18\x12 \x01(\x03R!directoriesFailedToListFromSource\x12\\\n" +
 	"+directories_successfully_listed_from_source\x18\x13 \x01(\x03R'directoriesSuccessfullyListedFromSource\x12E\n" +
 	"\x1fintermediate_objects_cleaned_up\x18\x16 \x01(\x03R\x1cintermediateObjectsCleanedUp\x12R\n" +
-	"&intermediate_objects_failed_cleaned_up\x18\x17 \x01(\x03R\"intermediateObjectsFailedCleanedUp\"\xcd\x03\n" +
-	"\x12NotificationConfig\x12&\n" +
-	"\fpubsub_topic\x18\x01 \x01(\tB\x03\xe0A\x02R\vpubsubTopic\x12X\n" +
+	"&intermediate_objects_failed_cleaned_up\x18\x17 \x01(\x03R\"intermediateObjectsFailedCleanedUp\"\xcf\x03\n" +
+	"\x12NotificationConfig\x12'\n" +
+	"\fpubsub_topic\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vpubsubTopic\x12X\n" +
 	"\vevent_types\x18\x02 \x03(\x0e27.google.storagetransfer.v1.NotificationConfig.EventTypeR\n" +
-	"eventTypes\x12g\n" +
-	"\x0epayload_format\x18\x03 \x01(\x0e2;.google.storagetransfer.v1.NotificationConfig.PayloadFormatB\x03\xe0A\x02R\rpayloadFormat\"\x86\x01\n" +
+	"eventTypes\x12h\n" +
+	"\x0epayload_format\x18\x03 \x01(\x0e2;.google.storagetransfer.v1.NotificationConfig.PayloadFormatB\x04\xe2A\x01\x02R\rpayloadFormat\"\x86\x01\n" +
 	"\tEventType\x12\x1a\n" +
 	"\x16EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aTRANSFER_OPERATION_SUCCESS\x10\x01\x12\x1d\n" +

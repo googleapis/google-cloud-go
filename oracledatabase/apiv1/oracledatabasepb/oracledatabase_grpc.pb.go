@@ -75,6 +75,10 @@ const (
 	OracleDatabase_GetOdbSubnet_FullMethodName                                = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet"
 	OracleDatabase_CreateOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet"
 	OracleDatabase_DeleteOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet"
+	OracleDatabase_ListOdbDnsZones_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbDnsZones"
+	OracleDatabase_GetOdbDnsZone_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbDnsZone"
+	OracleDatabase_CreateOdbDnsZone_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbDnsZone"
+	OracleDatabase_DeleteOdbDnsZone_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbDnsZone"
 	OracleDatabase_ListExadbVmClusters_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters"
 	OracleDatabase_GetExadbVmCluster_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster"
 	OracleDatabase_CreateExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster"
@@ -206,6 +210,14 @@ type OracleDatabaseClient interface {
 	CreateOdbSubnet(ctx context.Context, in *CreateOdbSubnetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single ODB Subnet.
 	DeleteOdbSubnet(ctx context.Context, in *DeleteOdbSubnetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists all the ODB DNS Zones in a given ODB Network.
+	ListOdbDnsZones(ctx context.Context, in *ListOdbDnsZonesRequest, opts ...grpc.CallOption) (*ListOdbDnsZonesResponse, error)
+	// Gets details of a single ODB DNS Zone.
+	GetOdbDnsZone(ctx context.Context, in *GetOdbDnsZoneRequest, opts ...grpc.CallOption) (*OdbDnsZone, error)
+	// Creates a new ODB DNS Zone in a given ODB Network.
+	CreateOdbDnsZone(ctx context.Context, in *CreateOdbDnsZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single ODB DNS Zone.
+	DeleteOdbDnsZone(ctx context.Context, in *DeleteOdbDnsZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists all the Exadb (Exascale) VM Clusters for the given project and
 	// location.
 	ListExadbVmClusters(ctx context.Context, in *ListExadbVmClustersRequest, opts ...grpc.CallOption) (*ListExadbVmClustersResponse, error)
@@ -662,6 +674,42 @@ func (c *oracleDatabaseClient) DeleteOdbSubnet(ctx context.Context, in *DeleteOd
 	return out, nil
 }
 
+func (c *oracleDatabaseClient) ListOdbDnsZones(ctx context.Context, in *ListOdbDnsZonesRequest, opts ...grpc.CallOption) (*ListOdbDnsZonesResponse, error) {
+	out := new(ListOdbDnsZonesResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListOdbDnsZones_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetOdbDnsZone(ctx context.Context, in *GetOdbDnsZoneRequest, opts ...grpc.CallOption) (*OdbDnsZone, error) {
+	out := new(OdbDnsZone)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetOdbDnsZone_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateOdbDnsZone(ctx context.Context, in *CreateOdbDnsZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateOdbDnsZone_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteOdbDnsZone(ctx context.Context, in *DeleteOdbDnsZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteOdbDnsZone_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *oracleDatabaseClient) ListExadbVmClusters(ctx context.Context, in *ListExadbVmClustersRequest, opts ...grpc.CallOption) (*ListExadbVmClustersResponse, error) {
 	out := new(ListExadbVmClustersResponse)
 	err := c.cc.Invoke(ctx, OracleDatabase_ListExadbVmClusters_FullMethodName, in, out, opts...)
@@ -1111,6 +1159,14 @@ type OracleDatabaseServer interface {
 	CreateOdbSubnet(context.Context, *CreateOdbSubnetRequest) (*longrunningpb.Operation, error)
 	// Deletes a single ODB Subnet.
 	DeleteOdbSubnet(context.Context, *DeleteOdbSubnetRequest) (*longrunningpb.Operation, error)
+	// Lists all the ODB DNS Zones in a given ODB Network.
+	ListOdbDnsZones(context.Context, *ListOdbDnsZonesRequest) (*ListOdbDnsZonesResponse, error)
+	// Gets details of a single ODB DNS Zone.
+	GetOdbDnsZone(context.Context, *GetOdbDnsZoneRequest) (*OdbDnsZone, error)
+	// Creates a new ODB DNS Zone in a given ODB Network.
+	CreateOdbDnsZone(context.Context, *CreateOdbDnsZoneRequest) (*longrunningpb.Operation, error)
+	// Deletes a single ODB DNS Zone.
+	DeleteOdbDnsZone(context.Context, *DeleteOdbDnsZoneRequest) (*longrunningpb.Operation, error)
 	// Lists all the Exadb (Exascale) VM Clusters for the given project and
 	// location.
 	ListExadbVmClusters(context.Context, *ListExadbVmClustersRequest) (*ListExadbVmClustersResponse, error)
@@ -1322,6 +1378,18 @@ func (UnimplementedOracleDatabaseServer) CreateOdbSubnet(context.Context, *Creat
 }
 func (UnimplementedOracleDatabaseServer) DeleteOdbSubnet(context.Context, *DeleteOdbSubnetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteOdbSubnet not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListOdbDnsZones(context.Context, *ListOdbDnsZonesRequest) (*ListOdbDnsZonesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListOdbDnsZones not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetOdbDnsZone(context.Context, *GetOdbDnsZoneRequest) (*OdbDnsZone, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOdbDnsZone not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateOdbDnsZone(context.Context, *CreateOdbDnsZoneRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOdbDnsZone not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteOdbDnsZone(context.Context, *DeleteOdbDnsZoneRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteOdbDnsZone not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListExadbVmClusters(context.Context, *ListExadbVmClustersRequest) (*ListExadbVmClustersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListExadbVmClusters not implemented")
@@ -2171,6 +2239,78 @@ func _OracleDatabase_DeleteOdbSubnet_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).DeleteOdbSubnet(ctx, req.(*DeleteOdbSubnetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListOdbDnsZones_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListOdbDnsZonesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListOdbDnsZones(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListOdbDnsZones_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListOdbDnsZones(ctx, req.(*ListOdbDnsZonesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetOdbDnsZone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOdbDnsZoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetOdbDnsZone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetOdbDnsZone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetOdbDnsZone(ctx, req.(*GetOdbDnsZoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateOdbDnsZone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOdbDnsZoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateOdbDnsZone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateOdbDnsZone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateOdbDnsZone(ctx, req.(*CreateOdbDnsZoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteOdbDnsZone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteOdbDnsZoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteOdbDnsZone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteOdbDnsZone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteOdbDnsZone(ctx, req.(*DeleteOdbDnsZoneRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3061,6 +3201,22 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteOdbSubnet",
 			Handler:    _OracleDatabase_DeleteOdbSubnet_Handler,
+		},
+		{
+			MethodName: "ListOdbDnsZones",
+			Handler:    _OracleDatabase_ListOdbDnsZones_Handler,
+		},
+		{
+			MethodName: "GetOdbDnsZone",
+			Handler:    _OracleDatabase_GetOdbDnsZone_Handler,
+		},
+		{
+			MethodName: "CreateOdbDnsZone",
+			Handler:    _OracleDatabase_CreateOdbDnsZone_Handler,
+		},
+		{
+			MethodName: "DeleteOdbDnsZone",
+			Handler:    _OracleDatabase_DeleteOdbDnsZone_Handler,
 		},
 		{
 			MethodName: "ListExadbVmClusters",

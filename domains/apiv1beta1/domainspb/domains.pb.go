@@ -3033,25 +3033,25 @@ var File_google_cloud_domains_v1beta1_domains_proto protoreflect.FileDescriptor
 
 const file_google_cloud_domains_v1beta1_domains_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/domains/v1beta1/domains.proto\x12\x1cgoogle.cloud.domains.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/money.proto\x1a google/type/postal_address.proto\"\xbc\n" +
+	"*google/cloud/domains/v1beta1/domains.proto\x12\x1cgoogle.cloud.domains.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/money.proto\x1a google/type/postal_address.proto\"\xc3\n" +
 	"\n" +
-	"\fRegistration\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12'\n" +
-	"\vdomain_name\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\n" +
-	"domainName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12K\n" +
-	"\x05state\x18\a \x01(\x0e20.google.cloud.domains.v1beta1.Registration.StateB\x03\xe0A\x03R\x05state\x12M\n" +
-	"\x06issues\x18\b \x03(\x0e20.google.cloud.domains.v1beta1.Registration.IssueB\x03\xe0A\x03R\x06issues\x12N\n" +
+	"\fRegistration\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12&\n" +
+	"\vdomain_name\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\n" +
+	"domainName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12L\n" +
+	"\x05state\x18\a \x01(\x0e20.google.cloud.domains.v1beta1.Registration.StateB\x04\xe2A\x01\x03R\x05state\x12N\n" +
+	"\x06issues\x18\b \x03(\x0e20.google.cloud.domains.v1beta1.Registration.IssueB\x04\xe2A\x01\x03R\x06issues\x12N\n" +
 	"\x06labels\x18\t \x03(\v26.google.cloud.domains.v1beta1.Registration.LabelsEntryR\x06labels\x12a\n" +
 	"\x13management_settings\x18\n" +
 	" \x01(\v20.google.cloud.domains.v1beta1.ManagementSettingsR\x12managementSettings\x12L\n" +
-	"\fdns_settings\x18\v \x01(\v2).google.cloud.domains.v1beta1.DnsSettingsR\vdnsSettings\x12]\n" +
-	"\x10contact_settings\x18\f \x01(\v2-.google.cloud.domains.v1beta1.ContactSettingsB\x03\xe0A\x02R\x0fcontactSettings\x12l\n" +
-	"\x18pending_contact_settings\x18\r \x01(\v2-.google.cloud.domains.v1beta1.ContactSettingsB\x03\xe0A\x03R\x16pendingContactSettings\x12^\n" +
-	"\x11supported_privacy\x18\x0e \x03(\x0e2,.google.cloud.domains.v1beta1.ContactPrivacyB\x03\xe0A\x03R\x10supportedPrivacy\x1a9\n" +
+	"\fdns_settings\x18\v \x01(\v2).google.cloud.domains.v1beta1.DnsSettingsR\vdnsSettings\x12^\n" +
+	"\x10contact_settings\x18\f \x01(\v2-.google.cloud.domains.v1beta1.ContactSettingsB\x04\xe2A\x01\x02R\x0fcontactSettings\x12m\n" +
+	"\x18pending_contact_settings\x18\r \x01(\v2-.google.cloud.domains.v1beta1.ContactSettingsB\x04\xe2A\x01\x03R\x16pendingContactSettings\x12_\n" +
+	"\x11supported_privacy\x18\x0e \x03(\x0e2,.google.cloud.domains.v1beta1.ContactPrivacyB\x04\xe2A\x01\x03R\x10supportedPrivacy\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa5\x01\n" +
@@ -3069,28 +3069,28 @@ const file_google_cloud_domains_v1beta1_domains_proto_rawDesc = "" +
 	"\x11ISSUE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fCONTACT_SUPPORT\x10\x01\x12\x14\n" +
 	"\x10UNVERIFIED_EMAIL\x10\x02:n\xeaAk\n" +
-	"#domains.googleapis.com/Registration\x12Dprojects/{project}/locations/{location}/registrations/{registration}\"\xbd\x02\n" +
-	"\x12ManagementSettings\x12j\n" +
-	"\x0erenewal_method\x18\x03 \x01(\x0e2>.google.cloud.domains.v1beta1.ManagementSettings.RenewalMethodB\x03\xe0A\x03R\rrenewalMethod\x12_\n" +
+	"#domains.googleapis.com/Registration\x12Dprojects/{project}/locations/{location}/registrations/{registration}\"\xbe\x02\n" +
+	"\x12ManagementSettings\x12k\n" +
+	"\x0erenewal_method\x18\x03 \x01(\x0e2>.google.cloud.domains.v1beta1.ManagementSettings.RenewalMethodB\x04\xe2A\x01\x03R\rrenewalMethod\x12_\n" +
 	"\x13transfer_lock_state\x18\x04 \x01(\x0e2/.google.cloud.domains.v1beta1.TransferLockStateR\x11transferLockState\"Z\n" +
 	"\rRenewalMethod\x12\x1e\n" +
 	"\x1aRENEWAL_METHOD_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11AUTOMATIC_RENEWAL\x10\x01\x12\x12\n" +
-	"\x0eMANUAL_RENEWAL\x10\x02\"\xf9\v\n" +
+	"\x0eMANUAL_RENEWAL\x10\x02\"\xfe\v\n" +
 	"\vDnsSettings\x12T\n" +
 	"\n" +
 	"custom_dns\x18\x01 \x01(\v23.google.cloud.domains.v1beta1.DnsSettings.CustomDnsH\x00R\tcustomDns\x12j\n" +
 	"\x12google_domains_dns\x18\x02 \x01(\v2:.google.cloud.domains.v1beta1.DnsSettings.GoogleDomainsDnsH\x00R\x10googleDomainsDns\x12W\n" +
-	"\fglue_records\x18\x04 \x03(\v24.google.cloud.domains.v1beta1.DnsSettings.GlueRecordR\vglueRecords\x1a\x86\x01\n" +
-	"\tCustomDns\x12&\n" +
-	"\fname_servers\x18\x01 \x03(\tB\x03\xe0A\x02R\vnameServers\x12Q\n" +
+	"\fglue_records\x18\x04 \x03(\v24.google.cloud.domains.v1beta1.DnsSettings.GlueRecordR\vglueRecords\x1a\x87\x01\n" +
+	"\tCustomDns\x12'\n" +
+	"\fname_servers\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\vnameServers\x12Q\n" +
 	"\n" +
-	"ds_records\x18\x02 \x03(\v22.google.cloud.domains.v1beta1.DnsSettings.DsRecordR\tdsRecords\x1a\xe5\x01\n" +
-	"\x10GoogleDomainsDns\x12&\n" +
-	"\fname_servers\x18\x01 \x03(\tB\x03\xe0A\x03R\vnameServers\x12Q\n" +
-	"\bds_state\x18\x02 \x01(\x0e21.google.cloud.domains.v1beta1.DnsSettings.DsStateB\x03\xe0A\x02R\adsState\x12V\n" +
+	"ds_records\x18\x02 \x03(\v22.google.cloud.domains.v1beta1.DnsSettings.DsRecordR\tdsRecords\x1a\xe8\x01\n" +
+	"\x10GoogleDomainsDns\x12'\n" +
+	"\fname_servers\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\vnameServers\x12R\n" +
+	"\bds_state\x18\x02 \x01(\x0e21.google.cloud.domains.v1beta1.DnsSettings.DsStateB\x04\xe2A\x01\x02R\adsState\x12W\n" +
 	"\n" +
-	"ds_records\x18\x03 \x03(\v22.google.cloud.domains.v1beta1.DnsSettings.DsRecordB\x03\xe0A\x03R\tdsRecords\x1a\xf4\x04\n" +
+	"ds_records\x18\x03 \x03(\v22.google.cloud.domains.v1beta1.DnsSettings.DsRecordB\x04\xe2A\x01\x03R\tdsRecords\x1a\xf4\x04\n" +
 	"\bDsRecord\x12\x17\n" +
 	"\akey_tag\x18\x01 \x01(\x05R\x06keyTag\x12Z\n" +
 	"\talgorithm\x18\x02 \x01(\x0e2<.google.cloud.domains.v1beta1.DnsSettings.DsRecord.AlgorithmR\talgorithm\x12^\n" +
@@ -3128,66 +3128,66 @@ const file_google_cloud_domains_v1beta1_domains_proto_rawDesc = "" +
 	"\x06SHA256\x10\x02\x12\f\n" +
 	"\bGOST3411\x10\x03\x12\n" +
 	"\n" +
-	"\x06SHA384\x10\x04\x1a|\n" +
+	"\x06SHA384\x10\x04\x1a}\n" +
 	"\n" +
-	"GlueRecord\x12 \n" +
-	"\thost_name\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostName\x12%\n" +
+	"GlueRecord\x12!\n" +
+	"\thost_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostName\x12%\n" +
 	"\x0eipv4_addresses\x18\x02 \x03(\tR\ripv4Addresses\x12%\n" +
 	"\x0eipv6_addresses\x18\x03 \x03(\tR\ripv6Addresses\"Y\n" +
 	"\aDsState\x12\x18\n" +
 	"\x14DS_STATE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16DS_RECORDS_UNPUBLISHED\x10\x01\x12\x18\n" +
 	"\x14DS_RECORDS_PUBLISHED\x10\x02B\x0e\n" +
-	"\fdns_provider\"\xc9\x04\n" +
-	"\x0fContactSettings\x12K\n" +
-	"\aprivacy\x18\x01 \x01(\x0e2,.google.cloud.domains.v1beta1.ContactPrivacyB\x03\xe0A\x02R\aprivacy\x12i\n" +
-	"\x12registrant_contact\x18\x02 \x01(\v25.google.cloud.domains.v1beta1.ContactSettings.ContactB\x03\xe0A\x02R\x11registrantContact\x12_\n" +
-	"\radmin_contact\x18\x03 \x01(\v25.google.cloud.domains.v1beta1.ContactSettings.ContactB\x03\xe0A\x02R\fadminContact\x12g\n" +
-	"\x11technical_contact\x18\x04 \x01(\v25.google.cloud.domains.v1beta1.ContactSettings.ContactB\x03\xe0A\x02R\x10technicalContact\x1a\xb3\x01\n" +
-	"\aContact\x12F\n" +
-	"\x0epostal_address\x18\x01 \x01(\v2\x1a.google.type.PostalAddressB\x03\xe0A\x02R\rpostalAddress\x12\x19\n" +
-	"\x05email\x18\x02 \x01(\tB\x03\xe0A\x02R\x05email\x12&\n" +
-	"\fphone_number\x18\x03 \x01(\tB\x03\xe0A\x02R\vphoneNumber\x12\x1d\n" +
+	"\fdns_provider\"\xd0\x04\n" +
+	"\x0fContactSettings\x12L\n" +
+	"\aprivacy\x18\x01 \x01(\x0e2,.google.cloud.domains.v1beta1.ContactPrivacyB\x04\xe2A\x01\x02R\aprivacy\x12j\n" +
+	"\x12registrant_contact\x18\x02 \x01(\v25.google.cloud.domains.v1beta1.ContactSettings.ContactB\x04\xe2A\x01\x02R\x11registrantContact\x12`\n" +
+	"\radmin_contact\x18\x03 \x01(\v25.google.cloud.domains.v1beta1.ContactSettings.ContactB\x04\xe2A\x01\x02R\fadminContact\x12h\n" +
+	"\x11technical_contact\x18\x04 \x01(\v25.google.cloud.domains.v1beta1.ContactSettings.ContactB\x04\xe2A\x01\x02R\x10technicalContact\x1a\xb6\x01\n" +
+	"\aContact\x12G\n" +
+	"\x0epostal_address\x18\x01 \x01(\v2\x1a.google.type.PostalAddressB\x04\xe2A\x01\x02R\rpostalAddress\x12\x1a\n" +
+	"\x05email\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05email\x12'\n" +
+	"\fphone_number\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vphoneNumber\x12\x1d\n" +
 	"\n" +
-	"fax_number\x18\x04 \x01(\tR\tfaxNumber\"x\n" +
-	"\x14SearchDomainsRequest\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12E\n" +
-	"\blocation\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"fax_number\x18\x04 \x01(\tR\tfaxNumber\"z\n" +
+	"\x14SearchDomainsRequest\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12F\n" +
+	"\blocation\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\blocation\"z\n" +
 	"\x15SearchDomainsResponse\x12a\n" +
-	"\x13register_parameters\x18\x01 \x03(\v20.google.cloud.domains.v1beta1.RegisterParametersR\x12registerParameters\"\x90\x01\n" +
-	"!RetrieveRegisterParametersRequest\x12$\n" +
-	"\vdomain_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"domainName\x12E\n" +
-	"\blocation\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x13register_parameters\x18\x01 \x03(\v20.google.cloud.domains.v1beta1.RegisterParametersR\x12registerParameters\"\x92\x01\n" +
+	"!RetrieveRegisterParametersRequest\x12%\n" +
+	"\vdomain_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"domainName\x12F\n" +
+	"\blocation\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\blocation\"\x87\x01\n" +
 	"\"RetrieveRegisterParametersResponse\x12a\n" +
-	"\x13register_parameters\x18\x01 \x01(\v20.google.cloud.domains.v1beta1.RegisterParametersR\x12registerParameters\"\xb9\x03\n" +
-	"\x15RegisterDomainRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12S\n" +
-	"\fregistration\x18\x02 \x01(\v2*.google.cloud.domains.v1beta1.RegistrationB\x03\xe0A\x02R\fregistration\x12Q\n" +
+	"\x13register_parameters\x18\x01 \x01(\v20.google.cloud.domains.v1beta1.RegisterParametersR\x12registerParameters\"\xbc\x03\n" +
+	"\x15RegisterDomainRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12T\n" +
+	"\fregistration\x18\x02 \x01(\v2*.google.cloud.domains.v1beta1.RegistrationB\x04\xe2A\x01\x02R\fregistration\x12Q\n" +
 	"\x0edomain_notices\x18\x03 \x03(\x0e2*.google.cloud.domains.v1beta1.DomainNoticeR\rdomainNotices\x12T\n" +
-	"\x0fcontact_notices\x18\x04 \x03(\x0e2+.google.cloud.domains.v1beta1.ContactNoticeR\x0econtactNotices\x12:\n" +
-	"\fyearly_price\x18\x05 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x02R\vyearlyPrice\x12#\n" +
-	"\rvalidate_only\x18\x06 \x01(\bR\fvalidateOnly\"\x90\x01\n" +
-	"!RetrieveTransferParametersRequest\x12$\n" +
-	"\vdomain_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"domainName\x12E\n" +
-	"\blocation\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fcontact_notices\x18\x04 \x03(\x0e2+.google.cloud.domains.v1beta1.ContactNoticeR\x0econtactNotices\x12;\n" +
+	"\fyearly_price\x18\x05 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x02R\vyearlyPrice\x12#\n" +
+	"\rvalidate_only\x18\x06 \x01(\bR\fvalidateOnly\"\x92\x01\n" +
+	"!RetrieveTransferParametersRequest\x12%\n" +
+	"\vdomain_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"domainName\x12F\n" +
+	"\blocation\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\blocation\"\x87\x01\n" +
 	"\"RetrieveTransferParametersResponse\x12a\n" +
-	"\x13transfer_parameters\x18\x01 \x01(\v20.google.cloud.domains.v1beta1.TransferParametersR\x12transferParameters\"\xc6\x03\n" +
-	"\x15TransferDomainRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12S\n" +
-	"\fregistration\x18\x02 \x01(\v2*.google.cloud.domains.v1beta1.RegistrationB\x03\xe0A\x02R\fregistration\x12T\n" +
-	"\x0fcontact_notices\x18\x03 \x03(\x0e2+.google.cloud.domains.v1beta1.ContactNoticeR\x0econtactNotices\x12:\n" +
-	"\fyearly_price\x18\x04 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x02R\vyearlyPrice\x12^\n" +
+	"\x13transfer_parameters\x18\x01 \x01(\v20.google.cloud.domains.v1beta1.TransferParametersR\x12transferParameters\"\xc9\x03\n" +
+	"\x15TransferDomainRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12T\n" +
+	"\fregistration\x18\x02 \x01(\v2*.google.cloud.domains.v1beta1.RegistrationB\x04\xe2A\x01\x02R\fregistration\x12T\n" +
+	"\x0fcontact_notices\x18\x03 \x03(\x0e2+.google.cloud.domains.v1beta1.ContactNoticeR\x0econtactNotices\x12;\n" +
+	"\fyearly_price\x18\x04 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x02R\vyearlyPrice\x12^\n" +
 	"\x12authorization_code\x18\x05 \x01(\v2/.google.cloud.domains.v1beta1.AuthorizationCodeR\x11authorizationCode\x12#\n" +
-	"\rvalidate_only\x18\x06 \x01(\bR\fvalidateOnly\"\xb1\x01\n" +
-	"\x18ListRegistrationsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\rvalidate_only\x18\x06 \x01(\bR\fvalidateOnly\"\xb2\x01\n" +
+	"\x18ListRegistrationsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -3195,46 +3195,46 @@ const file_google_cloud_domains_v1beta1_domains_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x95\x01\n" +
 	"\x19ListRegistrationsResponse\x12P\n" +
 	"\rregistrations\x18\x01 \x03(\v2*.google.cloud.domains.v1beta1.RegistrationR\rregistrations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
-	"\x16GetRegistrationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#domains.googleapis.com/RegistrationR\x04name\"\xad\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\x16GetRegistrationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#domains.googleapis.com/RegistrationR\x04name\"\xae\x01\n" +
 	"\x19UpdateRegistrationRequest\x12N\n" +
-	"\fregistration\x18\x01 \x01(\v2*.google.cloud.domains.v1beta1.RegistrationR\fregistration\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x9a\x02\n" +
-	"\"ConfigureManagementSettingsRequest\x12O\n" +
-	"\fregistration\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\fregistration\x18\x01 \x01(\v2*.google.cloud.domains.v1beta1.RegistrationR\fregistration\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x9c\x02\n" +
+	"\"ConfigureManagementSettingsRequest\x12P\n" +
+	"\fregistration\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#domains.googleapis.com/RegistrationR\fregistration\x12a\n" +
-	"\x13management_settings\x18\x02 \x01(\v20.google.cloud.domains.v1beta1.ManagementSettingsR\x12managementSettings\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xa3\x02\n" +
-	"\x1bConfigureDnsSettingsRequest\x12O\n" +
-	"\fregistration\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x13management_settings\x18\x02 \x01(\v20.google.cloud.domains.v1beta1.ManagementSettingsR\x12managementSettings\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa5\x02\n" +
+	"\x1bConfigureDnsSettingsRequest\x12P\n" +
+	"\fregistration\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#domains.googleapis.com/RegistrationR\fregistration\x12L\n" +
-	"\fdns_settings\x18\x02 \x01(\v2).google.cloud.domains.v1beta1.DnsSettingsR\vdnsSettings\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\fdns_settings\x18\x02 \x01(\v2).google.cloud.domains.v1beta1.DnsSettingsR\vdnsSettings\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\x89\x03\n" +
-	"\x1fConfigureContactSettingsRequest\x12O\n" +
-	"\fregistration\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\x8b\x03\n" +
+	"\x1fConfigureContactSettingsRequest\x12P\n" +
+	"\fregistration\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#domains.googleapis.com/RegistrationR\fregistration\x12X\n" +
-	"\x10contact_settings\x18\x02 \x01(\v2-.google.cloud.domains.v1beta1.ContactSettingsR\x0fcontactSettings\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x10contact_settings\x18\x02 \x01(\v2-.google.cloud.domains.v1beta1.ContactSettingsR\x0fcontactSettings\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\x12T\n" +
 	"\x0fcontact_notices\x18\x04 \x03(\x0e2+.google.cloud.domains.v1beta1.ContactNoticeR\x0econtactNotices\x12#\n" +
-	"\rvalidate_only\x18\x05 \x01(\bR\fvalidateOnly\"\\\n" +
-	"\x19ExportRegistrationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#domains.googleapis.com/RegistrationR\x04name\"\\\n" +
-	"\x19DeleteRegistrationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#domains.googleapis.com/RegistrationR\x04name\"s\n" +
-	" RetrieveAuthorizationCodeRequest\x12O\n" +
-	"\fregistration\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#domains.googleapis.com/RegistrationR\fregistration\"p\n" +
-	"\x1dResetAuthorizationCodeRequest\x12O\n" +
-	"\fregistration\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\rvalidate_only\x18\x05 \x01(\bR\fvalidateOnly\"]\n" +
+	"\x19ExportRegistrationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#domains.googleapis.com/RegistrationR\x04name\"]\n" +
+	"\x19DeleteRegistrationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#domains.googleapis.com/RegistrationR\x04name\"t\n" +
+	" RetrieveAuthorizationCodeRequest\x12P\n" +
+	"\fregistration\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#domains.googleapis.com/RegistrationR\fregistration\"q\n" +
+	"\x1dResetAuthorizationCodeRequest\x12P\n" +
+	"\fregistration\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#domains.googleapis.com/RegistrationR\fregistration\"\xe9\x03\n" +
 	"\x12RegisterParameters\x12\x1f\n" +
 	"\vdomain_name\x18\x01 \x01(\tR\n" +

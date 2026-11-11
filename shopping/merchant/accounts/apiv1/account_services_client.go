@@ -679,6 +679,11 @@ func (c *accountServicesRESTClient) GetAccountService(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -744,6 +749,11 @@ func (c *accountServicesRESTClient) ListAccountServices(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/services", req.GetParent())
@@ -817,6 +827,11 @@ func (c *accountServicesRESTClient) ProposeAccountService(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/services:propose", req.GetParent())
 
 	params := url.Values{}
@@ -875,6 +890,11 @@ func (c *accountServicesRESTClient) ApproveAccountService(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:approve", req.GetName())
@@ -936,6 +956,11 @@ func (c *accountServicesRESTClient) RejectAccountService(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:reject", req.GetName())

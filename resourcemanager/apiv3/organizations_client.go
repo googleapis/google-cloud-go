@@ -686,6 +686,11 @@ func (c *organizationsRESTClient) GetOrganization(ctx context.Context, req *reso
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -838,6 +843,11 @@ func (c *organizationsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -901,6 +911,11 @@ func (c *organizationsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:setIamPolicy", req.GetResource())
@@ -967,6 +982,11 @@ func (c *organizationsRESTClient) TestIamPermissions(ctx context.Context, req *i
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1019,6 +1039,11 @@ func (c *organizationsRESTClient) TestIamPermissions(ctx context.Context, req *i
 func (c *organizationsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())

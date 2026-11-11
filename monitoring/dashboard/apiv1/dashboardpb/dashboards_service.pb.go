@@ -392,31 +392,31 @@ var File_google_monitoring_dashboard_v1_dashboards_service_proto protoreflect.Fi
 
 const file_google_monitoring_dashboard_v1_dashboards_service_proto_rawDesc = "" +
 	"\n" +
-	"7google/monitoring/dashboard/v1/dashboards_service.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/monitoring/dashboard/v1/dashboard.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xd8\x01\n" +
-	"\x16CreateDashboardRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12L\n" +
-	"\tdashboard\x18\x02 \x01(\v2).google.monitoring.dashboard.v1.DashboardB\x03\xe0A\x02R\tdashboard\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\xa5\x01\n" +
-	"\x15ListDashboardsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"7google/monitoring/dashboard/v1/dashboards_service.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/monitoring/dashboard/v1/dashboard.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xda\x01\n" +
+	"\x16CreateDashboardRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12M\n" +
+	"\tdashboard\x18\x02 \x01(\v2).google.monitoring.dashboard.v1.DashboardB\x04\xe2A\x01\x02R\tdashboard\x12#\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\xa7\x01\n" +
+	"\x15ListDashboardsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\"\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8b\x01\n" +
 	"\x16ListDashboardsResponse\x12I\n" +
 	"\n" +
 	"dashboards\x18\x01 \x03(\v2).google.monitoring.dashboard.v1.DashboardR\n" +
 	"dashboards\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
-	"\x13GetDashboardRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#monitoring.googleapis.com/DashboardR\x04name\"Y\n" +
-	"\x16DeleteDashboardRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#monitoring.googleapis.com/DashboardR\x04name\"\x8b\x01\n" +
-	"\x16UpdateDashboardRequest\x12L\n" +
-	"\tdashboard\x18\x01 \x01(\v2).google.monitoring.dashboard.v1.DashboardB\x03\xe0A\x02R\tdashboard\x12#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
+	"\x13GetDashboardRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#monitoring.googleapis.com/DashboardR\x04name\"Z\n" +
+	"\x16DeleteDashboardRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#monitoring.googleapis.com/DashboardR\x04name\"\x8c\x01\n" +
+	"\x16UpdateDashboardRequest\x12M\n" +
+	"\tdashboard\x18\x01 \x01(\v2).google.monitoring.dashboard.v1.DashboardB\x04\xe2A\x01\x02R\tdashboard\x12#\n" +
 	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly2\xdb\b\n" +
 	"\x11DashboardsService\x12\xbe\x01\n" +
 	"\x0fCreateDashboard\x126.google.monitoring.dashboard.v1.CreateDashboardRequest\x1a).google.monitoring.dashboard.v1.Dashboard\"H\xdaA\x10parent,dashboard\x82\xd3\xe4\x93\x02/:\tdashboard\"\"/v1/{parent=projects/*}/dashboards\x12\xb4\x01\n" +

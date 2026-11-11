@@ -455,12 +455,12 @@ var File_google_shopping_merchant_inventories_v1beta_localinventory_proto protor
 
 const file_google_shopping_merchant_inventories_v1beta_localinventory_proto_rawDesc = "" +
 	"\n" +
-	"@google/shopping/merchant/inventories/v1beta/localinventory.proto\x12+google.shopping.merchant.inventories.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xac\x06\n" +
-	"\x0eLocalInventory\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1d\n" +
-	"\aaccount\x18\x02 \x01(\x03B\x03\xe0A\x03R\aaccount\x12%\n" +
+	"@google/shopping/merchant/inventories/v1beta/localinventory.proto\x12+google.shopping.merchant.inventories.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xad\x06\n" +
+	"\x0eLocalInventory\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1e\n" +
+	"\aaccount\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\aaccount\x12$\n" +
 	"\n" +
-	"store_code\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tstoreCode\x121\n" +
+	"store_code\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\tstoreCode\x121\n" +
 	"\x05price\x18\x04 \x01(\v2\x1b.google.shopping.type.PriceR\x05price\x12:\n" +
 	"\n" +
 	"sale_price\x18\x05 \x01(\v2\x1b.google.shopping.type.PriceR\tsalePrice\x12P\n" +
@@ -478,20 +478,20 @@ const file_google_shopping_merchant_inventories_v1beta_localinventory_proto_rawD
 	"\t_quantityB\x10\n" +
 	"\x0e_pickup_methodB\r\n" +
 	"\v_pickup_slaB\x1b\n" +
-	"\x19_instore_product_location\"\xa4\x01\n" +
-	"\x1bListLocalInventoriesRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)merchantapi.googleapis.com/LocalInventoryR\x06parent\x12\x1b\n" +
+	"\x19_instore_product_location\"\xa5\x01\n" +
+	"\x1bListLocalInventoriesRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)merchantapi.googleapis.com/LocalInventoryR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb0\x01\n" +
 	"\x1cListLocalInventoriesResponse\x12h\n" +
 	"\x11local_inventories\x18\x01 \x03(\v2;.google.shopping.merchant.inventories.v1beta.LocalInventoryR\x10localInventories\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd3\x01\n" +
-	"\x1bInsertLocalInventoryRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)merchantapi.googleapis.com/LocalInventoryR\x06parent\x12i\n" +
-	"\x0flocal_inventory\x18\x02 \x01(\v2;.google.shopping.merchant.inventories.v1beta.LocalInventoryB\x03\xe0A\x02R\x0elocalInventory\"d\n" +
-	"\x1bDeleteLocalInventoryRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd5\x01\n" +
+	"\x1bInsertLocalInventoryRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)merchantapi.googleapis.com/LocalInventoryR\x06parent\x12j\n" +
+	"\x0flocal_inventory\x18\x02 \x01(\v2;.google.shopping.merchant.inventories.v1beta.LocalInventoryB\x04\xe2A\x01\x02R\x0elocalInventory\"e\n" +
+	"\x1bDeleteLocalInventoryRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")merchantapi.googleapis.com/LocalInventoryR\x04name2\xb8\x06\n" +
 	"\x15LocalInventoryService\x12\x81\x02\n" +
 	"\x14ListLocalInventories\x12H.google.shopping.merchant.inventories.v1beta.ListLocalInventoriesRequest\x1aI.google.shopping.merchant.inventories.v1beta.ListLocalInventoriesResponse\"T\xdaA\x06parent\x82\xd3\xe4\x93\x02E\x12C/inventories/v1beta/{parent=accounts/*/products/*}/localInventories\x12\x82\x02\n" +

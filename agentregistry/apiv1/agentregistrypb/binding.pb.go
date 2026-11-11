@@ -398,17 +398,17 @@ var File_google_cloud_agentregistry_v1_binding_proto protoreflect.FileDescriptor
 
 const file_google_cloud_agentregistry_v1_binding_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/agentregistry/v1/binding.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x84\a\n" +
+	"+google/cloud/agentregistry/v1/binding.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\a\n" +
 	"\aBinding\x12p\n" +
-	"\x15auth_provider_binding\x18\x06 \x01(\v2:.google.cloud.agentregistry.v1.Binding.AuthProviderBindingH\x00R\x13authProviderBinding\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x02R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12J\n" +
-	"\x06source\x18\x04 \x01(\v2-.google.cloud.agentregistry.v1.Binding.SourceB\x03\xe0A\x01R\x06source\x12J\n" +
-	"\x06target\x18\x05 \x01(\v2-.google.cloud.agentregistry.v1.Binding.TargetB\x03\xe0A\x02R\x06target\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x15auth_provider_binding\x18\x06 \x01(\v2:.google.cloud.agentregistry.v1.Binding.AuthProviderBindingH\x00R\x13authProviderBinding\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x02R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12K\n" +
+	"\x06source\x18\x04 \x01(\v2-.google.cloud.agentregistry.v1.Binding.SourceB\x04\xe2A\x01\x01R\x06source\x12K\n" +
+	"\x06target\x18\x05 \x01(\v2-.google.cloud.agentregistry.v1.Binding.TargetB\x04\xe2A\x01\x02R\x06target\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a9\n" +
 	"\x06Source\x12 \n" +
 	"\n" +
@@ -419,11 +419,11 @@ const file_google_cloud_agentregistry_v1_binding_proto_rawDesc = "" +
 	"\n" +
 	"identifier\x18\x01 \x01(\tH\x00R\n" +
 	"identifierB\r\n" +
-	"\vtarget_type\x1a\x84\x01\n" +
-	"\x13AuthProviderBinding\x12(\n" +
-	"\rauth_provider\x18\x01 \x01(\tB\x03\xe0A\x02R\fauthProvider\x12\x1b\n" +
-	"\x06scopes\x18\x02 \x03(\tB\x03\xe0A\x01R\x06scopes\x12&\n" +
-	"\fcontinue_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\vcontinueUri:x\xeaAu\n" +
+	"\vtarget_type\x1a\x87\x01\n" +
+	"\x13AuthProviderBinding\x12)\n" +
+	"\rauth_provider\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fauthProvider\x12\x1c\n" +
+	"\x06scopes\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x06scopes\x12'\n" +
+	"\fcontinue_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vcontinueUri:x\xeaAu\n" +
 	"$agentregistry.googleapis.com/Binding\x12:projects/{project}/locations/{location}/bindings/{binding}*\bbindings2\abindingB\t\n" +
 	"\abindingB\xdf\x01\n" +
 	"!com.google.cloud.agentregistry.v1B\fBindingProtoP\x01ZGcloud.google.com/go/agentregistry/apiv1/agentregistrypb;agentregistrypb\xaa\x02\x1dGoogle.Cloud.AgentRegistry.V1\xca\x02\x1dGoogle\\Cloud\\AgentRegistry\\V1\xea\x02 Google::Cloud::AgentRegistry::V1b\x06proto3"

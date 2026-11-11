@@ -1734,8 +1734,12 @@ type SentimentAnalysisResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The sentiment analysis result for `query_text`.
 	QueryTextSentiment *Sentiment `protobuf:"bytes,1,opt,name=query_text_sentiment,json=queryTextSentiment,proto3" json:"query_text_sentiment,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Output only. The status of the sentiment analysis operation.
+	// If the operation failed, this field will contain the error details.
+	// For example, it might indicate a quota issue (RESOURCE_EXHAUSTED).
+	Status        *status.Status `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SentimentAnalysisResult) Reset() {
@@ -1771,6 +1775,13 @@ func (*SentimentAnalysisResult) Descriptor() ([]byte, []int) {
 func (x *SentimentAnalysisResult) GetQueryTextSentiment() *Sentiment {
 	if x != nil {
 		return x.QueryTextSentiment
+	}
+	return nil
+}
+
+func (x *SentimentAnalysisResult) GetStatus() *status.Status {
+	if x != nil {
+		return x.Status
 	}
 	return nil
 }
@@ -1839,12 +1850,12 @@ var File_google_cloud_dialogflow_v2_session_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_session_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/dialogflow/v2/session.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/v2/audio_config.proto\x1a(google/cloud/dialogflow/v2/context.proto\x1a'google/cloud/dialogflow/v2/intent.proto\x1a4google/cloud/dialogflow/v2/session_entity_type.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\x1a\x18google/type/latlng.proto\"\xcd\x03\n" +
-	"\x13DetectIntentRequest\x12C\n" +
-	"\asession\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"(google/cloud/dialogflow/v2/session.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/v2/audio_config.proto\x1a(google/cloud/dialogflow/v2/context.proto\x1a'google/cloud/dialogflow/v2/intent.proto\x1a4google/cloud/dialogflow/v2/session_entity_type.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\x1a\x18google/type/latlng.proto\"\xcf\x03\n" +
+	"\x13DetectIntentRequest\x12D\n" +
+	"\asession\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/SessionR\asession\x12N\n" +
-	"\fquery_params\x18\x02 \x01(\v2+.google.cloud.dialogflow.v2.QueryParametersR\vqueryParams\x12L\n" +
-	"\vquery_input\x18\x03 \x01(\v2&.google.cloud.dialogflow.v2.QueryInputB\x03\xe0A\x02R\n" +
+	"\fquery_params\x18\x02 \x01(\v2+.google.cloud.dialogflow.v2.QueryParametersR\vqueryParams\x12M\n" +
+	"\vquery_input\x18\x03 \x01(\v2&.google.cloud.dialogflow.v2.QueryInputB\x04\xe2A\x01\x02R\n" +
 	"queryInput\x12]\n" +
 	"\x13output_audio_config\x18\x04 \x01(\v2-.google.cloud.dialogflow.v2.OutputAudioConfigR\x11outputAudioConfig\x12S\n" +
 	"\x18output_audio_config_mask\x18\a \x01(\v2\x1a.google.protobuf.FieldMaskR\x15outputAudioConfigMask\x12\x1f\n" +
@@ -1897,12 +1908,12 @@ const file_google_cloud_dialogflow_v2_session_proto_rawDesc = "" +
 	"\x06intent\x18\v \x01(\v2\".google.cloud.dialogflow.v2.IntentR\x06intent\x12>\n" +
 	"\x1bintent_detection_confidence\x18\f \x01(\x02R\x19intentDetectionConfidence\x12@\n" +
 	"\x0fdiagnostic_info\x18\x0e \x01(\v2\x17.google.protobuf.StructR\x0ediagnosticInfo\x12o\n" +
-	"\x19sentiment_analysis_result\x18\x11 \x01(\v23.google.cloud.dialogflow.v2.SentimentAnalysisResultR\x17sentimentAnalysisResult\"\xb9\x04\n" +
-	"\x1cStreamingDetectIntentRequest\x12C\n" +
-	"\asession\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x19sentiment_analysis_result\x18\x11 \x01(\v23.google.cloud.dialogflow.v2.SentimentAnalysisResultR\x17sentimentAnalysisResult\"\xbb\x04\n" +
+	"\x1cStreamingDetectIntentRequest\x12D\n" +
+	"\asession\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/SessionR\asession\x12N\n" +
-	"\fquery_params\x18\x02 \x01(\v2+.google.cloud.dialogflow.v2.QueryParametersR\vqueryParams\x12L\n" +
-	"\vquery_input\x18\x03 \x01(\v2&.google.cloud.dialogflow.v2.QueryInputB\x03\xe0A\x02R\n" +
+	"\fquery_params\x18\x02 \x01(\v2+.google.cloud.dialogflow.v2.QueryParametersR\vqueryParams\x12M\n" +
+	"\vquery_input\x18\x03 \x01(\v2&.google.cloud.dialogflow.v2.QueryInputB\x04\xe2A\x01\x02R\n" +
 	"queryInput\x12-\n" +
 	"\x10single_utterance\x18\x04 \x01(\bB\x02\x18\x01R\x0fsingleUtterance\x12]\n" +
 	"\x13output_audio_config\x18\x05 \x01(\v2-.google.cloud.dialogflow.v2.OutputAudioConfigR\x11outputAudioConfig\x12S\n" +
@@ -1961,21 +1972,22 @@ const file_google_cloud_dialogflow_v2_session_proto_rawDesc = "" +
 	"\x17END_OF_SINGLE_UTTERANCE\x10\x02\x12\x17\n" +
 	"\x13PARTIAL_DTMF_DIGITS\x10\x04\x12\x19\n" +
 	"\x15SPEECH_ACTIVITY_BEGIN\x10\x05\x12\x17\n" +
-	"\x13SPEECH_ACTIVITY_END\x10\x06\"N\n" +
-	"\tTextInput\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01R\x04text\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x02R\flanguageCode\"\x88\x01\n" +
+	"\x13SPEECH_ACTIVITY_END\x10\x06\"P\n" +
+	"\tTextInput\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04text\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\flanguageCode\"\x8a\x01\n" +
 	"\n" +
-	"EventInput\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x127\n" +
+	"EventInput\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x127\n" +
 	"\n" +
 	"parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructR\n" +
-	"parameters\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x02R\flanguageCode\"a\n" +
+	"parameters\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\flanguageCode\"a\n" +
 	"\x1eSentimentAnalysisRequestConfig\x12?\n" +
-	"\x1canalyze_query_text_sentiment\x18\x01 \x01(\bR\x19analyzeQueryTextSentiment\"r\n" +
+	"\x1canalyze_query_text_sentiment\x18\x01 \x01(\bR\x19analyzeQueryTextSentiment\"\xa4\x01\n" +
 	"\x17SentimentAnalysisResult\x12W\n" +
-	"\x14query_text_sentiment\x18\x01 \x01(\v2%.google.cloud.dialogflow.v2.SentimentR\x12queryTextSentiment\"?\n" +
+	"\x14query_text_sentiment\x18\x01 \x01(\v2%.google.cloud.dialogflow.v2.SentimentR\x12queryTextSentiment\x120\n" +
+	"\x06status\x18\x03 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x06status\"?\n" +
 	"\tSentiment\x12\x14\n" +
 	"\x05score\x18\x01 \x01(\x02R\x05score\x12\x1c\n" +
 	"\tmagnitude\x18\x02 \x01(\x02R\tmagnitude2\xe5\x05\n" +
@@ -2078,15 +2090,16 @@ var file_google_cloud_dialogflow_v2_session_proto_depIdxs = []int32{
 	26, // 45: google.cloud.dialogflow.v2.StreamingRecognitionResult.speech_end_offset:type_name -> google.protobuf.Duration
 	22, // 46: google.cloud.dialogflow.v2.EventInput.parameters:type_name -> google.protobuf.Struct
 	14, // 47: google.cloud.dialogflow.v2.SentimentAnalysisResult.query_text_sentiment:type_name -> google.cloud.dialogflow.v2.Sentiment
-	1,  // 48: google.cloud.dialogflow.v2.Sessions.DetectIntent:input_type -> google.cloud.dialogflow.v2.DetectIntentRequest
-	6,  // 49: google.cloud.dialogflow.v2.Sessions.StreamingDetectIntent:input_type -> google.cloud.dialogflow.v2.StreamingDetectIntentRequest
-	2,  // 50: google.cloud.dialogflow.v2.Sessions.DetectIntent:output_type -> google.cloud.dialogflow.v2.DetectIntentResponse
-	8,  // 51: google.cloud.dialogflow.v2.Sessions.StreamingDetectIntent:output_type -> google.cloud.dialogflow.v2.StreamingDetectIntentResponse
-	50, // [50:52] is the sub-list for method output_type
-	48, // [48:50] is the sub-list for method input_type
-	48, // [48:48] is the sub-list for extension type_name
-	48, // [48:48] is the sub-list for extension extendee
-	0,  // [0:48] is the sub-list for field type_name
+	18, // 48: google.cloud.dialogflow.v2.SentimentAnalysisResult.status:type_name -> google.rpc.Status
+	1,  // 49: google.cloud.dialogflow.v2.Sessions.DetectIntent:input_type -> google.cloud.dialogflow.v2.DetectIntentRequest
+	6,  // 50: google.cloud.dialogflow.v2.Sessions.StreamingDetectIntent:input_type -> google.cloud.dialogflow.v2.StreamingDetectIntentRequest
+	2,  // 51: google.cloud.dialogflow.v2.Sessions.DetectIntent:output_type -> google.cloud.dialogflow.v2.DetectIntentResponse
+	8,  // 52: google.cloud.dialogflow.v2.Sessions.StreamingDetectIntent:output_type -> google.cloud.dialogflow.v2.StreamingDetectIntentResponse
+	51, // [51:53] is the sub-list for method output_type
+	49, // [49:51] is the sub-list for method input_type
+	49, // [49:49] is the sub-list for extension type_name
+	49, // [49:49] is the sub-list for extension extendee
+	0,  // [0:49] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dialogflow_v2_session_proto_init() }

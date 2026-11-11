@@ -3042,33 +3042,33 @@ var File_google_cloud_networksecurity_v1_mirroring_proto protoreflect.FileDescri
 
 const file_google_cloud_networksecurity_v1_mirroring_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/networksecurity/v1/mirroring.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb2\x0e\n" +
-	"\x16MirroringEndpointGroup\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12`\n" +
-	"\x06labels\x18\x04 \x03(\v2C.google.cloud.networksecurity.v1.MirroringEndpointGroup.LabelsEntryB\x03\xe0A\x01R\x06labels\x12}\n" +
-	"\x1amirroring_deployment_group\x18\x05 \x01(\tB?\xe0A\x05\xfaA9\n" +
-	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x18mirroringDeploymentGroup\x12\x95\x01\n" +
-	"\x1bconnected_deployment_groups\x18\r \x03(\v2P.google.cloud.networksecurity.v1.MirroringEndpointGroup.ConnectedDeploymentGroupB\x03\xe0A\x03R\x19connectedDeploymentGroups\x12X\n" +
-	"\x05state\x18\a \x01(\x0e2=.google.cloud.networksecurity.v1.MirroringEndpointGroup.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12U\n" +
-	"\x04type\x18\v \x01(\x0e2<.google.cloud.networksecurity.v1.MirroringEndpointGroup.TypeB\x03\xe0A\x05R\x04type\x12s\n" +
-	"\fassociations\x18\t \x03(\v2J.google.cloud.networksecurity.v1.MirroringEndpointGroup.AssociationDetailsB\x03\xe0A\x03R\fassociations\x12%\n" +
+	"/google/cloud/networksecurity/v1/mirroring.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc0\x0e\n" +
+	"\x16MirroringEndpointGroup\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12a\n" +
+	"\x06labels\x18\x04 \x03(\v2C.google.cloud.networksecurity.v1.MirroringEndpointGroup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12~\n" +
+	"\x1amirroring_deployment_group\x18\x05 \x01(\tB@\xe2A\x01\x05\xfaA9\n" +
+	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x18mirroringDeploymentGroup\x12\x96\x01\n" +
+	"\x1bconnected_deployment_groups\x18\r \x03(\v2P.google.cloud.networksecurity.v1.MirroringEndpointGroup.ConnectedDeploymentGroupB\x04\xe2A\x01\x03R\x19connectedDeploymentGroups\x12Y\n" +
+	"\x05state\x18\a \x01(\x0e2=.google.cloud.networksecurity.v1.MirroringEndpointGroup.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12V\n" +
+	"\x04type\x18\v \x01(\x0e2<.google.cloud.networksecurity.v1.MirroringEndpointGroup.TypeB\x04\xe2A\x01\x05R\x04type\x12t\n" +
+	"\fassociations\x18\t \x03(\v2J.google.cloud.networksecurity.v1.MirroringEndpointGroup.AssociationDetailsB\x04\xe2A\x01\x03R\fassociations\x12&\n" +
 	"\vdescription\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\vdescription\x1a\xc6\x01\n" +
-	"\x18ConnectedDeploymentGroup\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x03\xfaA9\n" +
-	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x04name\x12U\n" +
-	"\tlocations\x18\x02 \x03(\v22.google.cloud.networksecurity.v1.MirroringLocationB\x03\xe0A\x03R\tlocations\x1a\x99\x02\n" +
-	"\x12AssociationDetails\x12\\\n" +
-	"\x04name\x18\x01 \x01(\tBH\xe0A\x03\xfaAB\n" +
-	"@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x04name\x12@\n" +
-	"\anetwork\x18\x02 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12c\n" +
-	"\x05state\x18\x03 \x01(\x0e2H.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\vdescription\x1a\xc8\x01\n" +
+	"\x18ConnectedDeploymentGroup\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x03\xfaA9\n" +
+	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x04name\x12V\n" +
+	"\tlocations\x18\x02 \x03(\v22.google.cloud.networksecurity.v1.MirroringLocationB\x04\xe2A\x01\x03R\tlocations\x1a\x9c\x02\n" +
+	"\x12AssociationDetails\x12]\n" +
+	"\x04name\x18\x01 \x01(\tBI\xe2A\x01\x03\xfaAB\n" +
+	"@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x04name\x12A\n" +
+	"\anetwork\x18\x02 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12d\n" +
+	"\x05state\x18\x03 \x01(\x0e2H.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"v\n" +
@@ -3086,56 +3086,56 @@ const file_google_cloud_networksecurity_v1_mirroring_proto_rawDesc = "" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06DIRECT\x10\x01:\xc8\x01\xeaA\xc4\x01\n" +
-	"5networksecurity.googleapis.com/MirroringEndpointGroup\x12Zprojects/{project}/locations/{location}/mirroringEndpointGroups/{mirroring_endpoint_group}*\x17mirroringEndpointGroups2\x16mirroringEndpointGroup\"\xfe\x01\n" +
-	"\"ListMirroringEndpointGroupsRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125networksecurity.googleapis.com/MirroringEndpointGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"5networksecurity.googleapis.com/MirroringEndpointGroup\x12Zprojects/{project}/locations/{location}/mirroringEndpointGroups/{mirroring_endpoint_group}*\x17mirroringEndpointGroups2\x16mirroringEndpointGroup\"\x83\x02\n" +
+	"\"ListMirroringEndpointGroupsRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125networksecurity.googleapis.com/MirroringEndpointGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc2\x01\n" +
 	"#ListMirroringEndpointGroupsResponse\x12s\n" +
 	"\x19mirroring_endpoint_groups\x18\x01 \x03(\v27.google.cloud.networksecurity.v1.MirroringEndpointGroupR\x17mirroringEndpointGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"u\n" +
-	" GetMirroringEndpointGroupRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5networksecurity.googleapis.com/MirroringEndpointGroupR\x04name\"\xe4\x02\n" +
-	"#CreateMirroringEndpointGroupRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125networksecurity.googleapis.com/MirroringEndpointGroupR\x06parent\x12B\n" +
-	"\x1bmirroring_endpoint_group_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x18mirroringEndpointGroupId\x12v\n" +
-	"\x18mirroring_endpoint_group\x18\x03 \x01(\v27.google.cloud.networksecurity.v1.MirroringEndpointGroupB\x03\xe0A\x02R\x16mirroringEndpointGroup\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"v\n" +
+	" GetMirroringEndpointGroupRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5networksecurity.googleapis.com/MirroringEndpointGroupR\x04name\"\xe8\x02\n" +
+	"#CreateMirroringEndpointGroupRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125networksecurity.googleapis.com/MirroringEndpointGroupR\x06parent\x12C\n" +
+	"\x1bmirroring_endpoint_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x18mirroringEndpointGroupId\x12w\n" +
+	"\x18mirroring_endpoint_group\x18\x03 \x01(\v27.google.cloud.networksecurity.v1.MirroringEndpointGroupB\x04\xe2A\x01\x02R\x16mirroringEndpointGroup\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x02\n" +
-	"#UpdateMirroringEndpointGroupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12v\n" +
-	"\x18mirroring_endpoint_group\x18\x02 \x01(\v27.google.cloud.networksecurity.v1.MirroringEndpointGroupB\x03\xe0A\x02R\x16mirroringEndpointGroup\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8e\x02\n" +
+	"#UpdateMirroringEndpointGroupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12w\n" +
+	"\x18mirroring_endpoint_group\x18\x02 \x01(\v27.google.cloud.networksecurity.v1.MirroringEndpointGroupB\x04\xe2A\x01\x02R\x16mirroringEndpointGroup\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa4\x01\n" +
-	"#DeleteMirroringEndpointGroupRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5networksecurity.googleapis.com/MirroringEndpointGroupR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa6\x01\n" +
+	"#DeleteMirroringEndpointGroupRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5networksecurity.googleapis.com/MirroringEndpointGroupR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf4\v\n" +
-	"!MirroringEndpointGroupAssociation\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12k\n" +
-	"\x06labels\x18\x04 \x03(\v2N.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.LabelsEntryB\x03\xe0A\x01R\x06labels\x12w\n" +
-	"\x18mirroring_endpoint_group\x18\x05 \x01(\tB=\xe0A\x05\xfaA7\n" +
-	"5networksecurity.googleapis.com/MirroringEndpointGroupR\x16mirroringEndpointGroup\x12@\n" +
-	"\anetwork\x18\x06 \x01(\tB&\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x86\x01\n" +
-	"\x11locations_details\x18\a \x03(\v2R.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.LocationDetailsB\x05\xe0A\x03\x18\x01R\x10locationsDetails\x12c\n" +
-	"\x05state\x18\b \x01(\x0e2H.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vreconciling\x18\t \x01(\bB\x03\xe0A\x03R\vreconciling\x12U\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfe\v\n" +
+	"!MirroringEndpointGroupAssociation\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12l\n" +
+	"\x06labels\x18\x04 \x03(\v2N.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12x\n" +
+	"\x18mirroring_endpoint_group\x18\x05 \x01(\tB>\xe2A\x01\x05\xfaA7\n" +
+	"5networksecurity.googleapis.com/MirroringEndpointGroupR\x16mirroringEndpointGroup\x12A\n" +
+	"\anetwork\x18\x06 \x01(\tB'\xe2A\x01\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x87\x01\n" +
+	"\x11locations_details\x18\a \x03(\v2R.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.LocationDetailsB\x06\xe2A\x01\x03\x18\x01R\x10locationsDetails\x12d\n" +
+	"\x05state\x18\b \x01(\x0e2H.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vreconciling\x18\t \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12V\n" +
 	"\tlocations\x18\n" +
-	" \x03(\v22.google.cloud.networksecurity.v1.MirroringLocationB\x03\xe0A\x03R\tlocations\x1a\xe4\x01\n" +
-	"\x0fLocationDetails\x12\x1f\n" +
-	"\blocation\x18\x01 \x01(\tB\x03\xe0A\x03R\blocation\x12s\n" +
-	"\x05state\x18\x02 \x01(\x0e2X.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.LocationDetails.StateB\x03\xe0A\x03R\x05state\";\n" +
+	" \x03(\v22.google.cloud.networksecurity.v1.MirroringLocationB\x04\xe2A\x01\x03R\tlocations\x1a\xe6\x01\n" +
+	"\x0fLocationDetails\x12 \n" +
+	"\blocation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12t\n" +
+	"\x05state\x18\x02 \x01(\x0e2X.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociation.LocationDetails.StateB\x04\xe2A\x01\x03R\x05state\";\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -3154,61 +3154,61 @@ const file_google_cloud_networksecurity_v1_mirroring_proto_rawDesc = "" +
 	"\x06CLOSED\x10\x05\x12\x0f\n" +
 	"\vOUT_OF_SYNC\x10\x06\x12\x11\n" +
 	"\rDELETE_FAILED\x10\a:\x80\x02\xeaA\xfc\x01\n" +
-	"@networksecurity.googleapis.com/MirroringEndpointGroupAssociation\x12qprojects/{project}/locations/{location}/mirroringEndpointGroupAssociations/{mirroring_endpoint_group_association}*\"mirroringEndpointGroupAssociations2!mirroringEndpointGroupAssociation\"\x94\x02\n" +
-	"-ListMirroringEndpointGroupAssociationsRequest\x12`\n" +
-	"\x06parent\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\x12@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"@networksecurity.googleapis.com/MirroringEndpointGroupAssociation\x12qprojects/{project}/locations/{location}/mirroringEndpointGroupAssociations/{mirroring_endpoint_group_association}*\"mirroringEndpointGroupAssociations2!mirroringEndpointGroupAssociation\"\x99\x02\n" +
+	"-ListMirroringEndpointGroupAssociationsRequest\x12a\n" +
+	"\x06parent\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\x12@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xf0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xf0\x01\n" +
 	".ListMirroringEndpointGroupAssociationsResponse\x12\x95\x01\n" +
 	"%mirroring_endpoint_group_associations\x18\x01 \x03(\v2B.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociationR\"mirroringEndpointGroupAssociations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8b\x01\n" +
-	"+GetMirroringEndpointGroupAssociationRequest\x12\\\n" +
-	"\x04name\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\n" +
-	"@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x04name\"\xb4\x03\n" +
-	".CreateMirroringEndpointGroupAssociationRequest\x12`\n" +
-	"\x06parent\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\x12@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x06parent\x12Y\n" +
-	"'mirroring_endpoint_group_association_id\x18\x02 \x01(\tB\x03\xe0A\x01R#mirroringEndpointGroupAssociationId\x12\x98\x01\n" +
-	"$mirroring_endpoint_group_association\x18\x03 \x01(\v2B.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociationB\x03\xe0A\x02R!mirroringEndpointGroupAssociation\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8c\x01\n" +
+	"+GetMirroringEndpointGroupAssociationRequest\x12]\n" +
+	"\x04name\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\n" +
+	"@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x04name\"\xb8\x03\n" +
+	".CreateMirroringEndpointGroupAssociationRequest\x12a\n" +
+	"\x06parent\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\x12@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x06parent\x12Z\n" +
+	"'mirroring_endpoint_group_association_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R#mirroringEndpointGroupAssociationId\x12\x99\x01\n" +
+	"$mirroring_endpoint_group_association\x18\x03 \x01(\v2B.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociationB\x04\xe2A\x01\x02R!mirroringEndpointGroupAssociation\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb9\x02\n" +
-	".UpdateMirroringEndpointGroupAssociationRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12\x98\x01\n" +
-	"$mirroring_endpoint_group_association\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociationB\x03\xe0A\x02R!mirroringEndpointGroupAssociation\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbc\x02\n" +
+	".UpdateMirroringEndpointGroupAssociationRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12\x99\x01\n" +
+	"$mirroring_endpoint_group_association\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.MirroringEndpointGroupAssociationB\x04\xe2A\x01\x02R!mirroringEndpointGroupAssociation\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xba\x01\n" +
-	".DeleteMirroringEndpointGroupAssociationRequest\x12\\\n" +
-	"\x04name\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\n" +
-	"@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbc\x01\n" +
+	".DeleteMirroringEndpointGroupAssociationRequest\x12]\n" +
+	"\x04name\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\n" +
+	"@networksecurity.googleapis.com/MirroringEndpointGroupAssociationR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfb\v\n" +
-	"\x18MirroringDeploymentGroup\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12b\n" +
-	"\x06labels\x18\x04 \x03(\v2E.google.cloud.networksecurity.v1.MirroringDeploymentGroup.LabelsEntryB\x03\xe0A\x01R\x06labels\x12C\n" +
-	"\anetwork\x18\x05 \x01(\tB)\xe0A\x02\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x91\x01\n" +
-	"\x19connected_endpoint_groups\x18\x06 \x03(\v2P.google.cloud.networksecurity.v1.MirroringDeploymentGroup.ConnectedEndpointGroupB\x03\xe0A\x03R\x17connectedEndpointGroups\x12z\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x85\f\n" +
+	"\x18MirroringDeploymentGroup\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12c\n" +
+	"\x06labels\x18\x04 \x03(\v2E.google.cloud.networksecurity.v1.MirroringDeploymentGroup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12B\n" +
+	"\anetwork\x18\x05 \x01(\tB(\xe2A\x02\x02\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x92\x01\n" +
+	"\x19connected_endpoint_groups\x18\x06 \x03(\v2P.google.cloud.networksecurity.v1.MirroringDeploymentGroup.ConnectedEndpointGroupB\x04\xe2A\x01\x03R\x17connectedEndpointGroups\x12{\n" +
 	"\x12nested_deployments\x18\n" +
-	" \x03(\v2D.google.cloud.networksecurity.v1.MirroringDeploymentGroup.DeploymentB\x05\xe0A\x03\x18\x01R\x11nestedDeployments\x12Z\n" +
-	"\x05state\x18\a \x01(\x0e2?.google.cloud.networksecurity.v1.MirroringDeploymentGroup.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12U\n" +
-	"\tlocations\x18\v \x03(\v22.google.cloud.networksecurity.v1.MirroringLocationB\x03\xe0A\x03R\tlocations\x1ak\n" +
-	"\x16ConnectedEndpointGroup\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x03\xfaA7\n" +
-	"5networksecurity.googleapis.com/MirroringEndpointGroupR\x04name\x1a\xb3\x01\n" +
+	" \x03(\v2D.google.cloud.networksecurity.v1.MirroringDeploymentGroup.DeploymentB\x06\xe2A\x01\x03\x18\x01R\x11nestedDeployments\x12[\n" +
+	"\x05state\x18\a \x01(\x0e2?.google.cloud.networksecurity.v1.MirroringDeploymentGroup.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12V\n" +
+	"\tlocations\x18\v \x03(\v22.google.cloud.networksecurity.v1.MirroringLocationB\x04\xe2A\x01\x03R\tlocations\x1al\n" +
+	"\x16ConnectedEndpointGroup\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x03\xfaA7\n" +
+	"5networksecurity.googleapis.com/MirroringEndpointGroupR\x04name\x1a\xb5\x01\n" +
 	"\n" +
-	"Deployment\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x03\xfaA4\n" +
-	"2networksecurity.googleapis.com/MirroringDeploymentR\x04name\x12U\n" +
-	"\x05state\x18\x02 \x01(\x0e2:.google.cloud.networksecurity.v1.MirroringDeployment.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	"Deployment\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x03\xfaA4\n" +
+	"2networksecurity.googleapis.com/MirroringDeploymentR\x04name\x12V\n" +
+	"\x05state\x18\x02 \x01(\x0e2:.google.cloud.networksecurity.v1.MirroringDeployment.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"R\n" +
@@ -3220,51 +3220,51 @@ const file_google_cloud_networksecurity_v1_mirroring_proto_rawDesc = "" +
 	"\bDELETING\x10\x03\x12\n" +
 	"\n" +
 	"\x06CLOSED\x10\x04:\xd2\x01\xeaA\xce\x01\n" +
-	"7networksecurity.googleapis.com/MirroringDeploymentGroup\x12^projects/{project}/locations/{location}/mirroringDeploymentGroups/{mirroring_deployment_group}*\x19mirroringDeploymentGroups2\x18mirroringDeploymentGroup\"\x82\x02\n" +
-	"$ListMirroringDeploymentGroupsRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127networksecurity.googleapis.com/MirroringDeploymentGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"7networksecurity.googleapis.com/MirroringDeploymentGroup\x12^projects/{project}/locations/{location}/mirroringDeploymentGroups/{mirroring_deployment_group}*\x19mirroringDeploymentGroups2\x18mirroringDeploymentGroup\"\x87\x02\n" +
+	"$ListMirroringDeploymentGroupsRequest\x12X\n" +
+	"\x06parent\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\x127networksecurity.googleapis.com/MirroringDeploymentGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xca\x01\n" +
 	"%ListMirroringDeploymentGroupsResponse\x12y\n" +
 	"\x1bmirroring_deployment_groups\x18\x01 \x03(\v29.google.cloud.networksecurity.v1.MirroringDeploymentGroupR\x19mirroringDeploymentGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"y\n" +
-	"\"GetMirroringDeploymentGroupRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x04name\"\xf2\x02\n" +
-	"%CreateMirroringDeploymentGroupRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127networksecurity.googleapis.com/MirroringDeploymentGroupR\x06parent\x12F\n" +
-	"\x1dmirroring_deployment_group_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x1amirroringDeploymentGroupId\x12|\n" +
-	"\x1amirroring_deployment_group\x18\x03 \x01(\v29.google.cloud.networksecurity.v1.MirroringDeploymentGroupB\x03\xe0A\x02R\x18mirroringDeploymentGroup\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"z\n" +
+	"\"GetMirroringDeploymentGroupRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x04name\"\xf6\x02\n" +
+	"%CreateMirroringDeploymentGroupRequest\x12X\n" +
+	"\x06parent\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\x127networksecurity.googleapis.com/MirroringDeploymentGroupR\x06parent\x12G\n" +
+	"\x1dmirroring_deployment_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x1amirroringDeploymentGroupId\x12}\n" +
+	"\x1amirroring_deployment_group\x18\x03 \x01(\v29.google.cloud.networksecurity.v1.MirroringDeploymentGroupB\x04\xe2A\x01\x02R\x18mirroringDeploymentGroup\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x93\x02\n" +
-	"%UpdateMirroringDeploymentGroupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12|\n" +
-	"\x1amirroring_deployment_group\x18\x02 \x01(\v29.google.cloud.networksecurity.v1.MirroringDeploymentGroupB\x03\xe0A\x02R\x18mirroringDeploymentGroup\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x96\x02\n" +
+	"%UpdateMirroringDeploymentGroupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12}\n" +
+	"\x1amirroring_deployment_group\x18\x02 \x01(\v29.google.cloud.networksecurity.v1.MirroringDeploymentGroupB\x04\xe2A\x01\x02R\x18mirroringDeploymentGroup\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa8\x01\n" +
-	"%DeleteMirroringDeploymentGroupRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xaa\x01\n" +
+	"%DeleteMirroringDeploymentGroupRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf9\a\n" +
-	"\x13MirroringDeployment\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12]\n" +
-	"\x06labels\x18\x04 \x03(\v2@.google.cloud.networksecurity.v1.MirroringDeployment.LabelsEntryB\x03\xe0A\x01R\x06labels\x12Y\n" +
-	"\x0fforwarding_rule\x18\x05 \x01(\tB0\xe0A\x02\xe0A\x05\xfaA'\n" +
-	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12\x80\x01\n" +
-	"\x1amirroring_deployment_group\x18\x06 \x01(\tBB\xe0A\x02\xe0A\x05\xfaA9\n" +
-	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x18mirroringDeploymentGroup\x12U\n" +
-	"\x05state\x18\a \x01(\x0e2:.google.cloud.networksecurity.v1.MirroringDeployment.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x1a9\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfb\a\n" +
+	"\x13MirroringDeployment\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12^\n" +
+	"\x06labels\x18\x04 \x03(\v2@.google.cloud.networksecurity.v1.MirroringDeployment.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12X\n" +
+	"\x0fforwarding_rule\x18\x05 \x01(\tB/\xe2A\x02\x02\x05\xfaA'\n" +
+	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12\x7f\n" +
+	"\x1amirroring_deployment_group\x18\x06 \x01(\tBA\xe2A\x02\x02\x05\xfaA9\n" +
+	"7networksecurity.googleapis.com/MirroringDeploymentGroupR\x18mirroringDeploymentGroup\x12V\n" +
+	"\x05state\x18\a \x01(\x0e2:.google.cloud.networksecurity.v1.MirroringDeployment.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"j\n" +
@@ -3276,41 +3276,41 @@ const file_google_cloud_networksecurity_v1_mirroring_proto_rawDesc = "" +
 	"\bDELETING\x10\x03\x12\x0f\n" +
 	"\vOUT_OF_SYNC\x10\x04\x12\x11\n" +
 	"\rDELETE_FAILED\x10\x05:\xb8\x01\xeaA\xb4\x01\n" +
-	"2networksecurity.googleapis.com/MirroringDeployment\x12Sprojects/{project}/locations/{location}/mirroringDeployments/{mirroring_deployment}*\x14mirroringDeployments2\x13mirroringDeployment\"\xf8\x01\n" +
-	"\x1fListMirroringDeploymentsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networksecurity.googleapis.com/MirroringDeploymentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"2networksecurity.googleapis.com/MirroringDeployment\x12Sprojects/{project}/locations/{location}/mirroringDeployments/{mirroring_deployment}*\x14mirroringDeployments2\x13mirroringDeployment\"\xfd\x01\n" +
+	"\x1fListMirroringDeploymentsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networksecurity.googleapis.com/MirroringDeploymentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd7\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd7\x01\n" +
 	" ListMirroringDeploymentsResponse\x12i\n" +
 	"\x15mirroring_deployments\x18\x01 \x03(\v24.google.cloud.networksecurity.v1.MirroringDeploymentR\x14mirroringDeployments\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"o\n" +
-	"\x1dGetMirroringDeploymentRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2networksecurity.googleapis.com/MirroringDeploymentR\x04name\"\xcd\x02\n" +
-	" CreateMirroringDeploymentRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networksecurity.googleapis.com/MirroringDeploymentR\x06parent\x12;\n" +
-	"\x17mirroring_deployment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15mirroringDeploymentId\x12l\n" +
-	"\x14mirroring_deployment\x18\x03 \x01(\v24.google.cloud.networksecurity.v1.MirroringDeploymentB\x03\xe0A\x02R\x13mirroringDeployment\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"p\n" +
+	"\x1dGetMirroringDeploymentRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2networksecurity.googleapis.com/MirroringDeploymentR\x04name\"\xd1\x02\n" +
+	" CreateMirroringDeploymentRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networksecurity.googleapis.com/MirroringDeploymentR\x06parent\x12<\n" +
+	"\x17mirroring_deployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15mirroringDeploymentId\x12m\n" +
+	"\x14mirroring_deployment\x18\x03 \x01(\v24.google.cloud.networksecurity.v1.MirroringDeploymentB\x04\xe2A\x01\x02R\x13mirroringDeployment\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfe\x01\n" +
-	" UpdateMirroringDeploymentRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12l\n" +
-	"\x14mirroring_deployment\x18\x02 \x01(\v24.google.cloud.networksecurity.v1.MirroringDeploymentB\x03\xe0A\x02R\x13mirroringDeployment\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x81\x02\n" +
+	" UpdateMirroringDeploymentRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12m\n" +
+	"\x14mirroring_deployment\x18\x02 \x01(\v24.google.cloud.networksecurity.v1.MirroringDeploymentB\x04\xe2A\x01\x02R\x13mirroringDeployment\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9e\x01\n" +
-	" DeleteMirroringDeploymentRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2networksecurity.googleapis.com/MirroringDeploymentR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa0\x01\n" +
+	" DeleteMirroringDeploymentRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2networksecurity.googleapis.com/MirroringDeploymentR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc6\x01\n" +
-	"\x11MirroringLocation\x12\x1f\n" +
-	"\blocation\x18\x01 \x01(\tB\x03\xe0A\x03R\blocation\x12S\n" +
-	"\x05state\x18\x02 \x01(\x0e28.google.cloud.networksecurity.v1.MirroringLocation.StateB\x03\xe0A\x03R\x05state\";\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc8\x01\n" +
+	"\x11MirroringLocation\x12 \n" +
+	"\blocation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12T\n" +
+	"\x05state\x18\x02 \x01(\x0e28.google.cloud.networksecurity.v1.MirroringLocation.StateB\x04\xe2A\x01\x03R\x05state\";\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

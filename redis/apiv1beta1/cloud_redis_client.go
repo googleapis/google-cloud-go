@@ -1095,6 +1095,11 @@ func (c *cloudRedisRESTClient) ListInstances(ctx context.Context, req *redispb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/instances", req.GetParent())
 
 		params := url.Values{}
@@ -1160,6 +1165,11 @@ func (c *cloudRedisRESTClient) GetInstance(ctx context.Context, req *redispb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1214,6 +1224,11 @@ func (c *cloudRedisRESTClient) GetInstance(ctx context.Context, req *redispb.Get
 func (c *cloudRedisRESTClient) GetInstanceAuthString(ctx context.Context, req *redispb.GetInstanceAuthStringRequest, opts ...gax.CallOption) (*redispb.InstanceAuthString, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/authString", req.GetName())
@@ -1288,6 +1303,11 @@ func (c *cloudRedisRESTClient) CreateInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/instances", req.GetParent())
 
 	params := url.Values{}
@@ -1359,6 +1379,11 @@ func (c *cloudRedisRESTClient) UpdateInstance(ctx context.Context, req *redispb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetInstance().GetName())
@@ -1436,6 +1461,11 @@ func (c *cloudRedisRESTClient) UpgradeInstance(ctx context.Context, req *redispb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:upgrade", req.GetName())
 
 	params := url.Values{}
@@ -1510,6 +1540,11 @@ func (c *cloudRedisRESTClient) ImportInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:import", req.GetName())
 
 	params := url.Values{}
@@ -1582,6 +1617,11 @@ func (c *cloudRedisRESTClient) ExportInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:export", req.GetName())
 
 	params := url.Values{}
@@ -1650,6 +1690,11 @@ func (c *cloudRedisRESTClient) FailoverInstance(ctx context.Context, req *redisp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:failover", req.GetName())
 
 	params := url.Values{}
@@ -1710,6 +1755,11 @@ func (c *cloudRedisRESTClient) FailoverInstance(ctx context.Context, req *redisp
 func (c *cloudRedisRESTClient) DeleteInstance(ctx context.Context, req *redispb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -1778,6 +1828,11 @@ func (c *cloudRedisRESTClient) RescheduleMaintenance(ctx context.Context, req *r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:rescheduleMaintenance", req.GetName())

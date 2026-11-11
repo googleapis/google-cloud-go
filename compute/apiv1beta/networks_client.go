@@ -471,6 +471,12 @@ func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/addPeering", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -543,6 +549,12 @@ func (c *networksRESTClient) CancelRequestRemovePeering(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/cancelRequestRemovePeering", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -604,6 +616,12 @@ func (c *networksRESTClient) CancelRequestRemovePeering(ctx context.Context, req
 func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
@@ -669,6 +687,12 @@ func (c *networksRESTClient) Get(ctx context.Context, req *computepb.GetNetworkR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
 	// Build HTTP headers from client and context metadata.
@@ -716,6 +740,12 @@ func (c *networksRESTClient) Get(ctx context.Context, req *computepb.GetNetworkR
 func (c *networksRESTClient) GetEffectiveFirewalls(ctx context.Context, req *computepb.GetEffectiveFirewallsNetworkRequest, opts ...gax.CallOption) (*computepb.NetworksGetEffectiveFirewallsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/getEffectiveFirewalls", req.GetProject(), req.GetNetwork())
@@ -773,6 +803,11 @@ func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks", req.GetProject())
@@ -849,6 +884,11 @@ func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetwor
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks", req.GetProject())
@@ -935,6 +975,12 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetNetwork(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/listPeeringRoutes", req.GetProject(), req.GetNetwork())
@@ -1027,6 +1073,12 @@ func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetw
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -1095,6 +1147,12 @@ func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.R
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/removePeering", req.GetProject(), req.GetNetwork())
@@ -1168,6 +1226,12 @@ func (c *networksRESTClient) RequestRemovePeering(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/requestRemovePeering", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -1229,6 +1293,12 @@ func (c *networksRESTClient) RequestRemovePeering(ctx context.Context, req *comp
 func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *computepb.SwitchToCustomModeNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/switchToCustomMode", req.GetProject(), req.GetNetwork())
@@ -1301,6 +1371,12 @@ func (c *networksRESTClient) TestIamPermissions(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1357,6 +1433,12 @@ func (c *networksRESTClient) UpdatePeering(ctx context.Context, req *computepb.U
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/updatePeering", req.GetProject(), req.GetNetwork())

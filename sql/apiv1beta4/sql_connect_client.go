@@ -477,6 +477,12 @@ func (c *sqlConnectRESTClient) GetConnectSettings(ctx context.Context, req *sqlp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/connectSettings", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -537,6 +543,12 @@ func (c *sqlConnectRESTClient) GetConnectSettings(ctx context.Context, req *sqlp
 func (c *sqlConnectRESTClient) ResolveConnectSettings(ctx context.Context, req *sqlpb.ResolveConnectSettingsRequest, opts ...gax.CallOption) (*sqlpb.ConnectSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLocation(),
+		req.GetDnsName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/locations/%v/dns/%v:resolveConnectSettings", req.GetLocation(), req.GetDnsName())
@@ -600,6 +612,12 @@ func (c *sqlConnectRESTClient) GenerateEphemeralCert(ctx context.Context, req *s
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v:generateEphemeralCert", req.GetProject(), req.GetInstance())

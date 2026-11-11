@@ -513,12 +513,12 @@ var File_google_cloud_visionai_v1_streams_resources_proto protoreflect.FileDescr
 
 const file_google_cloud_visionai_v1_streams_resources_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/visionai/v1/streams_resources.proto\x12\x18google.cloud.visionai.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaf\x05\n" +
+	"0google/cloud/visionai/v1/streams_resources.proto\x12\x18google.cloud.visionai.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb1\x05\n" +
 	"\x06Stream\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12D\n" +
 	"\x06labels\x18\x04 \x03(\v2,.google.cloud.visionai.v1.Stream.LabelsEntryR\x06labels\x12S\n" +
 	"\vannotations\x18\x05 \x03(\v21.google.cloud.visionai.v1.Stream.AnnotationsEntryR\vannotations\x12!\n" +
@@ -531,12 +531,12 @@ const file_google_cloud_visionai_v1_streams_resources_proto_rawDesc = "" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:p\xeaAm\n" +
-	"\x1evisionai.googleapis.com/Stream\x12Kprojects/{project}/locations/{location}/clusters/{cluster}/streams/{stream}\"\xe9\x05\n" +
+	"\x1evisionai.googleapis.com/Stream\x12Kprojects/{project}/locations/{location}/clusters/{cluster}/streams/{stream}\"\xeb\x05\n" +
 	"\x05Event\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12C\n" +
 	"\x06labels\x18\x04 \x03(\v2+.google.cloud.visionai.v1.Event.LabelsEntryR\x06labels\x12R\n" +
 	"\vannotations\x18\x05 \x03(\v20.google.cloud.visionai.v1.Event.AnnotationsEntryR\vannotations\x12N\n" +
@@ -553,18 +553,18 @@ const file_google_cloud_visionai_v1_streams_resources_proto_rawDesc = "" +
 	"\aCAPTURE\x10\x01\x12\n" +
 	"\n" +
 	"\x06INGEST\x10\x02:m\xeaAj\n" +
-	"\x1dvisionai.googleapis.com/Event\x12Iprojects/{project}/locations/{location}/clusters/{cluster}/events/{event}\"\xa4\x05\n" +
+	"\x1dvisionai.googleapis.com/Event\x12Iprojects/{project}/locations/{location}/clusters/{cluster}/events/{event}\"\xa8\x05\n" +
 	"\x06Series\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12D\n" +
 	"\x06labels\x18\x04 \x03(\v2,.google.cloud.visionai.v1.Series.LabelsEntryR\x06labels\x12S\n" +
-	"\vannotations\x18\x05 \x03(\v21.google.cloud.visionai.v1.Series.AnnotationsEntryR\vannotations\x12>\n" +
-	"\x06stream\x18\x06 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1evisionai.googleapis.com/StreamR\x06stream\x12;\n" +
-	"\x05event\x18\a \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\vannotations\x18\x05 \x03(\v21.google.cloud.visionai.v1.Series.AnnotationsEntryR\vannotations\x12?\n" +
+	"\x06stream\x18\x06 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1evisionai.googleapis.com/StreamR\x06stream\x12<\n" +
+	"\x05event\x18\a \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/EventR\x05event\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -572,18 +572,18 @@ const file_google_cloud_visionai_v1_streams_resources_proto_rawDesc = "" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:o\xeaAl\n" +
-	"\x1evisionai.googleapis.com/Series\x12Jprojects/{project}/locations/{location}/clusters/{cluster}/series/{series}\"\xab\x05\n" +
+	"\x1evisionai.googleapis.com/Series\x12Jprojects/{project}/locations/{location}/clusters/{cluster}/series/{series}\"\xaf\x05\n" +
 	"\aChannel\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12E\n" +
 	"\x06labels\x18\x04 \x03(\v2-.google.cloud.visionai.v1.Channel.LabelsEntryR\x06labels\x12T\n" +
-	"\vannotations\x18\x05 \x03(\v22.google.cloud.visionai.v1.Channel.AnnotationsEntryR\vannotations\x12>\n" +
-	"\x06stream\x18\x06 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1evisionai.googleapis.com/StreamR\x06stream\x12;\n" +
-	"\x05event\x18\a \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\vannotations\x18\x05 \x03(\v22.google.cloud.visionai.v1.Channel.AnnotationsEntryR\vannotations\x12?\n" +
+	"\x06stream\x18\x06 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1evisionai.googleapis.com/StreamR\x06stream\x12<\n" +
+	"\x05event\x18\a \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/EventR\x05event\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

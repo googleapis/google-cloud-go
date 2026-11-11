@@ -111,12 +111,12 @@ var File_google_cloud_bigquery_v2_job_reference_proto protoreflect.FileDescripto
 
 const file_google_cloud_bigquery_v2_job_reference_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/bigquery/v2/job_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x8d\x01\n" +
-	"\fJobReference\x12\"\n" +
+	",google/cloud/bigquery/v2/job_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x90\x01\n" +
+	"\fJobReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1a\n" +
-	"\x06job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05jobId\x12=\n" +
-	"\blocation\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\blocationBn\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1b\n" +
+	"\x06job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\x12>\n" +
+	"\blocation\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\blocationBn\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x11JobReferenceProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

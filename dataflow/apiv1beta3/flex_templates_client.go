@@ -408,6 +408,12 @@ func (c *flexTemplatesRESTClient) LaunchFlexTemplate(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/flexTemplates:launch", req.GetProjectId(), req.GetLocation())
 
 	params := url.Values{}

@@ -583,6 +583,11 @@ func (c *accountTaxRESTClient) GetAccountTax(ctx context.Context, req *accountsp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -651,6 +656,11 @@ func (c *accountTaxRESTClient) ListAccountTax(ctx context.Context, req *accounts
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/accounttax", req.GetParent())
@@ -723,6 +733,11 @@ func (c *accountTaxRESTClient) UpdateAccountTax(ctx context.Context, req *accoun
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccountTax().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetAccountTax().GetName())

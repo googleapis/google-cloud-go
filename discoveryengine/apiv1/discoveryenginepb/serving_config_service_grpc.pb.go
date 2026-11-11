@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -34,17 +35,41 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	ServingConfigService_CreateServingConfig_FullMethodName = "/google.cloud.discoveryengine.v1.ServingConfigService/CreateServingConfig"
+	ServingConfigService_DeleteServingConfig_FullMethodName = "/google.cloud.discoveryengine.v1.ServingConfigService/DeleteServingConfig"
 	ServingConfigService_UpdateServingConfig_FullMethodName = "/google.cloud.discoveryengine.v1.ServingConfigService/UpdateServingConfig"
+	ServingConfigService_GetServingConfig_FullMethodName    = "/google.cloud.discoveryengine.v1.ServingConfigService/GetServingConfig"
+	ServingConfigService_ListServingConfigs_FullMethodName  = "/google.cloud.discoveryengine.v1.ServingConfigService/ListServingConfigs"
 )
 
 // ServingConfigServiceClient is the client API for ServingConfigService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServingConfigServiceClient interface {
+	// Creates a ServingConfig.
+	//
+	// Note: The Google Cloud console works only with the default serving config.
+	// Additional ServingConfigs can be created and managed only via the API.
+	//
+	// A maximum of 100
+	// [ServingConfig][google.cloud.discoveryengine.v1.ServingConfig]s are allowed
+	// in an [Engine][google.cloud.discoveryengine.v1.Engine], otherwise a
+	// RESOURCE_EXHAUSTED error is returned.
+	CreateServingConfig(ctx context.Context, in *CreateServingConfigRequest, opts ...grpc.CallOption) (*ServingConfig, error)
+	// Deletes a ServingConfig.
+	//
+	// Returns a NOT_FOUND error if the ServingConfig does not exist.
+	DeleteServingConfig(ctx context.Context, in *DeleteServingConfigRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Updates a ServingConfig.
 	//
 	// Returns a NOT_FOUND error if the ServingConfig does not exist.
 	UpdateServingConfig(ctx context.Context, in *UpdateServingConfigRequest, opts ...grpc.CallOption) (*ServingConfig, error)
+	// Gets a ServingConfig.
+	//
+	// Returns a NotFound error if the ServingConfig does not exist.
+	GetServingConfig(ctx context.Context, in *GetServingConfigRequest, opts ...grpc.CallOption) (*ServingConfig, error)
+	// Lists all ServingConfigs linked to this dataStore.
+	ListServingConfigs(ctx context.Context, in *ListServingConfigsRequest, opts ...grpc.CallOption) (*ListServingConfigsResponse, error)
 }
 
 type servingConfigServiceClient struct {
@@ -53,6 +78,24 @@ type servingConfigServiceClient struct {
 
 func NewServingConfigServiceClient(cc grpc.ClientConnInterface) ServingConfigServiceClient {
 	return &servingConfigServiceClient{cc}
+}
+
+func (c *servingConfigServiceClient) CreateServingConfig(ctx context.Context, in *CreateServingConfigRequest, opts ...grpc.CallOption) (*ServingConfig, error) {
+	out := new(ServingConfig)
+	err := c.cc.Invoke(ctx, ServingConfigService_CreateServingConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *servingConfigServiceClient) DeleteServingConfig(ctx context.Context, in *DeleteServingConfigRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ServingConfigService_DeleteServingConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *servingConfigServiceClient) UpdateServingConfig(ctx context.Context, in *UpdateServingConfigRequest, opts ...grpc.CallOption) (*ServingConfig, error) {
@@ -64,22 +107,72 @@ func (c *servingConfigServiceClient) UpdateServingConfig(ctx context.Context, in
 	return out, nil
 }
 
+func (c *servingConfigServiceClient) GetServingConfig(ctx context.Context, in *GetServingConfigRequest, opts ...grpc.CallOption) (*ServingConfig, error) {
+	out := new(ServingConfig)
+	err := c.cc.Invoke(ctx, ServingConfigService_GetServingConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *servingConfigServiceClient) ListServingConfigs(ctx context.Context, in *ListServingConfigsRequest, opts ...grpc.CallOption) (*ListServingConfigsResponse, error) {
+	out := new(ListServingConfigsResponse)
+	err := c.cc.Invoke(ctx, ServingConfigService_ListServingConfigs_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServingConfigServiceServer is the server API for ServingConfigService service.
 // All implementations should embed UnimplementedServingConfigServiceServer
 // for forward compatibility
 type ServingConfigServiceServer interface {
+	// Creates a ServingConfig.
+	//
+	// Note: The Google Cloud console works only with the default serving config.
+	// Additional ServingConfigs can be created and managed only via the API.
+	//
+	// A maximum of 100
+	// [ServingConfig][google.cloud.discoveryengine.v1.ServingConfig]s are allowed
+	// in an [Engine][google.cloud.discoveryengine.v1.Engine], otherwise a
+	// RESOURCE_EXHAUSTED error is returned.
+	CreateServingConfig(context.Context, *CreateServingConfigRequest) (*ServingConfig, error)
+	// Deletes a ServingConfig.
+	//
+	// Returns a NOT_FOUND error if the ServingConfig does not exist.
+	DeleteServingConfig(context.Context, *DeleteServingConfigRequest) (*emptypb.Empty, error)
 	// Updates a ServingConfig.
 	//
 	// Returns a NOT_FOUND error if the ServingConfig does not exist.
 	UpdateServingConfig(context.Context, *UpdateServingConfigRequest) (*ServingConfig, error)
+	// Gets a ServingConfig.
+	//
+	// Returns a NotFound error if the ServingConfig does not exist.
+	GetServingConfig(context.Context, *GetServingConfigRequest) (*ServingConfig, error)
+	// Lists all ServingConfigs linked to this dataStore.
+	ListServingConfigs(context.Context, *ListServingConfigsRequest) (*ListServingConfigsResponse, error)
 }
 
 // UnimplementedServingConfigServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedServingConfigServiceServer struct {
 }
 
+func (UnimplementedServingConfigServiceServer) CreateServingConfig(context.Context, *CreateServingConfigRequest) (*ServingConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateServingConfig not implemented")
+}
+func (UnimplementedServingConfigServiceServer) DeleteServingConfig(context.Context, *DeleteServingConfigRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteServingConfig not implemented")
+}
 func (UnimplementedServingConfigServiceServer) UpdateServingConfig(context.Context, *UpdateServingConfigRequest) (*ServingConfig, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateServingConfig not implemented")
+}
+func (UnimplementedServingConfigServiceServer) GetServingConfig(context.Context, *GetServingConfigRequest) (*ServingConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetServingConfig not implemented")
+}
+func (UnimplementedServingConfigServiceServer) ListServingConfigs(context.Context, *ListServingConfigsRequest) (*ListServingConfigsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListServingConfigs not implemented")
 }
 
 // UnsafeServingConfigServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -91,6 +184,42 @@ type UnsafeServingConfigServiceServer interface {
 
 func RegisterServingConfigServiceServer(s grpc.ServiceRegistrar, srv ServingConfigServiceServer) {
 	s.RegisterService(&ServingConfigService_ServiceDesc, srv)
+}
+
+func _ServingConfigService_CreateServingConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateServingConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServingConfigServiceServer).CreateServingConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServingConfigService_CreateServingConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServingConfigServiceServer).CreateServingConfig(ctx, req.(*CreateServingConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServingConfigService_DeleteServingConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteServingConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServingConfigServiceServer).DeleteServingConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServingConfigService_DeleteServingConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServingConfigServiceServer).DeleteServingConfig(ctx, req.(*DeleteServingConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ServingConfigService_UpdateServingConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -111,6 +240,42 @@ func _ServingConfigService_UpdateServingConfig_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ServingConfigService_GetServingConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetServingConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServingConfigServiceServer).GetServingConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServingConfigService_GetServingConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServingConfigServiceServer).GetServingConfig(ctx, req.(*GetServingConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServingConfigService_ListServingConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListServingConfigsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServingConfigServiceServer).ListServingConfigs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServingConfigService_ListServingConfigs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServingConfigServiceServer).ListServingConfigs(ctx, req.(*ListServingConfigsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ServingConfigService_ServiceDesc is the grpc.ServiceDesc for ServingConfigService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -119,8 +284,24 @@ var ServingConfigService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ServingConfigServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "CreateServingConfig",
+			Handler:    _ServingConfigService_CreateServingConfig_Handler,
+		},
+		{
+			MethodName: "DeleteServingConfig",
+			Handler:    _ServingConfigService_DeleteServingConfig_Handler,
+		},
+		{
 			MethodName: "UpdateServingConfig",
 			Handler:    _ServingConfigService_UpdateServingConfig_Handler,
+		},
+		{
+			MethodName: "GetServingConfig",
+			Handler:    _ServingConfigService_GetServingConfig_Handler,
+		},
+		{
+			MethodName: "ListServingConfigs",
+			Handler:    _ServingConfigService_ListServingConfigs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

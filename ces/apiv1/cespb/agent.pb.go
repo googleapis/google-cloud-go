@@ -575,59 +575,59 @@ var File_google_cloud_ces_v1_agent_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_agent_proto_rawDesc = "" +
 	"\n" +
-	"\x1fgoogle/cloud/ces/v1/agent.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/ces/v1/agent_transfers.proto\x1a google/cloud/ces/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xea\x13\n" +
-	"\x05Agent\x12G\n" +
-	"\tllm_agent\x18\x1a \x01(\v2#.google.cloud.ces.v1.Agent.LlmAgentB\x03\xe0A\x01H\x00R\bllmAgent\x12o\n" +
-	"\x17remote_dialogflow_agent\x18\x1b \x01(\v20.google.cloud.ces.v1.Agent.RemoteDialogflowAgentB\x03\xe0A\x01H\x00R\x15remoteDialogflowAgent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12N\n" +
-	"\x0emodel_settings\x18\x04 \x01(\v2\".google.cloud.ces.v1.ModelSettingsB\x03\xe0A\x01R\rmodelSettings\x12%\n" +
-	"\vinstruction\x18\x06 \x01(\tB\x03\xe0A\x01R\vinstruction\x125\n" +
-	"\x05tools\x18\a \x03(\tB\x1f\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolR\x05tools\x12C\n" +
-	"\fchild_agents\x18\b \x03(\tB \xe0A\x01\xfaA\x1a\n" +
-	"\x18ces.googleapis.com/AgentR\vchildAgents\x12X\n" +
-	"\x16before_agent_callbacks\x18\x12 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x03\xe0A\x01R\x14beforeAgentCallbacks\x12V\n" +
-	"\x15after_agent_callbacks\x18\x13 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x03\xe0A\x01R\x13afterAgentCallbacks\x12X\n" +
-	"\x16before_model_callbacks\x18\x14 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x03\xe0A\x01R\x14beforeModelCallbacks\x12V\n" +
-	"\x15after_model_callbacks\x18\x15 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x03\xe0A\x01R\x13afterModelCallbacks\x12V\n" +
-	"\x15before_tool_callbacks\x18\x16 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x03\xe0A\x01R\x13beforeToolCallbacks\x12T\n" +
-	"\x14after_tool_callbacks\x18\x17 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x03\xe0A\x01R\x12afterToolCallbacks\x12@\n" +
-	"\vcreate_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12D\n" +
+	"\x1fgoogle/cloud/ces/v1/agent.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/ces/v1/agent_transfers.proto\x1a google/cloud/ces/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\x14\n" +
+	"\x05Agent\x12H\n" +
+	"\tllm_agent\x18\x1a \x01(\v2#.google.cloud.ces.v1.Agent.LlmAgentB\x04\xe2A\x01\x01H\x00R\bllmAgent\x12p\n" +
+	"\x17remote_dialogflow_agent\x18\x1b \x01(\v20.google.cloud.ces.v1.Agent.RemoteDialogflowAgentB\x04\xe2A\x01\x01H\x00R\x15remoteDialogflowAgent\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12O\n" +
+	"\x0emodel_settings\x18\x04 \x01(\v2\".google.cloud.ces.v1.ModelSettingsB\x04\xe2A\x01\x01R\rmodelSettings\x12&\n" +
+	"\vinstruction\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vinstruction\x126\n" +
+	"\x05tools\x18\a \x03(\tB \xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolR\x05tools\x12D\n" +
+	"\fchild_agents\x18\b \x03(\tB!\xe2A\x01\x01\xfaA\x1a\n" +
+	"\x18ces.googleapis.com/AgentR\vchildAgents\x12Y\n" +
+	"\x16before_agent_callbacks\x18\x12 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x04\xe2A\x01\x01R\x14beforeAgentCallbacks\x12W\n" +
+	"\x15after_agent_callbacks\x18\x13 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x04\xe2A\x01\x01R\x13afterAgentCallbacks\x12Y\n" +
+	"\x16before_model_callbacks\x18\x14 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x04\xe2A\x01\x01R\x14beforeModelCallbacks\x12W\n" +
+	"\x15after_model_callbacks\x18\x15 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x04\xe2A\x01\x01R\x13afterModelCallbacks\x12W\n" +
+	"\x15before_tool_callbacks\x18\x16 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x04\xe2A\x01\x01R\x13beforeToolCallbacks\x12U\n" +
+	"\x14after_tool_callbacks\x18\x17 \x03(\v2\x1d.google.cloud.ces.v1.CallbackB\x04\xe2A\x01\x01R\x12afterToolCallbacks\x12A\n" +
+	"\vcreate_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12E\n" +
 	"\n" +
-	"guardrails\x18\x11 \x03(\tB$\xe0A\x01\xfaA\x1e\n" +
+	"guardrails\x18\x11 \x03(\tB%\xe2A\x01\x01\xfaA\x1e\n" +
 	"\x1cces.googleapis.com/GuardrailR\n" +
 	"guardrails\x12\x12\n" +
-	"\x04etag\x18\x18 \x01(\tR\x04etag\x12H\n" +
-	"\btoolsets\x18\x1c \x03(\v2'.google.cloud.ces.v1.Agent.AgentToolsetB\x03\xe0A\x01R\btoolsets\x120\n" +
-	"\x11generated_summary\x18\x1d \x01(\tB\x03\xe0A\x03R\x10generatedSummary\x12M\n" +
-	"\x0etransfer_rules\x18\x1e \x03(\v2!.google.cloud.ces.v1.TransferRuleB\x03\xe0A\x01R\rtransferRules\x120\n" +
-	"\x11validation_errors\x18  \x03(\tB\x03\xe0A\x03R\x10validationErrors\x1a\n" +
+	"\x04etag\x18\x18 \x01(\tR\x04etag\x12I\n" +
+	"\btoolsets\x18\x1c \x03(\v2'.google.cloud.ces.v1.Agent.AgentToolsetB\x04\xe2A\x01\x01R\btoolsets\x121\n" +
+	"\x11generated_summary\x18\x1d \x01(\tB\x04\xe2A\x01\x03R\x10generatedSummary\x12N\n" +
+	"\x0etransfer_rules\x18\x1e \x03(\v2!.google.cloud.ces.v1.TransferRuleB\x04\xe2A\x01\x01R\rtransferRules\x121\n" +
+	"\x11validation_errors\x18  \x03(\tB\x04\xe2A\x01\x03R\x10validationErrors\x1a\n" +
 	"\n" +
-	"\bLlmAgent\x1a\xe5\x05\n" +
-	"\x15RemoteDialogflowAgent\x12G\n" +
-	"\x05agent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")dialogflow.googleapis.com/DialogflowAgentR\x05agent\x12\x1c\n" +
-	"\aflow_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06flowId\x12*\n" +
-	"\x0eenvironment_id\x18\x03 \x01(\tB\x03\xe0A\x01R\renvironmentId\x12\x85\x01\n" +
-	"\x16input_variable_mapping\x18\x04 \x03(\v2J.google.cloud.ces.v1.Agent.RemoteDialogflowAgent.InputVariableMappingEntryB\x03\xe0A\x01R\x14inputVariableMapping\x12\x88\x01\n" +
-	"\x17output_variable_mapping\x18\x05 \x03(\v2K.google.cloud.ces.v1.Agent.RemoteDialogflowAgent.OutputVariableMappingEntryB\x03\xe0A\x01R\x15outputVariableMapping\x12X\n" +
-	"&respect_response_interruption_settings\x18\x06 \x01(\bB\x03\xe0A\x01R#respectResponseInterruptionSettings\x129\n" +
-	"\x16language_code_variable\x18\a \x01(\tB\x03\xe0A\x01R\x14languageCodeVariable\x1aG\n" +
+	"\bLlmAgent\x1a\xec\x05\n" +
+	"\x15RemoteDialogflowAgent\x12H\n" +
+	"\x05agent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")dialogflow.googleapis.com/DialogflowAgentR\x05agent\x12\x1d\n" +
+	"\aflow_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06flowId\x12+\n" +
+	"\x0eenvironment_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\renvironmentId\x12\x86\x01\n" +
+	"\x16input_variable_mapping\x18\x04 \x03(\v2J.google.cloud.ces.v1.Agent.RemoteDialogflowAgent.InputVariableMappingEntryB\x04\xe2A\x01\x01R\x14inputVariableMapping\x12\x89\x01\n" +
+	"\x17output_variable_mapping\x18\x05 \x03(\v2K.google.cloud.ces.v1.Agent.RemoteDialogflowAgent.OutputVariableMappingEntryB\x04\xe2A\x01\x01R\x15outputVariableMapping\x12Y\n" +
+	"&respect_response_interruption_settings\x18\x06 \x01(\bB\x04\xe2A\x01\x01R#respectResponseInterruptionSettings\x12:\n" +
+	"\x16language_code_variable\x18\a \x01(\tB\x04\xe2A\x01\x01R\x14languageCodeVariable\x1aG\n" +
 	"\x19InputVariableMappingEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aH\n" +
 	"\x1aOutputVariableMappingEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1al\n" +
-	"\fAgentToolset\x12<\n" +
-	"\atoolset\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/ToolsetR\atoolset\x12\x1e\n" +
-	"\btool_ids\x18\x04 \x03(\tB\x03\xe0A\x01R\atoolIds:o\xeaAl\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1an\n" +
+	"\fAgentToolset\x12=\n" +
+	"\atoolset\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/ToolsetR\atoolset\x12\x1f\n" +
+	"\btool_ids\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\atoolIds:o\xeaAl\n" +
 	"\x18ces.googleapis.com/Agent\x12Aprojects/{project}/locations/{location}/apps/{app}/agents/{agent}*\x06agents2\x05agentB\f\n" +
 	"\n" +
 	"agent_typeB\xb8\x01\xeaAc\n" +

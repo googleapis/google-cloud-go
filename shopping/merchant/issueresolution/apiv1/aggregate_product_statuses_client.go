@@ -472,6 +472,11 @@ func (c *aggregateProductStatusesRESTClient) ListAggregateProductStatuses(ctx co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/issueresolution/v1/%v/aggregateProductStatuses", req.GetParent())
 
 		params := url.Values{}

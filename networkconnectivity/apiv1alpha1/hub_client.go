@@ -1033,6 +1033,11 @@ func (c *hubRESTClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/hubs", req.GetParent())
 
 		params := url.Values{}
@@ -1104,6 +1109,11 @@ func (c *hubRESTClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1163,6 +1173,11 @@ func (c *hubRESTClient) CreateHub(ctx context.Context, req *networkconnectivityp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/hubs", req.GetParent())
@@ -1239,6 +1254,11 @@ func (c *hubRESTClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetHub().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetHub().GetName())
 
 	params := url.Values{}
@@ -1308,6 +1328,11 @@ func (c *hubRESTClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 func (c *hubRESTClient) DeleteHub(ctx context.Context, req *networkconnectivitypb.DeleteHubRequest, opts ...gax.CallOption) (*DeleteHubOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
@@ -1387,6 +1412,11 @@ func (c *hubRESTClient) ListSpokes(ctx context.Context, req *networkconnectivity
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/spokes", req.GetParent())
 
 		params := url.Values{}
@@ -1458,6 +1488,11 @@ func (c *hubRESTClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1517,6 +1552,11 @@ func (c *hubRESTClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/spokes", req.GetParent())
@@ -1593,6 +1633,11 @@ func (c *hubRESTClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSpoke().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetSpoke().GetName())
 
 	params := url.Values{}
@@ -1662,6 +1707,11 @@ func (c *hubRESTClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 func (c *hubRESTClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.DeleteSpokeRequest, opts ...gax.CallOption) (*DeleteSpokeOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())

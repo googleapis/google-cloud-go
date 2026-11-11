@@ -424,6 +424,11 @@ func (c *instantSnapshotsRESTClient) AggregatedList(ctx context.Context, req *co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/instantSnapshots", req.GetProject())
 
 		params := url.Values{}
@@ -517,6 +522,13 @@ func (c *instantSnapshotsRESTClient) Delete(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstantSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instantSnapshots/%v", req.GetProject(), req.GetZone(), req.GetInstantSnapshot())
 
 	params := url.Values{}
@@ -581,6 +593,13 @@ func (c *instantSnapshotsRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstantSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instantSnapshots/%v", req.GetProject(), req.GetZone(), req.GetInstantSnapshot())
 
 	// Build HTTP headers from client and context metadata.
@@ -629,6 +648,13 @@ func (c *instantSnapshotsRESTClient) Get(ctx context.Context, req *computepb.Get
 func (c *instantSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instantSnapshots/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
@@ -692,6 +718,12 @@ func (c *instantSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instantSnapshots", req.GetProject(), req.GetZone())
@@ -770,6 +802,12 @@ func (c *instantSnapshotsRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instantSnapshots", req.GetProject(), req.GetZone())
@@ -853,6 +891,13 @@ func (c *instantSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instantSnapshots/%v/setIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -909,6 +954,13 @@ func (c *instantSnapshotsRESTClient) SetLabels(ctx context.Context, req *compute
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instantSnapshots/%v/setLabels", req.GetProject(), req.GetZone(), req.GetResource())
@@ -980,6 +1032,13 @@ func (c *instantSnapshotsRESTClient) TestIamPermissions(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instantSnapshots/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())

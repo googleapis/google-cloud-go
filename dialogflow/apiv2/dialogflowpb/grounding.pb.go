@@ -520,35 +520,35 @@ var File_google_cloud_dialogflow_v2_grounding_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_grounding_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/dialogflow/v2/grounding.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xe5\x02\n" +
-	"\x11GroundingMetadata\x121\n" +
-	"\x12web_search_queries\x18\x01 \x03(\tB\x03\xe0A\x01R\x10webSearchQueries\x12_\n" +
-	"\x12search_entry_point\x18\x02 \x01(\v2,.google.cloud.dialogflow.v2.SearchEntryPointB\x03\xe0A\x01R\x10searchEntryPoint\x12Z\n" +
-	"\x10grounding_chunks\x18\x03 \x03(\v2*.google.cloud.dialogflow.v2.GroundingChunkB\x03\xe0A\x01R\x0fgroundingChunks\x12`\n" +
-	"\x12grounding_supports\x18\x04 \x03(\v2,.google.cloud.dialogflow.v2.GroundingSupportB\x03\xe0A\x01R\x11groundingSupports\"B\n" +
-	"\x10SearchEntryPoint\x12.\n" +
-	"\x10rendered_content\x18\x01 \x01(\tB\x03\xe0A\x01R\x0frenderedContent\"\x8d\x03\n" +
-	"\x0eGroundingChunk\x12G\n" +
-	"\x03web\x18\x01 \x01(\v2..google.cloud.dialogflow.v2.GroundingChunk.WebB\x03\xe0A\x01H\x00R\x03web\x12o\n" +
-	"\x11retrieved_context\x18\x02 \x01(\v2;.google.cloud.dialogflow.v2.GroundingChunk.RetrievedContextB\x03\xe0A\x01H\x00R\x10retrievedContext\x1aT\n" +
-	"\x03Web\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title\x12\x1b\n" +
-	"\x06domain\x18\x03 \x01(\tB\x03\xe0A\x03R\x06domain\x1a]\n" +
-	"\x10RetrievedContext\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title\x12\x17\n" +
-	"\x04text\x18\x03 \x01(\tB\x03\xe0A\x03R\x04textB\f\n" +
+	"*google/cloud/dialogflow/v2/grounding.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xe9\x02\n" +
+	"\x11GroundingMetadata\x122\n" +
+	"\x12web_search_queries\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x10webSearchQueries\x12`\n" +
+	"\x12search_entry_point\x18\x02 \x01(\v2,.google.cloud.dialogflow.v2.SearchEntryPointB\x04\xe2A\x01\x01R\x10searchEntryPoint\x12[\n" +
+	"\x10grounding_chunks\x18\x03 \x03(\v2*.google.cloud.dialogflow.v2.GroundingChunkB\x04\xe2A\x01\x01R\x0fgroundingChunks\x12a\n" +
+	"\x12grounding_supports\x18\x04 \x03(\v2,.google.cloud.dialogflow.v2.GroundingSupportB\x04\xe2A\x01\x01R\x11groundingSupports\"C\n" +
+	"\x10SearchEntryPoint\x12/\n" +
+	"\x10rendered_content\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0frenderedContent\"\x95\x03\n" +
+	"\x0eGroundingChunk\x12H\n" +
+	"\x03web\x18\x01 \x01(\v2..google.cloud.dialogflow.v2.GroundingChunk.WebB\x04\xe2A\x01\x01H\x00R\x03web\x12p\n" +
+	"\x11retrieved_context\x18\x02 \x01(\v2;.google.cloud.dialogflow.v2.GroundingChunk.RetrievedContextB\x04\xe2A\x01\x01H\x00R\x10retrievedContext\x1aW\n" +
+	"\x03Web\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12\x1c\n" +
+	"\x06domain\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06domain\x1a`\n" +
+	"\x10RetrievedContext\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12\x18\n" +
+	"\x04text\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04textB\f\n" +
 	"\n" +
-	"chunk_type\"j\n" +
-	"\aSegment\x12$\n" +
-	"\vstart_index\x18\x01 \x01(\x05B\x03\xe0A\x03R\n" +
-	"startIndex\x12 \n" +
-	"\tend_index\x18\x02 \x01(\x05B\x03\xe0A\x03R\bendIndex\x12\x17\n" +
-	"\x04text\x18\x03 \x01(\tB\x03\xe0A\x03R\x04text\"\x93\x01\n" +
-	"\x10GroundingSupport\x12B\n" +
-	"\asegment\x18\x01 \x01(\v2#.google.cloud.dialogflow.v2.SegmentB\x03\xe0A\x01R\asegment\x12;\n" +
-	"\x17grounding_chunk_indices\x18\x02 \x03(\x05B\x03\xe0A\x01R\x15groundingChunkIndicesB\x94\x01\n" +
+	"chunk_type\"m\n" +
+	"\aSegment\x12%\n" +
+	"\vstart_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"startIndex\x12!\n" +
+	"\tend_index\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\bendIndex\x12\x18\n" +
+	"\x04text\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04text\"\x95\x01\n" +
+	"\x10GroundingSupport\x12C\n" +
+	"\asegment\x18\x01 \x01(\v2#.google.cloud.dialogflow.v2.SegmentB\x04\xe2A\x01\x01R\asegment\x12<\n" +
+	"\x17grounding_chunk_indices\x18\x02 \x03(\x05B\x04\xe2A\x01\x01R\x15groundingChunkIndicesB\x94\x01\n" +
 	"\x1ecom.google.cloud.dialogflow.v2B\x0eGroundingProtoP\x01Z>cloud.google.com/go/dialogflow/apiv2/dialogflowpb;dialogflowpb\xa2\x02\x02DF\xaa\x02\x1aGoogle.Cloud.Dialogflow.V2b\x06proto3"
 
 var (

@@ -1237,6 +1237,11 @@ func (c *securityCenterSettingsRESTClient) GetServiceAccount(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1284,6 +1289,11 @@ func (c *securityCenterSettingsRESTClient) GetServiceAccount(ctx context.Context
 func (c *securityCenterSettingsRESTClient) GetSettings(ctx context.Context, req *settingspb.GetSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v", req.GetName())
@@ -1340,6 +1350,11 @@ func (c *securityCenterSettingsRESTClient) UpdateSettings(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v", req.GetSettings().GetName())
@@ -1417,6 +1432,11 @@ func (c *securityCenterSettingsRESTClient) ResetSettings(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v:reset", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1449,6 +1469,11 @@ func (c *securityCenterSettingsRESTClient) ResetSettings(ctx context.Context, re
 func (c *securityCenterSettingsRESTClient) BatchGetSettings(ctx context.Context, req *settingspb.BatchGetSettingsRequest, opts ...gax.CallOption) (*settingspb.BatchGetSettingsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v/settings:batchGet", req.GetParent())
@@ -1522,6 +1547,11 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveSettings(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v:calculate", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1577,6 +1607,11 @@ func (c *securityCenterSettingsRESTClient) BatchCalculateEffectiveSettings(ctx c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v/effectiveSettings:batchCalculate", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -1624,6 +1659,11 @@ func (c *securityCenterSettingsRESTClient) BatchCalculateEffectiveSettings(ctx c
 func (c *securityCenterSettingsRESTClient) GetComponentSettings(ctx context.Context, req *settingspb.GetComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v", req.GetName())
@@ -1680,6 +1720,11 @@ func (c *securityCenterSettingsRESTClient) UpdateComponentSettings(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetComponentSettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v", req.GetComponentSettings().GetName())
@@ -1752,6 +1797,11 @@ func (c *securityCenterSettingsRESTClient) ResetComponentSettings(ctx context.Co
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v:reset", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1784,6 +1834,11 @@ func (c *securityCenterSettingsRESTClient) ResetComponentSettings(ctx context.Co
 func (c *securityCenterSettingsRESTClient) CalculateEffectiveComponentSettings(ctx context.Context, req *settingspb.CalculateEffectiveComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v:calculate", req.GetName())
@@ -1846,6 +1901,11 @@ func (c *securityCenterSettingsRESTClient) ListDetectors(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v/detectors", req.GetParent())
@@ -1926,6 +1986,11 @@ func (c *securityCenterSettingsRESTClient) ListComponents(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v/components", req.GetParent())

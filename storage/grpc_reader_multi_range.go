@@ -23,6 +23,7 @@ import (
 	"log"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"google.golang.org/grpc"
@@ -42,9 +43,10 @@ const (
 	// This should never be hit in practice, but is a safety valve to prevent
 	// unbounded memory usage if the user is adding ranges faster than they
 	// can be processed.
-	mrdAddInternalQueueMaxSize = 50000
-	defaultTargetPendingBytes  = 1 << 30 // 1 GiB
-	defaultTargetPendingRanges = 500
+	mrdAddInternalQueueMaxSize    = 50000
+	defaultTargetPendingBytes     = 1 << 30 // 1 GiB
+	defaultTargetPendingRanges    = 500
+	defaultSessionShutdownTimeout = 200 * time.Millisecond
 )
 
 // --- internalMultiRangeDownloader Interface ---
@@ -189,6 +191,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 	session, finalSpec, err := manager.createNewSession(initialStreamID, readSpec, true)
 	if err != nil {
+		cancel()
 		manager.setPermanentError(err)
 		return nil, err
 	}
@@ -621,11 +624,14 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 }
 
 func (m *multiRangeDownloaderManager) cleanup() {
-	for id, stream := range m.streams {
+	// Shut down sessions before cancelling the manager context so that they
+	// can close their streams gracefully. Keep the stream entries until
+	// failAllPending() has run so that ranges already sent on a stream get
+	// their callbacks.
+	for _, stream := range m.streams {
 		if stream.session != nil {
 			stream.session.Shutdown()
 		}
-		delete(m.streams, id)
 	}
 
 	// Drain and free any remaining responses to prevent buffer leaks.
@@ -658,6 +664,10 @@ sessionDrainLoop:
 		close(waiter)
 	}
 	m.attrsOnce.Do(func() { close(m.attrsReady) })
+	clear(m.streams)
+	// Stop any session that is still being opened and make new calls to Add,
+	// Wait and Close return immediately.
+	m.cancel()
 	// Complete any commands leftover in cmds channel.
 cmdDrainLoop:
 	for {
@@ -790,6 +800,7 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 		// Process the successful first result
 		m.processSessionResult(firstResult)
 		if pErr := m.getPermanentError(); pErr != nil {
+			newSession.Shutdown()
 			return nil, nil, pErr
 		}
 	}
@@ -797,29 +808,58 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 }
 
 func (m *multiRangeDownloaderManager) openAndInitializeSession(ctx context.Context, id int, spec *storagepb.BidiReadObjectSpec, waitForResult bool) (*bidiReadStreamSession, mrdSessionResult) {
-	session, err := newBidiReadStreamSession(m.ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
-	if err != nil {
-		return nil, mrdSessionResult{err: err}
-	}
 	if !waitForResult {
+		session, err := newBidiReadStreamSession(ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
+		if err != nil {
+			return nil, mrdSessionResult{err: err}
+		}
 		return session, mrdSessionResult{}
 	}
-	for {
-		select {
-		case result := <-m.sessionResps:
-			if result.session != session {
-				// Stale session result, free it if it has data.
-				if result.decoder != nil {
-					result.decoder.databufs.Free()
-				}
-				continue
-			}
-			return session, result
-		case <-ctx.Done():
-			session.Shutdown()
-			return nil, mrdSessionResult{err: ctx.Err()}
+
+	var (
+		session *bidiReadStreamSession
+		result  mrdSessionResult
+	)
+	err := executeWithReadStallTimeout(ctx, m.client.readStallMgr, m.params.bucket, func(ctx context.Context) error {
+		var err error
+		session, err = newBidiReadStreamSession(ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
+		if err != nil {
+			return err
 		}
+		for {
+			select {
+			case res := <-m.sessionResps:
+				if res.session != session {
+					// Stale session result, free it if it has data.
+					if res.decoder != nil {
+						res.decoder.databufs.Free()
+					}
+					continue
+				}
+				result = res
+				return res.err
+			case <-ctx.Done():
+				session.Shutdown()
+				session = nil
+				return ctx.Err()
+			}
+		}
+	}, func(stallTimeout time.Duration) {
+		target := stripPort(metricsStateFromContext(ctx).getTarget())
+		m.client.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "grpc", target)
+		if result.decoder != nil {
+			result.decoder.databufs.Free()
+		}
+		if session != nil {
+			session.Shutdown()
+			session = nil
+		}
+		result = mrdSessionResult{}
+	})
+	if err != nil {
+		result.err = err
 	}
+	return session, result
 }
 
 func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrdAddCmd) {
@@ -899,8 +939,9 @@ func (m *multiRangeDownloaderManager) handleCloseCmd(ctx context.Context, cmd *m
 	} else {
 		err = errClosed
 	}
+	// The manager context is cancelled at the end of cleanup(), after the
+	// sessions have been shut down.
 	m.setPermanentError(err)
-	m.cancel()
 }
 
 func (m *multiRangeDownloaderManager) handleWaitCmd(ctx context.Context, cmd *mrdWaitCmd) {
@@ -1305,11 +1346,32 @@ func (s *bidiReadStreamSession) SendRequest(req *storagepb.BidiReadObjectRequest
 }
 func (s *bidiReadStreamSession) Shutdown() {
 	s.mu.Lock()
+	if s.manualShutdown {
+		s.mu.Unlock()
+		return
+	}
 	s.manualShutdown = true
 	s.mu.Unlock()
 
+	// Close reqC to tell sendLoop to exit cleanly and invoke CloseSend()
+	close(s.reqC)
+
+	done := make(chan struct{})
+	go func() {
+		s.wg.Wait()
+		close(done)
+	}()
+
+	timer := time.NewTimer(defaultSessionShutdownTimeout)
+	defer timer.Stop()
+	select {
+	case <-done:
+	case <-timer.C:
+		s.cancel()
+		<-done
+	}
+
 	s.cancel()
-	s.wg.Wait()
 	s.setError(s.ctx.Err())
 }
 func (s *bidiReadStreamSession) setError(err error) {
@@ -1359,6 +1421,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 				databufs: databufs,
 			}
 			err = decoder.readFullObjectResponse()
+			recordBidiReadPayload(s.stream, decoder, err)
 			if err == nil && !s.params.disableMRDReadChecksum {
 				decoder.verifyChecksums()
 			}

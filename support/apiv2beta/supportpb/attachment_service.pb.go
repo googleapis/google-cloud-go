@@ -216,15 +216,15 @@ var File_google_cloud_support_v2beta_attachment_service_proto protoreflect.FileD
 
 const file_google_cloud_support_v2beta_attachment_service_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/support/v2beta/attachment_service.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/support/v2beta/attachment.proto\"\x96\x01\n" +
-	"\x16ListAttachmentsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"4google/cloud/support/v2beta/attachment_service.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/support/v2beta/attachment.proto\"\x97\x01\n" +
+	"\x16ListAttachmentsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" cloudsupport.googleapis.com/CaseR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"Z\n" +
-	"\x14GetAttachmentRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\"[\n" +
+	"\x14GetAttachmentRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&cloudsupport.googleapis.com/AttachmentR\x04name\"\x8c\x01\n" +
 	"\x17ListAttachmentsResponse\x12I\n" +
 	"\vattachments\x18\x01 \x03(\v2'.google.cloud.support.v2beta.AttachmentR\vattachments\x12&\n" +

@@ -292,9 +292,9 @@ var File_google_cloud_beyondcorp_appconnectors_v1_app_connector_instance_config_
 
 const file_google_cloud_beyondcorp_appconnectors_v1_app_connector_instance_config_proto_rawDesc = "" +
 	"\n" +
-	"Lgoogle/cloud/beyondcorp/appconnectors/v1/app_connector_instance_config.proto\x12(google.cloud.beyondcorp.appconnectors.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\"\xd2\x02\n" +
-	"\x1aAppConnectorInstanceConfig\x12,\n" +
-	"\x0fsequence_number\x18\x01 \x01(\x03B\x03\xe0A\x02R\x0esequenceNumber\x12=\n" +
+	"Lgoogle/cloud/beyondcorp/appconnectors/v1/app_connector_instance_config.proto\x12(google.cloud.beyondcorp.appconnectors.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\"\xd3\x02\n" +
+	"\x1aAppConnectorInstanceConfig\x12-\n" +
+	"\x0fsequence_number\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x0esequenceNumber\x12=\n" +
 	"\x0finstance_config\x18\x02 \x01(\v2\x14.google.protobuf.AnyR\x0einstanceConfig\x12m\n" +
 	"\x13notification_config\x18\x03 \x01(\v2<.google.cloud.beyondcorp.appconnectors.v1.NotificationConfigR\x12notificationConfig\x12X\n" +
 	"\fimage_config\x18\x04 \x01(\v25.google.cloud.beyondcorp.appconnectors.v1.ImageConfigR\vimageConfig\"\x80\x02\n" +

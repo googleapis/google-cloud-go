@@ -166,9 +166,9 @@ const file_google_chat_v1_thread_read_state_proto_rawDesc = "" +
 	"\x0fThreadReadState\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
 	"\x0elast_read_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\flastReadTime:w\xeaAt\n" +
-	"#chat.googleapis.com/ThreadReadState\x12<users/{user}/spaces/{space}/threads/{thread}/threadReadState2\x0fthreadReadState\"\\\n" +
-	"\x19GetThreadReadStateRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"#chat.googleapis.com/ThreadReadState\x12<users/{user}/spaces/{space}/threads/{thread}/threadReadState2\x0fthreadReadState\"]\n" +
+	"\x19GetThreadReadStateRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#chat.googleapis.com/ThreadReadStateR\x04nameB\xad\x01\n" +
 	"\x12com.google.chat.v1B\x14ThreadReadStateProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 

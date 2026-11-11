@@ -189,10 +189,10 @@ var File_google_cloud_dialogflow_v2beta1_gcs_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2beta1_gcs_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/dialogflow/v2beta1/gcs.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\"%\n" +
+	")google/cloud/dialogflow/v2beta1/gcs.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\"&\n" +
 	"\n" +
-	"GcsSources\x12\x17\n" +
-	"\x04uris\x18\x02 \x03(\tB\x03\xe0A\x02R\x04uris\"\x1d\n" +
+	"GcsSources\x12\x18\n" +
+	"\x04uris\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x04uris\"\x1d\n" +
 	"\tGcsSource\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\"\"\n" +
 	"\x0eGcsDestination\x12\x10\n" +

@@ -3714,9 +3714,9 @@ var File_google_cloud_privilegedaccessmanager_v1_privilegedaccessmanager_proto p
 
 const file_google_cloud_privilegedaccessmanager_v1_privilegedaccessmanager_proto_rawDesc = "" +
 	"\n" +
-	"Egoogle/cloud/privilegedaccessmanager/v1/privilegedaccessmanager.proto\x12'google.cloud.privilegedaccessmanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"r\n" +
-	"\x1cCheckOnboardingStatusRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122privilegedaccessmanager.googleapis.com/EntitlementR\x06parent\"\xa3\x03\n" +
+	"Egoogle/cloud/privilegedaccessmanager/v1/privilegedaccessmanager.proto\x12'google.cloud.privilegedaccessmanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"s\n" +
+	"\x1cCheckOnboardingStatusRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122privilegedaccessmanager.googleapis.com/EntitlementR\x06parent\"\xa3\x03\n" +
 	"\x1dCheckOnboardingStatusResponse\x12'\n" +
 	"\x0fservice_account\x18\x01 \x01(\tR\x0eserviceAccount\x12j\n" +
 	"\bfindings\x18\x02 \x03(\v2N.google.cloud.privilegedaccessmanager.v1.CheckOnboardingStatusResponse.FindingR\bfindings\x1a\xec\x01\n" +
@@ -3724,31 +3724,31 @@ const file_google_cloud_privilegedaccessmanager_v1_privilegedaccessmanager_proto
 	"\x11iam_access_denied\x18\x01 \x01(\v2^.google.cloud.privilegedaccessmanager.v1.CheckOnboardingStatusResponse.Finding.IAMAccessDeniedH\x00R\x0fiamAccessDenied\x1aB\n" +
 	"\x0fIAMAccessDenied\x12/\n" +
 	"\x13missing_permissions\x18\x01 \x03(\tR\x12missingPermissionsB\x0e\n" +
-	"\ffinding_type\"\xfc\x0e\n" +
-	"\vEntitlement\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12g\n" +
-	"\x0eeligible_users\x18\x05 \x03(\v2;.google.cloud.privilegedaccessmanager.v1.AccessControlEntryB\x03\xe0A\x01R\religibleUsers\x12k\n" +
-	"\x11approval_workflow\x18\x06 \x01(\v29.google.cloud.privilegedaccessmanager.v1.ApprovalWorkflowB\x03\xe0A\x01R\x10approvalWorkflow\x12f\n" +
-	"\x11privileged_access\x18\a \x01(\v29.google.cloud.privilegedaccessmanager.v1.PrivilegedAccessR\x10privilegedAccess\x12P\n" +
-	"\x14max_request_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x12maxRequestDuration\x12U\n" +
-	"\x05state\x18\t \x01(\x0e2:.google.cloud.privilegedaccessmanager.v1.Entitlement.StateB\x03\xe0A\x03R\x05state\x12\x9c\x01\n" +
+	"\ffinding_type\"\x87\x0f\n" +
+	"\vEntitlement\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12h\n" +
+	"\x0eeligible_users\x18\x05 \x03(\v2;.google.cloud.privilegedaccessmanager.v1.AccessControlEntryB\x04\xe2A\x01\x01R\religibleUsers\x12l\n" +
+	"\x11approval_workflow\x18\x06 \x01(\v29.google.cloud.privilegedaccessmanager.v1.ApprovalWorkflowB\x04\xe2A\x01\x01R\x10approvalWorkflow\x12f\n" +
+	"\x11privileged_access\x18\a \x01(\v29.google.cloud.privilegedaccessmanager.v1.PrivilegedAccessR\x10privilegedAccess\x12Q\n" +
+	"\x14max_request_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x12maxRequestDuration\x12V\n" +
+	"\x05state\x18\t \x01(\x0e2:.google.cloud.privilegedaccessmanager.v1.Entitlement.StateB\x04\xe2A\x01\x03R\x05state\x12\x9d\x01\n" +
 	"\x1erequester_justification_config\x18\n" +
-	" \x01(\v2Q.google.cloud.privilegedaccessmanager.v1.Entitlement.RequesterJustificationConfigB\x03\xe0A\x02R\x1crequesterJustificationConfig\x12\x9f\x01\n" +
-	"\x1fadditional_notification_targets\x18\v \x01(\v2R.google.cloud.privilegedaccessmanager.v1.Entitlement.AdditionalNotificationTargetsB\x03\xe0A\x01R\x1dadditionalNotificationTargets\x12\x12\n" +
+	" \x01(\v2Q.google.cloud.privilegedaccessmanager.v1.Entitlement.RequesterJustificationConfigB\x04\xe2A\x01\x02R\x1crequesterJustificationConfig\x12\xa0\x01\n" +
+	"\x1fadditional_notification_targets\x18\v \x01(\v2R.google.cloud.privilegedaccessmanager.v1.Entitlement.AdditionalNotificationTargetsB\x04\xe2A\x01\x01R\x1dadditionalNotificationTargets\x12\x12\n" +
 	"\x04etag\x18\f \x01(\tR\x04etag\x1a\xe3\x02\n" +
 	"\x1cRequesterJustificationConfig\x12\x85\x01\n" +
 	"\rnot_mandatory\x18\x01 \x01(\v2^.google.cloud.privilegedaccessmanager.v1.Entitlement.RequesterJustificationConfig.NotMandatoryH\x00R\fnotMandatory\x12\x84\x01\n" +
 	"\funstructured\x18\x02 \x01(\v2^.google.cloud.privilegedaccessmanager.v1.Entitlement.RequesterJustificationConfig.UnstructuredH\x00R\funstructured\x1a\x0e\n" +
 	"\fNotMandatory\x1a\x0e\n" +
 	"\fUnstructuredB\x14\n" +
-	"\x12justification_type\x1a\x9d\x01\n" +
-	"\x1dAdditionalNotificationTargets\x129\n" +
-	"\x16admin_email_recipients\x18\x01 \x03(\tB\x03\xe0A\x01R\x14adminEmailRecipients\x12A\n" +
-	"\x1arequester_email_recipients\x18\x02 \x03(\tB\x03\xe0A\x01R\x18requesterEmailRecipients\"d\n" +
+	"\x12justification_type\x1a\x9f\x01\n" +
+	"\x1dAdditionalNotificationTargets\x12:\n" +
+	"\x16admin_email_recipients\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x14adminEmailRecipients\x12B\n" +
+	"\x1arequester_email_recipients\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x18requesterEmailRecipients\"d\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\r\n" +
@@ -3756,94 +3756,94 @@ const file_google_cloud_privilegedaccessmanager_v1_privilegedaccessmanager_proto
 	"\bDELETING\x10\x03\x12\v\n" +
 	"\aDELETED\x10\x04\x12\f\n" +
 	"\bUPDATING\x10\x05:\xa7\x02\xeaA\xa3\x02\n" +
-	"2privilegedaccessmanager.googleapis.com/Entitlement\x12Bprojects/{project}/locations/{location}/entitlements/{entitlement}\x12@folders/{folder}/locations/{location}/entitlements/{entitlement}\x12Lorganizations/{organization}/locations/{location}/entitlements/{entitlement}*\fentitlements2\ventitlement\"9\n" +
-	"\x12AccessControlEntry\x12#\n" +
+	"2privilegedaccessmanager.googleapis.com/Entitlement\x12Bprojects/{project}/locations/{location}/entitlements/{entitlement}\x12@folders/{folder}/locations/{location}/entitlements/{entitlement}\x12Lorganizations/{organization}/locations/{location}/entitlements/{entitlement}*\fentitlements2\ventitlement\":\n" +
+	"\x12AccessControlEntry\x12$\n" +
 	"\n" +
-	"principals\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
+	"principals\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
 	"principals\"\x8e\x01\n" +
 	"\x10ApprovalWorkflow\x12e\n" +
 	"\x10manual_approvals\x18\x01 \x01(\v28.google.cloud.privilegedaccessmanager.v1.ManualApprovalsH\x00R\x0fmanualApprovalsB\x13\n" +
-	"\x11approval_workflow\"\x90\x03\n" +
-	"\x0fManualApprovals\x12I\n" +
-	"\x1erequire_approver_justification\x18\x01 \x01(\bB\x03\xe0A\x01R\x1crequireApproverJustification\x12X\n" +
-	"\x05steps\x18\x02 \x03(\v2=.google.cloud.privilegedaccessmanager.v1.ManualApprovals.StepB\x03\xe0A\x01R\x05steps\x1a\xd7\x01\n" +
-	"\x04Step\x12^\n" +
-	"\tapprovers\x18\x01 \x03(\v2;.google.cloud.privilegedaccessmanager.v1.AccessControlEntryB\x03\xe0A\x01R\tapprovers\x12.\n" +
-	"\x10approvals_needed\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fapprovalsNeeded\x12?\n" +
-	"\x19approver_email_recipients\x18\x03 \x03(\tB\x03\xe0A\x01R\x17approverEmailRecipients\"\xcb\x03\n" +
+	"\x11approval_workflow\"\x95\x03\n" +
+	"\x0fManualApprovals\x12J\n" +
+	"\x1erequire_approver_justification\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1crequireApproverJustification\x12Y\n" +
+	"\x05steps\x18\x02 \x03(\v2=.google.cloud.privilegedaccessmanager.v1.ManualApprovals.StepB\x04\xe2A\x01\x01R\x05steps\x1a\xda\x01\n" +
+	"\x04Step\x12_\n" +
+	"\tapprovers\x18\x01 \x03(\v2;.google.cloud.privilegedaccessmanager.v1.AccessControlEntryB\x04\xe2A\x01\x01R\tapprovers\x12/\n" +
+	"\x10approvals_needed\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0fapprovalsNeeded\x12@\n" +
+	"\x19approver_email_recipients\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x17approverEmailRecipients\"\xd0\x03\n" +
 	"\x10PrivilegedAccess\x12n\n" +
-	"\x0egcp_iam_access\x18\x01 \x01(\v2F.google.cloud.privilegedaccessmanager.v1.PrivilegedAccess.GcpIamAccessH\x00R\fgcpIamAccess\x1a\xb7\x02\n" +
-	"\fGcpIamAccess\x12(\n" +
-	"\rresource_type\x18\x01 \x01(\tB\x03\xe0A\x02R\fresourceType\x12\x1f\n" +
-	"\bresource\x18\x02 \x01(\tB\x03\xe0A\x02R\bresource\x12|\n" +
-	"\rrole_bindings\x18\x04 \x03(\v2R.google.cloud.privilegedaccessmanager.v1.PrivilegedAccess.GcpIamAccess.RoleBindingB\x03\xe0A\x02R\froleBindings\x1a^\n" +
-	"\vRoleBinding\x12\x17\n" +
-	"\x04role\x18\x01 \x01(\tB\x03\xe0A\x02R\x04role\x126\n" +
-	"\x14condition_expression\x18\x02 \x01(\tB\x03\xe0A\x01R\x13conditionExpressionB\r\n" +
-	"\vaccess_type\"\xf0\x01\n" +
-	"\x17ListEntitlementsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122privilegedaccessmanager.googleapis.com/EntitlementR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0egcp_iam_access\x18\x01 \x01(\v2F.google.cloud.privilegedaccessmanager.v1.PrivilegedAccess.GcpIamAccessH\x00R\fgcpIamAccess\x1a\xbc\x02\n" +
+	"\fGcpIamAccess\x12)\n" +
+	"\rresource_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fresourceType\x12 \n" +
+	"\bresource\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bresource\x12}\n" +
+	"\rrole_bindings\x18\x04 \x03(\v2R.google.cloud.privilegedaccessmanager.v1.PrivilegedAccess.GcpIamAccess.RoleBindingB\x04\xe2A\x01\x02R\froleBindings\x1a`\n" +
+	"\vRoleBinding\x12\x18\n" +
+	"\x04role\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04role\x127\n" +
+	"\x14condition_expression\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13conditionExpressionB\r\n" +
+	"\vaccess_type\"\xf5\x01\n" +
+	"\x17ListEntitlementsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122privilegedaccessmanager.googleapis.com/EntitlementR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbe\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xbe\x01\n" +
 	"\x18ListEntitlementsResponse\x12X\n" +
 	"\fentitlements\x18\x01 \x03(\v24.google.cloud.privilegedaccessmanager.v1.EntitlementR\fentitlements\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xbc\x03\n" +
-	"\x19SearchEntitlementsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122privilegedaccessmanager.googleapis.com/EntitlementR\x06parent\x12\x86\x01\n" +
-	"\x12caller_access_type\x18\x02 \x01(\x0e2S.google.cloud.privilegedaccessmanager.v1.SearchEntitlementsRequest.CallerAccessTypeB\x03\xe0A\x02R\x10callerAccessType\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xc1\x03\n" +
+	"\x19SearchEntitlementsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122privilegedaccessmanager.googleapis.com/EntitlementR\x06parent\x12\x87\x01\n" +
+	"\x12caller_access_type\x18\x02 \x01(\x0e2S.google.cloud.privilegedaccessmanager.v1.SearchEntitlementsRequest.CallerAccessTypeB\x04\xe2A\x01\x02R\x10callerAccessType\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"_\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"_\n" +
 	"\x10CallerAccessType\x12\"\n" +
 	"\x1eCALLER_ACCESS_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fGRANT_REQUESTER\x10\x01\x12\x12\n" +
 	"\x0eGRANT_APPROVER\x10\x02\"\x9e\x01\n" +
 	"\x1aSearchEntitlementsResponse\x12X\n" +
 	"\fentitlements\x18\x01 \x03(\v24.google.cloud.privilegedaccessmanager.v1.EntitlementR\fentitlements\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"g\n" +
-	"\x15GetEntitlementRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2privilegedaccessmanager.googleapis.com/EntitlementR\x04name\"\x9b\x02\n" +
-	"\x18CreateEntitlementRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122privilegedaccessmanager.googleapis.com/EntitlementR\x06parent\x12*\n" +
-	"\x0eentitlement_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rentitlementId\x12[\n" +
-	"\ventitlement\x18\x03 \x01(\v24.google.cloud.privilegedaccessmanager.v1.EntitlementB\x03\xe0A\x02R\ventitlement\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"h\n" +
+	"\x15GetEntitlementRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2privilegedaccessmanager.googleapis.com/EntitlementR\x04name\"\x9f\x02\n" +
+	"\x18CreateEntitlementRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122privilegedaccessmanager.googleapis.com/EntitlementR\x06parent\x12+\n" +
+	"\x0eentitlement_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rentitlementId\x12\\\n" +
+	"\ventitlement\x18\x03 \x01(\v24.google.cloud.privilegedaccessmanager.v1.EntitlementB\x04\xe2A\x01\x02R\ventitlement\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xa9\x01\n" +
-	"\x18DeleteEntitlementRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2privilegedaccessmanager.googleapis.com/EntitlementR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xac\x01\n" +
+	"\x18DeleteEntitlementRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2privilegedaccessmanager.googleapis.com/EntitlementR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xb9\x01\n" +
-	"\x18UpdateEntitlementRequest\x12[\n" +
-	"\ventitlement\x18\x01 \x01(\v24.google.cloud.privilegedaccessmanager.v1.EntitlementB\x03\xe0A\x02R\ventitlement\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x8c\x1b\n" +
-	"\x05Grant\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12!\n" +
-	"\trequester\x18\x04 \x01(\tB\x03\xe0A\x03R\trequester\x12M\n" +
-	"\x12requested_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x11requestedDuration\x12a\n" +
-	"\rjustification\x18\x06 \x01(\v26.google.cloud.privilegedaccessmanager.v1.JustificationB\x03\xe0A\x01R\rjustification\x12O\n" +
-	"\x05state\x18\a \x01(\x0e24.google.cloud.privilegedaccessmanager.v1.Grant.StateB\x03\xe0A\x03R\x05state\x12X\n" +
-	"\btimeline\x18\b \x01(\v27.google.cloud.privilegedaccessmanager.v1.Grant.TimelineB\x03\xe0A\x03R\btimeline\x12k\n" +
-	"\x11privileged_access\x18\t \x01(\v29.google.cloud.privilegedaccessmanager.v1.PrivilegedAccessB\x03\xe0A\x03R\x10privilegedAccess\x12_\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xbb\x01\n" +
+	"\x18UpdateEntitlementRequest\x12\\\n" +
+	"\ventitlement\x18\x01 \x01(\v24.google.cloud.privilegedaccessmanager.v1.EntitlementB\x04\xe2A\x01\x02R\ventitlement\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa5\x1b\n" +
+	"\x05Grant\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\"\n" +
+	"\trequester\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\trequester\x12N\n" +
+	"\x12requested_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x11requestedDuration\x12b\n" +
+	"\rjustification\x18\x06 \x01(\v26.google.cloud.privilegedaccessmanager.v1.JustificationB\x04\xe2A\x01\x01R\rjustification\x12P\n" +
+	"\x05state\x18\a \x01(\x0e24.google.cloud.privilegedaccessmanager.v1.Grant.StateB\x04\xe2A\x01\x03R\x05state\x12Y\n" +
+	"\btimeline\x18\b \x01(\v27.google.cloud.privilegedaccessmanager.v1.Grant.TimelineB\x04\xe2A\x01\x03R\btimeline\x12l\n" +
+	"\x11privileged_access\x18\t \x01(\v29.google.cloud.privilegedaccessmanager.v1.PrivilegedAccessB\x04\xe2A\x01\x03R\x10privilegedAccess\x12`\n" +
 	"\vaudit_trail\x18\n" +
-	" \x01(\v29.google.cloud.privilegedaccessmanager.v1.Grant.AuditTrailB\x03\xe0A\x03R\n" +
-	"auditTrail\x12C\n" +
-	"\x1badditional_email_recipients\x18\v \x03(\tB\x03\xe0A\x01R\x19additionalEmailRecipients\x124\n" +
-	"\x13externally_modified\x18\f \x01(\bB\x03\xe0A\x03R\x12externallyModified\x1a\xd4\x0e\n" +
-	"\bTimeline\x12Z\n" +
-	"\x06events\x18\x01 \x03(\v2=.google.cloud.privilegedaccessmanager.v1.Grant.Timeline.EventB\x03\xe0A\x03R\x06events\x1a\xeb\r\n" +
+	" \x01(\v29.google.cloud.privilegedaccessmanager.v1.Grant.AuditTrailB\x04\xe2A\x01\x03R\n" +
+	"auditTrail\x12D\n" +
+	"\x1badditional_email_recipients\x18\v \x03(\tB\x04\xe2A\x01\x01R\x19additionalEmailRecipients\x125\n" +
+	"\x13externally_modified\x18\f \x01(\bB\x04\xe2A\x01\x03R\x12externallyModified\x1a\xdf\x0e\n" +
+	"\bTimeline\x12[\n" +
+	"\x06events\x18\x01 \x03(\v2=.google.cloud.privilegedaccessmanager.v1.Grant.Timeline.EventB\x04\xe2A\x01\x03R\x06events\x1a\xf5\r\n" +
 	"\x05Event\x12g\n" +
 	"\trequested\x18\x02 \x01(\v2G.google.cloud.privilegedaccessmanager.v1.Grant.Timeline.Event.RequestedH\x00R\trequested\x12d\n" +
 	"\bapproved\x18\x03 \x01(\v2F.google.cloud.privilegedaccessmanager.v1.Grant.Timeline.Event.ApprovedH\x00R\bapproved\x12^\n" +
@@ -3856,35 +3856,35 @@ const file_google_cloud_privilegedaccessmanager_v1_privilegedaccessmanager_proto
 	" \x01(\v2E.google.cloud.privilegedaccessmanager.v1.Grant.Timeline.Event.ExpiredH\x00R\aexpired\x12[\n" +
 	"\x05ended\x18\v \x01(\v2C.google.cloud.privilegedaccessmanager.v1.Grant.Timeline.Event.EndedH\x00R\x05ended\x12\x83\x01\n" +
 	"\x13externally_modified\x18\f \x01(\v2P.google.cloud.privilegedaccessmanager.v1.Grant.Timeline.Event.ExternallyModifiedH\x00R\x12externallyModified\x12g\n" +
-	"\twithdrawn\x18\r \x01(\v2G.google.cloud.privilegedaccessmanager.v1.Grant.Timeline.Event.WithdrawnH\x00R\twithdrawn\x12>\n" +
+	"\twithdrawn\x18\r \x01(\v2G.google.cloud.privilegedaccessmanager.v1.Grant.Timeline.Event.WithdrawnH\x00R\twithdrawn\x12?\n" +
 	"\n" +
-	"event_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\teventTime\x1aM\n" +
-	"\tRequested\x12@\n" +
-	"\vexpire_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x1aB\n" +
-	"\bApproved\x12\x1b\n" +
-	"\x06reason\x18\x01 \x01(\tB\x03\xe0A\x03R\x06reason\x12\x19\n" +
-	"\x05actor\x18\x02 \x01(\tB\x03\xe0A\x03R\x05actor\x1a@\n" +
-	"\x06Denied\x12\x1b\n" +
-	"\x06reason\x18\x01 \x01(\tB\x03\xe0A\x03R\x06reason\x12\x19\n" +
-	"\x05actor\x18\x02 \x01(\tB\x03\xe0A\x03R\x05actor\x1aA\n" +
-	"\aRevoked\x12\x1b\n" +
-	"\x06reason\x18\x01 \x01(\tB\x03\xe0A\x03R\x06reason\x12\x19\n" +
-	"\x05actor\x18\x02 \x01(\tB\x03\xe0A\x03R\x05actor\x1a\v\n" +
-	"\tWithdrawn\x1ah\n" +
-	"\tScheduled\x12[\n" +
-	"\x19scheduled_activation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x17scheduledActivationTime\x1a\v\n" +
-	"\tActivated\x1aA\n" +
-	"\x10ActivationFailed\x12-\n" +
-	"\x05error\x18\x01 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x1a\t\n" +
+	"event_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\teventTime\x1aN\n" +
+	"\tRequested\x12A\n" +
+	"\vexpire_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x1aD\n" +
+	"\bApproved\x12\x1c\n" +
+	"\x06reason\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06reason\x12\x1a\n" +
+	"\x05actor\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05actor\x1aB\n" +
+	"\x06Denied\x12\x1c\n" +
+	"\x06reason\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06reason\x12\x1a\n" +
+	"\x05actor\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05actor\x1aC\n" +
+	"\aRevoked\x12\x1c\n" +
+	"\x06reason\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06reason\x12\x1a\n" +
+	"\x05actor\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05actor\x1a\v\n" +
+	"\tWithdrawn\x1ai\n" +
+	"\tScheduled\x12\\\n" +
+	"\x19scheduled_activation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x17scheduledActivationTime\x1a\v\n" +
+	"\tActivated\x1aB\n" +
+	"\x10ActivationFailed\x12.\n" +
+	"\x05error\x18\x01 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x1a\t\n" +
 	"\aExpired\x1a\a\n" +
 	"\x05Ended\x1a\x14\n" +
 	"\x12ExternallyModifiedB\a\n" +
-	"\x05event\x1a\xa8\x01\n" +
+	"\x05event\x1a\xaa\x01\n" +
 	"\n" +
-	"AuditTrail\x12K\n" +
-	"\x11access_grant_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0faccessGrantTime\x12M\n" +
-	"\x12access_remove_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x10accessRemoveTime\"\xd5\x01\n" +
+	"AuditTrail\x12L\n" +
+	"\x11access_grant_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0faccessGrantTime\x12N\n" +
+	"\x12access_remove_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x10accessRemoveTime\"\xd5\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10APPROVAL_AWAITED\x10\x01\x12\n" +
@@ -3906,25 +3906,25 @@ const file_google_cloud_privilegedaccessmanager_v1_privilegedaccessmanager_proto
 	",privilegedaccessmanager.googleapis.com/Grant\x12Qprojects/{project}/locations/{location}/entitlements/{entitlement}/grants/{grant}\x12Ofolders/{folder}/locations/{location}/entitlements/{entitlement}/grants/{grant}\x12[organizations/{organization}/locations/{location}/entitlements/{entitlement}/grants/{grant}*\x06grants2\x05grant\"a\n" +
 	"\rJustification\x12?\n" +
 	"\x1aunstructured_justification\x18\x01 \x01(\tH\x00R\x19unstructuredJustificationB\x0f\n" +
-	"\rjustification\"\xe4\x01\n" +
-	"\x11ListGrantsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,privilegedaccessmanager.googleapis.com/GrantR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\rjustification\"\xe9\x01\n" +
+	"\x11ListGrantsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,privilegedaccessmanager.googleapis.com/GrantR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa6\x01\n" +
 	"\x12ListGrantsResponse\x12F\n" +
 	"\x06grants\x18\x01 \x03(\v2..google.cloud.privilegedaccessmanager.v1.GrantR\x06grants\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xca\x03\n" +
-	"\x13SearchGrantsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,privilegedaccessmanager.googleapis.com/GrantR\x06parent\x12\x89\x01\n" +
-	"\x13caller_relationship\x18\x02 \x01(\x0e2S.google.cloud.privilegedaccessmanager.v1.SearchGrantsRequest.CallerRelationshipTypeB\x03\xe0A\x02R\x12callerRelationship\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xcf\x03\n" +
+	"\x13SearchGrantsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,privilegedaccessmanager.googleapis.com/GrantR\x06parent\x12\x8a\x01\n" +
+	"\x13caller_relationship\x18\x02 \x01(\x0e2S.google.cloud.privilegedaccessmanager.v1.SearchGrantsRequest.CallerRelationshipTypeB\x04\xe2A\x01\x02R\x12callerRelationship\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"v\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"v\n" +
 	"\x16CallerRelationshipType\x12(\n" +
 	"$CALLER_RELATIONSHIP_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vHAD_CREATED\x10\x01\x12\x0f\n" +
@@ -3932,36 +3932,36 @@ const file_google_cloud_privilegedaccessmanager_v1_privilegedaccessmanager_proto
 	"\fHAD_APPROVED\x10\x03\"\x86\x01\n" +
 	"\x14SearchGrantsResponse\x12F\n" +
 	"\x06grants\x18\x01 \x03(\v2..google.cloud.privilegedaccessmanager.v1.GrantR\x06grants\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"[\n" +
-	"\x0fGetGrantRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",privilegedaccessmanager.googleapis.com/GrantR\x04name\"|\n" +
-	"\x13ApproveGrantRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",privilegedaccessmanager.googleapis.com/GrantR\x04name\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x01R\x06reason\"y\n" +
-	"\x10DenyGrantRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",privilegedaccessmanager.googleapis.com/GrantR\x04name\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x01R\x06reason\"{\n" +
-	"\x12RevokeGrantRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",privilegedaccessmanager.googleapis.com/GrantR\x04name\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x01R\x06reason\"\xd1\x01\n" +
-	"\x12CreateGrantRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,privilegedaccessmanager.googleapis.com/GrantR\x06parent\x12I\n" +
-	"\x05grant\x18\x02 \x01(\v2..google.cloud.privilegedaccessmanager.v1.GrantB\x03\xe0A\x02R\x05grant\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\\\n" +
+	"\x0fGetGrantRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",privilegedaccessmanager.googleapis.com/GrantR\x04name\"~\n" +
+	"\x13ApproveGrantRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",privilegedaccessmanager.googleapis.com/GrantR\x04name\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06reason\"{\n" +
+	"\x10DenyGrantRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",privilegedaccessmanager.googleapis.com/GrantR\x04name\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06reason\"}\n" +
+	"\x12RevokeGrantRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",privilegedaccessmanager.googleapis.com/GrantR\x04name\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06reason\"\xd4\x01\n" +
+	"\x12CreateGrantRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,privilegedaccessmanager.googleapis.com/GrantR\x06parent\x12J\n" +
+	"\x05grant\x18\x02 \x01(\v2..google.cloud.privilegedaccessmanager.v1.GrantB\x04\xe2A\x01\x02R\x05grant\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\xc1'\n" +
 	"\x17PrivilegedAccessManager\x12\xe9\x02\n" +
 	"\x15CheckOnboardingStatus\x12E.google.cloud.privilegedaccessmanager.v1.CheckOnboardingStatusRequest\x1aF.google.cloud.privilegedaccessmanager.v1.CheckOnboardingStatusResponse\"\xc0\x01\x82\xd3\xe4\x93\x02\xb9\x01Z@\x12>/v1/{parent=organizations/*/locations/*}:checkOnboardingStatusZ:\x128/v1/{parent=folders/*/locations/*}:checkOnboardingStatus\x129/v1/{parent=projects/*/locations/*}:checkOnboardingStatus\x12\xc8\x02\n" +

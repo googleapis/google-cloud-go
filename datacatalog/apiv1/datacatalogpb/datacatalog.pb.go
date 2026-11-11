@@ -6166,68 +6166,68 @@ var File_google_cloud_datacatalog_v1_datacatalog_proto protoreflect.FileDescript
 
 const file_google_cloud_datacatalog_v1_datacatalog_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/datacatalog/v1/datacatalog.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/datacatalog/v1/bigquery.proto\x1a(google/cloud/datacatalog/v1/common.proto\x1a-google/cloud/datacatalog/v1/data_source.proto\x1a/google/cloud/datacatalog/v1/dataplex_spec.proto\x1a2google/cloud/datacatalog/v1/gcs_fileset_spec.proto\x1a(google/cloud/datacatalog/v1/schema.proto\x1a(google/cloud/datacatalog/v1/search.proto\x1a,google/cloud/datacatalog/v1/table_spec.proto\x1a&google/cloud/datacatalog/v1/tags.proto\x1a,google/cloud/datacatalog/v1/timestamps.proto\x1a'google/cloud/datacatalog/v1/usage.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd2\x04\n" +
-	"\x14SearchCatalogRequest\x12R\n" +
-	"\x05scope\x18\x06 \x01(\v27.google.cloud.datacatalog.v1.SearchCatalogRequest.ScopeB\x03\xe0A\x02R\x05scope\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x01R\x05query\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\"\n" +
+	"-google/cloud/datacatalog/v1/datacatalog.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/datacatalog/v1/bigquery.proto\x1a(google/cloud/datacatalog/v1/common.proto\x1a-google/cloud/datacatalog/v1/data_source.proto\x1a/google/cloud/datacatalog/v1/dataplex_spec.proto\x1a2google/cloud/datacatalog/v1/gcs_fileset_spec.proto\x1a(google/cloud/datacatalog/v1/schema.proto\x1a(google/cloud/datacatalog/v1/search.proto\x1a,google/cloud/datacatalog/v1/table_spec.proto\x1a&google/cloud/datacatalog/v1/tags.proto\x1a,google/cloud/datacatalog/v1/timestamps.proto\x1a'google/cloud/datacatalog/v1/usage.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd9\x04\n" +
+	"\x14SearchCatalogRequest\x12S\n" +
+	"\x05scope\x18\x06 \x01(\v27.google.cloud.datacatalog.v1.SearchCatalogRequest.ScopeB\x04\xe2A\x01\x02R\x05scope\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05query\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\x12&\n" +
-	"\fadmin_search\x18\x11 \x01(\bB\x03\xe0A\x01R\vadminSearch\x1a\xc6\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x19\n" +
+	"\border_by\x18\x05 \x01(\tR\aorderBy\x12'\n" +
+	"\fadmin_search\x18\x11 \x01(\bB\x04\xe2A\x01\x01R\vadminSearch\x1a\xc9\x02\n" +
 	"\x05Scope\x12&\n" +
 	"\x0finclude_org_ids\x18\x02 \x03(\tR\rincludeOrgIds\x12.\n" +
 	"\x13include_project_ids\x18\x03 \x03(\tR\x11includeProjectIds\x12=\n" +
-	"\x1binclude_gcp_public_datasets\x18\a \x01(\bR\x18includeGcpPublicDatasets\x126\n" +
-	"\x14restricted_locations\x18\x10 \x03(\tB\x03\xe0A\x01R\x13restrictedLocations\x12&\n" +
-	"\fstarred_only\x18\x12 \x01(\bB\x03\xe0A\x01R\vstarredOnly\x12F\n" +
-	"\x1cinclude_public_tag_templates\x18\x13 \x01(\bB\x05\xe0A\x01\x18\x01R\x19includePublicTagTemplates\"\xcc\x01\n" +
+	"\x1binclude_gcp_public_datasets\x18\a \x01(\bR\x18includeGcpPublicDatasets\x127\n" +
+	"\x14restricted_locations\x18\x10 \x03(\tB\x04\xe2A\x01\x01R\x13restrictedLocations\x12'\n" +
+	"\fstarred_only\x18\x12 \x01(\bB\x04\xe2A\x01\x01R\vstarredOnly\x12G\n" +
+	"\x1cinclude_public_tag_templates\x18\x13 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x19includePublicTagTemplates\"\xcc\x01\n" +
 	"\x15SearchCatalogResponse\x12J\n" +
 	"\aresults\x18\x01 \x03(\v20.google.cloud.datacatalog.v1.SearchCatalogResultR\aresults\x12\x1d\n" +
 	"\n" +
 	"total_size\x18\x02 \x01(\x05R\ttotalSize\x12&\n" +
 	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x06 \x03(\tR\vunreachable\"\xd5\x01\n" +
-	"\x17CreateEntryGroupRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%datacatalog.googleapis.com/EntryGroupR\x06parent\x12)\n" +
-	"\x0eentry_group_id\x18\x03 \x01(\tB\x03\xe0A\x02R\fentryGroupId\x12H\n" +
+	"\vunreachable\x18\x06 \x03(\tR\vunreachable\"\xd7\x01\n" +
+	"\x17CreateEntryGroupRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%datacatalog.googleapis.com/EntryGroupR\x06parent\x12*\n" +
+	"\x0eentry_group_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fentryGroupId\x12H\n" +
 	"\ventry_group\x18\x02 \x01(\v2'.google.cloud.datacatalog.v1.EntryGroupR\n" +
-	"entryGroup\"\xa5\x01\n" +
-	"\x17UpdateEntryGroupRequest\x12M\n" +
-	"\ventry_group\x18\x01 \x01(\v2'.google.cloud.datacatalog.v1.EntryGroupB\x03\xe0A\x02R\n" +
+	"entryGroup\"\xa6\x01\n" +
+	"\x17UpdateEntryGroupRequest\x12N\n" +
+	"\ventry_group\x18\x01 \x01(\v2'.google.cloud.datacatalog.v1.EntryGroupB\x04\xe2A\x01\x02R\n" +
 	"entryGroup\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x92\x01\n" +
-	"\x14GetEntryGroupRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"updateMask\"\x93\x01\n" +
+	"\x14GetEntryGroupRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%datacatalog.googleapis.com/EntryGroupR\x04name\x127\n" +
-	"\tread_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\breadMask\"w\n" +
-	"\x17DeleteEntryGroupRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%datacatalog.googleapis.com/EntryGroupR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xa5\x01\n" +
-	"\x16ListEntryGroupsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%datacatalog.googleapis.com/EntryGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\tread_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\breadMask\"y\n" +
+	"\x17DeleteEntryGroupRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%datacatalog.googleapis.com/EntryGroupR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xa8\x01\n" +
+	"\x16ListEntryGroupsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%datacatalog.googleapis.com/EntryGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8d\x01\n" +
 	"\x17ListEntryGroupsResponse\x12J\n" +
 	"\fentry_groups\x18\x01 \x03(\v2'.google.cloud.datacatalog.v1.EntryGroupR\ventryGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xba\x01\n" +
-	"\x12CreateEntryRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%datacatalog.googleapis.com/EntryGroupR\x06parent\x12\x1e\n" +
-	"\bentry_id\x18\x03 \x01(\tB\x03\xe0A\x02R\aentryId\x12=\n" +
-	"\x05entry\x18\x02 \x01(\v2\".google.cloud.datacatalog.v1.EntryB\x03\xe0A\x02R\x05entry\"\x90\x01\n" +
-	"\x12UpdateEntryRequest\x12=\n" +
-	"\x05entry\x18\x01 \x01(\v2\".google.cloud.datacatalog.v1.EntryB\x03\xe0A\x02R\x05entry\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbd\x01\n" +
+	"\x12CreateEntryRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%datacatalog.googleapis.com/EntryGroupR\x06parent\x12\x1f\n" +
+	"\bentry_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\aentryId\x12>\n" +
+	"\x05entry\x18\x02 \x01(\v2\".google.cloud.datacatalog.v1.EntryB\x04\xe2A\x01\x02R\x05entry\"\x91\x01\n" +
+	"\x12UpdateEntryRequest\x12>\n" +
+	"\x05entry\x18\x01 \x01(\v2\".google.cloud.datacatalog.v1.EntryB\x04\xe2A\x01\x02R\x05entry\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"R\n" +
-	"\x12DeleteEntryRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" datacatalog.googleapis.com/EntryR\x04name\"O\n" +
-	"\x0fGetEntryRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"updateMask\"S\n" +
+	"\x12DeleteEntryRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" datacatalog.googleapis.com/EntryR\x04name\"P\n" +
+	"\x0fGetEntryRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" datacatalog.googleapis.com/EntryR\x04name\"\xdd\x01\n" +
 	"\x12LookupEntryRequest\x12)\n" +
 	"\x0flinked_resource\x18\x01 \x01(\tH\x00R\x0elinkedResource\x12#\n" +
@@ -6235,22 +6235,22 @@ const file_google_cloud_datacatalog_v1_datacatalog_proto_rawDesc = "" +
 	"\x14fully_qualified_name\x18\x05 \x01(\tH\x00R\x12fullyQualifiedName\x12\x18\n" +
 	"\aproject\x18\x06 \x01(\tR\aproject\x12\x1a\n" +
 	"\blocation\x18\a \x01(\tR\blocationB\r\n" +
-	"\vtarget_name\"\xf6\x14\n" +
-	"\x05Entry\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x03\xe0A\b\xfaA'\n" +
+	"\vtarget_name\"\xfa\x14\n" +
+	"\x05Entry\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x02\x03\b\xfaA'\n" +
 	"%datacatalog.googleapis.com/EntryGroupR\x04name\x12'\n" +
 	"\x0flinked_resource\x18\t \x01(\tR\x0elinkedResource\x120\n" +
 	"\x14fully_qualified_name\x18\x1d \x01(\tR\x12fullyQualifiedName\x12<\n" +
 	"\x04type\x18\x02 \x01(\x0e2&.google.cloud.datacatalog.v1.EntryTypeH\x00R\x04type\x120\n" +
-	"\x13user_specified_type\x18\x10 \x01(\tH\x00R\x11userSpecifiedType\x12a\n" +
-	"\x11integrated_system\x18\x11 \x01(\x0e2-.google.cloud.datacatalog.v1.IntegratedSystemB\x03\xe0A\x03H\x01R\x10integratedSystem\x124\n" +
+	"\x13user_specified_type\x18\x10 \x01(\tH\x00R\x11userSpecifiedType\x12b\n" +
+	"\x11integrated_system\x18\x11 \x01(\x0e2-.google.cloud.datacatalog.v1.IntegratedSystemB\x04\xe2A\x01\x03H\x01R\x10integratedSystem\x124\n" +
 	"\x15user_specified_system\x18\x12 \x01(\tH\x01R\x13userSpecifiedSystem\x12m\n" +
 	"\x18sql_database_system_spec\x18' \x01(\v22.google.cloud.datacatalog.v1.SqlDatabaseSystemSpecH\x02R\x15sqlDatabaseSystemSpec\x12]\n" +
 	"\x12looker_system_spec\x18( \x01(\v2-.google.cloud.datacatalog.v1.LookerSystemSpecH\x02R\x10lookerSystemSpec\x12s\n" +
 	"\x1acloud_bigtable_system_spec\x18) \x01(\v24.google.cloud.datacatalog.v1.CloudBigtableSystemSpecH\x02R\x17cloudBigtableSystemSpec\x12W\n" +
-	"\x10gcs_fileset_spec\x18\x06 \x01(\v2+.google.cloud.datacatalog.v1.GcsFilesetSpecH\x03R\x0egcsFilesetSpec\x12e\n" +
-	"\x13bigquery_table_spec\x18\f \x01(\v2..google.cloud.datacatalog.v1.BigQueryTableSpecB\x03\xe0A\x03H\x03R\x11bigqueryTableSpec\x12x\n" +
-	"\x1abigquery_date_sharded_spec\x18\x0f \x01(\v24.google.cloud.datacatalog.v1.BigQueryDateShardedSpecB\x03\xe0A\x03H\x03R\x17bigqueryDateShardedSpec\x12`\n" +
+	"\x10gcs_fileset_spec\x18\x06 \x01(\v2+.google.cloud.datacatalog.v1.GcsFilesetSpecH\x03R\x0egcsFilesetSpec\x12f\n" +
+	"\x13bigquery_table_spec\x18\f \x01(\v2..google.cloud.datacatalog.v1.BigQueryTableSpecB\x04\xe2A\x01\x03H\x03R\x11bigqueryTableSpec\x12y\n" +
+	"\x1abigquery_date_sharded_spec\x18\x0f \x01(\v24.google.cloud.datacatalog.v1.BigQueryDateShardedSpecB\x04\xe2A\x01\x03H\x03R\x17bigqueryDateShardedSpec\x12`\n" +
 	"\x13database_table_spec\x18\x18 \x01(\v2..google.cloud.datacatalog.v1.DatabaseTableSpecH\x04R\x11databaseTableSpec\x12v\n" +
 	"\x1bdata_source_connection_spec\x18\x1b \x01(\v25.google.cloud.datacatalog.v1.DataSourceConnectionSpecH\x04R\x18dataSourceConnectionSpec\x12M\n" +
 	"\froutine_spec\x18\x1c \x01(\v2(.google.cloud.datacatalog.v1.RoutineSpecH\x04R\vroutineSpec\x12M\n" +
@@ -6266,10 +6266,10 @@ const file_google_cloud_datacatalog_v1_datacatalog_proto_rawDesc = "" +
 	"\x06schema\x18\x05 \x01(\v2#.google.cloud.datacatalog.v1.SchemaR\x06schema\x12g\n" +
 	"\x18source_system_timestamps\x18\a \x01(\v2-.google.cloud.datacatalog.v1.SystemTimestampsR\x16sourceSystemTimestamps\x12K\n" +
 	"\fusage_signal\x18\r \x01(\v2(.google.cloud.datacatalog.v1.UsageSignalR\vusageSignal\x12F\n" +
-	"\x06labels\x18\x0e \x03(\v2..google.cloud.datacatalog.v1.Entry.LabelsEntryR\x06labels\x12M\n" +
-	"\vdata_source\x18\x14 \x01(\v2'.google.cloud.datacatalog.v1.DataSourceB\x03\xe0A\x03R\n" +
-	"dataSource\x12\\\n" +
-	"\x10personal_details\x18\x1a \x01(\v2,.google.cloud.datacatalog.v1.PersonalDetailsB\x03\xe0A\x03R\x0fpersonalDetails\x1a9\n" +
+	"\x06labels\x18\x0e \x03(\v2..google.cloud.datacatalog.v1.Entry.LabelsEntryR\x06labels\x12N\n" +
+	"\vdata_source\x18\x14 \x01(\v2'.google.cloud.datacatalog.v1.DataSourceB\x04\xe2A\x01\x03R\n" +
+	"dataSource\x12]\n" +
+	"\x10personal_details\x18\x1a \x01(\v2,.google.cloud.datacatalog.v1.PersonalDetailsB\x04\xe2A\x01\x03R\x0fpersonalDetails\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:x\xeaAu\n" +
@@ -6279,10 +6279,10 @@ const file_google_cloud_datacatalog_v1_datacatalog_proto_rawDesc = "" +
 	"\x06systemB\r\n" +
 	"\vsystem_specB\v\n" +
 	"\ttype_specB\x06\n" +
-	"\x04spec\"\x91\x05\n" +
+	"\x04spec\"\x92\x05\n" +
 	"\x11DatabaseTableSpec\x12L\n" +
-	"\x04type\x18\x01 \x01(\x0e28.google.cloud.datacatalog.v1.DatabaseTableSpec.TableTypeR\x04type\x12Z\n" +
-	"\x0edataplex_table\x18\x02 \x01(\v2..google.cloud.datacatalog.v1.DataplexTableSpecB\x03\xe0A\x03R\rdataplexTable\x12m\n" +
+	"\x04type\x18\x01 \x01(\x0e28.google.cloud.datacatalog.v1.DatabaseTableSpec.TableTypeR\x04type\x12[\n" +
+	"\x0edataplex_table\x18\x02 \x01(\v2..google.cloud.datacatalog.v1.DataplexTableSpecB\x04\xe2A\x01\x03R\rdataplexTable\x12m\n" +
 	"\x12database_view_spec\x18\x03 \x01(\v2?.google.cloud.datacatalog.v1.DatabaseTableSpec.DatabaseViewSpecR\x10databaseViewSpec\x1a\x9f\x02\n" +
 	"\x10DatabaseViewSpec\x12e\n" +
 	"\tview_type\x18\x01 \x01(\x0e2H.google.cloud.datacatalog.v1.DatabaseTableSpec.DatabaseViewSpec.ViewTypeR\bviewType\x12\x1f\n" +
@@ -6394,9 +6394,9 @@ const file_google_cloud_datacatalog_v1_datacatalog_proto_rawDesc = "" +
 	"\vTEXT_PROMPT\x10\f\"v\n" +
 	"\tModelSpec\x12Z\n" +
 	"\x11vertex_model_spec\x18\x01 \x01(\v2,.google.cloud.datacatalog.v1.VertexModelSpecH\x00R\x0fvertexModelSpecB\r\n" +
-	"\vsystem_spec\"\xcb\x01\n" +
-	"\x16FeatureOnlineStoreSpec\x12g\n" +
-	"\fstorage_type\x18\x01 \x01(\x0e2?.google.cloud.datacatalog.v1.FeatureOnlineStoreSpec.StorageTypeB\x03\xe0A\x03R\vstorageType\"H\n" +
+	"\vsystem_spec\"\xcc\x01\n" +
+	"\x16FeatureOnlineStoreSpec\x12h\n" +
+	"\fstorage_type\x18\x01 \x01(\x0e2?.google.cloud.datacatalog.v1.FeatureOnlineStoreSpec.StorageTypeB\x04\xe2A\x01\x03R\vstorageType\"H\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bBIGTABLE\x10\x01\x12\r\n" +
@@ -6410,74 +6410,74 @@ const file_google_cloud_datacatalog_v1_datacatalog_proto_rawDesc = "" +
 	"\x06people\x18\x01 \x03(\v2,.google.cloud.datacatalog.v1.Contacts.PersonR\x06people\x1a@\n" +
 	"\x06Person\x12 \n" +
 	"\vdesignation\x18\x01 \x01(\tR\vdesignation\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05email\"\x82\x03\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\"\x85\x03\n" +
 	"\n" +
-	"EntryGroup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12!\n" +
+	"EntryGroup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12j\n" +
-	"\x17data_catalog_timestamps\x18\x04 \x01(\v2-.google.cloud.datacatalog.v1.SystemTimestampsB\x03\xe0A\x03R\x15dataCatalogTimestamps\x12;\n" +
-	"\x17transferred_to_dataplex\x18\t \x01(\bB\x03\xe0A\x01R\x15transferredToDataplex:m\xeaAj\n" +
-	"%datacatalog.googleapis.com/EntryGroup\x12Aprojects/{project}/locations/{location}/entryGroups/{entry_group}\"\xe1\x01\n" +
-	"\x18CreateTagTemplateRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&datacatalog.googleapis.com/TagTemplateR\x06parent\x12+\n" +
-	"\x0ftag_template_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rtagTemplateId\x12P\n" +
-	"\ftag_template\x18\x02 \x01(\v2(.google.cloud.datacatalog.v1.TagTemplateB\x03\xe0A\x02R\vtagTemplate\"[\n" +
-	"\x15GetTagTemplateRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&datacatalog.googleapis.com/TagTemplateR\x04name\"\xa9\x01\n" +
-	"\x18UpdateTagTemplateRequest\x12P\n" +
-	"\ftag_template\x18\x01 \x01(\v2(.google.cloud.datacatalog.v1.TagTemplateB\x03\xe0A\x02R\vtagTemplate\x12;\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12k\n" +
+	"\x17data_catalog_timestamps\x18\x04 \x01(\v2-.google.cloud.datacatalog.v1.SystemTimestampsB\x04\xe2A\x01\x03R\x15dataCatalogTimestamps\x12<\n" +
+	"\x17transferred_to_dataplex\x18\t \x01(\bB\x04\xe2A\x01\x01R\x15transferredToDataplex:m\xeaAj\n" +
+	"%datacatalog.googleapis.com/EntryGroup\x12Aprojects/{project}/locations/{location}/entryGroups/{entry_group}\"\xe4\x01\n" +
+	"\x18CreateTagTemplateRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&datacatalog.googleapis.com/TagTemplateR\x06parent\x12,\n" +
+	"\x0ftag_template_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rtagTemplateId\x12Q\n" +
+	"\ftag_template\x18\x02 \x01(\v2(.google.cloud.datacatalog.v1.TagTemplateB\x04\xe2A\x01\x02R\vtagTemplate\"\\\n" +
+	"\x15GetTagTemplateRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&datacatalog.googleapis.com/TagTemplateR\x04name\"\xaa\x01\n" +
+	"\x18UpdateTagTemplateRequest\x12Q\n" +
+	"\ftag_template\x18\x01 \x01(\v2(.google.cloud.datacatalog.v1.TagTemplateB\x04\xe2A\x01\x02R\vtagTemplate\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"y\n" +
-	"\x18DeleteTagTemplateRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&datacatalog.googleapis.com/TagTemplateR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x02R\x05force\"\x8b\x01\n" +
-	"\x10CreateTagRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edatacatalog.googleapis.com/TagR\x06parent\x127\n" +
-	"\x03tag\x18\x02 \x01(\v2 .google.cloud.datacatalog.v1.TagB\x03\xe0A\x02R\x03tag\"\x88\x01\n" +
-	"\x10UpdateTagRequest\x127\n" +
-	"\x03tag\x18\x01 \x01(\v2 .google.cloud.datacatalog.v1.TagB\x03\xe0A\x02R\x03tag\x12;\n" +
+	"updateMask\"{\n" +
+	"\x18DeleteTagTemplateRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&datacatalog.googleapis.com/TagTemplateR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x02R\x05force\"\x8d\x01\n" +
+	"\x10CreateTagRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1edatacatalog.googleapis.com/TagR\x06parent\x128\n" +
+	"\x03tag\x18\x02 \x01(\v2 .google.cloud.datacatalog.v1.TagB\x04\xe2A\x01\x02R\x03tag\"\x89\x01\n" +
+	"\x10UpdateTagRequest\x128\n" +
+	"\x03tag\x18\x01 \x01(\v2 .google.cloud.datacatalog.v1.TagB\x04\xe2A\x01\x02R\x03tag\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"N\n" +
-	"\x10DeleteTagRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edatacatalog.googleapis.com/TagR\x04name\"\x81\x02\n" +
-	"\x1dCreateTagTemplateFieldRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&datacatalog.googleapis.com/TagTemplateR\x06parent\x126\n" +
-	"\x15tag_template_field_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12tagTemplateFieldId\x12`\n" +
-	"\x12tag_template_field\x18\x03 \x01(\v2-.google.cloud.datacatalog.v1.TagTemplateFieldB\x03\xe0A\x02R\x10tagTemplateField\"\x8c\x02\n" +
-	"\x1dUpdateTagTemplateFieldRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+datacatalog.googleapis.com/TagTemplateFieldR\x04name\x12`\n" +
-	"\x12tag_template_field\x18\x02 \x01(\v2-.google.cloud.datacatalog.v1.TagTemplateFieldB\x03\xe0A\x02R\x10tagTemplateField\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xa7\x01\n" +
-	"\x1dRenameTagTemplateFieldRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+datacatalog.googleapis.com/TagTemplateFieldR\x04name\x12=\n" +
-	"\x19new_tag_template_field_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15newTagTemplateFieldId\"\xbd\x01\n" +
-	"&RenameTagTemplateFieldEnumValueRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4datacatalog.googleapis.com/TagTemplateFieldEnumValueR\x04name\x12A\n" +
-	"\x1bnew_enum_value_display_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x17newEnumValueDisplayName\"\x83\x01\n" +
-	"\x1dDeleteTagTemplateFieldRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+datacatalog.googleapis.com/TagTemplateFieldR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x02R\x05force\"\x8d\x01\n" +
-	"\x0fListTagsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edatacatalog.googleapis.com/TagR\x06parent\x12\x1b\n" +
+	"updateMask\"O\n" +
+	"\x10DeleteTagRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1edatacatalog.googleapis.com/TagR\x04name\"\x84\x02\n" +
+	"\x1dCreateTagTemplateFieldRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&datacatalog.googleapis.com/TagTemplateR\x06parent\x127\n" +
+	"\x15tag_template_field_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12tagTemplateFieldId\x12a\n" +
+	"\x12tag_template_field\x18\x03 \x01(\v2-.google.cloud.datacatalog.v1.TagTemplateFieldB\x04\xe2A\x01\x02R\x10tagTemplateField\"\x8f\x02\n" +
+	"\x1dUpdateTagTemplateFieldRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+datacatalog.googleapis.com/TagTemplateFieldR\x04name\x12a\n" +
+	"\x12tag_template_field\x18\x02 \x01(\v2-.google.cloud.datacatalog.v1.TagTemplateFieldB\x04\xe2A\x01\x02R\x10tagTemplateField\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xa9\x01\n" +
+	"\x1dRenameTagTemplateFieldRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+datacatalog.googleapis.com/TagTemplateFieldR\x04name\x12>\n" +
+	"\x19new_tag_template_field_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15newTagTemplateFieldId\"\xbf\x01\n" +
+	"&RenameTagTemplateFieldEnumValueRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4datacatalog.googleapis.com/TagTemplateFieldEnumValueR\x04name\x12B\n" +
+	"\x1bnew_enum_value_display_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x17newEnumValueDisplayName\"\x85\x01\n" +
+	"\x1dDeleteTagTemplateFieldRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+datacatalog.googleapis.com/TagTemplateFieldR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x02R\x05force\"\x8e\x01\n" +
+	"\x0fListTagsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1edatacatalog.googleapis.com/TagR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"p\n" +
 	"\x10ListTagsResponse\x124\n" +
 	"\x04tags\x18\x01 \x03(\v2 .google.cloud.datacatalog.v1.TagR\x04tags\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x93\x02\n" +
-	"\x14ReconcileTagsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" datacatalog.googleapis.com/EntryR\x06parent\x12Q\n" +
-	"\ftag_template\x18\x02 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x95\x02\n" +
+	"\x14ReconcileTagsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" datacatalog.googleapis.com/EntryR\x06parent\x12R\n" +
+	"\ftag_template\x18\x02 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&datacatalog.googleapis.com/TagTemplateR\vtagTemplate\x120\n" +
 	"\x14force_delete_missing\x18\x03 \x01(\bR\x12forceDeleteMissing\x124\n" +
 	"\x04tags\x18\x04 \x03(\v2 .google.cloud.datacatalog.v1.TagR\x04tags\"\xa1\x01\n" +
@@ -6495,9 +6495,9 @@ const file_google_cloud_datacatalog_v1_datacatalog_proto_rawDesc = "" +
 	" RECONCILIATION_STATE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15RECONCILIATION_QUEUED\x10\x01\x12\x1e\n" +
 	"\x1aRECONCILIATION_IN_PROGRESS\x10\x02\x12\x17\n" +
-	"\x13RECONCILIATION_DONE\x10\x03\"\xd0\x01\n" +
-	"\x12ListEntriesRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x13RECONCILIATION_DONE\x10\x03\"\xd1\x01\n" +
+	"\x12ListEntriesRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%datacatalog.googleapis.com/EntryGroupR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -6505,19 +6505,19 @@ const file_google_cloud_datacatalog_v1_datacatalog_proto_rawDesc = "" +
 	"\tread_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskR\breadMask\"{\n" +
 	"\x13ListEntriesResponse\x12<\n" +
 	"\aentries\x18\x01 \x03(\v2\".google.cloud.datacatalog.v1.EntryR\aentries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
-	"\x10StarEntryRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
+	"\x10StarEntryRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" datacatalog.googleapis.com/EntryR\x04name\"\x13\n" +
-	"\x11StarEntryResponse\"R\n" +
-	"\x12UnstarEntryRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\x11StarEntryResponse\"S\n" +
+	"\x12UnstarEntryRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" datacatalog.googleapis.com/EntryR\x04name\"\x15\n" +
-	"\x13UnstarEntryResponse\"\xa8\x01\n" +
-	"\x14ImportEntriesRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 datacatalog.googleapis.com/EntryR\x06parent\x12(\n" +
-	"\x0fgcs_bucket_path\x18\x02 \x01(\tH\x00R\rgcsBucketPath\x12\x1a\n" +
-	"\x06job_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x05jobIdB\b\n" +
+	"\x13UnstarEntryResponse\"\xaa\x01\n" +
+	"\x14ImportEntriesRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 datacatalog.googleapis.com/EntryR\x06parent\x12(\n" +
+	"\x0fgcs_bucket_path\x18\x02 \x01(\tH\x00R\rgcsBucketPath\x12\x1b\n" +
+	"\x06job_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05jobIdB\b\n" +
 	"\x06source\"\xc0\x01\n" +
 	"\x15ImportEntriesResponse\x129\n" +
 	"\x16upserted_entries_count\x18\x05 \x01(\x03H\x00R\x14upsertedEntriesCount\x88\x01\x01\x127\n" +
@@ -6532,24 +6532,24 @@ const file_google_cloud_datacatalog_v1_datacatalog_proto_rawDesc = "" +
 	"\rIMPORT_QUEUED\x10\x01\x12\x16\n" +
 	"\x12IMPORT_IN_PROGRESS\x10\x02\x12\x0f\n" +
 	"\vIMPORT_DONE\x10\x03\x12\x13\n" +
-	"\x0fIMPORT_OBSOLETE\x10\x04\"\xb2\x01\n" +
-	"\x1aModifyEntryOverviewRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" datacatalog.googleapis.com/EntryR\x04name\x12V\n" +
-	"\x0eentry_overview\x18\x02 \x01(\v2*.google.cloud.datacatalog.v1.EntryOverviewB\x03\xe0A\x02R\rentryOverview\"\xa2\x01\n" +
-	"\x1aModifyEntryContactsRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" datacatalog.googleapis.com/EntryR\x04name\x12F\n" +
-	"\bcontacts\x18\x02 \x01(\v2%.google.cloud.datacatalog.v1.ContactsB\x03\xe0A\x02R\bcontacts\"\x8f\x02\n" +
-	"\x10SetConfigRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12i\n" +
+	"\x0fIMPORT_OBSOLETE\x10\x04\"\xb4\x01\n" +
+	"\x1aModifyEntryOverviewRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" datacatalog.googleapis.com/EntryR\x04name\x12W\n" +
+	"\x0eentry_overview\x18\x02 \x01(\v2*.google.cloud.datacatalog.v1.EntryOverviewB\x04\xe2A\x01\x02R\rentryOverview\"\xa4\x01\n" +
+	"\x1aModifyEntryContactsRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" datacatalog.googleapis.com/EntryR\x04name\x12G\n" +
+	"\bcontacts\x18\x02 \x01(\v2%.google.cloud.datacatalog.v1.ContactsB\x04\xe2A\x01\x02R\bcontacts\"\x90\x02\n" +
+	"\x10SetConfigRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12i\n" +
 	"\x16tag_template_migration\x18\x02 \x01(\x0e21.google.cloud.datacatalog.v1.TagTemplateMigrationH\x00R\x14tagTemplateMigration\x12f\n" +
 	"\x15catalog_ui_experience\x18\x03 \x01(\x0e20.google.cloud.datacatalog.v1.CatalogUIExperienceH\x00R\x13catalogUiExperienceB\x0f\n" +
-	"\rconfiguration\"0\n" +
-	"\x15RetrieveConfigRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"9\n" +
-	"\x1eRetrieveEffectiveConfigRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\xd2\x01\n" +
+	"\rconfiguration\"1\n" +
+	"\x15RetrieveConfigRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\":\n" +
+	"\x1eRetrieveEffectiveConfigRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\xd2\x01\n" +
 	"\x12OrganizationConfig\x12S\n" +
 	"\x06config\x18\x01 \x03(\v2;.google.cloud.datacatalog.v1.OrganizationConfig.ConfigEntryR\x06config\x1ag\n" +
 	"\vConfigEntry\x12\x10\n" +

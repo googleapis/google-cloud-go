@@ -545,42 +545,42 @@ var File_google_cloud_dataproc_v1_session_templates_proto protoreflect.FileDescr
 
 const file_google_cloud_dataproc_v1_session_templates_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/dataproc/v1/session_templates.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/dataproc/v1/sessions.proto\x1a%google/cloud/dataproc/v1/shared.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc2\x01\n" +
-	"\x1cCreateSessionTemplateRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'dataproc.googleapis.com/SessionTemplateR\x06parent\x12Y\n" +
-	"\x10session_template\x18\x03 \x01(\v2).google.cloud.dataproc.v1.SessionTemplateB\x03\xe0A\x02R\x0fsessionTemplate\"y\n" +
-	"\x1cUpdateSessionTemplateRequest\x12Y\n" +
-	"\x10session_template\x18\x01 \x01(\v2).google.cloud.dataproc.v1.SessionTemplateB\x03\xe0A\x02R\x0fsessionTemplate\"`\n" +
-	"\x19GetSessionTemplateRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'dataproc.googleapis.com/SessionTemplateR\x04name\"\xc9\x01\n" +
-	"\x1bListSessionTemplatesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'dataproc.googleapis.com/SessionTemplateR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"0google/cloud/dataproc/v1/session_templates.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/dataproc/v1/sessions.proto\x1a%google/cloud/dataproc/v1/shared.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\x01\n" +
+	"\x1cCreateSessionTemplateRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'dataproc.googleapis.com/SessionTemplateR\x06parent\x12Z\n" +
+	"\x10session_template\x18\x03 \x01(\v2).google.cloud.dataproc.v1.SessionTemplateB\x04\xe2A\x01\x02R\x0fsessionTemplate\"z\n" +
+	"\x1cUpdateSessionTemplateRequest\x12Z\n" +
+	"\x10session_template\x18\x01 \x01(\v2).google.cloud.dataproc.v1.SessionTemplateB\x04\xe2A\x01\x02R\x0fsessionTemplate\"a\n" +
+	"\x19GetSessionTemplateRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'dataproc.googleapis.com/SessionTemplateR\x04name\"\xcd\x01\n" +
+	"\x1bListSessionTemplatesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'dataproc.googleapis.com/SessionTemplateR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa3\x01\n" +
-	"\x1cListSessionTemplatesResponse\x12[\n" +
-	"\x11session_templates\x18\x01 \x03(\v2).google.cloud.dataproc.v1.SessionTemplateB\x03\xe0A\x03R\x10sessionTemplates\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"c\n" +
-	"\x1cDeleteSessionTemplateRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'dataproc.googleapis.com/SessionTemplateR\x04name\"\x9c\a\n" +
-	"\x0fSessionTemplate\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12W\n" +
-	"\x0fjupyter_session\x18\x03 \x01(\v2'.google.cloud.dataproc.v1.JupyterConfigB\x03\xe0A\x01H\x00R\x0ejupyterSession\x12g\n" +
-	"\x15spark_connect_session\x18\v \x01(\v2,.google.cloud.dataproc.v1.SparkConnectConfigB\x03\xe0A\x01H\x00R\x13sparkConnectSession\x12\x1d\n" +
-	"\acreator\x18\x05 \x01(\tB\x03\xe0A\x03R\acreator\x12R\n" +
-	"\x06labels\x18\x06 \x03(\v25.google.cloud.dataproc.v1.SessionTemplate.LabelsEntryB\x03\xe0A\x01R\x06labels\x12S\n" +
-	"\x0eruntime_config\x18\a \x01(\v2'.google.cloud.dataproc.v1.RuntimeConfigB\x03\xe0A\x01R\rruntimeConfig\x12_\n" +
-	"\x12environment_config\x18\b \x01(\v2+.google.cloud.dataproc.v1.EnvironmentConfigB\x03\xe0A\x01R\x11environmentConfig\x12@\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa4\x01\n" +
+	"\x1cListSessionTemplatesResponse\x12\\\n" +
+	"\x11session_templates\x18\x01 \x03(\v2).google.cloud.dataproc.v1.SessionTemplateB\x04\xe2A\x01\x03R\x10sessionTemplates\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
+	"\x1cDeleteSessionTemplateRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'dataproc.googleapis.com/SessionTemplateR\x04name\"\xa5\a\n" +
+	"\x0fSessionTemplate\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12X\n" +
+	"\x0fjupyter_session\x18\x03 \x01(\v2'.google.cloud.dataproc.v1.JupyterConfigB\x04\xe2A\x01\x01H\x00R\x0ejupyterSession\x12h\n" +
+	"\x15spark_connect_session\x18\v \x01(\v2,.google.cloud.dataproc.v1.SparkConnectConfigB\x04\xe2A\x01\x01H\x00R\x13sparkConnectSession\x12\x1e\n" +
+	"\acreator\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\acreator\x12S\n" +
+	"\x06labels\x18\x06 \x03(\v25.google.cloud.dataproc.v1.SessionTemplate.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12T\n" +
+	"\x0eruntime_config\x18\a \x01(\v2'.google.cloud.dataproc.v1.RuntimeConfigB\x04\xe2A\x01\x01R\rruntimeConfig\x12`\n" +
+	"\x12environment_config\x18\b \x01(\v2+.google.cloud.dataproc.v1.EnvironmentConfigB\x04\xe2A\x01\x01R\x11environmentConfig\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04uuid\x18\f \x01(\tB\x03\xe0A\x03R\x04uuid\x1a9\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04uuid\x18\f \x01(\tB\x04\xe2A\x01\x03R\x04uuid\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:q\xeaAn\n" +

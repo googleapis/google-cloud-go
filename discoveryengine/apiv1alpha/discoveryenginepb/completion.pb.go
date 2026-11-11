@@ -288,19 +288,19 @@ var File_google_cloud_discoveryengine_v1alpha_completion_proto protoreflect.File
 
 const file_google_cloud_discoveryengine_v1alpha_completion_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/discoveryengine/v1alpha/completion.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\"\x8a\x02\n" +
-	"\x17SuggestionDenyListEntry\x12&\n" +
-	"\fblock_phrase\x18\x01 \x01(\tB\x03\xe0A\x02R\vblockPhrase\x12w\n" +
-	"\x0ematch_operator\x18\x02 \x01(\x0e2K.google.cloud.discoveryengine.v1alpha.SuggestionDenyListEntry.MatchOperatorB\x03\xe0A\x02R\rmatchOperator\"N\n" +
+	"5google/cloud/discoveryengine/v1alpha/completion.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\"\x8c\x02\n" +
+	"\x17SuggestionDenyListEntry\x12'\n" +
+	"\fblock_phrase\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vblockPhrase\x12x\n" +
+	"\x0ematch_operator\x18\x02 \x01(\x0e2K.google.cloud.discoveryengine.v1alpha.SuggestionDenyListEntry.MatchOperatorB\x04\xe2A\x01\x02R\rmatchOperator\"N\n" +
 	"\rMatchOperator\x12\x1e\n" +
 	"\x1aMATCH_OPERATOR_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vEXACT_MATCH\x10\x01\x12\f\n" +
-	"\bCONTAINS\x10\x02\"\xa2\x02\n" +
+	"\bCONTAINS\x10\x02\"\xa3\x02\n" +
 	"\x14CompletionSuggestion\x12#\n" +
 	"\fglobal_score\x18\x02 \x01(\x01H\x00R\vglobalScore\x12\x1e\n" +
-	"\tfrequency\x18\x03 \x01(\x03H\x00R\tfrequency\x12#\n" +
+	"\tfrequency\x18\x03 \x01(\x03H\x00R\tfrequency\x12$\n" +
 	"\n" +
-	"suggestion\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"suggestion\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"suggestion\x12#\n" +
 	"\rlanguage_code\x18\x04 \x01(\tR\flanguageCode\x12\x19\n" +
 	"\bgroup_id\x18\x05 \x01(\tR\agroupId\x12\x1f\n" +

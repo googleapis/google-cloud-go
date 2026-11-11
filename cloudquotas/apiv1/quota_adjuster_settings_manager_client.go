@@ -506,6 +506,11 @@ func (c *quotaAdjusterSettingsManagerRESTClient) UpdateQuotaAdjusterSettings(ctx
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetQuotaAdjusterSettings().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetQuotaAdjusterSettings().GetName())
 
 	params := url.Values{}
@@ -568,6 +573,11 @@ func (c *quotaAdjusterSettingsManagerRESTClient) UpdateQuotaAdjusterSettings(ctx
 func (c *quotaAdjusterSettingsManagerRESTClient) GetQuotaAdjusterSettings(ctx context.Context, req *cloudquotaspb.GetQuotaAdjusterSettingsRequest, opts ...gax.CallOption) (*cloudquotaspb.QuotaAdjusterSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

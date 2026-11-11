@@ -2521,30 +2521,30 @@ var File_google_cloud_parallelstore_v1beta_parallelstore_proto protoreflect.File
 
 const file_google_cloud_parallelstore_v1beta_parallelstore_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/parallelstore/v1beta/parallelstore.proto\x12!google.cloud.parallelstore.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\xe6\n" +
+	"5google/cloud/parallelstore/v1beta/parallelstore.proto\x12!google.cloud.parallelstore.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\xe7\n" +
 	"\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12L\n" +
-	"\x05state\x18\x03 \x01(\x0e21.google.cloud.parallelstore.v1beta.Instance.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12T\n" +
-	"\x06labels\x18\x06 \x03(\v27.google.cloud.parallelstore.v1beta.Instance.LabelsEntryB\x03\xe0A\x01R\x06labels\x12)\n" +
-	"\fcapacity_gib\x18\b \x01(\x03B\x06\xe0A\x05\xe0A\x02R\vcapacityGib\x12(\n" +
-	"\fdaos_version\x18\t \x01(\tB\x05\xe0A\x03\x18\x01R\vdaosVersion\x12(\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12M\n" +
+	"\x05state\x18\x03 \x01(\x0e21.google.cloud.parallelstore.v1beta.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12U\n" +
+	"\x06labels\x18\x06 \x03(\v27.google.cloud.parallelstore.v1beta.Instance.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12(\n" +
+	"\fcapacity_gib\x18\b \x01(\x03B\x05\xe2A\x02\x05\x02R\vcapacityGib\x12)\n" +
+	"\fdaos_version\x18\t \x01(\tB\x06\xe2A\x01\x03\x18\x01R\vdaosVersion\x12)\n" +
 	"\raccess_points\x18\n" +
-	" \x03(\tB\x03\xe0A\x03R\faccessPoints\x12C\n" +
-	"\anetwork\x18\v \x01(\tB)\xe0A\x05\xe0A\x01\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12U\n" +
-	"\x11reserved_ip_range\x18\f \x01(\tB)\xe0A\x05\xe0A\x01\xfaA \n" +
-	"\x1ecompute.googleapis.com/AddressR\x0freservedIpRange\x12h\n" +
-	"\x1beffective_reserved_ip_range\x18\x0e \x01(\tB)\xe0A\x05\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/AddressR\x18effectiveReservedIpRange\x12f\n" +
-	"\x11file_stripe_level\x18\x0f \x01(\x0e22.google.cloud.parallelstore.v1beta.FileStripeLevelB\x06\xe0A\x05\xe0A\x01R\x0ffileStripeLevel\x12u\n" +
-	"\x16directory_stripe_level\x18\x10 \x01(\x0e27.google.cloud.parallelstore.v1beta.DirectoryStripeLevelB\x06\xe0A\x05\xe0A\x01R\x14directoryStripeLevel\x12b\n" +
-	"\x0fdeployment_type\x18\x11 \x01(\x0e21.google.cloud.parallelstore.v1beta.DeploymentTypeB\x06\xe0A\x05\xe0A\x01R\x0edeploymentType\x1a9\n" +
+	" \x03(\tB\x04\xe2A\x01\x03R\faccessPoints\x12B\n" +
+	"\anetwork\x18\v \x01(\tB(\xe2A\x02\x05\x01\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12T\n" +
+	"\x11reserved_ip_range\x18\f \x01(\tB(\xe2A\x02\x05\x01\xfaA \n" +
+	"\x1ecompute.googleapis.com/AddressR\x0freservedIpRange\x12g\n" +
+	"\x1beffective_reserved_ip_range\x18\x0e \x01(\tB(\xe2A\x02\x05\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/AddressR\x18effectiveReservedIpRange\x12e\n" +
+	"\x11file_stripe_level\x18\x0f \x01(\x0e22.google.cloud.parallelstore.v1beta.FileStripeLevelB\x05\xe2A\x02\x05\x01R\x0ffileStripeLevel\x12t\n" +
+	"\x16directory_stripe_level\x18\x10 \x01(\x0e27.google.cloud.parallelstore.v1beta.DirectoryStripeLevelB\x05\xe2A\x02\x05\x01R\x14directoryStripeLevel\x12a\n" +
+	"\x0fdeployment_type\x18\x11 \x01(\x0e21.google.cloud.parallelstore.v1beta.DeploymentTypeB\x05\xe2A\x02\x05\x01R\x0edeploymentType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"p\n" +
@@ -2558,11 +2558,11 @@ const file_google_cloud_parallelstore_v1beta_parallelstore_proto_rawDesc = "" +
 	"\x06FAILED\x10\x04\x12\r\n" +
 	"\tUPGRADING\x10\x05\x12\r\n" +
 	"\tREPAIRING\x10\x06:}\xeaAz\n" +
-	"%parallelstore.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}*\tinstances2\binstance\"\xe7\x03\n" +
-	"\x17TransferMetadataOptions\x12U\n" +
-	"\x03uid\x18\x01 \x01(\x0e2>.google.cloud.parallelstore.v1beta.TransferMetadataOptions.UidB\x03\xe0A\x01R\x03uid\x12U\n" +
-	"\x03gid\x18\x02 \x01(\x0e2>.google.cloud.parallelstore.v1beta.TransferMetadataOptions.GidB\x03\xe0A\x01R\x03gid\x12X\n" +
-	"\x04mode\x18\x03 \x01(\x0e2?.google.cloud.parallelstore.v1beta.TransferMetadataOptions.ModeB\x03\xe0A\x01R\x04mode\"A\n" +
+	"%parallelstore.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}*\tinstances2\binstance\"\xea\x03\n" +
+	"\x17TransferMetadataOptions\x12V\n" +
+	"\x03uid\x18\x01 \x01(\x0e2>.google.cloud.parallelstore.v1beta.TransferMetadataOptions.UidB\x04\xe2A\x01\x01R\x03uid\x12V\n" +
+	"\x03gid\x18\x02 \x01(\x0e2>.google.cloud.parallelstore.v1beta.TransferMetadataOptions.GidB\x04\xe2A\x01\x01R\x03gid\x12Y\n" +
+	"\x04mode\x18\x03 \x01(\x0e2?.google.cloud.parallelstore.v1beta.TransferMetadataOptions.ModeB\x04\xe2A\x01\x01R\x04mode\"A\n" +
 	"\x03Uid\x12\x13\n" +
 	"\x0fUID_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bUID_SKIP\x10\x01\x12\x17\n" +
@@ -2574,79 +2574,79 @@ const file_google_cloud_parallelstore_v1beta_parallelstore_proto_rawDesc = "" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tMODE_SKIP\x10\x01\x12\x11\n" +
-	"\rMODE_PRESERVE\x10\x02\"\xe0\x01\n" +
-	"\x14ListInstancesRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%parallelstore.googleapis.com/InstanceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\rMODE_PRESERVE\x10\x02\"\xe5\x01\n" +
+	"\x14ListInstancesRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%parallelstore.googleapis.com/InstanceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xac\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xac\x01\n" +
 	"\x15ListInstancesResponse\x12I\n" +
 	"\tinstances\x18\x01 \x03(\v2+.google.cloud.parallelstore.v1beta.InstanceR\tinstances\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x12GetInstanceRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%parallelstore.googleapis.com/InstanceR\x04name\"\xf6\x01\n" +
-	"\x15CreateInstanceRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%parallelstore.googleapis.com/InstanceR\x06parent\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12L\n" +
-	"\binstance\x18\x03 \x01(\v2+.google.cloud.parallelstore.v1beta.InstanceB\x03\xe0A\x02R\binstance\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x12GetInstanceRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%parallelstore.googleapis.com/InstanceR\x04name\"\xfa\x01\n" +
+	"\x15CreateInstanceRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%parallelstore.googleapis.com/InstanceR\x06parent\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12M\n" +
+	"\binstance\x18\x03 \x01(\v2+.google.cloud.parallelstore.v1beta.InstanceB\x04\xe2A\x01\x02R\binstance\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xcb\x01\n" +
-	"\x15UpdateInstanceRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12L\n" +
-	"\binstance\x18\x02 \x01(\v2+.google.cloud.parallelstore.v1beta.InstanceB\x03\xe0A\x02R\binstance\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xce\x01\n" +
+	"\x15UpdateInstanceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12M\n" +
+	"\binstance\x18\x02 \x01(\v2+.google.cloud.parallelstore.v1beta.InstanceB\x04\xe2A\x01\x02R\binstance\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"~\n" +
-	"\x15DeleteInstanceRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%parallelstore.googleapis.com/InstanceR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x80\x01\n" +
+	"\x15DeleteInstanceRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%parallelstore.googleapis.com/InstanceR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"(\n" +
-	"\x0fSourceGcsBucket\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\"-\n" +
-	"\x14DestinationGcsBucket\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\".\n" +
-	"\x13SourceParallelstore\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x01R\x04path\"3\n" +
-	"\x18DestinationParallelstore\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x01R\x04path\"\xb9\x04\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\")\n" +
+	"\x0fSourceGcsBucket\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\".\n" +
+	"\x14DestinationGcsBucket\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\"/\n" +
+	"\x13SourceParallelstore\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04path\"4\n" +
+	"\x18DestinationParallelstore\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04path\"\xbd\x04\n" +
 	"\x11ImportDataRequest\x12`\n" +
 	"\x11source_gcs_bucket\x18\x02 \x01(\v22.google.cloud.parallelstore.v1beta.SourceGcsBucketH\x00R\x0fsourceGcsBucket\x12z\n" +
-	"\x19destination_parallelstore\x18\x03 \x01(\v2;.google.cloud.parallelstore.v1beta.DestinationParallelstoreH\x01R\x18destinationParallelstore\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%parallelstore.googleapis.com/InstanceR\x04name\x12*\n" +
+	"\x19destination_parallelstore\x18\x03 \x01(\v2;.google.cloud.parallelstore.v1beta.DestinationParallelstoreH\x01R\x18destinationParallelstore\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%parallelstore.googleapis.com/InstanceR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12R\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12j\n" +
-	"\x10metadata_options\x18\x06 \x01(\v2:.google.cloud.parallelstore.v1beta.TransferMetadataOptionsB\x03\xe0A\x01R\x0fmetadataOptionsB\b\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12S\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12k\n" +
+	"\x10metadata_options\x18\x06 \x01(\v2:.google.cloud.parallelstore.v1beta.TransferMetadataOptionsB\x04\xe2A\x01\x01R\x0fmetadataOptionsB\b\n" +
 	"\x06sourceB\r\n" +
-	"\vdestination\"\xb9\x04\n" +
+	"\vdestination\"\xbd\x04\n" +
 	"\x11ExportDataRequest\x12k\n" +
 	"\x14source_parallelstore\x18\x02 \x01(\v26.google.cloud.parallelstore.v1beta.SourceParallelstoreH\x00R\x13sourceParallelstore\x12o\n" +
-	"\x16destination_gcs_bucket\x18\x03 \x01(\v27.google.cloud.parallelstore.v1beta.DestinationGcsBucketH\x01R\x14destinationGcsBucket\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%parallelstore.googleapis.com/InstanceR\x04name\x12*\n" +
+	"\x16destination_gcs_bucket\x18\x03 \x01(\v27.google.cloud.parallelstore.v1beta.DestinationGcsBucketH\x01R\x14destinationGcsBucket\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%parallelstore.googleapis.com/InstanceR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12R\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12j\n" +
-	"\x10metadata_options\x18\x06 \x01(\v2:.google.cloud.parallelstore.v1beta.TransferMetadataOptionsB\x03\xe0A\x01R\x0fmetadataOptionsB\b\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12S\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12k\n" +
+	"\x10metadata_options\x18\x06 \x01(\v2:.google.cloud.parallelstore.v1beta.TransferMetadataOptionsB\x04\xe2A\x01\x01R\x0fmetadataOptionsB\b\n" +
 	"\x06sourceB\r\n" +
 	"\vdestination\"\x14\n" +
 	"\x12ImportDataResponse\"N\n" +
@@ -2658,39 +2658,39 @@ const file_google_cloud_parallelstore_v1beta_parallelstore_proto_rawDesc = "" +
 	"error_code\x18\x01 \x01(\x0e2\x10.google.rpc.CodeR\terrorCode\x12\x1f\n" +
 	"\verror_count\x18\x02 \x01(\x03R\n" +
 	"errorCount\x12d\n" +
-	"\x11error_log_entries\x18\x04 \x03(\v28.google.cloud.parallelstore.v1beta.TransferErrorLogEntryR\x0ferrorLogEntries\"\xc3\x03\n" +
+	"\x11error_log_entries\x18\x04 \x03(\v28.google.cloud.parallelstore.v1beta.TransferErrorLogEntryR\x0ferrorLogEntries\"\xca\x03\n" +
 	"\x12ImportDataMetadata\x12k\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2<.google.cloud.parallelstore.v1beta.TransferOperationMetadataR\x11operationMetadata\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x04 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x05 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x06 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\a \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\b \x01(\tB\x03\xe0A\x03R\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2<.google.cloud.parallelstore.v1beta.TransferOperationMetadataR\x11operationMetadata\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\a \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion\"\x14\n" +
-	"\x12ExportDataResponse\"\xc3\x03\n" +
+	"\x12ExportDataResponse\"\xca\x03\n" +
 	"\x12ExportDataMetadata\x12k\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2<.google.cloud.parallelstore.v1beta.TransferOperationMetadataR\x11operationMetadata\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x04 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x05 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x06 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\a \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\b \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\x98\x06\n" +
-	"\x19TransferOperationMetadata\x12p\n" +
-	"\x14source_parallelstore\x18\a \x01(\v26.google.cloud.parallelstore.v1beta.SourceParallelstoreB\x03\xe0A\x03H\x00R\x13sourceParallelstore\x12e\n" +
-	"\x11source_gcs_bucket\x18\b \x01(\v22.google.cloud.parallelstore.v1beta.SourceGcsBucketB\x03\xe0A\x03H\x00R\x0fsourceGcsBucket\x12t\n" +
-	"\x16destination_gcs_bucket\x18\t \x01(\v27.google.cloud.parallelstore.v1beta.DestinationGcsBucketB\x03\xe0A\x03H\x01R\x14destinationGcsBucket\x12\x7f\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2<.google.cloud.parallelstore.v1beta.TransferOperationMetadataR\x11operationMetadata\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\a \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xa0\x06\n" +
+	"\x19TransferOperationMetadata\x12q\n" +
+	"\x14source_parallelstore\x18\a \x01(\v26.google.cloud.parallelstore.v1beta.SourceParallelstoreB\x04\xe2A\x01\x03H\x00R\x13sourceParallelstore\x12f\n" +
+	"\x11source_gcs_bucket\x18\b \x01(\v22.google.cloud.parallelstore.v1beta.SourceGcsBucketB\x04\xe2A\x01\x03H\x00R\x0fsourceGcsBucket\x12u\n" +
+	"\x16destination_gcs_bucket\x18\t \x01(\v27.google.cloud.parallelstore.v1beta.DestinationGcsBucketB\x04\xe2A\x01\x03H\x01R\x14destinationGcsBucket\x12\x80\x01\n" +
 	"\x19destination_parallelstore\x18\n" +
-	" \x01(\v2;.google.cloud.parallelstore.v1beta.DestinationParallelstoreB\x03\xe0A\x03H\x01R\x18destinationParallelstore\x12T\n" +
-	"\bcounters\x18\x03 \x01(\v23.google.cloud.parallelstore.v1beta.TransferCountersB\x03\xe0A\x03R\bcounters\x12Y\n" +
-	"\rtransfer_type\x18\x06 \x01(\x0e2/.google.cloud.parallelstore.v1beta.TransferTypeB\x03\xe0A\x03R\ftransferType\x12a\n" +
-	"\rerror_summary\x18\r \x03(\v27.google.cloud.parallelstore.v1beta.TransferErrorSummaryB\x03\xe0A\x03R\ferrorSummaryB\b\n" +
+	" \x01(\v2;.google.cloud.parallelstore.v1beta.DestinationParallelstoreB\x04\xe2A\x01\x03H\x01R\x18destinationParallelstore\x12U\n" +
+	"\bcounters\x18\x03 \x01(\v23.google.cloud.parallelstore.v1beta.TransferCountersB\x04\xe2A\x01\x03R\bcounters\x12Z\n" +
+	"\rtransfer_type\x18\x06 \x01(\x0e2/.google.cloud.parallelstore.v1beta.TransferTypeB\x04\xe2A\x01\x03R\ftransferType\x12b\n" +
+	"\rerror_summary\x18\r \x03(\v27.google.cloud.parallelstore.v1beta.TransferErrorSummaryB\x04\xe2A\x01\x03R\ferrorSummaryB\b\n" +
 	"\x06sourceB\r\n" +
 	"\vdestination\"\xba\x02\n" +
 	"\x10TransferCounters\x12#\n" +

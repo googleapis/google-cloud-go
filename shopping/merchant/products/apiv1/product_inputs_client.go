@@ -573,6 +573,11 @@ func (c *productInputsRESTClient) InsertProductInput(ctx context.Context, req *p
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/products/v1/%v/productInputs:insert", req.GetParent())
 
 	params := url.Values{}
@@ -640,6 +645,11 @@ func (c *productInputsRESTClient) UpdateProductInput(ctx context.Context, req *p
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProductInput().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/products/v1/%v", req.GetProductInput().GetName())
 
 	params := url.Values{}
@@ -703,6 +713,11 @@ func (c *productInputsRESTClient) UpdateProductInput(ctx context.Context, req *p
 func (c *productInputsRESTClient) DeleteProductInput(ctx context.Context, req *productspb.DeleteProductInputRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/products/v1/%v", req.GetName())

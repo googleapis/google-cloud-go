@@ -168,13 +168,13 @@ var File_google_cloud_kms_inventory_v1_key_dashboard_service_proto protoreflect.
 
 const file_google_cloud_kms_inventory_v1_key_dashboard_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/kms/inventory/v1/key_dashboard_service.proto\x12\x1dgoogle.cloud.kms.inventory.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/kms/v1/resources.proto\"\xaa\x01\n" +
-	"\x15ListCryptoKeysRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"9google/cloud/kms/inventory/v1/key_dashboard_service.proto\x12\x1dgoogle.cloud.kms.inventory.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/kms/v1/resources.proto\"\xad\x01\n" +
+	"\x15ListCryptoKeysRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x81\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x81\x01\n" +
 	"\x16ListCryptoKeysResponse\x12?\n" +
 	"\vcrypto_keys\x18\x01 \x03(\v2\x1e.google.cloud.kms.v1.CryptoKeyR\n" +
 	"cryptoKeys\x12&\n" +

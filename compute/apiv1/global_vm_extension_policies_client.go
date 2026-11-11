@@ -374,6 +374,11 @@ func (c *globalVmExtensionPoliciesRESTClient) AggregatedList(ctx context.Context
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/vmExtensionPolicies", req.GetProject())
 
 		params := url.Values{}
@@ -469,6 +474,12 @@ func (c *globalVmExtensionPoliciesRESTClient) Delete(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetGlobalVmExtensionPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/vmExtensionPolicies/%v/delete", req.GetProject(), req.GetGlobalVmExtensionPolicy())
 
 	params := url.Values{}
@@ -532,6 +543,12 @@ func (c *globalVmExtensionPoliciesRESTClient) Get(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetGlobalVmExtensionPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/vmExtensionPolicies/%v", req.GetProject(), req.GetGlobalVmExtensionPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -586,6 +603,11 @@ func (c *globalVmExtensionPoliciesRESTClient) Insert(ctx context.Context, req *c
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/vmExtensionPolicies", req.GetProject())
@@ -664,6 +686,11 @@ func (c *globalVmExtensionPoliciesRESTClient) List(ctx context.Context, req *com
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/vmExtensionPolicies", req.GetProject())
 
 		params := url.Values{}
@@ -739,6 +766,12 @@ func (c *globalVmExtensionPoliciesRESTClient) Update(ctx context.Context, req *c
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetGlobalVmExtensionPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/vmExtensionPolicies/%v", req.GetProject(), req.GetGlobalVmExtensionPolicy())

@@ -178,10 +178,10 @@ var File_google_cloud_securitycenter_v2_job_proto protoreflect.FileDescriptor
 
 const file_google_cloud_securitycenter_v2_job_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/securitycenter/v2/job.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x99\x01\n" +
+	"(google/cloud/securitycenter/v2/job.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x9a\x01\n" +
 	"\x03Job\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12C\n" +
-	"\x05state\x18\x02 \x01(\x0e2(.google.cloud.securitycenter.v2.JobStateB\x03\xe0A\x03R\x05state\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12D\n" +
+	"\x05state\x18\x02 \x01(\x0e2(.google.cloud.securitycenter.v2.JobStateB\x04\xe2A\x01\x03R\x05state\x12\x1d\n" +
 	"\n" +
 	"error_code\x18\x03 \x01(\x05R\terrorCode\x12\x1a\n" +
 	"\blocation\x18\x04 \x01(\tR\blocation*Z\n" +

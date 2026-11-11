@@ -7517,38 +7517,38 @@ var File_google_cloud_contactcenterinsights_v1_resources_proto protoreflect.File
 
 const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/contactcenterinsights/v1/resources.proto\x12%google.cloud.contactcenterinsights.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc8!\n" +
+	"5google/cloud/contactcenterinsights/v1/resources.proto\x12%google.cloud.contactcenterinsights.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5!\n" +
 	"\fConversation\x12g\n" +
 	"\rcall_metadata\x18\a \x01(\v2@.google.cloud.contactcenterinsights.v1.Conversation.CallMetadataH\x00R\fcallMetadata\x12=\n" +
 	"\vexpire_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampH\x01R\n" +
-	"expireTime\x122\n" +
-	"\x03ttl\x18\x10 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04H\x01R\x03ttl\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12^\n" +
+	"expireTime\x123\n" +
+	"\x03ttl\x18\x10 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04H\x01R\x03ttl\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12^\n" +
 	"\vdata_source\x18\x02 \x01(\v2=.google.cloud.contactcenterinsights.v1.ConversationDataSourceR\n" +
-	"dataSource\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"dataSource\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x129\n" +
 	"\n" +
 	"start_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12#\n" +
 	"\rlanguage_code\x18\x0e \x01(\tR\flanguageCode\x12\x19\n" +
 	"\bagent_id\x18\x05 \x01(\tR\aagentId\x12W\n" +
 	"\x06labels\x18\x06 \x03(\v2?.google.cloud.contactcenterinsights.v1.Conversation.LabelsEntryR\x06labels\x12n\n" +
-	"\x10quality_metadata\x18\x18 \x01(\v2C.google.cloud.contactcenterinsights.v1.Conversation.QualityMetadataR\x0fqualityMetadata\x12(\n" +
-	"\rmetadata_json\x18\x19 \x01(\tB\x03\xe0A\x04R\fmetadataJson\x12c\n" +
+	"\x10quality_metadata\x18\x18 \x01(\v2C.google.cloud.contactcenterinsights.v1.Conversation.QualityMetadataR\x0fqualityMetadata\x12)\n" +
+	"\rmetadata_json\x18\x19 \x01(\tB\x04\xe2A\x01\x04R\fmetadataJson\x12d\n" +
 	"\n" +
-	"transcript\x18\b \x01(\v2>.google.cloud.contactcenterinsights.v1.Conversation.TranscriptB\x03\xe0A\x03R\n" +
-	"transcript\x12W\n" +
-	"\x06medium\x18\t \x01(\x0e2:.google.cloud.contactcenterinsights.v1.Conversation.MediumB\x03\xe0A\x05R\x06medium\x12:\n" +
+	"transcript\x18\b \x01(\v2>.google.cloud.contactcenterinsights.v1.Conversation.TranscriptB\x04\xe2A\x01\x03R\n" +
+	"transcript\x12X\n" +
+	"\x06medium\x18\t \x01(\x0e2:.google.cloud.contactcenterinsights.v1.Conversation.MediumB\x04\xe2A\x01\x05R\x06medium\x12;\n" +
 	"\bduration\x18\n" +
-	" \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\bduration\x12\"\n" +
+	" \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\bduration\x12#\n" +
 	"\n" +
-	"turn_count\x18\v \x01(\x05B\x03\xe0A\x03R\tturnCount\x12]\n" +
-	"\x0flatest_analysis\x18\f \x01(\v2/.google.cloud.contactcenterinsights.v1.AnalysisB\x03\xe0A\x03R\x0elatestAnalysis\x12z\n" +
-	"\x0elatest_summary\x18\x14 \x01(\v2N.google.cloud.contactcenterinsights.v1.ConversationSummarizationSuggestionDataB\x03\xe0A\x03R\rlatestSummary\x12n\n" +
-	"\x13runtime_annotations\x18\r \x03(\v28.google.cloud.contactcenterinsights.v1.RuntimeAnnotationB\x03\xe0A\x03R\x12runtimeAnnotations\x12~\n" +
-	"\x12dialogflow_intents\x18\x12 \x03(\v2J.google.cloud.contactcenterinsights.v1.Conversation.DialogflowIntentsEntryB\x03\xe0A\x03R\x11dialogflowIntents\x12,\n" +
+	"turn_count\x18\v \x01(\x05B\x04\xe2A\x01\x03R\tturnCount\x12^\n" +
+	"\x0flatest_analysis\x18\f \x01(\v2/.google.cloud.contactcenterinsights.v1.AnalysisB\x04\xe2A\x01\x03R\x0elatestAnalysis\x12{\n" +
+	"\x0elatest_summary\x18\x14 \x01(\v2N.google.cloud.contactcenterinsights.v1.ConversationSummarizationSuggestionDataB\x04\xe2A\x01\x03R\rlatestSummary\x12o\n" +
+	"\x13runtime_annotations\x18\r \x03(\v28.google.cloud.contactcenterinsights.v1.RuntimeAnnotationB\x04\xe2A\x01\x03R\x12runtimeAnnotations\x12\x7f\n" +
+	"\x12dialogflow_intents\x18\x12 \x03(\v2J.google.cloud.contactcenterinsights.v1.Conversation.DialogflowIntentsEntryB\x04\xe2A\x01\x03R\x11dialogflowIntents\x12,\n" +
 	"\x12obfuscated_user_id\x18\x15 \x01(\tR\x10obfuscatedUserId\x1a^\n" +
 	"\fCallMetadata\x12)\n" +
 	"\x10customer_channel\x18\x01 \x01(\x05R\x0fcustomerChannel\x12#\n" +
@@ -7618,25 +7618,25 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\n" +
 	"\bmetadataB\f\n" +
 	"\n" +
-	"expiration\"\xc1\x05\n" +
-	"\bAnalysis\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12B\n" +
-	"\frequest_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vrequestTime\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12c\n" +
-	"\x0fanalysis_result\x18\a \x01(\v25.google.cloud.contactcenterinsights.v1.AnalysisResultB\x03\xe0A\x03R\x0eanalysisResult\x12g\n" +
+	"expiration\"\xc5\x05\n" +
+	"\bAnalysis\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12C\n" +
+	"\frequest_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vrequestTime\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12d\n" +
+	"\x0fanalysis_result\x18\a \x01(\v25.google.cloud.contactcenterinsights.v1.AnalysisResultB\x04\xe2A\x01\x03R\x0eanalysisResult\x12g\n" +
 	"\x12annotator_selector\x18\b \x01(\v28.google.cloud.contactcenterinsights.v1.AnnotatorSelectorR\x11annotatorSelector:\xc7\x02\xeaA\xc3\x02\n" +
 	"-contactcenterinsights.googleapis.com/Analysis\x12Xprojects/{project}/locations/{location}/conversations/{conversation}/analyses/{analysis}\x12\xa3\x01projects/{project}/locations/{location}/authorizedViewSets/{authorized_view_set}/authorizedViews/{authorized_view}/conversations/{conversation}/analyses/{analysis}*\banalyses2\banalysis\"\xdd\x01\n" +
 	"\x16ConversationDataSource\x12Q\n" +
 	"\n" +
 	"gcs_source\x18\x01 \x01(\v20.google.cloud.contactcenterinsights.v1.GcsSourceH\x00R\tgcsSource\x12f\n" +
 	"\x11dialogflow_source\x18\x03 \x01(\v27.google.cloud.contactcenterinsights.v1.DialogflowSourceH\x00R\x10dialogflowSourceB\b\n" +
-	"\x06source\"T\n" +
+	"\x06source\"U\n" +
 	"\tGcsSource\x12\x1b\n" +
-	"\taudio_uri\x18\x01 \x01(\tR\baudioUri\x12*\n" +
-	"\x0etranscript_uri\x18\x02 \x01(\tB\x03\xe0A\x05R\rtranscriptUri\"m\n" +
-	"\x10DialogflowSource\x12<\n" +
-	"\x17dialogflow_conversation\x18\x01 \x01(\tB\x03\xe0A\x03R\x16dialogflowConversation\x12\x1b\n" +
+	"\taudio_uri\x18\x01 \x01(\tR\baudioUri\x12+\n" +
+	"\x0etranscript_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\rtranscriptUri\"n\n" +
+	"\x10DialogflowSource\x12=\n" +
+	"\x17dialogflow_conversation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x16dialogflowConversation\x12\x1b\n" +
 	"\taudio_uri\x18\x03 \x01(\tR\baudioUri\"\xa0\v\n" +
 	"\x0eAnalysisResult\x12\x82\x01\n" +
 	"\x16call_analysis_metadata\x18\x02 \x01(\v2J.google.cloud.contactcenterinsights.v1.AnalysisResult.CallAnalysisMetadataH\x00R\x14callAnalysisMetadata\x125\n" +
@@ -7668,15 +7668,15 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\vissue_model\x18\x01 \x01(\tB4\xfaA1\n" +
 	"/contactcenterinsights.googleapis.com/IssueModelR\n" +
 	"issueModel\x12N\n" +
-	"\x06issues\x18\x02 \x03(\v26.google.cloud.contactcenterinsights.v1.IssueAssignmentR\x06issues\"\xd6\x05\n" +
+	"\x06issues\x18\x02 \x03(\v26.google.cloud.contactcenterinsights.v1.IssueAssignmentR\x06issues\"\xd9\x05\n" +
 	"\rFeedbackLabel\x12\x16\n" +
 	"\x05label\x18\x04 \x01(\tH\x00R\x05label\x12e\n" +
-	"\x0fqa_answer_label\x18\a \x01(\v2;.google.cloud.contactcenterinsights.v1.QaAnswer.AnswerValueH\x00R\rqaAnswerLabel\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12)\n" +
-	"\x10labeled_resource\x18\x03 \x01(\tR\x0flabeledResource\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0fqa_answer_label\x18\a \x01(\v2;.google.cloud.contactcenterinsights.v1.QaAnswer.AnswerValueH\x00R\rqaAnswerLabel\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12)\n" +
+	"\x10labeled_resource\x18\x03 \x01(\tR\x0flabeledResource\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\xef\x02\xeaA\xeb\x02\n" +
 	"2contactcenterinsights.googleapis.com/FeedbackLabel\x12dprojects/{project}/locations/{location}/conversations/{conversation}/feedbackLabels/{feedback_label}\x12\xaf\x01projects/{project}/locations/{location}/authorizedViewSets/{authorized_view_set}/authorizedViews/{authorized_view}/conversations/{conversation}/feedbackLabels/{feedback_label}*\x0efeedbackLabels2\rfeedbackLabelB\f\n" +
 	"\n" +
@@ -7687,11 +7687,11 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\x0esentiment_data\x18\x02 \x01(\v24.google.cloud.contactcenterinsights.v1.SentimentDataR\rsentimentData\"\x8f\x01\n" +
 	"\x18ConversationLevelSilence\x12D\n" +
 	"\x10silence_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x0fsilenceDuration\x12-\n" +
-	"\x12silence_percentage\x18\x02 \x01(\x02R\x11silencePercentage\"e\n" +
+	"\x12silence_percentage\x18\x02 \x01(\x02R\x11silencePercentage\"f\n" +
 	"\x0fIssueAssignment\x12\x14\n" +
 	"\x05issue\x18\x01 \x01(\tR\x05issue\x12\x14\n" +
-	"\x05score\x18\x02 \x01(\x01R\x05score\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x05R\vdisplayName\"\xae\b\n" +
+	"\x05score\x18\x02 \x01(\x01R\x05score\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\vdisplayName\"\xae\b\n" +
 	"\x0eCallAnnotation\x12f\n" +
 	"\x11interruption_data\x18\n" +
 	" \x01(\v27.google.cloud.contactcenterinsights.v1.InterruptionDataH\x00R\x10interruptionData\x12]\n" +
@@ -7766,27 +7766,27 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\tmagnitude\x18\x01 \x01(\x02R\tmagnitude\x12\x14\n" +
 	"\x05score\x18\x02 \x01(\x02R\x05score\"s\n" +
 	"\x0eIssueMatchData\x12a\n" +
-	"\x10issue_assignment\x18\x01 \x01(\v26.google.cloud.contactcenterinsights.v1.IssueAssignmentR\x0fissueAssignment\"\x95\t\n" +
+	"\x10issue_assignment\x18\x01 \x01(\v26.google.cloud.contactcenterinsights.v1.IssueAssignmentR\x0fissueAssignment\"\x9a\t\n" +
 	"\n" +
-	"IssueModel\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12$\n" +
-	"\vissue_count\x18\b \x01(\x03B\x03\xe0A\x03R\n" +
-	"issueCount\x12R\n" +
-	"\x05state\x18\x05 \x01(\x0e27.google.cloud.contactcenterinsights.v1.IssueModel.StateB\x03\xe0A\x03R\x05state\x12m\n" +
-	"\x11input_data_config\x18\x06 \x01(\v2A.google.cloud.contactcenterinsights.v1.IssueModel.InputDataConfigR\x0finputDataConfig\x12j\n" +
-	"\x0etraining_stats\x18\a \x01(\v2;.google.cloud.contactcenterinsights.v1.IssueModelLabelStatsB\x06\xe0A\x03\xe0A\x05R\rtrainingStats\x12Z\n" +
+	"IssueModel\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12%\n" +
+	"\vissue_count\x18\b \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"issueCount\x12S\n" +
+	"\x05state\x18\x05 \x01(\x0e27.google.cloud.contactcenterinsights.v1.IssueModel.StateB\x04\xe2A\x01\x03R\x05state\x12m\n" +
+	"\x11input_data_config\x18\x06 \x01(\v2A.google.cloud.contactcenterinsights.v1.IssueModel.InputDataConfigR\x0finputDataConfig\x12i\n" +
+	"\x0etraining_stats\x18\a \x01(\v2;.google.cloud.contactcenterinsights.v1.IssueModelLabelStatsB\x05\xe2A\x02\x03\x05R\rtrainingStats\x12Z\n" +
 	"\n" +
 	"model_type\x18\t \x01(\x0e2;.google.cloud.contactcenterinsights.v1.IssueModel.ModelTypeR\tmodelType\x12#\n" +
 	"\rlanguage_code\x18\n" +
-	" \x01(\tR\flanguageCode\x1a\xc8\x01\n" +
+	" \x01(\tR\flanguageCode\x1a\xc9\x01\n" +
 	"\x0fInputDataConfig\x12V\n" +
-	"\x06medium\x18\x01 \x01(\x0e2:.google.cloud.contactcenterinsights.v1.Conversation.MediumB\x02\x18\x01R\x06medium\x12E\n" +
-	"\x1ctraining_conversations_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x1atrainingConversationsCount\x12\x16\n" +
+	"\x06medium\x18\x01 \x01(\x0e2:.google.cloud.contactcenterinsights.v1.Conversation.MediumB\x02\x18\x01R\x06medium\x12F\n" +
+	"\x1ctraining_conversations_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x1atrainingConversationsCount\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\"j\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0e\n" +
@@ -7800,15 +7800,15 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\x16MODEL_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aTYPE_V1\x10\x01\x12\v\n" +
 	"\aTYPE_V2\x10\x02:w\xeaAt\n" +
-	"/contactcenterinsights.googleapis.com/IssueModel\x12Aprojects/{project}/locations/{location}/issueModels/{issue_model}\"\xae\x03\n" +
-	"\x05Issue\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x120\n" +
-	"\x11sample_utterances\x18\x06 \x03(\tB\x03\xe0A\x03R\x10sampleUtterances\x12/\n" +
+	"/contactcenterinsights.googleapis.com/IssueModel\x12Aprojects/{project}/locations/{location}/issueModels/{issue_model}\"\xb2\x03\n" +
+	"\x05Issue\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x121\n" +
+	"\x11sample_utterances\x18\x06 \x03(\tB\x04\xe2A\x01\x03R\x10sampleUtterances\x12/\n" +
 	"\x13display_description\x18\x0e \x01(\tR\x12displayDescription:\x81\x01\xeaA~\n" +
 	"*contactcenterinsights.googleapis.com/Issue\x12Pprojects/{project}/locations/{location}/issueModels/{issue_model}/issues/{issue}\"\xa0\x04\n" +
 	"\x14IssueModelLabelStats\x12@\n" +
@@ -7823,23 +7823,23 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x1a\x85\x01\n" +
 	"\x0fIssueStatsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\\\n" +
-	"\x05value\x18\x02 \x01(\v2F.google.cloud.contactcenterinsights.v1.IssueModelLabelStats.IssueStatsR\x05value:\x028\x01\"\xa4\a\n" +
+	"\x05value\x18\x02 \x01(\v2F.google.cloud.contactcenterinsights.v1.IssueModelLabelStats.IssueStatsR\x05value:\x028\x01\"\xa7\a\n" +
 	"\rPhraseMatcher\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x06\xe0A\x05\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x03R\n" +
 	"revisionId\x12\x1f\n" +
 	"\vversion_tag\x18\x03 \x01(\tR\n" +
-	"versionTag\x12Q\n" +
-	"\x14revision_create_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12revisionCreateTime\x12!\n" +
-	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12_\n" +
-	"\x04type\x18\x06 \x01(\x0e2F.google.cloud.contactcenterinsights.v1.PhraseMatcher.PhraseMatcherTypeB\x03\xe0A\x02R\x04type\x12\x16\n" +
+	"versionTag\x12R\n" +
+	"\x14revision_create_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12revisionCreateTime\x12!\n" +
+	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12`\n" +
+	"\x04type\x18\x06 \x01(\x0e2F.google.cloud.contactcenterinsights.v1.PhraseMatcher.PhraseMatcherTypeB\x04\xe2A\x01\x02R\x04type\x12\x16\n" +
 	"\x06active\x18\a \x01(\bR\x06active\x12t\n" +
-	"\x18phrase_match_rule_groups\x18\b \x03(\v2;.google.cloud.contactcenterinsights.v1.PhraseMatchRuleGroupR\x15phraseMatchRuleGroups\x12U\n" +
-	"\x16activation_update_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14activationUpdateTime\x12b\n" +
+	"\x18phrase_match_rule_groups\x18\b \x03(\v2;.google.cloud.contactcenterinsights.v1.PhraseMatchRuleGroupR\x15phraseMatchRuleGroups\x12V\n" +
+	"\x16activation_update_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14activationUpdateTime\x12b\n" +
 	"\n" +
 	"role_match\x18\n" +
-	" \x01(\x0e2C.google.cloud.contactcenterinsights.v1.ConversationParticipant.RoleR\troleMatch\x12@\n" +
-	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\x0e2C.google.cloud.contactcenterinsights.v1.ConversationParticipant.RoleR\troleMatch\x12A\n" +
+	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"P\n" +
 	"\x11PhraseMatcherType\x12#\n" +
 	"\x1fPHRASE_MATCHER_TYPE_UNSPECIFIED\x10\x00\x12\n" +
@@ -7847,38 +7847,38 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\x06ALL_OF\x10\x01\x12\n" +
 	"\n" +
 	"\x06ANY_OF\x10\x02:\x80\x01\xeaA}\n" +
-	"2contactcenterinsights.googleapis.com/PhraseMatcher\x12Gprojects/{project}/locations/{location}/phraseMatchers/{phrase_matcher}\"\xcd\x02\n" +
-	"\x14PhraseMatchRuleGroup\x12m\n" +
-	"\x04type\x18\x01 \x01(\x0e2T.google.cloud.contactcenterinsights.v1.PhraseMatchRuleGroup.PhraseMatchRuleGroupTypeB\x03\xe0A\x02R\x04type\x12d\n" +
+	"2contactcenterinsights.googleapis.com/PhraseMatcher\x12Gprojects/{project}/locations/{location}/phraseMatchers/{phrase_matcher}\"\xce\x02\n" +
+	"\x14PhraseMatchRuleGroup\x12n\n" +
+	"\x04type\x18\x01 \x01(\x0e2T.google.cloud.contactcenterinsights.v1.PhraseMatchRuleGroup.PhraseMatchRuleGroupTypeB\x04\xe2A\x01\x02R\x04type\x12d\n" +
 	"\x12phrase_match_rules\x18\x02 \x03(\v26.google.cloud.contactcenterinsights.v1.PhraseMatchRuleR\x10phraseMatchRules\"`\n" +
 	"\x18PhraseMatchRuleGroupType\x12,\n" +
 	"(PHRASE_MATCH_RULE_GROUP_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06ALL_OF\x10\x01\x12\n" +
 	"\n" +
-	"\x06ANY_OF\x10\x02\"\x9c\x01\n" +
-	"\x0fPhraseMatchRule\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12\x18\n" +
+	"\x06ANY_OF\x10\x02\"\x9d\x01\n" +
+	"\x0fPhraseMatchRule\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x18\n" +
 	"\anegated\x18\x02 \x01(\bR\anegated\x12T\n" +
 	"\x06config\x18\x03 \x01(\v2<.google.cloud.contactcenterinsights.v1.PhraseMatchRuleConfigR\x06config\"\x8a\x01\n" +
 	"\x15PhraseMatchRuleConfig\x12g\n" +
 	"\x12exact_match_config\x18\x01 \x01(\v27.google.cloud.contactcenterinsights.v1.ExactMatchConfigH\x00R\x10exactMatchConfigB\b\n" +
 	"\x06config\"9\n" +
 	"\x10ExactMatchConfig\x12%\n" +
-	"\x0ecase_sensitive\x18\x01 \x01(\bR\rcaseSensitive\"\xb0\t\n" +
-	"\bSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0ecase_sensitive\x18\x01 \x01(\bR\rcaseSensitive\"\xb4\t\n" +
+	"\bSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12#\n" +
 	"\rlanguage_code\x18\x04 \x01(\tR\flanguageCode\x12D\n" +
 	"\x10conversation_ttl\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\x0fconversationTtl\x12\x91\x01\n" +
 	"\x1cpubsub_notification_settings\x18\x06 \x03(\v2O.google.cloud.contactcenterinsights.v1.Settings.PubsubNotificationSettingsEntryR\x1apubsubNotificationSettings\x12g\n" +
 	"\x0fanalysis_config\x18\a \x01(\v2>.google.cloud.contactcenterinsights.v1.Settings.AnalysisConfigR\x0eanalysisConfig\x12a\n" +
 	"\x10redaction_config\x18\n" +
-	" \x01(\v26.google.cloud.contactcenterinsights.v1.RedactionConfigR\x0fredactionConfig\x12]\n" +
-	"\rspeech_config\x18\v \x01(\v23.google.cloud.contactcenterinsights.v1.SpeechConfigB\x03\xe0A\x01R\fspeechConfig\x1a\xa7\x02\n" +
+	" \x01(\v26.google.cloud.contactcenterinsights.v1.RedactionConfigR\x0fredactionConfig\x12^\n" +
+	"\rspeech_config\x18\v \x01(\v23.google.cloud.contactcenterinsights.v1.SpeechConfigB\x04\xe2A\x01\x01R\fspeechConfig\x1a\xa7\x02\n" +
 	"\x0eAnalysisConfig\x12U\n" +
 	"'runtime_integration_analysis_percentage\x18\x01 \x01(\x01R$runtimeIntegrationAnalysisPercentage\x12U\n" +
 	"'upload_conversation_analysis_percentage\x18\x06 \x01(\x01R$uploadConversationAnalysisPercentage\x12g\n" +
@@ -7886,12 +7886,12 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\x1fPubsubNotificationSettingsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:d\xeaAa\n" +
-	"-contactcenterinsights.googleapis.com/Settings\x120projects/{project}/locations/{location}/settings\"\xe5\x04\n" +
-	"\fAnalysisRule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"-contactcenterinsights.googleapis.com/Settings\x120projects/{project}/locations/{location}/settings\"\xe8\x04\n" +
+	"\fAnalysisRule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12&\n" +
 	"\fdisplay_name\x18\x04 \x01(\tH\x00R\vdisplayName\x88\x01\x01\x12/\n" +
 	"\x13conversation_filter\x18\x05 \x01(\tR\x12conversationFilter\x12g\n" +
@@ -7899,10 +7899,10 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\x13analysis_percentage\x18\a \x01(\x01R\x12analysisPercentage\x12\x16\n" +
 	"\x06active\x18\b \x01(\bR\x06active:\x9b\x01\xeaA\x97\x01\n" +
 	"1contactcenterinsights.googleapis.com/AnalysisRule\x12Eprojects/{project}/locations/{location}/analysisRules/{analysis_rule}*\ranalysisRules2\fanalysisRuleB\x0f\n" +
-	"\r_display_name\"\xb9\x01\n" +
-	"\x0eEncryptionSpec\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x1c\n" +
-	"\akms_key\x18\x02 \x01(\tB\x03\xe0A\x02R\x06kmsKey:p\xeaAm\n" +
+	"\r_display_name\"\xbb\x01\n" +
+	"\x0eEncryptionSpec\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x1d\n" +
+	"\akms_key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06kmsKey:p\xeaAm\n" +
 	"3contactcenterinsights.googleapis.com/EncryptionSpec\x126projects/{project}/locations/{location}/encryptionSpec\"m\n" +
 	"\x0fRedactionConfig\x12/\n" +
 	"\x13deidentify_template\x18\x01 \x01(\tR\x12deidentifyTemplate\x12)\n" +
@@ -8017,13 +8017,13 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\x0fAUTOMATED_AGENT\x10\x02\x12\f\n" +
 	"\bEND_USER\x10\x03\x12\r\n" +
 	"\tANY_AGENT\x10\x04B\r\n" +
-	"\vparticipant\"\xc2\x02\n" +
-	"\x04View\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vparticipant\"\xc5\x02\n" +
+	"\x04View\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x14\n" +
 	"\x05value\x18\x05 \x01(\tR\x05value:d\xeaAa\n" +
 	")contactcenterinsights.googleapis.com/View\x124projects/{project}/locations/{location}/views/{view}\"\xd3\f\n" +
@@ -8058,15 +8058,15 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\rScorecardList\x12s\n" +
 	"\x16qa_scorecard_revisions\x18\x01 \x03(\tB=\xfaA:\n" +
 	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x14qaScorecardRevisionsB\x12\n" +
-	"\x10scorecard_source\"\xa0\n" +
+	"\x10scorecard_source\"\xa4\n" +
 	"\n" +
 	"\n" +
-	"QaQuestion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
-	"\fabbreviation\x18\x02 \x01(\tR\fabbreviation\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"QaQuestion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\"\n" +
+	"\fabbreviation\x18\x02 \x01(\tR\fabbreviation\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12#\n" +
 	"\rquestion_body\x18\x05 \x01(\tR\fquestionBody\x12/\n" +
 	"\x13answer_instructions\x18\t \x01(\tR\x12answerInstructions\x12e\n" +
@@ -8085,31 +8085,31 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x19\n" +
 	"\x05score\x18\x06 \x01(\x01H\x01R\x05score\x88\x01\x01B\a\n" +
 	"\x05valueB\b\n" +
-	"\x06_score\x1a*\n" +
-	"\aMetrics\x12\x1f\n" +
-	"\baccuracy\x18\x01 \x01(\x01B\x03\xe0A\x03R\baccuracy\x1a\xeb\x01\n" +
+	"\x06_score\x1a+\n" +
+	"\aMetrics\x12 \n" +
+	"\baccuracy\x18\x01 \x01(\x01B\x04\xe2A\x01\x03R\baccuracy\x1a\xeb\x01\n" +
 	"\x0eTuningMetadata\x125\n" +
 	"\x17total_valid_label_count\x18\x01 \x01(\x03R\x14totalValidLabelCount\x12\x7f\n" +
 	"\x1bdataset_validation_warnings\x18\x02 \x03(\x0e2?.google.cloud.contactcenterinsights.v1.DatasetValidationWarningR\x19datasetValidationWarnings\x12!\n" +
 	"\ftuning_error\x18\x03 \x01(\tR\vtuningError:\xc2\x01\xeaA\xbe\x01\n" +
 	"/contactcenterinsights.googleapis.com/QaQuestion\x12rprojects/{project}/locations/{location}/qaScorecards/{qa_scorecard}/revisions/{revision}/qaQuestions/{qa_question}*\vqaQuestions2\n" +
-	"qaQuestion\"\x88\x03\n" +
-	"\vQaScorecard\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12!\n" +
+	"qaQuestion\"\x8b\x03\n" +
+	"\vQaScorecard\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
 	"\fdisplay_name\x18\a \x01(\tR\vdisplayName\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\x96\x01\xeaA\x92\x01\n" +
-	"0contactcenterinsights.googleapis.com/QaScorecard\x12Cprojects/{project}/locations/{location}/qaScorecards/{qa_scorecard}*\fqaScorecards2\vqaScorecard\"\x90\x05\n" +
-	"\x13QaScorecardRevision\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12N\n" +
-	"\bsnapshot\x18\x02 \x01(\v22.google.cloud.contactcenterinsights.v1.QaScorecardR\bsnapshot\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12(\n" +
-	"\ralternate_ids\x18\x04 \x03(\tB\x03\xe0A\x03R\falternateIds\x12[\n" +
-	"\x05state\x18\x05 \x01(\x0e2@.google.cloud.contactcenterinsights.v1.QaScorecardRevision.StateB\x03\xe0A\x03R\x05state\"\x80\x01\n" +
+	"0contactcenterinsights.googleapis.com/QaScorecard\x12Cprojects/{project}/locations/{location}/qaScorecards/{qa_scorecard}*\fqaScorecards2\vqaScorecard\"\x94\x05\n" +
+	"\x13QaScorecardRevision\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12N\n" +
+	"\bsnapshot\x18\x02 \x01(\v22.google.cloud.contactcenterinsights.v1.QaScorecardR\bsnapshot\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12)\n" +
+	"\ralternate_ids\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\falternateIds\x12\\\n" +
+	"\x05state\x18\x05 \x01(\x0e2@.google.cloud.contactcenterinsights.v1.QaScorecardRevision.StateB\x04\xe2A\x01\x03R\x05state\"\x80\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bEDITABLE\x10\f\x12\f\n" +
@@ -8118,7 +8118,7 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\x05READY\x10\v\x12\f\n" +
 	"\bDELETING\x10\a\x12\x16\n" +
 	"\x12TRAINING_CANCELLED\x10\x0e:\xc3\x01\xeaA\xbf\x01\n" +
-	"8contactcenterinsights.googleapis.com/QaScorecardRevision\x12Xprojects/{project}/locations/{location}/qaScorecards/{qa_scorecard}/revisions/{revision}*\x14qaScorecardRevisions2\x13qaScorecardRevision\"\xca\b\n" +
+	"8contactcenterinsights.googleapis.com/QaScorecardRevision\x12Xprojects/{project}/locations/{location}/qaScorecards/{qa_scorecard}/revisions/{revision}*\x14qaScorecardRevisions2\x13qaScorecardRevision\"\xcd\b\n" +
 	"\bQaAnswer\x12U\n" +
 	"\vqa_question\x18\a \x01(\tB4\xfaA1\n" +
 	"/contactcenterinsights.googleapis.com/QaQuestionR\n" +
@@ -8128,17 +8128,17 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\rquestion_body\x18\x06 \x01(\tR\fquestionBody\x12^\n" +
 	"\fanswer_value\x18\x03 \x01(\v2;.google.cloud.contactcenterinsights.v1.QaAnswer.AnswerValueR\vanswerValue\x12\x12\n" +
 	"\x04tags\x18\x05 \x03(\tR\x04tags\x12c\n" +
-	"\x0eanswer_sources\x18\b \x03(\v2<.google.cloud.contactcenterinsights.v1.QaAnswer.AnswerSourceR\ranswerSources\x1a\xdf\x02\n" +
+	"\x0eanswer_sources\x18\b \x03(\v2<.google.cloud.contactcenterinsights.v1.QaAnswer.AnswerSourceR\ranswerSources\x1a\xe2\x02\n" +
 	"\vAnswerValue\x12\x1d\n" +
 	"\tstr_value\x18\x02 \x01(\tH\x00R\bstrValue\x12\x1d\n" +
 	"\tnum_value\x18\x03 \x01(\x01H\x00R\bnumValue\x12\x1f\n" +
 	"\n" +
 	"bool_value\x18\x04 \x01(\bH\x00R\tboolValue\x12\x1b\n" +
 	"\bna_value\x18\x05 \x01(\bH\x00R\anaValue\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x1e\n" +
-	"\x05score\x18\x06 \x01(\x01B\x03\xe0A\x03H\x01R\x05score\x88\x01\x01\x121\n" +
-	"\x0fpotential_score\x18\a \x01(\x01B\x03\xe0A\x03H\x02R\x0epotentialScore\x88\x01\x01\x123\n" +
-	"\x10normalized_score\x18\b \x01(\x01B\x03\xe0A\x03H\x03R\x0fnormalizedScore\x88\x01\x01B\a\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x1f\n" +
+	"\x05score\x18\x06 \x01(\x01B\x04\xe2A\x01\x03H\x01R\x05score\x88\x01\x01\x122\n" +
+	"\x0fpotential_score\x18\a \x01(\x01B\x04\xe2A\x01\x03H\x02R\x0epotentialScore\x88\x01\x01\x124\n" +
+	"\x10normalized_score\x18\b \x01(\x01B\x04\xe2A\x01\x03H\x03R\x0fnormalizedScore\x88\x01\x01B\a\n" +
 	"\x05valueB\b\n" +
 	"\x06_scoreB\x12\n" +
 	"\x10_potential_scoreB\x13\n" +
@@ -8151,14 +8151,14 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"SourceType\x12\x1b\n" +
 	"\x17SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10SYSTEM_GENERATED\x10\x01\x12\x0f\n" +
-	"\vMANUAL_EDIT\x10\x02\"\xac\r\n" +
-	"\x11QaScorecardResult\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12q\n" +
+	"\vMANUAL_EDIT\x10\x02\"\xae\r\n" +
+	"\x11QaScorecardResult\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12q\n" +
 	"\x15qa_scorecard_revision\x18\x02 \x01(\tB=\xfaA:\n" +
 	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x13qaScorecardRevision\x12Z\n" +
 	"\fconversation\x18\x03 \x01(\tB6\xfaA3\n" +
-	"1contactcenterinsights.googleapis.com/ConversationR\fconversation\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"1contactcenterinsights.googleapis.com/ConversationR\fconversation\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12\x19\n" +
 	"\bagent_id\x18\x05 \x01(\tR\aagentId\x12N\n" +
 	"\n" +

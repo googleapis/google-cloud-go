@@ -580,6 +580,11 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *automlpb.Predic
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:predict", req.GetName())
 
 	params := url.Values{}
@@ -654,6 +659,11 @@ func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.B
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:batchPredict", req.GetName())

@@ -752,15 +752,15 @@ const file_google_devtools_cloudtrace_v1_trace_proto_rawDesc = "" +
 	"\btrace_id\x18\x02 \x01(\tR\atraceId\x12>\n" +
 	"\x05spans\x18\x03 \x03(\v2(.google.devtools.cloudtrace.v1.TraceSpanR\x05spans\"F\n" +
 	"\x06Traces\x12<\n" +
-	"\x06traces\x18\x01 \x03(\v2$.google.devtools.cloudtrace.v1.TraceR\x06traces\"\xec\x03\n" +
+	"\x06traces\x18\x01 \x03(\v2$.google.devtools.cloudtrace.v1.TraceR\x06traces\"\xed\x03\n" +
 	"\tTraceSpan\x12\x17\n" +
 	"\aspan_id\x18\x01 \x01(\x06R\x06spanId\x12E\n" +
 	"\x04kind\x18\x02 \x01(\x0e21.google.devtools.cloudtrace.v1.TraceSpan.SpanKindR\x04kind\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x129\n" +
 	"\n" +
 	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12)\n" +
-	"\x0eparent_span_id\x18\x06 \x01(\x06B\x03\xe0A\x01R\fparentSpanId\x12L\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12*\n" +
+	"\x0eparent_span_id\x18\x06 \x01(\x06B\x04\xe2A\x01\x01R\fparentSpanId\x12L\n" +
 	"\x06labels\x18\a \x03(\v24.google.devtools.cloudtrace.v1.TraceSpan.LabelsEntryR\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -770,19 +770,19 @@ const file_google_devtools_cloudtrace_v1_trace_proto_rawDesc = "" +
 	"\n" +
 	"RPC_SERVER\x10\x01\x12\x0e\n" +
 	"\n" +
-	"RPC_CLIENT\x10\x02\"\xcb\x03\n" +
-	"\x11ListTracesRequest\x12\"\n" +
+	"RPC_CLIENT\x10\x02\"\xd0\x03\n" +
+	"\x11ListTracesRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12R\n" +
-	"\x04view\x18\x02 \x01(\x0e29.google.devtools.cloudtrace.v1.ListTracesRequest.ViewTypeB\x03\xe0A\x01R\x04view\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\x1d\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12S\n" +
+	"\x04view\x18\x02 \x01(\x0e29.google.devtools.cloudtrace.v1.ListTracesRequest.ViewTypeB\x04\xe2A\x01\x01R\x04view\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\x129\n" +
 	"\n" +
 	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12\x1b\n" +
-	"\x06filter\x18\a \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\b \x01(\tB\x03\xe0A\x01R\aorderBy\"N\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12\x1c\n" +
+	"\x06filter\x18\a \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\b \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"N\n" +
 	"\bViewType\x12\x19\n" +
 	"\x15VIEW_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aMINIMAL\x10\x01\x12\f\n" +
@@ -790,15 +790,15 @@ const file_google_devtools_cloudtrace_v1_trace_proto_rawDesc = "" +
 	"\bCOMPLETE\x10\x03\"z\n" +
 	"\x12ListTracesResponse\x12<\n" +
 	"\x06traces\x18\x01 \x03(\v2$.google.devtools.cloudtrace.v1.TraceR\x06traces\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
-	"\x0fGetTraceRequest\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
+	"\x0fGetTraceRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1e\n" +
-	"\btrace_id\x18\x02 \x01(\tB\x03\xe0A\x02R\atraceId\"|\n" +
-	"\x12PatchTracesRequest\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1f\n" +
+	"\btrace_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\atraceId\"~\n" +
+	"\x12PatchTracesRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12B\n" +
-	"\x06traces\x18\x02 \x01(\v2%.google.devtools.cloudtrace.v1.TracesB\x03\xe0A\x02R\x06traces2\xb5\x05\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12C\n" +
+	"\x06traces\x18\x02 \x01(\v2%.google.devtools.cloudtrace.v1.TracesB\x04\xe2A\x01\x02R\x06traces2\xb5\x05\n" +
 	"\fTraceService\x12\xa8\x01\n" +
 	"\n" +
 	"ListTraces\x120.google.devtools.cloudtrace.v1.ListTracesRequest\x1a1.google.devtools.cloudtrace.v1.ListTracesResponse\"5\xdaA\n" +

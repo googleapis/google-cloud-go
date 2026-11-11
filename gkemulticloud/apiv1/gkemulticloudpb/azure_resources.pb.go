@@ -2422,37 +2422,37 @@ var File_google_cloud_gkemulticloud_v1_azure_resources_proto protoreflect.FileDe
 
 const file_google_cloud_gkemulticloud_v1_azure_resources_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/gkemulticloud/v1/azure_resources.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xa6\x0f\n" +
+	"3google/cloud/gkemulticloud/v1/azure_resources.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xbc\x0f\n" +
 	"\fAzureCluster\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fazure_region\x18\x03 \x01(\tB\x03\xe0A\x02R\vazureRegion\x12/\n" +
-	"\x11resource_group_id\x18\x11 \x01(\tB\x03\xe0A\x02R\x0fresourceGroupId\x12&\n" +
-	"\fazure_client\x18\x10 \x01(\tB\x03\xe0A\x01R\vazureClient\x12Z\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fazure_region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vazureRegion\x120\n" +
+	"\x11resource_group_id\x18\x11 \x01(\tB\x04\xe2A\x01\x02R\x0fresourceGroupId\x12'\n" +
+	"\fazure_client\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\vazureClient\x12[\n" +
 	"\n" +
-	"networking\x18\x04 \x01(\v25.google.cloud.gkemulticloud.v1.AzureClusterNetworkingB\x03\xe0A\x02R\n" +
-	"networking\x12Z\n" +
-	"\rcontrol_plane\x18\x05 \x01(\v20.google.cloud.gkemulticloud.v1.AzureControlPlaneB\x03\xe0A\x02R\fcontrolPlane\x12\\\n" +
-	"\rauthorization\x18\x06 \x01(\v21.google.cloud.gkemulticloud.v1.AzureAuthorizationB\x03\xe0A\x02R\rauthorization\x12\x83\x01\n" +
-	"\x1dazure_services_authentication\x18\x16 \x01(\v2:.google.cloud.gkemulticloud.v1.AzureServicesAuthenticationB\x03\xe0A\x01R\x1bazureServicesAuthentication\x12L\n" +
-	"\x05state\x18\a \x01(\x0e21.google.cloud.gkemulticloud.v1.AzureCluster.StateB\x03\xe0A\x03R\x05state\x12\x1f\n" +
-	"\bendpoint\x18\b \x01(\tB\x03\xe0A\x03R\bendpoint\x12\x15\n" +
-	"\x03uid\x18\t \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
+	"networking\x18\x04 \x01(\v25.google.cloud.gkemulticloud.v1.AzureClusterNetworkingB\x04\xe2A\x01\x02R\n" +
+	"networking\x12[\n" +
+	"\rcontrol_plane\x18\x05 \x01(\v20.google.cloud.gkemulticloud.v1.AzureControlPlaneB\x04\xe2A\x01\x02R\fcontrolPlane\x12]\n" +
+	"\rauthorization\x18\x06 \x01(\v21.google.cloud.gkemulticloud.v1.AzureAuthorizationB\x04\xe2A\x01\x02R\rauthorization\x12\x84\x01\n" +
+	"\x1dazure_services_authentication\x18\x16 \x01(\v2:.google.cloud.gkemulticloud.v1.AzureServicesAuthenticationB\x04\xe2A\x01\x01R\x1bazureServicesAuthentication\x12M\n" +
+	"\x05state\x18\a \x01(\x0e21.google.cloud.gkemulticloud.v1.AzureCluster.StateB\x04\xe2A\x01\x03R\x05state\x12 \n" +
+	"\bendpoint\x18\b \x01(\tB\x04\xe2A\x01\x03R\bendpoint\x12\x16\n" +
+	"\x03uid\x18\t \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
 	"\vreconciling\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\vreconciling\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x12\n" +
-	"\x04etag\x18\r \x01(\tR\x04etag\x12c\n" +
-	"\vannotations\x18\x0e \x03(\v2<.google.cloud.gkemulticloud.v1.AzureCluster.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12t\n" +
-	"\x18workload_identity_config\x18\x12 \x01(\v25.google.cloud.gkemulticloud.v1.WorkloadIdentityConfigB\x03\xe0A\x03R\x16workloadIdentityConfig\x129\n" +
-	"\x16cluster_ca_certificate\x18\x13 \x01(\tB\x03\xe0A\x03R\x14clusterCaCertificate\x12?\n" +
-	"\x05fleet\x18\x14 \x01(\v2$.google.cloud.gkemulticloud.v1.FleetB\x03\xe0A\x02R\x05fleet\x12f\n" +
-	"\x11managed_resources\x18\x15 \x01(\v24.google.cloud.gkemulticloud.v1.AzureClusterResourcesB\x03\xe0A\x03R\x10managedResources\x12X\n" +
-	"\x0elogging_config\x18\x17 \x01(\v2,.google.cloud.gkemulticloud.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x12M\n" +
-	"\x06errors\x18\x18 \x03(\v20.google.cloud.gkemulticloud.v1.AzureClusterErrorB\x03\xe0A\x03R\x06errors\x12a\n" +
-	"\x11monitoring_config\x18\x19 \x01(\v2/.google.cloud.gkemulticloud.v1.MonitoringConfigB\x03\xe0A\x01R\x10monitoringConfig\x1a>\n" +
+	"\x04etag\x18\r \x01(\tR\x04etag\x12d\n" +
+	"\vannotations\x18\x0e \x03(\v2<.google.cloud.gkemulticloud.v1.AzureCluster.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12u\n" +
+	"\x18workload_identity_config\x18\x12 \x01(\v25.google.cloud.gkemulticloud.v1.WorkloadIdentityConfigB\x04\xe2A\x01\x03R\x16workloadIdentityConfig\x12:\n" +
+	"\x16cluster_ca_certificate\x18\x13 \x01(\tB\x04\xe2A\x01\x03R\x14clusterCaCertificate\x12@\n" +
+	"\x05fleet\x18\x14 \x01(\v2$.google.cloud.gkemulticloud.v1.FleetB\x04\xe2A\x01\x02R\x05fleet\x12g\n" +
+	"\x11managed_resources\x18\x15 \x01(\v24.google.cloud.gkemulticloud.v1.AzureClusterResourcesB\x04\xe2A\x01\x03R\x10managedResources\x12Y\n" +
+	"\x0elogging_config\x18\x17 \x01(\v2,.google.cloud.gkemulticloud.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x12N\n" +
+	"\x06errors\x18\x18 \x03(\v20.google.cloud.gkemulticloud.v1.AzureClusterErrorB\x04\xe2A\x01\x03R\x06errors\x12b\n" +
+	"\x11monitoring_config\x18\x19 \x01(\v2/.google.cloud.gkemulticloud.v1.MonitoringConfigB\x04\xe2A\x01\x01R\x10monitoringConfig\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"u\n" +
@@ -2464,96 +2464,96 @@ const file_google_cloud_gkemulticloud_v1_azure_resources_proto_rawDesc = "" +
 	"\bSTOPPING\x10\x04\x12\t\n" +
 	"\x05ERROR\x10\x05\x12\f\n" +
 	"\bDEGRADED\x10\x06:w\xeaAr\n" +
-	")gkemulticloud.googleapis.com/AzureCluster\x12Eprojects/{project}/locations/{location}/azureClusters/{azure_cluster}\x18\x01\"\x9a\x02\n" +
-	"\x16AzureClusterNetworking\x121\n" +
-	"\x12virtual_network_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x10virtualNetworkId\x12:\n" +
-	"\x17pod_address_cidr_blocks\x18\x02 \x03(\tB\x03\xe0A\x02R\x14podAddressCidrBlocks\x12B\n" +
-	"\x1bservice_address_cidr_blocks\x18\x03 \x03(\tB\x03\xe0A\x02R\x18serviceAddressCidrBlocks\x12I\n" +
-	"\x1fservice_load_balancer_subnet_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x1bserviceLoadBalancerSubnetId:\x02\x18\x01\"\xce\a\n" +
-	"\x11AzureControlPlane\x12\x1d\n" +
-	"\aversion\x18\x01 \x01(\tB\x03\xe0A\x02R\aversion\x12 \n" +
-	"\tsubnet_id\x18\x02 \x01(\tB\x03\xe0A\x01R\bsubnetId\x12\x1c\n" +
-	"\avm_size\x18\x03 \x01(\tB\x03\xe0A\x01R\x06vmSize\x12Q\n" +
+	")gkemulticloud.googleapis.com/AzureCluster\x12Eprojects/{project}/locations/{location}/azureClusters/{azure_cluster}\x18\x01\"\x9e\x02\n" +
+	"\x16AzureClusterNetworking\x122\n" +
+	"\x12virtual_network_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x10virtualNetworkId\x12;\n" +
+	"\x17pod_address_cidr_blocks\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x14podAddressCidrBlocks\x12C\n" +
+	"\x1bservice_address_cidr_blocks\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x18serviceAddressCidrBlocks\x12J\n" +
+	"\x1fservice_load_balancer_subnet_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x1bserviceLoadBalancerSubnetId:\x02\x18\x01\"\xda\a\n" +
+	"\x11AzureControlPlane\x12\x1e\n" +
+	"\aversion\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12!\n" +
+	"\tsubnet_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bsubnetId\x12\x1d\n" +
+	"\avm_size\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06vmSize\x12R\n" +
 	"\n" +
-	"ssh_config\x18\v \x01(\v2-.google.cloud.gkemulticloud.v1.AzureSshConfigB\x03\xe0A\x02R\tsshConfig\x12V\n" +
-	"\vroot_volume\x18\x04 \x01(\v20.google.cloud.gkemulticloud.v1.AzureDiskTemplateB\x03\xe0A\x01R\n" +
-	"rootVolume\x12V\n" +
-	"\vmain_volume\x18\x05 \x01(\v20.google.cloud.gkemulticloud.v1.AzureDiskTemplateB\x03\xe0A\x01R\n" +
-	"mainVolume\x12l\n" +
+	"ssh_config\x18\v \x01(\v2-.google.cloud.gkemulticloud.v1.AzureSshConfigB\x04\xe2A\x01\x02R\tsshConfig\x12W\n" +
+	"\vroot_volume\x18\x04 \x01(\v20.google.cloud.gkemulticloud.v1.AzureDiskTemplateB\x04\xe2A\x01\x01R\n" +
+	"rootVolume\x12W\n" +
+	"\vmain_volume\x18\x05 \x01(\v20.google.cloud.gkemulticloud.v1.AzureDiskTemplateB\x04\xe2A\x01\x01R\n" +
+	"mainVolume\x12m\n" +
 	"\x13database_encryption\x18\n" +
-	" \x01(\v26.google.cloud.gkemulticloud.v1.AzureDatabaseEncryptionB\x03\xe0A\x01R\x12databaseEncryption\x12W\n" +
-	"\fproxy_config\x18\f \x01(\v2/.google.cloud.gkemulticloud.v1.AzureProxyConfigB\x03\xe0A\x01R\vproxyConfig\x12f\n" +
-	"\x11config_encryption\x18\x0e \x01(\v24.google.cloud.gkemulticloud.v1.AzureConfigEncryptionB\x03\xe0A\x01R\x10configEncryption\x12S\n" +
-	"\x04tags\x18\a \x03(\v2:.google.cloud.gkemulticloud.v1.AzureControlPlane.TagsEntryB\x03\xe0A\x01R\x04tags\x12c\n" +
-	"\x12replica_placements\x18\r \x03(\v2/.google.cloud.gkemulticloud.v1.ReplicaPlacementB\x03\xe0A\x01R\x11replicaPlacements\x121\n" +
-	"\x12endpoint_subnet_id\x18\x0f \x01(\tB\x03\xe0A\x01R\x10endpointSubnetId\x1a7\n" +
+	" \x01(\v26.google.cloud.gkemulticloud.v1.AzureDatabaseEncryptionB\x04\xe2A\x01\x01R\x12databaseEncryption\x12X\n" +
+	"\fproxy_config\x18\f \x01(\v2/.google.cloud.gkemulticloud.v1.AzureProxyConfigB\x04\xe2A\x01\x01R\vproxyConfig\x12g\n" +
+	"\x11config_encryption\x18\x0e \x01(\v24.google.cloud.gkemulticloud.v1.AzureConfigEncryptionB\x04\xe2A\x01\x01R\x10configEncryption\x12T\n" +
+	"\x04tags\x18\a \x03(\v2:.google.cloud.gkemulticloud.v1.AzureControlPlane.TagsEntryB\x04\xe2A\x01\x01R\x04tags\x12d\n" +
+	"\x12replica_placements\x18\r \x03(\v2/.google.cloud.gkemulticloud.v1.ReplicaPlacementB\x04\xe2A\x01\x01R\x11replicaPlacements\x122\n" +
+	"\x12endpoint_subnet_id\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\x10endpointSubnetId\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x02\x18\x01\"u\n" +
-	"\x10ReplicaPlacement\x12 \n" +
-	"\tsubnet_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bsubnetId\x12;\n" +
-	"\x17azure_availability_zone\x18\x02 \x01(\tB\x03\xe0A\x02R\x15azureAvailabilityZone:\x02\x18\x01\"_\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x02\x18\x01\"w\n" +
+	"\x10ReplicaPlacement\x12!\n" +
+	"\tsubnet_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bsubnetId\x12<\n" +
+	"\x17azure_availability_zone\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15azureAvailabilityZone:\x02\x18\x01\"_\n" +
 	"\x10AzureProxyConfig\x12*\n" +
 	"\x11resource_group_id\x18\x01 \x01(\tR\x0fresourceGroupId\x12\x1b\n" +
-	"\tsecret_id\x18\x02 \x01(\tR\bsecretId:\x02\x18\x01\"9\n" +
-	"\x17AzureDatabaseEncryption\x12\x1a\n" +
-	"\x06key_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x05keyId:\x02\x18\x01\"[\n" +
-	"\x15AzureConfigEncryption\x12\x1a\n" +
-	"\x06key_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05keyId\x12\"\n" +
+	"\tsecret_id\x18\x02 \x01(\tR\bsecretId:\x02\x18\x01\":\n" +
+	"\x17AzureDatabaseEncryption\x12\x1b\n" +
+	"\x06key_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05keyId:\x02\x18\x01\"]\n" +
+	"\x15AzureConfigEncryption\x12\x1b\n" +
+	"\x06key_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05keyId\x12#\n" +
 	"\n" +
-	"public_key\x18\x03 \x01(\tB\x03\xe0A\x01R\tpublicKey:\x02\x18\x01\"7\n" +
-	"\x11AzureDiskTemplate\x12\x1e\n" +
-	"\bsize_gib\x18\x01 \x01(\x05B\x03\xe0A\x01R\asizeGib:\x02\x18\x01\"\xf9\x04\n" +
+	"public_key\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpublicKey:\x02\x18\x01\"8\n" +
+	"\x11AzureDiskTemplate\x12\x1f\n" +
+	"\bsize_gib\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\asizeGib:\x02\x18\x01\"\x81\x05\n" +
 	"\vAzureClient\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\ttenant_id\x18\x02 \x01(\tB\x03\xe0A\x02R\btenantId\x12*\n" +
-	"\x0eapplication_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rapplicationId\x12%\n" +
-	"\vreconciling\x18\t \x01(\bB\x03\xe0A\x03R\vreconciling\x12b\n" +
-	"\vannotations\x18\b \x03(\v2;.google.cloud.gkemulticloud.v1.AzureClient.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12,\n" +
-	"\x0fpem_certificate\x18\a \x01(\tB\x03\xe0A\x03R\x0epemCertificate\x12\x15\n" +
-	"\x03uid\x18\x05 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
+	"\ttenant_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\btenantId\x12+\n" +
+	"\x0eapplication_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rapplicationId\x12&\n" +
+	"\vreconciling\x18\t \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12c\n" +
+	"\vannotations\x18\b \x03(\v2;.google.cloud.gkemulticloud.v1.AzureClient.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12-\n" +
+	"\x0fpem_certificate\x18\a \x01(\tB\x04\xe2A\x01\x03R\x0epemCertificate\x12\x16\n" +
+	"\x03uid\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:t\xeaAo\n" +
-	"(gkemulticloud.googleapis.com/AzureClient\x12Cprojects/{project}/locations/{location}/azureClients/{azure_client}\x18\x01\"\xc9\x01\n" +
-	"\x12AzureAuthorization\x12U\n" +
-	"\vadmin_users\x18\x01 \x03(\v2/.google.cloud.gkemulticloud.v1.AzureClusterUserB\x03\xe0A\x01R\n" +
-	"adminUsers\x12X\n" +
-	"\fadmin_groups\x18\x02 \x03(\v20.google.cloud.gkemulticloud.v1.AzureClusterGroupB\x03\xe0A\x01R\vadminGroups:\x02\x18\x01\"o\n" +
-	"\x1bAzureServicesAuthentication\x12 \n" +
-	"\ttenant_id\x18\x01 \x01(\tB\x03\xe0A\x02R\btenantId\x12*\n" +
-	"\x0eapplication_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rapplicationId:\x02\x18\x01\"7\n" +
-	"\x10AzureClusterUser\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername:\x02\x18\x01\"2\n" +
-	"\x11AzureClusterGroup\x12\x19\n" +
-	"\x05group\x18\x01 \x01(\tB\x03\xe0A\x02R\x05group:\x02\x18\x01\"\xbd\n" +
+	"(gkemulticloud.googleapis.com/AzureClient\x12Cprojects/{project}/locations/{location}/azureClients/{azure_client}\x18\x01\"\xcb\x01\n" +
+	"\x12AzureAuthorization\x12V\n" +
+	"\vadmin_users\x18\x01 \x03(\v2/.google.cloud.gkemulticloud.v1.AzureClusterUserB\x04\xe2A\x01\x01R\n" +
+	"adminUsers\x12Y\n" +
+	"\fadmin_groups\x18\x02 \x03(\v20.google.cloud.gkemulticloud.v1.AzureClusterGroupB\x04\xe2A\x01\x01R\vadminGroups:\x02\x18\x01\"q\n" +
+	"\x1bAzureServicesAuthentication\x12!\n" +
+	"\ttenant_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\btenantId\x12+\n" +
+	"\x0eapplication_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rapplicationId:\x02\x18\x01\"8\n" +
+	"\x10AzureClusterUser\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername:\x02\x18\x01\"3\n" +
+	"\x11AzureClusterGroup\x12\x1a\n" +
+	"\x05group\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05group:\x02\x18\x01\"\xcb\n" +
 	"\n" +
 	"\rAzureNodePool\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x02R\aversion\x12K\n" +
-	"\x06config\x18\x16 \x01(\v2..google.cloud.gkemulticloud.v1.AzureNodeConfigB\x03\xe0A\x02R\x06config\x12 \n" +
-	"\tsubnet_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bsubnetId\x12^\n" +
-	"\vautoscaling\x18\x04 \x01(\v27.google.cloud.gkemulticloud.v1.AzureNodePoolAutoscalingB\x03\xe0A\x02R\vautoscaling\x12M\n" +
-	"\x05state\x18\x06 \x01(\x0e22.google.cloud.gkemulticloud.v1.AzureNodePool.StateB\x03\xe0A\x03R\x05state\x12\x15\n" +
-	"\x03uid\x18\b \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vreconciling\x18\t \x01(\bB\x03\xe0A\x03R\vreconciling\x12@\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12L\n" +
+	"\x06config\x18\x16 \x01(\v2..google.cloud.gkemulticloud.v1.AzureNodeConfigB\x04\xe2A\x01\x02R\x06config\x12!\n" +
+	"\tsubnet_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bsubnetId\x12_\n" +
+	"\vautoscaling\x18\x04 \x01(\v27.google.cloud.gkemulticloud.v1.AzureNodePoolAutoscalingB\x04\xe2A\x01\x02R\vautoscaling\x12N\n" +
+	"\x05state\x18\x06 \x01(\x0e22.google.cloud.gkemulticloud.v1.AzureNodePool.StateB\x04\xe2A\x01\x03R\x05state\x12\x16\n" +
+	"\x03uid\x18\b \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vreconciling\x18\t \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12A\n" +
 	"\vcreate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x12\n" +
-	"\x04etag\x18\f \x01(\tR\x04etag\x12d\n" +
-	"\vannotations\x18\r \x03(\v2=.google.cloud.gkemulticloud.v1.AzureNodePool.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12e\n" +
-	"\x13max_pods_constraint\x18\x15 \x01(\v20.google.cloud.gkemulticloud.v1.MaxPodsConstraintB\x03\xe0A\x02R\x11maxPodsConstraint\x12;\n" +
-	"\x17azure_availability_zone\x18\x17 \x01(\tB\x03\xe0A\x01R\x15azureAvailabilityZone\x12N\n" +
-	"\x06errors\x18\x1d \x03(\v21.google.cloud.gkemulticloud.v1.AzureNodePoolErrorB\x03\xe0A\x03R\x06errors\x12W\n" +
+	"\x04etag\x18\f \x01(\tR\x04etag\x12e\n" +
+	"\vannotations\x18\r \x03(\v2=.google.cloud.gkemulticloud.v1.AzureNodePool.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12f\n" +
+	"\x13max_pods_constraint\x18\x15 \x01(\v20.google.cloud.gkemulticloud.v1.MaxPodsConstraintB\x04\xe2A\x01\x02R\x11maxPodsConstraint\x12<\n" +
+	"\x17azure_availability_zone\x18\x17 \x01(\tB\x04\xe2A\x01\x01R\x15azureAvailabilityZone\x12O\n" +
+	"\x06errors\x18\x1d \x03(\v21.google.cloud.gkemulticloud.v1.AzureNodePoolErrorB\x04\xe2A\x01\x03R\x06errors\x12X\n" +
 	"\n" +
-	"management\x18\x1e \x01(\v22.google.cloud.gkemulticloud.v1.AzureNodeManagementB\x03\xe0A\x01R\n" +
+	"management\x18\x1e \x01(\v22.google.cloud.gkemulticloud.v1.AzureNodeManagementB\x04\xe2A\x01\x01R\n" +
 	"management\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2566,33 +2566,33 @@ const file_google_cloud_gkemulticloud_v1_azure_resources_proto_rawDesc = "" +
 	"\bSTOPPING\x10\x04\x12\t\n" +
 	"\x05ERROR\x10\x05\x12\f\n" +
 	"\bDEGRADED\x10\x06:\x9a\x01\xeaA\x94\x01\n" +
-	"*gkemulticloud.googleapis.com/AzureNodePool\x12fprojects/{project}/locations/{location}/azureClusters/{azure_cluster}/azureNodePools/{azure_node_pool}\x18\x01\"?\n" +
-	"\x13AzureNodeManagement\x12$\n" +
-	"\vauto_repair\x18\x01 \x01(\bB\x03\xe0A\x01R\n" +
-	"autoRepair:\x02\x18\x01\"\xaa\x06\n" +
-	"\x0fAzureNodeConfig\x12\x1c\n" +
-	"\avm_size\x18\x01 \x01(\tB\x03\xe0A\x01R\x06vmSize\x12V\n" +
-	"\vroot_volume\x18\x02 \x01(\v20.google.cloud.gkemulticloud.v1.AzureDiskTemplateB\x03\xe0A\x01R\n" +
-	"rootVolume\x12Q\n" +
-	"\x04tags\x18\x03 \x03(\v28.google.cloud.gkemulticloud.v1.AzureNodeConfig.TagsEntryB\x03\xe0A\x01R\x04tags\x12\"\n" +
+	"*gkemulticloud.googleapis.com/AzureNodePool\x12fprojects/{project}/locations/{location}/azureClusters/{azure_cluster}/azureNodePools/{azure_node_pool}\x18\x01\"@\n" +
+	"\x13AzureNodeManagement\x12%\n" +
+	"\vauto_repair\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"autoRepair:\x02\x18\x01\"\xb3\x06\n" +
+	"\x0fAzureNodeConfig\x12\x1d\n" +
+	"\avm_size\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06vmSize\x12W\n" +
+	"\vroot_volume\x18\x02 \x01(\v20.google.cloud.gkemulticloud.v1.AzureDiskTemplateB\x04\xe2A\x01\x01R\n" +
+	"rootVolume\x12R\n" +
+	"\x04tags\x18\x03 \x03(\v28.google.cloud.gkemulticloud.v1.AzureNodeConfig.TagsEntryB\x04\xe2A\x01\x01R\x04tags\x12#\n" +
 	"\n" +
-	"image_type\x18\b \x01(\tB\x03\xe0A\x01R\timageType\x12Q\n" +
+	"image_type\x18\b \x01(\tB\x04\xe2A\x01\x01R\timageType\x12R\n" +
 	"\n" +
-	"ssh_config\x18\a \x01(\v2-.google.cloud.gkemulticloud.v1.AzureSshConfigB\x03\xe0A\x02R\tsshConfig\x12W\n" +
-	"\fproxy_config\x18\t \x01(\v2/.google.cloud.gkemulticloud.v1.AzureProxyConfigB\x03\xe0A\x01R\vproxyConfig\x12f\n" +
-	"\x11config_encryption\x18\f \x01(\v24.google.cloud.gkemulticloud.v1.AzureConfigEncryptionB\x03\xe0A\x01R\x10configEncryption\x12E\n" +
+	"ssh_config\x18\a \x01(\v2-.google.cloud.gkemulticloud.v1.AzureSshConfigB\x04\xe2A\x01\x02R\tsshConfig\x12X\n" +
+	"\fproxy_config\x18\t \x01(\v2/.google.cloud.gkemulticloud.v1.AzureProxyConfigB\x04\xe2A\x01\x01R\vproxyConfig\x12g\n" +
+	"\x11config_encryption\x18\f \x01(\v24.google.cloud.gkemulticloud.v1.AzureConfigEncryptionB\x04\xe2A\x01\x01R\x10configEncryption\x12F\n" +
 	"\x06taints\x18\n" +
-	" \x03(\v2(.google.cloud.gkemulticloud.v1.NodeTaintB\x03\xe0A\x01R\x06taints\x12W\n" +
-	"\x06labels\x18\v \x03(\v2:.google.cloud.gkemulticloud.v1.AzureNodeConfig.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a7\n" +
+	" \x03(\v2(.google.cloud.gkemulticloud.v1.NodeTaintB\x04\xe2A\x01\x01R\x06taints\x12X\n" +
+	"\x06labels\x18\v \x03(\v2:.google.cloud.gkemulticloud.v1.AzureNodeConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x02\x18\x01\"t\n" +
-	"\x18AzureNodePoolAutoscaling\x12)\n" +
-	"\x0emin_node_count\x18\x01 \x01(\x05B\x03\xe0A\x02R\fminNodeCount\x12)\n" +
-	"\x0emax_node_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\fmaxNodeCount:\x02\x18\x01\"\xe5\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x02\x18\x01\"v\n" +
+	"\x18AzureNodePoolAutoscaling\x12*\n" +
+	"\x0emin_node_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\fminNodeCount\x12*\n" +
+	"\x0emax_node_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\fmaxNodeCount:\x02\x18\x01\"\xe5\x02\n" +
 	"\x11AzureOpenIdConfig\x12\x16\n" +
 	"\x06issuer\x18\x01 \x01(\tR\x06issuer\x12\x1a\n" +
 	"\bjwks_uri\x18\x02 \x01(\tR\bjwks_uri\x12:\n" +
@@ -2607,18 +2607,18 @@ const file_google_cloud_gkemulticloud_v1_azure_resources_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12Y\n" +
 	"\x0evalid_versions\x18\x02 \x03(\v22.google.cloud.gkemulticloud.v1.AzureK8sVersionInfoR\rvalidVersions\x126\n" +
 	"\x17supported_azure_regions\x18\x03 \x03(\tR\x15supportedAzureRegions:p\xeaAk\n" +
-	".gkemulticloud.googleapis.com/AzureServerConfig\x129projects/{project}/locations/{location}/azureServerConfig\x18\x01\"\xf3\x01\n" +
+	".gkemulticloud.googleapis.com/AzureServerConfig\x129projects/{project}/locations/{location}/azureServerConfig\x18\x01\"\xf7\x01\n" +
 	"\x13AzureK8sVersionInfo\x12\x18\n" +
-	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1d\n" +
-	"\aenabled\x18\x03 \x01(\bB\x03\xe0A\x01R\aenabled\x12#\n" +
-	"\vend_of_life\x18\x04 \x01(\bB\x03\xe0A\x01R\tendOfLife\x12?\n" +
-	"\x10end_of_life_date\x18\x05 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\rendOfLifeDate\x129\n" +
-	"\frelease_date\x18\x06 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\vreleaseDate:\x02\x18\x01\"@\n" +
-	"\x0eAzureSshConfig\x12*\n" +
-	"\x0eauthorized_key\x18\x01 \x01(\tB\x03\xe0A\x02R\rauthorizedKey:\x02\x18\x01\"\xbd\x01\n" +
-	"\x15AzureClusterResources\x12>\n" +
-	"\x19network_security_group_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x16networkSecurityGroupId\x12`\n" +
-	"+control_plane_application_security_group_id\x18\x02 \x01(\tB\x03\xe0A\x03R&controlPlaneApplicationSecurityGroupId:\x02\x18\x01\"1\n" +
+	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1e\n" +
+	"\aenabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12$\n" +
+	"\vend_of_life\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\tendOfLife\x12@\n" +
+	"\x10end_of_life_date\x18\x05 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\rendOfLifeDate\x12:\n" +
+	"\frelease_date\x18\x06 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\vreleaseDate:\x02\x18\x01\"A\n" +
+	"\x0eAzureSshConfig\x12+\n" +
+	"\x0eauthorized_key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rauthorizedKey:\x02\x18\x01\"\xbf\x01\n" +
+	"\x15AzureClusterResources\x12?\n" +
+	"\x19network_security_group_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x16networkSecurityGroupId\x12a\n" +
+	"+control_plane_application_security_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R&controlPlaneApplicationSecurityGroupId:\x02\x18\x01\"1\n" +
 	"\x11AzureClusterError\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage:\x02\x18\x01\"2\n" +
 	"\x12AzureNodePoolError\x12\x18\n" +

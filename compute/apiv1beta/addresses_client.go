@@ -393,6 +393,11 @@ func (c *addressesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/addresses", req.GetProject())
 
 		params := url.Values{}
@@ -479,6 +484,13 @@ func (c *addressesRESTClient) Delete(ctx context.Context, req *computepb.DeleteA
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetAddress(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/addresses/%v", req.GetProject(), req.GetRegion(), req.GetAddress())
 
 	params := url.Values{}
@@ -543,6 +555,13 @@ func (c *addressesRESTClient) Get(ctx context.Context, req *computepb.GetAddress
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetAddress(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/addresses/%v", req.GetProject(), req.GetRegion(), req.GetAddress())
 
 	// Build HTTP headers from client and context metadata.
@@ -598,6 +617,12 @@ func (c *addressesRESTClient) Insert(ctx context.Context, req *computepb.InsertA
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/addresses", req.GetProject(), req.GetRegion())
@@ -676,6 +701,12 @@ func (c *addressesRESTClient) List(ctx context.Context, req *computepb.ListAddre
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/addresses", req.GetProject(), req.GetRegion())
@@ -758,6 +789,13 @@ func (c *addressesRESTClient) Move(ctx context.Context, req *computepb.MoveAddre
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetAddress(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/addresses/%v/move", req.GetProject(), req.GetRegion(), req.GetAddress())
 
 	params := url.Values{}
@@ -830,6 +868,13 @@ func (c *addressesRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/addresses/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
@@ -899,6 +944,13 @@ func (c *addressesRESTClient) TestIamPermissions(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/addresses/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

@@ -455,7 +455,7 @@ var File_google_cloud_tasks_v2_task_proto protoreflect.FileDescriptor
 
 const file_google_cloud_tasks_v2_task_proto_rawDesc = "" +
 	"\n" +
-	" google/cloud/tasks/v2/task.proto\x12\x15google.cloud.tasks.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/tasks/v2/queue.proto\x1a\"google/cloud/tasks/v2/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x94\a\n" +
+	" google/cloud/tasks/v2/task.proto\x12\x15google.cloud.tasks.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/tasks/v2/queue.proto\x1a\"google/cloud/tasks/v2/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x95\a\n" +
 	"\x04Task\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12d\n" +
 	"\x17app_engine_http_request\x18\x02 \x01(\v2+.google.cloud.tasks.v2.AppEngineHttpRequestH\x00R\x14appEngineHttpRequest\x12G\n" +
@@ -469,8 +469,8 @@ const file_google_cloud_tasks_v2_task_proto_rawDesc = "" +
 	"\rfirst_attempt\x18\t \x01(\v2\x1e.google.cloud.tasks.v2.AttemptR\ffirstAttempt\x12A\n" +
 	"\flast_attempt\x18\n" +
 	" \x01(\v2\x1e.google.cloud.tasks.v2.AttemptR\vlastAttempt\x124\n" +
-	"\x04view\x18\v \x01(\x0e2 .google.cloud.tasks.v2.Task.ViewR\x04view\x12J\n" +
-	"\fretry_config\x18\f \x01(\v2\".google.cloud.tasks.v2.RetryConfigB\x03\xe0A\x01R\vretryConfig\"1\n" +
+	"\x04view\x18\v \x01(\x0e2 .google.cloud.tasks.v2.Task.ViewR\x04view\x12K\n" +
+	"\fretry_config\x18\f \x01(\v2\".google.cloud.tasks.v2.RetryConfigB\x04\xe2A\x01\x01R\vretryConfig\"1\n" +
 	"\x04View\x12\x14\n" +
 	"\x10VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\b\n" +

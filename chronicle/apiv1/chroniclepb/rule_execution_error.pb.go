@@ -324,25 +324,25 @@ var File_google_cloud_chronicle_v1_rule_execution_error_proto protoreflect.FileD
 
 const file_google_cloud_chronicle_v1_rule_execution_error_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/chronicle/v1/rule_execution_error.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"\xc1\x01\n" +
-	"\x1eListRuleExecutionErrorsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+chronicle.googleapis.com/RuleExecutionErrorR\x06parent\x12\x1b\n" +
+	"4google/cloud/chronicle/v1/rule_execution_error.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"\xc2\x01\n" +
+	"\x1eListRuleExecutionErrorsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+chronicle.googleapis.com/RuleExecutionErrorR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\xac\x01\n" +
 	"\x1fListRuleExecutionErrorsResponse\x12a\n" +
 	"\x15rule_execution_errors\x18\x01 \x03(\v2-.google.cloud.chronicle.v1.RuleExecutionErrorR\x13ruleExecutionErrors\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xce\x03\n" +
-	"\x12RuleExecutionError\x12;\n" +
-	"\x04rule\x18\x04 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dchronicle.googleapis.com/RuleH\x00R\x04rule\x12Q\n" +
-	"\fcurated_rule\x18\x05 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$chronicle.googleapis.com/CuratedRuleH\x00R\vcuratedRule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12-\n" +
-	"\x05error\x18\x02 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x129\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd3\x03\n" +
+	"\x12RuleExecutionError\x12<\n" +
+	"\x04rule\x18\x04 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dchronicle.googleapis.com/RuleH\x00R\x04rule\x12R\n" +
+	"\fcurated_rule\x18\x05 \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$chronicle.googleapis.com/CuratedRuleH\x00R\vcuratedRule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12.\n" +
+	"\x05error\x18\x02 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12:\n" +
 	"\n" +
-	"time_range\x18\x03 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x03R\ttimeRange:\x9a\x01\xeaA\x96\x01\n" +
+	"time_range\x18\x03 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x03R\ttimeRange:\x9a\x01\xeaA\x96\x01\n" +
 	"+chronicle.googleapis.com/RuleExecutionError\x12gprojects/{project}/locations/{location}/instances/{instance}/ruleExecutionErrors/{rule_execution_error}B\b\n" +
 	"\x06source2\xb1\x03\n" +
 	"\x19RuleExecutionErrorService\x12\xe6\x01\n" +

@@ -264,22 +264,22 @@ var File_google_cloud_support_v2beta_comment_service_proto protoreflect.FileDesc
 
 const file_google_cloud_support_v2beta_comment_service_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/support/v2beta/comment_service.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/support/v2beta/comment.proto\"\x93\x01\n" +
-	"\x13ListCommentsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"1google/cloud/support/v2beta/comment_service.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/support/v2beta/comment.proto\"\x94\x01\n" +
+	"\x13ListCommentsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" cloudsupport.googleapis.com/CaseR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x05 \x01(\tR\tpageToken\"\x80\x01\n" +
 	"\x14ListCommentsResponse\x12@\n" +
 	"\bcomments\x18\x01 \x03(\v2$.google.cloud.support.v2beta.CommentR\bcomments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9d\x01\n" +
-	"\x14CreateCommentRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" cloudsupport.googleapis.com/CaseR\x06parent\x12C\n" +
-	"\acomment\x18\x02 \x01(\v2$.google.cloud.support.v2beta.CommentB\x03\xe0A\x02R\acomment\"T\n" +
-	"\x11GetCommentRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9f\x01\n" +
+	"\x14CreateCommentRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" cloudsupport.googleapis.com/CaseR\x06parent\x12D\n" +
+	"\acomment\x18\x02 \x01(\v2$.google.cloud.support.v2beta.CommentB\x04\xe2A\x01\x02R\acomment\"U\n" +
+	"\x11GetCommentRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#cloudsupport.googleapis.com/CommentR\x04name2\xe0\x05\n" +
 	"\x0eCommentService\x12\xe7\x01\n" +
 	"\fListComments\x120.google.cloud.support.v2beta.ListCommentsRequest\x1a1.google.cloud.support.v2beta.ListCommentsResponse\"r\xdaA\x06parent\x82\xd3\xe4\x93\x02cZ3\x121/v2beta/{parent=organizations/*/cases/*}/comments\x12,/v2beta/{parent=projects/*/cases/*}/comments\x12\xf7\x01\n" +

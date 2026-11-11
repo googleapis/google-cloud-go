@@ -202,20 +202,20 @@ var File_google_cloud_securitycenter_v2_bigquery_export_proto protoreflect.FileD
 
 const file_google_cloud_securitycenter_v2_bigquery_export_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/securitycenter/v2/bigquery_export.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc6\x05\n" +
-	"\x0eBigQueryExport\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
+	"4google/cloud/securitycenter/v2/bigquery_export.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x05\n" +
+	"\x0eBigQueryExport\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x18\n" +
-	"\adataset\x18\x04 \x01(\tR\adataset\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x121\n" +
-	"\x12most_recent_editor\x18\a \x01(\tB\x03\xe0A\x03R\x10mostRecentEditor\x12!\n" +
-	"\tprincipal\x18\b \x01(\tB\x03\xe0A\x03R\tprincipal\x12I\n" +
+	"\adataset\x18\x04 \x01(\tR\adataset\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x122\n" +
+	"\x12most_recent_editor\x18\a \x01(\tB\x04\xe2A\x01\x03R\x10mostRecentEditor\x12\"\n" +
+	"\tprincipal\x18\b \x01(\tB\x04\xe2A\x01\x03R\tprincipal\x12J\n" +
 	"\x1edeletion_notifications_enabled\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\x1cdeletionNotificationsEnabled:\xa1\x02\xeaA\x9d\x02\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\x1cdeletionNotificationsEnabled:\xa1\x02\xeaA\x9d\x02\n" +
 	",securitycenter.googleapis.com/BigQueryExport\x12Jorganizations/{organization}/locations/{location}/bigQueryExports/{export}\x12>folders/{folder}/locations/{location}/bigQueryExports/{export}\x12@projects/{project}/locations/{location}/bigQueryExports/{export}*\x0fbigQueryExports2\x0ebigQueryExportB\xed\x01\n" +
 	"\"com.google.cloud.securitycenter.v2B\x13BigQueryExportProtoP\x01ZJcloud.google.com/go/securitycenter/apiv2/securitycenterpb;securitycenterpb\xaa\x02\x1eGoogle.Cloud.SecurityCenter.V2\xca\x02\x1eGoogle\\Cloud\\SecurityCenter\\V2\xea\x02!Google::Cloud::SecurityCenter::V2b\x06proto3"
 

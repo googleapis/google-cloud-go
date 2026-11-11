@@ -272,6 +272,12 @@ func (c *interconnectLocationsRESTClient) Get(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnectLocation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectLocations/%v", req.GetProject(), req.GetInterconnectLocation())
 
 	// Build HTTP headers from client and context metadata.
@@ -333,6 +339,11 @@ func (c *interconnectLocationsRESTClient) List(ctx context.Context, req *compute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectLocations", req.GetProject())

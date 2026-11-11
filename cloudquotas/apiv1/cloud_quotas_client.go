@@ -808,6 +808,11 @@ func (c *restClient) ListQuotaInfos(ctx context.Context, req *cloudquotaspb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/quotaInfos", req.GetParent())
 
 		params := url.Values{}
@@ -871,6 +876,11 @@ func (c *restClient) ListQuotaInfos(ctx context.Context, req *cloudquotaspb.List
 func (c *restClient) GetQuotaInfo(ctx context.Context, req *cloudquotaspb.GetQuotaInfoRequest, opts ...gax.CallOption) (*cloudquotaspb.QuotaInfo, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -938,6 +948,11 @@ func (c *restClient) ListQuotaPreferences(ctx context.Context, req *cloudquotasp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/quotaPreferences", req.GetParent())
@@ -1011,6 +1026,11 @@ func (c *restClient) GetQuotaPreference(ctx context.Context, req *cloudquotaspb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1070,6 +1090,11 @@ func (c *restClient) CreateQuotaPreference(ctx context.Context, req *cloudquotas
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/quotaPreferences", req.GetParent())
@@ -1140,6 +1165,11 @@ func (c *restClient) UpdateQuotaPreference(ctx context.Context, req *cloudquotas
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetQuotaPreference().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetQuotaPreference().GetName())

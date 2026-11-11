@@ -1240,42 +1240,42 @@ var File_google_cloud_osconfig_v1alpha_os_policy_assignments_proto protoreflect.
 
 const file_google_cloud_osconfig_v1alpha_os_policy_assignments_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/osconfig/v1alpha/os_policy_assignments.proto\x12\x1dgoogle.cloud.osconfig.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/osconfig/v1alpha/os_policy.proto\x1a3google/cloud/osconfig/v1alpha/osconfig_common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8e\x0e\n" +
+	"9google/cloud/osconfig/v1alpha/os_policy_assignments.proto\x12\x1dgoogle.cloud.osconfig.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/osconfig/v1alpha/os_policy.proto\x1a3google/cloud/osconfig/v1alpha/osconfig_common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9b\x0e\n" +
 	"\x12OSPolicyAssignment\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12M\n" +
-	"\vos_policies\x18\x03 \x03(\v2'.google.cloud.osconfig.v1alpha.OSPolicyB\x03\xe0A\x02R\n" +
-	"osPolicies\x12n\n" +
-	"\x0finstance_filter\x18\x04 \x01(\v2@.google.cloud.osconfig.v1alpha.OSPolicyAssignment.InstanceFilterB\x03\xe0A\x02R\x0einstanceFilter\x12X\n" +
-	"\arollout\x18\x05 \x01(\v29.google.cloud.osconfig.v1alpha.OSPolicyAssignment.RolloutB\x03\xe0A\x02R\arollout\x12$\n" +
-	"\vrevision_id\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"revisionId\x12Q\n" +
-	"\x14revision_create_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12revisionCreateTime\x12\x12\n" +
-	"\x04etag\x18\b \x01(\tR\x04etag\x12h\n" +
-	"\rrollout_state\x18\t \x01(\x0e2>.google.cloud.osconfig.v1alpha.OSPolicyAssignment.RolloutStateB\x03\xe0A\x03R\frolloutState\x12\x1f\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12N\n" +
+	"\vos_policies\x18\x03 \x03(\v2'.google.cloud.osconfig.v1alpha.OSPolicyB\x04\xe2A\x01\x02R\n" +
+	"osPolicies\x12o\n" +
+	"\x0finstance_filter\x18\x04 \x01(\v2@.google.cloud.osconfig.v1alpha.OSPolicyAssignment.InstanceFilterB\x04\xe2A\x01\x02R\x0einstanceFilter\x12Y\n" +
+	"\arollout\x18\x05 \x01(\v29.google.cloud.osconfig.v1alpha.OSPolicyAssignment.RolloutB\x04\xe2A\x01\x02R\arollout\x12%\n" +
+	"\vrevision_id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"revisionId\x12R\n" +
+	"\x14revision_create_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12revisionCreateTime\x12\x12\n" +
+	"\x04etag\x18\b \x01(\tR\x04etag\x12i\n" +
+	"\rrollout_state\x18\t \x01(\x0e2>.google.cloud.osconfig.v1alpha.OSPolicyAssignment.RolloutStateB\x04\xe2A\x01\x03R\frolloutState\x12 \n" +
 	"\bbaseline\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\bbaseline\x12\x1d\n" +
-	"\adeleted\x18\v \x01(\bB\x03\xe0A\x03R\adeleted\x12%\n" +
-	"\vreconciling\x18\f \x01(\bB\x03\xe0A\x03R\vreconciling\x12\x15\n" +
-	"\x03uid\x18\r \x01(\tB\x03\xe0A\x03R\x03uid\x1a\xa5\x01\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\bbaseline\x12\x1e\n" +
+	"\adeleted\x18\v \x01(\bB\x04\xe2A\x01\x03R\adeleted\x12&\n" +
+	"\vreconciling\x18\f \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12\x16\n" +
+	"\x03uid\x18\r \x01(\tB\x04\xe2A\x01\x03R\x03uid\x1a\xa5\x01\n" +
 	"\bLabelSet\x12^\n" +
 	"\x06labels\x18\x01 \x03(\v2F.google.cloud.osconfig.v1alpha.OSPolicyAssignment.LabelSet.LabelsEntryR\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\xdd\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\xde\x03\n" +
 	"\x0eInstanceFilter\x12\x10\n" +
 	"\x03all\x18\x01 \x01(\bR\x03all\x12(\n" +
 	"\x0eos_short_names\x18\x02 \x03(\tB\x02\x18\x01R\fosShortNames\x12e\n" +
 	"\x10inclusion_labels\x18\x03 \x03(\v2:.google.cloud.osconfig.v1alpha.OSPolicyAssignment.LabelSetR\x0finclusionLabels\x12e\n" +
 	"\x10exclusion_labels\x18\x04 \x03(\v2:.google.cloud.osconfig.v1alpha.OSPolicyAssignment.LabelSetR\x0fexclusionLabels\x12l\n" +
-	"\vinventories\x18\x05 \x03(\v2J.google.cloud.osconfig.v1alpha.OSPolicyAssignment.InstanceFilter.InventoryR\vinventories\x1aS\n" +
-	"\tInventory\x12'\n" +
-	"\ros_short_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vosShortName\x12\x1d\n" +
+	"\vinventories\x18\x05 \x03(\v2J.google.cloud.osconfig.v1alpha.OSPolicyAssignment.InstanceFilter.InventoryR\vinventories\x1aT\n" +
+	"\tInventory\x12(\n" +
+	"\ros_short_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vosShortName\x12\x1d\n" +
 	"\n" +
-	"os_version\x18\x02 \x01(\tR\tosVersion\x1a\xb6\x01\n" +
-	"\aRollout\x12_\n" +
-	"\x11disruption_budget\x18\x01 \x01(\v2-.google.cloud.osconfig.v1alpha.FixedOrPercentB\x03\xe0A\x02R\x10disruptionBudget\x12J\n" +
-	"\x11min_wait_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fminWaitDuration\"l\n" +
+	"os_version\x18\x02 \x01(\tR\tosVersion\x1a\xb8\x01\n" +
+	"\aRollout\x12`\n" +
+	"\x11disruption_budget\x18\x01 \x01(\v2-.google.cloud.osconfig.v1alpha.FixedOrPercentB\x04\xe2A\x01\x02R\x10disruptionBudget\x12K\n" +
+	"\x11min_wait_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0fminWaitDuration\"l\n" +
 	"\fRolloutState\x12\x1d\n" +
 	"\x19ROLLOUT_STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01\x12\x0e\n" +
@@ -1306,39 +1306,39 @@ const file_google_cloud_osconfig_v1alpha_os_policy_assignments_proto_rawDesc = "
 	"\n" +
 	"CANCELLING\x10\x02\x12\r\n" +
 	"\tCANCELLED\x10\x03\x12\r\n" +
-	"\tSUCCEEDED\x10\x04\"\x8a\x02\n" +
-	"\x1fCreateOSPolicyAssignmentRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12h\n" +
-	"\x14os_policy_assignment\x18\x02 \x01(\v21.google.cloud.osconfig.v1alpha.OSPolicyAssignmentB\x03\xe0A\x02R\x12osPolicyAssignment\x12:\n" +
-	"\x17os_policy_assignment_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x14osPolicyAssignmentId\"\xcd\x01\n" +
-	"\x1fUpdateOSPolicyAssignmentRequest\x12h\n" +
-	"\x14os_policy_assignment\x18\x01 \x01(\v21.google.cloud.osconfig.v1alpha.OSPolicyAssignmentB\x03\xe0A\x02R\x12osPolicyAssignment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"f\n" +
-	"\x1cGetOSPolicyAssignmentRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*osconfig.googleapis.com/OSPolicyAssignmentR\x04name\"\x9f\x01\n" +
-	"\x1eListOSPolicyAssignmentsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\tSUCCEEDED\x10\x04\"\x8d\x02\n" +
+	"\x1fCreateOSPolicyAssignmentRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12i\n" +
+	"\x14os_policy_assignment\x18\x02 \x01(\v21.google.cloud.osconfig.v1alpha.OSPolicyAssignmentB\x04\xe2A\x01\x02R\x12osPolicyAssignment\x12;\n" +
+	"\x17os_policy_assignment_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x14osPolicyAssignmentId\"\xcf\x01\n" +
+	"\x1fUpdateOSPolicyAssignmentRequest\x12i\n" +
+	"\x14os_policy_assignment\x18\x01 \x01(\v21.google.cloud.osconfig.v1alpha.OSPolicyAssignmentB\x04\xe2A\x01\x02R\x12osPolicyAssignment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"g\n" +
+	"\x1cGetOSPolicyAssignmentRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*osconfig.googleapis.com/OSPolicyAssignmentR\x04name\"\xa0\x01\n" +
+	"\x1eListOSPolicyAssignmentsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb0\x01\n" +
 	"\x1fListOSPolicyAssignmentsResponse\x12e\n" +
 	"\x15os_policy_assignments\x18\x01 \x03(\v21.google.cloud.osconfig.v1alpha.OSPolicyAssignmentR\x13osPolicyAssignments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xac\x01\n" +
-	"&ListOSPolicyAssignmentRevisionsRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xad\x01\n" +
+	"&ListOSPolicyAssignmentRevisionsRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*osconfig.googleapis.com/OSPolicyAssignmentR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb8\x01\n" +
 	"'ListOSPolicyAssignmentRevisionsResponse\x12e\n" +
 	"\x15os_policy_assignments\x18\x01 \x03(\v21.google.cloud.osconfig.v1alpha.OSPolicyAssignmentR\x13osPolicyAssignments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"i\n" +
-	"\x1fDeleteOSPolicyAssignmentRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"j\n" +
+	"\x1fDeleteOSPolicyAssignmentRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*osconfig.googleapis.com/OSPolicyAssignmentR\x04nameB\xe1\x01\n" +
 	"!com.google.cloud.osconfig.v1alphaB\x18OsPolicyAssignmentsProtoP\x01Z=cloud.google.com/go/osconfig/apiv1alpha/osconfigpb;osconfigpb\xaa\x02\x1dGoogle.Cloud.OsConfig.V1Alpha\xca\x02\x1dGoogle\\Cloud\\OsConfig\\V1alpha\xea\x02 Google::Cloud::OsConfig::V1alphab\x06proto3"
 

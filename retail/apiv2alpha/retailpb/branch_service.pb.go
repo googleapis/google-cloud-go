@@ -216,15 +216,15 @@ var File_google_cloud_retail_v2alpha_branch_service_proto protoreflect.FileDescr
 
 const file_google_cloud_retail_v2alpha_branch_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/retail/v2alpha/branch_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2alpha/branch.proto\"\x91\x01\n" +
-	"\x13ListBranchesRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"0google/cloud/retail/v2alpha/branch_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2alpha/branch.proto\"\x92\x01\n" +
+	"\x13ListBranchesRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dretail.googleapis.com/CatalogR\x06parent\x12;\n" +
 	"\x04view\x18\x02 \x01(\x0e2'.google.cloud.retail.v2alpha.BranchViewR\x04view\"W\n" +
 	"\x14ListBranchesResponse\x12?\n" +
-	"\bbranches\x18\x01 \x03(\v2#.google.cloud.retail.v2alpha.BranchR\bbranches\"\x89\x01\n" +
-	"\x10GetBranchRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\bbranches\x18\x01 \x03(\v2#.google.cloud.retail.v2alpha.BranchR\bbranches\"\x8a\x01\n" +
+	"\x10GetBranchRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1cretail.googleapis.com/BranchR\x04name\x12;\n" +
 	"\x04view\x18\x02 \x01(\x0e2'.google.cloud.retail.v2alpha.BranchViewR\x04view2\xce\x03\n" +
 	"\rBranchService\x12\xc2\x01\n" +

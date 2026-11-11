@@ -2854,7 +2854,7 @@ const file_google_cloud_retail_v2beta_common_proto_rawDesc = "" +
 	"\tTimeRange\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xfb\x11\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xfd\x11\n" +
 	"\x04Rule\x12Q\n" +
 	"\fboost_action\x18\x02 \x01(\v2,.google.cloud.retail.v2beta.Rule.BoostActionH\x00R\vboostAction\x12Z\n" +
 	"\x0fredirect_action\x18\x03 \x01(\v2/.google.cloud.retail.v2beta.Rule.RedirectActionH\x00R\x0eredirectAction\x12m\n" +
@@ -2868,8 +2868,8 @@ const file_google_cloud_retail_v2beta_common_proto_rawDesc = "" +
 	"\x19force_return_facet_action\x18\f \x01(\v27.google.cloud.retail.v2beta.Rule.ForceReturnFacetActionH\x00R\x16forceReturnFacetAction\x12d\n" +
 	"\x13remove_facet_action\x18\r \x01(\v22.google.cloud.retail.v2beta.Rule.RemoveFacetActionH\x00R\x11removeFacetAction\x12K\n" +
 	"\n" +
-	"pin_action\x18\x0e \x01(\v2*.google.cloud.retail.v2beta.Rule.PinActionH\x00R\tpinAction\x12H\n" +
-	"\tcondition\x18\x01 \x01(\v2%.google.cloud.retail.v2beta.ConditionB\x03\xe0A\x02R\tcondition\x1aL\n" +
+	"pin_action\x18\x0e \x01(\v2*.google.cloud.retail.v2beta.Rule.PinActionH\x00R\tpinAction\x12I\n" +
+	"\tcondition\x18\x01 \x01(\v2%.google.cloud.retail.v2beta.ConditionB\x04\xe2A\x01\x02R\tcondition\x1aL\n" +
 	"\vBoostAction\x12\x14\n" +
 	"\x05boost\x18\x01 \x01(\x02R\x05boost\x12'\n" +
 	"\x0fproducts_filter\x18\x02 \x01(\tR\x0eproductsFilter\x1a&\n" +
@@ -2902,9 +2902,9 @@ const file_google_cloud_retail_v2beta_common_proto_rawDesc = "" +
 	"\x0eattribute_name\x18\x01 \x01(\tR\rattributeName\x12\x1a\n" +
 	"\bposition\x18\x02 \x01(\x05R\bposition\x1a<\n" +
 	"\x11RemoveFacetAction\x12'\n" +
-	"\x0fattribute_names\x18\x01 \x03(\tR\x0eattributeNames\x1a\x9c\x01\n" +
-	"\tPinAction\x12T\n" +
-	"\apin_map\x18\x01 \x03(\v26.google.cloud.retail.v2beta.Rule.PinAction.PinMapEntryB\x03\xe0A\x02R\x06pinMap\x1a9\n" +
+	"\x0fattribute_names\x18\x01 \x03(\tR\x0eattributeNames\x1a\x9d\x01\n" +
+	"\tPinAction\x12U\n" +
+	"\apin_map\x18\x01 \x03(\v26.google.cloud.retail.v2beta.Rule.PinAction.PinMapEntryB\x04\xe2A\x01\x02R\x06pinMap\x1a9\n" +
 	"\vPinMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x03R\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
@@ -2928,9 +2928,9 @@ const file_google_cloud_retail_v2beta_common_proto_rawDesc = "" +
 	"_indexable\"B\n" +
 	"\x0fFulfillmentInfo\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x1b\n" +
-	"\tplace_ids\x18\x02 \x03(\tR\bplaceIds\"L\n" +
-	"\x05Image\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12\x16\n" +
+	"\tplace_ids\x18\x02 \x03(\tR\bplaceIds\"M\n" +
+	"\x05Image\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12\x16\n" +
 	"\x06height\x18\x02 \x01(\x05R\x06height\x12\x14\n" +
 	"\x05width\x18\x03 \x01(\x05R\x05width\"\xae\x01\n" +
 	"\bInterval\x12\x1a\n" +
@@ -2939,15 +2939,15 @@ const file_google_cloud_retail_v2beta_common_proto_rawDesc = "" +
 	"\amaximum\x18\x03 \x01(\x01H\x01R\amaximum\x12-\n" +
 	"\x11exclusive_maximum\x18\x04 \x01(\x01H\x01R\x10exclusiveMaximumB\x05\n" +
 	"\x03minB\x05\n" +
-	"\x03max\"\x87\x04\n" +
+	"\x03max\"\x88\x04\n" +
 	"\tPriceInfo\x12#\n" +
 	"\rcurrency_code\x18\x01 \x01(\tR\fcurrencyCode\x12\x14\n" +
 	"\x05price\x18\x02 \x01(\x02R\x05price\x12%\n" +
 	"\x0eoriginal_price\x18\x03 \x01(\x02R\roriginalPrice\x12\x12\n" +
 	"\x04cost\x18\x04 \x01(\x02R\x04cost\x12L\n" +
 	"\x14price_effective_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x12priceEffectiveTime\x12F\n" +
-	"\x11price_expire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x0fpriceExpireTime\x12V\n" +
-	"\vprice_range\x18\a \x01(\v20.google.cloud.retail.v2beta.PriceInfo.PriceRangeB\x03\xe0A\x03R\n" +
+	"\x11price_expire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x0fpriceExpireTime\x12W\n" +
+	"\vprice_range\x18\a \x01(\v20.google.cloud.retail.v2beta.PriceInfo.PriceRangeB\x04\xe2A\x01\x03R\n" +
 	"priceRange\x1a\x95\x01\n" +
 	"\n" +
 	"PriceRange\x12:\n" +
@@ -2963,15 +2963,15 @@ const file_google_cloud_retail_v2beta_common_proto_rawDesc = "" +
 	"ip_address\x18\x02 \x01(\tR\tipAddress\x12\x1d\n" +
 	"\n" +
 	"user_agent\x18\x03 \x01(\tR\tuserAgent\x12.\n" +
-	"\x13direct_user_request\x18\x04 \x01(\bR\x11directUserRequest\"\xfa\x02\n" +
-	"\x0eLocalInventory\x12\x1e\n" +
-	"\bplace_id\x18\x01 \x01(\tB\x03\xe0A\x01R\aplaceId\x12I\n" +
+	"\x13direct_user_request\x18\x04 \x01(\bR\x11directUserRequest\"\xfe\x02\n" +
+	"\x0eLocalInventory\x12\x1f\n" +
+	"\bplace_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\aplaceId\x12J\n" +
 	"\n" +
-	"price_info\x18\x02 \x01(\v2%.google.cloud.retail.v2beta.PriceInfoB\x03\xe0A\x01R\tpriceInfo\x12_\n" +
+	"price_info\x18\x02 \x01(\v2%.google.cloud.retail.v2beta.PriceInfoB\x04\xe2A\x01\x01R\tpriceInfo\x12`\n" +
 	"\n" +
-	"attributes\x18\x03 \x03(\v2:.google.cloud.retail.v2beta.LocalInventory.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x120\n" +
-	"\x11fulfillment_types\x18\x04 \x03(\tB\x03\xe0A\x01R\x10fulfillmentTypes\x1aj\n" +
+	"attributes\x18\x03 \x03(\v2:.google.cloud.retail.v2beta.LocalInventory.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x121\n" +
+	"\x11fulfillment_types\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x10fulfillmentTypes\x1aj\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12A\n" +
 	"\x05value\x18\x02 \x01(\v2+.google.cloud.retail.v2beta.CustomAttributeR\x05value:\x028\x01\"\x8f\x04\n" +

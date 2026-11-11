@@ -1370,6 +1370,11 @@ func (c *restClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/gateways", req.GetParent())
 
 		params := url.Values{}
@@ -1441,6 +1446,11 @@ func (c *restClient) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1500,6 +1510,11 @@ func (c *restClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/gateways", req.GetParent())
@@ -1571,6 +1586,11 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGateway().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetGateway().GetName())
 
 	params := url.Values{}
@@ -1637,6 +1657,11 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 func (c *restClient) DeleteGateway(ctx context.Context, req *apigatewaypb.DeleteGatewayRequest, opts ...gax.CallOption) (*DeleteGatewayOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1713,6 +1738,11 @@ func (c *restClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/apis", req.GetParent())
 
 		params := url.Values{}
@@ -1784,6 +1814,11 @@ func (c *restClient) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1843,6 +1878,11 @@ func (c *restClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/apis", req.GetParent())
@@ -1914,6 +1954,11 @@ func (c *restClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetApi().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetApi().GetName())
 
 	params := url.Values{}
@@ -1980,6 +2025,11 @@ func (c *restClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 func (c *restClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiRequest, opts ...gax.CallOption) (*DeleteApiOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2056,6 +2106,11 @@ func (c *restClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/configs", req.GetParent())
 
 		params := url.Values{}
@@ -2127,6 +2182,11 @@ func (c *restClient) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiC
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2189,6 +2249,11 @@ func (c *restClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/configs", req.GetParent())
@@ -2260,6 +2325,11 @@ func (c *restClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetApiConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetApiConfig().GetName())
 
 	params := url.Values{}
@@ -2326,6 +2396,11 @@ func (c *restClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 func (c *restClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.DeleteApiConfigRequest, opts ...gax.CallOption) (*DeleteApiConfigOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

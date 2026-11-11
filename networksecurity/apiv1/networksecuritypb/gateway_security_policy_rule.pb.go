@@ -613,40 +613,40 @@ var File_google_cloud_networksecurity_v1_gateway_security_policy_rule_proto prot
 
 const file_google_cloud_networksecurity_v1_gateway_security_policy_rule_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/networksecurity/v1/gateway_security_policy_rule.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xae\x06\n" +
-	"\x19GatewaySecurityPolicyRule\x12s\n" +
-	"\rbasic_profile\x18\t \x01(\x0e2G.google.cloud.networksecurity.v1.GatewaySecurityPolicyRule.BasicProfileB\x03\xe0A\x02H\x00R\fbasicProfile\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1d\n" +
-	"\aenabled\x18\x04 \x01(\bB\x03\xe0A\x02R\aenabled\x12\x1f\n" +
-	"\bpriority\x18\x05 \x01(\x05B\x03\xe0A\x02R\bpriority\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12,\n" +
-	"\x0fsession_matcher\x18\a \x01(\tB\x03\xe0A\x02R\x0esessionMatcher\x124\n" +
-	"\x13application_matcher\x18\b \x01(\tB\x03\xe0A\x01R\x12applicationMatcher\x129\n" +
+	"Bgoogle/cloud/networksecurity/v1/gateway_security_policy_rule.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb6\x06\n" +
+	"\x19GatewaySecurityPolicyRule\x12t\n" +
+	"\rbasic_profile\x18\t \x01(\x0e2G.google.cloud.networksecurity.v1.GatewaySecurityPolicyRule.BasicProfileB\x04\xe2A\x01\x02H\x00R\fbasicProfile\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1e\n" +
+	"\aenabled\x18\x04 \x01(\bB\x04\xe2A\x01\x02R\aenabled\x12 \n" +
+	"\bpriority\x18\x05 \x01(\x05B\x04\xe2A\x01\x02R\bpriority\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12-\n" +
+	"\x0fsession_matcher\x18\a \x01(\tB\x04\xe2A\x01\x02R\x0esessionMatcher\x125\n" +
+	"\x13application_matcher\x18\b \x01(\tB\x04\xe2A\x01\x01R\x12applicationMatcher\x12:\n" +
 	"\x16tls_inspection_enabled\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\x14tlsInspectionEnabled\"B\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\x14tlsInspectionEnabled\"B\n" +
 	"\fBasicProfile\x12\x1d\n" +
 	"\x19BASIC_PROFILE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ALLOW\x10\x01\x12\b\n" +
 	"\x04DENY\x10\x02:\xa6\x01\xeaA\xa2\x01\n" +
 	"8networksecurity.googleapis.com/GatewaySecurityPolicyRule\x12fprojects/{project}/locations/{location}/gatewaySecurityPolicies/{gateway_security_policy}/rules/{rule}B\t\n" +
-	"\aprofile\"\xcb\x02\n" +
-	"&CreateGatewaySecurityPolicyRuleRequest\x12X\n" +
-	"\x06parent\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\x128networksecurity.googleapis.com/GatewaySecurityPolicyRuleR\x06parent\x12\x80\x01\n" +
-	"\x1cgateway_security_policy_rule\x18\x02 \x01(\v2:.google.cloud.networksecurity.v1.GatewaySecurityPolicyRuleB\x03\xe0A\x02R\x19gatewaySecurityPolicyRule\x12D\n" +
-	"\x1fgateway_security_policy_rule_id\x18\x03 \x01(\tR\x1bgatewaySecurityPolicyRuleId\"{\n" +
-	"#GetGatewaySecurityPolicyRuleRequest\x12T\n" +
-	"\x04name\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8networksecurity.googleapis.com/GatewaySecurityPolicyRuleR\x04name\"\xed\x01\n" +
-	"&UpdateGatewaySecurityPolicyRuleRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12\x80\x01\n" +
-	"\x1cgateway_security_policy_rule\x18\x02 \x01(\v2:.google.cloud.networksecurity.v1.GatewaySecurityPolicyRuleB\x03\xe0A\x02R\x19gatewaySecurityPolicyRule\"\xb9\x01\n" +
-	"%ListGatewaySecurityPolicyRulesRequest\x12T\n" +
-	"\x06parent\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
+	"\aprofile\"\xcd\x02\n" +
+	"&CreateGatewaySecurityPolicyRuleRequest\x12Y\n" +
+	"\x06parent\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\x128networksecurity.googleapis.com/GatewaySecurityPolicyRuleR\x06parent\x12\x81\x01\n" +
+	"\x1cgateway_security_policy_rule\x18\x02 \x01(\v2:.google.cloud.networksecurity.v1.GatewaySecurityPolicyRuleB\x04\xe2A\x01\x02R\x19gatewaySecurityPolicyRule\x12D\n" +
+	"\x1fgateway_security_policy_rule_id\x18\x03 \x01(\tR\x1bgatewaySecurityPolicyRuleId\"|\n" +
+	"#GetGatewaySecurityPolicyRuleRequest\x12U\n" +
+	"\x04name\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8networksecurity.googleapis.com/GatewaySecurityPolicyRuleR\x04name\"\xef\x01\n" +
+	"&UpdateGatewaySecurityPolicyRuleRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12\x81\x01\n" +
+	"\x1cgateway_security_policy_rule\x18\x02 \x01(\v2:.google.cloud.networksecurity.v1.GatewaySecurityPolicyRuleB\x04\xe2A\x01\x02R\x19gatewaySecurityPolicyRule\"\xba\x01\n" +
+	"%ListGatewaySecurityPolicyRulesRequest\x12U\n" +
+	"\x06parent\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
 	"4networksecurity.googleapis.com/GatewaySecurityPolicyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -654,9 +654,9 @@ const file_google_cloud_networksecurity_v1_gateway_security_policy_rule_proto_ra
 	"&ListGatewaySecurityPolicyRulesResponse\x12}\n" +
 	"\x1dgateway_security_policy_rules\x18\x01 \x03(\v2:.google.cloud.networksecurity.v1.GatewaySecurityPolicyRuleR\x1agatewaySecurityPolicyRules\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"~\n" +
-	"&DeleteGatewaySecurityPolicyRuleRequest\x12T\n" +
-	"\x04name\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x7f\n" +
+	"&DeleteGatewaySecurityPolicyRuleRequest\x12U\n" +
+	"\x04name\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
 	"8networksecurity.googleapis.com/GatewaySecurityPolicyRuleR\x04nameB\xff\x01\n" +
 	"#com.google.cloud.networksecurity.v1B\x1eGatewaySecurityPolicyRuleProtoP\x01ZMcloud.google.com/go/networksecurity/apiv1/networksecuritypb;networksecuritypb\xaa\x02\x1fGoogle.Cloud.NetworkSecurity.V1\xca\x02\x1fGoogle\\Cloud\\NetworkSecurity\\V1\xea\x02\"Google::Cloud::NetworkSecurity::V1b\x06proto3"
 

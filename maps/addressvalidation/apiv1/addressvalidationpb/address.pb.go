@@ -406,11 +406,11 @@ var File_google_maps_addressvalidation_v1_address_proto protoreflect.FileDescrip
 
 const file_google_maps_addressvalidation_v1_address_proto_rawDesc = "" +
 	"\n" +
-	".google/maps/addressvalidation/v1/address.proto\x12 google.maps.addressvalidation.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/type/postal_address.proto\"\x86\x03\n" +
+	".google/maps/addressvalidation/v1/address.proto\x12 google.maps.addressvalidation.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/type/postal_address.proto\"\x87\x03\n" +
 	"\aAddress\x12+\n" +
 	"\x11formatted_address\x18\x02 \x01(\tR\x10formattedAddress\x12A\n" +
-	"\x0epostal_address\x18\x03 \x01(\v2\x1a.google.type.PostalAddressR\rpostalAddress\x12f\n" +
-	"\x12address_components\x18\x04 \x03(\v22.google.maps.addressvalidation.v1.AddressComponentB\x03\xe0A\x06R\x11addressComponents\x126\n" +
+	"\x0epostal_address\x18\x03 \x01(\v2\x1a.google.type.PostalAddressR\rpostalAddress\x12g\n" +
+	"\x12address_components\x18\x04 \x03(\v22.google.maps.addressvalidation.v1.AddressComponentB\x04\xe2A\x01\x06R\x11addressComponents\x126\n" +
 	"\x17missing_component_types\x18\x05 \x03(\tR\x15missingComponentTypes\x12>\n" +
 	"\x1bunconfirmed_component_types\x18\x06 \x03(\tR\x19unconfirmedComponentTypes\x12+\n" +
 	"\x11unresolved_tokens\x18\a \x03(\tR\x10unresolvedTokens\"\x8f\x04\n" +

@@ -1267,6 +1267,11 @@ func (c *restClient) ListConstraints(ctx context.Context, req *orgpolicypb.ListC
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/constraints", req.GetParent())
 
 		params := url.Values{}
@@ -1345,6 +1350,11 @@ func (c *restClient) ListPolicies(ctx context.Context, req *orgpolicypb.ListPoli
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/policies", req.GetParent())
 
 		params := url.Values{}
@@ -1414,6 +1424,11 @@ func (c *restClient) GetPolicy(ctx context.Context, req *orgpolicypb.GetPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1471,6 +1486,11 @@ func (c *restClient) GetPolicy(ctx context.Context, req *orgpolicypb.GetPolicyRe
 func (c *restClient) GetEffectivePolicy(ctx context.Context, req *orgpolicypb.GetEffectivePolicyRequest, opts ...gax.CallOption) (*orgpolicypb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:getEffectivePolicy", req.GetName())
@@ -1537,6 +1557,11 @@ func (c *restClient) CreatePolicy(ctx context.Context, req *orgpolicypb.CreatePo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/policies", req.GetParent())
@@ -1608,6 +1633,11 @@ func (c *restClient) UpdatePolicy(ctx context.Context, req *orgpolicypb.UpdatePo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetPolicy().GetName())
 
 	params := url.Values{}
@@ -1672,6 +1702,11 @@ func (c *restClient) DeletePolicy(ctx context.Context, req *orgpolicypb.DeletePo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1724,6 +1759,11 @@ func (c *restClient) CreateCustomConstraint(ctx context.Context, req *orgpolicyp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/customConstraints", req.GetParent())
@@ -1793,6 +1833,11 @@ func (c *restClient) UpdateCustomConstraint(ctx context.Context, req *orgpolicyp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomConstraint().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetCustomConstraint().GetName())
 
 	params := url.Values{}
@@ -1848,6 +1893,11 @@ func (c *restClient) UpdateCustomConstraint(ctx context.Context, req *orgpolicyp
 func (c *restClient) GetCustomConstraint(ctx context.Context, req *orgpolicypb.GetCustomConstraintRequest, opts ...gax.CallOption) (*orgpolicypb.CustomConstraint, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1918,6 +1968,11 @@ func (c *restClient) ListCustomConstraints(ctx context.Context, req *orgpolicypb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/customConstraints", req.GetParent())
 
 		params := url.Values{}
@@ -1984,6 +2039,11 @@ func (c *restClient) ListCustomConstraints(ctx context.Context, req *orgpolicypb
 func (c *restClient) DeleteCustomConstraint(ctx context.Context, req *orgpolicypb.DeleteCustomConstraintRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

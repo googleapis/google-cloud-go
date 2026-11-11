@@ -139,15 +139,15 @@ var File_google_cloud_ces_v1beta_open_api_toolset_proto protoreflect.FileDescrip
 
 const file_google_cloud_ces_v1beta_open_api_toolset_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/ces/v1beta/open_api_toolset.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/cloud/ces/v1beta/auth.proto\x1a$google/cloud/ces/v1beta/common.proto\"\xa5\x03\n" +
-	"\x0eOpenApiToolset\x12+\n" +
-	"\x0fopen_api_schema\x18\x01 \x01(\tB\x03\xe0A\x02R\ropenApiSchema\x12^\n" +
-	"\x12api_authentication\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.ApiAuthenticationB\x03\xe0A\x01R\x11apiAuthentication\x12F\n" +
+	".google/cloud/ces/v1beta/open_api_toolset.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/cloud/ces/v1beta/auth.proto\x1a$google/cloud/ces/v1beta/common.proto\"\xab\x03\n" +
+	"\x0eOpenApiToolset\x12,\n" +
+	"\x0fopen_api_schema\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ropenApiSchema\x12_\n" +
+	"\x12api_authentication\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.ApiAuthenticationB\x04\xe2A\x01\x01R\x11apiAuthentication\x12G\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\".google.cloud.ces.v1beta.TlsConfigB\x03\xe0A\x01R\ttlsConfig\x12n\n" +
-	"\x18service_directory_config\x18\x04 \x01(\v2/.google.cloud.ces.v1beta.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x127\n" +
-	"\x15ignore_unknown_fields\x18\x05 \x01(\bB\x03\xe0A\x01R\x13ignoreUnknownFields\x12\x15\n" +
-	"\x03url\x18\x06 \x01(\tB\x03\xe0A\x01R\x03urlBc\n" +
+	"tls_config\x18\x03 \x01(\v2\".google.cloud.ces.v1beta.TlsConfigB\x04\xe2A\x01\x01R\ttlsConfig\x12o\n" +
+	"\x18service_directory_config\x18\x04 \x01(\v2/.google.cloud.ces.v1beta.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x128\n" +
+	"\x15ignore_unknown_fields\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x13ignoreUnknownFields\x12\x16\n" +
+	"\x03url\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x03urlBc\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x13OpenApiToolsetProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
 var (

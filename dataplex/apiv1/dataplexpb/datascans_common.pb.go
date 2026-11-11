@@ -146,9 +146,9 @@ var File_google_cloud_dataplex_v1_datascans_common_proto protoreflect.FileDescri
 
 const file_google_cloud_dataplex_v1_datascans_common_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/dataplex/v1/datascans_common.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xc5\x01\n" +
-	"\x1fDataScanCatalogPublishingStatus\x12Z\n" +
-	"\x05state\x18\x01 \x01(\x0e2?.google.cloud.dataplex.v1.DataScanCatalogPublishingStatus.StateB\x03\xe0A\x03R\x05state\"F\n" +
+	"/google/cloud/dataplex/v1/datascans_common.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xc6\x01\n" +
+	"\x1fDataScanCatalogPublishingStatus\x12[\n" +
+	"\x05state\x18\x01 \x01(\x0e2?.google.cloud.dataplex.v1.DataScanCatalogPublishingStatus.StateB\x04\xe2A\x01\x03R\x05state\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSUCCEEDED\x10\x01\x12\n" +

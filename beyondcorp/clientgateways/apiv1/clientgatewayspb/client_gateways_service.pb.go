@@ -679,16 +679,16 @@ var File_google_cloud_beyondcorp_clientgateways_v1_client_gateways_service_proto
 
 const file_google_cloud_beyondcorp_clientgateways_v1_client_gateways_service_proto_rawDesc = "" +
 	"\n" +
-	"Ggoogle/cloud/beyondcorp/clientgateways/v1/client_gateways_service.proto\x12)google.cloud.beyondcorp.clientgateways.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbe\x04\n" +
-	"\rClientGateway\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Y\n" +
-	"\x05state\x18\x04 \x01(\x0e2>.google.cloud.beyondcorp.clientgateways.v1.ClientGateway.StateB\x03\xe0A\x03R\x05state\x12\x13\n" +
-	"\x02id\x18\x05 \x01(\tB\x03\xe0A\x03R\x02id\x12=\n" +
-	"\x18client_connector_service\x18\x06 \x01(\tB\x03\xe0A\x03R\x16clientConnectorService\"j\n" +
+	"Ggoogle/cloud/beyondcorp/clientgateways/v1/client_gateways_service.proto\x12)google.cloud.beyondcorp.clientgateways.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\x04\n" +
+	"\rClientGateway\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12Z\n" +
+	"\x05state\x18\x04 \x01(\x0e2>.google.cloud.beyondcorp.clientgateways.v1.ClientGateway.StateB\x04\xe2A\x01\x03R\x05state\x12\x14\n" +
+	"\x02id\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12>\n" +
+	"\x18client_connector_service\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x16clientConnectorService\"j\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\f\n" +
@@ -697,43 +697,43 @@ const file_google_cloud_beyondcorp_clientgateways_v1_client_gateways_service_pro
 	"\aRUNNING\x10\x04\x12\b\n" +
 	"\x04DOWN\x10\x05\x12\t\n" +
 	"\x05ERROR\x10\x06:u\xeaAr\n" +
-	"'beyondcorp.googleapis.com/ClientGateway\x12Gprojects/{project}/locations/{location}/clientGateways/{client_gateway}\"\xe7\x01\n" +
-	"\x19ListClientGatewaysRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'beyondcorp.googleapis.com/ClientGatewayR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"'beyondcorp.googleapis.com/ClientGateway\x12Gprojects/{project}/locations/{location}/clientGateways/{client_gateway}\"\xec\x01\n" +
+	"\x19ListClientGatewaysRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'beyondcorp.googleapis.com/ClientGatewayR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc9\x01\n" +
 	"\x1aListClientGatewaysResponse\x12a\n" +
 	"\x0fclient_gateways\x18\x01 \x03(\v28.google.cloud.beyondcorp.clientgateways.v1.ClientGatewayR\x0eclientGateways\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
-	"\x17GetClientGatewayRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'beyondcorp.googleapis.com/ClientGatewayR\x04name\"\xca\x02\n" +
-	"\x1aCreateClientGatewayRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'beyondcorp.googleapis.com/ClientGatewayR\x06parent\x12/\n" +
-	"\x11client_gateway_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fclientGatewayId\x12d\n" +
-	"\x0eclient_gateway\x18\x03 \x01(\v28.google.cloud.beyondcorp.clientgateways.v1.ClientGatewayB\x03\xe0A\x02R\rclientGateway\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
+	"\x17GetClientGatewayRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'beyondcorp.googleapis.com/ClientGatewayR\x04name\"\xcf\x02\n" +
+	"\x1aCreateClientGatewayRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'beyondcorp.googleapis.com/ClientGatewayR\x06parent\x120\n" +
+	"\x11client_gateway_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fclientGatewayId\x12e\n" +
+	"\x0eclient_gateway\x18\x03 \x01(\v28.google.cloud.beyondcorp.clientgateways.v1.ClientGatewayB\x04\xe2A\x01\x02R\rclientGateway\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xaf\x01\n" +
-	"\x1aDeleteClientGatewayRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'beyondcorp.googleapis.com/ClientGatewayR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xb2\x01\n" +
+	"\x1aDeleteClientGatewayRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'beyondcorp.googleapis.com/ClientGatewayR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xe2\x02\n" +
-	"\x1eClientGatewayOperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xe9\x02\n" +
+	"\x1eClientGatewayOperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\xc7\b\n" +
 	"\x15ClientGatewaysService\x12\xe6\x01\n" +
 	"\x12ListClientGateways\x12D.google.cloud.beyondcorp.clientgateways.v1.ListClientGatewaysRequest\x1aE.google.cloud.beyondcorp.clientgateways.v1.ListClientGatewaysResponse\"C\xdaA\x06parent\x82\xd3\xe4\x93\x024\x122/v1/{parent=projects/*/locations/*}/clientGateways\x12\xd3\x01\n" +

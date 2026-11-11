@@ -2447,24 +2447,24 @@ var File_google_cloud_agentidentity_v1_auth_provider_service_proto protoreflect.
 
 const file_google_cloud_agentidentity_v1_auth_provider_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/agentidentity/v1/auth_provider_service.proto\x12\x1dgoogle.cloud.agentidentity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\v\n" +
-	"\fAuthProvider\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12T\n" +
-	"\x06labels\x18\x04 \x03(\v27.google.cloud.agentidentity.v1.AuthProvider.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x82\x01\n" +
-	"\x19auth_provider_type_params\x18\x05 \x01(\v2B.google.cloud.agentidentity.v1.AuthProvider.AuthProviderTypeParamsB\x03\xe0A\x02R\x16authProviderTypeParams\x12*\n" +
-	"\x0eallowed_scopes\x18\x06 \x03(\tB\x03\xe0A\x01R\rallowedScopes\x12*\n" +
-	"\x0eblocked_scopes\x18\a \x03(\tB\x03\xe0A\x01R\rblockedScopes\x12%\n" +
-	"\vdescription\x18\b \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1d\n" +
-	"\adeleted\x18\t \x01(\bB\x03\xe0A\x03R\adeleted\x12@\n" +
+	"9google/cloud/agentidentity/v1/auth_provider_service.proto\x12\x1dgoogle.cloud.agentidentity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\v\n" +
+	"\fAuthProvider\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12U\n" +
+	"\x06labels\x18\x04 \x03(\v27.google.cloud.agentidentity.v1.AuthProvider.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x83\x01\n" +
+	"\x19auth_provider_type_params\x18\x05 \x01(\v2B.google.cloud.agentidentity.v1.AuthProvider.AuthProviderTypeParamsB\x04\xe2A\x01\x02R\x16authProviderTypeParams\x12+\n" +
+	"\x0eallowed_scopes\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\rallowedScopes\x12+\n" +
+	"\x0eblocked_scopes\x18\a \x03(\tB\x04\xe2A\x01\x01R\rblockedScopes\x12&\n" +
+	"\vdescription\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1e\n" +
+	"\adeleted\x18\t \x01(\bB\x04\xe2A\x01\x03R\adeleted\x12A\n" +
 	"\vexpire_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12L\n" +
-	"\x05state\x18\v \x01(\x0e21.google.cloud.agentidentity.v1.AuthProvider.StateB\x03\xe0A\x03R\x05state\x12)\n" +
-	"\fworkload_ids\x18\f \x03(\tB\x06\xe0A\x01\xe0A\x04R\vworkloadIds\x1a\x93\x03\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12M\n" +
+	"\x05state\x18\v \x01(\x0e21.google.cloud.agentidentity.v1.AuthProvider.StateB\x04\xe2A\x01\x03R\x05state\x12(\n" +
+	"\fworkload_ids\x18\f \x03(\tB\x05\xe2A\x02\x01\x04R\vworkloadIds\x1a\x93\x03\n" +
 	"\x16AuthProviderTypeParams\x12_\n" +
 	"\x12three_legged_oauth\x18\x01 \x01(\v2/.google.cloud.agentidentity.v1.ThreeLeggedOAuthH\x00R\x10threeLeggedOauth\x12Y\n" +
 	"\x10two_legged_oauth\x18\x02 \x01(\v2-.google.cloud.agentidentity.v1.TwoLeggedOAuthH\x00R\x0etwoLeggedOauth\x12F\n" +
@@ -2478,161 +2478,161 @@ const file_google_cloud_agentidentity_v1_auth_provider_service_proto_rawDesc = "
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
 	"\bDISABLED\x10\x02:\x93\x01\xeaA\x8f\x01\n" +
-	")agentidentity.googleapis.com/AuthProvider\x12Eprojects/{project}/locations/{location}/authProviders/{auth_provider}*\rauthProviders2\fauthProvider\"\xba\x02\n" +
-	"\x10ThreeLeggedOAuth\x12+\n" +
-	"\rclient_secret\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\x04R\fclientSecret\x12 \n" +
-	"\tclient_id\x18\x02 \x01(\tB\x03\xe0A\x01R\bclientId\x12&\n" +
-	"\fredirect_url\x18\x03 \x01(\tB\x03\xe0A\x03R\vredirectUrl\x120\n" +
-	"\x11authorization_url\x18\x04 \x01(\tB\x03\xe0A\x01R\x10authorizationUrl\x12 \n" +
-	"\ttoken_url\x18\x05 \x01(\tB\x03\xe0A\x01R\btokenUrl\x12$\n" +
-	"\venable_pkce\x18\x06 \x01(\bB\x03\xe0A\x01R\n" +
-	"enablePkce\x125\n" +
-	"\x14default_continue_uri\x18\a \x01(\tB\x03\xe0A\x01R\x12defaultContinueUri\"\x81\x01\n" +
-	"\x0eTwoLeggedOAuth\x12+\n" +
-	"\rclient_secret\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\x04R\fclientSecret\x12 \n" +
-	"\tclient_id\x18\x02 \x01(\tB\x03\xe0A\x01R\bclientId\x12 \n" +
-	"\ttoken_url\x18\x03 \x01(\tB\x03\xe0A\x01R\btokenUrl\"/\n" +
-	"\fApiKeyParams\x12\x1f\n" +
-	"\aapi_key\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\x04R\x06apiKey\"$\n" +
-	"\"GeminiEnterpriseAuthProviderParams\"\x90\x02\n" +
-	"\x18ListAuthProvidersRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)agentidentity.googleapis.com/AuthProviderR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	")agentidentity.googleapis.com/AuthProvider\x12Eprojects/{project}/locations/{location}/authProviders/{auth_provider}*\rauthProviders2\fauthProvider\"\xbf\x02\n" +
+	"\x10ThreeLeggedOAuth\x12*\n" +
+	"\rclient_secret\x18\x01 \x01(\tB\x05\xe2A\x02\x01\x04R\fclientSecret\x12!\n" +
+	"\tclient_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bclientId\x12'\n" +
+	"\fredirect_url\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vredirectUrl\x121\n" +
+	"\x11authorization_url\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10authorizationUrl\x12!\n" +
+	"\ttoken_url\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\btokenUrl\x12%\n" +
+	"\venable_pkce\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"enablePkce\x126\n" +
+	"\x14default_continue_uri\x18\a \x01(\tB\x04\xe2A\x01\x01R\x12defaultContinueUri\"\x82\x01\n" +
+	"\x0eTwoLeggedOAuth\x12*\n" +
+	"\rclient_secret\x18\x01 \x01(\tB\x05\xe2A\x02\x01\x04R\fclientSecret\x12!\n" +
+	"\tclient_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bclientId\x12!\n" +
+	"\ttoken_url\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\btokenUrl\".\n" +
+	"\fApiKeyParams\x12\x1e\n" +
+	"\aapi_key\x18\x01 \x01(\tB\x05\xe2A\x02\x01\x04R\x06apiKey\"$\n" +
+	"\"GeminiEnterpriseAuthProviderParams\"\x96\x02\n" +
+	"\x18ListAuthProvidersRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)agentidentity.googleapis.com/AuthProviderR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12&\n" +
-	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\xbe\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12'\n" +
+	"\fshow_deleted\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\"\xbf\x01\n" +
 	"\x19ListAuthProvidersResponse\x12R\n" +
 	"\x0eauth_providers\x18\x01 \x03(\v2+.google.cloud.agentidentity.v1.AuthProviderR\rauthProviders\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"_\n" +
-	"\x16GetAuthProviderRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")agentidentity.googleapis.com/AuthProviderR\x04name\"\x98\x02\n" +
-	"\x19CreateAuthProviderRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)agentidentity.googleapis.com/AuthProviderR\x06parent\x12-\n" +
-	"\x10auth_provider_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eauthProviderId\x12U\n" +
-	"\rauth_provider\x18\x03 \x01(\v2+.google.cloud.agentidentity.v1.AuthProviderB\x03\xe0A\x02R\fauthProvider\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"`\n" +
+	"\x16GetAuthProviderRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")agentidentity.googleapis.com/AuthProviderR\x04name\"\x9c\x02\n" +
+	"\x19CreateAuthProviderRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)agentidentity.googleapis.com/AuthProviderR\x06parent\x12.\n" +
+	"\x10auth_provider_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eauthProviderId\x12V\n" +
+	"\rauth_provider\x18\x03 \x01(\v2+.google.cloud.agentidentity.v1.AuthProviderB\x04\xe2A\x01\x02R\fauthProvider\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe0\x01\n" +
-	"\x19UpdateAuthProviderRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12U\n" +
-	"\rauth_provider\x18\x02 \x01(\v2+.google.cloud.agentidentity.v1.AuthProviderB\x03\xe0A\x02R\fauthProvider\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe3\x01\n" +
+	"\x19UpdateAuthProviderRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12V\n" +
+	"\rauth_provider\x18\x02 \x01(\v2+.google.cloud.agentidentity.v1.AuthProviderB\x04\xe2A\x01\x02R\fauthProvider\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8e\x01\n" +
-	"\x19DeleteAuthProviderRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")agentidentity.googleapis.com/AuthProviderR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x90\x01\n" +
+	"\x19DeleteAuthProviderRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")agentidentity.googleapis.com/AuthProviderR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x90\x01\n" +
-	"\x1bUndeleteAuthProviderRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")agentidentity.googleapis.com/AuthProviderR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x92\x01\n" +
+	"\x1bUndeleteAuthProviderRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")agentidentity.googleapis.com/AuthProviderR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8e\x01\n" +
-	"\x19EnableAuthProviderRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")agentidentity.googleapis.com/AuthProviderR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x90\x01\n" +
+	"\x19EnableAuthProviderRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")agentidentity.googleapis.com/AuthProviderR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8f\x01\n" +
-	"\x1aDisableAuthProviderRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")agentidentity.googleapis.com/AuthProviderR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x91\x01\n" +
+	"\x1aDisableAuthProviderRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")agentidentity.googleapis.com/AuthProviderR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb6\x04\n" +
-	"\rAuthorization\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12)\n" +
-	"\x0eclient_user_id\x18\x05 \x01(\tB\x03\xe0A\x03R\fclientUserId\x12\x1b\n" +
-	"\x06scopes\x18\x06 \x03(\tB\x03\xe0A\x03R\x06scopes\x12M\n" +
-	"\x05state\x18\a \x01(\x0e22.google.cloud.agentidentity.v1.Authorization.StateB\x03\xe0A\x03R\x05state\"9\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbc\x04\n" +
+	"\rAuthorization\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12*\n" +
+	"\x0eclient_user_id\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\fclientUserId\x12\x1c\n" +
+	"\x06scopes\x18\x06 \x03(\tB\x04\xe2A\x01\x03R\x06scopes\x12N\n" +
+	"\x05state\x18\a \x01(\x0e22.google.cloud.agentidentity.v1.Authorization.StateB\x04\xe2A\x01\x03R\x05state\"9\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\r\n" +
 	"\tSUSPENDED\x10\x02:\xb5\x01\xeaA\xb1\x01\n" +
-	"*agentidentity.googleapis.com/Authorization\x12dprojects/{project}/locations/{location}/authProviders/{auth_provider}/authorizations/{authorization}*\x0eauthorizations2\rauthorization\"\xea\x01\n" +
-	"\x19ListAuthorizationsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*agentidentity.googleapis.com/AuthorizationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"*agentidentity.googleapis.com/Authorization\x12dprojects/{project}/locations/{location}/authProviders/{auth_provider}/authorizations/{authorization}*\x0eauthorizations2\rauthorization\"\xef\x01\n" +
+	"\x19ListAuthorizationsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*agentidentity.googleapis.com/AuthorizationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc2\x01\n" +
 	"\x1aListAuthorizationsResponse\x12T\n" +
 	"\x0eauthorizations\x18\x01 \x03(\v2,.google.cloud.agentidentity.v1.AuthorizationR\x0eauthorizations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"a\n" +
-	"\x17GetAuthorizationRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*agentidentity.googleapis.com/AuthorizationR\x04name\"\x90\x01\n" +
-	"\x1aDeleteAuthorizationRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*agentidentity.googleapis.com/AuthorizationR\x04name\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"b\n" +
+	"\x17GetAuthorizationRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*agentidentity.googleapis.com/AuthorizationR\x04name\"\x92\x01\n" +
+	"\x1aDeleteAuthorizationRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*agentidentity.googleapis.com/AuthorizationR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf1\x06\n" +
-	"\rAccessSummary\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12K\n" +
-	"\x11first_access_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0ffirstAccessTime\x12I\n" +
-	"\x10last_access_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastAccessTime\x12U\n" +
-	"\x06labels\x18\x04 \x03(\v28.google.cloud.agentidentity.v1.AccessSummary.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x1c\n" +
-	"\auser_id\x18\x05 \x01(\tB\x03\xe0A\x03R\x06userId\x12$\n" +
-	"\vworkload_id\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"workloadId\x12 \n" +
-	"\ttoken_url\x18\a \x01(\tB\x03\xe0A\x03R\btokenUrl\x12\x1b\n" +
-	"\x06scopes\x18\b \x03(\tB\x03\xe0A\x03R\x06scopes\x12V\n" +
-	"\rauth_provider\x18\t \x01(\tB1\xe0A\x03\xfaA+\n" +
-	")agentidentity.googleapis.com/AuthProviderR\fauthProvider\x12>\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfa\x06\n" +
+	"\rAccessSummary\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12L\n" +
+	"\x11first_access_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0ffirstAccessTime\x12J\n" +
+	"\x10last_access_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastAccessTime\x12V\n" +
+	"\x06labels\x18\x04 \x03(\v28.google.cloud.agentidentity.v1.AccessSummary.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x1d\n" +
+	"\auser_id\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x06userId\x12%\n" +
+	"\vworkload_id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"workloadId\x12!\n" +
+	"\ttoken_url\x18\a \x01(\tB\x04\xe2A\x01\x03R\btokenUrl\x12\x1c\n" +
+	"\x06scopes\x18\b \x03(\tB\x04\xe2A\x01\x03R\x06scopes\x12W\n" +
+	"\rauth_provider\x18\t \x01(\tB2\xe2A\x01\x03\xfaA+\n" +
+	")agentidentity.googleapis.com/AuthProviderR\fauthProvider\x12?\n" +
 	"\n" +
 	"purge_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tpurgeTime\x12b\n" +
-	"\x12auth_provider_type\x18\v \x01(\x0e2/.google.cloud.agentidentity.v1.AuthProviderTypeB\x03\xe0A\x03R\x10authProviderType\x1a9\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tpurgeTime\x12c\n" +
+	"\x12auth_provider_type\x18\v \x01(\x0e2/.google.cloud.agentidentity.v1.AuthProviderTypeB\x04\xe2A\x01\x03R\x10authProviderType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9a\x01\xeaA\x96\x01\n" +
-	"*agentidentity.googleapis.com/AccessSummary\x12Hprojects/{project}/locations/{location}/accessSummaries/{access_summary}*\x0faccessSummaries2\raccessSummary\"\xeb\x01\n" +
-	"\x1aListAccessSummariesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*agentidentity.googleapis.com/AccessSummaryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"*agentidentity.googleapis.com/AccessSummary\x12Hprojects/{project}/locations/{location}/accessSummaries/{access_summary}*\x0faccessSummaries2\raccessSummary\"\xf0\x01\n" +
+	"\x1aListAccessSummariesRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*agentidentity.googleapis.com/AccessSummaryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc6\x01\n" +
 	"\x1bListAccessSummariesResponse\x12W\n" +
 	"\x10access_summaries\x18\x01 \x03(\v2,.google.cloud.agentidentity.v1.AccessSummaryR\x0faccessSummaries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"a\n" +
-	"\x17GetAccessSummaryRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*agentidentity.googleapis.com/AccessSummaryR\x04name\"\xd2\x01\n" +
-	"\x19QueryAuthProvidersRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)agentidentity.googleapis.com/AuthProviderR\x06parent\x12$\n" +
-	"\vworkload_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"workloadId\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"b\n" +
+	"\x17GetAccessSummaryRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*agentidentity.googleapis.com/AccessSummaryR\x04name\"\xd6\x01\n" +
+	"\x19QueryAuthProvidersRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)agentidentity.googleapis.com/AuthProviderR\x06parent\x12%\n" +
+	"\vworkload_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"workloadId\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"t\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"t\n" +
 	"\x1aQueryAuthProvidersResponse\x12.\n" +
 	"\x13auth_provider_names\x18\x01 \x03(\tR\x11authProviderNames\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa4\x01\n" +
-	"\x15QueryWorkloadsRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")agentidentity.googleapis.com/AuthProviderR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa7\x01\n" +
+	"\x15QueryWorkloadsRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")agentidentity.googleapis.com/AuthProviderR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"c\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"c\n" +
 	"\x16QueryWorkloadsResponse\x12!\n" +
 	"\fworkload_ids\x18\x01 \x03(\tR\vworkloadIds\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x81\x01\n" +
-	"\x1aRevokeAuthorizationRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")agentidentity.googleapis.com/AuthProviderR\x04name\x12\x1c\n" +
-	"\auser_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06userId\"\x1d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x83\x01\n" +
+	"\x1aRevokeAuthorizationRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")agentidentity.googleapis.com/AuthProviderR\x04name\x12\x1d\n" +
+	"\auser_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06userId\"\x1d\n" +
 	"\x1bRevokeAuthorizationResponse*\xd4\x01\n" +
 	"\x10AuthProviderType\x12\"\n" +
 	"\x1eAUTH_PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12)\n" +

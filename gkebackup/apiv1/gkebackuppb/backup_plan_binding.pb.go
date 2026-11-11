@@ -576,41 +576,41 @@ var File_google_cloud_gkebackup_v1_backup_plan_binding_proto protoreflect.FileDe
 
 const file_google_cloud_gkebackup_v1_backup_plan_binding_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/gkebackup/v1/backup_plan_binding.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x93\x11\n" +
-	"\x11BackupPlanBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12O\n" +
-	"\vbackup_plan\x18\x05 \x01(\tB.\xe0A\x05\xe0A\x03\xfaA%\n" +
+	"3google/cloud/gkebackup/v1/backup_plan_binding.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\x11\n" +
+	"\x11BackupPlanBinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12N\n" +
+	"\vbackup_plan\x18\x05 \x01(\tB-\xe2A\x02\x05\x03\xfaA%\n" +
 	"#gkebackup.googleapis.com/BackupPlanR\n" +
-	"backupPlan\x12E\n" +
-	"\acluster\x18\x06 \x01(\tB+\xe0A\x05\xe0A\x03\xfaA\"\n" +
-	" container.googleapis.com/ClusterR\acluster\x12s\n" +
-	"\x13backup_plan_details\x18\a \x01(\v2>.google.cloud.gkebackup.v1.BackupPlanBinding.BackupPlanDetailsB\x03\xe0A\x03R\x11backupPlanDetails\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x03R\x04etag\x1a\xcf\v\n" +
-	"\x11BackupPlanDetails\x123\n" +
-	"\x13protected_pod_count\x18\x01 \x01(\x05B\x03\xe0A\x03R\x11protectedPodCount\x12_\n" +
-	"\x05state\x18\x02 \x01(\x0e2D.google.cloud.gkebackup.v1.BackupPlanBinding.BackupPlanDetails.StateB\x03\xe0A\x03R\x05state\x12^\n" +
-	"\x1blast_successful_backup_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x18lastSuccessfulBackupTime\x12\\\n" +
-	"\x1anext_scheduled_backup_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x17nextScheduledBackupTime\x12)\n" +
-	"\x0erpo_risk_level\x18\x05 \x01(\x05B\x03\xe0A\x03R\frpoRiskLevel\x129\n" +
-	"\x16last_successful_backup\x18\x06 \x01(\tB\x03\xe0A\x03R\x14lastSuccessfulBackup\x12\x8b\x01\n" +
-	"\x15backup_config_details\x18\a \x01(\v2R.google.cloud.gkebackup.v1.BackupPlanBinding.BackupPlanDetails.BackupConfigDetailsB\x03\xe0A\x03R\x13backupConfigDetails\x12\x94\x01\n" +
-	"\x18retention_policy_details\x18\b \x01(\v2U.google.cloud.gkebackup.v1.BackupPlanBinding.BackupPlanDetails.RetentionPolicyDetailsB\x03\xe0A\x03R\x16retentionPolicyDetails\x1a\xd3\x03\n" +
-	"\x13BackupConfigDetails\x12,\n" +
-	"\x0eall_namespaces\x18\x01 \x01(\bB\x03\xe0A\x03H\x00R\rallNamespaces\x12]\n" +
-	"\x13selected_namespaces\x18\x02 \x01(\v2%.google.cloud.gkebackup.v1.NamespacesB\x03\xe0A\x03H\x00R\x12selectedNamespaces\x12f\n" +
-	"\x15selected_applications\x18\x03 \x01(\v2*.google.cloud.gkebackup.v1.NamespacedNamesB\x03\xe0A\x03H\x00R\x14selectedApplications\x123\n" +
-	"\x13include_volume_data\x18\x05 \x01(\bB\x03\xe0A\x03R\x11includeVolumeData\x12,\n" +
-	"\x0finclude_secrets\x18\x06 \x01(\bB\x03\xe0A\x03R\x0eincludeSecrets\x12T\n" +
-	"\x0eencryption_key\x18\a \x01(\v2(.google.cloud.gkebackup.v1.EncryptionKeyB\x03\xe0A\x03R\rencryptionKeyB\x0e\n" +
-	"\fbackup_scope\x1a\x87\x01\n" +
-	"\x16RetentionPolicyDetails\x12:\n" +
-	"\x17backup_delete_lock_days\x18\x01 \x01(\x05B\x03\xe0A\x01R\x14backupDeleteLockDays\x121\n" +
-	"\x12backup_retain_days\x18\x02 \x01(\x05B\x03\xe0A\x01R\x10backupRetainDays\"{\n" +
+	"backupPlan\x12D\n" +
+	"\acluster\x18\x06 \x01(\tB*\xe2A\x02\x05\x03\xfaA\"\n" +
+	" container.googleapis.com/ClusterR\acluster\x12t\n" +
+	"\x13backup_plan_details\x18\a \x01(\v2>.google.cloud.gkebackup.v1.BackupPlanBinding.BackupPlanDetailsB\x04\xe2A\x01\x03R\x11backupPlanDetails\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a\xdf\v\n" +
+	"\x11BackupPlanDetails\x124\n" +
+	"\x13protected_pod_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x11protectedPodCount\x12`\n" +
+	"\x05state\x18\x02 \x01(\x0e2D.google.cloud.gkebackup.v1.BackupPlanBinding.BackupPlanDetails.StateB\x04\xe2A\x01\x03R\x05state\x12_\n" +
+	"\x1blast_successful_backup_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x18lastSuccessfulBackupTime\x12]\n" +
+	"\x1anext_scheduled_backup_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x17nextScheduledBackupTime\x12*\n" +
+	"\x0erpo_risk_level\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\frpoRiskLevel\x12:\n" +
+	"\x16last_successful_backup\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x14lastSuccessfulBackup\x12\x8c\x01\n" +
+	"\x15backup_config_details\x18\a \x01(\v2R.google.cloud.gkebackup.v1.BackupPlanBinding.BackupPlanDetails.BackupConfigDetailsB\x04\xe2A\x01\x03R\x13backupConfigDetails\x12\x95\x01\n" +
+	"\x18retention_policy_details\x18\b \x01(\v2U.google.cloud.gkebackup.v1.BackupPlanBinding.BackupPlanDetails.RetentionPolicyDetailsB\x04\xe2A\x01\x03R\x16retentionPolicyDetails\x1a\xd9\x03\n" +
+	"\x13BackupConfigDetails\x12-\n" +
+	"\x0eall_namespaces\x18\x01 \x01(\bB\x04\xe2A\x01\x03H\x00R\rallNamespaces\x12^\n" +
+	"\x13selected_namespaces\x18\x02 \x01(\v2%.google.cloud.gkebackup.v1.NamespacesB\x04\xe2A\x01\x03H\x00R\x12selectedNamespaces\x12g\n" +
+	"\x15selected_applications\x18\x03 \x01(\v2*.google.cloud.gkebackup.v1.NamespacedNamesB\x04\xe2A\x01\x03H\x00R\x14selectedApplications\x124\n" +
+	"\x13include_volume_data\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x11includeVolumeData\x12-\n" +
+	"\x0finclude_secrets\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x0eincludeSecrets\x12U\n" +
+	"\x0eencryption_key\x18\a \x01(\v2(.google.cloud.gkebackup.v1.EncryptionKeyB\x04\xe2A\x01\x03R\rencryptionKeyB\x0e\n" +
+	"\fbackup_scope\x1a\x89\x01\n" +
+	"\x16RetentionPolicyDetails\x12;\n" +
+	"\x17backup_delete_lock_days\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x14backupDeleteLockDays\x122\n" +
+	"\x12backup_retain_days\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x10backupRetainDays\"{\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fCLUSTER_PENDING\x10\x01\x12\x10\n" +

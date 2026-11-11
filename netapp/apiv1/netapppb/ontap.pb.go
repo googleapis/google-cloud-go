@@ -468,27 +468,27 @@ var File_google_cloud_netapp_v1_ontap_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_ontap_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/netapp/v1/ontap.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\"o\n" +
-	"\x17ExecuteOntapPostRequest\x120\n" +
-	"\x04body\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x02R\x04body\x12\"\n" +
+	"\"google/cloud/netapp/v1/ontap.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\"q\n" +
+	"\x17ExecuteOntapPostRequest\x121\n" +
+	"\x04body\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x02R\x04body\x12#\n" +
 	"\n" +
-	"ontap_path\x18\x03 \x01(\tB\x03\xe0A\x02R\tontapPath\"G\n" +
+	"ontap_path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tontapPath\"G\n" +
 	"\x18ExecuteOntapPostResponse\x12+\n" +
-	"\x04body\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x04body\"<\n" +
-	"\x16ExecuteOntapGetRequest\x12\"\n" +
+	"\x04body\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x04body\"=\n" +
+	"\x16ExecuteOntapGetRequest\x12#\n" +
 	"\n" +
-	"ontap_path\x18\x01 \x01(\tB\x03\xe0A\x02R\tontapPath\"F\n" +
+	"ontap_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tontapPath\"F\n" +
 	"\x17ExecuteOntapGetResponse\x12+\n" +
-	"\x04body\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x04body\"?\n" +
-	"\x19ExecuteOntapDeleteRequest\x12\"\n" +
+	"\x04body\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x04body\"@\n" +
+	"\x19ExecuteOntapDeleteRequest\x12#\n" +
 	"\n" +
-	"ontap_path\x18\x02 \x01(\tB\x03\xe0A\x02R\tontapPath\"I\n" +
+	"ontap_path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tontapPath\"I\n" +
 	"\x1aExecuteOntapDeleteResponse\x12+\n" +
-	"\x04body\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x04body\"p\n" +
-	"\x18ExecuteOntapPatchRequest\x120\n" +
-	"\x04body\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x02R\x04body\x12\"\n" +
+	"\x04body\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x04body\"r\n" +
+	"\x18ExecuteOntapPatchRequest\x121\n" +
+	"\x04body\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x02R\x04body\x12#\n" +
 	"\n" +
-	"ontap_path\x18\x03 \x01(\tB\x03\xe0A\x02R\tontapPath\"H\n" +
+	"ontap_path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tontapPath\"H\n" +
 	"\x19ExecuteOntapPatchResponse\x12+\n" +
 	"\x04body\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x04bodyB\xac\x01\n" +
 	"\x1acom.google.cloud.netapp.v1B\n" +

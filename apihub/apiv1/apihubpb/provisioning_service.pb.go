@@ -314,20 +314,20 @@ var File_google_cloud_apihub_v1_provisioning_service_proto protoreflect.FileDesc
 
 const file_google_cloud_apihub_v1_provisioning_service_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/apihub/v1/provisioning_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/apihub/v1/common_fields.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xeb\x01\n" +
-	"\x1bCreateApiHubInstanceRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x122\n" +
-	"\x13api_hub_instance_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x10apiHubInstanceId\x12U\n" +
-	"\x10api_hub_instance\x18\x03 \x01(\v2&.google.cloud.apihub.v1.ApiHubInstanceB\x03\xe0A\x02R\x0eapiHubInstance\"_\n" +
-	"\x1bDeleteApiHubInstanceRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$apihub.googleapis.com/ApiHubInstanceR\x04name\"\\\n" +
-	"\x18GetApiHubInstanceRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$apihub.googleapis.com/ApiHubInstanceR\x04name\"c\n" +
-	"\x1bLookupApiHubInstanceRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$apihub.googleapis.com/ApiHubInstanceR\x06parent\"p\n" +
+	"1google/cloud/apihub/v1/provisioning_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/apihub/v1/common_fields.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xee\x01\n" +
+	"\x1bCreateApiHubInstanceRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x123\n" +
+	"\x13api_hub_instance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10apiHubInstanceId\x12V\n" +
+	"\x10api_hub_instance\x18\x03 \x01(\v2&.google.cloud.apihub.v1.ApiHubInstanceB\x04\xe2A\x01\x02R\x0eapiHubInstance\"`\n" +
+	"\x1bDeleteApiHubInstanceRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$apihub.googleapis.com/ApiHubInstanceR\x04name\"]\n" +
+	"\x18GetApiHubInstanceRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$apihub.googleapis.com/ApiHubInstanceR\x04name\"d\n" +
+	"\x1bLookupApiHubInstanceRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$apihub.googleapis.com/ApiHubInstanceR\x06parent\"p\n" +
 	"\x1cLookupApiHubInstanceResponse\x12P\n" +
 	"\x10api_hub_instance\x18\x01 \x01(\v2&.google.cloud.apihub.v1.ApiHubInstanceR\x0eapiHubInstance2\xcd\a\n" +
 	"\fProvisioning\x12\x8e\x02\n" +

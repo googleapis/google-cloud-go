@@ -2685,6 +2685,11 @@ func (c *restClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/channels", req.GetParent())
 
 	params := url.Values{}
@@ -2763,6 +2768,11 @@ func (c *restClient) ListChannels(ctx context.Context, req *livestreampb.ListCha
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/channels", req.GetParent())
 
 		params := url.Values{}
@@ -2834,6 +2844,11 @@ func (c *restClient) GetChannel(ctx context.Context, req *livestreampb.GetChanne
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2886,6 +2901,11 @@ func (c *restClient) GetChannel(ctx context.Context, req *livestreampb.GetChanne
 func (c *restClient) DeleteChannel(ctx context.Context, req *livestreampb.DeleteChannelRequest, opts ...gax.CallOption) (*DeleteChannelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2960,6 +2980,11 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *livestreampb.Update
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChannel().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetChannel().GetName())
@@ -3040,6 +3065,11 @@ func (c *restClient) StartChannel(ctx context.Context, req *livestreampb.StartCh
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
 
 	params := url.Values{}
@@ -3106,6 +3136,11 @@ func (c *restClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
@@ -3176,6 +3211,11 @@ func (c *restClient) StartDistribution(ctx context.Context, req *livestreampb.St
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:startdistribution", req.GetName())
 
 	params := url.Values{}
@@ -3241,6 +3281,11 @@ func (c *restClient) StopDistribution(ctx context.Context, req *livestreampb.Sto
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stopdistribution", req.GetName())
@@ -3309,6 +3354,11 @@ func (c *restClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/inputs", req.GetParent())
@@ -3389,6 +3439,11 @@ func (c *restClient) ListInputs(ctx context.Context, req *livestreampb.ListInput
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/inputs", req.GetParent())
 
 		params := url.Values{}
@@ -3460,6 +3515,11 @@ func (c *restClient) GetInput(ctx context.Context, req *livestreampb.GetInputReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3512,6 +3572,11 @@ func (c *restClient) GetInput(ctx context.Context, req *livestreampb.GetInputReq
 func (c *restClient) DeleteInput(ctx context.Context, req *livestreampb.DeleteInputRequest, opts ...gax.CallOption) (*DeleteInputOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3583,6 +3648,11 @@ func (c *restClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInput().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInput().GetName())
@@ -3662,6 +3732,11 @@ func (c *restClient) PreviewInput(ctx context.Context, req *livestreampb.Preview
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:preview", req.GetName())
 
 	params := url.Values{}
@@ -3721,6 +3796,11 @@ func (c *restClient) CreateEvent(ctx context.Context, req *livestreampb.CreateEv
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/events", req.GetParent())
@@ -3794,6 +3874,11 @@ func (c *restClient) ListEvents(ctx context.Context, req *livestreampb.ListEvent
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/events", req.GetParent())
 
 		params := url.Values{}
@@ -3865,6 +3950,11 @@ func (c *restClient) GetEvent(ctx context.Context, req *livestreampb.GetEventReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3917,6 +4007,11 @@ func (c *restClient) GetEvent(ctx context.Context, req *livestreampb.GetEventReq
 func (c *restClient) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEventRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3972,6 +4067,11 @@ func (c *restClient) ListClips(ctx context.Context, req *livestreampb.ListClipsR
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/clips", req.GetParent())
@@ -4045,6 +4145,11 @@ func (c *restClient) GetClip(ctx context.Context, req *livestreampb.GetClipReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4104,6 +4209,11 @@ func (c *restClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/clips", req.GetParent())
@@ -4170,6 +4280,11 @@ func (c *restClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 func (c *restClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteClipRequest, opts ...gax.CallOption) (*DeleteClipOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4241,6 +4356,11 @@ func (c *restClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dvrSessions", req.GetParent())
@@ -4321,6 +4441,11 @@ func (c *restClient) ListDvrSessions(ctx context.Context, req *livestreampb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dvrSessions", req.GetParent())
 
 		params := url.Values{}
@@ -4392,6 +4517,11 @@ func (c *restClient) GetDvrSession(ctx context.Context, req *livestreampb.GetDvr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4444,6 +4574,11 @@ func (c *restClient) GetDvrSession(ctx context.Context, req *livestreampb.GetDvr
 func (c *restClient) DeleteDvrSession(ctx context.Context, req *livestreampb.DeleteDvrSessionRequest, opts ...gax.CallOption) (*DeleteDvrSessionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4515,6 +4650,11 @@ func (c *restClient) UpdateDvrSession(ctx context.Context, req *livestreampb.Upd
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDvrSession().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDvrSession().GetName())
@@ -4596,6 +4736,11 @@ func (c *restClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAs
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/assets", req.GetParent())
 
 	params := url.Values{}
@@ -4661,6 +4806,11 @@ func (c *restClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4723,6 +4873,11 @@ func (c *restClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 func (c *restClient) GetAsset(ctx context.Context, req *livestreampb.GetAssetRequest, opts ...gax.CallOption) (*livestreampb.Asset, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4790,6 +4945,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *livestreampb.ListAsset
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/assets", req.GetParent())
@@ -4863,6 +5023,11 @@ func (c *restClient) GetPool(ctx context.Context, req *livestreampb.GetPoolReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4922,6 +5087,11 @@ func (c *restClient) UpdatePool(ctx context.Context, req *livestreampb.UpdatePoo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPool().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPool().GetName())
@@ -4995,6 +5165,11 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5060,6 +5235,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -5136,6 +5316,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -5175,6 +5360,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5212,6 +5402,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5279,6 +5474,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

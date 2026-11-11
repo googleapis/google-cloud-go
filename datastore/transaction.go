@@ -350,7 +350,17 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 		}
 
 		var retryErr error
-		fRunErr := f(tx)
+		fRunErr := func() error {
+			panicked := true
+			defer func() {
+				if panicked {
+					_ = tx.rollbackWithRetry()
+				}
+			}()
+			err := f(tx)
+			panicked = false
+			return err
+		}()
 		if fRunErr == nil {
 			// Commit transaction
 			cmt, commitErr := tx.Commit()

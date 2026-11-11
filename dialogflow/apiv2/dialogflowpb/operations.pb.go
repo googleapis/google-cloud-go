@@ -91,9 +91,9 @@ var File_google_cloud_dialogflow_v2_operations_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_operations_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/dialogflow/v2/operations.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"^\n" +
-	"$GeneratorEvaluationOperationMetadata\x126\n" +
-	"\x14generator_evaluation\x18\x01 \x01(\tB\x03\xe0A\x03R\x13generatorEvaluationB\x95\x01\n" +
+	"+google/cloud/dialogflow/v2/operations.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"_\n" +
+	"$GeneratorEvaluationOperationMetadata\x127\n" +
+	"\x14generator_evaluation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x13generatorEvaluationB\x95\x01\n" +
 	"\x1ecom.google.cloud.dialogflow.v2B\x0fOperationsProtoP\x01Z>cloud.google.com/go/dialogflow/apiv2/dialogflowpb;dialogflowpb\xa2\x02\x02DF\xaa\x02\x1aGoogle.Cloud.Dialogflow.V2b\x06proto3"
 
 var (

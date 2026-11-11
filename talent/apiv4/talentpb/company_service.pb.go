@@ -414,23 +414,23 @@ var File_google_cloud_talent_v4_company_service_proto protoreflect.FileDescripto
 
 const file_google_cloud_talent_v4_company_service_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/talent/v4/company_service.proto\x12\x16google.cloud.talent.v4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/talent/v4/common.proto\x1a$google/cloud/talent/v4/company.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x92\x01\n" +
-	"\x14CreateCompanyRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1ajobs.googleapis.com/TenantR\x06parent\x12>\n" +
-	"\acompany\x18\x02 \x01(\v2\x1f.google.cloud.talent.v4.CompanyB\x03\xe0A\x02R\acompany\"L\n" +
-	"\x11GetCompanyRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bjobs.googleapis.com/CompanyR\x04name\"\x93\x01\n" +
-	"\x14UpdateCompanyRequest\x12>\n" +
-	"\acompany\x18\x01 \x01(\v2\x1f.google.cloud.talent.v4.CompanyB\x03\xe0A\x02R\acompany\x12;\n" +
+	",google/cloud/talent/v4/company_service.proto\x12\x16google.cloud.talent.v4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/talent/v4/common.proto\x1a$google/cloud/talent/v4/company.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x94\x01\n" +
+	"\x14CreateCompanyRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1ajobs.googleapis.com/TenantR\x06parent\x12?\n" +
+	"\acompany\x18\x02 \x01(\v2\x1f.google.cloud.talent.v4.CompanyB\x04\xe2A\x01\x02R\acompany\"M\n" +
+	"\x11GetCompanyRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bjobs.googleapis.com/CompanyR\x04name\"\x94\x01\n" +
+	"\x14UpdateCompanyRequest\x12?\n" +
+	"\acompany\x18\x01 \x01(\v2\x1f.google.cloud.talent.v4.CompanyB\x04\xe2A\x01\x02R\acompany\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"O\n" +
-	"\x14DeleteCompanyRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bjobs.googleapis.com/CompanyR\x04name\"\xba\x01\n" +
-	"\x14ListCompaniesRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"updateMask\"P\n" +
+	"\x14DeleteCompanyRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bjobs.googleapis.com/CompanyR\x04name\"\xbb\x01\n" +
+	"\x14ListCompaniesRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
 	"\x1ajobs.googleapis.com/TenantR\x06parent\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x1b\n" +

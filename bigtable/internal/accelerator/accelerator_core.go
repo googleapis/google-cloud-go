@@ -16,20 +16,23 @@
 // translates Bigtable V2 RPCs into proto-native session vRPCs handled by
 // internal/session.
 //
-// Channel is scoped to one (project, instance, appProfile). It owns a
-// session.Client and a session.TableCache, and dispatches each RPC by
-// resolving a per-resource session.TableAPI through the cache. Handles are kept
-// warm for reuse and evicted on idle TTL, so a long-lived daemon reclaims idle
-// resources' session pools instead of accumulating one per resource forever.
-// Close tears down the cache (releasing cached handles' pools) and then the
-// session.Client.
+// Channel is scoped to a GCP project (and optionally a pinned instance and
+// appProfile). It owns one or more session.Client instances (keyed by
+// (instance, appProfile)) and a session.TableCache, and dispatches each RPC by
+// resolving a per-resource session.TableAPI through the cache. Table handles
+// are kept warm for reuse and evicted on idle TTL, so a long-lived daemon
+// reclaims idle resources' session pools instead of accumulating one per
+// resource forever. Close tears down the cache (releasing cached handles'
+// pools) and then all session.Client instances.
 package accelerator
 
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"strings"
+	"sync"
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal"
@@ -124,29 +127,56 @@ var newSessionClient = func(
 	return session.NewClient(ctx, project, instance, appProfile, clientName, metricsProvider, featureFlags, opts...)
 }
 
-// Channel is an in-process grpc.ClientConnInterface backed by
-// internal/session. It owns a session.Client and opens a per-resource
-// session.TableAPI on it for each RPC. One channel per
-// (project, instance, appProfile).
-//
-// scopePrefix is "projects/<project>/instances/<instance>/", precomputed once
-// at construction. The dispatch path validates that an incoming V2 resource
-// name targets this daemon's scope against it, then strips it to the leaf ID
-// session.Client expects (see resourcename.go). It is the only retained form of
-// the (project, instance) the channel is scoped to.
-//
-// sessionTables caches per-resource session.TableAPI handles keyed by the
-// fully-qualified V2 resource name, so repeated RPCs to the same resource share
-// one warm handle and idle resources' pools are reclaimed by its TTL sweeper.
-type Channel struct {
-	sc            session.Client
-	scopePrefix   string
-	sessionTables *session.TableCache
+// clientKey identifies a distinct (instance, appProfile) session.Client within
+// a project-scoped Channel.
+type clientKey struct {
+	instance   string
+	appProfile string
 }
 
-// NewChannel constructs an Channel scoped to
-// (project, instance, appProfile). It dials the underlying session.Client,
-// which the Channel owns and closes via Close (below).
+// clientLoadState coordinates single-flight lazy client creation per clientKey.
+type clientLoadState struct {
+	ready chan struct{}
+}
+
+// Channel is an in-process grpc.ClientConnInterface backed by
+// internal/session. It is scoped to a GCP project (and optionally a pinned
+// instance/appProfile). When instance is omitted at construction, Channel
+// lazily creates and caches one session.Client per (instance, appProfile)
+// observed in incoming RPC requests.
+//
+// scopePrefix is "projects/<project>/instances/<instance>/" when instance is
+// pinned, or "projects/<project>/instances/" when project-scoped, precomputed
+// once at construction. The dispatch path validates that an incoming V2
+// resource name targets this daemon's scope against it, then strips it to the
+// instance ID and leaf ID(s) session.Client expects (see resourcename.go).
+//
+// sessionTables caches per-resource session.TableAPI handles keyed by the
+// fully-qualified V2 resource name and effective app profile, so repeated RPCs
+// to the same resource share one warm handle and idle resources' pools are
+// reclaimed by its TTL sweeper.
+type Channel struct {
+	ctx        context.Context
+	project    string
+	instance   string
+	appProfile string
+	clientName string
+	opts       []option.ClientOption
+
+	scopePrefix   string
+	sessionTables *session.TableCache
+
+	mu      sync.Mutex
+	clients map[clientKey]session.Client
+	loading map[clientKey]*clientLoadState
+	closed  bool
+}
+
+// NewChannel constructs a Channel scoped to project (and optionally instance
+// and appProfile when non-empty). When instance is provided at construction,
+// the underlying session.Client is dialed eagerly; when instance is empty,
+// session.Client instances are dialed lazily per (instance, appProfile) on
+// incoming RPCs and closed via Close (below).
 //
 // clientName is stamped as the client_name attribute on exported client-side
 // metrics. The daemon passes its composed user agent here (see ComposeUserAgent),
@@ -168,64 +198,183 @@ func NewChannel(
 	if err != nil {
 		return nil, err
 	}
+	// DefaultClientOptions does not touch message sizes, and this dial does not
+	// go through bigtable.NewClient, so without this the daemon would keep
+	// gRPC's 4 MiB default receive limit — making the accelerated path reject
+	// ReadRows responses the client it stands in for accepts.
+	defaultOpts = append(defaultOpts, btopt.MessageSizeOptions()...)
 	opts = append(defaultOpts, opts...)
 
-	sc, err := newSessionClient(ctx, project, instance, appProfile, clientName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &Channel{
-		sc:            sc,
+	ch := &Channel{
+		ctx:           ctx,
+		project:       project,
+		instance:      instance,
+		appProfile:    appProfile,
+		clientName:    clientName,
+		opts:          opts,
 		scopePrefix:   scopePrefixFor(project, instance),
 		sessionTables: session.NewTableCache(session.DefaultTableCacheTTL, session.DefaultTableCacheSweepInterval, nil /* time.Now */),
-	}, nil
+		clients:       make(map[clientKey]session.Client),
+		loading:       make(map[clientKey]*clientLoadState),
+	}
+	if instance != "" {
+		sc, err := newSessionClient(ctx, project, instance, appProfile, clientName, opts...)
+		if err != nil {
+			ch.sessionTables.Close()
+			return nil, err
+		}
+		ch.clients[clientKey{instance: instance, appProfile: appProfile}] = sc
+	}
+	return ch, nil
+}
+
+// getOrCreateSessionClient returns the session.Client for (instanceID, appProfile),
+// dialing and caching a new one if needed using per-key single-flight
+// coordination so warm clients return immediately without waiting on cold dials.
+func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (session.Client, error) {
+	key := clientKey{instance: instanceID, appProfile: appProfile}
+	for {
+		c.mu.Lock()
+		if c.closed {
+			c.mu.Unlock()
+			return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
+		}
+		if sc, ok := c.clients[key]; ok {
+			c.mu.Unlock()
+			return sc, nil
+		}
+		if c.loading == nil {
+			c.loading = make(map[clientKey]*clientLoadState)
+		}
+		if ls, ok := c.loading[key]; ok {
+			c.mu.Unlock()
+			<-ls.ready
+			continue
+		}
+		ls := &clientLoadState{ready: make(chan struct{})}
+		c.loading[key] = ls
+		c.mu.Unlock()
+
+		var (
+			sc  session.Client
+			err error
+		)
+		func() {
+			defer func() {
+				c.mu.Lock()
+				delete(c.loading, key)
+				c.mu.Unlock()
+				close(ls.ready)
+			}()
+
+			ctx := c.ctx
+			if ctx == nil {
+				ctx = context.Background()
+			}
+			sc, err = newSessionClient(ctx, c.project, instanceID, appProfile, c.clientName, c.opts...)
+			if err != nil {
+				return
+			}
+
+			c.mu.Lock()
+			if c.closed {
+				c.mu.Unlock()
+				_ = sc.Close()
+				sc = nil
+				err = status.Error(codes.Unavailable, "accelerator: channel is closed")
+				return
+			}
+			if c.clients == nil {
+				c.clients = make(map[clientKey]session.Client)
+			}
+			c.clients[key] = sc
+			c.mu.Unlock()
+		}()
+		return sc, err
+	}
+}
+
+// resolveAppProfile returns the effective app profile for an RPC, checking
+// against the channel's pinned app profile if one was configured at startup.
+func (c *Channel) resolveAppProfile(reqAppProfile string) (string, error) {
+	if c.appProfile != "" {
+		if reqAppProfile != "" && reqAppProfile != c.appProfile {
+			return "", status.Errorf(codes.InvalidArgument,
+				"accelerator: request app_profile_id %q does not match this daemon's app profile (%s)",
+				reqAppProfile, c.appProfile)
+		}
+		return c.appProfile, nil
+	}
+	return reqAppProfile, nil
 }
 
 // openHandle resolves an extracted resource to a per-resource, cached
 // session.TableAPI based on its kind. The adapter already determined the kind
 // from the populated V2 name field; here the full name is validated against
-// this daemon's scope and reduced to the leaf ID(s) session.Client expects,
-// which re-prefixes them with its own project/instance. A name targeting a
-// different project/instance is rejected rather than silently served from this
-// daemon's scope.
+// this daemon's scope and reduced to the instance ID and leaf ID(s)
+// session.Client expects, which re-prefixes them with its own project/instance.
+// A name targeting a different project (or a different instance when pinned) is
+// rejected rather than silently served from this daemon's scope.
 //
 // Validation runs before the cache lookup, so an out-of-scope name is rejected
 // without ever creating or caching a handle. In-scope names resolve through the
-// TableCache keyed by the full V2 name, so repeated RPCs to the same resource
-// share one warm handle; the cache's sweeper evicts idle handles (releasing
-// their pools) on TTL.
+// TableCache keyed by the full V2 name and effective app profile, so repeated
+// RPCs to the same resource share one warm handle; the cache's sweeper evicts
+// idle handles (releasing their pools) on TTL.
 func (c *Channel) openHandle(res adapters.Resource) (session.TableAPI, error) {
-	var open func() session.TableAPI
+	appProfile, err := c.resolveAppProfile(res.AppProfile)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		instanceID string
+		openWith   func(session.Client) session.TableAPI
+	)
 	switch res.Kind {
 	case adapters.ResourceTable:
-		tableID, err := c.parseTableName(res.Name)
+		var tableID string
+		instanceID, tableID, err = c.parseTableName(res.Name)
 		if err != nil {
 			return nil, err
 		}
-		open = func() session.TableAPI { return c.sc.OpenTable(tableID) }
+		openWith = func(sc session.Client) session.TableAPI { return sc.OpenTable(tableID) }
 	case adapters.ResourceAuthorizedView:
-		tableID, viewID, err := c.parseAuthorizedViewName(res.Name)
+		var tableID, viewID string
+		instanceID, tableID, viewID, err = c.parseAuthorizedViewName(res.Name)
 		if err != nil {
 			return nil, err
 		}
-		open = func() session.TableAPI { return c.sc.OpenAuthorizedView(tableID, viewID) }
+		openWith = func(sc session.Client) session.TableAPI { return sc.OpenAuthorizedView(tableID, viewID) }
 	case adapters.ResourceMaterializedView:
-		viewID, err := c.parseMaterializedViewName(res.Name)
+		var viewID string
+		instanceID, viewID, err = c.parseMaterializedViewName(res.Name)
 		if err != nil {
 			return nil, err
 		}
-		open = func() session.TableAPI { return c.sc.OpenMaterializedView(viewID) }
+		openWith = func(sc session.Client) session.TableAPI { return sc.OpenMaterializedView(viewID) }
 	default:
 		// Kind is set by the adapter from the populated V2 name field, so an
 		// unrecognized kind is an internal invariant violation, not bad input.
 		return nil, status.Errorf(codes.Internal, "accelerator: unknown resource kind %v", res.Kind)
 	}
 
-	// Key on the full V2 name (the identity Cloud Bigtable uses on the wire),
-	// so table / authorized-view / materialized-view keys never collide. A nil
-	// handle means the cache has been Closed (Channel.Close), so the channel is
-	// no longer usable.
-	tbl := c.sessionTables.GetOrOpen(res.Name, open)
+	sc, err := c.getOrCreateSessionClient(instanceID, appProfile)
+	if err != nil {
+		return nil, err
+	}
+
+	// Key on the full V2 name plus effective app profile, so table /
+	// authorized-view / materialized-view keys and distinct app profiles never
+	// collide. A nil handle means the cache has been Closed (Channel.Close), so
+	// the channel is no longer usable.
+	cacheKey := res.Name
+	if appProfile != "" {
+		cacheKey = res.Name + "\x00" + appProfile
+	}
+	tbl := c.sessionTables.GetOrOpen(cacheKey, func() session.TableAPI {
+		return openWith(sc)
+	})
 	if tbl == nil {
 		return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
 	}
@@ -308,14 +457,37 @@ func (c *Channel) NewStream(ctx context.Context, _ *grpc.StreamDesc, method stri
 
 // Close releases resources held by the channel. It closes the per-resource
 // TableCache first — stopping its sweeper and Close()ing every cached handle so
-// each releases its session pools — then tears down the session.Client that
-// owns those pools.
+// each releases its session pools — then tears down all session.Client
+// instances that own those pools.
 func (c *Channel) Close() error {
-	if c.sc == nil {
+	if c == nil {
 		return nil
 	}
-	c.sessionTables.Close()
-	return c.sc.Close()
+	c.mu.Lock()
+	if c.closed {
+		c.mu.Unlock()
+		return nil
+	}
+	c.closed = true
+	clients := make([]session.Client, 0, len(c.clients))
+	for _, sc := range c.clients {
+		if sc != nil {
+			clients = append(clients, sc)
+		}
+	}
+	c.clients = nil
+	c.mu.Unlock()
+
+	if c.sessionTables != nil {
+		c.sessionTables.Close()
+	}
+	var errs []error
+	for _, sc := range clients {
+		if err := sc.Close(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
 }
 
 // readRowsClientStream implements grpc.ClientStream for the V2 ReadRows RPC,

@@ -1,5 +1,19 @@
 # Changes
 
+## [0.15.1](https://github.com/googleapis/google-cloud-go/compare/phishingprotection/v0.15.0...phishingprotection/v0.15.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/phishingprotection/v0.14.0...phishingprotection/v0.15.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
 ## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/phishingprotection/v0.13.0...phishingprotection/v0.14.0) (2026-09-23)
 
 

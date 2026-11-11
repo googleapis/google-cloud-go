@@ -1805,46 +1805,46 @@ var File_google_spanner_admin_database_v1_backup_proto protoreflect.FileDescript
 
 const file_google_spanner_admin_database_v1_backup_proto_rawDesc = "" +
 	"\n" +
-	"-google/spanner/admin/database/v1/backup.proto\x12 google.spanner.admin.database.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-google/spanner/admin/database/v1/common.proto\"\x9e\f\n" +
+	"-google/spanner/admin/database/v1/backup.proto\x12 google.spanner.admin.database.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-google/spanner/admin/database/v1/common.proto\"\xad\f\n" +
 	"\x06Backup\x12@\n" +
 	"\bdatabase\x18\x02 \x01(\tB$\xfaA!\n" +
 	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12=\n" +
 	"\fversion_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\vversionTime\x12;\n" +
 	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"expireTime\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x05 \x01(\x03B\x03\xe0A\x03R\tsizeBytes\x123\n" +
-	"\x13freeable_size_bytes\x18\x0f \x01(\x03B\x03\xe0A\x03R\x11freeableSizeBytes\x125\n" +
-	"\x14exclusive_size_bytes\x18\x10 \x01(\x03B\x03\xe0A\x03R\x12exclusiveSizeBytes\x12I\n" +
-	"\x05state\x18\x06 \x01(\x0e2..google.spanner.admin.database.v1.Backup.StateB\x03\xe0A\x03R\x05state\x12\\\n" +
-	"\x15referencing_databases\x18\a \x03(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\x14referencingDatabases\x12^\n" +
-	"\x0fencryption_info\x18\b \x01(\v20.google.spanner.admin.database.v1.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12l\n" +
-	"\x16encryption_information\x18\r \x03(\v20.google.spanner.admin.database.v1.EncryptionInfoB\x03\xe0A\x03R\x15encryptionInformation\x12a\n" +
+	"size_bytes\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes\x124\n" +
+	"\x13freeable_size_bytes\x18\x0f \x01(\x03B\x04\xe2A\x01\x03R\x11freeableSizeBytes\x126\n" +
+	"\x14exclusive_size_bytes\x18\x10 \x01(\x03B\x04\xe2A\x01\x03R\x12exclusiveSizeBytes\x12J\n" +
+	"\x05state\x18\x06 \x01(\x0e2..google.spanner.admin.database.v1.Backup.StateB\x04\xe2A\x01\x03R\x05state\x12]\n" +
+	"\x15referencing_databases\x18\a \x03(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\x14referencingDatabases\x12_\n" +
+	"\x0fencryption_info\x18\b \x01(\v20.google.spanner.admin.database.v1.EncryptionInfoB\x04\xe2A\x01\x03R\x0eencryptionInfo\x12m\n" +
+	"\x16encryption_information\x18\r \x03(\v20.google.spanner.admin.database.v1.EncryptionInfoB\x04\xe2A\x01\x03R\x15encryptionInformation\x12b\n" +
 	"\x10database_dialect\x18\n" +
-	" \x01(\x0e21.google.spanner.admin.database.v1.DatabaseDialectB\x03\xe0A\x03R\x0fdatabaseDialect\x12V\n" +
-	"\x13referencing_backups\x18\v \x03(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dspanner.googleapis.com/BackupR\x12referencingBackups\x12G\n" +
-	"\x0fmax_expire_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rmaxExpireTime\x12X\n" +
-	"\x10backup_schedules\x18\x0e \x03(\tB-\xe0A\x03\xfaA'\n" +
-	"%spanner.googleapis.com/BackupScheduleR\x0fbackupSchedules\x12B\n" +
-	"\x1bincremental_backup_chain_id\x18\x11 \x01(\tB\x03\xe0A\x03R\x18incrementalBackupChainId\x12O\n" +
-	"\x13oldest_version_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11oldestVersionTime\x12o\n" +
-	"\x13instance_partitions\x18\x13 \x03(\v29.google.spanner.admin.database.v1.BackupInstancePartitionB\x03\xe0A\x03R\x12instancePartitions\"7\n" +
+	" \x01(\x0e21.google.spanner.admin.database.v1.DatabaseDialectB\x04\xe2A\x01\x03R\x0fdatabaseDialect\x12W\n" +
+	"\x13referencing_backups\x18\v \x03(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dspanner.googleapis.com/BackupR\x12referencingBackups\x12H\n" +
+	"\x0fmax_expire_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rmaxExpireTime\x12Y\n" +
+	"\x10backup_schedules\x18\x0e \x03(\tB.\xe2A\x01\x03\xfaA'\n" +
+	"%spanner.googleapis.com/BackupScheduleR\x0fbackupSchedules\x12C\n" +
+	"\x1bincremental_backup_chain_id\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\x18incrementalBackupChainId\x12P\n" +
+	"\x13oldest_version_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11oldestVersionTime\x12p\n" +
+	"\x13instance_partitions\x18\x13 \x03(\v29.google.spanner.admin.database.v1.BackupInstancePartitionB\x04\xe2A\x01\x03R\x12instancePartitions\"7\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\t\n" +
 	"\x05READY\x10\x02:\\\xeaAY\n" +
-	"\x1dspanner.googleapis.com/Backup\x128projects/{project}/instances/{instance}/backups/{backup}\"\xb1\x02\n" +
-	"\x13CreateBackupRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12 \n" +
-	"\tbackup_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bbackupId\x12E\n" +
-	"\x06backup\x18\x03 \x01(\v2(.google.spanner.admin.database.v1.BackupB\x03\xe0A\x02R\x06backup\x12p\n" +
-	"\x11encryption_config\x18\x04 \x01(\v2>.google.spanner.admin.database.v1.CreateBackupEncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\"\x9e\x02\n" +
+	"\x1dspanner.googleapis.com/Backup\x128projects/{project}/instances/{instance}/backups/{backup}\"\xb5\x02\n" +
+	"\x13CreateBackupRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12!\n" +
+	"\tbackup_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bbackupId\x12F\n" +
+	"\x06backup\x18\x03 \x01(\v2(.google.spanner.admin.database.v1.BackupB\x04\xe2A\x01\x02R\x06backup\x12q\n" +
+	"\x11encryption_config\x18\x04 \x01(\v2>.google.spanner.admin.database.v1.CreateBackupEncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\"\x9e\x02\n" +
 	"\x14CreateBackupMetadata\x126\n" +
 	"\x04name\x18\x01 \x01(\tB\"\xfaA\x1f\n" +
 	"\x1dspanner.googleapis.com/BackupR\x04name\x12@\n" +
@@ -1852,16 +1852,16 @@ const file_google_spanner_admin_database_v1_backup_proto_rawDesc = "" +
 	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12O\n" +
 	"\bprogress\x18\x03 \x01(\v23.google.spanner.admin.database.v1.OperationProgressR\bprogress\x12;\n" +
 	"\vcancel_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"cancelTime\"\xf4\x02\n" +
-	"\x11CopyBackupRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12 \n" +
-	"\tbackup_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bbackupId\x12J\n" +
-	"\rsource_backup\x18\x03 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dspanner.googleapis.com/BackupR\fsourceBackup\x12@\n" +
-	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\n" +
-	"expireTime\x12n\n" +
-	"\x11encryption_config\x18\x05 \x01(\v2<.google.spanner.admin.database.v1.CopyBackupEncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\"\xa3\x02\n" +
+	"cancelTime\"\xf9\x02\n" +
+	"\x11CopyBackupRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12!\n" +
+	"\tbackup_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bbackupId\x12K\n" +
+	"\rsource_backup\x18\x03 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dspanner.googleapis.com/BackupR\fsourceBackup\x12A\n" +
+	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\n" +
+	"expireTime\x12o\n" +
+	"\x11encryption_config\x18\x05 \x01(\v2<.google.spanner.admin.database.v1.CopyBackupEncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\"\xa3\x02\n" +
 	"\x12CopyBackupMetadata\x126\n" +
 	"\x04name\x18\x01 \x01(\tB\"\xfaA\x1f\n" +
 	"\x1dspanner.googleapis.com/BackupR\x04name\x12G\n" +
@@ -1869,19 +1869,19 @@ const file_google_spanner_admin_database_v1_backup_proto_rawDesc = "" +
 	"\x1dspanner.googleapis.com/BackupR\fsourceBackup\x12O\n" +
 	"\bprogress\x18\x03 \x01(\v23.google.spanner.admin.database.v1.OperationProgressR\bprogress\x12;\n" +
 	"\vcancel_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"cancelTime\"\x9e\x01\n" +
-	"\x13UpdateBackupRequest\x12E\n" +
-	"\x06backup\x18\x01 \x01(\v2(.google.spanner.admin.database.v1.BackupB\x03\xe0A\x02R\x06backup\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"M\n" +
-	"\x10GetBackupRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dspanner.googleapis.com/BackupR\x04name\"P\n" +
-	"\x13DeleteBackupRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dspanner.googleapis.com/BackupR\x04name\"\xa9\x01\n" +
-	"\x12ListBackupsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"cancelTime\"\xa0\x01\n" +
+	"\x13UpdateBackupRequest\x12F\n" +
+	"\x06backup\x18\x01 \x01(\v2(.google.spanner.admin.database.v1.BackupB\x04\xe2A\x01\x02R\x06backup\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"N\n" +
+	"\x10GetBackupRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dspanner.googleapis.com/BackupR\x04name\"Q\n" +
+	"\x13DeleteBackupRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dspanner.googleapis.com/BackupR\x04name\"\xaa\x01\n" +
+	"\x12ListBackupsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1889,9 +1889,9 @@ const file_google_spanner_admin_database_v1_backup_proto_rawDesc = "" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x81\x01\n" +
 	"\x13ListBackupsResponse\x12B\n" +
 	"\abackups\x18\x01 \x03(\v2(.google.spanner.admin.database.v1.BackupR\abackups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2\x01\n" +
-	"\x1bListBackupOperationsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb3\x01\n" +
+	"\x1bListBackupOperationsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1910,25 +1910,25 @@ const file_google_spanner_admin_database_v1_backup_proto_rawDesc = "" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12M\n" +
 	"\x0fsource_database\x18\x03 \x01(\tB$\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\x0esourceDatabase\"\xc8\x03\n" +
-	"\x1cCreateBackupEncryptionConfig\x12{\n" +
-	"\x0fencryption_type\x18\x01 \x01(\x0e2M.google.spanner.admin.database.v1.CreateBackupEncryptionConfig.EncryptionTypeB\x03\xe0A\x02R\x0eencryptionType\x12K\n" +
-	"\fkms_key_name\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\x0esourceDatabase\"\xcb\x03\n" +
+	"\x1cCreateBackupEncryptionConfig\x12|\n" +
+	"\x0fencryption_type\x18\x01 \x01(\x0e2M.google.spanner.admin.database.v1.CreateBackupEncryptionConfig.EncryptionTypeB\x04\xe2A\x01\x02R\x0eencryptionType\x12L\n" +
+	"\fkms_key_name\x18\x02 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12M\n" +
-	"\rkms_key_names\x18\x03 \x03(\tB)\xe0A\x01\xfaA#\n" +
+	"kmsKeyName\x12N\n" +
+	"\rkms_key_names\x18\x03 \x03(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\vkmsKeyNames\"\x8e\x01\n" +
 	"\x0eEncryptionType\x12\x1f\n" +
 	"\x1bENCRYPTION_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17USE_DATABASE_ENCRYPTION\x10\x01\x12\x1d\n" +
 	"\x19GOOGLE_DEFAULT_ENCRYPTION\x10\x02\x12\x1f\n" +
-	"\x1bCUSTOMER_MANAGED_ENCRYPTION\x10\x03\"\xd4\x03\n" +
-	"\x1aCopyBackupEncryptionConfig\x12y\n" +
-	"\x0fencryption_type\x18\x01 \x01(\x0e2K.google.spanner.admin.database.v1.CopyBackupEncryptionConfig.EncryptionTypeB\x03\xe0A\x02R\x0eencryptionType\x12K\n" +
-	"\fkms_key_name\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"\x1bCUSTOMER_MANAGED_ENCRYPTION\x10\x03\"\xd7\x03\n" +
+	"\x1aCopyBackupEncryptionConfig\x12z\n" +
+	"\x0fencryption_type\x18\x01 \x01(\x0e2K.google.spanner.admin.database.v1.CopyBackupEncryptionConfig.EncryptionTypeB\x04\xe2A\x01\x02R\x0eencryptionType\x12L\n" +
+	"\fkms_key_name\x18\x02 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12M\n" +
-	"\rkms_key_names\x18\x03 \x03(\tB)\xe0A\x01\xfaA#\n" +
+	"kmsKeyName\x12N\n" +
+	"\rkms_key_names\x18\x03 \x03(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\vkmsKeyNames\"\x9e\x01\n" +
 	"\x0eEncryptionType\x12\x1f\n" +
 	"\x1bENCRYPTION_TYPE_UNSPECIFIED\x10\x00\x12+\n" +

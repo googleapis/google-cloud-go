@@ -577,42 +577,42 @@ var File_google_cloud_bigquery_storage_v1beta2_stream_proto protoreflect.FileDes
 
 const file_google_cloud_bigquery_storage_v1beta2_stream_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/bigquery/storage/v1beta2/stream.proto\x12%google.cloud.bigquery.storage.v1beta2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/bigquery/storage/v1beta2/arrow.proto\x1a0google/cloud/bigquery/storage/v1beta2/avro.proto\x1a1google/cloud/bigquery/storage/v1beta2/table.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\t\n" +
-	"\vReadSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12W\n" +
-	"\vdata_format\x18\x03 \x01(\x0e21.google.cloud.bigquery.storage.v1beta2.DataFormatB\x03\xe0A\x05R\n" +
-	"dataFormat\x12Y\n" +
-	"\vavro_schema\x18\x04 \x01(\v21.google.cloud.bigquery.storage.v1beta2.AvroSchemaB\x03\xe0A\x03H\x00R\n" +
-	"avroSchema\x12\\\n" +
-	"\farrow_schema\x18\x05 \x01(\v22.google.cloud.bigquery.storage.v1beta2.ArrowSchemaB\x03\xe0A\x03H\x00R\varrowSchema\x12;\n" +
-	"\x05table\x18\x06 \x01(\tB%\xe0A\x05\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x05table\x12o\n" +
-	"\x0ftable_modifiers\x18\a \x01(\v2A.google.cloud.bigquery.storage.v1beta2.ReadSession.TableModifiersB\x03\xe0A\x01R\x0etableModifiers\x12k\n" +
-	"\fread_options\x18\b \x01(\v2C.google.cloud.bigquery.storage.v1beta2.ReadSession.TableReadOptionsB\x03\xe0A\x01R\vreadOptions\x12P\n" +
+	"2google/cloud/bigquery/storage/v1beta2/stream.proto\x12%google.cloud.bigquery.storage.v1beta2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/bigquery/storage/v1beta2/arrow.proto\x1a0google/cloud/bigquery/storage/v1beta2/avro.proto\x1a1google/cloud/bigquery/storage/v1beta2/table.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\t\n" +
+	"\vReadSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12X\n" +
+	"\vdata_format\x18\x03 \x01(\x0e21.google.cloud.bigquery.storage.v1beta2.DataFormatB\x04\xe2A\x01\x05R\n" +
+	"dataFormat\x12Z\n" +
+	"\vavro_schema\x18\x04 \x01(\v21.google.cloud.bigquery.storage.v1beta2.AvroSchemaB\x04\xe2A\x01\x03H\x00R\n" +
+	"avroSchema\x12]\n" +
+	"\farrow_schema\x18\x05 \x01(\v22.google.cloud.bigquery.storage.v1beta2.ArrowSchemaB\x04\xe2A\x01\x03H\x00R\varrowSchema\x12<\n" +
+	"\x05table\x18\x06 \x01(\tB&\xe2A\x01\x05\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x05table\x12p\n" +
+	"\x0ftable_modifiers\x18\a \x01(\v2A.google.cloud.bigquery.storage.v1beta2.ReadSession.TableModifiersB\x04\xe2A\x01\x01R\x0etableModifiers\x12l\n" +
+	"\fread_options\x18\b \x01(\v2C.google.cloud.bigquery.storage.v1beta2.ReadSession.TableReadOptionsB\x04\xe2A\x01\x01R\vreadOptions\x12Q\n" +
 	"\astreams\x18\n" +
-	" \x03(\v21.google.cloud.bigquery.storage.v1beta2.ReadStreamB\x03\xe0A\x03R\astreams\x1aQ\n" +
+	" \x03(\v21.google.cloud.bigquery.storage.v1beta2.ReadStreamB\x04\xe2A\x01\x03R\astreams\x1aQ\n" +
 	"\x0eTableModifiers\x12?\n" +
-	"\rsnapshot_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\fsnapshotTime\x1a\xec\x01\n" +
+	"\rsnapshot_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\fsnapshotTime\x1a\xed\x01\n" +
 	"\x10TableReadOptions\x12'\n" +
 	"\x0fselected_fields\x18\x01 \x03(\tR\x0eselectedFields\x12'\n" +
-	"\x0frow_restriction\x18\x02 \x01(\tR\x0erowRestriction\x12\x85\x01\n" +
-	"\x1barrow_serialization_options\x18\x03 \x01(\v2@.google.cloud.bigquery.storage.v1beta2.ArrowSerializationOptionsB\x03\xe0A\x01R\x19arrowSerializationOptions:k\xeaAh\n" +
+	"\x0frow_restriction\x18\x02 \x01(\tR\x0erowRestriction\x12\x86\x01\n" +
+	"\x1barrow_serialization_options\x18\x03 \x01(\v2@.google.cloud.bigquery.storage.v1beta2.ArrowSerializationOptionsB\x04\xe2A\x01\x01R\x19arrowSerializationOptions:k\xeaAh\n" +
 	"*bigquerystorage.googleapis.com/ReadSession\x12:projects/{project}/locations/{location}/sessions/{session}B\b\n" +
-	"\x06schema\"\xa2\x01\n" +
+	"\x06schema\"\xa3\x01\n" +
 	"\n" +
-	"ReadStream\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name:{\xeaAx\n" +
-	")bigquerystorage.googleapis.com/ReadStream\x12Kprojects/{project}/locations/{location}/sessions/{session}/streams/{stream}\"\x98\x04\n" +
-	"\vWriteStream\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12P\n" +
-	"\x04type\x18\x02 \x01(\x0e27.google.cloud.bigquery.storage.v1beta2.WriteStream.TypeB\x03\xe0A\x05R\x04type\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vcommit_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"commitTime\x12Z\n" +
-	"\ftable_schema\x18\x05 \x01(\v22.google.cloud.bigquery.storage.v1beta2.TableSchemaB\x03\xe0A\x03R\vtableSchema\"F\n" +
+	"ReadStream\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name:{\xeaAx\n" +
+	")bigquerystorage.googleapis.com/ReadStream\x12Kprojects/{project}/locations/{location}/sessions/{session}/streams/{stream}\"\x9d\x04\n" +
+	"\vWriteStream\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12Q\n" +
+	"\x04type\x18\x02 \x01(\x0e27.google.cloud.bigquery.storage.v1beta2.WriteStream.TypeB\x04\xe2A\x01\x05R\x04type\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vcommit_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"commitTime\x12[\n" +
+	"\ftable_schema\x18\x05 \x01(\v22.google.cloud.bigquery.storage.v1beta2.TableSchemaB\x04\xe2A\x01\x03R\vtableSchema\"F\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOMMITTED\x10\x01\x12\v\n" +

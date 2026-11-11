@@ -1,10 +1,10 @@
-// Copyright 2020 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,11 +14,22 @@
 
 package longrunning
 
-// SetGoogleClientInfo sets the name and version of the application in
-// the `x-goog-api-client` header passed on each request. Also passes any
-// provided key-value pairs. Intended for use by Google-written clients.
-//
-// Internal use only.
-func (c *OperationsClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
+import "errors"
+
+// A custom method on the LRO autogen to propagate the API interface version to the autogen
+// helper client.  This is used internally by Google client code and not intended for general
+// use.
+func (c *OperationsClient) SetSourceAPIVersion(versionID string) error {
+	key := "x-goog-api-version"
+
+	ic := c.internalClient
+	if gc, ok := ic.(*operationsGRPCClient); ok {
+		gc.xGoogHeaders = append(gc.xGoogHeaders, key, versionID)
+		return nil
+	}
+	if rc, ok := ic.(*operationsRESTClient); ok {
+		rc.xGoogHeaders = append(rc.xGoogHeaders, key, versionID)
+		return nil
+	}
+	return errors.New("could not set API version")
 }

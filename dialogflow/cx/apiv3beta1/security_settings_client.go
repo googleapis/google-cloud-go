@@ -944,6 +944,11 @@ func (c *securitySettingsRESTClient) CreateSecuritySettings(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/securitySettings", req.GetParent())
 
 	params := url.Values{}
@@ -998,6 +1003,11 @@ func (c *securitySettingsRESTClient) CreateSecuritySettings(ctx context.Context,
 func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, req *cxpb.GetSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -1060,6 +1070,11 @@ func (c *securitySettingsRESTClient) UpdateSecuritySettings(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecuritySettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetSecuritySettings().GetName())
@@ -1136,6 +1151,11 @@ func (c *securitySettingsRESTClient) ListSecuritySettings(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/securitySettings", req.GetParent())
 
 		params := url.Values{}
@@ -1202,6 +1222,11 @@ func (c *securitySettingsRESTClient) DeleteSecuritySettings(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1239,6 +1264,11 @@ func (c *securitySettingsRESTClient) DeleteSecuritySettings(ctx context.Context,
 func (c *securitySettingsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -1323,6 +1353,11 @@ func (c *securitySettingsRESTClient) ListLocations(ctx context.Context, req *loc
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1391,6 +1426,11 @@ func (c *securitySettingsRESTClient) CancelOperation(ctx context.Context, req *l
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1428,6 +1468,11 @@ func (c *securitySettingsRESTClient) CancelOperation(ctx context.Context, req *l
 func (c *securitySettingsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -1495,6 +1540,11 @@ func (c *securitySettingsRESTClient) ListOperations(ctx context.Context, req *lo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())

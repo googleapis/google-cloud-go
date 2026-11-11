@@ -405,6 +405,11 @@ func (c *vpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *compute
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/vpnGateways", req.GetProject())
 
 		params := url.Values{}
@@ -488,6 +493,13 @@ func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetVpnGateway(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetVpnGateway())
 
 	params := url.Values{}
@@ -552,6 +564,13 @@ func (c *vpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetVpnGa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetVpnGateway(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetVpnGateway())
 
 	// Build HTTP headers from client and context metadata.
@@ -599,6 +618,13 @@ func (c *vpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetVpnGa
 func (c *vpnGatewaysRESTClient) GetStatus(ctx context.Context, req *computepb.GetStatusVpnGatewayRequest, opts ...gax.CallOption) (*computepb.VpnGatewaysGetStatusResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetVpnGateway(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways/%v/getStatus", req.GetProject(), req.GetRegion(), req.GetVpnGateway())
@@ -656,6 +682,12 @@ func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways", req.GetProject(), req.GetRegion())
@@ -736,6 +768,12 @@ func (c *vpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListVpn
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -814,6 +852,13 @@ func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
@@ -883,6 +928,13 @@ func (c *vpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, req *com
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

@@ -323,6 +323,12 @@ func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRout
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRoute(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/routes/%v", req.GetProject(), req.GetRoute())
 
 	params := url.Values{}
@@ -386,6 +392,12 @@ func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRoute(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/routes/%v", req.GetProject(), req.GetRoute())
 
 	// Build HTTP headers from client and context metadata.
@@ -441,6 +453,11 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/routes", req.GetProject())
@@ -517,6 +534,11 @@ func (c *routesRESTClient) List(ctx context.Context, req *computepb.ListRoutesRe
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/routes", req.GetProject())
@@ -597,6 +619,12 @@ func (c *routesRESTClient) TestIamPermissions(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/routes/%v/testIamPermissions", req.GetProject(), req.GetResource())

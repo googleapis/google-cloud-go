@@ -11520,158 +11520,158 @@ var File_google_cloud_datastream_v1_datastream_resources_proto protoreflect.File
 
 const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/datastream/v1/datastream_resources.proto\x12\x1agoogle.cloud.datastream.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x04\n" +
-	"\rOracleProfile\x12\x1f\n" +
-	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x12\n" +
-	"\x04port\x18\x02 \x01(\x05R\x04port\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x04 \x01(\tB\x03\xe0A\x01R\bpassword\x12.\n" +
-	"\x10database_service\x18\x05 \x01(\tB\x03\xe0A\x02R\x0fdatabaseService\x12x\n" +
-	"\x15connection_attributes\x18\x06 \x03(\v2C.google.cloud.datastream.v1.OracleProfile.ConnectionAttributesEntryR\x14connectionAttributes\x12\\\n" +
-	"\x11oracle_ssl_config\x18\a \x01(\v2+.google.cloud.datastream.v1.OracleSslConfigB\x03\xe0A\x01R\x0foracleSslConfig\x12\\\n" +
-	"\x11oracle_asm_config\x18\b \x01(\v2+.google.cloud.datastream.v1.OracleAsmConfigB\x03\xe0A\x01R\x0foracleAsmConfig\x12H\n" +
-	"\x1esecret_manager_stored_password\x18\t \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\x1aG\n" +
+	"5google/cloud/datastream/v1/datastream_resources.proto\x12\x1agoogle.cloud.datastream.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x86\x05\n" +
+	"\rOracleProfile\x12 \n" +
+	"\bhostname\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12\x12\n" +
+	"\x04port\x18\x02 \x01(\x05R\x04port\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bpassword\x12/\n" +
+	"\x10database_service\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x0fdatabaseService\x12x\n" +
+	"\x15connection_attributes\x18\x06 \x03(\v2C.google.cloud.datastream.v1.OracleProfile.ConnectionAttributesEntryR\x14connectionAttributes\x12]\n" +
+	"\x11oracle_ssl_config\x18\a \x01(\v2+.google.cloud.datastream.v1.OracleSslConfigB\x04\xe2A\x01\x01R\x0foracleSslConfig\x12]\n" +
+	"\x11oracle_asm_config\x18\b \x01(\v2+.google.cloud.datastream.v1.OracleAsmConfigB\x04\xe2A\x01\x01R\x0foracleAsmConfig\x12I\n" +
+	"\x1esecret_manager_stored_password\x18\t \x01(\tB\x04\xe2A\x01\x01R\x1bsecretManagerStoredPassword\x1aG\n" +
 	"\x19ConnectionAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa5\x04\n" +
-	"\x0fOracleAsmConfig\x12\x1f\n" +
-	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x02R\x04port\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x04 \x01(\tB\x03\xe0A\x01R\bpassword\x12$\n" +
-	"\vasm_service\x18\x05 \x01(\tB\x03\xe0A\x02R\n" +
-	"asmService\x12\x7f\n" +
-	"\x15connection_attributes\x18\x06 \x03(\v2E.google.cloud.datastream.v1.OracleAsmConfig.ConnectionAttributesEntryB\x03\xe0A\x01R\x14connectionAttributes\x12\\\n" +
-	"\x11oracle_ssl_config\x18\a \x01(\v2+.google.cloud.datastream.v1.OracleSslConfigB\x03\xe0A\x01R\x0foracleSslConfig\x12H\n" +
-	"\x1esecret_manager_stored_password\x18\b \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\x1aG\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xae\x04\n" +
+	"\x0fOracleAsmConfig\x12 \n" +
+	"\bhostname\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x04port\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bpassword\x12%\n" +
+	"\vasm_service\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"asmService\x12\x80\x01\n" +
+	"\x15connection_attributes\x18\x06 \x03(\v2E.google.cloud.datastream.v1.OracleAsmConfig.ConnectionAttributesEntryB\x04\xe2A\x01\x01R\x14connectionAttributes\x12]\n" +
+	"\x11oracle_ssl_config\x18\a \x01(\v2+.google.cloud.datastream.v1.OracleSslConfigB\x04\xe2A\x01\x01R\x0foracleSslConfig\x12I\n" +
+	"\x1esecret_manager_stored_password\x18\b \x01(\tB\x04\xe2A\x01\x01R\x1bsecretManagerStoredPassword\x1aG\n" +
 	"\x19ConnectionAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9d\x02\n" +
-	"\fMysqlProfile\x12\x1f\n" +
-	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x12\n" +
-	"\x04port\x18\x02 \x01(\x05R\x04port\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\"\n" +
-	"\bpassword\x18\x04 \x01(\tB\x06\xe0A\x01\xe0A\x04R\bpassword\x12I\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9f\x02\n" +
+	"\fMysqlProfile\x12 \n" +
+	"\bhostname\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12\x12\n" +
+	"\x04port\x18\x02 \x01(\x05R\x04port\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\busername\x12!\n" +
+	"\bpassword\x18\x04 \x01(\tB\x05\xe2A\x02\x01\x04R\bpassword\x12I\n" +
 	"\n" +
-	"ssl_config\x18\x05 \x01(\v2*.google.cloud.datastream.v1.MysqlSslConfigR\tsslConfig\x12H\n" +
-	"\x1esecret_manager_stored_password\x18\x06 \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\"\xca\x02\n" +
-	"\x11PostgresqlProfile\x12\x1f\n" +
-	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x12\n" +
-	"\x04port\x18\x02 \x01(\x05R\x04port\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x04 \x01(\tB\x03\xe0A\x01R\bpassword\x12\x1f\n" +
-	"\bdatabase\x18\x05 \x01(\tB\x03\xe0A\x02R\bdatabase\x12H\n" +
-	"\x1esecret_manager_stored_password\x18\x06 \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\x12S\n" +
+	"ssl_config\x18\x05 \x01(\v2*.google.cloud.datastream.v1.MysqlSslConfigR\tsslConfig\x12I\n" +
+	"\x1esecret_manager_stored_password\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x1bsecretManagerStoredPassword\"\xd0\x02\n" +
+	"\x11PostgresqlProfile\x12 \n" +
+	"\bhostname\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12\x12\n" +
+	"\x04port\x18\x02 \x01(\x05R\x04port\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bpassword\x12 \n" +
+	"\bdatabase\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\bdatabase\x12I\n" +
+	"\x1esecret_manager_stored_password\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x1bsecretManagerStoredPassword\x12T\n" +
 	"\n" +
-	"ssl_config\x18\a \x01(\v2/.google.cloud.datastream.v1.PostgresqlSslConfigB\x03\xe0A\x01R\tsslConfig\"\xc8\x02\n" +
-	"\x10SqlServerProfile\x12\x1f\n" +
-	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x12\n" +
-	"\x04port\x18\x02 \x01(\x05R\x04port\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x04 \x01(\tB\x03\xe0A\x01R\bpassword\x12\x1f\n" +
-	"\bdatabase\x18\x05 \x01(\tB\x03\xe0A\x02R\bdatabase\x12R\n" +
+	"ssl_config\x18\a \x01(\v2/.google.cloud.datastream.v1.PostgresqlSslConfigB\x04\xe2A\x01\x01R\tsslConfig\"\xce\x02\n" +
+	"\x10SqlServerProfile\x12 \n" +
+	"\bhostname\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12\x12\n" +
+	"\x04port\x18\x02 \x01(\x05R\x04port\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bpassword\x12 \n" +
+	"\bdatabase\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\bdatabase\x12S\n" +
 	"\n" +
-	"ssl_config\x18\x06 \x01(\v2..google.cloud.datastream.v1.SqlServerSslConfigB\x03\xe0A\x01R\tsslConfig\x12H\n" +
-	"\x1esecret_manager_stored_password\x18\a \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\"\x95\x06\n" +
-	"\x11SalesforceProfile\x12\x1b\n" +
-	"\x06domain\x18\x01 \x01(\tB\x03\xe0A\x02R\x06domain\x12n\n" +
+	"ssl_config\x18\x06 \x01(\v2..google.cloud.datastream.v1.SqlServerSslConfigB\x04\xe2A\x01\x01R\tsslConfig\x12I\n" +
+	"\x1esecret_manager_stored_password\x18\a \x01(\tB\x04\xe2A\x01\x01R\x1bsecretManagerStoredPassword\"\x9e\x06\n" +
+	"\x11SalesforceProfile\x12\x1c\n" +
+	"\x06domain\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06domain\x12n\n" +
 	"\x10user_credentials\x18\x02 \x01(\v2=.google.cloud.datastream.v1.SalesforceProfile.UserCredentialsB\x02\x18\x01H\x00R\x0fuserCredentials\x12\x83\x01\n" +
-	"\x19oauth2_client_credentials\x18\x03 \x01(\v2E.google.cloud.datastream.v1.SalesforceProfile.Oauth2ClientCredentialsH\x00R\x17oauth2ClientCredentials\x1a\xa2\x02\n" +
-	"\x0fUserCredentials\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x01R\bpassword\x12*\n" +
-	"\x0esecurity_token\x18\x03 \x01(\tB\x03\xe0A\x01R\rsecurityToken\x12H\n" +
-	"\x1esecret_manager_stored_password\x18\x04 \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\x12S\n" +
-	"$secret_manager_stored_security_token\x18\x05 \x01(\tB\x03\xe0A\x01R secretManagerStoredSecurityToken:\x02\x18\x01\x1a\xb8\x01\n" +
-	"\x17Oauth2ClientCredentials\x12 \n" +
-	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12(\n" +
-	"\rclient_secret\x18\x02 \x01(\tB\x03\xe0A\x01R\fclientSecret\x12Q\n" +
-	"#secret_manager_stored_client_secret\x18\x03 \x01(\tB\x03\xe0A\x01R\x1fsecretManagerStoredClientSecretB\r\n" +
-	"\vcredentials\"\xa0\x06\n" +
-	"\x0eMongodbProfile\x12S\n" +
-	"\x0ehost_addresses\x18\x01 \x03(\v2'.google.cloud.datastream.v1.HostAddressB\x03\xe0A\x02R\rhostAddresses\x12$\n" +
-	"\vreplica_set\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"replicaSet\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x04 \x01(\tB\x03\xe0A\x01R\bpassword\x12H\n" +
-	"\x1esecret_manager_stored_password\x18\x05 \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\x12P\n" +
+	"\x19oauth2_client_credentials\x18\x03 \x01(\v2E.google.cloud.datastream.v1.SalesforceProfile.Oauth2ClientCredentialsH\x00R\x17oauth2ClientCredentials\x1a\xa7\x02\n" +
+	"\x0fUserCredentials\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bpassword\x12+\n" +
+	"\x0esecurity_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rsecurityToken\x12I\n" +
+	"\x1esecret_manager_stored_password\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x1bsecretManagerStoredPassword\x12T\n" +
+	"$secret_manager_stored_security_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R secretManagerStoredSecurityToken:\x02\x18\x01\x1a\xbb\x01\n" +
+	"\x17Oauth2ClientCredentials\x12!\n" +
+	"\tclient_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12)\n" +
+	"\rclient_secret\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fclientSecret\x12R\n" +
+	"#secret_manager_stored_client_secret\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x1fsecretManagerStoredClientSecretB\r\n" +
+	"\vcredentials\"\xa7\x06\n" +
+	"\x0eMongodbProfile\x12T\n" +
+	"\x0ehost_addresses\x18\x01 \x03(\v2'.google.cloud.datastream.v1.HostAddressB\x04\xe2A\x01\x02R\rhostAddresses\x12%\n" +
+	"\vreplica_set\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"replicaSet\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bpassword\x12I\n" +
+	"\x1esecret_manager_stored_password\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x1bsecretManagerStoredPassword\x12Q\n" +
 	"\n" +
-	"ssl_config\x18\x06 \x01(\v2,.google.cloud.datastream.v1.MongodbSslConfigB\x03\xe0A\x01R\tsslConfig\x12e\n" +
+	"ssl_config\x18\x06 \x01(\v2,.google.cloud.datastream.v1.MongodbSslConfigB\x04\xe2A\x01\x01R\tsslConfig\x12e\n" +
 	"\x15srv_connection_format\x18e \x01(\v2/.google.cloud.datastream.v1.SrvConnectionFormatH\x00R\x13srvConnectionFormat\x12t\n" +
-	"\x1astandard_connection_format\x18f \x01(\v24.google.cloud.datastream.v1.StandardConnectionFormatH\x00R\x18standardConnectionFormat\x12u\n" +
-	"\x12additional_options\x18\a \x03(\v2A.google.cloud.datastream.v1.MongodbProfile.AdditionalOptionsEntryB\x03\xe0A\x01R\x11additionalOptions\x1aD\n" +
+	"\x1astandard_connection_format\x18f \x01(\v24.google.cloud.datastream.v1.StandardConnectionFormatH\x00R\x18standardConnectionFormat\x12v\n" +
+	"\x12additional_options\x18\a \x03(\v2A.google.cloud.datastream.v1.MongodbProfile.AdditionalOptionsEntryB\x04\xe2A\x01\x01R\x11additionalOptions\x1aD\n" +
 	"\x16AdditionalOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x1b\n" +
-	"\x19mongodb_connection_format\"G\n" +
-	"\vHostAddress\x12\x1f\n" +
-	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x01R\x04port\"q\n" +
-	"\x0eSpannerProfile\x12F\n" +
-	"\bdatabase\x18\x01 \x01(\tB*\xe0A\x02\xe0A\x05\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12\x17\n" +
-	"\x04host\x18\x02 \x01(\tB\x03\xe0A\x01R\x04host\"\x88\x01\n" +
-	"\x16OauthClientCredentials\x12 \n" +
-	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12L\n" +
-	"\rclient_secret\x18\x02 \x01(\v2\".google.cloud.datastream.v1.SecretB\x03\xe0A\x02R\fclientSecret\"\xdf\x01\n" +
-	"\x1cOauthRefreshTokenCredentials\x12q\n" +
-	"\x18oauth_client_credentials\x18\x01 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsB\x03\xe0A\x02R\x16oauthClientCredentials\x12L\n" +
-	"\rrefresh_token\x18\x02 \x01(\v2\".google.cloud.datastream.v1.SecretB\x03\xe0A\x02R\frefreshToken\"\x7f\n" +
-	"\x17UserPasswordCredentials\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12C\n" +
-	"\bpassword\x18\x02 \x01(\v2\".google.cloud.datastream.v1.SecretB\x03\xe0A\x02R\bpassword\"\xba\x01\n" +
-	"\x1fSalesforceMarketingCloudProfile\x12!\n" +
-	"\tsubdomain\x18\x01 \x01(\tB\x03\xe0A\x02R\tsubdomain\x12t\n" +
-	"\x18oauth_client_credentials\x18\x03 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsB\x06\xe0A\x04\xe0A\x02R\x16oauthClientCredentials\"\xd5\x01\n" +
-	"\x10DataverseProfile\x12 \n" +
-	"\ttenant_id\x18\x01 \x01(\tB\x03\xe0A\x02R\btenantId\x12,\n" +
-	"\x0fenvironment_url\x18\x05 \x01(\tB\x03\xe0A\x02R\x0eenvironmentUrl\x12q\n" +
-	"\x18oauth_client_credentials\x18\x03 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsB\x03\xe0A\x02R\x16oauthClientCredentials\"\xa6\x02\n" +
-	"\x11ServiceNowProfile\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12q\n" +
+	"\x19mongodb_connection_format\"I\n" +
+	"\vHostAddress\x12 \n" +
+	"\bhostname\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x04port\"q\n" +
+	"\x0eSpannerProfile\x12E\n" +
+	"\bdatabase\x18\x01 \x01(\tB)\xe2A\x02\x02\x05\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12\x18\n" +
+	"\x04host\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04host\"\x8a\x01\n" +
+	"\x16OauthClientCredentials\x12!\n" +
+	"\tclient_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12M\n" +
+	"\rclient_secret\x18\x02 \x01(\v2\".google.cloud.datastream.v1.SecretB\x04\xe2A\x01\x02R\fclientSecret\"\xe1\x01\n" +
+	"\x1cOauthRefreshTokenCredentials\x12r\n" +
+	"\x18oauth_client_credentials\x18\x01 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsB\x04\xe2A\x01\x02R\x16oauthClientCredentials\x12M\n" +
+	"\rrefresh_token\x18\x02 \x01(\v2\".google.cloud.datastream.v1.SecretB\x04\xe2A\x01\x02R\frefreshToken\"\x81\x01\n" +
+	"\x17UserPasswordCredentials\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername\x12D\n" +
+	"\bpassword\x18\x02 \x01(\v2\".google.cloud.datastream.v1.SecretB\x04\xe2A\x01\x02R\bpassword\"\xba\x01\n" +
+	"\x1fSalesforceMarketingCloudProfile\x12\"\n" +
+	"\tsubdomain\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tsubdomain\x12s\n" +
+	"\x18oauth_client_credentials\x18\x03 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsB\x05\xe2A\x02\x04\x02R\x16oauthClientCredentials\"\xd8\x01\n" +
+	"\x10DataverseProfile\x12!\n" +
+	"\ttenant_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\btenantId\x12-\n" +
+	"\x0fenvironment_url\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x0eenvironmentUrl\x12r\n" +
+	"\x18oauth_client_credentials\x18\x03 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsB\x04\xe2A\x01\x02R\x16oauthClientCredentials\"\xa7\x02\n" +
+	"\x11ServiceNowProfile\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12q\n" +
 	"\x19user_password_credentials\x18\x02 \x01(\v23.google.cloud.datastream.v1.UserPasswordCredentialsH\x00R\x17userPasswordCredentials\x12n\n" +
 	"\x18oauth_client_credentials\x18\x03 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsH\x00R\x16oauthClientCredentialsB\r\n" +
-	"\vcredentials\"\xcd\x01\n" +
-	"\x0eWorkdayProfile\x12\x17\n" +
-	"\x04host\x18\x01 \x01(\tB\x03\xe0A\x02R\x04host\x12\x1b\n" +
-	"\x06tenant\x18\x02 \x01(\tB\x03\xe0A\x02R\x06tenant\x12\x84\x01\n" +
-	"\x1foauth_refresh_token_credentials\x18\x03 \x01(\v28.google.cloud.datastream.v1.OauthRefreshTokenCredentialsB\x03\xe0A\x02R\x1coauthRefreshTokenCredentials\"\x15\n" +
-	"\x13SrvConnectionFormat\"N\n" +
-	"\x18StandardConnectionFormat\x122\n" +
-	"\x11direct_connection\x18\x01 \x01(\bB\x05\xe0A\x01\x18\x01R\x10directConnection\"K\n" +
+	"\vcredentials\"\xd0\x01\n" +
+	"\x0eWorkdayProfile\x12\x18\n" +
+	"\x04host\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04host\x12\x1c\n" +
+	"\x06tenant\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06tenant\x12\x85\x01\n" +
+	"\x1foauth_refresh_token_credentials\x18\x03 \x01(\v28.google.cloud.datastream.v1.OauthRefreshTokenCredentialsB\x04\xe2A\x01\x02R\x1coauthRefreshTokenCredentials\"\x15\n" +
+	"\x13SrvConnectionFormat\"O\n" +
+	"\x18StandardConnectionFormat\x123\n" +
+	"\x11direct_connection\x18\x01 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x10directConnection\"M\n" +
 	"\n" +
-	"GcsProfile\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12 \n" +
-	"\troot_path\x18\x02 \x01(\tB\x03\xe0A\x01R\brootPath\"\x11\n" +
+	"GcsProfile\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12!\n" +
+	"\troot_path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\brootPath\"\x11\n" +
 	"\x0fBigQueryProfile\"\x1d\n" +
-	"\x1bStaticServiceIpConnectivity\"\xd8\x01\n" +
-	"\x1cForwardSshTunnelConnectivity\x12\x1f\n" +
-	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x02R\busername\x12\x12\n" +
-	"\x04port\x18\x03 \x01(\x05R\x04port\x12!\n" +
-	"\bpassword\x18d \x01(\tB\x03\xe0A\x04H\x00R\bpassword\x12&\n" +
-	"\vprivate_key\x18e \x01(\tB\x03\xe0A\x04H\x00R\n" +
+	"\x1bStaticServiceIpConnectivity\"\xdc\x01\n" +
+	"\x1cForwardSshTunnelConnectivity\x12 \n" +
+	"\bhostname\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\busername\x12\x12\n" +
+	"\x04port\x18\x03 \x01(\x05R\x04port\x12\"\n" +
+	"\bpassword\x18d \x01(\tB\x04\xe2A\x01\x04H\x00R\bpassword\x12'\n" +
+	"\vprivate_key\x18e \x01(\tB\x04\xe2A\x01\x04H\x00R\n" +
 	"privateKeyB\x17\n" +
-	"\x15authentication_method\"j\n" +
-	"\x10VpcPeeringConfig\x129\n" +
-	"\x03vpc\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fcompute.googleapis.com/NetworksR\x03vpc\x12\x1b\n" +
-	"\x06subnet\x18\x02 \x01(\tB\x03\xe0A\x02R\x06subnet\"u\n" +
-	"\x12PscInterfaceConfig\x12_\n" +
-	"\x12network_attachment\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachment\"\xa6\b\n" +
-	"\x11PrivateConnection\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x15authentication_method\"l\n" +
+	"\x10VpcPeeringConfig\x12:\n" +
+	"\x03vpc\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fcompute.googleapis.com/NetworksR\x03vpc\x12\x1c\n" +
+	"\x06subnet\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06subnet\"v\n" +
+	"\x12PscInterfaceConfig\x12`\n" +
+	"\x12network_attachment\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachment\"\xac\b\n" +
+	"\x11PrivateConnection\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v29.google.cloud.datastream.v1.PrivateConnection.LabelsEntryR\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12N\n" +
-	"\x05state\x18\x06 \x01(\x0e23.google.cloud.datastream.v1.PrivateConnection.StateB\x03\xe0A\x03R\x05state\x12<\n" +
-	"\x05error\x18\a \x01(\v2!.google.cloud.datastream.v1.ErrorB\x03\xe0A\x03R\x05error\x12-\n" +
-	"\rsatisfies_pzs\x18\b \x01(\bB\x03\xe0A\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\t \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12Z\n" +
+	"\x06labels\x18\x04 \x03(\v29.google.cloud.datastream.v1.PrivateConnection.LabelsEntryR\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12O\n" +
+	"\x05state\x18\x06 \x01(\x0e23.google.cloud.datastream.v1.PrivateConnection.StateB\x04\xe2A\x01\x03R\x05state\x12=\n" +
+	"\x05error\x18\a \x01(\v2!.google.cloud.datastream.v1.ErrorB\x04\xe2A\x01\x03R\x05error\x12.\n" +
+	"\rsatisfies_pzs\x18\b \x01(\bB\x04\xe2A\x01\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\t \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12Z\n" +
 	"\x12vpc_peering_config\x18d \x01(\v2,.google.cloud.datastream.v1.VpcPeeringConfigR\x10vpcPeeringConfig\x12`\n" +
 	"\x14psc_interface_config\x18e \x01(\v2..google.cloud.datastream.v1.PscInterfaceConfigR\x12pscInterfaceConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
@@ -11687,83 +11687,83 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x10FAILED_TO_DELETE\x10\x05:\x81\x01\xeaA~\n" +
 	"+datastream.googleapis.com/PrivateConnection\x12Oprojects/{project}/locations/{location}/privateConnections/{private_connection}B\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"y\n" +
-	"\x13PrivateConnectivity\x12b\n" +
-	"\x12private_connection\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+datastream.googleapis.com/PrivateConnectionR\x11privateConnection\"\xba\x04\n" +
-	"\x05Route\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0e_satisfies_pzi\"z\n" +
+	"\x13PrivateConnectivity\x12c\n" +
+	"\x12private_connection\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+datastream.googleapis.com/PrivateConnectionR\x11privateConnection\"\xbd\x04\n" +
+	"\x05Route\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12E\n" +
-	"\x06labels\x18\x04 \x03(\v2-.google.cloud.datastream.v1.Route.LabelsEntryR\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x124\n" +
-	"\x13destination_address\x18\x06 \x01(\tB\x03\xe0A\x02R\x12destinationAddress\x12)\n" +
+	"\x06labels\x18\x04 \x03(\v2-.google.cloud.datastream.v1.Route.LabelsEntryR\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x125\n" +
+	"\x13destination_address\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x12destinationAddress\x12)\n" +
 	"\x10destination_port\x18\a \x01(\x05R\x0fdestinationPort\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x85\x01\xeaA\x81\x01\n" +
 	"\x1fdatastream.googleapis.com/Route\x12^projects/{project}/locations/{location}/privateConnections/{private_connection}/routes/{route}\"f\n" +
-	"\x06Secret\x12%\n" +
-	"\traw_value\x18\x01 \x01(\tB\x06\xe0A\x04\xe0A\x01H\x00R\brawValue\x12,\n" +
-	"\x0esecret_version\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\rsecretVersionB\a\n" +
-	"\x05value\"\x88\x03\n" +
-	"\x10MongodbSslConfig\x12%\n" +
+	"\x06Secret\x12$\n" +
+	"\traw_value\x18\x01 \x01(\tB\x05\xe2A\x02\x04\x01H\x00R\brawValue\x12-\n" +
+	"\x0esecret_version\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\rsecretVersionB\a\n" +
+	"\x05value\"\x87\x03\n" +
+	"\x10MongodbSslConfig\x12$\n" +
 	"\n" +
-	"client_key\x18\x01 \x01(\tB\x06\xe0A\x04\xe0A\x01R\tclientKey\x12)\n" +
-	"\x0eclient_key_set\x18\x02 \x01(\bB\x03\xe0A\x03R\fclientKeySet\x125\n" +
-	"\x12client_certificate\x18\x03 \x01(\tB\x06\xe0A\x04\xe0A\x01R\x11clientCertificate\x129\n" +
-	"\x16client_certificate_set\x18\x04 \x01(\bB\x03\xe0A\x03R\x14clientCertificateSet\x12-\n" +
-	"\x0eca_certificate\x18\x05 \x01(\tB\x06\xe0A\x04\xe0A\x01R\rcaCertificate\x121\n" +
-	"\x12ca_certificate_set\x18\x06 \x01(\bB\x03\xe0A\x03R\x10caCertificateSet\x12N\n" +
-	" secret_manager_stored_client_key\x18\a \x01(\tB\x06\xe0A\x04\xe0A\x01R\x1csecretManagerStoredClientKey\"\xb3\x02\n" +
-	"\x0eMysqlSslConfig\x12%\n" +
+	"client_key\x18\x01 \x01(\tB\x05\xe2A\x02\x04\x01R\tclientKey\x12*\n" +
+	"\x0eclient_key_set\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\fclientKeySet\x124\n" +
+	"\x12client_certificate\x18\x03 \x01(\tB\x05\xe2A\x02\x04\x01R\x11clientCertificate\x12:\n" +
+	"\x16client_certificate_set\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x14clientCertificateSet\x12,\n" +
+	"\x0eca_certificate\x18\x05 \x01(\tB\x05\xe2A\x02\x04\x01R\rcaCertificate\x122\n" +
+	"\x12ca_certificate_set\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x10caCertificateSet\x12M\n" +
+	" secret_manager_stored_client_key\x18\a \x01(\tB\x05\xe2A\x02\x04\x01R\x1csecretManagerStoredClientKey\"\xb5\x02\n" +
+	"\x0eMysqlSslConfig\x12$\n" +
 	"\n" +
-	"client_key\x18\x01 \x01(\tB\x06\xe0A\x04\xe0A\x01R\tclientKey\x12)\n" +
-	"\x0eclient_key_set\x18\x02 \x01(\bB\x03\xe0A\x03R\fclientKeySet\x125\n" +
-	"\x12client_certificate\x18\x03 \x01(\tB\x06\xe0A\x04\xe0A\x01R\x11clientCertificate\x129\n" +
-	"\x16client_certificate_set\x18\x04 \x01(\bB\x03\xe0A\x03R\x14clientCertificateSet\x12*\n" +
-	"\x0eca_certificate\x18\x05 \x01(\tB\x03\xe0A\x04R\rcaCertificate\x121\n" +
-	"\x12ca_certificate_set\x18\x06 \x01(\bB\x03\xe0A\x03R\x10caCertificateSet\"\xc8\x01\n" +
-	"\x0fOracleSslConfig\x12*\n" +
-	"\x0eca_certificate\x18\x01 \x01(\tB\x03\xe0A\x04R\rcaCertificate\x121\n" +
-	"\x12ca_certificate_set\x18\x02 \x01(\bB\x03\xe0A\x03R\x10caCertificateSet\x12V\n" +
-	"%server_certificate_distinguished_name\x18\x03 \x01(\tB\x03\xe0A\x01R\"serverCertificateDistinguishedName\"\x98\x05\n" +
+	"client_key\x18\x01 \x01(\tB\x05\xe2A\x02\x04\x01R\tclientKey\x12*\n" +
+	"\x0eclient_key_set\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\fclientKeySet\x124\n" +
+	"\x12client_certificate\x18\x03 \x01(\tB\x05\xe2A\x02\x04\x01R\x11clientCertificate\x12:\n" +
+	"\x16client_certificate_set\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x14clientCertificateSet\x12+\n" +
+	"\x0eca_certificate\x18\x05 \x01(\tB\x04\xe2A\x01\x04R\rcaCertificate\x122\n" +
+	"\x12ca_certificate_set\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x10caCertificateSet\"\xcb\x01\n" +
+	"\x0fOracleSslConfig\x12+\n" +
+	"\x0eca_certificate\x18\x01 \x01(\tB\x04\xe2A\x01\x04R\rcaCertificate\x122\n" +
+	"\x12ca_certificate_set\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x10caCertificateSet\x12W\n" +
+	"%server_certificate_distinguished_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\"serverCertificateDistinguishedName\"\x98\x05\n" +
 	"\x12SqlServerSslConfig\x12~\n" +
 	"\x17encryption_not_enforced\x18\x01 \x01(\v2D.google.cloud.datastream.v1.SqlServerSslConfig.EncryptionNotEnforcedH\x00R\x15encryptionNotEnforced\x12k\n" +
 	"\x10basic_encryption\x18\x02 \x01(\v2>.google.cloud.datastream.v1.SqlServerSslConfig.BasicEncryptionH\x00R\x0fbasicEncryption\x12\x97\x01\n" +
 	" encryption_and_server_validation\x18\x03 \x01(\v2L.google.cloud.datastream.v1.SqlServerSslConfig.EncryptionAndServerValidationH\x00R\x1dencryptionAndServerValidation\x1a\x17\n" +
 	"\x15EncryptionNotEnforced\x1a\x11\n" +
 	"\x0fBasicEncryption\x1a\xb8\x01\n" +
-	"\x1dEncryptionAndServerValidation\x12-\n" +
-	"\x0eca_certificate\x18\x02 \x01(\tB\x06\xe0A\x04\xe0A\x01R\rcaCertificate\x12H\n" +
-	"\x1bserver_certificate_hostname\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x19serverCertificateHostname\x88\x01\x01B\x1e\n" +
+	"\x1dEncryptionAndServerValidation\x12,\n" +
+	"\x0eca_certificate\x18\x02 \x01(\tB\x05\xe2A\x02\x04\x01R\rcaCertificate\x12I\n" +
+	"\x1bserver_certificate_hostname\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x19serverCertificateHostname\x88\x01\x01B\x1e\n" +
 	"\x1c_server_certificate_hostnameB\x14\n" +
-	"\x12encryption_setting\"\xb4\x05\n" +
+	"\x12encryption_setting\"\xb2\x05\n" +
 	"\x13PostgresqlSslConfig\x12u\n" +
 	"\x13server_verification\x18\x01 \x01(\v2B.google.cloud.datastream.v1.PostgresqlSslConfig.ServerVerificationH\x00R\x12serverVerification\x12\x92\x01\n" +
 	"\x1eserver_and_client_verification\x18\x02 \x01(\v2K.google.cloud.datastream.v1.PostgresqlSslConfig.ServerAndClientVerificationH\x00R\x1bserverAndClientVerification\x1a\x88\x01\n" +
-	"\x12ServerVerification\x12-\n" +
-	"\x0eca_certificate\x18\x01 \x01(\tB\x06\xe0A\x04\xe0A\x02R\rcaCertificate\x12C\n" +
-	"\x1bserver_certificate_hostname\x18\x02 \x01(\tB\x03\xe0A\x01R\x19serverCertificateHostname\x1a\xef\x01\n" +
-	"\x1bServerAndClientVerification\x125\n" +
-	"\x12client_certificate\x18\x01 \x01(\tB\x06\xe0A\x04\xe0A\x02R\x11clientCertificate\x12%\n" +
+	"\x12ServerVerification\x12,\n" +
+	"\x0eca_certificate\x18\x01 \x01(\tB\x05\xe2A\x02\x04\x02R\rcaCertificate\x12D\n" +
+	"\x1bserver_certificate_hostname\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x19serverCertificateHostname\x1a\xed\x01\n" +
+	"\x1bServerAndClientVerification\x124\n" +
+	"\x12client_certificate\x18\x01 \x01(\tB\x05\xe2A\x02\x04\x02R\x11clientCertificate\x12$\n" +
 	"\n" +
-	"client_key\x18\x02 \x01(\tB\x06\xe0A\x04\xe0A\x01R\tclientKey\x12-\n" +
-	"\x0eca_certificate\x18\x03 \x01(\tB\x06\xe0A\x04\xe0A\x02R\rcaCertificate\x12C\n" +
-	"\x1bserver_certificate_hostname\x18\x05 \x01(\tB\x03\xe0A\x01R\x19serverCertificateHostnameB\x14\n" +
-	"\x12encryption_setting\"\xa6\x11\n" +
-	"\x11ConnectionProfile\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"client_key\x18\x02 \x01(\tB\x05\xe2A\x02\x04\x01R\tclientKey\x12,\n" +
+	"\x0eca_certificate\x18\x03 \x01(\tB\x05\xe2A\x02\x04\x02R\rcaCertificate\x12D\n" +
+	"\x1bserver_certificate_hostname\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x19serverCertificateHostnameB\x14\n" +
+	"\x12encryption_setting\"\xab\x11\n" +
+	"\x11ConnectionProfile\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v29.google.cloud.datastream.v1.ConnectionProfile.LabelsEntryR\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12-\n" +
-	"\rsatisfies_pzs\x18\x06 \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\a \x01(\bB\x03\xe0A\x03H\x03R\fsatisfiesPzi\x88\x01\x01\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v29.google.cloud.datastream.v1.ConnectionProfile.LabelsEntryR\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12.\n" +
+	"\rsatisfies_pzs\x18\x06 \x01(\bB\x04\xe2A\x01\x03H\x02R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\a \x01(\bB\x04\xe2A\x01\x03H\x03R\fsatisfiesPzi\x88\x01\x01\x12R\n" +
 	"\x0eoracle_profile\x18d \x01(\v2).google.cloud.datastream.v1.OracleProfileH\x00R\roracleProfile\x12I\n" +
 	"\vgcs_profile\x18e \x01(\v2&.google.cloud.datastream.v1.GcsProfileH\x00R\n" +
 	"gcsProfile\x12O\n" +
@@ -11776,8 +11776,8 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x0fspanner_profile\x18m \x01(\v2*.google.cloud.datastream.v1.SpannerProfileH\x00R\x0espannerProfile\x12[\n" +
 	"\x11dataverse_profile\x18r \x01(\v2,.google.cloud.datastream.v1.DataverseProfileH\x00R\x10dataverseProfile\x12\x8a\x01\n" +
 	"\"salesforce_marketing_cloud_profile\x18w \x01(\v2;.google.cloud.datastream.v1.SalesforceMarketingCloudProfileH\x00R\x1fsalesforceMarketingCloudProfile\x12_\n" +
-	"\x13service_now_profile\x18x \x01(\v2-.google.cloud.datastream.v1.ServiceNowProfileH\x00R\x11serviceNowProfile\x12Z\n" +
-	"\x0fworkday_profile\x18y \x01(\v2*.google.cloud.datastream.v1.WorkdayProfileB\x03\xe0A\x01H\x00R\x0eworkdayProfile\x12\x7f\n" +
+	"\x13service_now_profile\x18x \x01(\v2-.google.cloud.datastream.v1.ServiceNowProfileH\x00R\x11serviceNowProfile\x12[\n" +
+	"\x0fworkday_profile\x18y \x01(\v2*.google.cloud.datastream.v1.WorkdayProfileB\x04\xe2A\x01\x01H\x00R\x0eworkdayProfile\x12\x7f\n" +
 	"\x1estatic_service_ip_connectivity\x18\xc8\x01 \x01(\v27.google.cloud.datastream.v1.StaticServiceIpConnectivityH\x01R\x1bstaticServiceIpConnectivity\x12u\n" +
 	"\x18forward_ssh_connectivity\x18\xc9\x01 \x01(\v28.google.cloud.datastream.v1.ForwardSshTunnelConnectivityH\x01R\x16forwardSshConnectivity\x12e\n" +
 	"\x14private_connectivity\x18\xca\x01 \x01(\v2/.google.cloud.datastream.v1.PrivateConnectivityH\x01R\x13privateConnectivity\x1a9\n" +
@@ -11807,7 +11807,7 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x06schema\x18\x01 \x01(\tR\x06schema\x12L\n" +
 	"\roracle_tables\x18\x02 \x03(\v2'.google.cloud.datastream.v1.OracleTableR\foracleTables\"^\n" +
 	"\vOracleRdbms\x12O\n" +
-	"\x0eoracle_schemas\x18\x01 \x03(\v2(.google.cloud.datastream.v1.OracleSchemaR\roracleSchemas\"\xa8\n" +
+	"\x0eoracle_schemas\x18\x01 \x03(\v2(.google.cloud.datastream.v1.OracleSchemaR\roracleSchemas\"\xaa\n" +
 	"\n" +
 	"\x12OracleSourceConfig\x12P\n" +
 	"\x0finclude_objects\x18\x01 \x01(\v2'.google.cloud.datastream.v1.OracleRdbmsR\x0eincludeObjects\x12P\n" +
@@ -11821,14 +11821,14 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x10DropLargeObjects\x1a\x14\n" +
 	"\x12StreamLargeObjects\x1a\n" +
 	"\n" +
-	"\bLogMiner\x1a\xe5\x03\n" +
+	"\bLogMiner\x1a\xe7\x03\n" +
 	"\x0fBinaryLogParser\x12\x93\x01\n" +
 	"\x1aoracle_asm_log_file_access\x18\x01 \x01(\v2U.google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.OracleAsmLogFileAccessH\x00R\x16oracleAsmLogFileAccess\x12\x85\x01\n" +
 	"\x14log_file_directories\x18\x02 \x01(\v2Q.google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.LogFileDirectoriesH\x00R\x12logFileDirectories\x1a\x18\n" +
-	"\x16OracleAsmLogFileAccess\x1a\x86\x01\n" +
-	"\x12LogFileDirectories\x125\n" +
-	"\x14online_log_directory\x18\x01 \x01(\tB\x03\xe0A\x02R\x12onlineLogDirectory\x129\n" +
-	"\x16archived_log_directory\x18\x02 \x01(\tB\x03\xe0A\x02R\x14archivedLogDirectoryB\x11\n" +
+	"\x16OracleAsmLogFileAccess\x1a\x88\x01\n" +
+	"\x12LogFileDirectories\x126\n" +
+	"\x14online_log_directory\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x12onlineLogDirectory\x12:\n" +
+	"\x16archived_log_directory\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x14archivedLogDirectoryB\x11\n" +
 	"\x0flog_file_accessB\x18\n" +
 	"\x16large_objects_handlingB\f\n" +
 	"\n" +
@@ -11853,9 +11853,9 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x12postgresql_schemas\x18\x01 \x03(\v2,.google.cloud.datastream.v1.PostgresqlSchemaR\x11postgresqlSchemas\"\xe1\x02\n" +
 	"\x16PostgresqlSourceConfig\x12T\n" +
 	"\x0finclude_objects\x18\x01 \x01(\v2+.google.cloud.datastream.v1.PostgresqlRdbmsR\x0eincludeObjects\x12T\n" +
-	"\x0fexclude_objects\x18\x02 \x01(\v2+.google.cloud.datastream.v1.PostgresqlRdbmsR\x0eexcludeObjects\x121\n" +
-	"\x10replication_slot\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x0freplicationSlot\x12%\n" +
-	"\vpublication\x18\x04 \x01(\tB\x03\xe0A\x02R\vpublication\x12A\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2+.google.cloud.datastream.v1.PostgresqlRdbmsR\x0eexcludeObjects\x120\n" +
+	"\x10replication_slot\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\x0freplicationSlot\x12&\n" +
+	"\vpublication\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vpublication\x12A\n" +
 	"\x1dmax_concurrent_backfill_tasks\x18\x05 \x01(\x05R\x1amaxConcurrentBackfillTasks\"\xfa\x01\n" +
 	"\x0fSqlServerColumn\x12\x16\n" +
 	"\x06column\x18\x01 \x01(\tR\x06column\x12\x1b\n" +
@@ -11884,13 +11884,13 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\rchange_tables\x18f \x01(\v21.google.cloud.datastream.v1.SqlServerChangeTablesH\x00R\fchangeTablesB\f\n" +
 	"\n" +
 	"cdc_method\"\x1a\n" +
-	"\x18SqlServerTransactionLogs\"\xbe\x02\n" +
-	"\x15SqlServerChangeTables\x12h\n" +
+	"\x18SqlServerTransactionLogs\"\xc1\x02\n" +
+	"\x15SqlServerChangeTables\x12i\n" +
 	"\n" +
-	"ddl_config\x18\x01 \x01(\v2D.google.cloud.datastream.v1.SqlServerChangeTables.SqlServerDdlConfigB\x03\xe0A\x01R\tddlConfig\x1a\xba\x01\n" +
-	"\x12SqlServerDdlConfig\x12W\n" +
-	"'auto_create_new_capture_instance_on_ddl\x18\x01 \x01(\bB\x03\xe0A\x01R!autoCreateNewCaptureInstanceOnDdl\x12K\n" +
-	" auto_delete_old_capture_instance\x18\x02 \x01(\bB\x03\xe0A\x01R\x1cautoDeleteOldCaptureInstance\"\x94\x02\n" +
+	"ddl_config\x18\x01 \x01(\v2D.google.cloud.datastream.v1.SqlServerChangeTables.SqlServerDdlConfigB\x04\xe2A\x01\x01R\tddlConfig\x1a\xbc\x01\n" +
+	"\x12SqlServerDdlConfig\x12X\n" +
+	"'auto_create_new_capture_instance_on_ddl\x18\x01 \x01(\bB\x04\xe2A\x01\x01R!autoCreateNewCaptureInstanceOnDdl\x12L\n" +
+	" auto_delete_old_capture_instance\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x1cautoDeleteOldCaptureInstance\"\x94\x02\n" +
 	"\vMysqlColumn\x12\x16\n" +
 	"\x06column\x18\x01 \x01(\tR\x06column\x12\x1b\n" +
 	"\tdata_type\x18\x02 \x01(\tR\bdataType\x12\x16\n" +
@@ -11922,11 +11922,11 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x11BinaryLogPosition\x1a\x06\n" +
 	"\x04GtidB\f\n" +
 	"\n" +
-	"cdc_method\"\x8b\x02\n" +
+	"cdc_method\"\x8c\x02\n" +
 	"\x16SalesforceSourceConfig\x12R\n" +
 	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SalesforceOrgR\x0eincludeObjects\x12R\n" +
-	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SalesforceOrgR\x0eexcludeObjects\x12I\n" +
-	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fpollingInterval\"W\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SalesforceOrgR\x0eexcludeObjects\x12J\n" +
+	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0fpollingInterval\"W\n" +
 	"\rSalesforceOrg\x12F\n" +
 	"\aobjects\x18\x01 \x03(\v2,.google.cloud.datastream.v1.SalesforceObjectR\aobjects\"x\n" +
 	"\x10SalesforceObject\x12\x1f\n" +
@@ -11936,12 +11936,12 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x0fSalesforceField\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
 	"\tdata_type\x18\x02 \x01(\tR\bdataType\x12\x1a\n" +
-	"\bnillable\x18\x03 \x01(\bR\bnillable\"\xd6\x02\n" +
+	"\bnillable\x18\x03 \x01(\bR\bnillable\"\xd8\x02\n" +
 	"\x13MongodbSourceConfig\x12S\n" +
 	"\x0finclude_objects\x18\x01 \x01(\v2*.google.cloud.datastream.v1.MongodbClusterR\x0eincludeObjects\x12S\n" +
-	"\x0fexclude_objects\x18\x02 \x01(\v2*.google.cloud.datastream.v1.MongodbClusterR\x0eexcludeObjects\x12F\n" +
-	"\x1dmax_concurrent_backfill_tasks\x18\x03 \x01(\x05B\x03\xe0A\x01R\x1amaxConcurrentBackfillTasks\x12M\n" +
-	"\tjson_mode\x18\x04 \x01(\x0e2+.google.cloud.datastream.v1.MongodbJsonModeB\x03\xe0A\x01R\bjsonMode\"[\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2*.google.cloud.datastream.v1.MongodbClusterR\x0eexcludeObjects\x12G\n" +
+	"\x1dmax_concurrent_backfill_tasks\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x1amaxConcurrentBackfillTasks\x12N\n" +
+	"\tjson_mode\x18\x04 \x01(\x0e2+.google.cloud.datastream.v1.MongodbJsonModeB\x04\xe2A\x01\x01R\bjsonMode\"[\n" +
 	"\x0eMongodbCluster\x12I\n" +
 	"\tdatabases\x18\x01 \x03(\v2+.google.cloud.datastream.v1.MongodbDatabaseR\tdatabases\"~\n" +
 	"\x0fMongodbDatabase\x12\x1a\n" +
@@ -11953,70 +11953,70 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"collection\x12@\n" +
 	"\x06fields\x18\x02 \x03(\v2(.google.cloud.datastream.v1.MongodbFieldR\x06fields\"$\n" +
 	"\fMongodbField\x12\x14\n" +
-	"\x05field\x18\x01 \x01(\tR\x05field\"\xc3\x05\n" +
-	"\x13SpannerSourceConfig\x124\n" +
-	"\x12change_stream_name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x10changeStreamName\x12y\n" +
-	"\x14spanner_rpc_priority\x18\x02 \x01(\x0e2B.google.cloud.datastream.v1.SpannerSourceConfig.SpannerRpcPriorityB\x03\xe0A\x01R\x12spannerRpcPriority\x12 \n" +
-	"\tfgac_role\x18\x03 \x01(\tB\x03\xe0A\x01R\bfgacRole\x12<\n" +
-	"\x18max_concurrent_cdc_tasks\x18\b \x01(\x05B\x03\xe0A\x01R\x15maxConcurrentCdcTasks\x12F\n" +
-	"\x1dmax_concurrent_backfill_tasks\x18\x04 \x01(\x05B\x03\xe0A\x01R\x1amaxConcurrentBackfillTasks\x12Y\n" +
-	"\x0finclude_objects\x18\x06 \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseB\x03\xe0A\x01R\x0eincludeObjects\x12Y\n" +
-	"\x0fexclude_objects\x18\a \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseB\x03\xe0A\x01R\x0eexcludeObjects\x12B\n" +
-	"\x1bbackfill_data_boost_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x18backfillDataBoostEnabled\"Y\n" +
+	"\x05field\x18\x01 \x01(\tR\x05field\"\xc9\x05\n" +
+	"\x13SpannerSourceConfig\x123\n" +
+	"\x12change_stream_name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x10changeStreamName\x12z\n" +
+	"\x14spanner_rpc_priority\x18\x02 \x01(\x0e2B.google.cloud.datastream.v1.SpannerSourceConfig.SpannerRpcPriorityB\x04\xe2A\x01\x01R\x12spannerRpcPriority\x12!\n" +
+	"\tfgac_role\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bfgacRole\x12=\n" +
+	"\x18max_concurrent_cdc_tasks\x18\b \x01(\x05B\x04\xe2A\x01\x01R\x15maxConcurrentCdcTasks\x12G\n" +
+	"\x1dmax_concurrent_backfill_tasks\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x1amaxConcurrentBackfillTasks\x12Z\n" +
+	"\x0finclude_objects\x18\x06 \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseB\x04\xe2A\x01\x01R\x0eincludeObjects\x12Z\n" +
+	"\x0fexclude_objects\x18\a \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseB\x04\xe2A\x01\x01R\x0eexcludeObjects\x12C\n" +
+	"\x1bbackfill_data_boost_enabled\x18\t \x01(\bB\x04\xe2A\x01\x01R\x18backfillDataBoostEnabled\"Y\n" +
 	"\x12SpannerRpcPriority\x12$\n" +
 	" SPANNER_RPC_PRIORITY_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03LOW\x10\x01\x12\n" +
 	"\n" +
 	"\x06MEDIUM\x10\x02\x12\b\n" +
-	"\x04HIGH\x10\x03\"[\n" +
-	"\x0fSpannerDatabase\x12H\n" +
-	"\aschemas\x18\x01 \x03(\v2).google.cloud.datastream.v1.SpannerSchemaB\x03\xe0A\x01R\aschemas\"s\n" +
-	"\rSpannerSchema\x12\x1b\n" +
-	"\x06schema\x18\x01 \x01(\tB\x03\xe0A\x02R\x06schema\x12E\n" +
-	"\x06tables\x18\x02 \x03(\v2(.google.cloud.datastream.v1.SpannerTableB\x03\xe0A\x01R\x06tables\"s\n" +
-	"\fSpannerTable\x12\x19\n" +
-	"\x05table\x18\x01 \x01(\tB\x03\xe0A\x02R\x05table\x12H\n" +
-	"\acolumns\x18\x02 \x03(\v2).google.cloud.datastream.v1.SpannerColumnB\x03\xe0A\x01R\acolumns\"\xa9\x01\n" +
-	"\rSpannerColumn\x12\x1b\n" +
-	"\x06column\x18\x01 \x01(\tB\x03\xe0A\x02R\x06column\x12 \n" +
-	"\tdata_type\x18\x02 \x01(\tB\x03\xe0A\x01R\bdataType\x12)\n" +
-	"\x0eis_primary_key\x18\x03 \x01(\bB\x03\xe0A\x01R\fisPrimaryKey\x12.\n" +
-	"\x10ordinal_position\x18\x04 \x01(\x03B\x03\xe0A\x01R\x0fordinalPosition\"\x94\x02\n" +
-	"\x15DataverseSourceConfig\x12W\n" +
-	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eincludeObjects\x12W\n" +
-	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eexcludeObjects\x12I\n" +
-	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fpollingInterval\"\x86\x03\n" +
-	"$SalesforceMarketingCloudSourceConfig\x12W\n" +
-	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eincludeObjects\x12W\n" +
-	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eexcludeObjects\x12I\n" +
-	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fpollingInterval\x12a\n" +
-	"\x1dfull_refresh_polling_interval\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x1afullRefreshPollingInterval\"\x95\x02\n" +
-	"\x16ServiceNowSourceConfig\x12W\n" +
-	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eincludeObjects\x12W\n" +
-	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eexcludeObjects\x12I\n" +
-	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fpollingInterval\"\x92\x02\n" +
-	"\x13WorkdaySourceConfig\x12W\n" +
-	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eincludeObjects\x12W\n" +
-	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eexcludeObjects\x12I\n" +
-	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fpollingInterval\"X\n" +
-	"\rSourceCatalog\x12G\n" +
-	"\aobjects\x18\x01 \x03(\v2(.google.cloud.datastream.v1.SourceObjectB\x03\xe0A\x01R\aobjects\"\x85\x01\n" +
-	"\fSourceObject\x12$\n" +
-	"\vobject_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"objectName\x12O\n" +
+	"\x04HIGH\x10\x03\"\\\n" +
+	"\x0fSpannerDatabase\x12I\n" +
+	"\aschemas\x18\x01 \x03(\v2).google.cloud.datastream.v1.SpannerSchemaB\x04\xe2A\x01\x01R\aschemas\"u\n" +
+	"\rSpannerSchema\x12\x1c\n" +
+	"\x06schema\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06schema\x12F\n" +
+	"\x06tables\x18\x02 \x03(\v2(.google.cloud.datastream.v1.SpannerTableB\x04\xe2A\x01\x01R\x06tables\"u\n" +
+	"\fSpannerTable\x12\x1a\n" +
+	"\x05table\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05table\x12I\n" +
+	"\acolumns\x18\x02 \x03(\v2).google.cloud.datastream.v1.SpannerColumnB\x04\xe2A\x01\x01R\acolumns\"\xad\x01\n" +
+	"\rSpannerColumn\x12\x1c\n" +
+	"\x06column\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06column\x12!\n" +
+	"\tdata_type\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bdataType\x12*\n" +
+	"\x0eis_primary_key\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fisPrimaryKey\x12/\n" +
+	"\x10ordinal_position\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\x0fordinalPosition\"\x97\x02\n" +
+	"\x15DataverseSourceConfig\x12X\n" +
+	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x04\xe2A\x01\x01R\x0eincludeObjects\x12X\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x04\xe2A\x01\x01R\x0eexcludeObjects\x12J\n" +
+	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0fpollingInterval\"\x8a\x03\n" +
+	"$SalesforceMarketingCloudSourceConfig\x12X\n" +
+	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x04\xe2A\x01\x01R\x0eincludeObjects\x12X\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x04\xe2A\x01\x01R\x0eexcludeObjects\x12J\n" +
+	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0fpollingInterval\x12b\n" +
+	"\x1dfull_refresh_polling_interval\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x1afullRefreshPollingInterval\"\x98\x02\n" +
+	"\x16ServiceNowSourceConfig\x12X\n" +
+	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x04\xe2A\x01\x01R\x0eincludeObjects\x12X\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x04\xe2A\x01\x01R\x0eexcludeObjects\x12J\n" +
+	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0fpollingInterval\"\x95\x02\n" +
+	"\x13WorkdaySourceConfig\x12X\n" +
+	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x04\xe2A\x01\x01R\x0eincludeObjects\x12X\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x04\xe2A\x01\x01R\x0eexcludeObjects\x12J\n" +
+	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0fpollingInterval\"Y\n" +
+	"\rSourceCatalog\x12H\n" +
+	"\aobjects\x18\x01 \x03(\v2(.google.cloud.datastream.v1.SourceObjectB\x04\xe2A\x01\x01R\aobjects\"\x87\x01\n" +
+	"\fSourceObject\x12%\n" +
+	"\vobject_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"objectName\x12P\n" +
 	"\n" +
-	"properties\x18\x02 \x03(\v2*.google.cloud.datastream.v1.SourcePropertyB\x03\xe0A\x01R\n" +
-	"properties\"\xb1\x01\n" +
-	"\x0eSourceProperty\x12(\n" +
-	"\rproperty_name\x18\x01 \x01(\tB\x03\xe0A\x02R\fpropertyName\x12O\n" +
+	"properties\x18\x02 \x03(\v2*.google.cloud.datastream.v1.SourcePropertyB\x04\xe2A\x01\x01R\n" +
+	"properties\"\xb4\x01\n" +
+	"\x0eSourceProperty\x12)\n" +
+	"\rproperty_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fpropertyName\x12P\n" +
 	"\n" +
-	"properties\x18\x02 \x03(\v2*.google.cloud.datastream.v1.SourcePropertyB\x03\xe0A\x01R\n" +
-	"properties\x12$\n" +
-	"\vprimary_key\x18\x04 \x01(\bB\x03\xe0A\x01R\n" +
-	"primaryKey\"\xdf\n" +
+	"properties\x18\x02 \x03(\v2*.google.cloud.datastream.v1.SourcePropertyB\x04\xe2A\x01\x01R\n" +
+	"properties\x12%\n" +
+	"\vprimary_key\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"primaryKey\"\xe1\n" +
 	"\n" +
-	"\fSourceConfig\x12o\n" +
-	"\x19source_connection_profile\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\fSourceConfig\x12p\n" +
+	"\x19source_connection_profile\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+datastream.googleapis.com/ConnectionProfileR\x17sourceConnectionProfile\x12b\n" +
 	"\x14oracle_source_config\x18d \x01(\v2..google.cloud.datastream.v1.OracleSourceConfigH\x00R\x12oracleSourceConfig\x12_\n" +
 	"\x13mysql_source_config\x18e \x01(\v2-.google.cloud.datastream.v1.MysqlSourceConfigH\x00R\x11mysqlSourceConfig\x12n\n" +
@@ -12027,8 +12027,8 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x15spanner_source_config\x18j \x01(\v2/.google.cloud.datastream.v1.SpannerSourceConfigH\x00R\x13spannerSourceConfig\x12k\n" +
 	"\x17dataverse_source_config\x18o \x01(\v21.google.cloud.datastream.v1.DataverseSourceConfigH\x00R\x15dataverseSourceConfig\x12\x9a\x01\n" +
 	"(salesforce_marketing_cloud_source_config\x18t \x01(\v2@.google.cloud.datastream.v1.SalesforceMarketingCloudSourceConfigH\x00R$salesforceMarketingCloudSourceConfig\x12o\n" +
-	"\x19service_now_source_config\x18u \x01(\v22.google.cloud.datastream.v1.ServiceNowSourceConfigH\x00R\x16serviceNowSourceConfig\x12j\n" +
-	"\x15workday_source_config\x18v \x01(\v2/.google.cloud.datastream.v1.WorkdaySourceConfigB\x03\xe0A\x01H\x00R\x13workdaySourceConfigB\x16\n" +
+	"\x19service_now_source_config\x18u \x01(\v22.google.cloud.datastream.v1.ServiceNowSourceConfigH\x00R\x16serviceNowSourceConfig\x12k\n" +
+	"\x15workday_source_config\x18v \x01(\v2/.google.cloud.datastream.v1.WorkdaySourceConfigB\x04\xe2A\x01\x01H\x00R\x13workdaySourceConfigB\x16\n" +
 	"\x14source_stream_config\"\x10\n" +
 	"\x0eAvroFileFormat\"\x8e\x03\n" +
 	"\x0eJsonFileFormat\x12i\n" +
@@ -12041,24 +12041,24 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x0fJsonCompression\x12 \n" +
 	"\x1cJSON_COMPRESSION_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eNO_COMPRESSION\x10\x01\x12\b\n" +
-	"\x04GZIP\x10\x02\"3\n" +
-	"\x12BigQueryClustering\x12\x1d\n" +
-	"\acolumns\x18\x01 \x03(\tB\x03\xe0A\x02R\acolumns\"\x9b\x01\n" +
-	"\x16IngestionTimePartition\x12\x80\x01\n" +
-	"\x1dpartitioning_time_granularity\x18\x01 \x01(\x0e27.google.cloud.datastream.v1.PartitioningTimeGranularityB\x03\xe0A\x01R\x1bpartitioningTimeGranularity\"\xb3\x01\n" +
-	"\x11TimeUnitPartition\x12\x1b\n" +
-	"\x06column\x18\x01 \x01(\tB\x03\xe0A\x02R\x06column\x12\x80\x01\n" +
-	"\x1dpartitioning_time_granularity\x18\x02 \x01(\x0e27.google.cloud.datastream.v1.PartitioningTimeGranularityB\x03\xe0A\x01R\x1bpartitioningTimeGranularity\"\x87\x01\n" +
-	"\x15IntegerRangePartition\x12\x1b\n" +
-	"\x06column\x18\x01 \x01(\tB\x03\xe0A\x02R\x06column\x12\x19\n" +
-	"\x05start\x18\x02 \x01(\x03B\x03\xe0A\x02R\x05start\x12\x15\n" +
-	"\x03end\x18\x03 \x01(\x03B\x03\xe0A\x02R\x03end\x12\x1f\n" +
-	"\binterval\x18\x04 \x01(\x03B\x03\xe0A\x02R\binterval\"\xa3\x03\n" +
+	"\x04GZIP\x10\x02\"4\n" +
+	"\x12BigQueryClustering\x12\x1e\n" +
+	"\acolumns\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\acolumns\"\x9c\x01\n" +
+	"\x16IngestionTimePartition\x12\x81\x01\n" +
+	"\x1dpartitioning_time_granularity\x18\x01 \x01(\x0e27.google.cloud.datastream.v1.PartitioningTimeGranularityB\x04\xe2A\x01\x01R\x1bpartitioningTimeGranularity\"\xb5\x01\n" +
+	"\x11TimeUnitPartition\x12\x1c\n" +
+	"\x06column\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06column\x12\x81\x01\n" +
+	"\x1dpartitioning_time_granularity\x18\x02 \x01(\x0e27.google.cloud.datastream.v1.PartitioningTimeGranularityB\x04\xe2A\x01\x01R\x1bpartitioningTimeGranularity\"\x8b\x01\n" +
+	"\x15IntegerRangePartition\x12\x1c\n" +
+	"\x06column\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06column\x12\x1a\n" +
+	"\x05start\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\x05start\x12\x16\n" +
+	"\x03end\x18\x03 \x01(\x03B\x04\xe2A\x01\x02R\x03end\x12 \n" +
+	"\binterval\x18\x04 \x01(\x03B\x04\xe2A\x01\x02R\binterval\"\xa4\x03\n" +
 	"\x14BigQueryPartitioning\x12k\n" +
 	"\x17integer_range_partition\x18d \x01(\v21.google.cloud.datastream.v1.IntegerRangePartitionH\x00R\x15integerRangePartition\x12_\n" +
 	"\x13time_unit_partition\x18e \x01(\v2-.google.cloud.datastream.v1.TimeUnitPartitionH\x00R\x11timeUnitPartition\x12n\n" +
-	"\x18ingestion_time_partition\x18f \x01(\v22.google.cloud.datastream.v1.IngestionTimePartitionH\x00R\x16ingestionTimePartition\x12=\n" +
-	"\x18require_partition_filter\x18g \x01(\bB\x03\xe0A\x01R\x16requirePartitionFilterB\x0e\n" +
+	"\x18ingestion_time_partition\x18f \x01(\v22.google.cloud.datastream.v1.IngestionTimePartitionH\x00R\x16ingestionTimePartition\x12>\n" +
+	"\x18require_partition_filter\x18g \x01(\bB\x04\xe2A\x01\x01R\x16requirePartitionFilterB\x0e\n" +
 	"\fpartitioning\"\xe4\x02\n" +
 	"\x14GcsDestinationConfig\x12\x12\n" +
 	"\x04path\x18\x01 \x01(\tR\x04path\x12(\n" +
@@ -12066,37 +12066,37 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x16file_rotation_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\x14fileRotationInterval\x12V\n" +
 	"\x10avro_file_format\x18d \x01(\v2*.google.cloud.datastream.v1.AvroFileFormatH\x00R\x0eavroFileFormat\x12V\n" +
 	"\x10json_file_format\x18e \x01(\v2*.google.cloud.datastream.v1.JsonFileFormatH\x00R\x0ejsonFileFormatB\r\n" +
-	"\vfile_format\"\xb5\f\n" +
+	"\vfile_format\"\xbc\f\n" +
 	"\x19BigQueryDestinationConfig\x12\x80\x01\n" +
 	"\x15single_target_dataset\x18\xc9\x01 \x01(\v2I.google.cloud.datastream.v1.BigQueryDestinationConfig.SingleTargetDatasetH\x00R\x13singleTargetDataset\x12\x8c\x01\n" +
 	"\x19source_hierarchy_datasets\x18\xca\x01 \x01(\v2M.google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasetsH\x00R\x17sourceHierarchyDatasets\x12A\n" +
-	"\x0edata_freshness\x18\xac\x02 \x01(\v2\x19.google.protobuf.DurationR\rdataFreshness\x12f\n" +
-	"\vblmt_config\x18\x01 \x01(\v2@.google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfigB\x03\xe0A\x01R\n" +
+	"\x0edata_freshness\x18\xac\x02 \x01(\v2\x19.google.protobuf.DurationR\rdataFreshness\x12g\n" +
+	"\vblmt_config\x18\x01 \x01(\v2@.google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfigB\x04\xe2A\x01\x01R\n" +
 	"blmtConfig\x12T\n" +
 	"\x05merge\x18\xad\x02 \x01(\v2;.google.cloud.datastream.v1.BigQueryDestinationConfig.MergeH\x01R\x05merge\x12d\n" +
 	"\vappend_only\x18\xae\x02 \x01(\v2@.google.cloud.datastream.v1.BigQueryDestinationConfig.AppendOnlyH\x01R\n" +
 	"appendOnly\x1a4\n" +
 	"\x13SingleTargetDataset\x12\x1d\n" +
 	"\n" +
-	"dataset_id\x18\x01 \x01(\tR\tdatasetId\x1a\xdf\x02\n" +
+	"dataset_id\x18\x01 \x01(\tR\tdatasetId\x1a\xe1\x02\n" +
 	"\x17SourceHierarchyDatasets\x12\x88\x01\n" +
-	"\x10dataset_template\x18\x02 \x01(\v2].google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets.DatasetTemplateR\x0fdatasetTemplate\x12'\n" +
+	"\x10dataset_template\x18\x02 \x01(\v2].google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets.DatasetTemplateR\x0fdatasetTemplate\x12(\n" +
 	"\n" +
-	"project_id\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\tprojectId\x88\x01\x01\x1a\x80\x01\n" +
-	"\x0fDatasetTemplate\x12\x1f\n" +
-	"\blocation\x18\x01 \x01(\tB\x03\xe0A\x02R\blocation\x12*\n" +
+	"project_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\tprojectId\x88\x01\x01\x1a\x81\x01\n" +
+	"\x0fDatasetTemplate\x12 \n" +
+	"\blocation\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\blocation\x12*\n" +
 	"\x11dataset_id_prefix\x18\x02 \x01(\tR\x0fdatasetIdPrefix\x12 \n" +
 	"\fkms_key_name\x18\x03 \x01(\tR\n" +
 	"kmsKeyNameB\r\n" +
-	"\v_project_id\x1a\xcf\x03\n" +
+	"\v_project_id\x1a\xd3\x03\n" +
 	"\n" +
-	"BlmtConfig\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\x1b\n" +
-	"\troot_path\x18\x02 \x01(\tR\brootPath\x12,\n" +
-	"\x0fconnection_name\x18\x03 \x01(\tB\x03\xe0A\x02R\x0econnectionName\x12q\n" +
-	"\vfile_format\x18\x04 \x01(\x0e2K.google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.FileFormatB\x03\xe0A\x02R\n" +
-	"fileFormat\x12t\n" +
-	"\ftable_format\x18\x05 \x01(\x0e2L.google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.TableFormatB\x03\xe0A\x02R\vtableFormat\"6\n" +
+	"BlmtConfig\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12\x1b\n" +
+	"\troot_path\x18\x02 \x01(\tR\brootPath\x12-\n" +
+	"\x0fconnection_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0econnectionName\x12r\n" +
+	"\vfile_format\x18\x04 \x01(\x0e2K.google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.FileFormatB\x04\xe2A\x01\x02R\n" +
+	"fileFormat\x12u\n" +
+	"\ftable_format\x18\x05 \x01(\x0e2L.google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.TableFormatB\x04\xe2A\x01\x02R\vtableFormat\"6\n" +
 	"\n" +
 	"FileFormat\x12\x1b\n" +
 	"\x17FILE_FORMAT_UNSPECIFIED\x10\x00\x12\v\n" +
@@ -12109,33 +12109,33 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x05MergeB\x10\n" +
 	"\x0edataset_configB\f\n" +
 	"\n" +
-	"write_mode\"\x8e\x03\n" +
-	"\x11DestinationConfig\x12y\n" +
-	"\x1edestination_connection_profile\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"write_mode\"\x8f\x03\n" +
+	"\x11DestinationConfig\x12z\n" +
+	"\x1edestination_connection_profile\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+datastream.googleapis.com/ConnectionProfileR\x1cdestinationConnectionProfile\x12h\n" +
 	"\x16gcs_destination_config\x18d \x01(\v20.google.cloud.datastream.v1.GcsDestinationConfigH\x00R\x14gcsDestinationConfig\x12w\n" +
 	"\x1bbigquery_destination_config\x18e \x01(\v25.google.cloud.datastream.v1.BigQueryDestinationConfigH\x00R\x19bigqueryDestinationConfigB\x1b\n" +
-	"\x19destination_stream_config\"\xcc\x17\n" +
-	"\x06Stream\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x19destination_stream_config\"\xd8\x17\n" +
+	"\x06Stream\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12F\n" +
-	"\x06labels\x18\x04 \x03(\v2..google.cloud.datastream.v1.Stream.LabelsEntryR\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12R\n" +
-	"\rsource_config\x18\x06 \x01(\v2(.google.cloud.datastream.v1.SourceConfigB\x03\xe0A\x02R\fsourceConfig\x12a\n" +
-	"\x12destination_config\x18\a \x01(\v2-.google.cloud.datastream.v1.DestinationConfigB\x03\xe0A\x02R\x11destinationConfig\x12>\n" +
+	"\x06labels\x18\x04 \x03(\v2..google.cloud.datastream.v1.Stream.LabelsEntryR\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12S\n" +
+	"\rsource_config\x18\x06 \x01(\v2(.google.cloud.datastream.v1.SourceConfigB\x04\xe2A\x01\x02R\fsourceConfig\x12b\n" +
+	"\x12destination_config\x18\a \x01(\v2-.google.cloud.datastream.v1.DestinationConfigB\x04\xe2A\x01\x02R\x11destinationConfig\x12>\n" +
 	"\x05state\x18\b \x01(\x0e2(.google.cloud.datastream.v1.Stream.StateR\x05state\x12[\n" +
 	"\fbackfill_all\x18e \x01(\v26.google.cloud.datastream.v1.Stream.BackfillAllStrategyH\x00R\vbackfillAll\x12^\n" +
-	"\rbackfill_none\x18f \x01(\v27.google.cloud.datastream.v1.Stream.BackfillNoneStrategyH\x00R\fbackfillNone\x12>\n" +
-	"\x06errors\x18\t \x03(\v2!.google.cloud.datastream.v1.ErrorB\x03\xe0A\x03R\x06errors\x12O\n" +
+	"\rbackfill_none\x18f \x01(\v27.google.cloud.datastream.v1.Stream.BackfillNoneStrategyH\x00R\fbackfillNone\x12?\n" +
+	"\x06errors\x18\t \x03(\v2!.google.cloud.datastream.v1.ErrorB\x04\xe2A\x01\x03R\x06errors\x12P\n" +
 	"\x1fcustomer_managed_encryption_key\x18\n" +
-	" \x01(\tB\x03\xe0A\x05H\x01R\x1ccustomerManagedEncryptionKey\x88\x01\x01\x12M\n" +
-	"\x12last_recovery_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x10lastRecoveryTime\x12-\n" +
-	"\rsatisfies_pzs\x18\x0f \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\x10 \x01(\bB\x03\xe0A\x03H\x03R\fsatisfiesPzi\x88\x01\x01\x12L\n" +
-	"\trule_sets\x18\x13 \x03(\v2*.google.cloud.datastream.v1.Stream.RuleSetB\x03\xe0A\x01R\bruleSets\x1a\xe7\x06\n" +
+	" \x01(\tB\x04\xe2A\x01\x05H\x01R\x1ccustomerManagedEncryptionKey\x88\x01\x01\x12N\n" +
+	"\x12last_recovery_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x10lastRecoveryTime\x12.\n" +
+	"\rsatisfies_pzs\x18\x0f \x01(\bB\x04\xe2A\x01\x03H\x02R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\x10 \x01(\bB\x04\xe2A\x01\x03H\x03R\fsatisfiesPzi\x88\x01\x01\x12M\n" +
+	"\trule_sets\x18\x13 \x03(\v2*.google.cloud.datastream.v1.Stream.RuleSetB\x04\xe2A\x01\x01R\bruleSets\x1a\xe7\x06\n" +
 	"\x13BackfillAllStrategy\x12a\n" +
 	"\x17oracle_excluded_objects\x18\x01 \x01(\v2'.google.cloud.datastream.v1.OracleRdbmsH\x00R\x15oracleExcludedObjects\x12^\n" +
 	"\x16mysql_excluded_objects\x18\x02 \x01(\v2&.google.cloud.datastream.v1.MysqlRdbmsH\x00R\x14mysqlExcludedObjects\x12m\n" +
@@ -12146,10 +12146,10 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x18spanner_excluded_objects\x18\a \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseH\x00R\x16spannerExcludedObjects\x12_\n" +
 	"\x15saas_excluded_objects\x18\t \x01(\v2).google.cloud.datastream.v1.SourceCatalogH\x00R\x13saasExcludedObjectsB\x12\n" +
 	"\x10excluded_objects\x1a\x16\n" +
-	"\x14BackfillNoneStrategy\x1a\xda\x04\n" +
-	"\aRuleSet\x12r\n" +
-	"\x13customization_rules\x18\x01 \x03(\v2<.google.cloud.datastream.v1.Stream.RuleSet.CustomizationRuleB\x03\xe0A\x02R\x12customizationRules\x12a\n" +
-	"\robject_filter\x18\x02 \x01(\v27.google.cloud.datastream.v1.Stream.RuleSet.ObjectFilterB\x03\xe0A\x02R\fobjectFilter\x1a\x8d\x01\n" +
+	"\x14BackfillNoneStrategy\x1a\xdc\x04\n" +
+	"\aRuleSet\x12s\n" +
+	"\x13customization_rules\x18\x01 \x03(\v2<.google.cloud.datastream.v1.Stream.RuleSet.CustomizationRuleB\x04\xe2A\x01\x02R\x12customizationRules\x12b\n" +
+	"\robject_filter\x18\x02 \x01(\v27.google.cloud.datastream.v1.Stream.RuleSet.ObjectFilterB\x04\xe2A\x01\x02R\fobjectFilter\x1a\x8d\x01\n" +
 	"\fObjectFilter\x12n\n" +
 	"\x18source_object_identifier\x18\x01 \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierH\x00R\x16sourceObjectIdentifierB\r\n" +
 	"\vfilter_type\x1a\xe7\x01\n" +
@@ -12176,19 +12176,19 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x11backfill_strategyB\"\n" +
 	" _customer_managed_encryption_keyB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"\xa7\x05\n" +
-	"\fStreamObject\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12>\n" +
-	"\x06errors\x18\x06 \x03(\v2!.google.cloud.datastream.v1.ErrorB\x03\xe0A\x03R\x06errors\x12J\n" +
+	"\x0e_satisfies_pzi\"\xab\x05\n" +
+	"\fStreamObject\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12?\n" +
+	"\x06errors\x18\x06 \x03(\v2!.google.cloud.datastream.v1.ErrorB\x04\xe2A\x01\x03R\x06errors\x12J\n" +
 	"\fbackfill_job\x18\a \x01(\v2'.google.cloud.datastream.v1.BackfillJobR\vbackfillJob\x12W\n" +
-	"\rsource_object\x18\b \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierR\fsourceObject\x12r\n" +
-	"\x13customization_rules\x18\t \x03(\v2<.google.cloud.datastream.v1.Stream.RuleSet.CustomizationRuleB\x03\xe0A\x03R\x12customizationRules:v\xeaAs\n" +
-	"&datastream.googleapis.com/StreamObject\x12Iprojects/{project}/locations/{location}/streams/{stream}/objects/{object}\"\xf5\v\n" +
+	"\rsource_object\x18\b \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierR\fsourceObject\x12s\n" +
+	"\x13customization_rules\x18\t \x03(\v2<.google.cloud.datastream.v1.Stream.RuleSet.CustomizationRuleB\x04\xe2A\x01\x03R\x12customizationRules:v\xeaAs\n" +
+	"&datastream.googleapis.com/StreamObject\x12Iprojects/{project}/locations/{location}/streams/{stream}/objects/{object}\"\x82\f\n" +
 	"\x16SourceObjectIdentifier\x12x\n" +
 	"\x11oracle_identifier\x18\x01 \x01(\v2I.google.cloud.datastream.v1.SourceObjectIdentifier.OracleObjectIdentifierH\x00R\x10oracleIdentifier\x12u\n" +
 	"\x10mysql_identifier\x18\x02 \x01(\v2H.google.cloud.datastream.v1.SourceObjectIdentifier.MysqlObjectIdentifierH\x00R\x0fmysqlIdentifier\x12\x84\x01\n" +
@@ -12196,38 +12196,38 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x15sql_server_identifier\x18\x04 \x01(\v2L.google.cloud.datastream.v1.SourceObjectIdentifier.SqlServerObjectIdentifierH\x00R\x13sqlServerIdentifier\x12\x84\x01\n" +
 	"\x15salesforce_identifier\x18\x05 \x01(\v2M.google.cloud.datastream.v1.SourceObjectIdentifier.SalesforceObjectIdentifierH\x00R\x14salesforceIdentifier\x12{\n" +
 	"\x12mongodb_identifier\x18\x06 \x01(\v2J.google.cloud.datastream.v1.SourceObjectIdentifier.MongodbObjectIdentifierH\x00R\x11mongodbIdentifier\x12{\n" +
-	"\x12spanner_identifier\x18\a \x01(\v2J.google.cloud.datastream.v1.SourceObjectIdentifier.SpannerObjectIdentifierH\x00R\x11spannerIdentifier\x1aP\n" +
-	"\x16OracleObjectIdentifier\x12\x1b\n" +
-	"\x06schema\x18\x01 \x01(\tB\x03\xe0A\x02R\x06schema\x12\x19\n" +
-	"\x05table\x18\x02 \x01(\tB\x03\xe0A\x02R\x05table\x1aT\n" +
-	"\x1aPostgresqlObjectIdentifier\x12\x1b\n" +
-	"\x06schema\x18\x01 \x01(\tB\x03\xe0A\x02R\x06schema\x12\x19\n" +
-	"\x05table\x18\x02 \x01(\tB\x03\xe0A\x02R\x05table\x1aS\n" +
-	"\x15MysqlObjectIdentifier\x12\x1f\n" +
-	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x12\x19\n" +
-	"\x05table\x18\x02 \x01(\tB\x03\xe0A\x02R\x05table\x1aS\n" +
-	"\x19SqlServerObjectIdentifier\x12\x1b\n" +
-	"\x06schema\x18\x01 \x01(\tB\x03\xe0A\x02R\x06schema\x12\x19\n" +
-	"\x05table\x18\x02 \x01(\tB\x03\xe0A\x02R\x05table\x1aB\n" +
-	"\x1aSalesforceObjectIdentifier\x12$\n" +
-	"\vobject_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"objectName\x1a_\n" +
-	"\x17MongodbObjectIdentifier\x12\x1f\n" +
-	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x12#\n" +
+	"\x12spanner_identifier\x18\a \x01(\v2J.google.cloud.datastream.v1.SourceObjectIdentifier.SpannerObjectIdentifierH\x00R\x11spannerIdentifier\x1aR\n" +
+	"\x16OracleObjectIdentifier\x12\x1c\n" +
+	"\x06schema\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06schema\x12\x1a\n" +
+	"\x05table\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05table\x1aV\n" +
+	"\x1aPostgresqlObjectIdentifier\x12\x1c\n" +
+	"\x06schema\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06schema\x12\x1a\n" +
+	"\x05table\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05table\x1aU\n" +
+	"\x15MysqlObjectIdentifier\x12 \n" +
+	"\bdatabase\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bdatabase\x12\x1a\n" +
+	"\x05table\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05table\x1aU\n" +
+	"\x19SqlServerObjectIdentifier\x12\x1c\n" +
+	"\x06schema\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06schema\x12\x1a\n" +
+	"\x05table\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05table\x1aC\n" +
+	"\x1aSalesforceObjectIdentifier\x12%\n" +
+	"\vobject_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"objectName\x1aa\n" +
+	"\x17MongodbObjectIdentifier\x12 \n" +
+	"\bdatabase\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bdatabase\x12$\n" +
 	"\n" +
-	"collection\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"collection\x1aQ\n" +
-	"\x17SpannerObjectIdentifier\x12\x1b\n" +
-	"\x06schema\x18\x01 \x01(\tB\x03\xe0A\x01R\x06schema\x12\x19\n" +
-	"\x05table\x18\x02 \x01(\tB\x03\xe0A\x02R\x05tableB\x13\n" +
-	"\x11source_identifier\"\x84\x05\n" +
-	"\vBackfillJob\x12H\n" +
-	"\x05state\x18\x01 \x01(\x0e2-.google.cloud.datastream.v1.BackfillJob.StateB\x03\xe0A\x03R\x05state\x12I\n" +
-	"\atrigger\x18\x02 \x01(\x0e2/.google.cloud.datastream.v1.BackfillJob.TriggerR\atrigger\x12G\n" +
-	"\x0flast_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rlastStartTime\x12C\n" +
-	"\rlast_end_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vlastEndTime\x12>\n" +
-	"\x06errors\x18\x05 \x03(\v2!.google.cloud.datastream.v1.ErrorB\x03\xe0A\x03R\x06errors\x12O\n" +
-	"\fevent_filter\x18\a \x01(\v2'.google.cloud.datastream.v1.EventFilterB\x03\xe0A\x03R\veventFilter\"\x81\x01\n" +
+	"collection\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"collection\x1aS\n" +
+	"\x17SpannerObjectIdentifier\x12\x1c\n" +
+	"\x06schema\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06schema\x12\x1a\n" +
+	"\x05table\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05tableB\x13\n" +
+	"\x11source_identifier\"\x89\x05\n" +
+	"\vBackfillJob\x12I\n" +
+	"\x05state\x18\x01 \x01(\x0e2-.google.cloud.datastream.v1.BackfillJob.StateB\x04\xe2A\x01\x03R\x05state\x12I\n" +
+	"\atrigger\x18\x02 \x01(\x0e2/.google.cloud.datastream.v1.BackfillJob.TriggerR\atrigger\x12H\n" +
+	"\x0flast_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rlastStartTime\x12D\n" +
+	"\rlast_end_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vlastEndTime\x12?\n" +
+	"\x06errors\x18\x05 \x03(\v2!.google.cloud.datastream.v1.ErrorB\x04\xe2A\x01\x03R\x06errors\x12P\n" +
+	"\fevent_filter\x18\a \x01(\v2'.google.cloud.datastream.v1.EventFilterB\x04\xe2A\x01\x03R\veventFilter\"\x81\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vNOT_STARTED\x10\x01\x12\v\n" +
@@ -12259,11 +12259,11 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\\\n" +
 	"\x10ValidationResult\x12H\n" +
-	"\vvalidations\x18\x01 \x03(\v2&.google.cloud.datastream.v1.ValidationR\vvalidations\"\xab\x02\n" +
+	"\vvalidations\x18\x01 \x03(\v2&.google.cloud.datastream.v1.ValidationR\vvalidations\"\xac\x02\n" +
 	"\n" +
 	"Validation\x12 \n" +
-	"\vdescription\x18\x01 \x01(\tR\vdescription\x12G\n" +
-	"\x05state\x18\x02 \x01(\x0e2,.google.cloud.datastream.v1.Validation.StateB\x03\xe0A\x03R\x05state\x12G\n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x12H\n" +
+	"\x05state\x18\x02 \x01(\x0e2,.google.cloud.datastream.v1.Validation.StateB\x04\xe2A\x01\x03R\x05state\x12G\n" +
 	"\amessage\x18\x03 \x03(\v2-.google.cloud.datastream.v1.ValidationMessageR\amessage\x12\x12\n" +
 	"\x04code\x18\x04 \x01(\tR\x04code\"U\n" +
 	"\x05State\x12\x15\n" +
@@ -12285,39 +12285,39 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x05Level\x12\x15\n" +
 	"\x11LEVEL_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aWARNING\x10\x01\x12\t\n" +
-	"\x05ERROR\x10\x02\"\xa2\t\n" +
-	"\vCdcStrategy\x12\x83\x01\n" +
-	"\x1amost_recent_start_position\x18e \x01(\v2?.google.cloud.datastream.v1.CdcStrategy.MostRecentStartPositionB\x03\xe0A\x01H\x00R\x17mostRecentStartPosition\x12\x8c\x01\n" +
-	"\x1dnext_available_start_position\x18f \x01(\v2B.google.cloud.datastream.v1.CdcStrategy.NextAvailableStartPositionB\x03\xe0A\x01H\x00R\x1anextAvailableStartPosition\x12|\n" +
-	"\x17specific_start_position\x18g \x01(\v2=.google.cloud.datastream.v1.CdcStrategy.SpecificStartPositionB\x03\xe0A\x01H\x00R\x15specificStartPosition\x1a\x19\n" +
+	"\x05ERROR\x10\x02\"\xa6\t\n" +
+	"\vCdcStrategy\x12\x84\x01\n" +
+	"\x1amost_recent_start_position\x18e \x01(\v2?.google.cloud.datastream.v1.CdcStrategy.MostRecentStartPositionB\x04\xe2A\x01\x01H\x00R\x17mostRecentStartPosition\x12\x8d\x01\n" +
+	"\x1dnext_available_start_position\x18f \x01(\v2B.google.cloud.datastream.v1.CdcStrategy.NextAvailableStartPositionB\x04\xe2A\x01\x01H\x00R\x1anextAvailableStartPosition\x12}\n" +
+	"\x17specific_start_position\x18g \x01(\v2=.google.cloud.datastream.v1.CdcStrategy.SpecificStartPositionB\x04\xe2A\x01\x01H\x00R\x15specificStartPosition\x1a\x19\n" +
 	"\x17MostRecentStartPosition\x1a\x1c\n" +
-	"\x1aNextAvailableStartPosition\x1a\xb4\x05\n" +
+	"\x1aNextAvailableStartPosition\x1a\xb5\x05\n" +
 	"\x15SpecificStartPosition\x12\\\n" +
 	"\x12mysql_log_position\x18e \x01(\v2,.google.cloud.datastream.v1.MysqlLogPositionH\x00R\x10mysqlLogPosition\x12_\n" +
 	"\x13oracle_scn_position\x18f \x01(\v2-.google.cloud.datastream.v1.OracleScnPositionH\x00R\x11oracleScnPosition\x12i\n" +
 	"\x17sql_server_lsn_position\x18g \x01(\v20.google.cloud.datastream.v1.SqlServerLsnPositionH\x00R\x14sqlServerLsnPosition\x12_\n" +
 	"\x13mysql_gtid_position\x18h \x01(\v2-.google.cloud.datastream.v1.MysqlGtidPositionH\x00R\x11mysqlGtidPosition\x12~\n" +
-	"\x1emongodb_change_stream_position\x18i \x01(\v27.google.cloud.datastream.v1.MongodbChangeStreamPositionH\x00R\x1bmongodbChangeStreamPosition\x12\x83\x01\n" +
-	"\x1espanner_change_stream_position\x18j \x01(\v27.google.cloud.datastream.v1.SpannerChangeStreamPositionB\x03\xe0A\x01H\x00R\x1bspannerChangeStreamPositionB\n" +
+	"\x1emongodb_change_stream_position\x18i \x01(\v27.google.cloud.datastream.v1.MongodbChangeStreamPositionH\x00R\x1bmongodbChangeStreamPosition\x12\x84\x01\n" +
+	"\x1espanner_change_stream_position\x18j \x01(\v27.google.cloud.datastream.v1.SpannerChangeStreamPositionB\x04\xe2A\x01\x01H\x00R\x1bspannerChangeStreamPositionB\n" +
 	"\n" +
 	"\bpositionB\x10\n" +
-	"\x0estart_position\"-\n" +
-	"\x14SqlServerLsnPosition\x12\x15\n" +
-	"\x03lsn\x18\x01 \x01(\tB\x03\xe0A\x02R\x03lsn\"*\n" +
-	"\x11OracleScnPosition\x12\x15\n" +
-	"\x03scn\x18\x01 \x01(\x03B\x03\xe0A\x02R\x03scn\"p\n" +
-	"\x10MysqlLogPosition\x12\x1e\n" +
-	"\blog_file\x18\x01 \x01(\tB\x03\xe0A\x02R\alogFile\x12+\n" +
-	"\flog_position\x18\x02 \x01(\x05B\x03\xe0A\x01H\x00R\vlogPosition\x88\x01\x01B\x0f\n" +
-	"\r_log_position\"3\n" +
-	"\x11MysqlGtidPosition\x12\x1e\n" +
-	"\bgtid_set\x18\x01 \x01(\tB\x03\xe0A\x02R\agtidSet\"]\n" +
-	"\x1bMongodbChangeStreamPosition\x12>\n" +
+	"\x0estart_position\".\n" +
+	"\x14SqlServerLsnPosition\x12\x16\n" +
+	"\x03lsn\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03lsn\"+\n" +
+	"\x11OracleScnPosition\x12\x16\n" +
+	"\x03scn\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x03scn\"r\n" +
+	"\x10MysqlLogPosition\x12\x1f\n" +
+	"\blog_file\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\alogFile\x12,\n" +
+	"\flog_position\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x00R\vlogPosition\x88\x01\x01B\x0f\n" +
+	"\r_log_position\"4\n" +
+	"\x11MysqlGtidPosition\x12\x1f\n" +
+	"\bgtid_set\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\agtidSet\"^\n" +
+	"\x1bMongodbChangeStreamPosition\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\"]\n" +
-	"\x1bSpannerChangeStreamPosition\x12>\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime\"^\n" +
+	"\x1bSpannerChangeStreamPosition\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime*O\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime*O\n" +
 	"\x0fMongodbJsonMode\x12!\n" +
 	"\x1dMONGODB_JSON_MODE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

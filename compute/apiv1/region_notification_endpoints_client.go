@@ -364,6 +364,11 @@ func (c *regionNotificationEndpointsRESTClient) AggregatedList(ctx context.Conte
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/notificationEndpoints", req.GetProject())
 
 		params := url.Values{}
@@ -447,6 +452,13 @@ func (c *regionNotificationEndpointsRESTClient) Delete(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNotificationEndpoint(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints/%v", req.GetProject(), req.GetRegion(), req.GetNotificationEndpoint())
 
 	params := url.Values{}
@@ -511,6 +523,13 @@ func (c *regionNotificationEndpointsRESTClient) Get(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNotificationEndpoint(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints/%v", req.GetProject(), req.GetRegion(), req.GetNotificationEndpoint())
 
 	// Build HTTP headers from client and context metadata.
@@ -566,6 +585,12 @@ func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints", req.GetProject(), req.GetRegion())
@@ -645,6 +670,12 @@ func (c *regionNotificationEndpointsRESTClient) List(ctx context.Context, req *c
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -720,6 +751,13 @@ func (c *regionNotificationEndpointsRESTClient) TestIamPermissions(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

@@ -701,33 +701,33 @@ var File_google_apps_events_subscriptions_v1beta_subscription_resource_proto pro
 
 const file_google_apps_events_subscriptions_v1beta_subscription_resource_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/apps/events/subscriptions/v1beta/subscription_resource.proto\x12'google.apps.events.subscriptions.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\f\n" +
-	"\fSubscription\x12n\n" +
-	"\rdrive_options\x18\x14 \x01(\v2B.google.apps.events.subscriptions.v1beta.Subscription.DriveOptionsB\x03\xe0A\x01H\x00R\fdriveOptions\x12B\n" +
-	"\vexpire_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\aH\x01R\n" +
-	"expireTime\x122\n" +
-	"\x03ttl\x18\x0e \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04H\x01R\x03ttl\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x125\n" +
-	"\x0ftarget_resource\x18\x04 \x01(\tB\f\xe0A\x05\xe0A\x02\xfaA\x03\n" +
-	"\x01*R\x0etargetResource\x12'\n" +
-	"\vevent_types\x18\x05 \x03(\tB\x06\xe0A\x02\xe0A\x06R\n" +
-	"eventTypes\x12e\n" +
-	"\x0fpayload_options\x18\x06 \x01(\v27.google.apps.events.subscriptions.v1beta.PayloadOptionsB\x03\xe0A\x01R\x0epayloadOptions\x12z\n" +
-	"\x15notification_endpoint\x18\a \x01(\v2=.google.apps.events.subscriptions.v1beta.NotificationEndpointB\x06\xe0A\x02\xe0A\x05R\x14notificationEndpoint\x12V\n" +
-	"\x05state\x18\b \x01(\x0e2;.google.apps.events.subscriptions.v1beta.Subscription.StateB\x03\xe0A\x03R\x05state\x12q\n" +
-	"\x11suspension_reason\x18\x12 \x01(\x0e2?.google.apps.events.subscriptions.v1beta.Subscription.ErrorTypeB\x03\xe0A\x03R\x10suspensionReason\x12G\n" +
+	"Cgoogle/apps/events/subscriptions/v1beta/subscription_resource.proto\x12'google.apps.events.subscriptions.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\f\n" +
+	"\fSubscription\x12o\n" +
+	"\rdrive_options\x18\x14 \x01(\v2B.google.apps.events.subscriptions.v1beta.Subscription.DriveOptionsB\x04\xe2A\x01\x01H\x00R\fdriveOptions\x12C\n" +
+	"\vexpire_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\aH\x01R\n" +
+	"expireTime\x123\n" +
+	"\x03ttl\x18\x0e \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04H\x01R\x03ttl\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x124\n" +
+	"\x0ftarget_resource\x18\x04 \x01(\tB\v\xe2A\x02\x05\x02\xfaA\x03\n" +
+	"\x01*R\x0etargetResource\x12&\n" +
+	"\vevent_types\x18\x05 \x03(\tB\x05\xe2A\x02\x02\x06R\n" +
+	"eventTypes\x12f\n" +
+	"\x0fpayload_options\x18\x06 \x01(\v27.google.apps.events.subscriptions.v1beta.PayloadOptionsB\x04\xe2A\x01\x01R\x0epayloadOptions\x12y\n" +
+	"\x15notification_endpoint\x18\a \x01(\v2=.google.apps.events.subscriptions.v1beta.NotificationEndpointB\x05\xe2A\x02\x02\x05R\x14notificationEndpoint\x12W\n" +
+	"\x05state\x18\b \x01(\x0e2;.google.apps.events.subscriptions.v1beta.Subscription.StateB\x04\xe2A\x01\x03R\x05state\x12r\n" +
+	"\x11suspension_reason\x18\x12 \x01(\x0e2?.google.apps.events.subscriptions.v1beta.Subscription.ErrorTypeB\x04\xe2A\x01\x03R\x10suspensionReason\x12H\n" +
 	"\tauthority\x18\n" +
-	" \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!cloudidentity.googleapis.com/UserR\tauthority\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vreconciling\x18\x0f \x01(\bB\x03\xe0A\x03R\vreconciling\x12\x17\n" +
-	"\x04etag\x18\x11 \x01(\tB\x03\xe0A\x01R\x04etag\x1aG\n" +
-	"\fDriveOptions\x127\n" +
-	"\x13include_descendants\x18\x01 \x01(\bB\x06\xe0A\x01\xe0A\x05R\x12includeDescendants\"F\n" +
+	" \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!cloudidentity.googleapis.com/UserR\tauthority\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vreconciling\x18\x0f \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12\x18\n" +
+	"\x04etag\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1aF\n" +
+	"\fDriveOptions\x126\n" +
+	"\x13include_descendants\x18\x01 \x01(\bB\x05\xe2A\x02\x01\x05R\x12includeDescendants\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -746,13 +746,13 @@ const file_google_apps_events_subscriptions_v1beta_subscription_resource_proto_r
 	"+workspaceevents.googleapis.com/Subscription\x12\x1csubscriptions/{subscription}*\rsubscriptions2\fsubscriptionR\x01\x01B\x16\n" +
 	"\x14subscription_optionsB\f\n" +
 	"\n" +
-	"expiration\"\x80\x01\n" +
-	"\x0ePayloadOptions\x12.\n" +
-	"\x10include_resource\x18\x01 \x01(\bB\x03\xe0A\x01R\x0fincludeResource\x12>\n" +
+	"expiration\"\x82\x01\n" +
+	"\x0ePayloadOptions\x12/\n" +
+	"\x10include_resource\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0fincludeResource\x12?\n" +
 	"\n" +
-	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\tfieldMask\"l\n" +
-	"\x14NotificationEndpoint\x12H\n" +
-	"\fpubsub_topic\x18\x01 \x01(\tB#\xe0A\x05\xfaA\x1d\n" +
+	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\tfieldMask\"m\n" +
+	"\x14NotificationEndpoint\x12I\n" +
+	"\fpubsub_topic\x18\x01 \x01(\tB$\xe2A\x01\x05\xfaA\x1d\n" +
 	"\x1bpubsub.googleapis.com/TopicH\x00R\vpubsubTopicB\n" +
 	"\n" +
 	"\bendpointB\x9c\x03\xeaA1\n" +

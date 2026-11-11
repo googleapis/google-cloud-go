@@ -553,23 +553,23 @@ var File_google_spanner_v1_vtinternal_result_set_proto protoreflect.FileDescript
 
 const file_google_spanner_v1_vtinternal_result_set_proto_rawDesc = "" +
 	"\n" +
-	"-google/spanner/v1/vtinternal/result_set.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a+google/spanner/v1/vtinternal/location.proto\x1a-google/spanner/v1/vtinternal/query_plan.proto\x1a.google/spanner/v1/vtinternal/transaction.proto\x1a'google/spanner/v1/vtinternal/type.proto\"\x8d\x03\n" +
+	"-google/spanner/v1/vtinternal/result_set.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a+google/spanner/v1/vtinternal/location.proto\x1a-google/spanner/v1/vtinternal/query_plan.proto\x1a.google/spanner/v1/vtinternal/transaction.proto\x1a'google/spanner/v1/vtinternal/type.proto\"\x8f\x03\n" +
 	"\tResultSet\x12K\n" +
 	"\bmetadata\x18\x01 \x01(\v2/.google.spanner.v1.vtinternal.ResultSetMetadataR\bmetadata\x12.\n" +
 	"\x04rows\x18\x02 \x03(\v2\x1a.google.protobuf.ListValueR\x04rows\x12B\n" +
-	"\x05stats\x18\x03 \x01(\v2,.google.spanner.v1.vtinternal.ResultSetStatsR\x05stats\x12l\n" +
-	"\x0fprecommit_token\x18\x05 \x01(\v2>.google.spanner.v1.vtinternal.MultiplexedSessionPrecommitTokenB\x03\xe0A\x01R\x0eprecommitToken\x12Q\n" +
-	"\fcache_update\x18\x06 \x01(\v2).google.spanner.v1.vtinternal.CacheUpdateB\x03\xe0A\x01R\vcacheUpdate\"\xf5\x03\n" +
+	"\x05stats\x18\x03 \x01(\v2,.google.spanner.v1.vtinternal.ResultSetStatsR\x05stats\x12m\n" +
+	"\x0fprecommit_token\x18\x05 \x01(\v2>.google.spanner.v1.vtinternal.MultiplexedSessionPrecommitTokenB\x04\xe2A\x01\x01R\x0eprecommitToken\x12R\n" +
+	"\fcache_update\x18\x06 \x01(\v2).google.spanner.v1.vtinternal.CacheUpdateB\x04\xe2A\x01\x01R\vcacheUpdate\"\xf8\x03\n" +
 	"\x10PartialResultSet\x12K\n" +
 	"\bmetadata\x18\x01 \x01(\v2/.google.spanner.v1.vtinternal.ResultSetMetadataR\bmetadata\x12.\n" +
 	"\x06values\x18\x02 \x03(\v2\x16.google.protobuf.ValueR\x06values\x12#\n" +
 	"\rchunked_value\x18\x03 \x01(\bR\fchunkedValue\x12!\n" +
 	"\fresume_token\x18\x04 \x01(\fR\vresumeToken\x12B\n" +
-	"\x05stats\x18\x05 \x01(\v2,.google.spanner.v1.vtinternal.ResultSetStatsR\x05stats\x12l\n" +
-	"\x0fprecommit_token\x18\b \x01(\v2>.google.spanner.v1.vtinternal.MultiplexedSessionPrecommitTokenB\x03\xe0A\x01R\x0eprecommitToken\x12\x17\n" +
-	"\x04last\x18\t \x01(\bB\x03\xe0A\x01R\x04last\x12Q\n" +
+	"\x05stats\x18\x05 \x01(\v2,.google.spanner.v1.vtinternal.ResultSetStatsR\x05stats\x12m\n" +
+	"\x0fprecommit_token\x18\b \x01(\v2>.google.spanner.v1.vtinternal.MultiplexedSessionPrecommitTokenB\x04\xe2A\x01\x01R\x0eprecommitToken\x12\x18\n" +
+	"\x04last\x18\t \x01(\bB\x04\xe2A\x01\x01R\x04last\x12R\n" +
 	"\fcache_update\x18\n" +
-	" \x01(\v2).google.spanner.v1.vtinternal.CacheUpdateB\x03\xe0A\x01R\vcacheUpdate\"\x84\x02\n" +
+	" \x01(\v2).google.spanner.v1.vtinternal.CacheUpdateB\x04\xe2A\x01\x01R\vcacheUpdate\"\x84\x02\n" +
 	"\x11ResultSetMetadata\x12C\n" +
 	"\brow_type\x18\x01 \x01(\v2(.google.spanner.v1.vtinternal.StructTypeR\arowType\x12K\n" +
 	"\vtransaction\x18\x02 \x01(\v2).google.spanner.v1.vtinternal.TransactionR\vtransaction\x12]\n" +

@@ -1671,50 +1671,50 @@ var File_google_cloud_discoveryengine_v1beta_engine_proto protoreflect.FileDescr
 
 const file_google_cloud_discoveryengine_v1beta_engine_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/discoveryengine/v1beta/engine.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a?google/cloud/discoveryengine/v1beta/agent_gateway_setting.proto\x1a=google/cloud/discoveryengine/v1beta/cmek_config_service.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a1google/cloud/discoveryengine/v1beta/logging.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe10\n" +
+	"0google/cloud/discoveryengine/v1beta/engine.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a?google/cloud/discoveryengine/v1beta/agent_gateway_setting.proto\x1a=google/cloud/discoveryengine/v1beta/cmek_config_service.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a1google/cloud/discoveryengine/v1beta/logging.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf90\n" +
 	"\x06Engine\x12l\n" +
 	"\x12chat_engine_config\x18\v \x01(\v2<.google.cloud.discoveryengine.v1beta.Engine.ChatEngineConfigH\x00R\x10chatEngineConfig\x12r\n" +
 	"\x14search_engine_config\x18\r \x01(\v2>.google.cloud.discoveryengine.v1beta.Engine.SearchEngineConfigH\x00R\x12searchEngineConfig\x12\x9a\x01\n" +
-	"\"media_recommendation_engine_config\x18\x0e \x01(\v2K.google.cloud.discoveryengine.v1beta.Engine.MediaRecommendationEngineConfigH\x00R\x1fmediaRecommendationEngineConfig\x12w\n" +
-	"\x14chat_engine_metadata\x18\f \x01(\v2>.google.cloud.discoveryengine.v1beta.Engine.ChatEngineMetadataB\x03\xe0A\x03H\x01R\x12chatEngineMetadata\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12)\n" +
-	"\x0edata_store_ids\x18\x05 \x03(\tB\x03\xe0A\x01R\fdataStoreIds\x12[\n" +
-	"\rsolution_type\x18\x06 \x01(\x0e21.google.cloud.discoveryengine.v1beta.SolutionTypeB\x03\xe0A\x02R\fsolutionType\x12g\n" +
-	"\x11industry_vertical\x18\x10 \x01(\x0e25.google.cloud.discoveryengine.v1beta.IndustryVerticalB\x03\xe0A\x01R\x10industryVertical\x12]\n" +
-	"\rcommon_config\x18\x0f \x01(\v28.google.cloud.discoveryengine.v1beta.Engine.CommonConfigR\fcommonConfig\x12{\n" +
-	"\x16knowledge_graph_config\x18\x17 \x01(\v2@.google.cloud.discoveryengine.v1beta.Engine.KnowledgeGraphConfigB\x03\xe0A\x01R\x14knowledgeGraphConfig\x12V\n" +
-	"\bapp_type\x18\x18 \x01(\x0e23.google.cloud.discoveryengine.v1beta.Engine.AppTypeB\x06\xe0A\x01\xe0A\x05R\aappType\x120\n" +
-	"\x11disable_analytics\x18\x1a \x01(\bB\x03\xe0A\x01R\x10disableAnalytics\x12Z\n" +
-	"\bfeatures\x18\x1e \x03(\v29.google.cloud.discoveryengine.v1beta.Engine.FeaturesEntryB\x03\xe0A\x01R\bfeatures\x12U\n" +
-	"\vcmek_config\x18  \x01(\v2/.google.cloud.discoveryengine.v1beta.CmekConfigB\x03\xe0A\x03R\n" +
-	"cmekConfig\x12\x90\x01\n" +
-	"\x1dconfigurable_billing_approach\x18$ \x01(\x0e2G.google.cloud.discoveryengine.v1beta.Engine.ConfigurableBillingApproachB\x03\xe0A\x01R\x1bconfigurableBillingApproach\x12g\n" +
-	"\rmodel_configs\x18% \x03(\v2=.google.cloud.discoveryengine.v1beta.Engine.ModelConfigsEntryB\x03\xe0A\x01R\fmodelConfigs\x12p\n" +
-	"\x14observability_config\x18' \x01(\v28.google.cloud.discoveryengine.v1beta.ObservabilityConfigB\x03\xe0A\x01R\x13observabilityConfig\x12}\n" +
-	"\x15connector_tenant_info\x18* \x03(\v2D.google.cloud.discoveryengine.v1beta.Engine.ConnectorTenantInfoEntryB\x03\xe0A\x01R\x13connectorTenantInfo\x12q\n" +
-	"\x15agent_gateway_setting\x18+ \x01(\v28.google.cloud.discoveryengine.v1beta.AgentGatewaySettingB\x03\xe0A\x01R\x13agentGatewaySetting\x12\x8d\x01\n" +
-	"\x1cmarketplace_agent_visibility\x18, \x01(\x0e2F.google.cloud.discoveryengine.v1beta.Engine.MarketplaceAgentVisibilityB\x03\xe0A\x01R\x1amarketplaceAgentVisibility\x12A\n" +
-	"\x1aprocurement_contact_emails\x18- \x03(\tB\x03\xe0A\x01R\x18procurementContactEmails\x1a\xb8\x02\n" +
+	"\"media_recommendation_engine_config\x18\x0e \x01(\v2K.google.cloud.discoveryengine.v1beta.Engine.MediaRecommendationEngineConfigH\x00R\x1fmediaRecommendationEngineConfig\x12x\n" +
+	"\x14chat_engine_metadata\x18\f \x01(\v2>.google.cloud.discoveryengine.v1beta.Engine.ChatEngineMetadataB\x04\xe2A\x01\x03H\x01R\x12chatEngineMetadata\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12*\n" +
+	"\x0edata_store_ids\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\fdataStoreIds\x12\\\n" +
+	"\rsolution_type\x18\x06 \x01(\x0e21.google.cloud.discoveryengine.v1beta.SolutionTypeB\x04\xe2A\x01\x02R\fsolutionType\x12h\n" +
+	"\x11industry_vertical\x18\x10 \x01(\x0e25.google.cloud.discoveryengine.v1beta.IndustryVerticalB\x04\xe2A\x01\x01R\x10industryVertical\x12]\n" +
+	"\rcommon_config\x18\x0f \x01(\v28.google.cloud.discoveryengine.v1beta.Engine.CommonConfigR\fcommonConfig\x12|\n" +
+	"\x16knowledge_graph_config\x18\x17 \x01(\v2@.google.cloud.discoveryengine.v1beta.Engine.KnowledgeGraphConfigB\x04\xe2A\x01\x01R\x14knowledgeGraphConfig\x12U\n" +
+	"\bapp_type\x18\x18 \x01(\x0e23.google.cloud.discoveryengine.v1beta.Engine.AppTypeB\x05\xe2A\x02\x01\x05R\aappType\x121\n" +
+	"\x11disable_analytics\x18\x1a \x01(\bB\x04\xe2A\x01\x01R\x10disableAnalytics\x12[\n" +
+	"\bfeatures\x18\x1e \x03(\v29.google.cloud.discoveryengine.v1beta.Engine.FeaturesEntryB\x04\xe2A\x01\x01R\bfeatures\x12V\n" +
+	"\vcmek_config\x18  \x01(\v2/.google.cloud.discoveryengine.v1beta.CmekConfigB\x04\xe2A\x01\x03R\n" +
+	"cmekConfig\x12\x91\x01\n" +
+	"\x1dconfigurable_billing_approach\x18$ \x01(\x0e2G.google.cloud.discoveryengine.v1beta.Engine.ConfigurableBillingApproachB\x04\xe2A\x01\x01R\x1bconfigurableBillingApproach\x12h\n" +
+	"\rmodel_configs\x18% \x03(\v2=.google.cloud.discoveryengine.v1beta.Engine.ModelConfigsEntryB\x04\xe2A\x01\x01R\fmodelConfigs\x12q\n" +
+	"\x14observability_config\x18' \x01(\v28.google.cloud.discoveryengine.v1beta.ObservabilityConfigB\x04\xe2A\x01\x01R\x13observabilityConfig\x12~\n" +
+	"\x15connector_tenant_info\x18* \x03(\v2D.google.cloud.discoveryengine.v1beta.Engine.ConnectorTenantInfoEntryB\x04\xe2A\x01\x01R\x13connectorTenantInfo\x12r\n" +
+	"\x15agent_gateway_setting\x18+ \x01(\v28.google.cloud.discoveryengine.v1beta.AgentGatewaySettingB\x04\xe2A\x01\x01R\x13agentGatewaySetting\x12\x8e\x01\n" +
+	"\x1cmarketplace_agent_visibility\x18, \x01(\x0e2F.google.cloud.discoveryengine.v1beta.Engine.MarketplaceAgentVisibilityB\x04\xe2A\x01\x01R\x1amarketplaceAgentVisibility\x12B\n" +
+	"\x1aprocurement_contact_emails\x18- \x03(\tB\x04\xe2A\x01\x01R\x18procurementContactEmails\x1a\xb9\x02\n" +
 	"\x12SearchEngineConfig\x12P\n" +
 	"\vsearch_tier\x18\x01 \x01(\x0e2/.google.cloud.discoveryengine.v1beta.SearchTierR\n" +
-	"searchTier\x12x\n" +
-	"\x1arequired_subscription_tier\x18\x03 \x01(\x0e25.google.cloud.discoveryengine.v1beta.SubscriptionTierB\x03\xe0A\x01R\x18requiredSubscriptionTier\x12V\n" +
-	"\x0esearch_add_ons\x18\x02 \x03(\x0e20.google.cloud.discoveryengine.v1beta.SearchAddOnR\fsearchAddOns\x1a\x9e\n" +
+	"searchTier\x12y\n" +
+	"\x1arequired_subscription_tier\x18\x03 \x01(\x0e25.google.cloud.discoveryengine.v1beta.SubscriptionTierB\x04\xe2A\x01\x01R\x18requiredSubscriptionTier\x12V\n" +
+	"\x0esearch_add_ons\x18\x02 \x03(\x0e20.google.cloud.discoveryengine.v1beta.SearchAddOnR\fsearchAddOns\x1a\xa2\n" +
 	"\n" +
-	"\x1fMediaRecommendationEngineConfig\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\x125\n" +
+	"\x1fMediaRecommendationEngineConfig\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04type\x125\n" +
 	"\x16optimization_objective\x18\x02 \x01(\tR\x15optimizationObjective\x12\xab\x01\n" +
 	"\x1doptimization_objective_config\x18\x03 \x01(\v2g.google.cloud.discoveryengine.v1beta.Engine.MediaRecommendationEngineConfig.OptimizationObjectiveConfigR\x1boptimizationObjectiveConfig\x12\x80\x01\n" +
-	"\x0etraining_state\x18\x04 \x01(\x0e2Y.google.cloud.discoveryengine.v1beta.Engine.MediaRecommendationEngineConfig.TrainingStateR\rtrainingState\x12\x9b\x01\n" +
-	"\x16engine_features_config\x18\x05 \x01(\v2`.google.cloud.discoveryengine.v1beta.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfigB\x03\xe0A\x01R\x14engineFeaturesConfig\x1a\x83\x01\n" +
-	"\x1bOptimizationObjectiveConfig\x12&\n" +
-	"\ftarget_field\x18\x01 \x01(\tB\x03\xe0A\x02R\vtargetField\x12<\n" +
-	"\x18target_field_value_float\x18\x02 \x01(\x02B\x03\xe0A\x02R\x15targetFieldValueFloat\x1a\xf4\x02\n" +
+	"\x0etraining_state\x18\x04 \x01(\x0e2Y.google.cloud.discoveryengine.v1beta.Engine.MediaRecommendationEngineConfig.TrainingStateR\rtrainingState\x12\x9c\x01\n" +
+	"\x16engine_features_config\x18\x05 \x01(\v2`.google.cloud.discoveryengine.v1beta.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfigB\x04\xe2A\x01\x01R\x14engineFeaturesConfig\x1a\x85\x01\n" +
+	"\x1bOptimizationObjectiveConfig\x12'\n" +
+	"\ftarget_field\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vtargetField\x12=\n" +
+	"\x18target_field_value_float\x18\x02 \x01(\x02B\x04\xe2A\x01\x02R\x15targetFieldValueFloat\x1a\xf4\x02\n" +
 	"\x14EngineFeaturesConfig\x12\xa9\x01\n" +
 	"\x1arecommended_for_you_config\x18\x01 \x01(\v2j.google.cloud.discoveryengine.v1beta.Engine.MediaRecommendationEngineConfig.RecommendedForYouFeatureConfigH\x00R\x17recommendedForYouConfig\x12\x96\x01\n" +
 	"\x13most_popular_config\x18\x02 \x01(\v2d.google.cloud.discoveryengine.v1beta.Engine.MediaRecommendationEngineConfig.MostPopularFeatureConfigH\x00R\x11mostPopularConfigB\x17\n" +
@@ -1727,24 +1727,24 @@ const file_google_cloud_discoveryengine_v1beta_engine_proto_rawDesc = "" +
 	"\x1aTRAINING_STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06PAUSED\x10\x01\x12\f\n" +
-	"\bTRAINING\x10\x02\x1a\xab\x03\n" +
+	"\bTRAINING\x10\x02\x1a\xad\x03\n" +
 	"\x10ChatEngineConfig\x12\x84\x01\n" +
 	"\x15agent_creation_config\x18\x01 \x01(\v2P.google.cloud.discoveryengine.v1beta.Engine.ChatEngineConfig.AgentCreationConfigR\x13agentCreationConfig\x127\n" +
-	"\x18dialogflow_agent_to_link\x18\x02 \x01(\tR\x15dialogflowAgentToLink\x121\n" +
-	"\x12allow_cross_region\x18\x03 \x01(\bB\x03\xe0A\x01R\x10allowCrossRegion\x1a\xa3\x01\n" +
+	"\x18dialogflow_agent_to_link\x18\x02 \x01(\tR\x15dialogflowAgentToLink\x122\n" +
+	"\x12allow_cross_region\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x10allowCrossRegion\x1a\xa4\x01\n" +
 	"\x13AgentCreationConfig\x12\x1a\n" +
 	"\bbusiness\x18\x01 \x01(\tR\bbusiness\x122\n" +
-	"\x15default_language_code\x18\x02 \x01(\tR\x13defaultLanguageCode\x12 \n" +
-	"\ttime_zone\x18\x03 \x01(\tB\x03\xe0A\x02R\btimeZone\x12\x1a\n" +
+	"\x15default_language_code\x18\x02 \x01(\tR\x13defaultLanguageCode\x12!\n" +
+	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\btimeZone\x12\x1a\n" +
 	"\blocation\x18\x04 \x01(\tR\blocation\x1a1\n" +
 	"\fCommonConfig\x12!\n" +
-	"\fcompany_name\x18\x01 \x01(\tR\vcompanyName\x1a\xd4\x05\n" +
+	"\fcompany_name\x18\x01 \x01(\tR\vcompanyName\x1a\xd5\x05\n" +
 	"\x14KnowledgeGraphConfig\x12?\n" +
 	"\x1cenable_cloud_knowledge_graph\x18\x01 \x01(\bR\x19enableCloudKnowledgeGraph\x12=\n" +
 	"\x1bcloud_knowledge_graph_types\x18\x02 \x03(\tR\x18cloudKnowledgeGraphTypes\x12C\n" +
 	"\x1eenable_private_knowledge_graph\x18\x03 \x01(\bR\x1benablePrivateKnowledgeGraph\x12A\n" +
-	"\x1dprivate_knowledge_graph_types\x18\x04 \x03(\tR\x1aprivateKnowledgeGraphTypes\x12z\n" +
-	"\x0efeature_config\x18\x05 \x01(\v2N.google.cloud.discoveryengine.v1beta.Engine.KnowledgeGraphConfig.FeatureConfigB\x03\xe0A\x01R\rfeatureConfig\x1a\xb7\x02\n" +
+	"\x1dprivate_knowledge_graph_types\x18\x04 \x03(\tR\x1aprivateKnowledgeGraphTypes\x12{\n" +
+	"\x0efeature_config\x18\x05 \x01(\v2N.google.cloud.discoveryengine.v1beta.Engine.KnowledgeGraphConfig.FeatureConfigB\x04\xe2A\x01\x01R\rfeatureConfig\x1a\xb7\x02\n" +
 	"\rFeatureConfig\x12R\n" +
 	"&disable_private_kg_query_understanding\x18\x01 \x01(\bR\"disablePrivateKgQueryUnderstanding\x12A\n" +
 	"\x1ddisable_private_kg_enrichment\x18\x02 \x01(\bR\x1adisablePrivateKgEnrichment\x12F\n" +

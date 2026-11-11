@@ -2588,36 +2588,36 @@ var File_google_cloud_gkemulticloud_v1_aws_resources_proto protoreflect.FileDesc
 
 const file_google_cloud_gkemulticloud_v1_aws_resources_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/gkemulticloud/v1/aws_resources.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xb3\r\n" +
+	"1google/cloud/gkemulticloud/v1/aws_resources.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xc6\r\n" +
 	"\n" +
 	"AwsCluster\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12X\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Y\n" +
 	"\n" +
-	"networking\x18\x03 \x01(\v23.google.cloud.gkemulticloud.v1.AwsClusterNetworkingB\x03\xe0A\x02R\n" +
-	"networking\x12\"\n" +
+	"networking\x18\x03 \x01(\v23.google.cloud.gkemulticloud.v1.AwsClusterNetworkingB\x04\xe2A\x01\x02R\n" +
+	"networking\x12#\n" +
 	"\n" +
-	"aws_region\x18\x04 \x01(\tB\x03\xe0A\x02R\tawsRegion\x12X\n" +
-	"\rcontrol_plane\x18\x05 \x01(\v2..google.cloud.gkemulticloud.v1.AwsControlPlaneB\x03\xe0A\x02R\fcontrolPlane\x12Z\n" +
-	"\rauthorization\x18\x0f \x01(\v2/.google.cloud.gkemulticloud.v1.AwsAuthorizationB\x03\xe0A\x02R\rauthorization\x12J\n" +
-	"\x05state\x18\a \x01(\x0e2/.google.cloud.gkemulticloud.v1.AwsCluster.StateB\x03\xe0A\x03R\x05state\x12\x1f\n" +
-	"\bendpoint\x18\b \x01(\tB\x03\xe0A\x03R\bendpoint\x12\x15\n" +
-	"\x03uid\x18\t \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
+	"aws_region\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\tawsRegion\x12Y\n" +
+	"\rcontrol_plane\x18\x05 \x01(\v2..google.cloud.gkemulticloud.v1.AwsControlPlaneB\x04\xe2A\x01\x02R\fcontrolPlane\x12[\n" +
+	"\rauthorization\x18\x0f \x01(\v2/.google.cloud.gkemulticloud.v1.AwsAuthorizationB\x04\xe2A\x01\x02R\rauthorization\x12K\n" +
+	"\x05state\x18\a \x01(\x0e2/.google.cloud.gkemulticloud.v1.AwsCluster.StateB\x04\xe2A\x01\x03R\x05state\x12 \n" +
+	"\bendpoint\x18\b \x01(\tB\x04\xe2A\x01\x03R\bendpoint\x12\x16\n" +
+	"\x03uid\x18\t \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
 	"\vreconciling\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\vreconciling\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x12\n" +
-	"\x04etag\x18\r \x01(\tR\x04etag\x12a\n" +
-	"\vannotations\x18\x0e \x03(\v2:.google.cloud.gkemulticloud.v1.AwsCluster.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12t\n" +
-	"\x18workload_identity_config\x18\x10 \x01(\v25.google.cloud.gkemulticloud.v1.WorkloadIdentityConfigB\x03\xe0A\x03R\x16workloadIdentityConfig\x129\n" +
-	"\x16cluster_ca_certificate\x18\x11 \x01(\tB\x03\xe0A\x03R\x14clusterCaCertificate\x12?\n" +
-	"\x05fleet\x18\x12 \x01(\v2$.google.cloud.gkemulticloud.v1.FleetB\x03\xe0A\x02R\x05fleet\x12X\n" +
-	"\x0elogging_config\x18\x13 \x01(\v2,.google.cloud.gkemulticloud.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x12K\n" +
-	"\x06errors\x18\x14 \x03(\v2..google.cloud.gkemulticloud.v1.AwsClusterErrorB\x03\xe0A\x03R\x06errors\x12a\n" +
-	"\x11monitoring_config\x18\x15 \x01(\v2/.google.cloud.gkemulticloud.v1.MonitoringConfigB\x03\xe0A\x01R\x10monitoringConfig\x12j\n" +
-	"\x14binary_authorization\x18\x16 \x01(\v22.google.cloud.gkemulticloud.v1.BinaryAuthorizationB\x03\xe0A\x01R\x13binaryAuthorization\x1a>\n" +
+	"\x04etag\x18\r \x01(\tR\x04etag\x12b\n" +
+	"\vannotations\x18\x0e \x03(\v2:.google.cloud.gkemulticloud.v1.AwsCluster.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12u\n" +
+	"\x18workload_identity_config\x18\x10 \x01(\v25.google.cloud.gkemulticloud.v1.WorkloadIdentityConfigB\x04\xe2A\x01\x03R\x16workloadIdentityConfig\x12:\n" +
+	"\x16cluster_ca_certificate\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\x14clusterCaCertificate\x12@\n" +
+	"\x05fleet\x18\x12 \x01(\v2$.google.cloud.gkemulticloud.v1.FleetB\x04\xe2A\x01\x02R\x05fleet\x12Y\n" +
+	"\x0elogging_config\x18\x13 \x01(\v2,.google.cloud.gkemulticloud.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x12L\n" +
+	"\x06errors\x18\x14 \x03(\v2..google.cloud.gkemulticloud.v1.AwsClusterErrorB\x04\xe2A\x01\x03R\x06errors\x12b\n" +
+	"\x11monitoring_config\x18\x15 \x01(\v2/.google.cloud.gkemulticloud.v1.MonitoringConfigB\x04\xe2A\x01\x01R\x10monitoringConfig\x12k\n" +
+	"\x14binary_authorization\x18\x16 \x01(\v22.google.cloud.gkemulticloud.v1.BinaryAuthorizationB\x04\xe2A\x01\x01R\x13binaryAuthorization\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"u\n" +
@@ -2629,84 +2629,84 @@ const file_google_cloud_gkemulticloud_v1_aws_resources_proto_rawDesc = "" +
 	"\bSTOPPING\x10\x04\x12\t\n" +
 	"\x05ERROR\x10\x05\x12\f\n" +
 	"\bDEGRADED\x10\x06:q\xeaAl\n" +
-	"'gkemulticloud.googleapis.com/AwsCluster\x12Aprojects/{project}/locations/{location}/awsClusters/{aws_cluster}\x18\x01\"\x8a\t\n" +
-	"\x0fAwsControlPlane\x12\x1d\n" +
-	"\aversion\x18\x01 \x01(\tB\x03\xe0A\x02R\aversion\x12(\n" +
-	"\rinstance_type\x18\x02 \x01(\tB\x03\xe0A\x01R\finstanceType\x12O\n" +
+	"'gkemulticloud.googleapis.com/AwsCluster\x12Aprojects/{project}/locations/{location}/awsClusters/{aws_cluster}\x18\x01\"\x98\t\n" +
+	"\x0fAwsControlPlane\x12\x1e\n" +
+	"\aversion\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12)\n" +
+	"\rinstance_type\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\finstanceType\x12P\n" +
 	"\n" +
-	"ssh_config\x18\x0e \x01(\v2+.google.cloud.gkemulticloud.v1.AwsSshConfigB\x03\xe0A\x01R\tsshConfig\x12\"\n" +
+	"ssh_config\x18\x0e \x01(\v2+.google.cloud.gkemulticloud.v1.AwsSshConfigB\x04\xe2A\x01\x01R\tsshConfig\x12#\n" +
 	"\n" +
-	"subnet_ids\x18\x04 \x03(\tB\x03\xe0A\x02R\tsubnetIds\x121\n" +
-	"\x12security_group_ids\x18\x05 \x03(\tB\x03\xe0A\x01R\x10securityGroupIds\x125\n" +
-	"\x14iam_instance_profile\x18\a \x01(\tB\x03\xe0A\x02R\x12iamInstanceProfile\x12V\n" +
-	"\vroot_volume\x18\b \x01(\v20.google.cloud.gkemulticloud.v1.AwsVolumeTemplateB\x03\xe0A\x01R\n" +
-	"rootVolume\x12V\n" +
-	"\vmain_volume\x18\t \x01(\v20.google.cloud.gkemulticloud.v1.AwsVolumeTemplateB\x03\xe0A\x01R\n" +
-	"mainVolume\x12j\n" +
+	"subnet_ids\x18\x04 \x03(\tB\x04\xe2A\x01\x02R\tsubnetIds\x122\n" +
+	"\x12security_group_ids\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x10securityGroupIds\x126\n" +
+	"\x14iam_instance_profile\x18\a \x01(\tB\x04\xe2A\x01\x02R\x12iamInstanceProfile\x12W\n" +
+	"\vroot_volume\x18\b \x01(\v20.google.cloud.gkemulticloud.v1.AwsVolumeTemplateB\x04\xe2A\x01\x01R\n" +
+	"rootVolume\x12W\n" +
+	"\vmain_volume\x18\t \x01(\v20.google.cloud.gkemulticloud.v1.AwsVolumeTemplateB\x04\xe2A\x01\x01R\n" +
+	"mainVolume\x12k\n" +
 	"\x13database_encryption\x18\n" +
-	" \x01(\v24.google.cloud.gkemulticloud.v1.AwsDatabaseEncryptionB\x03\xe0A\x02R\x12databaseEncryption\x12Q\n" +
-	"\x04tags\x18\v \x03(\v28.google.cloud.gkemulticloud.v1.AwsControlPlane.TagsEntryB\x03\xe0A\x01R\x04tags\x12}\n" +
-	"\x1baws_services_authentication\x18\f \x01(\v28.google.cloud.gkemulticloud.v1.AwsServicesAuthenticationB\x03\xe0A\x02R\x19awsServicesAuthentication\x12U\n" +
-	"\fproxy_config\x18\x10 \x01(\v2-.google.cloud.gkemulticloud.v1.AwsProxyConfigB\x03\xe0A\x01R\vproxyConfig\x12d\n" +
-	"\x11config_encryption\x18\x11 \x01(\v22.google.cloud.gkemulticloud.v1.AwsConfigEncryptionB\x03\xe0A\x02R\x10configEncryption\x12g\n" +
-	"\x12instance_placement\x18\x12 \x01(\v23.google.cloud.gkemulticloud.v1.AwsInstancePlacementB\x03\xe0A\x01R\x11instancePlacement\x1a7\n" +
+	" \x01(\v24.google.cloud.gkemulticloud.v1.AwsDatabaseEncryptionB\x04\xe2A\x01\x02R\x12databaseEncryption\x12R\n" +
+	"\x04tags\x18\v \x03(\v28.google.cloud.gkemulticloud.v1.AwsControlPlane.TagsEntryB\x04\xe2A\x01\x01R\x04tags\x12~\n" +
+	"\x1baws_services_authentication\x18\f \x01(\v28.google.cloud.gkemulticloud.v1.AwsServicesAuthenticationB\x04\xe2A\x01\x02R\x19awsServicesAuthentication\x12V\n" +
+	"\fproxy_config\x18\x10 \x01(\v2-.google.cloud.gkemulticloud.v1.AwsProxyConfigB\x04\xe2A\x01\x01R\vproxyConfig\x12e\n" +
+	"\x11config_encryption\x18\x11 \x01(\v22.google.cloud.gkemulticloud.v1.AwsConfigEncryptionB\x04\xe2A\x01\x02R\x10configEncryption\x12h\n" +
+	"\x12instance_placement\x18\x12 \x01(\v23.google.cloud.gkemulticloud.v1.AwsInstancePlacementB\x04\xe2A\x01\x01R\x11instancePlacement\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x02\x18\x01\"p\n" +
-	"\x19AwsServicesAuthentication\x12\x1e\n" +
-	"\brole_arn\x18\x01 \x01(\tB\x03\xe0A\x02R\aroleArn\x12/\n" +
-	"\x11role_session_name\x18\x02 \x01(\tB\x03\xe0A\x01R\x0froleSessionName:\x02\x18\x01\"\xc3\x01\n" +
-	"\x10AwsAuthorization\x12S\n" +
-	"\vadmin_users\x18\x01 \x03(\v2-.google.cloud.gkemulticloud.v1.AwsClusterUserB\x03\xe0A\x01R\n" +
-	"adminUsers\x12V\n" +
-	"\fadmin_groups\x18\x02 \x03(\v2..google.cloud.gkemulticloud.v1.AwsClusterGroupB\x03\xe0A\x01R\vadminGroups:\x02\x18\x01\"5\n" +
-	"\x0eAwsClusterUser\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername:\x02\x18\x01\"0\n" +
-	"\x0fAwsClusterGroup\x12\x19\n" +
-	"\x05group\x18\x01 \x01(\tB\x03\xe0A\x02R\x05group:\x02\x18\x01\"@\n" +
-	"\x15AwsDatabaseEncryption\x12#\n" +
-	"\vkms_key_arn\x18\x01 \x01(\tB\x03\xe0A\x02R\tkmsKeyArn:\x02\x18\x01\"\xba\x02\n" +
-	"\x11AwsVolumeTemplate\x12\x1e\n" +
-	"\bsize_gib\x18\x01 \x01(\x05B\x03\xe0A\x01R\asizeGib\x12a\n" +
-	"\vvolume_type\x18\x02 \x01(\x0e2;.google.cloud.gkemulticloud.v1.AwsVolumeTemplate.VolumeTypeB\x03\xe0A\x01R\n" +
-	"volumeType\x12\x17\n" +
-	"\x04iops\x18\x03 \x01(\x05B\x03\xe0A\x01R\x04iops\x12#\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x02\x18\x01\"r\n" +
+	"\x19AwsServicesAuthentication\x12\x1f\n" +
+	"\brole_arn\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aroleArn\x120\n" +
+	"\x11role_session_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0froleSessionName:\x02\x18\x01\"\xc5\x01\n" +
+	"\x10AwsAuthorization\x12T\n" +
+	"\vadmin_users\x18\x01 \x03(\v2-.google.cloud.gkemulticloud.v1.AwsClusterUserB\x04\xe2A\x01\x01R\n" +
+	"adminUsers\x12W\n" +
+	"\fadmin_groups\x18\x02 \x03(\v2..google.cloud.gkemulticloud.v1.AwsClusterGroupB\x04\xe2A\x01\x01R\vadminGroups:\x02\x18\x01\"6\n" +
+	"\x0eAwsClusterUser\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername:\x02\x18\x01\"1\n" +
+	"\x0fAwsClusterGroup\x12\x1a\n" +
+	"\x05group\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05group:\x02\x18\x01\"A\n" +
+	"\x15AwsDatabaseEncryption\x12$\n" +
+	"\vkms_key_arn\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tkmsKeyArn:\x02\x18\x01\"\xbf\x02\n" +
+	"\x11AwsVolumeTemplate\x12\x1f\n" +
+	"\bsize_gib\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\asizeGib\x12b\n" +
+	"\vvolume_type\x18\x02 \x01(\x0e2;.google.cloud.gkemulticloud.v1.AwsVolumeTemplate.VolumeTypeB\x04\xe2A\x01\x01R\n" +
+	"volumeType\x12\x18\n" +
+	"\x04iops\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x04iops\x12$\n" +
 	"\n" +
-	"throughput\x18\x05 \x01(\x05B\x03\xe0A\x01R\n" +
-	"throughput\x12#\n" +
-	"\vkms_key_arn\x18\x04 \x01(\tB\x03\xe0A\x01R\tkmsKeyArn\";\n" +
+	"throughput\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"throughput\x12$\n" +
+	"\vkms_key_arn\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tkmsKeyArn\";\n" +
 	"\n" +
 	"VolumeType\x12\x1b\n" +
 	"\x17VOLUME_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03GP2\x10\x01\x12\a\n" +
-	"\x03GP3\x10\x02:\x02\x18\x01\"\x80\x02\n" +
-	"\x14AwsClusterNetworking\x12\x1a\n" +
-	"\x06vpc_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x05vpcId\x12:\n" +
-	"\x17pod_address_cidr_blocks\x18\x02 \x03(\tB\x03\xe0A\x02R\x14podAddressCidrBlocks\x12B\n" +
-	"\x1bservice_address_cidr_blocks\x18\x03 \x03(\tB\x03\xe0A\x02R\x18serviceAddressCidrBlocks\x12H\n" +
-	"\x1fper_node_pool_sg_rules_disabled\x18\x05 \x01(\bB\x03\xe0A\x01R\x1aperNodePoolSgRulesDisabled:\x02\x18\x01\"\xa3\v\n" +
+	"\x03GP3\x10\x02:\x02\x18\x01\"\x84\x02\n" +
+	"\x14AwsClusterNetworking\x12\x1b\n" +
+	"\x06vpc_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05vpcId\x12;\n" +
+	"\x17pod_address_cidr_blocks\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x14podAddressCidrBlocks\x12C\n" +
+	"\x1bservice_address_cidr_blocks\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x18serviceAddressCidrBlocks\x12I\n" +
+	"\x1fper_node_pool_sg_rules_disabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x1aperNodePoolSgRulesDisabled:\x02\x18\x01\"\xb2\v\n" +
 	"\vAwsNodePool\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x02R\aversion\x12I\n" +
-	"\x06config\x18\x1c \x01(\v2,.google.cloud.gkemulticloud.v1.AwsNodeConfigB\x03\xe0A\x02R\x06config\x12\\\n" +
-	"\vautoscaling\x18\x19 \x01(\v25.google.cloud.gkemulticloud.v1.AwsNodePoolAutoscalingB\x03\xe0A\x02R\vautoscaling\x12 \n" +
-	"\tsubnet_id\x18\x06 \x01(\tB\x03\xe0A\x02R\bsubnetId\x12K\n" +
-	"\x05state\x18\x10 \x01(\x0e20.google.cloud.gkemulticloud.v1.AwsNodePool.StateB\x03\xe0A\x03R\x05state\x12\x15\n" +
-	"\x03uid\x18\x11 \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vreconciling\x18\x12 \x01(\bB\x03\xe0A\x03R\vreconciling\x12@\n" +
-	"\vcreate_time\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1e\n" +
+	"\aversion\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12J\n" +
+	"\x06config\x18\x1c \x01(\v2,.google.cloud.gkemulticloud.v1.AwsNodeConfigB\x04\xe2A\x01\x02R\x06config\x12]\n" +
+	"\vautoscaling\x18\x19 \x01(\v25.google.cloud.gkemulticloud.v1.AwsNodePoolAutoscalingB\x04\xe2A\x01\x02R\vautoscaling\x12!\n" +
+	"\tsubnet_id\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\bsubnetId\x12L\n" +
+	"\x05state\x18\x10 \x01(\x0e20.google.cloud.gkemulticloud.v1.AwsNodePool.StateB\x04\xe2A\x01\x03R\x05state\x12\x16\n" +
+	"\x03uid\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vreconciling\x18\x12 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12A\n" +
+	"\vcreate_time\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x12\n" +
-	"\x04etag\x18\x15 \x01(\tR\x04etag\x12b\n" +
-	"\vannotations\x18\x16 \x03(\v2;.google.cloud.gkemulticloud.v1.AwsNodePool.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12e\n" +
-	"\x13max_pods_constraint\x18\x1b \x01(\v20.google.cloud.gkemulticloud.v1.MaxPodsConstraintB\x03\xe0A\x02R\x11maxPodsConstraint\x12L\n" +
-	"\x06errors\x18\x1d \x03(\v2/.google.cloud.gkemulticloud.v1.AwsNodePoolErrorB\x03\xe0A\x03R\x06errors\x12U\n" +
+	"\x04etag\x18\x15 \x01(\tR\x04etag\x12c\n" +
+	"\vannotations\x18\x16 \x03(\v2;.google.cloud.gkemulticloud.v1.AwsNodePool.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12f\n" +
+	"\x13max_pods_constraint\x18\x1b \x01(\v20.google.cloud.gkemulticloud.v1.MaxPodsConstraintB\x04\xe2A\x01\x02R\x11maxPodsConstraint\x12M\n" +
+	"\x06errors\x18\x1d \x03(\v2/.google.cloud.gkemulticloud.v1.AwsNodePoolErrorB\x04\xe2A\x01\x03R\x06errors\x12V\n" +
 	"\n" +
-	"management\x18\x1e \x01(\v20.google.cloud.gkemulticloud.v1.AwsNodeManagementB\x03\xe0A\x01R\n" +
-	"management\x12\\\n" +
-	"\x0ekubelet_config\x18\x1f \x01(\v20.google.cloud.gkemulticloud.v1.NodeKubeletConfigB\x03\xe0A\x01R\rkubeletConfig\x12[\n" +
-	"\x0fupdate_settings\x18  \x01(\v2-.google.cloud.gkemulticloud.v1.UpdateSettingsB\x03\xe0A\x01R\x0eupdateSettings\x1a>\n" +
+	"management\x18\x1e \x01(\v20.google.cloud.gkemulticloud.v1.AwsNodeManagementB\x04\xe2A\x01\x01R\n" +
+	"management\x12]\n" +
+	"\x0ekubelet_config\x18\x1f \x01(\v20.google.cloud.gkemulticloud.v1.NodeKubeletConfigB\x04\xe2A\x01\x01R\rkubeletConfig\x12\\\n" +
+	"\x0fupdate_settings\x18  \x01(\v2-.google.cloud.gkemulticloud.v1.UpdateSettingsB\x04\xe2A\x01\x01R\x0eupdateSettings\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"u\n" +
@@ -2718,44 +2718,44 @@ const file_google_cloud_gkemulticloud_v1_aws_resources_proto_rawDesc = "" +
 	"\bSTOPPING\x10\x04\x12\t\n" +
 	"\x05ERROR\x10\x05\x12\f\n" +
 	"\bDEGRADED\x10\x06:\x90\x01\xeaA\x8a\x01\n" +
-	"(gkemulticloud.googleapis.com/AwsNodePool\x12^projects/{project}/locations/{location}/awsClusters/{aws_cluster}/awsNodePools/{aws_node_pool}\x18\x01\"n\n" +
-	"\x0eUpdateSettings\x12X\n" +
-	"\x0esurge_settings\x18\x01 \x01(\v2,.google.cloud.gkemulticloud.v1.SurgeSettingsB\x03\xe0A\x01R\rsurgeSettings:\x02\x18\x01\"c\n" +
-	"\rSurgeSettings\x12 \n" +
-	"\tmax_surge\x18\x01 \x01(\x05B\x03\xe0A\x01R\bmaxSurge\x12,\n" +
-	"\x0fmax_unavailable\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0emaxUnavailable:\x02\x18\x01\"=\n" +
-	"\x11AwsNodeManagement\x12$\n" +
-	"\vauto_repair\x18\x01 \x01(\bB\x03\xe0A\x01R\n" +
-	"autoRepair:\x02\x18\x01\"\xdf\t\n" +
-	"\rAwsNodeConfig\x12(\n" +
-	"\rinstance_type\x18\x01 \x01(\tB\x03\xe0A\x01R\finstanceType\x12V\n" +
-	"\vroot_volume\x18\x02 \x01(\v20.google.cloud.gkemulticloud.v1.AwsVolumeTemplateB\x03\xe0A\x01R\n" +
-	"rootVolume\x12E\n" +
-	"\x06taints\x18\x03 \x03(\v2(.google.cloud.gkemulticloud.v1.NodeTaintB\x03\xe0A\x01R\x06taints\x12U\n" +
-	"\x06labels\x18\x04 \x03(\v28.google.cloud.gkemulticloud.v1.AwsNodeConfig.LabelsEntryB\x03\xe0A\x01R\x06labels\x12O\n" +
-	"\x04tags\x18\x05 \x03(\v26.google.cloud.gkemulticloud.v1.AwsNodeConfig.TagsEntryB\x03\xe0A\x01R\x04tags\x125\n" +
-	"\x14iam_instance_profile\x18\x06 \x01(\tB\x03\xe0A\x02R\x12iamInstanceProfile\x12\"\n" +
+	"(gkemulticloud.googleapis.com/AwsNodePool\x12^projects/{project}/locations/{location}/awsClusters/{aws_cluster}/awsNodePools/{aws_node_pool}\x18\x01\"o\n" +
+	"\x0eUpdateSettings\x12Y\n" +
+	"\x0esurge_settings\x18\x01 \x01(\v2,.google.cloud.gkemulticloud.v1.SurgeSettingsB\x04\xe2A\x01\x01R\rsurgeSettings:\x02\x18\x01\"e\n" +
+	"\rSurgeSettings\x12!\n" +
+	"\tmax_surge\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bmaxSurge\x12-\n" +
+	"\x0fmax_unavailable\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0emaxUnavailable:\x02\x18\x01\">\n" +
+	"\x11AwsNodeManagement\x12%\n" +
+	"\vauto_repair\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"autoRepair:\x02\x18\x01\"\xed\t\n" +
+	"\rAwsNodeConfig\x12)\n" +
+	"\rinstance_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\finstanceType\x12W\n" +
+	"\vroot_volume\x18\x02 \x01(\v20.google.cloud.gkemulticloud.v1.AwsVolumeTemplateB\x04\xe2A\x01\x01R\n" +
+	"rootVolume\x12F\n" +
+	"\x06taints\x18\x03 \x03(\v2(.google.cloud.gkemulticloud.v1.NodeTaintB\x04\xe2A\x01\x01R\x06taints\x12V\n" +
+	"\x06labels\x18\x04 \x03(\v28.google.cloud.gkemulticloud.v1.AwsNodeConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12P\n" +
+	"\x04tags\x18\x05 \x03(\v26.google.cloud.gkemulticloud.v1.AwsNodeConfig.TagsEntryB\x04\xe2A\x01\x01R\x04tags\x126\n" +
+	"\x14iam_instance_profile\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x12iamInstanceProfile\x12#\n" +
 	"\n" +
-	"image_type\x18\v \x01(\tB\x03\xe0A\x01R\timageType\x12O\n" +
+	"image_type\x18\v \x01(\tB\x04\xe2A\x01\x01R\timageType\x12P\n" +
 	"\n" +
-	"ssh_config\x18\t \x01(\v2+.google.cloud.gkemulticloud.v1.AwsSshConfigB\x03\xe0A\x01R\tsshConfig\x121\n" +
+	"ssh_config\x18\t \x01(\v2+.google.cloud.gkemulticloud.v1.AwsSshConfigB\x04\xe2A\x01\x01R\tsshConfig\x122\n" +
 	"\x12security_group_ids\x18\n" +
-	" \x03(\tB\x03\xe0A\x01R\x10securityGroupIds\x12U\n" +
-	"\fproxy_config\x18\f \x01(\v2-.google.cloud.gkemulticloud.v1.AwsProxyConfigB\x03\xe0A\x01R\vproxyConfig\x12d\n" +
-	"\x11config_encryption\x18\r \x01(\v22.google.cloud.gkemulticloud.v1.AwsConfigEncryptionB\x03\xe0A\x02R\x10configEncryption\x12g\n" +
-	"\x12instance_placement\x18\x0e \x01(\v23.google.cloud.gkemulticloud.v1.AwsInstancePlacementB\x03\xe0A\x01R\x11instancePlacement\x12\x8e\x01\n" +
-	"\x1eautoscaling_metrics_collection\x18\x0f \x01(\v2C.google.cloud.gkemulticloud.v1.AwsAutoscalingGroupMetricsCollectionB\x03\xe0A\x01R\x1cautoscalingMetricsCollection\x12O\n" +
-	"\vspot_config\x18\x10 \x01(\v2).google.cloud.gkemulticloud.v1.SpotConfigB\x03\xe0A\x01R\n" +
+	" \x03(\tB\x04\xe2A\x01\x01R\x10securityGroupIds\x12V\n" +
+	"\fproxy_config\x18\f \x01(\v2-.google.cloud.gkemulticloud.v1.AwsProxyConfigB\x04\xe2A\x01\x01R\vproxyConfig\x12e\n" +
+	"\x11config_encryption\x18\r \x01(\v22.google.cloud.gkemulticloud.v1.AwsConfigEncryptionB\x04\xe2A\x01\x02R\x10configEncryption\x12h\n" +
+	"\x12instance_placement\x18\x0e \x01(\v23.google.cloud.gkemulticloud.v1.AwsInstancePlacementB\x04\xe2A\x01\x01R\x11instancePlacement\x12\x8f\x01\n" +
+	"\x1eautoscaling_metrics_collection\x18\x0f \x01(\v2C.google.cloud.gkemulticloud.v1.AwsAutoscalingGroupMetricsCollectionB\x04\xe2A\x01\x01R\x1cautoscalingMetricsCollection\x12P\n" +
+	"\vspot_config\x18\x10 \x01(\v2).google.cloud.gkemulticloud.v1.SpotConfigB\x04\xe2A\x01\x01R\n" +
 	"spotConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x02\x18\x01\"r\n" +
-	"\x16AwsNodePoolAutoscaling\x12)\n" +
-	"\x0emin_node_count\x18\x01 \x01(\x05B\x03\xe0A\x02R\fminNodeCount\x12)\n" +
-	"\x0emax_node_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\fmaxNodeCount:\x02\x18\x01\"\xe3\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x02\x18\x01\"t\n" +
+	"\x16AwsNodePoolAutoscaling\x12*\n" +
+	"\x0emin_node_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\fminNodeCount\x12*\n" +
+	"\x0emax_node_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\fmaxNodeCount:\x02\x18\x01\"\xe3\x02\n" +
 	"\x0fAwsOpenIdConfig\x12\x16\n" +
 	"\x06issuer\x18\x01 \x01(\tR\x06issuer\x12\x1a\n" +
 	"\bjwks_uri\x18\x02 \x01(\tR\bjwks_uri\x12:\n" +
@@ -2770,35 +2770,35 @@ const file_google_cloud_gkemulticloud_v1_aws_resources_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12W\n" +
 	"\x0evalid_versions\x18\x02 \x03(\v20.google.cloud.gkemulticloud.v1.AwsK8sVersionInfoR\rvalidVersions\x122\n" +
 	"\x15supported_aws_regions\x18\x03 \x03(\tR\x13supportedAwsRegions:l\xeaAg\n" +
-	",gkemulticloud.googleapis.com/AwsServerConfig\x127projects/{project}/locations/{location}/awsServerConfig\x18\x01\"\xf1\x01\n" +
+	",gkemulticloud.googleapis.com/AwsServerConfig\x127projects/{project}/locations/{location}/awsServerConfig\x18\x01\"\xf5\x01\n" +
 	"\x11AwsK8sVersionInfo\x12\x18\n" +
-	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1d\n" +
-	"\aenabled\x18\x03 \x01(\bB\x03\xe0A\x01R\aenabled\x12#\n" +
-	"\vend_of_life\x18\x04 \x01(\bB\x03\xe0A\x01R\tendOfLife\x12?\n" +
-	"\x10end_of_life_date\x18\x05 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\rendOfLifeDate\x129\n" +
-	"\frelease_date\x18\x06 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\vreleaseDate:\x02\x18\x01\"9\n" +
-	"\fAwsSshConfig\x12%\n" +
-	"\fec2_key_pair\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1e\n" +
+	"\aenabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12$\n" +
+	"\vend_of_life\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\tendOfLife\x12@\n" +
+	"\x10end_of_life_date\x18\x05 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\rendOfLifeDate\x12:\n" +
+	"\frelease_date\x18\x06 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\vreleaseDate:\x02\x18\x01\":\n" +
+	"\fAwsSshConfig\x12&\n" +
+	"\fec2_key_pair\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"ec2KeyPair:\x02\x18\x01\"Z\n" +
 	"\x0eAwsProxyConfig\x12\x1d\n" +
 	"\n" +
 	"secret_arn\x18\x01 \x01(\tR\tsecretArn\x12%\n" +
-	"\x0esecret_version\x18\x02 \x01(\tR\rsecretVersion:\x02\x18\x01\">\n" +
-	"\x13AwsConfigEncryption\x12#\n" +
-	"\vkms_key_arn\x18\x01 \x01(\tB\x03\xe0A\x02R\tkmsKeyArn:\x02\x18\x01\"\xc0\x01\n" +
-	"\x14AwsInstancePlacement\x12Z\n" +
-	"\atenancy\x18\x01 \x01(\x0e2;.google.cloud.gkemulticloud.v1.AwsInstancePlacement.TenancyB\x03\xe0A\x02R\atenancy\"H\n" +
+	"\x0esecret_version\x18\x02 \x01(\tR\rsecretVersion:\x02\x18\x01\"?\n" +
+	"\x13AwsConfigEncryption\x12$\n" +
+	"\vkms_key_arn\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tkmsKeyArn:\x02\x18\x01\"\xc1\x01\n" +
+	"\x14AwsInstancePlacement\x12[\n" +
+	"\atenancy\x18\x01 \x01(\x0e2;.google.cloud.gkemulticloud.v1.AwsInstancePlacement.TenancyB\x04\xe2A\x01\x02R\atenancy\"H\n" +
 	"\aTenancy\x12\x17\n" +
 	"\x13TENANCY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aDEFAULT\x10\x01\x12\r\n" +
 	"\tDEDICATED\x10\x02\x12\b\n" +
-	"\x04HOST\x10\x03:\x02\x18\x01\"p\n" +
-	"$AwsAutoscalingGroupMetricsCollection\x12%\n" +
-	"\vgranularity\x18\x01 \x01(\tB\x03\xe0A\x02R\vgranularity\x12\x1d\n" +
-	"\ametrics\x18\x02 \x03(\tB\x03\xe0A\x01R\ametrics:\x02\x18\x01\"<\n" +
+	"\x04HOST\x10\x03:\x02\x18\x01\"r\n" +
+	"$AwsAutoscalingGroupMetricsCollection\x12&\n" +
+	"\vgranularity\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vgranularity\x12\x1e\n" +
+	"\ametrics\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\ametrics:\x02\x18\x01\"=\n" +
 	"\n" +
-	"SpotConfig\x12*\n" +
-	"\x0einstance_types\x18\x01 \x03(\tB\x03\xe0A\x02R\rinstanceTypes:\x02\x18\x01\"/\n" +
+	"SpotConfig\x12+\n" +
+	"\x0einstance_types\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\rinstanceTypes:\x02\x18\x01\"/\n" +
 	"\x0fAwsClusterError\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage:\x02\x18\x01\"0\n" +
 	"\x10AwsNodePoolError\x12\x18\n" +

@@ -733,6 +733,11 @@ func (c *alloyDBCSQLAdminRESTClient) RestoreFromCloudSQL(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/clusters:restoreFromCloudSQL", req.GetParent())
 
 	params := url.Values{}
@@ -792,6 +797,11 @@ func (c *alloyDBCSQLAdminRESTClient) RestoreFromCloudSQL(ctx context.Context, re
 func (c *alloyDBCSQLAdminRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -859,6 +869,11 @@ func (c *alloyDBCSQLAdminRESTClient) ListLocations(ctx context.Context, req *loc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/locations", req.GetName())
@@ -935,6 +950,11 @@ func (c *alloyDBCSQLAdminRESTClient) CancelOperation(ctx context.Context, req *l
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -974,6 +994,11 @@ func (c *alloyDBCSQLAdminRESTClient) DeleteOperation(ctx context.Context, req *l
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1011,6 +1036,11 @@ func (c *alloyDBCSQLAdminRESTClient) DeleteOperation(ctx context.Context, req *l
 func (c *alloyDBCSQLAdminRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1078,6 +1108,11 @@ func (c *alloyDBCSQLAdminRESTClient) ListOperations(ctx context.Context, req *lo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

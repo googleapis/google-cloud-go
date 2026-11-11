@@ -539,46 +539,46 @@ var File_google_cloud_networksecurity_v1beta1_dns_threat_detector_proto protoref
 
 const file_google_cloud_networksecurity_v1beta1_dns_threat_detector_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/networksecurity/v1beta1/dns_threat_detector.proto\x12$google.cloud.networksecurity.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\x05\n" +
-	"\x11DnsThreatDetector\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12`\n" +
-	"\x06labels\x18\x04 \x03(\v2C.google.cloud.networksecurity.v1beta1.DnsThreatDetector.LabelsEntryB\x03\xe0A\x01R\x06labels\x12S\n" +
-	"\x11excluded_networks\x18\x05 \x03(\tB&\xe0A\x01\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\x10excludedNetworks\x12a\n" +
-	"\bprovider\x18\x06 \x01(\x0e2@.google.cloud.networksecurity.v1beta1.DnsThreatDetector.ProviderB\x03\xe0A\x02R\bprovider\x1a9\n" +
+	">google/cloud/networksecurity/v1beta1/dns_threat_detector.proto\x12$google.cloud.networksecurity.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\x05\n" +
+	"\x11DnsThreatDetector\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12a\n" +
+	"\x06labels\x18\x04 \x03(\v2C.google.cloud.networksecurity.v1beta1.DnsThreatDetector.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12T\n" +
+	"\x11excluded_networks\x18\x05 \x03(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\x10excludedNetworks\x12b\n" +
+	"\bprovider\x18\x06 \x01(\x0e2@.google.cloud.networksecurity.v1beta1.DnsThreatDetector.ProviderB\x04\xe2A\x01\x02R\bprovider\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"2\n" +
 	"\bProvider\x12\x18\n" +
 	"\x14PROVIDER_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bINFOBLOX\x10\x01:\xaf\x01\xeaA\xab\x01\n" +
-	"0networksecurity.googleapis.com/DnsThreatDetector\x12Pprojects/{project}/locations/{location}/dnsThreatDetectors/{dns_threat_detector}*\x12dnsThreatDetectors2\x11dnsThreatDetector\"\xb7\x01\n" +
-	"\x1dListDnsThreatDetectorsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120networksecurity.googleapis.com/DnsThreatDetectorR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"0networksecurity.googleapis.com/DnsThreatDetector\x12Pprojects/{project}/locations/{location}/dnsThreatDetectors/{dns_threat_detector}*\x12dnsThreatDetectors2\x11dnsThreatDetector\"\xba\x01\n" +
+	"\x1dListDnsThreatDetectorsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120networksecurity.googleapis.com/DnsThreatDetectorR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xda\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xdb\x01\n" +
 	"\x1eListDnsThreatDetectorsResponse\x12i\n" +
 	"\x14dns_threat_detectors\x18\x01 \x03(\v27.google.cloud.networksecurity.v1beta1.DnsThreatDetectorR\x12dnsThreatDetectors\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"k\n" +
-	"\x1bGetDnsThreatDetectorRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0networksecurity.googleapis.com/DnsThreatDetectorR\x04name\"\x9a\x02\n" +
-	"\x1eCreateDnsThreatDetectorRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120networksecurity.googleapis.com/DnsThreatDetectorR\x06parent\x128\n" +
-	"\x16dns_threat_detector_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x13dnsThreatDetectorId\x12l\n" +
-	"\x13dns_threat_detector\x18\x03 \x01(\v27.google.cloud.networksecurity.v1beta1.DnsThreatDetectorB\x03\xe0A\x02R\x11dnsThreatDetector\"\xd0\x01\n" +
-	"\x1eUpdateDnsThreatDetectorRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12l\n" +
-	"\x13dns_threat_detector\x18\x02 \x01(\v27.google.cloud.networksecurity.v1beta1.DnsThreatDetectorB\x03\xe0A\x02R\x11dnsThreatDetector\"n\n" +
-	"\x1eDeleteDnsThreatDetectorRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"l\n" +
+	"\x1bGetDnsThreatDetectorRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0networksecurity.googleapis.com/DnsThreatDetectorR\x04name\"\x9d\x02\n" +
+	"\x1eCreateDnsThreatDetectorRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120networksecurity.googleapis.com/DnsThreatDetectorR\x06parent\x129\n" +
+	"\x16dns_threat_detector_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13dnsThreatDetectorId\x12m\n" +
+	"\x13dns_threat_detector\x18\x03 \x01(\v27.google.cloud.networksecurity.v1beta1.DnsThreatDetectorB\x04\xe2A\x01\x02R\x11dnsThreatDetector\"\xd2\x01\n" +
+	"\x1eUpdateDnsThreatDetectorRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12m\n" +
+	"\x13dns_threat_detector\x18\x02 \x01(\v27.google.cloud.networksecurity.v1beta1.DnsThreatDetectorB\x04\xe2A\x01\x02R\x11dnsThreatDetector\"o\n" +
+	"\x1eDeleteDnsThreatDetectorRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0networksecurity.googleapis.com/DnsThreatDetectorR\x04name2\xdf\n" +
 	"\n" +
 	"\x18DnsThreatDetectorService\x12\xf1\x01\n" +

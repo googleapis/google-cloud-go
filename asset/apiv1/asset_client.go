@@ -2027,6 +2027,11 @@ func (c *restClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportAssets", req.GetParent())
 
 	params := url.Values{}
@@ -2100,6 +2105,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/assets", req.GetParent())
@@ -2193,6 +2203,11 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:batchGetAssetsHistory", req.GetParent())
 
 	params := url.Values{}
@@ -2281,6 +2296,11 @@ func (c *restClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/feeds", req.GetParent())
 
 	params := url.Values{}
@@ -2335,6 +2355,11 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2387,6 +2412,11 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 func (c *restClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsRequest, opts ...gax.CallOption) (*assetpb.ListFeedsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/feeds", req.GetParent())
@@ -2449,6 +2479,11 @@ func (c *restClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFeed().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFeed().GetName())
 
 	params := url.Values{}
@@ -2501,6 +2536,11 @@ func (c *restClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 func (c *restClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2556,6 +2596,11 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchAllResources", req.GetScope())
@@ -2657,6 +2702,11 @@ func (c *restClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchAllIamPolicies", req.GetScope())
 
 		params := url.Values{}
@@ -2732,6 +2782,11 @@ func (c *restClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPolicyRequest, opts ...gax.CallOption) (*assetpb.AnalyzeIamPolicyResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAnalysisQuery().GetScope(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeIamPolicy", req.GetAnalysisQuery().GetScope())
@@ -2850,6 +2905,11 @@ func (c *restClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAnalysisQuery().GetScope(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeIamPolicyLongrunning", req.GetAnalysisQuery().GetScope())
 
 	params := url.Values{}
@@ -2913,6 +2973,11 @@ func (c *restClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRequest, opts ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeMove", req.GetResource())
@@ -2990,6 +3055,11 @@ func (c *restClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:queryAssets", req.GetParent())
 
 	params := url.Values{}
@@ -3051,6 +3121,11 @@ func (c *restClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/savedQueries", req.GetParent())
 
 	params := url.Values{}
@@ -3104,6 +3179,11 @@ func (c *restClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 func (c *restClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3171,6 +3251,11 @@ func (c *restClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/savedQueries", req.GetParent())
@@ -3248,6 +3333,11 @@ func (c *restClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSavedQuery().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSavedQuery().GetName())
 
 	params := url.Values{}
@@ -3309,6 +3399,11 @@ func (c *restClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3346,6 +3441,11 @@ func (c *restClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 func (c *restClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *assetpb.BatchGetEffectiveIamPoliciesRequest, opts ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetScope(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/effectiveIamPolicies:batchGet", req.GetScope())
@@ -3418,6 +3518,11 @@ func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeOrgPolicies", req.GetScope())
@@ -3501,6 +3606,11 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeOrgPolicyGovernedContainers", req.GetScope())
@@ -3673,6 +3783,11 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeOrgPolicyGovernedAssets", req.GetScope())
 
 		params := url.Values{}
@@ -3740,6 +3855,11 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

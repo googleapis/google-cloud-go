@@ -1746,7 +1746,7 @@ var File_google_firestore_v1_query_proto protoreflect.FileDescriptor
 
 const file_google_firestore_v1_query_proto_rawDesc = "" +
 	"\n" +
-	"\x1fgoogle/firestore/v1/query.proto\x12\x13google.firestore.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/firestore/v1/document.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xb4\x16\n" +
+	"\x1fgoogle/firestore/v1/query.proto\x12\x13google.firestore.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/firestore/v1/document.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xbb\x16\n" +
 	"\x0fStructuredQuery\x12G\n" +
 	"\x06select\x18\x01 \x01(\v2/.google.firestore.v1.StructuredQuery.ProjectionR\x06select\x12K\n" +
 	"\x04from\x18\x02 \x03(\v27.google.firestore.v1.StructuredQuery.CollectionSelectorR\x04from\x12A\n" +
@@ -1755,8 +1755,8 @@ const file_google_firestore_v1_query_proto_rawDesc = "" +
 	"\bstart_at\x18\a \x01(\v2\x1b.google.firestore.v1.CursorR\astartAt\x122\n" +
 	"\x06end_at\x18\b \x01(\v2\x1b.google.firestore.v1.CursorR\x05endAt\x12\x16\n" +
 	"\x06offset\x18\x06 \x01(\x05R\x06offset\x121\n" +
-	"\x05limit\x18\x05 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12X\n" +
-	"\ffind_nearest\x18\t \x01(\v20.google.firestore.v1.StructuredQuery.FindNearestB\x03\xe0A\x01R\vfindNearest\x1ab\n" +
+	"\x05limit\x18\x05 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12Y\n" +
+	"\ffind_nearest\x18\t \x01(\v20.google.firestore.v1.StructuredQuery.FindNearestB\x04\xe2A\x01\x01R\vfindNearest\x1ab\n" +
 	"\x12CollectionSelector\x12#\n" +
 	"\rcollection_id\x18\x02 \x01(\tR\fcollectionId\x12'\n" +
 	"\x0fall_descendants\x18\x03 \x01(\bR\x0eallDescendants\x1a\xa8\x02\n" +
@@ -1810,14 +1810,14 @@ const file_google_firestore_v1_query_proto_rawDesc = "" +
 	"field_path\x18\x02 \x01(\tR\tfieldPath\x1aY\n" +
 	"\n" +
 	"Projection\x12K\n" +
-	"\x06fields\x18\x02 \x03(\v23.google.firestore.v1.StructuredQuery.FieldReferenceR\x06fields\x1a\xc4\x04\n" +
-	"\vFindNearest\x12[\n" +
-	"\fvector_field\x18\x01 \x01(\v23.google.firestore.v1.StructuredQuery.FieldReferenceB\x03\xe0A\x02R\vvectorField\x12B\n" +
-	"\fquery_vector\x18\x02 \x01(\v2\x1a.google.firestore.v1.ValueB\x03\xe0A\x02R\vqueryVector\x12p\n" +
-	"\x10distance_measure\x18\x03 \x01(\x0e2@.google.firestore.v1.StructuredQuery.FindNearest.DistanceMeasureB\x03\xe0A\x02R\x0fdistanceMeasure\x126\n" +
-	"\x05limit\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x02R\x05limit\x127\n" +
-	"\x15distance_result_field\x18\x05 \x01(\tB\x03\xe0A\x01R\x13distanceResultField\x12P\n" +
-	"\x12distance_threshold\x18\x06 \x01(\v2\x1c.google.protobuf.DoubleValueB\x03\xe0A\x01R\x11distanceThreshold\"_\n" +
+	"\x06fields\x18\x02 \x03(\v23.google.firestore.v1.StructuredQuery.FieldReferenceR\x06fields\x1a\xca\x04\n" +
+	"\vFindNearest\x12\\\n" +
+	"\fvector_field\x18\x01 \x01(\v23.google.firestore.v1.StructuredQuery.FieldReferenceB\x04\xe2A\x01\x02R\vvectorField\x12C\n" +
+	"\fquery_vector\x18\x02 \x01(\v2\x1a.google.firestore.v1.ValueB\x04\xe2A\x01\x02R\vqueryVector\x12q\n" +
+	"\x10distance_measure\x18\x03 \x01(\x0e2@.google.firestore.v1.StructuredQuery.FindNearest.DistanceMeasureB\x04\xe2A\x01\x02R\x0fdistanceMeasure\x127\n" +
+	"\x05limit\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x02R\x05limit\x128\n" +
+	"\x15distance_result_field\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x13distanceResultField\x12Q\n" +
+	"\x12distance_threshold\x18\x06 \x01(\v2\x1c.google.protobuf.DoubleValueB\x04\xe2A\x01\x01R\x11distanceThreshold\"_\n" +
 	"\x0fDistanceMeasure\x12 \n" +
 	"\x1cDISTANCE_MEASURE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tEUCLIDEAN\x10\x01\x12\n" +
@@ -1828,17 +1828,17 @@ const file_google_firestore_v1_query_proto_rawDesc = "" +
 	"\x15DIRECTION_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tASCENDING\x10\x01\x12\x0e\n" +
 	"\n" +
-	"DESCENDING\x10\x02\"\x83\x06\n" +
+	"DESCENDING\x10\x02\"\x86\x06\n" +
 	"\x1aStructuredAggregationQuery\x12Q\n" +
-	"\x10structured_query\x18\x01 \x01(\v2$.google.firestore.v1.StructuredQueryH\x00R\x0fstructuredQuery\x12d\n" +
-	"\faggregations\x18\x03 \x03(\v2;.google.firestore.v1.StructuredAggregationQuery.AggregationB\x03\xe0A\x01R\faggregations\x1a\x9d\x04\n" +
+	"\x10structured_query\x18\x01 \x01(\v2$.google.firestore.v1.StructuredQueryH\x00R\x0fstructuredQuery\x12e\n" +
+	"\faggregations\x18\x03 \x03(\v2;.google.firestore.v1.StructuredAggregationQuery.AggregationB\x04\xe2A\x01\x01R\faggregations\x1a\x9f\x04\n" +
 	"\vAggregation\x12Y\n" +
 	"\x05count\x18\x01 \x01(\v2A.google.firestore.v1.StructuredAggregationQuery.Aggregation.CountH\x00R\x05count\x12S\n" +
 	"\x03sum\x18\x02 \x01(\v2?.google.firestore.v1.StructuredAggregationQuery.Aggregation.SumH\x00R\x03sum\x12S\n" +
-	"\x03avg\x18\x03 \x01(\v2?.google.firestore.v1.StructuredAggregationQuery.Aggregation.AvgH\x00R\x03avg\x12\x19\n" +
-	"\x05alias\x18\a \x01(\tB\x03\xe0A\x01R\x05alias\x1a>\n" +
-	"\x05Count\x125\n" +
-	"\x05up_to\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x04upTo\x1aP\n" +
+	"\x03avg\x18\x03 \x01(\v2?.google.firestore.v1.StructuredAggregationQuery.Aggregation.AvgH\x00R\x03avg\x12\x1a\n" +
+	"\x05alias\x18\a \x01(\tB\x04\xe2A\x01\x01R\x05alias\x1a?\n" +
+	"\x05Count\x126\n" +
+	"\x05up_to\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\x04upTo\x1aP\n" +
 	"\x03Sum\x12I\n" +
 	"\x05field\x18\x01 \x01(\v23.google.firestore.v1.StructuredQuery.FieldReferenceR\x05field\x1aP\n" +
 	"\x03Avg\x12I\n" +

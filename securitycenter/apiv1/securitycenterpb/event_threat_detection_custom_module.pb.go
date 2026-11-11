@@ -232,19 +232,19 @@ var File_google_cloud_securitycenter_v1_event_threat_detection_custom_module_pro
 
 const file_google_cloud_securitycenter_v1_event_threat_detection_custom_module_proto_rawDesc = "" +
 	"\n" +
-	"Igoogle/cloud/securitycenter/v1/event_threat_detection_custom_module.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\a\n" +
-	" EventThreatDetectionCustomModule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12/\n" +
-	"\x06config\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x06config\x12o\n" +
-	"\x0fancestor_module\x18\x03 \x01(\tBF\xe0A\x03\xfaA@\n" +
+	"Igoogle/cloud/securitycenter/v1/event_threat_detection_custom_module.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa5\a\n" +
+	" EventThreatDetectionCustomModule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12/\n" +
+	"\x06config\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x06config\x12p\n" +
+	"\x0fancestor_module\x18\x03 \x01(\tBG\xe2A\x01\x03\xfaA@\n" +
 	">securitycenter.googleapis.com/EventThreatDetectionCustomModuleR\x0eancestorModule\x12{\n" +
 	"\x10enablement_state\x18\x04 \x01(\x0e2P.google.cloud.securitycenter.v1.EventThreatDetectionCustomModule.EnablementStateR\x0fenablementState\x12\x12\n" +
 	"\x04type\x18\x05 \x01(\tR\x04type\x12!\n" +
 	"\fdisplay_name\x18\x06 \x01(\tR\vdisplayName\x12 \n" +
-	"\vdescription\x18\a \x01(\tR\vdescription\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12$\n" +
-	"\vlast_editor\x18\t \x01(\tB\x03\xe0A\x03R\n" +
+	"\vdescription\x18\a \x01(\tR\vdescription\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12%\n" +
+	"\vlast_editor\x18\t \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"lastEditor\"]\n" +
 	"\x0fEnablementState\x12 \n" +
 	"\x1cENABLEMENT_STATE_UNSPECIFIED\x10\x00\x12\v\n" +

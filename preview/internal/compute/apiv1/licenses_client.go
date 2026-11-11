@@ -407,6 +407,12 @@ func (c *licensesRESTClient) Delete(ctx context.Context, req *computepb.DeleteLi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetLicense(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v", req.GetProject(), req.GetLicense())
 
 	params := url.Values{}
@@ -473,6 +479,12 @@ func (c *licensesRESTClient) Get(ctx context.Context, req *computepb.GetLicenseR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetLicense(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v", req.GetProject(), req.GetLicense())
 
 	// Build HTTP headers from client and context metadata.
@@ -524,6 +536,12 @@ func (c *licensesRESTClient) Get(ctx context.Context, req *computepb.GetLicenseR
 func (c *licensesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyLicenseRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -590,6 +608,11 @@ func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses", req.GetProject())
@@ -676,6 +699,11 @@ func (c *licensesRESTClient) List(ctx context.Context, req *computepb.ListLicens
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses", req.GetProject())
 
 		params := url.Values{}
@@ -757,6 +785,12 @@ func (c *licensesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.Se
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -816,6 +850,12 @@ func (c *licensesRESTClient) TestIamPermissions(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -873,6 +913,12 @@ func (c *licensesRESTClient) Update(ctx context.Context, req *computepb.UpdateLi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetLicense(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v", req.GetProject(), req.GetLicense())

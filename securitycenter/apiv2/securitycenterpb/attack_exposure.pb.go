@@ -203,12 +203,12 @@ var File_google_cloud_securitycenter_v2_attack_exposure_proto protoreflect.FileD
 
 const file_google_cloud_securitycenter_v2_attack_exposure_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/securitycenter/v2/attack_exposure.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xab\x04\n" +
+	"4google/cloud/securitycenter/v2/attack_exposure.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x04\n" +
 	"\x0eAttackExposure\x12\x14\n" +
 	"\x05score\x18\x01 \x01(\x01R\x05score\x12R\n" +
 	"\x17latest_calculation_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x15latestCalculationTime\x124\n" +
-	"\x16attack_exposure_result\x18\x03 \x01(\tR\x14attackExposureResult\x12O\n" +
-	"\x05state\x18\x04 \x01(\x0e24.google.cloud.securitycenter.v2.AttackExposure.StateB\x03\xe0A\x03R\x05state\x12J\n" +
+	"\x16attack_exposure_result\x18\x03 \x01(\tR\x14attackExposureResult\x12P\n" +
+	"\x05state\x18\x04 \x01(\x0e24.google.cloud.securitycenter.v2.AttackExposure.StateB\x04\xe2A\x01\x03R\x05state\x12J\n" +
 	"\"exposed_high_value_resources_count\x18\x05 \x01(\x05R\x1eexposedHighValueResourcesCount\x12N\n" +
 	"$exposed_medium_value_resources_count\x18\x06 \x01(\x05R exposedMediumValueResourcesCount\x12H\n" +
 	"!exposed_low_value_resources_count\x18\a \x01(\x05R\x1dexposedLowValueResourcesCount\"B\n" +

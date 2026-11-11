@@ -1794,6 +1794,59 @@ func (it *FutureReservationsScopedListPairIterator) takeBuf() interface{} {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *GlobalVmExtensionIterator) All() iter.Seq2[*computepb.GlobalVmExtension, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// GlobalVmExtensionIterator manages a stream of *computepb.GlobalVmExtension.
+type GlobalVmExtensionIterator struct {
+	items    []*computepb.GlobalVmExtension
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.GlobalVmExtension, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *GlobalVmExtensionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *GlobalVmExtensionIterator) Next() (*computepb.GlobalVmExtension, error) {
+	var item *computepb.GlobalVmExtension
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *GlobalVmExtensionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *GlobalVmExtensionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *GlobalVmExtensionPolicyIterator) All() iter.Seq2[*computepb.GlobalVmExtensionPolicy, error] {
 	return gaxiter.RangeAdapter(it.Next)
 }
@@ -8381,6 +8434,59 @@ func (it *VmEndpointNatMappingsIterator) bufLen() int {
 }
 
 func (it *VmEndpointNatMappingsIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VmExtensionIterator) All() iter.Seq2[*computepb.VmExtension, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// VmExtensionIterator manages a stream of *computepb.VmExtension.
+type VmExtensionIterator struct {
+	items    []*computepb.VmExtension
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.VmExtension, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *VmExtensionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *VmExtensionIterator) Next() (*computepb.VmExtension, error) {
+	var item *computepb.VmExtension
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *VmExtensionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *VmExtensionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

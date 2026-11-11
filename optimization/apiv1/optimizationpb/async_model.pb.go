@@ -494,11 +494,11 @@ const file_google_cloud_optimization_v1_async_model_proto_rawDesc = "" +
 	"\x0fgcs_destination\x18\x01 \x01(\v2,.google.cloud.optimization.v1.GcsDestinationH\x00R\x0egcsDestination\x12I\n" +
 	"\vdata_format\x18\x02 \x01(\x0e2(.google.cloud.optimization.v1.DataFormatR\n" +
 	"dataFormatB\r\n" +
-	"\vdestination\"\"\n" +
-	"\tGcsSource\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\"'\n" +
-	"\x0eGcsDestination\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\"\xd8\x02\n" +
+	"\vdestination\"#\n" +
+	"\tGcsSource\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\"(\n" +
+	"\x0eGcsDestination\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\"\xd8\x02\n" +
 	"\x12AsyncModelMetadata\x12L\n" +
 	"\x05state\x18\x01 \x01(\x0e26.google.cloud.optimization.v1.AsyncModelMetadata.StateR\x05state\x12#\n" +
 	"\rstate_message\x18\x02 \x01(\tR\fstateMessage\x12;\n" +

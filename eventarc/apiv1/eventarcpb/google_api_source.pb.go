@@ -344,31 +344,31 @@ var File_google_cloud_eventarc_v1_google_api_source_proto protoreflect.FileDescr
 
 const file_google_cloud_eventarc_v1_google_api_source_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/eventarc/v1/google_api_source.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/eventarc/v1/logging_config.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe3\n" +
+	"0google/cloud/eventarc/v1/google_api_source.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/eventarc/v1/logging_config.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\n" +
 	"\n" +
-	"\x0fGoogleApiSource\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x03R\x04etag\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12R\n" +
-	"\x06labels\x18\x06 \x03(\v25.google.cloud.eventarc.v1.GoogleApiSource.LabelsEntryB\x03\xe0A\x01R\x06labels\x12a\n" +
-	"\vannotations\x18\a \x03(\v2:.google.cloud.eventarc.v1.GoogleApiSource.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x01R\vdisplayName\x12L\n" +
-	"\vdestination\x18\t \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"eventarc.googleapis.com/MessageBusR\vdestination\x12Q\n" +
+	"\x0fGoogleApiSource\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12S\n" +
+	"\x06labels\x18\x06 \x03(\v25.google.cloud.eventarc.v1.GoogleApiSource.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12b\n" +
+	"\vannotations\x18\a \x03(\v2:.google.cloud.eventarc.v1.GoogleApiSource.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12M\n" +
+	"\vdestination\x18\t \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"eventarc.googleapis.com/MessageBusR\vdestination\x12R\n" +
 	"\x0fcrypto_key_name\x18\n" +
-	" \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12S\n" +
-	"\x0elogging_config\x18\v \x01(\v2'.google.cloud.eventarc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x12\x86\x01\n" +
-	"\x19organization_subscription\x18\f \x01(\v2B.google.cloud.eventarc.v1.GoogleApiSource.OrganizationSubscriptionB\x03\xe0A\x01H\x00R\x18organizationSubscription\x12z\n" +
-	"\x15project_subscriptions\x18\r \x01(\v2>.google.cloud.eventarc.v1.GoogleApiSource.ProjectSubscriptionsB\x03\xe0A\x01H\x00R\x14projectSubscriptions\x1a/\n" +
-	"\x14ProjectSubscriptions\x12\x17\n" +
-	"\x04list\x18\x01 \x03(\tB\x03\xe0A\x02R\x04list\x1a9\n" +
-	"\x18OrganizationSubscription\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x02R\aenabled\x1a9\n" +
+	" \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12T\n" +
+	"\x0elogging_config\x18\v \x01(\v2'.google.cloud.eventarc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x12\x87\x01\n" +
+	"\x19organization_subscription\x18\f \x01(\v2B.google.cloud.eventarc.v1.GoogleApiSource.OrganizationSubscriptionB\x04\xe2A\x01\x01H\x00R\x18organizationSubscription\x12{\n" +
+	"\x15project_subscriptions\x18\r \x01(\v2>.google.cloud.eventarc.v1.GoogleApiSource.ProjectSubscriptionsB\x04\xe2A\x01\x01H\x00R\x14projectSubscriptions\x1a0\n" +
+	"\x14ProjectSubscriptions\x12\x18\n" +
+	"\x04list\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x04list\x1a:\n" +
+	"\x18OrganizationSubscription\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\aenabled\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +

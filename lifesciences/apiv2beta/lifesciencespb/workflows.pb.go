@@ -2510,10 +2510,10 @@ var File_google_cloud_lifesciences_v2beta_workflows_proto protoreflect.FileDescr
 
 const file_google_cloud_lifesciences_v2beta_workflows_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/lifesciences/v2beta/workflows.proto\x12 google.cloud.lifesciences.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\xb2\x02\n" +
+	"0google/cloud/lifesciences/v2beta/workflows.proto\x12 google.cloud.lifesciences.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\xb3\x02\n" +
 	"\x12RunPipelineRequest\x12\x16\n" +
-	"\x06parent\x18\x04 \x01(\tR\x06parent\x12K\n" +
-	"\bpipeline\x18\x01 \x01(\v2*.google.cloud.lifesciences.v2beta.PipelineB\x03\xe0A\x02R\bpipeline\x12X\n" +
+	"\x06parent\x18\x04 \x01(\tR\x06parent\x12L\n" +
+	"\bpipeline\x18\x01 \x01(\v2*.google.cloud.lifesciences.v2beta.PipelineB\x04\xe2A\x01\x02R\bpipeline\x12X\n" +
 	"\x06labels\x18\x02 \x03(\v2@.google.cloud.lifesciences.v2beta.RunPipelineRequest.LabelsEntryR\x06labels\x12\"\n" +
 	"\rpub_sub_topic\x18\x03 \x01(\tR\vpubSubTopic\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
@@ -2528,11 +2528,11 @@ const file_google_cloud_lifesciences_v2beta_workflows_proto_rawDesc = "" +
 	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x1a>\n" +
 	"\x10EnvironmentEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9a\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9b\n" +
 	"\n" +
 	"\x06Action\x12%\n" +
-	"\x0econtainer_name\x18\x01 \x01(\tR\rcontainerName\x12 \n" +
-	"\timage_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\bimageUri\x12\x1a\n" +
+	"\x0econtainer_name\x18\x01 \x01(\tR\rcontainerName\x12!\n" +
+	"\timage_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bimageUri\x12\x1a\n" +
 	"\bcommands\x18\x03 \x03(\tR\bcommands\x12\x1e\n" +
 	"\n" +
 	"entrypoint\x18\x04 \x01(\tR\n" +
@@ -2576,9 +2576,9 @@ const file_google_cloud_lifesciences_v2beta_workflows_proto_rawDesc = "" +
 	"\tResources\x12\x18\n" +
 	"\aregions\x18\x02 \x03(\tR\aregions\x12\x14\n" +
 	"\x05zones\x18\x03 \x03(\tR\x05zones\x12Y\n" +
-	"\x0fvirtual_machine\x18\x04 \x01(\v20.google.cloud.lifesciences.v2beta.VirtualMachineR\x0evirtualMachine\"\x9b\a\n" +
-	"\x0eVirtualMachine\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x02R\vmachineType\x12 \n" +
+	"\x0fvirtual_machine\x18\x04 \x01(\v20.google.cloud.lifesciences.v2beta.VirtualMachineR\x0evirtualMachine\"\x9c\a\n" +
+	"\x0eVirtualMachine\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vmachineType\x12 \n" +
 	"\vpreemptible\x18\x02 \x01(\bR\vpreemptible\x12T\n" +
 	"\x06labels\x18\x03 \x03(\v2<.google.cloud.lifesciences.v2beta.VirtualMachine.LabelsEntryR\x06labels\x12<\n" +
 	"\x05disks\x18\x04 \x03(\v2&.google.cloud.lifesciences.v2beta.DiskR\x05disks\x12C\n" +

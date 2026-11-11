@@ -1620,145 +1620,145 @@ var File_google_cloud_dataplex_v1_business_glossary_proto protoreflect.FileDescr
 
 const file_google_cloud_dataplex_v1_business_glossary_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/dataplex/v1/business_glossary.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x85\x05\n" +
-	"\bGlossary\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12K\n" +
-	"\x06labels\x18\a \x03(\v2..google.cloud.dataplex.v1.Glossary.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\"\n" +
+	"0google/cloud/dataplex/v1/business_glossary.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8d\x05\n" +
+	"\bGlossary\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12L\n" +
+	"\x06labels\x18\a \x03(\v2..google.cloud.dataplex.v1.Glossary.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12#\n" +
 	"\n" +
-	"term_count\x18\b \x01(\x05B\x03\xe0A\x03R\ttermCount\x12*\n" +
-	"\x0ecategory_count\x18\t \x01(\x05B\x03\xe0A\x03R\rcategoryCount\x12\x17\n" +
+	"term_count\x18\b \x01(\x05B\x04\xe2A\x01\x03R\ttermCount\x12+\n" +
+	"\x0ecategory_count\x18\t \x01(\x05B\x04\xe2A\x01\x03R\rcategoryCount\x12\x18\n" +
 	"\x04etag\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x04etag\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:z\xeaAw\n" +
 	" dataplex.googleapis.com/Glossary\x12=projects/{project}/locations/{location}/glossaries/{glossary}*\n" +
-	"glossaries2\bglossary\"\xf2\x04\n" +
-	"\x10GlossaryCategory\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12S\n" +
-	"\x06labels\x18\a \x03(\v26.google.cloud.dataplex.v1.GlossaryCategory.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x1b\n" +
-	"\x06parent\x18\b \x01(\tB\x03\xe0A\x02R\x06parent\x1a9\n" +
+	"glossaries2\bglossary\"\xf8\x04\n" +
+	"\x10GlossaryCategory\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12T\n" +
+	"\x06labels\x18\a \x03(\v26.google.cloud.dataplex.v1.GlossaryCategory.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x1c\n" +
+	"\x06parent\x18\b \x01(\tB\x04\xe2A\x01\x02R\x06parent\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xa2\x01\xeaA\x9e\x01\n" +
 	"(dataplex.googleapis.com/GlossaryCategory\x12\\projects/{project}/locations/{location}/glossaries/{glossary}/categories/{glossary_category}*\n" +
-	"categories2\bcategory\"\xf9\x04\n" +
-	"\fGlossaryTerm\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12O\n" +
-	"\x06labels\x18\a \x03(\v22.google.cloud.dataplex.v1.GlossaryTerm.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\x06parent\x18\b \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"categories2\bcategory\"\xff\x04\n" +
+	"\fGlossaryTerm\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12P\n" +
+	"\x06labels\x18\a \x03(\v22.google.cloud.dataplex.v1.GlossaryTerm.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\x06parent\x18\b \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" dataplex.googleapis.com/GlossaryR\x06parent\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8c\x01\xeaA\x88\x01\n" +
-	"$dataplex.googleapis.com/GlossaryTerm\x12Sprojects/{project}/locations/{location}/glossaries/{glossary}/terms/{glossary_term}*\x05terms2\x04term\"\xef\x01\n" +
-	"\x15CreateGlossaryRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12$\n" +
-	"\vglossary_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"glossaryId\x12C\n" +
-	"\bglossary\x18\x03 \x01(\v2\".google.cloud.dataplex.v1.GlossaryB\x03\xe0A\x02R\bglossary\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xc8\x01\n" +
-	"\x15UpdateGlossaryRequest\x12C\n" +
-	"\bglossary\x18\x01 \x01(\v2\".google.cloud.dataplex.v1.GlossaryB\x03\xe0A\x02R\bglossary\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"n\n" +
-	"\x15DeleteGlossaryRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dataplex.googleapis.com/GlossaryR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"R\n" +
-	"\x12GetGlossaryRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dataplex.googleapis.com/GlossaryR\x04name\"\xdd\x01\n" +
-	"\x15ListGlossariesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"$dataplex.googleapis.com/GlossaryTerm\x12Sprojects/{project}/locations/{location}/glossaries/{glossary}/terms/{glossary_term}*\x05terms2\x04term\"\xf3\x01\n" +
+	"\x15CreateGlossaryRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12%\n" +
+	"\vglossary_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"glossaryId\x12D\n" +
+	"\bglossary\x18\x03 \x01(\v2\".google.cloud.dataplex.v1.GlossaryB\x04\xe2A\x01\x02R\bglossary\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xcb\x01\n" +
+	"\x15UpdateGlossaryRequest\x12D\n" +
+	"\bglossary\x18\x01 \x01(\v2\".google.cloud.dataplex.v1.GlossaryB\x04\xe2A\x01\x02R\bglossary\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"p\n" +
+	"\x15DeleteGlossaryRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dataplex.googleapis.com/GlossaryR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"S\n" +
+	"\x12GetGlossaryRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dataplex.googleapis.com/GlossaryR\x04name\"\xe2\x01\n" +
+	"\x15ListGlossariesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb9\x01\n" +
 	"\x16ListGlossariesResponse\x12B\n" +
 	"\n" +
 	"glossaries\x18\x01 \x03(\v2\".google.cloud.dataplex.v1.GlossaryR\n" +
 	"glossaries\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\xd4\x01\n" +
-	"\x1dCreateGlossaryCategoryRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dataplex.googleapis.com/GlossaryR\x06parent\x12$\n" +
-	"\vcategory_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"categoryId\x12K\n" +
-	"\bcategory\x18\x03 \x01(\v2*.google.cloud.dataplex.v1.GlossaryCategoryB\x03\xe0A\x02R\bcategory\"\xae\x01\n" +
-	"\x1dUpdateGlossaryCategoryRequest\x12K\n" +
-	"\bcategory\x18\x01 \x01(\v2*.google.cloud.dataplex.v1.GlossaryCategoryB\x03\xe0A\x02R\bcategory\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"e\n" +
-	"\x1dDeleteGlossaryCategoryRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dataplex.googleapis.com/GlossaryCategoryR\x04name\"b\n" +
-	"\x1aGetGlossaryCategoryRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dataplex.googleapis.com/GlossaryCategoryR\x04name\"\xe4\x01\n" +
-	"\x1dListGlossaryCategoriesRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dataplex.googleapis.com/GlossaryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\xd7\x01\n" +
+	"\x1dCreateGlossaryCategoryRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dataplex.googleapis.com/GlossaryR\x06parent\x12%\n" +
+	"\vcategory_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"categoryId\x12L\n" +
+	"\bcategory\x18\x03 \x01(\v2*.google.cloud.dataplex.v1.GlossaryCategoryB\x04\xe2A\x01\x02R\bcategory\"\xb0\x01\n" +
+	"\x1dUpdateGlossaryCategoryRequest\x12L\n" +
+	"\bcategory\x18\x01 \x01(\v2*.google.cloud.dataplex.v1.GlossaryCategoryB\x04\xe2A\x01\x02R\bcategory\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"f\n" +
+	"\x1dDeleteGlossaryCategoryRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dataplex.googleapis.com/GlossaryCategoryR\x04name\"c\n" +
+	"\x1aGetGlossaryCategoryRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dataplex.googleapis.com/GlossaryCategoryR\x04name\"\xe9\x01\n" +
+	"\x1dListGlossaryCategoriesRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dataplex.googleapis.com/GlossaryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc9\x01\n" +
 	"\x1eListGlossaryCategoriesResponse\x12J\n" +
 	"\n" +
 	"categories\x18\x01 \x03(\v2*.google.cloud.dataplex.v1.GlossaryCategoryR\n" +
 	"categories\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\xbc\x01\n" +
-	"\x19CreateGlossaryTermRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dataplex.googleapis.com/GlossaryR\x06parent\x12\x1c\n" +
-	"\aterm_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06termId\x12?\n" +
-	"\x04term\x18\x03 \x01(\v2&.google.cloud.dataplex.v1.GlossaryTermB\x03\xe0A\x02R\x04term\"\x9e\x01\n" +
-	"\x19UpdateGlossaryTermRequest\x12?\n" +
-	"\x04term\x18\x01 \x01(\v2&.google.cloud.dataplex.v1.GlossaryTermB\x03\xe0A\x02R\x04term\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"]\n" +
-	"\x19DeleteGlossaryTermRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dataplex.googleapis.com/GlossaryTermR\x04name\"Z\n" +
-	"\x16GetGlossaryTermRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dataplex.googleapis.com/GlossaryTermR\x04name\"\xdf\x01\n" +
-	"\x18ListGlossaryTermsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dataplex.googleapis.com/GlossaryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\xbf\x01\n" +
+	"\x19CreateGlossaryTermRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dataplex.googleapis.com/GlossaryR\x06parent\x12\x1d\n" +
+	"\aterm_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06termId\x12@\n" +
+	"\x04term\x18\x03 \x01(\v2&.google.cloud.dataplex.v1.GlossaryTermB\x04\xe2A\x01\x02R\x04term\"\xa0\x01\n" +
+	"\x19UpdateGlossaryTermRequest\x12@\n" +
+	"\x04term\x18\x01 \x01(\v2&.google.cloud.dataplex.v1.GlossaryTermB\x04\xe2A\x01\x02R\x04term\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"^\n" +
+	"\x19DeleteGlossaryTermRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dataplex.googleapis.com/GlossaryTermR\x04name\"[\n" +
+	"\x16GetGlossaryTermRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dataplex.googleapis.com/GlossaryTermR\x04name\"\xe4\x01\n" +
+	"\x18ListGlossaryTermsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dataplex.googleapis.com/GlossaryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb6\x01\n" +
 	"\x19ListGlossaryTermsResponse\x12<\n" +
 	"\x05terms\x18\x01 \x03(\v2&.google.cloud.dataplex.v1.GlossaryTermR\x05terms\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +

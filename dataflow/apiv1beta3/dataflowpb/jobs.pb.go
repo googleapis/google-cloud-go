@@ -3325,14 +3325,14 @@ var File_google_dataflow_v1beta3_jobs_proto protoreflect.FileDescriptor
 
 const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"\n" +
-	"\"google/dataflow/v1beta3/jobs.proto\x12\x17google.dataflow.v1beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a)google/dataflow/v1beta3/environment.proto\x1a'google/dataflow/v1beta3/snapshots.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x91\x0f\n" +
+	"\"google/dataflow/v1beta3/jobs.proto\x12\x17google.dataflow.v1beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a)google/dataflow/v1beta3/environment.proto\x1a'google/dataflow/v1beta3/snapshots.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x99\x0f\n" +
 	"\x03Job\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tR\tprojectId\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x01R\x04name\x129\n" +
-	"\x04type\x18\x04 \x01(\x0e2 .google.dataflow.v1beta3.JobTypeB\x03\xe0A\x01R\x04type\x12K\n" +
-	"\venvironment\x18\x05 \x01(\v2$.google.dataflow.v1beta3.EnvironmentB\x03\xe0A\x01R\venvironment\x123\n" +
+	"project_id\x18\x02 \x01(\tR\tprojectId\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12:\n" +
+	"\x04type\x18\x04 \x01(\x0e2 .google.dataflow.v1beta3.JobTypeB\x04\xe2A\x01\x01R\x04type\x12L\n" +
+	"\venvironment\x18\x05 \x01(\v2$.google.dataflow.v1beta3.EnvironmentB\x04\xe2A\x01\x01R\venvironment\x123\n" +
 	"\x05steps\x18\x06 \x03(\v2\x1d.google.dataflow.v1beta3.StepR\x05steps\x12%\n" +
 	"\x0esteps_location\x18\x18 \x01(\tR\rstepsLocation\x12F\n" +
 	"\rcurrent_state\x18\a \x01(\x0e2!.google.dataflow.v1beta3.JobStateR\fcurrentState\x12H\n" +
@@ -3342,14 +3342,14 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	" \x01(\v2).google.dataflow.v1beta3.JobExecutionInfoR\rexecutionInfo\x12;\n" +
 	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12$\n" +
-	"\x0ereplace_job_id\x18\f \x01(\tR\freplaceJobId\x12q\n" +
-	"\x16transform_name_mapping\x18\r \x03(\v26.google.dataflow.v1beta3.Job.TransformNameMappingEntryB\x03\xe0A\x01R\x14transformNameMapping\x12*\n" +
+	"\x0ereplace_job_id\x18\f \x01(\tR\freplaceJobId\x12r\n" +
+	"\x16transform_name_mapping\x18\r \x03(\v26.google.dataflow.v1beta3.Job.TransformNameMappingEntryB\x04\xe2A\x01\x01R\x14transformNameMapping\x12*\n" +
 	"\x11client_request_id\x18\x0e \x01(\tR\x0fclientRequestId\x12+\n" +
 	"\x12replaced_by_job_id\x18\x0f \x01(\tR\x0freplacedByJobId\x12\x1d\n" +
 	"\n" +
 	"temp_files\x18\x10 \x03(\tR\ttempFiles\x12@\n" +
-	"\x06labels\x18\x11 \x03(\v2(.google.dataflow.v1beta3.Job.LabelsEntryR\x06labels\x12\x1f\n" +
-	"\blocation\x18\x12 \x01(\tB\x03\xe0A\x01R\blocation\x12_\n" +
+	"\x06labels\x18\x11 \x03(\v2(.google.dataflow.v1beta3.Job.LabelsEntryR\x06labels\x12 \n" +
+	"\blocation\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\blocation\x12_\n" +
 	"\x14pipeline_description\x18\x13 \x01(\v2,.google.dataflow.v1beta3.PipelineDescriptionR\x13pipelineDescription\x12O\n" +
 	"\fstage_states\x18\x14 \x03(\v2,.google.dataflow.v1beta3.ExecutionStageStateR\vstageStates\x12G\n" +
 	"\fjob_metadata\x18\x15 \x01(\v2$.google.dataflow.v1beta3.JobMetadataR\vjobMetadata\x129\n" +
@@ -3357,10 +3357,10 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"start_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x127\n" +
 	"\x18created_from_snapshot_id\x18\x17 \x01(\tR\x15createdFromSnapshotId\x12#\n" +
 	"\rsatisfies_pzs\x18\x19 \x01(\bR\fsatisfiesPzs\x12n\n" +
-	"\x18runtime_updatable_params\x18\x1a \x01(\v2/.google.dataflow.v1beta3.RuntimeUpdatableParamsH\x00R\x16runtimeUpdatableParams\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\x1b \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12`\n" +
-	"\x11service_resources\x18\x1c \x01(\v2).google.dataflow.v1beta3.ServiceResourcesB\x03\xe0A\x03H\x02R\x10serviceResources\x88\x01\x01\x12\x1f\n" +
-	"\bpausable\x18\x1d \x01(\bB\x03\xe0A\x03R\bpausable\x1aG\n" +
+	"\x18runtime_updatable_params\x18\x1a \x01(\v2/.google.dataflow.v1beta3.RuntimeUpdatableParamsH\x00R\x16runtimeUpdatableParams\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\x1b \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12a\n" +
+	"\x11service_resources\x18\x1c \x01(\v2).google.dataflow.v1beta3.ServiceResourcesB\x04\xe2A\x01\x03H\x02R\x10serviceResources\x88\x01\x01\x12 \n" +
+	"\bpausable\x18\x1d \x01(\bB\x04\xe2A\x01\x03R\bpausable\x1aG\n" +
 	"\x19TransformNameMappingEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -3369,15 +3369,15 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x1b\n" +
 	"\x19_runtime_updatable_paramsB\x10\n" +
 	"\x0e_satisfies_pziB\x14\n" +
-	"\x12_service_resources\"-\n" +
-	"\x10ServiceResources\x12\x19\n" +
-	"\x05zones\x18\x01 \x03(\tB\x03\xe0A\x03R\x05zones\"\xc4\x03\n" +
+	"\x12_service_resources\".\n" +
+	"\x10ServiceResources\x12\x1a\n" +
+	"\x05zones\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\x05zones\"\xc6\x03\n" +
 	"\x16RuntimeUpdatableParams\x12+\n" +
 	"\x0fmax_num_workers\x18\x01 \x01(\x05H\x00R\rmaxNumWorkers\x88\x01\x01\x12+\n" +
 	"\x0fmin_num_workers\x18\x02 \x01(\x05H\x01R\rminNumWorkers\x88\x01\x01\x12;\n" +
-	"\x17worker_utilization_hint\x18\x03 \x01(\x01H\x02R\x15workerUtilizationHint\x88\x01\x01\x12e\n" +
-	"\x1bacceptable_backlog_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x05\xe0A\x01\x18\x01H\x03R\x19acceptableBacklogDuration\x88\x01\x01\x123\n" +
-	"\x10autoscaling_tier\x18\x05 \x01(\tB\x03\xe0A\x01H\x04R\x0fautoscalingTier\x88\x01\x01B\x12\n" +
+	"\x17worker_utilization_hint\x18\x03 \x01(\x01H\x02R\x15workerUtilizationHint\x88\x01\x01\x12f\n" +
+	"\x1bacceptable_backlog_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x06\xe2A\x01\x01\x18\x01H\x03R\x19acceptableBacklogDuration\x88\x01\x01\x124\n" +
+	"\x10autoscaling_tier\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x04R\x0fautoscalingTier\x88\x01\x01B\x12\n" +
 	"\x10_max_num_workersB\x12\n" +
 	"\x10_min_num_workersB\x1a\n" +
 	"\x18_worker_utilization_hintB\x1e\n" +
@@ -3410,24 +3410,24 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"\vinstance_id\x18\x02 \x01(\tR\n" +
 	"instanceId\x12\x1f\n" +
 	"\vdatabase_id\x18\x03 \x01(\tR\n" +
-	"databaseId\"\xd2\x02\n" +
+	"databaseId\"\xd3\x02\n" +
 	"\n" +
 	"SdkVersion\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x120\n" +
 	"\x14version_display_name\x18\x02 \x01(\tR\x12versionDisplayName\x12b\n" +
-	"\x12sdk_support_status\x18\x03 \x01(\x0e24.google.dataflow.v1beta3.SdkVersion.SdkSupportStatusR\x10sdkSupportStatus\x128\n" +
-	"\x04bugs\x18\x04 \x03(\v2\x1f.google.dataflow.v1beta3.SdkBugB\x03\xe0A\x03R\x04bugs\"Z\n" +
+	"\x12sdk_support_status\x18\x03 \x01(\x0e24.google.dataflow.v1beta3.SdkVersion.SdkSupportStatusR\x10sdkSupportStatus\x129\n" +
+	"\x04bugs\x18\x04 \x03(\v2\x1f.google.dataflow.v1beta3.SdkBugB\x04\xe2A\x01\x03R\x04bugs\"Z\n" +
 	"\x10SdkSupportStatus\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\r\n" +
 	"\tSUPPORTED\x10\x01\x12\t\n" +
 	"\x05STALE\x10\x02\x12\x0e\n" +
 	"\n" +
 	"DEPRECATED\x10\x03\x12\x0f\n" +
-	"\vUNSUPPORTED\x10\x04\"\xbe\x02\n" +
-	"\x06SdkBug\x12=\n" +
-	"\x04type\x18\x01 \x01(\x0e2$.google.dataflow.v1beta3.SdkBug.TypeB\x03\xe0A\x03R\x04type\x12I\n" +
-	"\bseverity\x18\x02 \x01(\x0e2(.google.dataflow.v1beta3.SdkBug.SeverityB\x03\xe0A\x03R\bseverity\x12\x15\n" +
-	"\x03uri\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uri\"H\n" +
+	"\vUNSUPPORTED\x10\x04\"\xc1\x02\n" +
+	"\x06SdkBug\x12>\n" +
+	"\x04type\x18\x01 \x01(\x0e2$.google.dataflow.v1beta3.SdkBug.TypeB\x04\xe2A\x01\x03R\x04type\x12J\n" +
+	"\bseverity\x18\x02 \x01(\x0e2(.google.dataflow.v1beta3.SdkBug.SeverityB\x04\xe2A\x01\x03R\bseverity\x12\x16\n" +
+	"\x03uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uri\"H\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\x0f\n" +
@@ -3544,7 +3544,7 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"\blocation\x18\x04 \x01(\tR\blocation\x12@\n" +
 	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskH\x00R\n" +
 	"updateMask\x88\x01\x01B\x0e\n" +
-	"\f_update_mask\"\xee\x02\n" +
+	"\f_update_mask\"\xef\x02\n" +
 	"\x0fListJobsRequest\x12G\n" +
 	"\x06filter\x18\x05 \x01(\x0e2/.google.dataflow.v1beta3.ListJobsRequest.FilterR\x06filter\x12\x1d\n" +
 	"\n" +
@@ -3553,8 +3553,8 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\x12\x1a\n" +
-	"\blocation\x18\x11 \x01(\tR\blocation\x12\x1c\n" +
-	"\x04name\x18\v \x01(\tB\x03\xe0A\x01H\x00R\x04name\x88\x01\x01\":\n" +
+	"\blocation\x18\x11 \x01(\tR\blocation\x12\x1d\n" +
+	"\x04name\x18\v \x01(\tB\x04\xe2A\x01\x01H\x00R\x04name\x88\x01\x01\":\n" +
 	"\x06Filter\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\a\n" +
 	"\x03ALL\x10\x01\x12\x0e\n" +

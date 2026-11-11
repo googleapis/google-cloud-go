@@ -3814,6 +3814,11 @@ func (c *restClient) InspectContent(ctx context.Context, req *dlppb.InspectConte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/content:inspect", req.GetParent())
 
 	params := url.Values{}
@@ -3885,6 +3890,11 @@ func (c *restClient) RedactImage(ctx context.Context, req *dlppb.RedactImageRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/image:redact", req.GetParent())
 
 	params := url.Values{}
@@ -3953,6 +3963,11 @@ func (c *restClient) DeidentifyContent(ctx context.Context, req *dlppb.Deidentif
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/content:deidentify", req.GetParent())
 
 	params := url.Values{}
@@ -4014,6 +4029,11 @@ func (c *restClient) ReidentifyContent(ctx context.Context, req *dlppb.Reidentif
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/content:reidentify", req.GetParent())
@@ -4149,6 +4169,11 @@ func (c *restClient) CreateInspectTemplate(ctx context.Context, req *dlppb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/inspectTemplates", req.GetParent())
 
 	params := url.Values{}
@@ -4212,6 +4237,11 @@ func (c *restClient) UpdateInspectTemplate(ctx context.Context, req *dlppb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -4267,6 +4297,11 @@ func (c *restClient) UpdateInspectTemplate(ctx context.Context, req *dlppb.Updat
 func (c *restClient) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -4337,6 +4372,11 @@ func (c *restClient) ListInspectTemplates(ctx context.Context, req *dlppb.ListIn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/inspectTemplates", req.GetParent())
@@ -4413,6 +4453,11 @@ func (c *restClient) DeleteInspectTemplate(ctx context.Context, req *dlppb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -4460,6 +4505,11 @@ func (c *restClient) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.Cr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/deidentifyTemplates", req.GetParent())
@@ -4525,6 +4575,11 @@ func (c *restClient) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -4580,6 +4635,11 @@ func (c *restClient) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.Up
 func (c *restClient) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -4650,6 +4710,11 @@ func (c *restClient) ListDeidentifyTemplates(ctx context.Context, req *dlppb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/deidentifyTemplates", req.GetParent())
@@ -4726,6 +4791,11 @@ func (c *restClient) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.De
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -4773,6 +4843,11 @@ func (c *restClient) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobT
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/jobTriggers", req.GetParent())
@@ -4838,6 +4913,11 @@ func (c *restClient) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobT
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -4900,6 +4980,11 @@ func (c *restClient) HybridInspectJobTrigger(ctx context.Context, req *dlppb.Hyb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:hybridInspect", req.GetName())
 
 	params := url.Values{}
@@ -4955,6 +5040,11 @@ func (c *restClient) HybridInspectJobTrigger(ctx context.Context, req *dlppb.Hyb
 func (c *restClient) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -5025,6 +5115,11 @@ func (c *restClient) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTrig
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/jobTriggers", req.GetParent())
@@ -5107,6 +5202,11 @@ func (c *restClient) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobT
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5151,6 +5251,11 @@ func (c *restClient) ActivateJobTrigger(ctx context.Context, req *dlppb.Activate
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:activate", req.GetName())
@@ -5213,6 +5318,11 @@ func (c *restClient) CreateDiscoveryConfig(ctx context.Context, req *dlppb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/discoveryConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -5273,6 +5383,11 @@ func (c *restClient) UpdateDiscoveryConfig(ctx context.Context, req *dlppb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5325,6 +5440,11 @@ func (c *restClient) UpdateDiscoveryConfig(ctx context.Context, req *dlppb.Updat
 func (c *restClient) GetDiscoveryConfig(ctx context.Context, req *dlppb.GetDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -5392,6 +5512,11 @@ func (c *restClient) ListDiscoveryConfigs(ctx context.Context, req *dlppb.ListDi
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/discoveryConfigs", req.GetParent())
@@ -5462,6 +5587,11 @@ func (c *restClient) DeleteDiscoveryConfig(ctx context.Context, req *dlppb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5514,6 +5644,11 @@ func (c *restClient) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/dlpJobs", req.GetParent())
@@ -5586,6 +5721,11 @@ func (c *restClient) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequ
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/dlpJobs", req.GetParent())
@@ -5670,6 +5810,11 @@ func (c *restClient) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5731,6 +5876,11 @@ func (c *restClient) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRe
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5783,6 +5933,11 @@ func (c *restClient) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRe
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -5829,6 +5984,11 @@ func (c *restClient) CreateStoredInfoType(ctx context.Context, req *dlppb.Create
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/storedInfoTypes", req.GetParent())
@@ -5895,6 +6055,11 @@ func (c *restClient) UpdateStoredInfoType(ctx context.Context, req *dlppb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5950,6 +6115,11 @@ func (c *restClient) UpdateStoredInfoType(ctx context.Context, req *dlppb.Update
 func (c *restClient) GetStoredInfoType(ctx context.Context, req *dlppb.GetStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -6020,6 +6190,11 @@ func (c *restClient) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListSto
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/storedInfoTypes", req.GetParent())
@@ -6096,6 +6271,11 @@ func (c *restClient) DeleteStoredInfoType(ctx context.Context, req *dlppb.Delete
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -6146,6 +6326,11 @@ func (c *restClient) ListProjectDataProfiles(ctx context.Context, req *dlppb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/projectDataProfiles", req.GetParent())
@@ -6232,6 +6417,11 @@ func (c *restClient) ListTableDataProfiles(ctx context.Context, req *dlppb.ListT
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/tableDataProfiles", req.GetParent())
 
 		params := url.Values{}
@@ -6316,6 +6506,11 @@ func (c *restClient) ListColumnDataProfiles(ctx context.Context, req *dlppb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/columnDataProfiles", req.GetParent())
 
 		params := url.Values{}
@@ -6387,6 +6582,11 @@ func (c *restClient) GetProjectDataProfile(ctx context.Context, req *dlppb.GetPr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -6452,6 +6652,11 @@ func (c *restClient) ListFileStoreDataProfiles(ctx context.Context, req *dlppb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/fileStoreDataProfiles", req.GetParent())
@@ -6525,6 +6730,11 @@ func (c *restClient) GetFileStoreDataProfile(ctx context.Context, req *dlppb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -6580,6 +6790,11 @@ func (c *restClient) DeleteFileStoreDataProfile(ctx context.Context, req *dlppb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -6617,6 +6832,11 @@ func (c *restClient) DeleteFileStoreDataProfile(ctx context.Context, req *dlppb.
 func (c *restClient) GetTableDataProfile(ctx context.Context, req *dlppb.GetTableDataProfileRequest, opts ...gax.CallOption) (*dlppb.TableDataProfile, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -6671,6 +6891,11 @@ func (c *restClient) GetTableDataProfile(ctx context.Context, req *dlppb.GetTabl
 func (c *restClient) GetColumnDataProfile(ctx context.Context, req *dlppb.GetColumnDataProfileRequest, opts ...gax.CallOption) (*dlppb.ColumnDataProfile, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -6728,6 +6953,11 @@ func (c *restClient) DeleteTableDataProfile(ctx context.Context, req *dlppb.Dele
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -6773,6 +7003,11 @@ func (c *restClient) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridI
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:hybridInspect", req.GetName())
@@ -6836,6 +7071,11 @@ func (c *restClient) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobRe
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:finish", req.GetName())
 
 	params := url.Values{}
@@ -6879,6 +7119,11 @@ func (c *restClient) CreateConnection(ctx context.Context, req *dlppb.CreateConn
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/connections", req.GetParent())
@@ -6933,6 +7178,11 @@ func (c *restClient) CreateConnection(ctx context.Context, req *dlppb.CreateConn
 func (c *restClient) GetConnection(ctx context.Context, req *dlppb.GetConnectionRequest, opts ...gax.CallOption) (*dlppb.Connection, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -7001,6 +7251,11 @@ func (c *restClient) ListConnections(ctx context.Context, req *dlppb.ListConnect
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/connections", req.GetParent())
@@ -7084,6 +7339,11 @@ func (c *restClient) SearchConnections(ctx context.Context, req *dlppb.SearchCon
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/connections:search", req.GetParent())
 
 		params := url.Values{}
@@ -7152,6 +7412,11 @@ func (c *restClient) DeleteConnection(ctx context.Context, req *dlppb.DeleteConn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -7195,6 +7460,11 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *dlppb.UpdateConn
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -7257,6 +7527,11 @@ func (c *restClient) CreateContentPolicy(ctx context.Context, req *dlppb.CreateC
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/contentPolicies", req.GetParent())
 
 	params := url.Values{}
@@ -7317,6 +7592,11 @@ func (c *restClient) UpdateContentPolicy(ctx context.Context, req *dlppb.UpdateC
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -7369,6 +7649,11 @@ func (c *restClient) UpdateContentPolicy(ctx context.Context, req *dlppb.UpdateC
 func (c *restClient) GetContentPolicy(ctx context.Context, req *dlppb.GetContentPolicyRequest, opts ...gax.CallOption) (*dlppb.ContentPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -7438,6 +7723,11 @@ func (c *restClient) ListContentPolicies(ctx context.Context, req *dlppb.ListCon
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/contentPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -7501,6 +7791,11 @@ func (c *restClient) ListContentPolicies(ctx context.Context, req *dlppb.ListCon
 func (c *restClient) DeleteContentPolicy(ctx context.Context, req *dlppb.DeleteContentPolicyRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

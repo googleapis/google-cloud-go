@@ -201,18 +201,18 @@ var File_google_cloud_ces_v1_google_search_tool_proto protoreflect.FileDescripto
 
 const file_google_cloud_ces_v1_google_search_tool_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/ces/v1/google_search_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x96\x03\n" +
-	"\x10GoogleSearchTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fcontext_urls\x18\x03 \x03(\tB\x03\xe0A\x01R\vcontextUrls\x120\n" +
-	"\x11preferred_domains\x18\x06 \x03(\tB\x03\xe0A\x01R\x10preferredDomains\x12,\n" +
-	"\x0fexclude_domains\x18\x04 \x03(\tB\x03\xe0A\x01R\x0eexcludeDomains\x12\\\n" +
-	"\rprompt_config\x18\x05 \x01(\v22.google.cloud.ces.v1.GoogleSearchTool.PromptConfigB\x03\xe0A\x01R\fpromptConfig\x1a\\\n" +
-	"\fPromptConfig\x12$\n" +
-	"\vtext_prompt\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"textPrompt\x12&\n" +
-	"\fvoice_prompt\x18\x02 \x01(\tB\x03\xe0A\x01R\vvoicePromptB]\n" +
+	",google/cloud/ces/v1/google_search_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x9e\x03\n" +
+	"\x10GoogleSearchTool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fcontext_urls\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\vcontextUrls\x121\n" +
+	"\x11preferred_domains\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\x10preferredDomains\x12-\n" +
+	"\x0fexclude_domains\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x0eexcludeDomains\x12]\n" +
+	"\rprompt_config\x18\x05 \x01(\v22.google.cloud.ces.v1.GoogleSearchTool.PromptConfigB\x04\xe2A\x01\x01R\fpromptConfig\x1a^\n" +
+	"\fPromptConfig\x12%\n" +
+	"\vtext_prompt\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"textPrompt\x12'\n" +
+	"\fvoice_prompt\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vvoicePromptB]\n" +
 	"\x17com.google.cloud.ces.v1B\x15GoogleSearchToolProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (

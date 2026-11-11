@@ -21,6 +21,7 @@ import (
 	"reflect"
 	"time"
 
+	"cloud.google.com/go/civil"
 	genai_types "google.golang.org/genai"
 )
 
@@ -97,6 +98,16 @@ const (
 	OperatorLessThan Operator = "LESS_THAN"
 )
 
+// The machine config of the code execution environment.
+type MachineConfig string
+
+const (
+	// The default value: milligcu 2000, memory 1.5Gib
+	MachineConfigUnspecified MachineConfig = "MACHINE_CONFIG_UNSPECIFIED"
+	// The default value: milligcu 4000, memory 4 Gib
+	MachineConfigVcpu4Ram4gib MachineConfig = "MACHINE_CONFIG_VCPU4_RAM4GIB"
+)
+
 // The coding language supported in this environment.
 type Language string
 
@@ -107,16 +118,6 @@ const (
 	LanguagePython Language = "LANGUAGE_PYTHON"
 	// The coding language is JavaScript.
 	LanguageJavascript Language = "LANGUAGE_JAVASCRIPT"
-)
-
-// The machine config of the code execution environment.
-type MachineConfig string
-
-const (
-	// The default value: milligcu 2000, memory 1.5Gib
-	MachineConfigUnspecified MachineConfig = "MACHINE_CONFIG_UNSPECIFIED"
-	// The default value: milligcu 4000, memory 4 Gib
-	MachineConfigVcpu4Ram4gib MachineConfig = "MACHINE_CONFIG_VCPU4_RAM4GIB"
 )
 
 // The runtime state of the SandboxEnvironment.
@@ -135,6 +136,14 @@ const (
 	SandboxStateTerminated SandboxState = "STATE_TERMINATED"
 	// Sandbox runtime has been deleted.
 	SandboxStateDeleted SandboxState = "STATE_DELETED"
+	// Sandbox runtime is paused.
+	SandboxStatePaused SandboxState = "STATE_PAUSED"
+	// Sandbox runtime is pausing.
+	SandboxStatePausing SandboxState = "STATE_PAUSING"
+	// Sandbox runtime is resuming.
+	SandboxStateResuming SandboxState = "STATE_RESUMING"
+	// Sandbox runtime is stopping.
+	SandboxStateStopping SandboxState = "STATE_STOPPING"
 )
 
 // Protocol for port. Defaults to TCP if not specified.
@@ -161,6 +170,36 @@ const (
 	DefaultContainerCategoryShellSandbox DefaultContainerCategory = "DEFAULT_CONTAINER_CATEGORY_SHELL_SANDBOX"
 )
 
+// The state of the PSC service automation.
+type PscAutomationState string
+
+const (
+	// Should not be used.
+	PscAutomationStateUnspecified PscAutomationState = "PSC_AUTOMATION_STATE_UNSPECIFIED"
+	// The PSC service automation is successful.
+	PscAutomationStateSuccessful PscAutomationState = "PSC_AUTOMATION_STATE_SUCCESSFUL"
+	// The PSC service automation has failed.
+	PscAutomationStateFailed PscAutomationState = "PSC_AUTOMATION_STATE_FAILED"
+)
+
+// The state of the sandbox environment template.
+type SandboxEnvironmentTemplateState string
+
+const (
+	// The default value. This value is unused.
+	SandboxEnvironmentTemplateStateUnspecified SandboxEnvironmentTemplateState = "UNSPECIFIED"
+	// Runtime resources are being allocated for the sandbox environment.
+	SandboxEnvironmentTemplateStateProvisioning SandboxEnvironmentTemplateState = "PROVISIONING"
+	// Sandbox runtime is ready for serving.
+	SandboxEnvironmentTemplateStateActive SandboxEnvironmentTemplateState = "ACTIVE"
+	// Sandbox runtime is halted, performing tear down tasks.
+	SandboxEnvironmentTemplateStateDeprovisioning SandboxEnvironmentTemplateState = "DEPROVISIONING"
+	// Sandbox has terminated with underlying runtime failure.
+	SandboxEnvironmentTemplateStateDeleted SandboxEnvironmentTemplateState = "DELETED"
+	// Sandbox has failed to provision.
+	SandboxEnvironmentTemplateStateFailed SandboxEnvironmentTemplateState = "FAILED"
+)
+
 // Input only. Action to take on the source SandboxEnvironment after the snapshot is
 // taken. This field is only used in CreateSandboxEnvironmentSnapshotRequest and it
 // is not stored in the resource.
@@ -175,6 +214,54 @@ const (
 	PostSnapshotActionPause PostSnapshotAction = "PAUSE"
 )
 
+// The state of the session.
+type State string
+
+const (
+	// State unspecified.
+	StateUnspecified State = "STATE_UNSPECIFIED"
+	// The session is idle.
+	StateSessionIdle State = "SESSION_IDLE"
+	// The session is in progress.
+	StateSessionInProgress State = "SESSION_IN_PROGRESS"
+)
+
+// The traffic type for this request.
+type TrafficType string
+
+const (
+	// Unspecified request traffic type.
+	TrafficTypeUnspecified TrafficType = "TRAFFIC_TYPE_UNSPECIFIED"
+	// Type for Pay-As-You-Go traffic.
+	TrafficTypeOnDemand TrafficType = "ON_DEMAND"
+	// Type for Priority Pay-As-You-Go traffic.
+	TrafficTypeOnDemandPriority TrafficType = "ON_DEMAND_PRIORITY"
+	// Type for Flex traffic.
+	TrafficTypeOnDemandFlex TrafficType = "ON_DEMAND_FLEX"
+	// Type for Off-Peak Pay-As-You-Go traffic.
+	TrafficTypeOnDemandOffpeak TrafficType = "ON_DEMAND_OFFPEAK"
+	// Type for Provisioned Throughput traffic.
+	TrafficTypeProvisionedThroughput TrafficType = "PROVISIONED_THROUGHPUT"
+)
+
+// The modality that this token count applies to.
+type MediaModality string
+
+const (
+	// When a modality is not specified, it is treated as `TEXT`.
+	MediaModalityUnspecified MediaModality = "MODALITY_UNSPECIFIED"
+	// The `Part` contains plain text.
+	MediaModalityText MediaModality = "TEXT"
+	// The `Part` contains an image.
+	MediaModalityImage MediaModality = "IMAGE"
+	// The `Part` contains a video.
+	MediaModalityVideo MediaModality = "VIDEO"
+	// The `Part` contains audio.
+	MediaModalityAudio MediaModality = "AUDIO"
+	// The `Part` contains a document, such as a PDF.
+	MediaModalityDocument MediaModality = "DOCUMENT"
+)
+
 // Framework used to build the application.
 type Framework string
 
@@ -185,18 +272,6 @@ const (
 	FrameworkReact Framework = "REACT"
 	// Angular framework.
 	FrameworkAngular Framework = "ANGULAR"
-)
-
-// The state of the revision.
-type State string
-
-const (
-	// The unspecified state.
-	StateUnspecified State = "STATE_UNSPECIFIED"
-	// Is deployed and ready to be used.
-	StateActive State = "ACTIVE"
-	// Is deprecated, may not be used, only preserved for historical purposes.
-	StateDeprecated State = "DEPRECATED"
 )
 
 // The strategy to use when applying metadata to existing memories during consolidation.
@@ -370,6 +445,9 @@ type ReasoningEngineSpecDeploymentSpec struct {
 	// on a specified endpoint that a deployment host should use to keep the container alive
 	// based on the probe settings.
 	KeepAliveProbe *KeepAliveProbe `json:"keepAliveProbe,omitempty"`
+	// Optional. If true, the Reasoning Engine will be deployed with a dedicated ingress
+	// endpoint.
+	DedicatedIngressEndpointEnabled *bool `json:"dedicatedIngressEndpointEnabled,omitempty"`
 }
 
 // User-provided package specification, containing pickled object and package requirements.
@@ -456,6 +534,17 @@ type ReasoningEngineSpecSourceCodeSpecPythonSpec struct {
 	Version string `json:"version,omitempty"`
 }
 
+// Specifies source code to be fetched from a public Git repository.
+type ReasoningEngineSpecSourceCodeSpecGitSource struct {
+	// Required. The HTTPS URL of the public Git repository to clone.
+	URL string `json:"url,omitempty"`
+	// Optional. Directory, relative to the source root, in which to run the build.
+	Dir string `json:"dir,omitempty"`
+	// Required. The revision to fetch from the Git repository such as a branch, a tag,
+	// a commit SHA, or any Git ref.
+	Revision string `json:"revision,omitempty"`
+}
+
 // Specification for deploying from source code.
 type ReasoningEngineSpecSourceCodeSpec struct {
 	// Source code is generated from the agent config.
@@ -468,6 +557,8 @@ type ReasoningEngineSpecSourceCodeSpec struct {
 	InlineSource *ReasoningEngineSpecSourceCodeSpecInlineSource `json:"inlineSource,omitempty"`
 	// Configuration for a Python application.
 	PythonSpec *ReasoningEngineSpecSourceCodeSpecPythonSpec `json:"pythonSpec,omitempty"`
+	// Source code is in a public Git repository.
+	GitSource *ReasoningEngineSpecSourceCodeSpecGitSource `json:"gitSource,omitempty"`
 }
 
 // Specification for deploying from a container image.
@@ -515,6 +606,12 @@ type ReasoningEngineSpec struct {
 	SourceCodeSpec *ReasoningEngineSpecSourceCodeSpec `json:"sourceCodeSpec,omitempty"`
 	// Deploy from a container image with a defined entrypoint and commands.
 	ContainerSpec *ReasoningEngineSpecContainerSpec `json:"containerSpec,omitempty"`
+	// Optional. The resource name of the linked ExampleStore. At query time, examples can
+	// be used to guide the performance of the agent by providing the expected response
+	// or demonstrating when and how tools should be called. Format: `projects/{project}/locations/{location}/exampleStores/{example_store}`
+	ExampleStore string `json:"exampleStore,omitempty"`
+	// Output only. Boolean signifying if this agent engine has a runtime currently or not.
+	RuntimeActive *bool `json:"runtimeActive,omitempty"`
 }
 
 // The conversation source event for generating memories.
@@ -535,6 +632,8 @@ type MemoryTopicID struct {
 	CustomMemoryTopicLabel string `json:"customMemoryTopicLabel,omitempty"`
 	// Optional. Represents the managed memory topic.
 	ManagedMemoryTopic ManagedTopicEnum `json:"managedMemoryTopic,omitempty"`
+	// Optional. Deprecated: Use `schema_id` in top-level protos instead.
+	SchemaID string `json:"schemaId,omitempty"`
 }
 
 // A memory generated by the operation.
@@ -589,8 +688,7 @@ type MemoryBankCustomizationConfigConsolidationConfig struct {
 	RevisionsPerCandidateCount *int32 `json:"revisionsPerCandidateCount,omitempty"`
 }
 
-// Represents configuration for organizing natural language memories for a particular
-// scope.
+// Represents configuration for organizing natural language memories.
 type MemoryBankCustomizationConfig struct {
 	// Optional. Indicates whether the memories will be generated in the third person (i.e.
 	// "The user generates memories with Memory Bank."). By default, the memories will be
@@ -628,6 +726,8 @@ type MemoryGenerationTriggerConfigGenerationTriggerRule struct {
 	EventCount *int32 `json:"eventCount,omitempty"`
 	// Optional. Re-include the last N already-processed events in the next window.
 	OverlapEventCount *int32 `json:"overlapEventCount,omitempty"`
+	// Optional. Specifies to trigger generation when the token count reaches this limit.
+	TokenLimit *int32 `json:"tokenLimit,omitempty"`
 }
 
 func (m *MemoryGenerationTriggerConfigGenerationTriggerRule) UnmarshalJSON(data []byte) error {
@@ -690,6 +790,9 @@ type ReasoningEngineContextSpecMemoryBankConfigGenerationConfig struct {
 	// Optional. Specifies the default trigger configuration for generating memories using
 	// `IngestEvents`.
 	GenerationTriggerConfig *MemoryGenerationTriggerConfig `json:"generationTriggerConfig,omitempty"`
+	// Optional. A custom prompt to use for extracting memories from conversations. If not
+	// set, a default prompt will be used.
+	MemoryExtractionInstructions string `json:"memoryExtractionInstructions,omitempty"`
 }
 
 // Configuration for how to perform similarity search on memories.
@@ -872,10 +975,27 @@ type ReasoningEngineContextSpecMemoryBankConfig struct {
 	StructuredMemoryConfigs []*StructuredMemoryConfig `json:"structuredMemoryConfigs,omitempty"`
 }
 
+// Configuration for how to perform similarity search on examples.
+type ReasoningEngineContextSpecExampleStoreConfigSimilaritySearchConfig struct {
+	// Required. The Gemini model used to generate embeddings to lookup similar examples.
+	// Format: `projects/{project}/locations/{location}/publishers/google/models/{model}`.
+	EmbeddingModel string `json:"embeddingModel,omitempty"`
+}
+
+// Specification for an Example Store.
+type ReasoningEngineContextSpecExampleStoreConfig struct {
+	// Optional. Configuration for how to perform similarity search on examples. If not
+	// set, the Example Store will use the default embedding model `text-embedding-005`.
+	SimilaritySearchConfig *ReasoningEngineContextSpecExampleStoreConfigSimilaritySearchConfig `json:"similaritySearchConfig,omitempty"`
+}
+
 // Configuration for how Agent Engine sub-resources should manage context.
 type ReasoningEngineContextSpec struct {
 	// Optional. Specification for a Memory Bank, which manages memories for the Agent Engine.
 	MemoryBankConfig *ReasoningEngineContextSpecMemoryBankConfig `json:"memoryBankConfig,omitempty"`
+	// Optional. Specification for an Example Store, which manages few-shot examples for
+	// the Agent Engine.
+	ExampleStoreConfig *ReasoningEngineContextSpecExampleStoreConfig `json:"exampleStoreConfig,omitempty"`
 }
 
 // Config for create agent engine.
@@ -1013,6 +1133,28 @@ type ReasoningEngineTrafficConfig struct {
 	TrafficSplitManual *ReasoningEngineTrafficConfigTrafficSplitManual `json:"trafficSplitManual,omitempty"`
 }
 
+// Keeps only the latest N Runtime Revisions active.
+type ReasoningEngineRevisionGarbageCollectionStrategyKeepNLatest struct {
+	// Required. Specifies the maximum number of Runtime Revisions to keep active. If an
+	// update to Reasoning Engine would result in exceeding this number of active Runtime
+	// Revisions, a new Runtime Revision will be created, while the oldest Runtime Revision
+	// will be automatically deleted, providing it's not configured to serve traffic via
+	// `traffic_config`. If the oldest Runtime Revision is configured to serve traffic,
+	// the update will fail validation. No changes will be made to the Reasoning Engine,
+	// existing Runtime Revisions, and no new Runtime Revision will be created.
+	MaxRevisions int32 `json:"maxRevisions,omitempty"`
+}
+
+// Configures garbage collection of Runtime Revisions.
+type ReasoningEngineRevisionGarbageCollectionStrategy struct {
+	// Optional. Keeps only the latest N Runtime Revisions active.
+	KeepNLatest *ReasoningEngineRevisionGarbageCollectionStrategyKeepNLatest `json:"keepNLatest,omitempty"`
+}
+
+// The experiment config to control feature experiments.
+type ExperimentConfig struct {
+}
+
 // An agent engine.
 type ReasoningEngine struct {
 	// Customer-managed encryption key spec for a ReasoningEngine. If set, this ReasoningEngine
@@ -1039,6 +1181,13 @@ type ReasoningEngine struct {
 	UpdateTime time.Time `json:"updateTime,omitempty"`
 	// Optional. Traffic distribution configuration for the Reasoning Engine.
 	TrafficConfig *ReasoningEngineTrafficConfig `json:"trafficConfig,omitempty"`
+	// Optional. Configures garbage collection of Runtime Revisions.
+	RevisionGarbageCollectionStrategy *ReasoningEngineRevisionGarbageCollectionStrategy `json:"revisionGarbageCollectionStrategy,omitempty"`
+	// Optional. The experiment config used to control which features to enable in this
+	// API call.
+	ExperimentConfig *ExperimentConfig `json:"experimentConfig,omitempty"`
+	// Output only. The URL of the reasoning engine.
+	URL string `json:"url,omitempty"`
 }
 
 func (r *ReasoningEngine) UnmarshalJSON(data []byte) error {
@@ -1296,6 +1445,91 @@ type UpdateAgentEngineConfig struct {
 type CreateMemoryBankConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. The user-defined name of the Memory Bank.
+	// The display name can be up to 128 characters long and can comprise any
+	// UTF-8 characters.
+	DisplayName string `json:"displayName,omitempty"`
+	// Optional. The description of the Memory Bank.
+	Description string `json:"description,omitempty"`
+	// Optional. The encryption spec to be used for the Memory Bank.
+	EncryptionSpec *genai_types.EncryptionSpec `json:"encryptionSpec,omitempty"`
+}
+
+// The configuration for generating memories.
+type ManagedSemanticMemoryConfigGenerationConfig struct {
+	// Optional. The model used to generate memories.
+	// Format:
+	// `projects/{project}/locations/{location}/publishers/google/models/{model}`.
+	Model string `json:"model,omitempty"`
+	// Optional. The configuration for triggering memory generation.
+	GenerationTriggerConfig *MemoryGenerationTriggerConfig `json:"generationTriggerConfig,omitempty"`
+}
+
+// The configuration for similarity search.
+type ManagedSemanticMemoryConfigSimilaritySearchConfig struct {
+	// Optional. The model used to generate embeddings to look up similar memories.
+	// Format:
+	// `projects/{project}/locations/{location}/publishers/google/models/{model}`.
+	EmbeddingModel string `json:"embeddingModel,omitempty"`
+}
+
+// The configuration for granular TTL.
+type ManagedSemanticMemoryConfigTTLConfigGranularTTLConfig struct {
+	// Optional. The TTL duration for memories uploaded via
+	// CreateMemory.
+	CreateTTL string `json:"createTtl,omitempty"`
+	// Optional. The TTL duration for memories generated via
+	// GenerateMemories.
+	GenerateCreatedTTL string `json:"generateCreatedTtl,omitempty"`
+	// Optional. The TTL duration for memories updated via
+	// GenerateMemories (GenerateMemoriesResponse.GeneratedMemory.Action.UPDATED).
+	// In the case of an UPDATE action, the `expire_time` of the existing memory
+	// will be updated to the new value (now + TTL).
+	GenerateUpdatedTTL string `json:"generateUpdatedTtl,omitempty"`
+}
+
+// The configuration for automatic TTL ('time-to-live') of the memories.
+type ManagedSemanticMemoryConfigTTLConfig struct {
+	// Optional. The default TTL for memories in the Memory Bank. If not set, TTL will not
+	// be applied automatically. The TTL can be explicitly set by modifying the `expire_time`
+	// of each Memory resource.
+	DefaultTTL string `json:"defaultTtl,omitempty"`
+	// Optional. The granular TTL config for memories.
+	GranularTTLConfig *ManagedSemanticMemoryConfigTTLConfigGranularTTLConfig `json:"granularTtlConfig,omitempty"`
+	// Optional. The default TTL for memory revisions in the Memory Bank. If not set, TTL
+	// will not be applied automatically. The TTL can be explicitly set by modifying the
+	// `expire_time` of each Memory resource.
+	MemoryRevisionDefaultTTL string `json:"memoryRevisionDefaultTtl,omitempty"`
+}
+
+// The configuration for managed semantic memory.
+type ManagedSemanticMemoryConfig struct {
+	// Optional. Represents configuration for LLMs calls.
+	GenerationConfig *ManagedSemanticMemoryConfigGenerationConfig `json:"generationConfig,omitempty"`
+	// Optional. Configuration for how to perform similarity search on memories.
+	SimilaritySearchConfig *ManagedSemanticMemoryConfigSimilaritySearchConfig `json:"similaritySearchConfig,omitempty"`
+	// Optional. Configuration for how to customize Memory Bank behavior for a
+	// particular scope for unstructured memories.
+	UnstructuredMemoryConfigs []*MemoryBankCustomizationConfig `json:"unstructuredMemoryConfigs,omitempty"`
+	// Optional. Configuration for organizing structured memories for a particular
+	// scope.
+	StructuredMemoryConfigs []*StructuredMemoryConfig `json:"structuredMemoryConfigs,omitempty"`
+	// Optional. Configuration for automatic TTL ('time-to-live') of the memories in
+	// the Memory Bank. If not set, TTL will not be applied automatically. The
+	// TTL can be explicitly set by modifying the `expire_time` of each Memory
+	// resource.
+	TTLConfig *ManagedSemanticMemoryConfigTTLConfig `json:"ttlConfig,omitempty"`
+	// Optional. If true, no memory revisions will be created for any requests to
+	// Memory Bank.
+	DisableMemoryRevisions bool `json:"disableMemoryRevisions,omitempty"`
+}
+
+// Represents a customer-managed encryption key specification that can be applied to
+// a Vertex AI resource.
+type EncryptionSpec struct {
+	// Required. Resource name of the Cloud KMS key used to protect the resource. The Cloud
+	// KMS key must be in the same region as the resource. It must have the format `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}`.
+	KmsKeyName string `json:"kmsKeyName,omitempty"`
 }
 
 // A memory bank.
@@ -1303,6 +1537,66 @@ type MemoryBank struct {
 	// Required. Represents the ID of the schema. Must be 1-63 characters, start with a
 	// lowercase letter, and consist of lowercase letters, numbers, and hyphens.
 	Name string `json:"name,omitempty"`
+	// Represents the configuration for managed memories in Memory Bank. If not set, then
+	// the default configuration will be used.
+	ManagedSemanticMemoryConfig *ManagedSemanticMemoryConfig `json:"managedSemanticMemoryConfig,omitempty"`
+	// Represents the display name of the Memory Bank.
+	DisplayName string `json:"displayName,omitempty"`
+	// Represents the description of the Memory Bank.
+	Description string `json:"description,omitempty"`
+	// Timestamp when this Memory Bank was created.
+	CreateTime time.Time `json:"createTime,omitempty"`
+	// Timestamp when this Memory Bank was most recently updated.
+	UpdateTime time.Time `json:"updateTime,omitempty"`
+	// Customer-managed encryption key spec for a Memory Bank. If set, this Memory Bank
+	// and all sub-resources of this Memory Bank will be secured by this key.
+	EncryptionSpec *EncryptionSpec `json:"encryptionSpec,omitempty"`
+}
+
+func (m *MemoryBank) UnmarshalJSON(data []byte) error {
+	type Alias MemoryBank
+	aux := &struct {
+		CreateTime *time.Time `json:"createTime,omitempty"`
+		UpdateTime *time.Time `json:"updateTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(m),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.CreateTime).IsZero() {
+		m.CreateTime = time.Time(*aux.CreateTime)
+	}
+
+	if !reflect.ValueOf(aux.UpdateTime).IsZero() {
+		m.UpdateTime = time.Time(*aux.UpdateTime)
+	}
+
+	return nil
+}
+
+func (m *MemoryBank) MarshalJSON() ([]byte, error) {
+	type Alias MemoryBank
+	aux := &struct {
+		CreateTime *time.Time `json:"createTime,omitempty"`
+		UpdateTime *time.Time `json:"updateTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(m),
+	}
+
+	if !reflect.ValueOf(m.CreateTime).IsZero() {
+		aux.CreateTime = (*time.Time)(&m.CreateTime)
+	}
+
+	if !reflect.ValueOf(m.UpdateTime).IsZero() {
+		aux.UpdateTime = (*time.Time)(&m.UpdateTime)
+	}
+
+	return json.Marshal(aux)
 }
 
 // Operation that has an memory bank as a response.
@@ -1323,6 +1617,20 @@ type MemoryBankOperation struct {
 	Error map[string]any `json:"error,omitempty"`
 	// Optional. The created Memory Bank.
 	Response *MemoryBank `json:"response,omitempty"`
+}
+
+// Config for updating a memory bank.
+type UpdateMemoryBankConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. The user-defined name of the Memory Bank.
+	// The display name can be up to 128 characters long and can comprise any
+	// UTF-8 characters.
+	DisplayName string `json:"displayName,omitempty"`
+	// Optional. The description of the Memory Bank.
+	Description string `json:"description,omitempty"`
+	// Optional. The encryption spec to be used for the Memory Bank.
+	EncryptionSpec *genai_types.EncryptionSpec `json:"encryptionSpec,omitempty"`
 }
 
 // Config for delete memory bank.
@@ -1347,6 +1655,12 @@ type DeleteMemoryBankOperation struct {
 	Done bool `json:"done,omitempty"`
 	// Optional. The error result of the operation in case of failure or cancellation.
 	Error map[string]any `json:"error,omitempty"`
+}
+
+// Config for getting a Memory Bank.
+type GetMemoryBankConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 }
 
 // The direct contents source event for ingesting events.
@@ -1545,6 +1859,20 @@ type MemoryBankIngestEventsOperation struct {
 	Error map[string]any `json:"error,omitempty"`
 }
 
+// Config for listing Memory Banks.
+type ListMemoryBanksConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. PageSize specifies the maximum number of cached contents to return per
+	// API call. If zero, the server will use a default value.
+	PageSize int32 `json:"pageSize,omitempty"`
+	// Optional. PageToken represents a token used for pagination in API responses. It's
+	// an opaque string that should be passed to subsequent requests to retrieve the next
+	// page of results. An empty PageToken typically indicates that there are no further
+	// pages available.
+	PageToken string `json:"pageToken,omitempty"`
+}
+
 type GetMemoryBankOperationConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
@@ -1709,6 +2037,10 @@ type Memory struct {
 	MemoryType MemoryType `json:"memoryType,omitempty"`
 	// Optional. Represents the structured content of the memory.
 	StructuredContent *MemoryStructuredContent `json:"structuredContent,omitempty"`
+	// Optional. Represents the context of the memory.
+	Context string `json:"context,omitempty"`
+	// Optional. Deprecated: Use `structured_content` instead.
+	StructuredData map[string]any `json:"structuredData,omitempty"`
 }
 
 func (m *Memory) UnmarshalJSON(data []byte) error {
@@ -1901,6 +2233,44 @@ func (g *GenerateMemoriesRequestVertexSessionSource) MarshalJSON() ([]byte, erro
 type GenerateMemoriesRequestDirectContentsSourceEvent struct {
 	// Optional. Required. A single piece of content from which to generate memories.
 	Content *genai_types.Content `json:"content,omitempty"`
+	// Optional. The time at which the event occurred.
+	EventTime time.Time `json:"eventTime,omitempty"`
+}
+
+func (g *GenerateMemoriesRequestDirectContentsSourceEvent) UnmarshalJSON(data []byte) error {
+	type Alias GenerateMemoriesRequestDirectContentsSourceEvent
+	aux := &struct {
+		EventTime *time.Time `json:"eventTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(g),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.EventTime).IsZero() {
+		g.EventTime = time.Time(*aux.EventTime)
+	}
+
+	return nil
+}
+
+func (g *GenerateMemoriesRequestDirectContentsSourceEvent) MarshalJSON() ([]byte, error) {
+	type Alias GenerateMemoriesRequestDirectContentsSourceEvent
+	aux := &struct {
+		EventTime *time.Time `json:"eventTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(g),
+	}
+
+	if !reflect.ValueOf(g.EventTime).IsZero() {
+		aux.EventTime = (*time.Time)(&g.EventTime)
+	}
+
+	return json.Marshal(aux)
 }
 
 // The direct contents source for generating memories.
@@ -2379,6 +2749,9 @@ type IntermediateExtractedMemory struct {
 	Context string `json:"context,omitempty"`
 	// Output only. Represents the structured value of the extracted memory.
 	StructuredData map[string]any `json:"structuredData,omitempty"`
+	// Output only. Indicates that the extracted memory originated from an explicit instruction
+	// to remember or forget information.
+	IsExplicit bool `json:"isExplicit,omitempty"`
 }
 
 // A memory revision.
@@ -2402,6 +2775,9 @@ type MemoryRevision struct {
 	// Output only. Represents the structured value of the memory at the time of revision
 	// creation.
 	StructuredData map[string]any `json:"structuredData,omitempty"`
+	// Output only. Represents the context of the Memory Revision. The context may include
+	// context from both the historical revisions and the extracted content.
+	Context string `json:"context,omitempty"`
 }
 
 func (m *MemoryRevision) UnmarshalJSON(data []byte) error {
@@ -2487,9 +2863,12 @@ type SandboxEnvironmentSpecCodeExecutionEnvironment struct {
 
 // The computer use environment with customized settings.
 type SandboxEnvironmentSpecComputerUseEnvironment struct {
+	// Optional. The Artifact Registry Docker image URI (e.g., us-docker.dev.pkg/my-proj/my-repo/my-image:my-tag).
+	// When unspecified, the default Computer Use container image will be used.
+	ImageURI string `json:"imageUri,omitempty"`
 }
 
-// The shell environment with customized settings.
+// The shell environment.
 type SandboxEnvironmentSpecShellEnvironment struct {
 }
 
@@ -2499,8 +2878,11 @@ type SandboxEnvironmentSpec struct {
 	CodeExecutionEnvironment *SandboxEnvironmentSpecCodeExecutionEnvironment `json:"codeExecutionEnvironment,omitempty"`
 	// Optional. The computer use environment.
 	ComputerUseEnvironment *SandboxEnvironmentSpecComputerUseEnvironment `json:"computerUseEnvironment,omitempty"`
-	// Optional. The shell environment.
+	// Optional. The shell environment for executing shell commands and scripts.
 	ShellEnvironment *SandboxEnvironmentSpecShellEnvironment `json:"shellEnvironment,omitempty"`
+	// Optional. Immutable. Whether to provision the SandboxEnvironment via the GKE TD pool.
+	// Immutable.
+	UseGkeTd *bool `json:"useGkeTd,omitempty"`
 }
 
 // Config for creating a Sandbox.
@@ -2574,12 +2956,13 @@ type SandboxEnvironmentConnectionInfo struct {
 	SandboxInternalIp string `json:"sandboxInternalIp,omitempty"`
 	// Output only. The routing token for the SandboxEnvironment.
 	RoutingToken string `json:"routingToken,omitempty"`
-	// Output only. The name of the PSC-E service attachment created for
-	// private ingress to this SandboxEnvironment. Only populated when the
-	// template enables private ingress (see
-	// SandboxEnvironmentTemplate.ingress_control_config). VPC-SC customers
-	// use this to create a PSC endpoint in their VPC.
+	// Output only. The name of the PSC-E service attachment created for private ingress
+	// to this SandboxEnvironment. Only populated when the template enables private ingress
+	// (see SandboxEnvironmentTemplate.ingress_control_config). VPC-SC customers use this
+	// to create a PSC endpoint in their VPC.
 	ServiceAttachment string `json:"serviceAttachment,omitempty"`
+	// Output only. The hostname of the SandboxEnvironment.
+	SandboxHostname string `json:"sandboxHostname,omitempty"`
 }
 
 // A sandbox environment.
@@ -2791,6 +3174,22 @@ type ListAgentEngineSandboxesResponse struct {
 	SandboxEnvironments []*SandboxEnvironment `json:"sandboxEnvironments,omitempty"`
 }
 
+// Config for pausing an Agent Engine sandbox.
+type PauseAgentEngineSandboxConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. Waits for the operation to complete before returning.
+	WaitForCompletion *bool `json:"waitForCompletion,omitempty"`
+}
+
+// Config for resuming an Agent Engine sandbox.
+type ResumeAgentEngineSandboxConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. Waits for the operation to complete before returning.
+	WaitForCompletion *bool `json:"waitForCompletion,omitempty"`
+}
+
 // Specification for deploying from a custom container image.
 type SandboxEnvironmentTemplateCustomContainerSpec struct {
 	// Required. The Artifact Registry Docker image URI (e.g., us-central1-docker.pkg.dev/my-project/my-repo/my-image:tag)
@@ -2843,9 +3242,9 @@ type SandboxEnvironmentTemplateEgressControlConfigDnsPeeringConfig struct {
 	// Must end with a dot.
 	Domain string `json:"domain,omitempty"`
 	// Required. The VPC network name in the target_project where the DNS zone specified
-	// by 'domain' is visible.
+	// by `domain` is visible.
 	TargetNetwork string `json:"targetNetwork,omitempty"`
-	// Required. The project ID hosting the Cloud DNS managed zone that contains the 'domain'.
+	// Required. The project ID hosting the Cloud DNS managed zone that contains the `domain`.
 	// The Vertex AI Service Agent requires the dns.peer role on this project.
 	TargetProject string `json:"targetProject,omitempty"`
 }
@@ -2854,14 +3253,50 @@ type SandboxEnvironmentTemplateEgressControlConfigDnsPeeringConfig struct {
 type SandboxEnvironmentTemplateEgressControlConfig struct {
 	// Optional. Whether to allow internet access.
 	InternetAccess *bool `json:"internetAccess,omitempty"`
-	// Optional. The customer VPC network that sandbox egress is routed into.
-	CustomerVpcNetwork string `json:"customerVpcNetwork,omitempty"`
 	// Optional. DNS peering configurations that allow sandbox egress to resolve customer-internal
 	// domains via the customer VPC.
 	DnsPeeringConfigs []*SandboxEnvironmentTemplateEgressControlConfigDnsPeeringConfig `json:"dnsPeeringConfigs,omitempty"`
-	// Optional. The name of the customer VPC NetworkAttachment used to draw a PSC interface
+	// Optional. The name of the customer VPC `NetworkAttachment` used to draw a PSC interface
 	// IP into the customer VPC for sandbox egress.
 	NetworkAttachment string `json:"networkAttachment,omitempty"`
+}
+
+// PSC config that is used to automatically create PSC endpoints in the user projects.
+type PSCAutomationConfig struct {
+	// Output only. Error message if the PSC service automation failed.
+	ErrorMessage string `json:"errorMessage,omitempty"`
+	// Output only. Forwarding rule created by the PSC service automation.
+	ForwardingRule string `json:"forwardingRule,omitempty"`
+	// Output only. IP address rule created by the PSC service automation.
+	IpAddress string `json:"ipAddress,omitempty"`
+	// Required. The full name of the Google Compute Engine [network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks).
+	// [Format](https://cloud.google.com/compute/docs/reference/rest/v1/networks/get): `projects/{project}/global/networks/{network}`.
+	Network string `json:"network,omitempty"`
+	// Required. Project ID used to create forwarding rule.
+	ProjectID string `json:"projectId,omitempty"`
+	// Output only. The state of the PSC service automation.
+	State PscAutomationState `json:"state,omitempty"`
+}
+
+// Represents configuration for private service connect.
+type PrivateServiceConnectConfig struct {
+	// Required. If true, expose the IndexEndpoint via private service connect.
+	EnablePrivateServiceConnect *bool `json:"enablePrivateServiceConnect,omitempty"`
+	// Optional. If set to true, enable secure private service connect with IAM authorization.
+	// Otherwise, private service connect will be done without authorization. Note latency
+	// will be slightly increased if authorization is enabled.
+	EnableSecurePrivateServiceConnect *bool `json:"enableSecurePrivateServiceConnect,omitempty"`
+	// A list of Projects from which the forwarding rule will target the service attachment.
+	ProjectAllowlist []string `json:"projectAllowlist,omitempty"`
+	// Optional. List of projects and networks where the PSC endpoints will be created.
+	// This field is used by Online Inference(Prediction) only.
+	PscAutomationConfigs []*PSCAutomationConfig `json:"pscAutomationConfigs,omitempty"`
+	// Output only. The name of the generated service attachment resource. This is only
+	// populated if the endpoint is deployed with PrivateServiceConnect.
+	ServiceAttachment string `json:"serviceAttachment,omitempty"`
+	// Optional. Configuration for PSC-I. If this field is set, enable PSC-I for the endpoint.
+	// Otherwise, PSC-I will not be enabled.
+	PscInterfaceConfig *PscInterfaceConfig `json:"pscInterfaceConfig,omitempty"`
 }
 
 // Config for creating a Sandbox Template.
@@ -2876,6 +3311,33 @@ type CreateSandboxEnvironmentTemplateConfig struct {
 	EgressControlConfig *SandboxEnvironmentTemplateEgressControlConfig `json:"egressControlConfig,omitempty"`
 	// Optional. Waits for the operation to complete before returning.
 	WaitForCompletion *bool `json:"waitForCompletion,omitempty"`
+	// Optional. The ingress control config for the sandbox template.
+	IngressControlConfig *PrivateServiceConnectConfig `json:"ingressControlConfig,omitempty"`
+}
+
+// Configuration for attaching a persistent disk (PD) to each SandboxEnvironment created
+// from this template. A persistent disk provides durable, per-sandbox block storage
+// whose contents survive across the sandbox lifecycle events that this service supports
+// (e.g. pause/resume), unlike ephemeral local storage which is lost when the underlying
+// runtime is torn down.
+type SandboxEnvironmentTemplatePersistentDiskConfig struct {
+	// Optional. Whether a persistent disk is attached to sandboxes created from this template.
+	// Defaults to `false`. This flag lets a template carry (and preserve) disk configuration
+	// while keeping the disk detached, so it can be toggled on later without re-specifying
+	// the rest of the config. When `false`, the remaining fields in this message are ignored.
+	Enabled bool `json:"enabled,omitempty"`
+	// Optional. The absolute path inside the sandbox container at which the persistent
+	// disk is mounted. Defaults to `/workspace` when unset. Ignored when `enabled` is `false`.
+	// Only writes beneath this path land on the disk. Writes elsewhere go to the container's
+	// writable layer, which counts against the container's ephemeral storage and is lost
+	// when the sandbox's runtime is torn down, so this should be the directory the workload
+	// actually writes to. Paths that would shadow the container's system directories (for
+	// example `/etc`, `/proc`, or `/usr` itself) are rejected.
+	MountPath string `json:"mountPath,omitempty"`
+	// Optional. The size of the persistent disk in GB. Must be non-negative. When `enabled`
+	// is `true`, a positive value is required; when unset or zero while enabled, the service
+	// applies a default size. Ignored when `enabled` is `false`.
+	SizeGb int64 `json:"sizeGb,omitempty,string"`
 }
 
 // A sandbox environment template.
@@ -2893,10 +3355,28 @@ type SandboxEnvironmentTemplate struct {
 	// Identifier. The resource name of the SandboxEnvironmentTemplate. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/sandboxEnvironmentTemplates/{sandbox_environment_template}`
 	Name string `json:"name,omitempty"`
 	// Output only. The state of the sandbox environment template.
-	State string `json:"state,omitempty"`
+	State SandboxEnvironmentTemplateState `json:"state,omitempty"`
 	// Output only. The timestamp when this SandboxEnvironmentTemplate was most recently
 	// updated.
 	UpdateTime time.Time `json:"updateTime,omitempty"`
+	// Optional. The configuration for private ingress (PSC-E) of this template. When set,
+	// the sandbox router is exposed privately via a PSC service attachment so VPC-SC customers
+	// can connect from their VPC over a private endpoint instead of the public internet.
+	// The resulting service attachment is surfaced on `SandboxEnvironment.connection_info.service_attachment`.
+	// Only the PSC-E (service-attachment/ingress) portion of `PrivateServiceConnectConfig`
+	// applies here: `enable_private_service_connect` and `project_allowlist` (the consumer
+	// projects allowed to connect). The nested `psc_interface_config` (PSC-I / egress)
+	// is not used for sandbox ingress; sandbox egress is configured via `egress_control_config`
+	// instead.
+	IngressControlConfig *PrivateServiceConnectConfig `json:"ingressControlConfig,omitempty"`
+	// Optional. Configuration for attaching a persistent disk (PD) to each SandboxEnvironment
+	// created from this template. When unset (or when `enabled` is `false`), sandboxes
+	// created from this template are not backed by a persistent disk and rely on ephemeral
+	// storage only. See PersistentDiskConfig for details.
+	PersistentDiskConfig *SandboxEnvironmentTemplatePersistentDiskConfig `json:"persistentDiskConfig,omitempty"`
+	// Optional. Immutable. Whether to provision the SandboxEnvironmentTemplate via the
+	// GKE TD pool.
+	UseGkeTd bool `json:"useGkeTd,omitempty"`
 }
 
 func (s *SandboxEnvironmentTemplate) UnmarshalJSON(data []byte) error {
@@ -3103,6 +3583,8 @@ type SandboxEnvironmentSnapshot struct {
 	TTL time.Duration `json:"ttl,omitempty"`
 	// Output only. The timestamp when this SandboxEnvironment was most recently updated.
 	UpdateTime time.Time `json:"updateTime,omitempty"`
+	// Output only. Whether the source SandboxEnvironment uses the GKE TD pool.
+	UseGkeTd bool `json:"useGkeTd,omitempty"`
 }
 
 func (s *SandboxEnvironmentSnapshot) UnmarshalJSON(data []byte) error {
@@ -3348,6 +3830,16 @@ type Session struct {
 	UpdateTime time.Time `json:"updateTime,omitempty"`
 	// Required. Immutable. String ID provided by the user
 	UserID string `json:"userId,omitempty"`
+	// Output only. The resource names of the Agents that interacted within the session.
+	// Each resource name has the format: `projects/{project}/locations/{location}/agents/{agent}`.
+	Agents []string `json:"agents,omitempty"`
+	// The default limit of the number of steps each child Run can contain. Default to 20
+	// if not specified.
+	DefaultRunStepLimit int64 `json:"defaultRunStepLimit,omitempty,string"`
+	// Output only. The state of the session.
+	State State `json:"state,omitempty"`
+	// Optional. Custom metadata for the session.
+	CustomMetadata map[string]any `json:"customMetadata,omitempty"`
 }
 
 func (s *Session) UnmarshalJSON(data []byte) error {
@@ -3593,6 +4085,149 @@ type EventActions struct {
 	StateDelta map[string]any `json:"stateDelta,omitempty"`
 	// Optional. If set, the event transfers to the specified agent.
 	TransferAgent string `json:"transferAgent,omitempty"`
+	// Optional. If set, the event transfers to the specified agent. This field is intended
+	// to replace 'transfer_agent'. Not in use pending data migration.
+	TransferToAgent string `json:"transferToAgent,omitempty"`
+	// Optional. A dict of tool confirmation requested by this event, keyed by function
+	// call id.
+	RequestedToolConfirmations map[string]any `json:"requestedToolConfirmations,omitempty"`
+	// Optional. If true, the current agent has finished its current run.
+	EndOfAgent *bool `json:"endOfAgent,omitempty"`
+	// Optional. The agent state at the current event.
+	AgentState map[string]any `json:"agentState,omitempty"`
+}
+
+// A citation for a piece of generatedcontent.
+type Citation struct {
+	// Output only. The start index of the citation in the content.
+	StartIndex int32 `json:"startIndex,omitempty"`
+	// Output only. The end index of the citation in the content.
+	EndIndex int32 `json:"endIndex,omitempty"`
+	// Output only. The URI of the source of the citation.
+	URI string `json:"uri,omitempty"`
+	// Output only. The title of the source of the citation.
+	Title string `json:"title,omitempty"`
+	// Output only. The license of the source of the citation.
+	License string `json:"license,omitempty"`
+	// Output only. The publication date of the source of the citation.
+	PublicationDate civil.Date `json:"publicationDate,omitempty"`
+}
+
+func (c *Citation) UnmarshalJSON(data []byte) error {
+	type Alias Citation
+	aux := &struct {
+		PublicationDate *genai_types.InternalDateJSON `json:"publicationDate,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(c),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.PublicationDate).IsZero() {
+		c.PublicationDate = civil.Date(*aux.PublicationDate)
+	}
+
+	return nil
+}
+
+func (c *Citation) MarshalJSON() ([]byte, error) {
+	type Alias Citation
+	aux := &struct {
+		PublicationDate *genai_types.InternalDateJSON `json:"publicationDate,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(c),
+	}
+
+	if !reflect.ValueOf(c.PublicationDate).IsZero() {
+		aux.PublicationDate = (*genai_types.InternalDateJSON)(&c.PublicationDate)
+	}
+
+	return json.Marshal(aux)
+}
+
+// A collection of citations that apply to a piece of generated content.
+type CitationMetadata struct {
+	// Output only. A list of citations for the content.
+	Citations []*Citation `json:"citations,omitempty"`
+}
+
+// Represents a breakdown of token usage by modality. This message is used in CountTokensResponse
+// and GenerateContentResponse.UsageMetadata to provide a detailed view of how many
+// tokens are used by each modality (e.g., text, image, video) in a request. This is
+// particularly useful for multimodal models, allowing you to track and manage token
+// consumption for billing and quota purposes.
+type ModalityTokenCount struct {
+	// The modality that this token count applies to.
+	Modality MediaModality `json:"modality,omitempty"`
+	// The number of tokens counted for this modality.
+	TokenCount int32 `json:"tokenCount,omitempty"`
+}
+
+// [Deprecated] Billable usage information.
+type UsageMetadataBillablleUsage struct {
+	// The number of text characters.
+	TextCount *int32 `json:"textCount,omitempty"`
+	// The number of images.
+	ImageCount *int32 `json:"imageCount,omitempty"`
+	// The duration of video in seconds.
+	VideoDurationSeconds *int32 `json:"videoDurationSeconds,omitempty"`
+	// The duration of audio in seconds.
+	AudioDurationSeconds *int32 `json:"audioDurationSeconds,omitempty"`
+}
+
+type ToolCallStats struct {
+	// Output only. Note: Assuming `ToolType` mapping or just standardizing on strings depending
+	// on Vertex's `Tool` definitions.
+	FunctionName string `json:"functionName,omitempty"`
+	// toolCallCount
+	ToolCallCount *int32 `json:"toolCallCount,omitempty"`
+	// serverExecuted
+	ServerExecuted *bool `json:"serverExecuted,omitempty"`
+}
+
+// Usage metadata about the content generation request and response. This message provides
+// a detailed breakdown of token usage and other relevant metrics.
+type UsageMetadata struct {
+	// The total number of tokens in the prompt. This includes any text, images, or other
+	// media provided in the request. When `cached_content` is set, this also includes the
+	// number of tokens in the cached content.
+	PromptTokenCount *int32 `json:"promptTokenCount,omitempty"`
+	// The total number of tokens in the generated candidates.
+	CandidatesTokenCount *int32 `json:"candidatesTokenCount,omitempty"`
+	// The total number of tokens for the entire request. This is the sum of `prompt_token_count`,
+	// `candidates_token_count`, `tool_use_prompt_token_count`, and `thoughts_token_count`.
+	TotalTokenCount *int32 `json:"totalTokenCount,omitempty"`
+	// Output only. The number of tokens in the results from tool executions, which are
+	// provided back to the model as input, if applicable.
+	ToolUsePromptTokenCount *int32 `json:"toolUsePromptTokenCount,omitempty"`
+	// Output only. The number of tokens that were part of the model's generated "thoughts"
+	// output, if applicable.
+	ThoughtsTokenCount *int32 `json:"thoughtsTokenCount,omitempty"`
+	// Output only. The number of tokens in the cached content that was used for this request.
+	CachedContentTokenCount *int32 `json:"cachedContentTokenCount,omitempty"`
+	// Output only. A detailed breakdown of the token count for each modality in the prompt.
+	PromptTokensDetails []*ModalityTokenCount `json:"promptTokensDetails,omitempty"`
+	// Output only. A detailed breakdown of the token count for each modality in the cached
+	// content.
+	CacheTokensDetails []*ModalityTokenCount `json:"cacheTokensDetails,omitempty"`
+	// Output only. A detailed breakdown of the token count for each modality in the generated
+	// candidates.
+	CandidatesTokensDetails []*ModalityTokenCount `json:"candidatesTokensDetails,omitempty"`
+	// Output only. A detailed breakdown by modality of the token counts from the results
+	// of tool executions, which are provided back to the model as input.
+	ToolUsePromptTokensDetails []*ModalityTokenCount `json:"toolUsePromptTokensDetails,omitempty"`
+	// Output only. The traffic type for this request.
+	TrafficType TrafficType `json:"trafficType,omitempty"`
+	// Output only. [Deprecated] Billable usage for the prompt.
+	BillablePromptUsage *UsageMetadataBillablleUsage `json:"billablePromptUsage,omitempty"`
+	// Output only. [Deprecated] Billable usage for the cached content.
+	BillableCachedContentUsage *UsageMetadataBillablleUsage `json:"billableCachedContentUsage,omitempty"`
+	// Output only. Statistics about function calls in this generation request.
+	ToolCallStats []*ToolCallStats `json:"toolCallStats,omitempty"`
 }
 
 // Metadata relating to a LLM response event.
@@ -3622,6 +4257,10 @@ type EventMetadata struct {
 	InputTranscription *genai_types.Transcription `json:"inputTranscription,omitempty"`
 	// Optional. Audio transcription of model output.
 	OutputTranscription *genai_types.Transcription `json:"outputTranscription,omitempty"`
+	// Optional. Citation metadata for the response.
+	CitationMetadata *CitationMetadata `json:"citationMetadata,omitempty"`
+	// Optional. Usage metadata for the response.
+	UsageMetadata *UsageMetadata `json:"usageMetadata,omitempty"`
 }
 
 // Config for appending agent engine session event.
@@ -3968,6 +4607,10 @@ type SchemaPromptSpecAppBuilderData struct {
 	Framework Framework `json:"framework,omitempty"`
 	// Linked resources attached to the application by the user.
 	LinkedResources []*SchemaPromptSpecAppBuilderDataLinkedResource `json:"linkedResources,omitempty"`
+	// Optional. The Cloud Run regions in which the application is currently deployed. Used
+	// to rediscover and redeploy the app in the regions it already runs in, which may differ
+	// from the prompt's location.
+	DeployedRegions []string `json:"deployedRegions,omitempty"`
 }
 
 // Defines data for an interaction prompt.
@@ -4120,4 +4763,10 @@ type deployOption struct {
 	AcceleratorType string `json:"acceleratorType,omitempty"`
 	// Optional. The number of accelerators.
 	AcceleratorCount int32 `json:"acceleratorCount,omitempty"`
+}
+
+// The response for listing Memory Banks.
+type ListMemoryBanksResponse struct {
+	// The list of Memory Banks.
+	MemoryBanks []*MemoryBank `json:"memoryBanks,omitempty"`
 }

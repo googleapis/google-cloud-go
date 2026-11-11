@@ -2049,6 +2049,11 @@ func (c *clusterManagerRESTClient) ListClusters(ctx context.Context, req *contai
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
 
 	params := url.Values{}
@@ -2107,6 +2112,11 @@ func (c *clusterManagerRESTClient) ListClusters(ctx context.Context, req *contai
 func (c *clusterManagerRESTClient) GetCluster(ctx context.Context, req *containerpb.GetClusterRequest, opts ...gax.CallOption) (*containerpb.Cluster, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2191,6 +2201,11 @@ func (c *clusterManagerRESTClient) CreateCluster(ctx context.Context, req *conta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
 
 	params := url.Values{}
@@ -2249,6 +2264,11 @@ func (c *clusterManagerRESTClient) UpdateCluster(ctx context.Context, req *conta
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2311,6 +2331,11 @@ func (c *clusterManagerRESTClient) UpdateNodePool(ctx context.Context, req *cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2369,6 +2394,11 @@ func (c *clusterManagerRESTClient) SetNodePoolAutoscaling(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setAutoscaling", req.GetName())
@@ -2431,6 +2461,11 @@ func (c *clusterManagerRESTClient) SetLoggingService(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setLogging", req.GetName())
 
 	params := url.Values{}
@@ -2491,6 +2526,11 @@ func (c *clusterManagerRESTClient) SetMonitoringService(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setMonitoring", req.GetName())
 
 	params := url.Values{}
@@ -2549,6 +2589,11 @@ func (c *clusterManagerRESTClient) SetAddonsConfig(ctx context.Context, req *con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setAddons", req.GetName())
@@ -2616,6 +2661,11 @@ func (c *clusterManagerRESTClient) SetLocations(ctx context.Context, req *contai
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setLocations", req.GetName())
 
 	params := url.Values{}
@@ -2674,6 +2724,11 @@ func (c *clusterManagerRESTClient) UpdateMaster(ctx context.Context, req *contai
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:updateMaster", req.GetName())
@@ -2738,6 +2793,11 @@ func (c *clusterManagerRESTClient) SetMasterAuth(ctx context.Context, req *conta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setMasterAuth", req.GetName())
 
 	params := url.Values{}
@@ -2798,6 +2858,11 @@ func (c *clusterManagerRESTClient) SetMasterAuth(ctx context.Context, req *conta
 func (c *clusterManagerRESTClient) DeleteCluster(ctx context.Context, req *containerpb.DeleteClusterRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2863,6 +2928,11 @@ func (c *clusterManagerRESTClient) ListOperations(ctx context.Context, req *cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetParent())
 
 	params := url.Values{}
@@ -2921,6 +2991,11 @@ func (c *clusterManagerRESTClient) ListOperations(ctx context.Context, req *cont
 func (c *clusterManagerRESTClient) GetOperation(ctx context.Context, req *containerpb.GetOperationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2992,6 +3067,11 @@ func (c *clusterManagerRESTClient) CancelOperation(ctx context.Context, req *con
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3029,6 +3109,11 @@ func (c *clusterManagerRESTClient) CancelOperation(ctx context.Context, req *con
 func (c *clusterManagerRESTClient) GetServerConfig(ctx context.Context, req *containerpb.GetServerConfigRequest, opts ...gax.CallOption) (*containerpb.ServerConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/serverConfig", req.GetName())
@@ -3092,6 +3177,11 @@ func (c *clusterManagerRESTClient) GetJSONWebKeys(ctx context.Context, req *cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/jwks", req.GetParent())
 
 	params := url.Values{}
@@ -3144,6 +3234,11 @@ func (c *clusterManagerRESTClient) GetJSONWebKeys(ctx context.Context, req *cont
 func (c *clusterManagerRESTClient) ListNodePools(ctx context.Context, req *containerpb.ListNodePoolsRequest, opts ...gax.CallOption) (*containerpb.ListNodePoolsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/nodePools", req.GetParent())
@@ -3207,6 +3302,11 @@ func (c *clusterManagerRESTClient) ListNodePools(ctx context.Context, req *conta
 func (c *clusterManagerRESTClient) GetNodePool(ctx context.Context, req *containerpb.GetNodePoolRequest, opts ...gax.CallOption) (*containerpb.NodePool, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3281,6 +3381,11 @@ func (c *clusterManagerRESTClient) CreateNodePool(ctx context.Context, req *cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/nodePools", req.GetParent())
 
 	params := url.Values{}
@@ -3333,6 +3438,11 @@ func (c *clusterManagerRESTClient) CreateNodePool(ctx context.Context, req *cont
 func (c *clusterManagerRESTClient) DeleteNodePool(ctx context.Context, req *containerpb.DeleteNodePoolRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3408,6 +3518,11 @@ func (c *clusterManagerRESTClient) CompleteNodePoolUpgrade(ctx context.Context, 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:completeUpgrade", req.GetName())
 
 	params := url.Values{}
@@ -3452,6 +3567,11 @@ func (c *clusterManagerRESTClient) RollbackNodePoolUpgrade(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rollback", req.GetName())
@@ -3514,6 +3634,11 @@ func (c *clusterManagerRESTClient) SetNodePoolManagement(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setManagement", req.GetName())
 
 	params := url.Values{}
@@ -3572,6 +3697,11 @@ func (c *clusterManagerRESTClient) SetLabels(ctx context.Context, req *container
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setResourceLabels", req.GetName())
@@ -3634,6 +3764,11 @@ func (c *clusterManagerRESTClient) SetLegacyAbac(ctx context.Context, req *conta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setLegacyAbac", req.GetName())
 
 	params := url.Values{}
@@ -3694,6 +3829,11 @@ func (c *clusterManagerRESTClient) StartIPRotation(ctx context.Context, req *con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:startIpRotation", req.GetName())
 
 	params := url.Values{}
@@ -3752,6 +3892,11 @@ func (c *clusterManagerRESTClient) CompleteIPRotation(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:completeIpRotation", req.GetName())
@@ -3816,6 +3961,11 @@ func (c *clusterManagerRESTClient) SetNodePoolSize(ctx context.Context, req *con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setSize", req.GetName())
 
 	params := url.Values{}
@@ -3876,6 +4026,11 @@ func (c *clusterManagerRESTClient) SetNetworkPolicy(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setNetworkPolicy", req.GetName())
 
 	params := url.Values{}
@@ -3934,6 +4089,11 @@ func (c *clusterManagerRESTClient) SetMaintenancePolicy(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setMaintenancePolicy", req.GetName())
@@ -4001,6 +4161,11 @@ func (c *clusterManagerRESTClient) ListUsableSubnetworks(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/aggregated/usableSubnetworks", req.GetParent())
@@ -4072,6 +4237,11 @@ func (c *clusterManagerRESTClient) CheckAutopilotCompatibility(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:checkAutopilotCompatibility", req.GetName())
 
 	params := url.Values{}
@@ -4124,6 +4294,11 @@ func (c *clusterManagerRESTClient) CheckAutopilotCompatibility(ctx context.Conte
 func (c *clusterManagerRESTClient) FetchClusterUpgradeInfo(ctx context.Context, req *containerpb.FetchClusterUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.ClusterUpgradeInfo, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchClusterUpgradeInfo", req.GetName())
@@ -4181,6 +4356,11 @@ func (c *clusterManagerRESTClient) FetchClusterUpgradeInfo(ctx context.Context, 
 func (c *clusterManagerRESTClient) FetchNodePoolUpgradeInfo(ctx context.Context, req *containerpb.FetchNodePoolUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchNodePoolUpgradeInfo", req.GetName())
@@ -4245,6 +4425,11 @@ func (c *clusterManagerRESTClient) CompleteControlPlaneUpgrade(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:completeControlPlaneUpgrade", req.GetName())

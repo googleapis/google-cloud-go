@@ -315,22 +315,22 @@ const file_google_cloud_recommendationengine_v1beta1_prediction_apikey_registry_
 	"\n" +
 	"Rgoogle/cloud/recommendationengine/v1beta1/prediction_apikey_registry_service.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17google/api/client.proto\x1aNgoogle/cloud/recommendationengine/v1beta1/recommendationengine_resources.proto\"7\n" +
 	"\x1cPredictionApiKeyRegistration\x12\x17\n" +
-	"\aapi_key\x18\x01 \x01(\tR\x06apiKey\"\x91\x02\n" +
-	")CreatePredictionApiKeyRegistrationRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12\x93\x01\n" +
-	"\x1fprediction_api_key_registration\x18\x02 \x01(\v2G.google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistrationB\x03\xe0A\x02R\x1cpredictionApiKeyRegistration\"\xc0\x01\n" +
-	"(ListPredictionApiKeyRegistrationsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\aapi_key\x18\x01 \x01(\tR\x06apiKey\"\x93\x02\n" +
+	")CreatePredictionApiKeyRegistrationRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12\x94\x01\n" +
+	"\x1fprediction_api_key_registration\x18\x02 \x01(\v2G.google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistrationB\x04\xe2A\x01\x02R\x1cpredictionApiKeyRegistration\"\xc3\x01\n" +
+	"(ListPredictionApiKeyRegistrationsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xe6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xe6\x01\n" +
 	")ListPredictionApiKeyRegistrationsResponse\x12\x90\x01\n" +
 	" prediction_api_key_registrations\x18\x01 \x03(\v2G.google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistrationR\x1dpredictionApiKeyRegistrations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x89\x01\n" +
-	")DeletePredictionApiKeyRegistrationRequest\x12\\\n" +
-	"\x04name\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8a\x01\n" +
+	")DeletePredictionApiKeyRegistrationRequest\x12]\n" +
+	"\x04name\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\n" +
 	"@recommendationengine.googleapis.com/PredictionApiKeyRegistrationR\x04name2\x97\b\n" +
 	"\x18PredictionApiKeyRegistry\x12\xd9\x02\n" +
 	"\"CreatePredictionApiKeyRegistration\x12T.google.cloud.recommendationengine.v1beta1.CreatePredictionApiKeyRegistrationRequest\x1aG.google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistration\"\x93\x01\xdaA&parent,prediction_api_key_registration\x82\xd3\xe4\x93\x02d:\x01*\"_/v1beta1/{parent=projects/*/locations/*/catalogs/*/eventStores/*}/predictionApiKeyRegistrations\x12\xc0\x02\n" +

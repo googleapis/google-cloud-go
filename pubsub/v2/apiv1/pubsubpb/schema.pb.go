@@ -1249,33 +1249,33 @@ var File_google_pubsub_v1_schema_proto protoreflect.FileDescriptor
 
 const file_google_pubsub_v1_schema_proto_rawDesc = "" +
 	"\n" +
-	"\x1dgoogle/pubsub/v1/schema.proto\x12\x10google.pubsub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe8\x03\n" +
-	"\x06Schema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x121\n" +
+	"\x1dgoogle/pubsub/v1/schema.proto\x12\x10google.pubsub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xea\x03\n" +
+	"\x06Schema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x121\n" +
 	"\x04type\x18\x02 \x01(\x0e2\x1d.google.pubsub.v1.Schema.TypeR\x04type\x12\x1e\n" +
 	"\n" +
 	"definition\x18\x03 \x01(\tR\n" +
-	"definition\x12`\n" +
-	"\x15compiled_proto_schema\x18\b \x01(\v2%.google.pubsub.v1.CompiledProtoSchemaB\x03\xe0A\x01H\x00R\x13compiledProtoSchema\x12'\n" +
-	"\vrevision_id\x18\x04 \x01(\tB\x06\xe0A\x05\xe0A\x03R\n" +
-	"revisionId\x12Q\n" +
-	"\x14revision_create_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12revisionCreateTime\";\n" +
+	"definition\x12a\n" +
+	"\x15compiled_proto_schema\x18\b \x01(\v2%.google.pubsub.v1.CompiledProtoSchemaB\x04\xe2A\x01\x01H\x00R\x13compiledProtoSchema\x12&\n" +
+	"\vrevision_id\x18\x04 \x01(\tB\x05\xe2A\x02\x05\x03R\n" +
+	"revisionId\x12R\n" +
+	"\x14revision_create_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12revisionCreateTime\";\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fPROTOCOL_BUFFER\x10\x01\x12\b\n" +
 	"\x04AVRO\x10\x02:F\xeaAC\n" +
 	"\x1cpubsub.googleapis.com/Schema\x12#projects/{project}/schemas/{schema}B\x0f\n" +
-	"\rconfiguration\"\xa7\x01\n" +
-	"\x13CreateSchemaRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cpubsub.googleapis.com/SchemaR\x06parent\x125\n" +
-	"\x06schema\x18\x02 \x01(\v2\x18.google.pubsub.v1.SchemaB\x03\xe0A\x02R\x06schema\x12\x1b\n" +
-	"\tschema_id\x18\x03 \x01(\tR\bschemaId\"~\n" +
-	"\x10GetSchemaRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\rconfiguration\"\xa9\x01\n" +
+	"\x13CreateSchemaRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cpubsub.googleapis.com/SchemaR\x06parent\x126\n" +
+	"\x06schema\x18\x02 \x01(\v2\x18.google.pubsub.v1.SchemaB\x04\xe2A\x01\x02R\x06schema\x12\x1b\n" +
+	"\tschema_id\x18\x03 \x01(\tR\bschemaId\"\x7f\n" +
+	"\x10GetSchemaRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1cpubsub.googleapis.com/SchemaR\x04name\x120\n" +
-	"\x04view\x18\x02 \x01(\x0e2\x1c.google.pubsub.v1.SchemaViewR\x04view\"\xcf\x01\n" +
-	"\x12ListSchemasRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x04view\x18\x02 \x01(\x0e2\x1c.google.pubsub.v1.SchemaViewR\x04view\"\xd0\x01\n" +
+	"\x12ListSchemasRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x120\n" +
 	"\x04view\x18\x02 \x01(\x0e2\x1c.google.pubsub.v1.SchemaViewR\x04view\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1283,9 +1283,9 @@ const file_google_pubsub_v1_schema_proto_rawDesc = "" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"q\n" +
 	"\x13ListSchemasResponse\x122\n" +
 	"\aschemas\x18\x01 \x03(\v2\x18.google.pubsub.v1.SchemaR\aschemas\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc4\x01\n" +
-	"\x1aListSchemaRevisionsRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc5\x01\n" +
+	"\x1aListSchemaRevisionsRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1cpubsub.googleapis.com/SchemaR\x04name\x120\n" +
 	"\x04view\x18\x02 \x01(\x0e2\x1c.google.pubsub.v1.SchemaViewR\x04view\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1293,31 +1293,31 @@ const file_google_pubsub_v1_schema_proto_rawDesc = "" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"y\n" +
 	"\x1bListSchemaRevisionsResponse\x122\n" +
 	"\aschemas\x18\x01 \x03(\v2\x18.google.pubsub.v1.SchemaR\aschemas\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x86\x01\n" +
-	"\x13CommitSchemaRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cpubsub.googleapis.com/SchemaR\x04name\x125\n" +
-	"\x06schema\x18\x02 \x01(\v2\x18.google.pubsub.v1.SchemaB\x03\xe0A\x02R\x06schema\"w\n" +
-	"\x15RollbackSchemaRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cpubsub.googleapis.com/SchemaR\x04name\x12$\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"revisionId\"\x7f\n" +
-	"\x1bDeleteSchemaRevisionRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cpubsub.googleapis.com/SchemaR\x04name\x12&\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x05\xe0A\x01\x18\x01R\n" +
-	"revisionId\"O\n" +
-	"\x13DeleteSchemaRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cpubsub.googleapis.com/SchemaR\x04name\"\x9b\x01\n" +
-	"\x15ValidateSchemaRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x125\n" +
-	"\x06schema\x18\x02 \x01(\v2\x18.google.pubsub.v1.SchemaB\x03\xe0A\x02R\x06schema\"\x18\n" +
-	"\x16ValidateSchemaResponse\"\xb3\x02\n" +
-	"\x16ValidateMessageRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x88\x01\n" +
+	"\x13CommitSchemaRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cpubsub.googleapis.com/SchemaR\x04name\x126\n" +
+	"\x06schema\x18\x02 \x01(\v2\x18.google.pubsub.v1.SchemaB\x04\xe2A\x01\x02R\x06schema\"y\n" +
+	"\x15RollbackSchemaRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cpubsub.googleapis.com/SchemaR\x04name\x12%\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"revisionId\"\x81\x01\n" +
+	"\x1bDeleteSchemaRevisionRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cpubsub.googleapis.com/SchemaR\x04name\x12'\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\n" +
+	"revisionId\"P\n" +
+	"\x13DeleteSchemaRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cpubsub.googleapis.com/SchemaR\x04name\"\x9d\x01\n" +
+	"\x15ValidateSchemaRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x126\n" +
+	"\x06schema\x18\x02 \x01(\v2\x18.google.pubsub.v1.SchemaB\x04\xe2A\x01\x02R\x06schema\"\x18\n" +
+	"\x16ValidateSchemaResponse\"\xb4\x02\n" +
+	"\x16ValidateMessageRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x127\n" +
 	"\x04name\x18\x02 \x01(\tB!\xfaA\x1e\n" +
 	"\x1cpubsub.googleapis.com/SchemaH\x00R\x04name\x122\n" +
@@ -1325,10 +1325,10 @@ const file_google_pubsub_v1_schema_proto_rawDesc = "" +
 	"\amessage\x18\x04 \x01(\fR\amessage\x126\n" +
 	"\bencoding\x18\x05 \x01(\x0e2\x1a.google.pubsub.v1.EncodingR\bencodingB\r\n" +
 	"\vschema_spec\"\x19\n" +
-	"\x17ValidateMessageResponse\"i\n" +
-	"\x13CompiledProtoSchema\x12&\n" +
-	"\froot_message\x18\x01 \x01(\tB\x03\xe0A\x02R\vrootMessage\x12*\n" +
-	"\x0ecompiled_bytes\x18\x02 \x01(\fB\x03\xe0A\x02R\rcompiledBytes*>\n" +
+	"\x17ValidateMessageResponse\"k\n" +
+	"\x13CompiledProtoSchema\x12'\n" +
+	"\froot_message\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vrootMessage\x12+\n" +
+	"\x0ecompiled_bytes\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\rcompiledBytes*>\n" +
 	"\n" +
 	"SchemaView\x12\x1b\n" +
 	"\x17SCHEMA_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +

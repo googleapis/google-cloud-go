@@ -778,53 +778,53 @@ var File_google_cloud_discoveryengine_v1alpha_engine_service_proto protoreflect.
 
 const file_google_cloud_discoveryengine_v1alpha_engine_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/discoveryengine/v1alpha/engine_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/engine.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcd\x01\n" +
-	"\x13CreateEngineRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")discoveryengine.googleapis.com/CollectionR\x06parent\x12I\n" +
-	"\x06engine\x18\x02 \x01(\v2,.google.cloud.discoveryengine.v1alpha.EngineB\x03\xe0A\x02R\x06engine\x12 \n" +
-	"\tengine_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bengineId\"\x90\x01\n" +
+	"9google/cloud/discoveryengine/v1alpha/engine_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/engine.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd0\x01\n" +
+	"\x13CreateEngineRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")discoveryengine.googleapis.com/CollectionR\x06parent\x12J\n" +
+	"\x06engine\x18\x02 \x01(\v2,.google.cloud.discoveryengine.v1alpha.EngineB\x04\xe2A\x01\x02R\x06engine\x12!\n" +
+	"\tengine_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bengineId\"\x90\x01\n" +
 	"\x14CreateEngineMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"X\n" +
-	"\x13DeleteEngineRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"updateTime\"Y\n" +
+	"\x13DeleteEngineRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%discoveryengine.googleapis.com/EngineR\x04name\"\x90\x01\n" +
 	"\x14DeleteEngineMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"U\n" +
-	"\x10GetEngineRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/EngineR\x04name\"\xc2\x01\n" +
-	"\x12ListEnginesRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")discoveryengine.googleapis.com/CollectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"updateTime\"V\n" +
+	"\x10GetEngineRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/EngineR\x04name\"\xc6\x01\n" +
+	"\x12ListEnginesRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")discoveryengine.googleapis.com/CollectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x85\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x85\x01\n" +
 	"\x13ListEnginesResponse\x12F\n" +
 	"\aengines\x18\x01 \x03(\v2,.google.cloud.discoveryengine.v1alpha.EngineR\aengines\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9d\x01\n" +
-	"\x13UpdateEngineRequest\x12I\n" +
-	"\x06engine\x18\x01 \x01(\v2,.google.cloud.discoveryengine.v1alpha.EngineB\x03\xe0A\x02R\x06engine\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9e\x01\n" +
+	"\x13UpdateEngineRequest\x12J\n" +
+	"\x06engine\x18\x01 \x01(\v2,.google.cloud.discoveryengine.v1alpha.EngineB\x04\xe2A\x01\x02R\x06engine\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"W\n" +
-	"\x12PauseEngineRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/EngineR\x04name\"X\n" +
-	"\x13ResumeEngineRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/EngineR\x04name\"V\n" +
-	"\x11TuneEngineRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/EngineR\x04name\"[\n" +
-	"\x12TuneEngineMetadata\x12E\n" +
-	"\x06engine\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"updateMask\"X\n" +
+	"\x12PauseEngineRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/EngineR\x04name\"Y\n" +
+	"\x13ResumeEngineRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/EngineR\x04name\"W\n" +
+	"\x11TuneEngineRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/EngineR\x04name\"\\\n" +
+	"\x12TuneEngineMetadata\x12F\n" +
+	"\x06engine\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%discoveryengine.googleapis.com/EngineR\x06engine\"\x14\n" +
 	"\x12TuneEngineResponse2\xc0\x0f\n" +
 	"\rEngineService\x12\xbe\x02\n" +

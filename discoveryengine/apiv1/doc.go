@@ -42,7 +42,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := discoveryengine.NewSearchClient(ctx)
+//	c, err := discoveryengine.NewAclConfigClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -56,32 +56,20 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &discoveryenginepb.SearchRequest{
+//	req := &discoveryenginepb.GetAclConfigRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1/discoveryenginepb#SearchRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1/discoveryenginepb#GetAclConfigRequest.
 //	}
-//	it := c.Search(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
-//
-//		// If you need to access the underlying RPC response,
-//		// you can do so by casting the `Response` as below.
-//		// Otherwise, remove this line. Only populated after
-//		// first call to Next(). Not safe for concurrent access.
-//		_ = it.Response.(*discoveryenginepb.SearchResponse)
+//	resp, err := c.GetAclConfig(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //
-// The ctx passed to NewSearchClient is used for authentication requests and
+// The ctx passed to NewAclConfigClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

@@ -1060,6 +1060,11 @@ func (c *ekmRESTClient) ListEkmConnections(ctx context.Context, req *kmspb.ListE
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/ekmConnections", req.GetParent())
 
 		params := url.Values{}
@@ -1132,6 +1137,11 @@ func (c *ekmRESTClient) GetEkmConnection(ctx context.Context, req *kmspb.GetEkmC
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1192,6 +1202,11 @@ func (c *ekmRESTClient) CreateEkmConnection(ctx context.Context, req *kmspb.Crea
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/ekmConnections", req.GetParent())
@@ -1256,6 +1271,11 @@ func (c *ekmRESTClient) UpdateEkmConnection(ctx context.Context, req *kmspb.Upda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEkmConnection().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEkmConnection().GetName())
 
 	params := url.Values{}
@@ -1318,6 +1338,11 @@ func (c *ekmRESTClient) GetEkmConfig(ctx context.Context, req *kmspb.GetEkmConfi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1378,6 +1403,11 @@ func (c *ekmRESTClient) UpdateEkmConfig(ctx context.Context, req *kmspb.UpdateEk
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEkmConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEkmConfig().GetName())
@@ -1445,6 +1475,11 @@ func (c *ekmRESTClient) VerifyConnectivity(ctx context.Context, req *kmspb.Verif
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:verifyConnectivity", req.GetName())
 
 	params := url.Values{}
@@ -1497,6 +1532,11 @@ func (c *ekmRESTClient) VerifyConnectivity(ctx context.Context, req *kmspb.Verif
 func (c *ekmRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1581,6 +1621,11 @@ func (c *ekmRESTClient) ListLocations(ctx context.Context, req *locationpb.ListL
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1650,6 +1695,11 @@ func (c *ekmRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1715,6 +1765,11 @@ func (c *ekmRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -1783,6 +1838,11 @@ func (c *ekmRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1835,6 +1895,11 @@ func (c *ekmRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 func (c *ekmRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

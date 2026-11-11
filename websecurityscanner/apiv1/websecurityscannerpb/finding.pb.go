@@ -314,11 +314,11 @@ var File_google_cloud_websecurityscanner_v1_finding_proto protoreflect.FileDescr
 
 const file_google_cloud_websecurityscanner_v1_finding_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/websecurityscanner/v1/finding.proto\x12\"google.cloud.websecurityscanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a6google/cloud/websecurityscanner/v1/finding_addon.proto\"\xc1\t\n" +
+	"0google/cloud/websecurityscanner/v1/finding.proto\x12\"google.cloud.websecurityscanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a6google/cloud/websecurityscanner/v1/finding_addon.proto\"\xc3\t\n" +
 	"\aFinding\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
-	"\ffinding_type\x18\x02 \x01(\tR\vfindingType\x12U\n" +
-	"\bseverity\x18\x11 \x01(\x0e24.google.cloud.websecurityscanner.v1.Finding.SeverityB\x03\xe0A\x03R\bseverity\x12\x1f\n" +
+	"\ffinding_type\x18\x02 \x01(\tR\vfindingType\x12V\n" +
+	"\bseverity\x18\x11 \x01(\x0e24.google.cloud.websecurityscanner.v1.Finding.SeverityB\x04\xe2A\x01\x03R\bseverity\x12\x1f\n" +
 	"\vhttp_method\x18\x03 \x01(\tR\n" +
 	"httpMethod\x12\x1d\n" +
 	"\n" +
@@ -336,8 +336,8 @@ const file_google_cloud_websecurityscanner_v1_finding_proto_rawDesc = "" +
 	"\x12violating_resource\x18\f \x01(\v25.google.cloud.websecurityscanner.v1.ViolatingResourceR\x11violatingResource\x12d\n" +
 	"\x12vulnerable_headers\x18\x0f \x01(\v25.google.cloud.websecurityscanner.v1.VulnerableHeadersR\x11vulnerableHeaders\x12m\n" +
 	"\x15vulnerable_parameters\x18\r \x01(\v28.google.cloud.websecurityscanner.v1.VulnerableParametersR\x14vulnerableParameters\x129\n" +
-	"\x03xss\x18\x0e \x01(\v2'.google.cloud.websecurityscanner.v1.XssR\x03xss\x12>\n" +
-	"\x03xxe\x18\x12 \x01(\v2'.google.cloud.websecurityscanner.v1.XxeB\x03\xe0A\x03R\x03xxe\"Q\n" +
+	"\x03xss\x18\x0e \x01(\v2'.google.cloud.websecurityscanner.v1.XssR\x03xss\x12?\n" +
+	"\x03xxe\x18\x12 \x01(\v2'.google.cloud.websecurityscanner.v1.XxeB\x04\xe2A\x01\x03R\x03xxe\"Q\n" +
 	"\bSeverity\x12\x18\n" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCRITICAL\x10\x01\x12\b\n" +

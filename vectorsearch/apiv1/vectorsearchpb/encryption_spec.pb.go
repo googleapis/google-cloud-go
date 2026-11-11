@@ -92,9 +92,9 @@ var File_google_cloud_vectorsearch_v1_encryption_spec_proto protoreflect.FileDes
 
 const file_google_cloud_vectorsearch_v1_encryption_spec_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/vectorsearch/v1/encryption_spec.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"c\n" +
-	"\x0eEncryptionSpec\x12Q\n" +
-	"\x0fcrypto_key_name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"2google/cloud/vectorsearch/v1/encryption_spec.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"d\n" +
+	"\x0eEncryptionSpec\x12R\n" +
+	"\x0fcrypto_key_name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyNameB\xda\x02\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\n" +
 	" com.google.cloud.vectorsearch.v1B\x13EncryptionSpecProtoP\x01ZDcloud.google.com/go/vectorsearch/apiv1/vectorsearchpb;vectorsearchpb\xaa\x02\x1cGoogle.Cloud.VectorSearch.V1\xca\x02\x1cGoogle\\Cloud\\VectorSearch\\V1\xea\x02\x1fGoogle::Cloud::VectorSearch::V1b\x06proto3"

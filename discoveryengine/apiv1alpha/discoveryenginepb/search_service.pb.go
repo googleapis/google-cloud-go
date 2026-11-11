@@ -5139,9 +5139,9 @@ var File_google_cloud_discoveryengine_v1alpha_search_service_proto protoreflect.
 
 const file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/discoveryengine/v1alpha/search_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1alpha/chunk.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a3google/cloud/discoveryengine/v1alpha/document.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x9f@\n" +
-	"\rSearchRequest\x12[\n" +
-	"\x0eserving_config\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"9google/cloud/discoveryengine/v1alpha/search_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1alpha/chunk.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a3google/cloud/discoveryengine/v1alpha/document.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa4@\n" +
+	"\rSearchRequest\x12\\\n" +
+	"\x0eserving_config\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12B\n" +
 	"\x06branch\x18\x02 \x01(\tB*\xfaA'\n" +
 	"%discoveryengine.googleapis.com/BranchR\x06branch\x12\x14\n" +
@@ -5171,8 +5171,8 @@ const file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = "
 	"\x0euser_pseudo_id\x18\x0f \x01(\tR\fuserPseudoId\x12u\n" +
 	"\x13content_search_spec\x18\x18 \x01(\v2E.google.cloud.discoveryengine.v1alpha.SearchRequest.ContentSearchSpecR\x11contentSearchSpec\x12h\n" +
 	"\x0eembedding_spec\x18\x17 \x01(\v2A.google.cloud.discoveryengine.v1alpha.SearchRequest.EmbeddingSpecR\rembeddingSpec\x12-\n" +
-	"\x12ranking_expression\x18\x1a \x01(\tR\x11rankingExpression\x12\x8f\x01\n" +
-	"\x1aranking_expression_backend\x185 \x01(\x0e2L.google.cloud.discoveryengine.v1alpha.SearchRequest.RankingExpressionBackendB\x03\xe0A\x01R\x18rankingExpressionBackend\x12\x1f\n" +
+	"\x12ranking_expression\x18\x1a \x01(\tR\x11rankingExpression\x12\x90\x01\n" +
+	"\x1aranking_expression_backend\x185 \x01(\x0e2L.google.cloud.discoveryengine.v1alpha.SearchRequest.RankingExpressionBackendB\x04\xe2A\x01\x01R\x18rankingExpressionBackend\x12\x1f\n" +
 	"\vsafe_search\x18\x14 \x01(\bR\n" +
 	"safeSearch\x12d\n" +
 	"\vuser_labels\x18\x16 \x03(\v2C.google.cloud.discoveryengine.v1alpha.SearchRequest.UserLabelsEntryR\n" +
@@ -5188,18 +5188,18 @@ const file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = "
 	"ImageQuery\x12!\n" +
 	"\vimage_bytes\x18\x01 \x01(\tH\x00R\n" +
 	"imageBytesB\a\n" +
-	"\x05image\x1a`\n" +
-	"\rDataStoreSpec\x12O\n" +
+	"\x05image\x1aa\n" +
+	"\rDataStoreSpec\x12P\n" +
 	"\n" +
-	"data_store\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a\x92\x04\n" +
-	"\tFacetSpec\x12h\n" +
-	"\tfacet_key\x18\x01 \x01(\v2F.google.cloud.discoveryengine.v1alpha.SearchRequest.FacetSpec.FacetKeyB\x03\xe0A\x02R\bfacetKey\x12\x14\n" +
+	"data_store\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a\x94\x04\n" +
+	"\tFacetSpec\x12i\n" +
+	"\tfacet_key\x18\x01 \x01(\v2F.google.cloud.discoveryengine.v1alpha.SearchRequest.FacetSpec.FacetKeyB\x04\xe2A\x01\x02R\bfacetKey\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x120\n" +
 	"\x14excluded_filter_keys\x18\x03 \x03(\tR\x12excludedFilterKeys\x126\n" +
-	"\x17enable_dynamic_position\x18\x04 \x01(\bR\x15enableDynamicPosition\x1a\x9a\x02\n" +
-	"\bFacetKey\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12L\n" +
+	"\x17enable_dynamic_position\x18\x04 \x01(\bR\x15enableDynamicPosition\x1a\x9b\x02\n" +
+	"\bFacetKey\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12L\n" +
 	"\tintervals\x18\x02 \x03(\v2..google.cloud.discoveryengine.v1alpha.IntervalR\tintervals\x12+\n" +
 	"\x11restricted_values\x18\x03 \x03(\tR\x10restrictedValues\x12\x1a\n" +
 	"\bprefixes\x18\x04 \x03(\tR\bprefixes\x12\x1a\n" +
@@ -5323,7 +5323,7 @@ const file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = "
 	"\x18RankingExpressionBackend\x12*\n" +
 	"&RANKING_EXPRESSION_BACKEND_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11RANK_BY_EMBEDDING\x10\x03\x12\x13\n" +
-	"\x0fRANK_BY_FORMULA\x10\x04\"\x04\b\x01\x10\x01\"\x04\b\x02\x10\x02\"\xfc?\n" +
+	"\x0fRANK_BY_FORMULA\x10\x04\"\x04\b\x01\x10\x01\"\x04\b\x02\x10\x02\"\x89@\n" +
 	"\x0eSearchResponse\x12[\n" +
 	"\aresults\x18\x01 \x03(\v2A.google.cloud.discoveryengine.v1alpha.SearchResponse.SearchResultR\aresults\x12R\n" +
 	"\x06facets\x18\x02 \x03(\v2:.google.cloud.discoveryengine.v1alpha.SearchResponse.FacetR\x06facets\x12y\n" +
@@ -5341,30 +5341,30 @@ const file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = "
 	"\x14query_expansion_info\x18\x0e \x01(\v2G.google.cloud.discoveryengine.v1alpha.SearchResponse.QueryExpansionInfoR\x12queryExpansionInfo\x12\xb4\x01\n" +
 	")natural_language_query_understanding_info\x18\x0f \x01(\v2Z.google.cloud.discoveryengine.v1alpha.SearchResponse.NaturalLanguageQueryUnderstandingInfoR%naturalLanguageQueryUnderstandingInfo\x12c\n" +
 	"\fsession_info\x18\x13 \x01(\v2@.google.cloud.discoveryengine.v1alpha.SearchResponse.SessionInfoR\vsessionInfo\x12i\n" +
-	"\x0fone_box_results\x18\x14 \x03(\v2A.google.cloud.discoveryengine.v1alpha.SearchResponse.OneBoxResultR\roneBoxResults\x1a\xa5\n" +
+	"\x0fone_box_results\x18\x14 \x03(\v2A.google.cloud.discoveryengine.v1alpha.SearchResponse.OneBoxResultR\roneBoxResults\x1a\xb1\n" +
 	"\n" +
 	"\fSearchResult\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12J\n" +
 	"\bdocument\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1alpha.DocumentR\bdocument\x12A\n" +
 	"\x05chunk\x18\x12 \x01(\v2+.google.cloud.discoveryengine.v1alpha.ChunkR\x05chunk\x12u\n" +
-	"\fmodel_scores\x18\x04 \x03(\v2R.google.cloud.discoveryengine.v1alpha.SearchResponse.SearchResult.ModelScoresEntryR\vmodelScores\x12u\n" +
-	"\frank_signals\x18\a \x01(\v2M.google.cloud.discoveryengine.v1alpha.SearchResponse.SearchResult.RankSignalsB\x03\xe0A\x01R\vrankSignals\x1ap\n" +
+	"\fmodel_scores\x18\x04 \x03(\v2R.google.cloud.discoveryengine.v1alpha.SearchResponse.SearchResult.ModelScoresEntryR\vmodelScores\x12v\n" +
+	"\frank_signals\x18\a \x01(\v2M.google.cloud.discoveryengine.v1alpha.SearchResponse.SearchResult.RankSignalsB\x04\xe2A\x01\x01R\vrankSignals\x1ap\n" +
 	"\x10ModelScoresEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12F\n" +
-	"\x05value\x18\x02 \x01(\v20.google.cloud.discoveryengine.v1alpha.DoubleListR\x05value:\x028\x01\x1a\x95\x06\n" +
-	"\vRankSignals\x12B\n" +
-	"\x18keyword_similarity_score\x18\x01 \x01(\x02B\x03\xe0A\x01H\x00R\x16keywordSimilarityScore\x88\x01\x01\x121\n" +
-	"\x0frelevance_score\x18\x02 \x01(\x02B\x03\xe0A\x01H\x01R\x0erelevanceScore\x88\x01\x01\x12D\n" +
-	"\x19semantic_similarity_score\x18\x03 \x01(\x02B\x03\xe0A\x01H\x02R\x17semanticSimilarityScore\x88\x01\x01\x12%\n" +
-	"\tpctr_rank\x18\x04 \x01(\x02B\x03\xe0A\x01H\x03R\bpctrRank\x88\x01\x01\x121\n" +
-	"\x0ftopicality_rank\x18\x06 \x01(\x02B\x03\xe0A\x01H\x04R\x0etopicalityRank\x88\x01\x01\x12+\n" +
-	"\fdocument_age\x18\a \x01(\x02B\x03\xe0A\x01H\x05R\vdocumentAge\x88\x01\x01\x121\n" +
-	"\x0fboosting_factor\x18\b \x01(\x02B\x03\xe0A\x01H\x06R\x0eboostingFactor\x88\x01\x01\x12&\n" +
-	"\fdefault_rank\x18  \x01(\x02B\x03\xe0A\x01R\vdefaultRank\x12\x86\x01\n" +
-	"\x0ecustom_signals\x18! \x03(\v2Z.google.cloud.discoveryengine.v1alpha.SearchResponse.SearchResult.RankSignals.CustomSignalB\x03\xe0A\x01R\rcustomSignals\x1aB\n" +
-	"\fCustomSignal\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\x02B\x03\xe0A\x01R\x05valueB\x1b\n" +
+	"\x05value\x18\x02 \x01(\v20.google.cloud.discoveryengine.v1alpha.DoubleListR\x05value:\x028\x01\x1a\xa0\x06\n" +
+	"\vRankSignals\x12C\n" +
+	"\x18keyword_similarity_score\x18\x01 \x01(\x02B\x04\xe2A\x01\x01H\x00R\x16keywordSimilarityScore\x88\x01\x01\x122\n" +
+	"\x0frelevance_score\x18\x02 \x01(\x02B\x04\xe2A\x01\x01H\x01R\x0erelevanceScore\x88\x01\x01\x12E\n" +
+	"\x19semantic_similarity_score\x18\x03 \x01(\x02B\x04\xe2A\x01\x01H\x02R\x17semanticSimilarityScore\x88\x01\x01\x12&\n" +
+	"\tpctr_rank\x18\x04 \x01(\x02B\x04\xe2A\x01\x01H\x03R\bpctrRank\x88\x01\x01\x122\n" +
+	"\x0ftopicality_rank\x18\x06 \x01(\x02B\x04\xe2A\x01\x01H\x04R\x0etopicalityRank\x88\x01\x01\x12,\n" +
+	"\fdocument_age\x18\a \x01(\x02B\x04\xe2A\x01\x01H\x05R\vdocumentAge\x88\x01\x01\x122\n" +
+	"\x0fboosting_factor\x18\b \x01(\x02B\x04\xe2A\x01\x01H\x06R\x0eboostingFactor\x88\x01\x01\x12'\n" +
+	"\fdefault_rank\x18  \x01(\x02B\x04\xe2A\x01\x01R\vdefaultRank\x12\x87\x01\n" +
+	"\x0ecustom_signals\x18! \x03(\v2Z.google.cloud.discoveryengine.v1alpha.SearchResponse.SearchResult.RankSignals.CustomSignalB\x04\xe2A\x01\x01R\rcustomSignals\x1aD\n" +
+	"\fCustomSignal\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x05valueB\x1b\n" +
 	"\x19_keyword_similarity_scoreB\x12\n" +
 	"\x10_relevance_scoreB\x1c\n" +
 	"\x1a_semantic_similarity_scoreB\f\n" +
@@ -5388,7 +5388,7 @@ const file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = "
 	"\x13follow_up_questions\x18\x02 \x03(\tR\x11followUpQuestions\x1ac\n" +
 	"\x13RefinementAttribute\x12#\n" +
 	"\rattribute_key\x18\x01 \x01(\tR\fattributeKey\x12'\n" +
-	"\x0fattribute_value\x18\x02 \x01(\tR\x0eattributeValue\x1a\xbb\x0e\n" +
+	"\x0fattribute_value\x18\x02 \x01(\tR\x0eattributeValue\x1a\xbc\x0e\n" +
 	"\aSummary\x12!\n" +
 	"\fsummary_text\x18\x01 \x01(\tR\vsummaryText\x12\x89\x01\n" +
 	"\x17summary_skipped_reasons\x18\x02 \x03(\x0e2Q.google.cloud.discoveryengine.v1alpha.SearchResponse.Summary.SummarySkippedReasonR\x15summarySkippedReasons\x12z\n" +
@@ -5407,10 +5407,10 @@ const file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = "
 	"\tend_index\x18\x02 \x01(\x03R\bendIndex\x12e\n" +
 	"\asources\x18\x03 \x03(\v2K.google.cloud.discoveryengine.v1alpha.SearchResponse.Summary.CitationSourceR\asources\x1a9\n" +
 	"\x0eCitationSource\x12'\n" +
-	"\x0freference_index\x18\x04 \x01(\x03R\x0ereferenceIndex\x1a\xcf\x02\n" +
+	"\x0freference_index\x18\x04 \x01(\x03R\x0ereferenceIndex\x1a\xd0\x02\n" +
 	"\tReference\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\x12K\n" +
-	"\bdocument\x18\x02 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12L\n" +
+	"\bdocument\x18\x02 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/DocumentR\bdocument\x12\x10\n" +
 	"\x03uri\x18\x03 \x01(\tR\x03uri\x12z\n" +
 	"\x0echunk_contents\x18\x04 \x03(\v2S.google.cloud.discoveryengine.v1alpha.SearchResponse.Summary.Reference.ChunkContentR\rchunkContents\x1aQ\n" +

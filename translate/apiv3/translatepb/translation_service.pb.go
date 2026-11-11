@@ -4633,19 +4633,19 @@ const file_google_cloud_translate_v3_translation_service_proto_rawDesc = "" +
 	"\n" +
 	"3google/cloud/translate/v3/translation_service.proto\x12\x1bgoogle.cloud.translation.v3\x1a+google/cloud/translate/v3/adaptive_mt.proto\x1a2google/cloud/translate/v3/automl_translation.proto\x1a&google/cloud/translate/v3/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"N\n" +
 	"\x15TransliterationConfig\x125\n" +
-	"\x16enable_transliteration\x18\x01 \x01(\bR\x15enableTransliteration\"\x94\x05\n" +
-	"\x14TranslateTextRequest\x12\x1f\n" +
-	"\bcontents\x18\x01 \x03(\tB\x03\xe0A\x02R\bcontents\x12 \n" +
-	"\tmime_type\x18\x03 \x01(\tB\x03\xe0A\x01R\bmimeType\x125\n" +
-	"\x14source_language_code\x18\x04 \x01(\tB\x03\xe0A\x01R\x12sourceLanguageCode\x125\n" +
-	"\x14target_language_code\x18\x05 \x01(\tB\x03\xe0A\x02R\x12targetLanguageCode\x12A\n" +
-	"\x06parent\x18\b \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x19\n" +
-	"\x05model\x18\x06 \x01(\tB\x03\xe0A\x01R\x05model\x12f\n" +
-	"\x0fglossary_config\x18\a \x01(\v28.google.cloud.translation.v3.TranslateTextGlossaryConfigB\x03\xe0A\x01R\x0eglossaryConfig\x12n\n" +
-	"\x16transliteration_config\x18\r \x01(\v22.google.cloud.translation.v3.TransliterationConfigB\x03\xe0A\x01R\x15transliterationConfig\x12Z\n" +
+	"\x16enable_transliteration\x18\x01 \x01(\bR\x15enableTransliteration\"\x9d\x05\n" +
+	"\x14TranslateTextRequest\x12 \n" +
+	"\bcontents\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\bcontents\x12!\n" +
+	"\tmime_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bmimeType\x126\n" +
+	"\x14source_language_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x12sourceLanguageCode\x126\n" +
+	"\x14target_language_code\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x12targetLanguageCode\x12B\n" +
+	"\x06parent\x18\b \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1a\n" +
+	"\x05model\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x05model\x12g\n" +
+	"\x0fglossary_config\x18\a \x01(\v28.google.cloud.translation.v3.TranslateTextGlossaryConfigB\x04\xe2A\x01\x01R\x0eglossaryConfig\x12o\n" +
+	"\x16transliteration_config\x18\r \x01(\v22.google.cloud.translation.v3.TransliterationConfigB\x04\xe2A\x01\x01R\x15transliterationConfig\x12[\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v2=.google.cloud.translation.v3.TranslateTextRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	" \x03(\v2=.google.cloud.translation.v3.TranslateTextRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc4\x01\n" +
@@ -4656,24 +4656,24 @@ const file_google_cloud_translate_v3_translation_service_proto_rawDesc = "" +
 	"\x0ftranslated_text\x18\x01 \x01(\tR\x0etranslatedText\x12\x14\n" +
 	"\x05model\x18\x02 \x01(\tR\x05model\x124\n" +
 	"\x16detected_language_code\x18\x04 \x01(\tR\x14detectedLanguageCode\x12a\n" +
-	"\x0fglossary_config\x18\x03 \x01(\v28.google.cloud.translation.v3.TranslateTextGlossaryConfigR\x0eglossaryConfig\"\xb0\x01\n" +
-	"\x13RomanizeTextRequest\x12A\n" +
-	"\x06parent\x18\x04 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1f\n" +
-	"\bcontents\x18\x01 \x03(\tB\x03\xe0A\x02R\bcontents\x125\n" +
-	"\x14source_language_code\x18\x02 \x01(\tB\x03\xe0A\x01R\x12sourceLanguageCode\"k\n" +
+	"\x0fglossary_config\x18\x03 \x01(\v28.google.cloud.translation.v3.TranslateTextGlossaryConfigR\x0eglossaryConfig\"\xb3\x01\n" +
+	"\x13RomanizeTextRequest\x12B\n" +
+	"\x06parent\x18\x04 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
+	"\bcontents\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\bcontents\x126\n" +
+	"\x14source_language_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x12sourceLanguageCode\"k\n" +
 	"\fRomanization\x12%\n" +
 	"\x0eromanized_text\x18\x01 \x01(\tR\rromanizedText\x124\n" +
 	"\x16detected_language_code\x18\x02 \x01(\tR\x14detectedLanguageCode\"g\n" +
 	"\x14RomanizeTextResponse\x12O\n" +
-	"\rromanizations\x18\x01 \x03(\v2).google.cloud.translation.v3.RomanizationR\rromanizations\"\xd5\x02\n" +
-	"\x15DetectLanguageRequest\x12A\n" +
-	"\x06parent\x18\x05 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x19\n" +
-	"\x05model\x18\x04 \x01(\tB\x03\xe0A\x01R\x05model\x12\x1a\n" +
-	"\acontent\x18\x01 \x01(\tH\x00R\acontent\x12 \n" +
-	"\tmime_type\x18\x03 \x01(\tB\x03\xe0A\x01R\bmimeType\x12[\n" +
-	"\x06labels\x18\x06 \x03(\v2>.google.cloud.translation.v3.DetectLanguageRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\rromanizations\x18\x01 \x03(\v2).google.cloud.translation.v3.RomanizationR\rromanizations\"\xd9\x02\n" +
+	"\x15DetectLanguageRequest\x12B\n" +
+	"\x06parent\x18\x05 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1a\n" +
+	"\x05model\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x05model\x12\x1a\n" +
+	"\acontent\x18\x01 \x01(\tH\x00R\acontent\x12!\n" +
+	"\tmime_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bmimeType\x12\\\n" +
+	"\x06labels\x18\x06 \x03(\v2>.google.cloud.translation.v3.DetectLanguageRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
@@ -4684,28 +4684,28 @@ const file_google_cloud_translate_v3_translation_service_proto_rawDesc = "" +
 	"confidence\x18\x02 \x01(\x02R\n" +
 	"confidence\"e\n" +
 	"\x16DetectLanguageResponse\x12K\n" +
-	"\tlanguages\x18\x01 \x03(\v2-.google.cloud.translation.v3.DetectedLanguageR\tlanguages\"\xb5\x01\n" +
-	"\x1cGetSupportedLanguagesRequest\x12A\n" +
-	"\x06parent\x18\x03 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x127\n" +
-	"\x15display_language_code\x18\x01 \x01(\tB\x03\xe0A\x01R\x13displayLanguageCode\x12\x19\n" +
-	"\x05model\x18\x02 \x01(\tB\x03\xe0A\x01R\x05model\"b\n" +
+	"\tlanguages\x18\x01 \x03(\v2-.google.cloud.translation.v3.DetectedLanguageR\tlanguages\"\xb8\x01\n" +
+	"\x1cGetSupportedLanguagesRequest\x12B\n" +
+	"\x06parent\x18\x03 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x128\n" +
+	"\x15display_language_code\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x13displayLanguageCode\x12\x1a\n" +
+	"\x05model\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05model\"b\n" +
 	"\x12SupportedLanguages\x12L\n" +
 	"\tlanguages\x18\x01 \x03(\v2..google.cloud.translation.v3.SupportedLanguageR\tlanguages\"\xa9\x01\n" +
 	"\x11SupportedLanguage\x12#\n" +
 	"\rlanguage_code\x18\x01 \x01(\tR\flanguageCode\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12%\n" +
 	"\x0esupport_source\x18\x03 \x01(\bR\rsupportSource\x12%\n" +
-	"\x0esupport_target\x18\x04 \x01(\bR\rsupportTarget\"-\n" +
-	"\tGcsSource\x12 \n" +
-	"\tinput_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\binputUri\"\x82\x01\n" +
-	"\vInputConfig\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x01R\bmimeType\x12G\n" +
+	"\x0esupport_target\x18\x04 \x01(\bR\rsupportTarget\".\n" +
+	"\tGcsSource\x12!\n" +
+	"\tinput_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binputUri\"\x83\x01\n" +
+	"\vInputConfig\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bmimeType\x12G\n" +
 	"\n" +
 	"gcs_source\x18\x02 \x01(\v2&.google.cloud.translation.v3.GcsSourceH\x00R\tgcsSourceB\b\n" +
-	"\x06source\"A\n" +
-	"\x0eGcsDestination\x12/\n" +
-	"\x11output_uri_prefix\x18\x01 \x01(\tB\x03\xe0A\x02R\x0foutputUriPrefix\"u\n" +
+	"\x06source\"B\n" +
+	"\x0eGcsDestination\x120\n" +
+	"\x11output_uri_prefix\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0foutputUriPrefix\"u\n" +
 	"\fOutputConfig\x12V\n" +
 	"\x0fgcs_destination\x18\x01 \x01(\v2+.google.cloud.translation.v3.GcsDestinationH\x00R\x0egcsDestinationB\r\n" +
 	"\vdestination\"\xa1\x01\n" +
@@ -4714,25 +4714,25 @@ const file_google_cloud_translate_v3_translation_service_proto_rawDesc = "" +
 	"\n" +
 	"gcs_source\x18\x02 \x01(\v2&.google.cloud.translation.v3.GcsSourceH\x00R\tgcsSource\x12\x1b\n" +
 	"\tmime_type\x18\x04 \x01(\tR\bmimeTypeB\b\n" +
-	"\x06source\"\xa4\x01\n" +
-	"\x14DocumentOutputConfig\x12[\n" +
-	"\x0fgcs_destination\x18\x01 \x01(\v2+.google.cloud.translation.v3.GcsDestinationB\x03\xe0A\x01H\x00R\x0egcsDestination\x12 \n" +
-	"\tmime_type\x18\x03 \x01(\tB\x03\xe0A\x01R\bmimeTypeB\r\n" +
-	"\vdestination\"\xad\a\n" +
-	"\x18TranslateDocumentRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x125\n" +
-	"\x14source_language_code\x18\x02 \x01(\tB\x03\xe0A\x01R\x12sourceLanguageCode\x125\n" +
-	"\x14target_language_code\x18\x03 \x01(\tB\x03\xe0A\x02R\x12targetLanguageCode\x12i\n" +
-	"\x15document_input_config\x18\x04 \x01(\v20.google.cloud.translation.v3.DocumentInputConfigB\x03\xe0A\x02R\x13documentInputConfig\x12l\n" +
-	"\x16document_output_config\x18\x05 \x01(\v21.google.cloud.translation.v3.DocumentOutputConfigB\x03\xe0A\x01R\x14documentOutputConfig\x12\x19\n" +
-	"\x05model\x18\x06 \x01(\tB\x03\xe0A\x01R\x05model\x12f\n" +
-	"\x0fglossary_config\x18\a \x01(\v28.google.cloud.translation.v3.TranslateTextGlossaryConfigB\x03\xe0A\x01R\x0eglossaryConfig\x12^\n" +
-	"\x06labels\x18\b \x03(\v2A.google.cloud.translation.v3.TranslateDocumentRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x12:\n" +
+	"\x06source\"\xa6\x01\n" +
+	"\x14DocumentOutputConfig\x12\\\n" +
+	"\x0fgcs_destination\x18\x01 \x01(\v2+.google.cloud.translation.v3.GcsDestinationB\x04\xe2A\x01\x01H\x00R\x0egcsDestination\x12!\n" +
+	"\tmime_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bmimeTypeB\r\n" +
+	"\vdestination\"\xb9\a\n" +
+	"\x18TranslateDocumentRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x126\n" +
+	"\x14source_language_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x12sourceLanguageCode\x126\n" +
+	"\x14target_language_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x12targetLanguageCode\x12j\n" +
+	"\x15document_input_config\x18\x04 \x01(\v20.google.cloud.translation.v3.DocumentInputConfigB\x04\xe2A\x01\x02R\x13documentInputConfig\x12m\n" +
+	"\x16document_output_config\x18\x05 \x01(\v21.google.cloud.translation.v3.DocumentOutputConfigB\x04\xe2A\x01\x01R\x14documentOutputConfig\x12\x1a\n" +
+	"\x05model\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x05model\x12g\n" +
+	"\x0fglossary_config\x18\a \x01(\v28.google.cloud.translation.v3.TranslateTextGlossaryConfigB\x04\xe2A\x01\x01R\x0eglossaryConfig\x12_\n" +
+	"\x06labels\x18\b \x03(\v2A.google.cloud.translation.v3.TranslateDocumentRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12;\n" +
 	"\x16customized_attribution\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x15customizedAttribution\x12C\n" +
-	"\x1cis_translate_native_pdf_only\x18\v \x01(\bB\x03\xe0A\x01R\x18isTranslateNativePdfOnly\x12K\n" +
-	" enable_shadow_removal_native_pdf\x18\f \x01(\bB\x03\xe0A\x01R\x1cenableShadowRemovalNativePdf\x12A\n" +
-	"\x1aenable_rotation_correction\x18\r \x01(\bB\x03\xe0A\x01R\x18enableRotationCorrection\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x15customizedAttribution\x12D\n" +
+	"\x1cis_translate_native_pdf_only\x18\v \x01(\bB\x04\xe2A\x01\x01R\x18isTranslateNativePdfOnly\x12L\n" +
+	" enable_shadow_removal_native_pdf\x18\f \x01(\bB\x04\xe2A\x01\x01R\x1cenableShadowRemovalNativePdf\x12B\n" +
+	"\x1aenable_rotation_correction\x18\r \x01(\bB\x04\xe2A\x01\x01R\x18enableRotationCorrection\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x98\x01\n" +
@@ -4744,19 +4744,19 @@ const file_google_cloud_translate_v3_translation_service_proto_rawDesc = "" +
 	"\x14document_translation\x18\x01 \x01(\v20.google.cloud.translation.v3.DocumentTranslationR\x13documentTranslation\x12t\n" +
 	"\x1dglossary_document_translation\x18\x02 \x01(\v20.google.cloud.translation.v3.DocumentTranslationR\x1bglossaryDocumentTranslation\x12\x14\n" +
 	"\x05model\x18\x03 \x01(\tR\x05model\x12a\n" +
-	"\x0fglossary_config\x18\x04 \x01(\v28.google.cloud.translation.v3.TranslateTextGlossaryConfigR\x0eglossaryConfig\"\x95\a\n" +
-	"\x19BatchTranslateTextRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x125\n" +
-	"\x14source_language_code\x18\x02 \x01(\tB\x03\xe0A\x02R\x12sourceLanguageCode\x127\n" +
-	"\x15target_language_codes\x18\x03 \x03(\tB\x03\xe0A\x02R\x13targetLanguageCodes\x12_\n" +
-	"\x06models\x18\x04 \x03(\v2B.google.cloud.translation.v3.BatchTranslateTextRequest.ModelsEntryB\x03\xe0A\x01R\x06models\x12R\n" +
-	"\rinput_configs\x18\x05 \x03(\v2(.google.cloud.translation.v3.InputConfigB\x03\xe0A\x02R\finputConfigs\x12S\n" +
-	"\routput_config\x18\x06 \x01(\v2).google.cloud.translation.v3.OutputConfigB\x03\xe0A\x02R\foutputConfig\x12k\n" +
+	"\x0fglossary_config\x18\x04 \x01(\v28.google.cloud.translation.v3.TranslateTextGlossaryConfigR\x0eglossaryConfig\"\x9d\a\n" +
+	"\x19BatchTranslateTextRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x126\n" +
+	"\x14source_language_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12sourceLanguageCode\x128\n" +
+	"\x15target_language_codes\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x13targetLanguageCodes\x12`\n" +
+	"\x06models\x18\x04 \x03(\v2B.google.cloud.translation.v3.BatchTranslateTextRequest.ModelsEntryB\x04\xe2A\x01\x01R\x06models\x12S\n" +
+	"\rinput_configs\x18\x05 \x03(\v2(.google.cloud.translation.v3.InputConfigB\x04\xe2A\x01\x02R\finputConfigs\x12T\n" +
+	"\routput_config\x18\x06 \x01(\v2).google.cloud.translation.v3.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\x12l\n" +
 	"\n" +
-	"glossaries\x18\a \x03(\v2F.google.cloud.translation.v3.BatchTranslateTextRequest.GlossariesEntryB\x03\xe0A\x01R\n" +
-	"glossaries\x12_\n" +
-	"\x06labels\x18\t \x03(\v2B.google.cloud.translation.v3.BatchTranslateTextRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"glossaries\x18\a \x03(\v2F.google.cloud.translation.v3.BatchTranslateTextRequest.GlossariesEntryB\x04\xe2A\x01\x01R\n" +
+	"glossaries\x12`\n" +
+	"\x06labels\x18\t \x03(\v2B.google.cloud.translation.v3.BatchTranslateTextRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vModelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aw\n" +
@@ -4792,72 +4792,72 @@ const file_google_cloud_translate_v3_translation_service_proto_rawDesc = "" +
 	"\x13GlossaryInputConfig\x12G\n" +
 	"\n" +
 	"gcs_source\x18\x01 \x01(\v2&.google.cloud.translation.v3.GcsSourceH\x00R\tgcsSourceB\b\n" +
-	"\x06source\"\xb2\x06\n" +
-	"\bGlossary\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12]\n" +
+	"\x06source\"\xb7\x06\n" +
+	"\bGlossary\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12]\n" +
 	"\rlanguage_pair\x18\x03 \x01(\v26.google.cloud.translation.v3.Glossary.LanguageCodePairH\x00R\flanguagePair\x12f\n" +
 	"\x12language_codes_set\x18\x04 \x01(\v26.google.cloud.translation.v3.Glossary.LanguageCodesSetH\x00R\x10languageCodesSet\x12S\n" +
-	"\finput_config\x18\x05 \x01(\v20.google.cloud.translation.v3.GlossaryInputConfigR\vinputConfig\x12$\n" +
-	"\ventry_count\x18\x06 \x01(\x05B\x03\xe0A\x03R\n" +
-	"entryCount\x12@\n" +
-	"\vsubmit_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"submitTime\x12:\n" +
-	"\bend_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12&\n" +
-	"\fdisplay_name\x18\t \x01(\tB\x03\xe0A\x01R\vdisplayName\x1av\n" +
+	"\finput_config\x18\x05 \x01(\v20.google.cloud.translation.v3.GlossaryInputConfigR\vinputConfig\x12%\n" +
+	"\ventry_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"entryCount\x12A\n" +
+	"\vsubmit_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"submitTime\x12;\n" +
+	"\bend_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12'\n" +
+	"\fdisplay_name\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x1av\n" +
 	"\x10LanguageCodePair\x120\n" +
 	"\x14source_language_code\x18\x01 \x01(\tR\x12sourceLanguageCode\x120\n" +
 	"\x14target_language_code\x18\x02 \x01(\tR\x12targetLanguageCode\x1a9\n" +
 	"\x10LanguageCodesSet\x12%\n" +
 	"\x0elanguage_codes\x18\x01 \x03(\tR\rlanguageCodes:e\xeaAb\n" +
 	"!translate.googleapis.com/Glossary\x12=projects/{project}/locations/{location}/glossaries/{glossary}B\v\n" +
-	"\tlanguages\"\xa2\x01\n" +
-	"\x15CreateGlossaryRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12F\n" +
-	"\bglossary\x18\x02 \x01(\v2%.google.cloud.translation.v3.GlossaryB\x03\xe0A\x02R\bglossary\"\x9c\x01\n" +
-	"\x15UpdateGlossaryRequest\x12F\n" +
-	"\bglossary\x18\x01 \x01(\v2%.google.cloud.translation.v3.GlossaryB\x03\xe0A\x02R\bglossary\x12;\n" +
+	"\tlanguages\"\xa4\x01\n" +
+	"\x15CreateGlossaryRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12G\n" +
+	"\bglossary\x18\x02 \x01(\v2%.google.cloud.translation.v3.GlossaryB\x04\xe2A\x01\x02R\bglossary\"\x9d\x01\n" +
+	"\x15UpdateGlossaryRequest\x12G\n" +
+	"\bglossary\x18\x01 \x01(\v2%.google.cloud.translation.v3.GlossaryB\x04\xe2A\x01\x02R\bglossary\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"S\n" +
-	"\x12GetGlossaryRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!translate.googleapis.com/GlossaryR\x04name\"V\n" +
-	"\x15DeleteGlossaryRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!translate.googleapis.com/GlossaryR\x04name\"\xbd\x01\n" +
-	"\x15ListGlossariesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"updateMask\"T\n" +
+	"\x12GetGlossaryRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!translate.googleapis.com/GlossaryR\x04name\"W\n" +
+	"\x15DeleteGlossaryRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!translate.googleapis.com/GlossaryR\x04name\"\xc1\x01\n" +
+	"\x15ListGlossariesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x87\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x87\x01\n" +
 	"\x16ListGlossariesResponse\x12E\n" +
 	"\n" +
 	"glossaries\x18\x01 \x03(\v2%.google.cloud.translation.v3.GlossaryR\n" +
 	"glossaries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
-	"\x17GetGlossaryEntryRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&translate.googleapis.com/GlossaryEntryR\x04name\"`\n" +
-	"\x1aDeleteGlossaryEntryRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&translate.googleapis.com/GlossaryEntryR\x04name\"\xa5\x01\n" +
-	"\x1aListGlossaryEntriesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!translate.googleapis.com/GlossaryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
+	"\x17GetGlossaryEntryRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&translate.googleapis.com/GlossaryEntryR\x04name\"a\n" +
+	"\x1aDeleteGlossaryEntryRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&translate.googleapis.com/GlossaryEntryR\x04name\"\xa8\x01\n" +
+	"\x1aListGlossaryEntriesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!translate.googleapis.com/GlossaryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa6\x01\n" +
-	"\x1bListGlossaryEntriesResponse\x12Z\n" +
-	"\x10glossary_entries\x18\x01 \x03(\v2*.google.cloud.translation.v3.GlossaryEntryB\x03\xe0A\x01R\x0fglossaryEntries\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\xb7\x01\n" +
-	"\x1aCreateGlossaryEntryRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!translate.googleapis.com/GlossaryR\x06parent\x12V\n" +
-	"\x0eglossary_entry\x18\x02 \x01(\v2*.google.cloud.translation.v3.GlossaryEntryB\x03\xe0A\x02R\rglossaryEntry\"t\n" +
-	"\x1aUpdateGlossaryEntryRequest\x12V\n" +
-	"\x0eglossary_entry\x18\x01 \x01(\v2*.google.cloud.translation.v3.GlossaryEntryB\x03\xe0A\x02R\rglossaryEntry\"\xa1\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa8\x01\n" +
+	"\x1bListGlossaryEntriesResponse\x12[\n" +
+	"\x10glossary_entries\x18\x01 \x03(\v2*.google.cloud.translation.v3.GlossaryEntryB\x04\xe2A\x01\x01R\x0fglossaryEntries\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\"\xb9\x01\n" +
+	"\x1aCreateGlossaryEntryRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!translate.googleapis.com/GlossaryR\x06parent\x12W\n" +
+	"\x0eglossary_entry\x18\x02 \x01(\v2*.google.cloud.translation.v3.GlossaryEntryB\x04\xe2A\x01\x02R\rglossaryEntry\"u\n" +
+	"\x1aUpdateGlossaryEntryRequest\x12W\n" +
+	"\x0eglossary_entry\x18\x01 \x01(\v2*.google.cloud.translation.v3.GlossaryEntryB\x04\xe2A\x01\x02R\rglossaryEntry\"\xa1\x02\n" +
 	"\x16CreateGlossaryMetadata\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12O\n" +
 	"\x05state\x18\x02 \x01(\x0e29.google.cloud.translation.v3.CreateGlossaryMetadata.StateR\x05state\x12;\n" +
@@ -4904,23 +4904,23 @@ const file_google_cloud_translate_v3_translation_service_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\vsubmit_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"submitTime\x125\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xb9\t\n" +
-	"\x1dBatchTranslateDocumentRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x125\n" +
-	"\x14source_language_code\x18\x02 \x01(\tB\x03\xe0A\x02R\x12sourceLanguageCode\x127\n" +
-	"\x15target_language_codes\x18\x03 \x03(\tB\x03\xe0A\x02R\x13targetLanguageCodes\x12_\n" +
-	"\rinput_configs\x18\x04 \x03(\v25.google.cloud.translation.v3.BatchDocumentInputConfigB\x03\xe0A\x02R\finputConfigs\x12`\n" +
-	"\routput_config\x18\x05 \x01(\v26.google.cloud.translation.v3.BatchDocumentOutputConfigB\x03\xe0A\x02R\foutputConfig\x12c\n" +
-	"\x06models\x18\x06 \x03(\v2F.google.cloud.translation.v3.BatchTranslateDocumentRequest.ModelsEntryB\x03\xe0A\x01R\x06models\x12o\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xc4\t\n" +
+	"\x1dBatchTranslateDocumentRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x126\n" +
+	"\x14source_language_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12sourceLanguageCode\x128\n" +
+	"\x15target_language_codes\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x13targetLanguageCodes\x12`\n" +
+	"\rinput_configs\x18\x04 \x03(\v25.google.cloud.translation.v3.BatchDocumentInputConfigB\x04\xe2A\x01\x02R\finputConfigs\x12a\n" +
+	"\routput_config\x18\x05 \x01(\v26.google.cloud.translation.v3.BatchDocumentOutputConfigB\x04\xe2A\x01\x02R\foutputConfig\x12d\n" +
+	"\x06models\x18\x06 \x03(\v2F.google.cloud.translation.v3.BatchTranslateDocumentRequest.ModelsEntryB\x04\xe2A\x01\x01R\x06models\x12p\n" +
 	"\n" +
-	"glossaries\x18\a \x03(\v2J.google.cloud.translation.v3.BatchTranslateDocumentRequest.GlossariesEntryB\x03\xe0A\x01R\n" +
-	"glossaries\x12\x85\x01\n" +
-	"\x12format_conversions\x18\b \x03(\v2Q.google.cloud.translation.v3.BatchTranslateDocumentRequest.FormatConversionsEntryB\x03\xe0A\x01R\x11formatConversions\x12:\n" +
+	"glossaries\x18\a \x03(\v2J.google.cloud.translation.v3.BatchTranslateDocumentRequest.GlossariesEntryB\x04\xe2A\x01\x01R\n" +
+	"glossaries\x12\x86\x01\n" +
+	"\x12format_conversions\x18\b \x03(\v2Q.google.cloud.translation.v3.BatchTranslateDocumentRequest.FormatConversionsEntryB\x04\xe2A\x01\x01R\x11formatConversions\x12;\n" +
 	"\x16customized_attribution\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x15customizedAttribution\x12K\n" +
-	" enable_shadow_removal_native_pdf\x18\v \x01(\bB\x03\xe0A\x01R\x1cenableShadowRemovalNativePdf\x12A\n" +
-	"\x1aenable_rotation_correction\x18\f \x01(\bB\x03\xe0A\x01R\x18enableRotationCorrection\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x15customizedAttribution\x12L\n" +
+	" enable_shadow_removal_native_pdf\x18\v \x01(\bB\x04\xe2A\x01\x01R\x1cenableShadowRemovalNativePdf\x12B\n" +
+	"\x1aenable_rotation_correction\x18\f \x01(\bB\x04\xe2A\x01\x01R\x18enableRotationCorrection\x1a9\n" +
 	"\vModelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aw\n" +
@@ -4973,13 +4973,13 @@ const file_google_cloud_translate_v3_translation_service_proto_rawDesc = "" +
 	"\x06FAILED\x10\x03\x12\x0e\n" +
 	"\n" +
 	"CANCELLING\x10\x04\x12\r\n" +
-	"\tCANCELLED\x10\x05\"\xd5\x01\n" +
-	"\x1bTranslateTextGlossaryConfig\x12E\n" +
-	"\bglossary\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!translate.googleapis.com/GlossaryR\bglossary\x12$\n" +
-	"\vignore_case\x18\x02 \x01(\bB\x03\xe0A\x01R\n" +
-	"ignoreCase\x12I\n" +
-	"\x1econtextual_translation_enabled\x18\x04 \x01(\bB\x03\xe0A\x01R\x1ccontextualTranslationEnabled2\xbdC\n" +
+	"\tCANCELLED\x10\x05\"\xd8\x01\n" +
+	"\x1bTranslateTextGlossaryConfig\x12F\n" +
+	"\bglossary\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!translate.googleapis.com/GlossaryR\bglossary\x12%\n" +
+	"\vignore_case\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"ignoreCase\x12J\n" +
+	"\x1econtextual_translation_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x1ccontextualTranslationEnabled2\xbdC\n" +
 	"\x12TranslationService\x12\xd4\x02\n" +
 	"\rTranslateText\x121.google.cloud.translation.v3.TranslateTextRequest\x1a2.google.cloud.translation.v3.TranslateTextResponse\"\xdb\x01\xdaA$parent,target_language_code,contents\xdaAIparent,model,mime_type,source_language_code,target_language_code,contents\x82\xd3\xe4\x93\x02b:\x01*Z*:\x01*\"%/v3/{parent=projects/*}:translateText\"1/v3/{parent=projects/*/locations/*}:translateText\x12\xed\x01\n" +
 	"\fRomanizeText\x120.google.cloud.translation.v3.RomanizeTextRequest\x1a1.google.cloud.translation.v3.RomanizeTextResponse\"x\xdaA\x0fparent,contents\x82\xd3\xe4\x93\x02`:\x01*Z):\x01*\"$/v3/{parent=projects/*}:romanizeText\"0/v3/{parent=projects/*/locations/*}:romanizeText\x12\x87\x02\n" +

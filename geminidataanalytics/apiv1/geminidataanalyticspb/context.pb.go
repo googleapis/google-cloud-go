@@ -1896,23 +1896,23 @@ var File_google_cloud_geminidataanalytics_v1_context_proto protoreflect.FileDesc
 
 const file_google_cloud_geminidataanalytics_v1_context_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/geminidataanalytics/v1/context.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/geminidataanalytics/v1/datasource.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xe8\n" +
+	"1google/cloud/geminidataanalytics/v1/context.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/geminidataanalytics/v1/datasource.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xf2\n" +
 	"\n" +
-	"\aContext\x122\n" +
-	"\x12system_instruction\x18\x01 \x01(\tB\x03\xe0A\x01R\x11systemInstruction\x12s\n" +
-	"\x15datasource_references\x18\a \x01(\v29.google.cloud.geminidataanalytics.v1.DatasourceReferencesB\x03\xe0A\x02R\x14datasourceReferences\x12W\n" +
-	"\aoptions\x18\x03 \x01(\v28.google.cloud.geminidataanalytics.v1.ConversationOptionsB\x03\xe0A\x01R\aoptions\x12_\n" +
-	"\x0fexample_queries\x18\x05 \x03(\v21.google.cloud.geminidataanalytics.v1.ExampleQueryB\x03\xe0A\x01R\x0eexampleQueries\x12o\n" +
-	"\x15looker_golden_queries\x18\v \x03(\v26.google.cloud.geminidataanalytics.v1.LookerGoldenQueryB\x03\xe0A\x01R\x13lookerGoldenQueries\x12]\n" +
-	"\x0eglossary_terms\x18\b \x03(\v21.google.cloud.geminidataanalytics.v1.GlossaryTermB\x03\xe0A\x01R\rglossaryTerms\x12w\n" +
-	"\x14schema_relationships\x18\t \x03(\v2?.google.cloud.geminidataanalytics.v1.Context.SchemaRelationshipB\x03\xe0A\x01R\x13schemaRelationships\x12^\n" +
+	"\aContext\x123\n" +
+	"\x12system_instruction\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x11systemInstruction\x12t\n" +
+	"\x15datasource_references\x18\a \x01(\v29.google.cloud.geminidataanalytics.v1.DatasourceReferencesB\x04\xe2A\x01\x02R\x14datasourceReferences\x12X\n" +
+	"\aoptions\x18\x03 \x01(\v28.google.cloud.geminidataanalytics.v1.ConversationOptionsB\x04\xe2A\x01\x01R\aoptions\x12`\n" +
+	"\x0fexample_queries\x18\x05 \x03(\v21.google.cloud.geminidataanalytics.v1.ExampleQueryB\x04\xe2A\x01\x01R\x0eexampleQueries\x12p\n" +
+	"\x15looker_golden_queries\x18\v \x03(\v26.google.cloud.geminidataanalytics.v1.LookerGoldenQueryB\x04\xe2A\x01\x01R\x13lookerGoldenQueries\x12^\n" +
+	"\x0eglossary_terms\x18\b \x03(\v21.google.cloud.geminidataanalytics.v1.GlossaryTermB\x04\xe2A\x01\x01R\rglossaryTerms\x12x\n" +
+	"\x14schema_relationships\x18\t \x03(\v2?.google.cloud.geminidataanalytics.v1.Context.SchemaRelationshipB\x04\xe2A\x01\x01R\x13schemaRelationships\x12_\n" +
 	"\x0euser_functions\x18\n" +
-	" \x01(\v22.google.cloud.geminidataanalytics.v1.UserFunctionsB\x03\xe0A\x01R\ruserFunctions\x1a\xd0\x04\n" +
+	" \x01(\v22.google.cloud.geminidataanalytics.v1.UserFunctionsB\x04\xe2A\x01\x01R\ruserFunctions\x1a\xd2\x04\n" +
 	"\x12SchemaRelationship\x12w\n" +
 	"\x11left_schema_paths\x18\x01 \x01(\v2K.google.cloud.geminidataanalytics.v1.Context.SchemaRelationship.SchemaPathsR\x0fleftSchemaPaths\x12y\n" +
-	"\x12right_schema_paths\x18\x02 \x01(\v2K.google.cloud.geminidataanalytics.v1.Context.SchemaRelationship.SchemaPathsR\x10rightSchemaPaths\x12e\n" +
-	"\asources\x18\x03 \x03(\x0e2F.google.cloud.geminidataanalytics.v1.Context.SchemaRelationship.SourceB\x03\xe0A\x01R\asources\x12.\n" +
-	"\x10confidence_score\x18\x04 \x01(\x02B\x03\xe0A\x01R\x0fconfidenceScore\x1a@\n" +
+	"\x12right_schema_paths\x18\x02 \x01(\v2K.google.cloud.geminidataanalytics.v1.Context.SchemaRelationship.SchemaPathsR\x10rightSchemaPaths\x12f\n" +
+	"\asources\x18\x03 \x03(\x0e2F.google.cloud.geminidataanalytics.v1.Context.SchemaRelationship.SourceB\x04\xe2A\x01\x01R\asources\x12/\n" +
+	"\x10confidence_score\x18\x04 \x01(\x02B\x04\xe2A\x01\x01R\x0fconfidenceScore\x1a@\n" +
 	"\vSchemaPaths\x12\x1b\n" +
 	"\ttable_fqn\x18\x01 \x01(\tR\btableFqn\x12\x14\n" +
 	"\x05paths\x18\x02 \x03(\tR\x05paths\"m\n" +
@@ -1933,47 +1933,47 @@ const file_google_cloud_geminidataanalytics_v1_context_proto_rawDesc = "" +
 	"\n" +
 	"dataset_id\x18\x02 \x01(\tR\tdatasetId\x12\x1d\n" +
 	"\n" +
-	"routine_id\x18\x03 \x01(\tR\troutineId\"\xd6\x01\n" +
-	"\fExampleQuery\x12\"\n" +
-	"\tsql_query\x18e \x01(\tB\x03\xe0A\x01H\x00R\bsqlQuery\x12?\n" +
-	"\x19natural_language_question\x18\x01 \x01(\tB\x03\xe0A\x01R\x17naturalLanguageQuestion\x12X\n" +
+	"routine_id\x18\x03 \x01(\tR\troutineId\"\xd9\x01\n" +
+	"\fExampleQuery\x12#\n" +
+	"\tsql_query\x18e \x01(\tB\x04\xe2A\x01\x01H\x00R\bsqlQuery\x12@\n" +
+	"\x19natural_language_question\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x17naturalLanguageQuestion\x12Y\n" +
 	"\n" +
-	"parameters\x18\x03 \x03(\v23.google.cloud.geminidataanalytics.v1.QueryParameterB\x03\xe0A\x01R\n" +
+	"parameters\x18\x03 \x03(\v23.google.cloud.geminidataanalytics.v1.QueryParameterB\x04\xe2A\x01\x01R\n" +
 	"parametersB\a\n" +
-	"\x05query\"r\n" +
-	"\x0eQueryParameter\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12 \n" +
-	"\tdata_type\x18\x03 \x01(\tB\x03\xe0A\x02R\bdataType\"\xd7\x01\n" +
+	"\x05query\"u\n" +
+	"\x0eQueryParameter\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12!\n" +
+	"\tdata_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bdataType\"\xd7\x01\n" +
 	"\fMatchedQuery\x12V\n" +
 	"\rexample_query\x18\x01 \x01(\v21.google.cloud.geminidataanalytics.v1.ExampleQueryR\fexampleQuery\x12o\n" +
-	"\x16query_parameter_values\x18\x02 \x03(\v29.google.cloud.geminidataanalytics.v1.QueryParameterValuesR\x14queryParameterValues\"J\n" +
-	"\x14QueryParameterValues\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"\xb0\x01\n" +
-	"\x11LookerGoldenQuery\x12A\n" +
-	"\x1anatural_language_questions\x18\x04 \x03(\tB\x03\xe0A\x01R\x18naturalLanguageQuestions\x12X\n" +
-	"\flooker_query\x18\x05 \x01(\v20.google.cloud.geminidataanalytics.v1.LookerQueryB\x03\xe0A\x01R\vlookerQuery\"\xbf\x06\n" +
-	"\fDynamicField\x12$\n" +
-	"\bcategory\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\bcategory\x88\x01\x01\x12\x1c\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x04name\x88\x01\x01\x12\x1e\n" +
-	"\x05label\x18\x03 \x01(\tB\x03\xe0A\x01H\x02R\x05label\x88\x01\x01\x12#\n" +
-	"\bbased_on\x18\x04 \x01(\tB\x03\xe0A\x01H\x03R\abasedOn\x88\x01\x01\x12\x1c\n" +
-	"\x04type\x18\x05 \x01(\tB\x03\xe0A\x01H\x04R\x04type\x88\x01\x01\x12*\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01H\x05R\vdescription\x88\x01\x01\x12(\n" +
+	"\x16query_parameter_values\x18\x02 \x03(\v29.google.cloud.geminidataanalytics.v1.QueryParameterValuesR\x14queryParameterValues\"L\n" +
+	"\x14QueryParameterValues\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\"\xb2\x01\n" +
+	"\x11LookerGoldenQuery\x12B\n" +
+	"\x1anatural_language_questions\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x18naturalLanguageQuestions\x12Y\n" +
+	"\flooker_query\x18\x05 \x01(\v20.google.cloud.geminidataanalytics.v1.LookerQueryB\x04\xe2A\x01\x01R\vlookerQuery\"\xce\x06\n" +
+	"\fDynamicField\x12%\n" +
+	"\bcategory\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\bcategory\x88\x01\x01\x12\x1d\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x04name\x88\x01\x01\x12\x1f\n" +
+	"\x05label\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x02R\x05label\x88\x01\x01\x12$\n" +
+	"\bbased_on\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x03R\abasedOn\x88\x01\x01\x12\x1d\n" +
+	"\x04type\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x04R\x04type\x88\x01\x01\x12+\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x05R\vdescription\x88\x01\x01\x12)\n" +
 	"\n" +
-	"expression\x18\a \x01(\tB\x03\xe0A\x01H\x06R\n" +
-	"expression\x88\x01\x01\x125\n" +
-	"\x11filter_expression\x18\b \x01(\tB\x03\xe0A\x01H\aR\x10filterExpression\x88\x01\x01\x12+\n" +
-	"\fvalue_format\x18\t \x01(\tB\x03\xe0A\x01H\bR\vvalueFormat\x88\x01\x01\x124\n" +
+	"expression\x18\a \x01(\tB\x04\xe2A\x01\x01H\x06R\n" +
+	"expression\x88\x01\x01\x126\n" +
+	"\x11filter_expression\x18\b \x01(\tB\x04\xe2A\x01\x01H\aR\x10filterExpression\x88\x01\x01\x12,\n" +
+	"\fvalue_format\x18\t \x01(\tB\x04\xe2A\x01\x01H\bR\vvalueFormat\x88\x01\x01\x125\n" +
 	"\x11value_format_name\x18\n" +
-	" \x01(\tB\x03\xe0A\x01H\tR\x0fvalueFormatName\x88\x01\x01\x123\n" +
-	"\x10calculation_type\x18\v \x01(\tB\x03\xe0A\x01H\n" +
-	"R\x0fcalculationType\x88\x01\x01\x12\x17\n" +
-	"\x04args\x18\f \x03(\tB\x03\xe0A\x01R\x04args\x12%\n" +
-	"\tkind_hint\x18\r \x01(\tB\x03\xe0A\x01H\vR\bkindHint\x88\x01\x01\x12%\n" +
-	"\ttype_hint\x18\x0e \x01(\tB\x03\xe0A\x01H\fR\btypeHint\x88\x01\x01\x12)\n" +
-	"\vis_disabled\x18\x0f \x01(\bB\x03\xe0A\x01H\rR\n" +
+	" \x01(\tB\x04\xe2A\x01\x01H\tR\x0fvalueFormatName\x88\x01\x01\x124\n" +
+	"\x10calculation_type\x18\v \x01(\tB\x04\xe2A\x01\x01H\n" +
+	"R\x0fcalculationType\x88\x01\x01\x12\x18\n" +
+	"\x04args\x18\f \x03(\tB\x04\xe2A\x01\x01R\x04args\x12&\n" +
+	"\tkind_hint\x18\r \x01(\tB\x04\xe2A\x01\x01H\vR\bkindHint\x88\x01\x01\x12&\n" +
+	"\ttype_hint\x18\x0e \x01(\tB\x04\xe2A\x01\x01H\fR\btypeHint\x88\x01\x01\x12*\n" +
+	"\vis_disabled\x18\x0f \x01(\bB\x04\xe2A\x01\x01H\rR\n" +
 	"isDisabled\x88\x01\x01B\v\n" +
 	"\t_categoryB\a\n" +
 	"\x05_nameB\b\n" +
@@ -1990,65 +1990,65 @@ const file_google_cloud_geminidataanalytics_v1_context_proto_rawDesc = "" +
 	"_kind_hintB\f\n" +
 	"\n" +
 	"_type_hintB\x0e\n" +
-	"\f_is_disabled\"\x96\x04\n" +
-	"\vLookerQuery\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x02R\x05model\x12\x1d\n" +
-	"\aexplore\x18\x02 \x01(\tB\x03\xe0A\x02R\aexplore\x12\x1b\n" +
-	"\x06fields\x18\x03 \x03(\tB\x03\xe0A\x01R\x06fields\x12V\n" +
-	"\afilters\x18\x04 \x03(\v27.google.cloud.geminidataanalytics.v1.LookerQuery.FilterB\x03\xe0A\x01R\afilters\x12\x19\n" +
-	"\x05sorts\x18\x05 \x03(\tB\x03\xe0A\x01R\x05sorts\x12\x1e\n" +
-	"\x05limit\x18\x06 \x01(\tB\x03\xe0A\x01H\x00R\x05limit\x88\x01\x01\x12]\n" +
-	"\x0edynamic_fields\x18\t \x03(\v21.google.cloud.geminidataanalytics.v1.DynamicFieldB\x03\xe0A\x01R\rdynamicFields\x12#\n" +
+	"\f_is_disabled\"\xa1\x04\n" +
+	"\vLookerQuery\x12\x1a\n" +
+	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05model\x12\x1e\n" +
+	"\aexplore\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aexplore\x12\x1c\n" +
+	"\x06fields\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x06fields\x12W\n" +
+	"\afilters\x18\x04 \x03(\v27.google.cloud.geminidataanalytics.v1.LookerQuery.FilterB\x04\xe2A\x01\x01R\afilters\x12\x1a\n" +
+	"\x05sorts\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x05sorts\x12\x1f\n" +
+	"\x05limit\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x00R\x05limit\x88\x01\x01\x12^\n" +
+	"\x0edynamic_fields\x18\t \x03(\v21.google.cloud.geminidataanalytics.v1.DynamicFieldB\x04\xe2A\x01\x01R\rdynamicFields\x12$\n" +
 	"\bquery_id\x18\n" +
-	" \x01(\tB\x03\xe0A\x01H\x01R\aqueryId\x88\x01\x01\x12%\n" +
-	"\tclient_id\x18\v \x01(\tB\x03\xe0A\x01H\x02R\bclientId\x88\x01\x01\x1aM\n" +
-	"\x06Filter\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x02R\x05field\x12\x1e\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x05value\x88\x01\x01B\b\n" +
+	" \x01(\tB\x04\xe2A\x01\x01H\x01R\aqueryId\x88\x01\x01\x12&\n" +
+	"\tclient_id\x18\v \x01(\tB\x04\xe2A\x01\x01H\x02R\bclientId\x88\x01\x01\x1aO\n" +
+	"\x06Filter\x12\x1a\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05field\x12\x1f\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x05value\x88\x01\x01B\b\n" +
 	"\x06_valueB\b\n" +
 	"\x06_limitB\v\n" +
 	"\t_query_idB\f\n" +
 	"\n" +
-	"_client_id\"z\n" +
-	"\fGlossaryTerm\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x02R\vdescription\x12\x1b\n" +
-	"\x06labels\x18\x03 \x03(\tB\x03\xe0A\x01R\x06labels\"\xe8\x02\n" +
-	"\x13ConversationOptions\x12U\n" +
-	"\banalysis\x18\x02 \x01(\v24.google.cloud.geminidataanalytics.v1.AnalysisOptionsB\x03\xe0A\x01R\banalysis\x12[\n" +
+	"_client_id\"}\n" +
+	"\fGlossaryTerm\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12\x1c\n" +
+	"\x06labels\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x06labels\"\xeb\x02\n" +
+	"\x13ConversationOptions\x12V\n" +
+	"\banalysis\x18\x02 \x01(\v24.google.cloud.geminidataanalytics.v1.AnalysisOptionsB\x04\xe2A\x01\x01R\banalysis\x12\\\n" +
 	"\n" +
-	"datasource\x18\x03 \x01(\v26.google.cloud.geminidataanalytics.v1.DatasourceOptionsB\x03\xe0A\x01R\n" +
-	"datasource\x12^\n" +
-	"\x05model\x18\x06 \x01(\x0e2>.google.cloud.geminidataanalytics.v1.ConversationOptions.ModelB\x03\xe0A\x01H\x00R\x05model\x88\x01\x01\"3\n" +
+	"datasource\x18\x03 \x01(\v26.google.cloud.geminidataanalytics.v1.DatasourceOptionsB\x04\xe2A\x01\x01R\n" +
+	"datasource\x12_\n" +
+	"\x05model\x18\x06 \x01(\x0e2>.google.cloud.geminidataanalytics.v1.ConversationOptions.ModelB\x04\xe2A\x01\x01H\x00R\x05model\x88\x01\x01\"3\n" +
 	"\x05Model\x12\x15\n" +
 	"\x11MODEL_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fLATEST_GA_MODEL\x10\x01B\b\n" +
-	"\x06_model\"q\n" +
-	"\x11DatasourceOptions\x12\\\n" +
-	"\x1abig_query_max_billed_bytes\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x16bigQueryMaxBilledBytes\"\x94\x01\n" +
-	"\x0fAnalysisOptions\x12X\n" +
-	"\x06python\x18\x01 \x01(\v2;.google.cloud.geminidataanalytics.v1.AnalysisOptions.PythonB\x03\xe0A\x01R\x06python\x1a'\n" +
-	"\x06Python\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"\xb2\x01\n" +
-	"\bCitation\x12R\n" +
-	"\asources\x18\x01 \x03(\v23.google.cloud.geminidataanalytics.v1.CitationSourceB\x03\xe0A\x03R\asources\x12R\n" +
-	"\aanchors\x18\x02 \x03(\v23.google.cloud.geminidataanalytics.v1.CitationAnchorB\x03\xe0A\x03R\aanchors\"\xa6\x02\n" +
-	"\x0eCitationSource\x12\x17\n" +
-	"\x03uri\x18\x03 \x01(\tB\x03\xe0A\x03H\x00R\x03uri\x12]\n" +
-	"\rexample_query\x18\x04 \x01(\v21.google.cloud.geminidataanalytics.v1.ExampleQueryB\x03\xe0A\x03H\x00R\fexampleQuery\x12]\n" +
-	"\rglossary_term\x18\x05 \x01(\v21.google.cloud.geminidataanalytics.v1.GlossaryTermB\x03\xe0A\x03H\x00R\fglossaryTerm\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05titleB\r\n" +
-	"\vsource_type\"\xee\x02\n" +
-	"\x0eCitationAnchor\x12\x84\x01\n" +
-	"\x13text_message_anchor\x18\x01 \x01(\v2M.google.cloud.geminidataanalytics.v1.CitationAnchor.TextMessageCitationAnchorB\x03\xe0A\x03H\x00R\x11textMessageAnchor\x1a\xc5\x01\n" +
-	"\x19TextMessageCitationAnchor\x12\"\n" +
+	"\x06_model\"r\n" +
+	"\x11DatasourceOptions\x12]\n" +
+	"\x1abig_query_max_billed_bytes\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\x16bigQueryMaxBilledBytes\"\x96\x01\n" +
+	"\x0fAnalysisOptions\x12Y\n" +
+	"\x06python\x18\x01 \x01(\v2;.google.cloud.geminidataanalytics.v1.AnalysisOptions.PythonB\x04\xe2A\x01\x01R\x06python\x1a(\n" +
+	"\x06Python\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\"\xb4\x01\n" +
+	"\bCitation\x12S\n" +
+	"\asources\x18\x01 \x03(\v23.google.cloud.geminidataanalytics.v1.CitationSourceB\x04\xe2A\x01\x03R\asources\x12S\n" +
+	"\aanchors\x18\x02 \x03(\v23.google.cloud.geminidataanalytics.v1.CitationAnchorB\x04\xe2A\x01\x03R\aanchors\"\xab\x02\n" +
+	"\x0eCitationSource\x12\x18\n" +
+	"\x03uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03H\x00R\x03uri\x12^\n" +
+	"\rexample_query\x18\x04 \x01(\v21.google.cloud.geminidataanalytics.v1.ExampleQueryB\x04\xe2A\x01\x03H\x00R\fexampleQuery\x12^\n" +
+	"\rglossary_term\x18\x05 \x01(\v21.google.cloud.geminidataanalytics.v1.GlossaryTermB\x04\xe2A\x01\x03H\x00R\fglossaryTerm\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05titleB\r\n" +
+	"\vsource_type\"\xf3\x02\n" +
+	"\x0eCitationAnchor\x12\x85\x01\n" +
+	"\x13text_message_anchor\x18\x01 \x01(\v2M.google.cloud.geminidataanalytics.v1.CitationAnchor.TextMessageCitationAnchorB\x04\xe2A\x01\x03H\x00R\x11textMessageAnchor\x1a\xc9\x01\n" +
+	"\x19TextMessageCitationAnchor\x12#\n" +
 	"\n" +
-	"part_index\x18\x01 \x01(\x05B\x03\xe0A\x03R\tpartIndex\x121\n" +
-	"\x12start_offset_bytes\x18\x02 \x01(\x05B\x03\xe0A\x03R\x10startOffsetBytes\x12-\n" +
-	"\x10end_offset_bytes\x18\x03 \x01(\x05B\x03\xe0A\x03R\x0eendOffsetBytes\x12\"\n" +
+	"part_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\tpartIndex\x122\n" +
+	"\x12start_offset_bytes\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x10startOffsetBytes\x12.\n" +
+	"\x10end_offset_bytes\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x0eendOffsetBytes\x12#\n" +
 	"\n" +
-	"source_ids\x18\x04 \x03(\tB\x03\xe0A\x03R\tsourceIdsB\r\n" +
+	"source_ids\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\tsourceIdsB\r\n" +
 	"\vanchor_typeB\x89\x02\n" +
 	"'com.google.cloud.geminidataanalytics.v1B\fContextProtoP\x01ZYcloud.google.com/go/geminidataanalytics/apiv1/geminidataanalyticspb;geminidataanalyticspb\xaa\x02#Google.Cloud.GeminiDataAnalytics.V1\xca\x02#Google\\Cloud\\GeminiDataAnalytics\\V1\xea\x02&Google::Cloud::GeminiDataAnalytics::V1b\x06proto3"
 

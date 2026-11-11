@@ -558,6 +558,13 @@ func (c *sqlBackupRunsRESTClient) Delete(ctx context.Context, req *sqlpb.SqlBack
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/backupRuns/%v", req.GetProject(), req.GetInstance(), req.GetId())
 
 	params := url.Values{}
@@ -610,6 +617,13 @@ func (c *sqlBackupRunsRESTClient) Delete(ctx context.Context, req *sqlpb.SqlBack
 func (c *sqlBackupRunsRESTClient) Get(ctx context.Context, req *sqlpb.SqlBackupRunsGetRequest, opts ...gax.CallOption) (*sqlpb.BackupRun, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/backupRuns/%v", req.GetProject(), req.GetInstance(), req.GetId())
@@ -671,6 +685,12 @@ func (c *sqlBackupRunsRESTClient) Insert(ctx context.Context, req *sqlpb.SqlBack
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/backupRuns", req.GetProject(), req.GetInstance())
@@ -740,6 +760,12 @@ func (c *sqlBackupRunsRESTClient) List(ctx context.Context, req *sqlpb.SqlBackup
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetInstance(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/backupRuns", req.GetProject(), req.GetInstance())

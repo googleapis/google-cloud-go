@@ -507,6 +507,11 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
 	params := url.Values{}

@@ -63,9 +63,10 @@ const (
 	// "N/A" otherwise.
 	// Section name: "reason_for_cancellation".
 	HumanAgentAssistantConfig_SuggestionQueryConfig_Sections_REASON_FOR_CANCELLATION HumanAgentAssistantConfig_SuggestionQueryConfig_Sections_SectionType = 4
-	// "Unsatisfied" or "Satisfied" depending on the customer's feelings at
-	// the end of the conversation.
-	// Section name: "customer_satisfaction".
+	// Customer satisfaction derived from the text transcript only (not
+	// audio). Categorized based on customer statements by the end of the
+	// conversation. `D` for dissatisfied and `N` for neutral or satisfied
+	// (default). Section name: `customer_satisfaction`.
 	HumanAgentAssistantConfig_SuggestionQueryConfig_Sections_CUSTOMER_SATISFACTION HumanAgentAssistantConfig_SuggestionQueryConfig_Sections_SectionType = 5
 	// Key entities extracted from the conversation, such as ticket number,
 	// order number, dollar amount, etc.
@@ -2856,59 +2857,59 @@ var File_google_cloud_dialogflow_v2_conversation_profile_proto protoreflect.File
 
 const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/dialogflow/v2/conversation_profile.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/v2/audio_config.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a,google/cloud/dialogflow/v2/participant.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc9\f\n" +
+	"5google/cloud/dialogflow/v2/conversation_profile.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/v2/audio_config.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a,google/cloud/dialogflow/v2/participant.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\f\n" +
 	"\x13ConversationProfile\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12f\n" +
 	"\x16automated_agent_config\x18\x03 \x01(\v20.google.cloud.dialogflow.v2.AutomatedAgentConfigR\x14automatedAgentConfig\x12v\n" +
 	"\x1chuman_agent_assistant_config\x18\x04 \x01(\v25.google.cloud.dialogflow.v2.HumanAgentAssistantConfigR\x19humanAgentAssistantConfig\x12p\n" +
 	"\x1ahuman_agent_handoff_config\x18\x05 \x01(\v23.google.cloud.dialogflow.v2.HumanAgentHandoffConfigR\x17humanAgentHandoffConfig\x12_\n" +
 	"\x13notification_config\x18\x06 \x01(\v2..google.cloud.dialogflow.v2.NotificationConfigR\x12notificationConfig\x12P\n" +
 	"\x0elogging_config\x18\a \x01(\v2).google.cloud.dialogflow.v2.LoggingConfigR\rloggingConfig\x12\x80\x01\n" +
-	"%new_message_event_notification_config\x18\b \x01(\v2..google.cloud.dialogflow.v2.NotificationConfigR!newMessageEventNotificationConfig\x12\x8f\x01\n" +
-	"*new_recognition_result_notification_config\x18\x15 \x01(\v2..google.cloud.dialogflow.v2.NotificationConfigB\x03\xe0A\x01R&newRecognitionResultNotificationConfig\x12M\n" +
+	"%new_message_event_notification_config\x18\b \x01(\v2..google.cloud.dialogflow.v2.NotificationConfigR!newMessageEventNotificationConfig\x12\x90\x01\n" +
+	"*new_recognition_result_notification_config\x18\x15 \x01(\v2..google.cloud.dialogflow.v2.NotificationConfigB\x04\xe2A\x01\x01R&newRecognitionResultNotificationConfig\x12M\n" +
 	"\n" +
 	"stt_config\x18\t \x01(\v2..google.cloud.dialogflow.v2.SpeechToTextConfigR\tsttConfig\x12#\n" +
 	"\rlanguage_code\x18\n" +
-	" \x01(\tR\flanguageCode\x12I\n" +
+	" \x01(\tR\flanguageCode\x12J\n" +
 	"\n" +
-	"sip_config\x18\x10 \x01(\v2%.google.cloud.dialogflow.v2.SipConfigB\x03\xe0A\x01R\tsipConfig\x12\x1b\n" +
+	"sip_config\x18\x10 \x01(\v2%.google.cloud.dialogflow.v2.SipConfigB\x04\xe2A\x01\x01R\tsipConfig\x12\x1b\n" +
 	"\ttime_zone\x18\x0e \x01(\tR\btimeZone\x12^\n" +
 	"\x11security_settings\x18\r \x01(\tB1\xfaA.\n" +
 	",dialogflow.googleapis.com/CXSecuritySettingsR\x10securitySettings\x12Q\n" +
 	"\n" +
 	"tts_config\x18\x12 \x01(\v22.google.cloud.dialogflow.v2.SynthesizeSpeechConfigR\tttsConfig:\xc8\x01\xeaA\xc4\x01\n" +
-	"-dialogflow.googleapis.com/ConversationProfile\x12>projects/{project}/conversationProfiles/{conversation_profile}\x12Sprojects/{project}/locations/{location}/conversationProfiles/{conversation_profile}\"\xac\x01\n" +
-	"\x1fListConversationProfilesRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-dialogflow.googleapis.com/ConversationProfileR\x06parent\x12\x1b\n" +
+	"-dialogflow.googleapis.com/ConversationProfile\x12>projects/{project}/conversationProfiles/{conversation_profile}\x12Sprojects/{project}/locations/{location}/conversationProfiles/{conversation_profile}\"\xad\x01\n" +
+	"\x1fListConversationProfilesRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-dialogflow.googleapis.com/ConversationProfileR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb0\x01\n" +
 	" ListConversationProfilesResponse\x12d\n" +
 	"\x15conversation_profiles\x18\x01 \x03(\v2/.google.cloud.dialogflow.v2.ConversationProfileR\x14conversationProfiles\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"j\n" +
-	"\x1dGetConversationProfileRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/ConversationProfileR\x04name\"\xda\x01\n" +
-	" CreateConversationProfileRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-dialogflow.googleapis.com/ConversationProfileR\x06parent\x12g\n" +
-	"\x14conversation_profile\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2.ConversationProfileB\x03\xe0A\x02R\x13conversationProfile\"\xcd\x01\n" +
-	" UpdateConversationProfileRequest\x12g\n" +
-	"\x14conversation_profile\x18\x01 \x01(\v2/.google.cloud.dialogflow.v2.ConversationProfileB\x03\xe0A\x02R\x13conversationProfile\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"m\n" +
-	" DeleteConversationProfileRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/ConversationProfileR\x04name\"\x96\x01\n" +
-	"\x14AutomatedAgentConfig\x12=\n" +
-	"\x05agent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdialogflow.googleapis.com/AgentR\x05agent\x12?\n" +
-	"\vsession_ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\n" +
-	"sessionTtl\"\xfe'\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"k\n" +
+	"\x1dGetConversationProfileRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/ConversationProfileR\x04name\"\xdc\x01\n" +
+	" CreateConversationProfileRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-dialogflow.googleapis.com/ConversationProfileR\x06parent\x12h\n" +
+	"\x14conversation_profile\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2.ConversationProfileB\x04\xe2A\x01\x02R\x13conversationProfile\"\xcf\x01\n" +
+	" UpdateConversationProfileRequest\x12h\n" +
+	"\x14conversation_profile\x18\x01 \x01(\v2/.google.cloud.dialogflow.v2.ConversationProfileB\x04\xe2A\x01\x02R\x13conversationProfile\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"n\n" +
+	" DeleteConversationProfileRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/ConversationProfileR\x04name\"\x98\x01\n" +
+	"\x14AutomatedAgentConfig\x12>\n" +
+	"\x05agent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdialogflow.googleapis.com/AgentR\x05agent\x12@\n" +
+	"\vsession_ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\n" +
+	"sessionTtl\"\x94(\n" +
 	"\x19HumanAgentAssistantConfig\x12_\n" +
 	"\x13notification_config\x18\x02 \x01(\v2..google.cloud.dialogflow.v2.NotificationConfigR\x12notificationConfig\x12\x89\x01\n" +
 	"\x1dhuman_agent_suggestion_config\x18\x03 \x01(\v2F.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfigR\x1ahumanAgentSuggestionConfig\x12\x83\x01\n" +
@@ -2916,37 +2917,37 @@ const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"\x17message_analysis_config\x18\x05 \x01(\v2K.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.MessageAnalysisConfigR\x15messageAnalysisConfig\x1ab\n" +
 	"\x19SuggestionTriggerSettings\x12!\n" +
 	"\fno_smalltalk\x18\x01 \x01(\bR\vnoSmalltalk\x12\"\n" +
-	"\ronly_end_user\x18\x02 \x01(\bR\vonlyEndUser\x1a\xd2\n" +
+	"\ronly_end_user\x18\x02 \x01(\bR\vonlyEndUser\x1a\xda\n" +
 	"\n" +
 	"\x17SuggestionFeatureConfig\x12\\\n" +
 	"\x12suggestion_feature\x18\x05 \x01(\v2-.google.cloud.dialogflow.v2.SuggestionFeatureR\x11suggestionFeature\x12A\n" +
-	"\x1denable_event_based_suggestion\x18\x03 \x01(\bR\x1aenableEventBasedSuggestion\x12B\n" +
-	"\x1bdisable_agent_query_logging\x18\x0e \x01(\bB\x03\xe0A\x01R\x18disableAgentQueryLogging\x12V\n" +
-	"&enable_query_suggestion_when_no_answer\x18\x0f \x01(\bB\x03\xe0A\x01R!enableQuerySuggestionWhenNoAnswer\x12R\n" +
-	"#enable_conversation_augmented_query\x18\x10 \x01(\bB\x03\xe0A\x01R enableConversationAugmentedQuery\x12D\n" +
-	"\x1cenable_query_suggestion_only\x18\x11 \x01(\bB\x03\xe0A\x01R\x19enableQuerySuggestionOnly\x12@\n" +
-	"\x1aenable_response_debug_info\x18\x12 \x01(\bB\x03\xe0A\x01R\x17enableResponseDebugInfo\x12O\n" +
-	"\frai_settings\x18\x13 \x01(\v2'.google.cloud.dialogflow.v2.RaiSettingsB\x03\xe0A\x01R\vraiSettings\x12g\n" +
-	"\x18suggestion_trigger_event\x18\x14 \x01(\x0e2(.google.cloud.dialogflow.v2.TriggerEventB\x03\xe0A\x01R\x16suggestionTriggerEvent\x12D\n" +
-	"\x1cdisable_query_search_context\x18\x15 \x01(\bB\x03\xe0A\x01R\x19disableQuerySearchContext\x12\x8f\x01\n" +
+	"\x1denable_event_based_suggestion\x18\x03 \x01(\bR\x1aenableEventBasedSuggestion\x12C\n" +
+	"\x1bdisable_agent_query_logging\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\x18disableAgentQueryLogging\x12W\n" +
+	"&enable_query_suggestion_when_no_answer\x18\x0f \x01(\bB\x04\xe2A\x01\x01R!enableQuerySuggestionWhenNoAnswer\x12S\n" +
+	"#enable_conversation_augmented_query\x18\x10 \x01(\bB\x04\xe2A\x01\x01R enableConversationAugmentedQuery\x12E\n" +
+	"\x1cenable_query_suggestion_only\x18\x11 \x01(\bB\x04\xe2A\x01\x01R\x19enableQuerySuggestionOnly\x12A\n" +
+	"\x1aenable_response_debug_info\x18\x12 \x01(\bB\x04\xe2A\x01\x01R\x17enableResponseDebugInfo\x12P\n" +
+	"\frai_settings\x18\x13 \x01(\v2'.google.cloud.dialogflow.v2.RaiSettingsB\x04\xe2A\x01\x01R\vraiSettings\x12h\n" +
+	"\x18suggestion_trigger_event\x18\x14 \x01(\x0e2(.google.cloud.dialogflow.v2.TriggerEventB\x04\xe2A\x01\x01R\x16suggestionTriggerEvent\x12E\n" +
+	"\x1cdisable_query_search_context\x18\x15 \x01(\bB\x04\xe2A\x01\x01R\x19disableQuerySearchContext\x12\x8f\x01\n" +
 	"\x1bsuggestion_trigger_settings\x18\n" +
 	" \x01(\v2O.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionTriggerSettingsR\x19suggestionTriggerSettings\x12n\n" +
 	"\fquery_config\x18\x06 \x01(\v2K.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfigR\vqueryConfig\x12\x89\x01\n" +
 	"\x19conversation_model_config\x18\a \x01(\v2M.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationModelConfigR\x17conversationModelConfig\x12\x8f\x01\n" +
-	"\x1bconversation_process_config\x18\b \x01(\v2O.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationProcessConfigR\x19conversationProcessConfig\x1a\xab\x05\n" +
+	"\x1bconversation_process_config\x18\b \x01(\v2O.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationProcessConfigR\x19conversationProcessConfig\x1a\xb1\x05\n" +
 	"\x10SuggestionConfig\x12v\n" +
 	"\x0ffeature_configs\x18\x02 \x03(\v2M.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfigR\x0efeatureConfigs\x12<\n" +
-	"\x1agroup_suggestion_responses\x18\x03 \x01(\bR\x18groupSuggestionResponses\x12K\n" +
+	"\x1agroup_suggestion_responses\x18\x03 \x01(\bR\x18groupSuggestionResponses\x12L\n" +
 	"\n" +
-	"generators\x18\x04 \x03(\tB+\xe0A\x01\xfaA%\n" +
+	"generators\x18\x04 \x03(\tB,\xe2A\x01\x01\xfaA%\n" +
 	"#dialogflow.googleapis.com/GeneratorR\n" +
-	"generators\x12`\n" +
-	"+disable_high_latency_features_sync_delivery\x18\x05 \x01(\bB\x03\xe0A\x01R&disableHighLatencyFeaturesSyncDelivery\x12M\n" +
-	"!skip_empty_event_based_suggestion\x18\x06 \x01(\bB\x03\xe0A\x01R\x1dskipEmptyEventBasedSuggestion\x12L\n" +
-	" use_unredacted_conversation_data\x18\b \x01(\bB\x03\xe0A\x01R\x1duseUnredactedConversationData\x12:\n" +
-	"\x16enable_async_tool_call\x18\t \x01(\bB\x05\xe0A\x01\x18\x01R\x13enableAsyncToolCall\x12Y\n" +
-	"\x0fcompanion_agent\x18\v \x01(\tB0\xe0A\x01\xfaA*\n" +
-	"(dialogflow.googleapis.com/CompanionAgentR\x0ecompanionAgent\x1a\xbd\x0f\n" +
+	"generators\x12a\n" +
+	"+disable_high_latency_features_sync_delivery\x18\x05 \x01(\bB\x04\xe2A\x01\x01R&disableHighLatencyFeaturesSyncDelivery\x12N\n" +
+	"!skip_empty_event_based_suggestion\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x1dskipEmptyEventBasedSuggestion\x12M\n" +
+	" use_unredacted_conversation_data\x18\b \x01(\bB\x04\xe2A\x01\x01R\x1duseUnredactedConversationData\x12;\n" +
+	"\x16enable_async_tool_call\x18\t \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x13enableAsyncToolCall\x12Z\n" +
+	"\x0fcompanion_agent\x18\v \x01(\tB1\xe2A\x01\x01\xfaA*\n" +
+	"(dialogflow.googleapis.com/CompanionAgentR\x0ecompanionAgent\x1a\xc4\x0f\n" +
 	"\x15SuggestionQueryConfig\x12\xa5\x01\n" +
 	"\x1bknowledge_base_query_source\x18\x01 \x01(\v2d.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.KnowledgeBaseQuerySourceH\x00R\x18knowledgeBaseQuerySource\x12\x95\x01\n" +
 	"\x15document_query_source\x18\x02 \x01(\v2_.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DocumentQuerySourceH\x00R\x13documentQuerySource\x12\x9b\x01\n" +
@@ -2954,21 +2955,21 @@ const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"\vmax_results\x18\x04 \x01(\x05R\n" +
 	"maxResults\x121\n" +
 	"\x14confidence_threshold\x18\x05 \x01(\x02R\x13confidenceThreshold\x12\x99\x01\n" +
-	"\x17context_filter_settings\x18\a \x01(\v2a.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.ContextFilterSettingsR\x15contextFilterSettings\x12u\n" +
-	"\bsections\x18\b \x01(\v2T.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.SectionsB\x03\xe0A\x01R\bsections\x12&\n" +
-	"\fcontext_size\x18\t \x01(\x05B\x03\xe0A\x01R\vcontextSize\x1at\n" +
-	"\x18KnowledgeBaseQuerySource\x12X\n" +
-	"\x0fknowledge_bases\x18\x01 \x03(\tB/\xe0A\x02\xfaA)\n" +
-	"'dialogflow.googleapis.com/KnowledgeBaseR\x0eknowledgeBases\x1a_\n" +
-	"\x13DocumentQuerySource\x12H\n" +
-	"\tdocuments\x18\x01 \x03(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/DocumentR\tdocuments\x1a\xe2\x02\n" +
-	"\x15DialogflowQuerySource\x12=\n" +
-	"\x05agent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdialogflow.googleapis.com/AgentR\x05agent\x12\xb2\x01\n" +
-	"\x17human_agent_side_config\x18\x03 \x01(\v2v.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource.HumanAgentSideConfigB\x03\xe0A\x01R\x14humanAgentSideConfig\x1aU\n" +
-	"\x14HumanAgentSideConfig\x12=\n" +
-	"\x05agent\x18\x01 \x01(\tB'\xe0A\x01\xfaA!\n" +
+	"\x17context_filter_settings\x18\a \x01(\v2a.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.ContextFilterSettingsR\x15contextFilterSettings\x12v\n" +
+	"\bsections\x18\b \x01(\v2T.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.SectionsB\x04\xe2A\x01\x01R\bsections\x12'\n" +
+	"\fcontext_size\x18\t \x01(\x05B\x04\xe2A\x01\x01R\vcontextSize\x1au\n" +
+	"\x18KnowledgeBaseQuerySource\x12Y\n" +
+	"\x0fknowledge_bases\x18\x01 \x03(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'dialogflow.googleapis.com/KnowledgeBaseR\x0eknowledgeBases\x1a`\n" +
+	"\x13DocumentQuerySource\x12I\n" +
+	"\tdocuments\x18\x01 \x03(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/DocumentR\tdocuments\x1a\xe5\x02\n" +
+	"\x15DialogflowQuerySource\x12>\n" +
+	"\x05agent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdialogflow.googleapis.com/AgentR\x05agent\x12\xb3\x01\n" +
+	"\x17human_agent_side_config\x18\x03 \x01(\v2v.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource.HumanAgentSideConfigB\x04\xe2A\x01\x01R\x14humanAgentSideConfig\x1aV\n" +
+	"\x14HumanAgentSideConfig\x12>\n" +
+	"\x05agent\x18\x01 \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
 	"\x1fdialogflow.googleapis.com/AgentR\x05agent\x1a\xb6\x01\n" +
 	"\x15ContextFilterSettings\x122\n" +
 	"\x15drop_handoff_messages\x18\x01 \x01(\bR\x13dropHandoffMessages\x12=\n" +
@@ -2992,21 +2993,21 @@ const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"+dialogflow.googleapis.com/ConversationModelR\x05model\x124\n" +
 	"\x16baseline_model_version\x18\b \x01(\tR\x14baselineModelVersion\x1aQ\n" +
 	"\x19ConversationProcessConfig\x124\n" +
-	"\x16recent_sentences_count\x18\x02 \x01(\x05R\x14recentSentencesCount\x1a\xd3\x01\n" +
+	"\x16recent_sentences_count\x18\x02 \x01(\x05R\x14recentSentencesCount\x1a\xd4\x01\n" +
 	"\x15MessageAnalysisConfig\x128\n" +
 	"\x18enable_entity_extraction\x18\x02 \x01(\bR\x16enableEntityExtraction\x12:\n" +
-	"\x19enable_sentiment_analysis\x18\x03 \x01(\bR\x17enableSentimentAnalysis\x12D\n" +
-	"\x1cenable_sentiment_analysis_v3\x18\x05 \x01(\bB\x03\xe0A\x01R\x19enableSentimentAnalysisV3\"\xb9\x04\n" +
+	"\x19enable_sentiment_analysis\x18\x03 \x01(\bR\x17enableSentimentAnalysis\x12E\n" +
+	"\x1cenable_sentiment_analysis_v3\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x19enableSentimentAnalysisV3\"\xbe\x04\n" +
 	"\x17HumanAgentHandoffConfig\x12t\n" +
 	"\x12live_person_config\x18\x01 \x01(\v2D.google.cloud.dialogflow.v2.HumanAgentHandoffConfig.LivePersonConfigH\x00R\x10livePersonConfig\x12\x90\x01\n" +
-	"\x1csalesforce_live_agent_config\x18\x02 \x01(\v2M.google.cloud.dialogflow.v2.HumanAgentHandoffConfig.SalesforceLiveAgentConfigH\x00R\x19salesforceLiveAgentConfig\x1a>\n" +
-	"\x10LivePersonConfig\x12*\n" +
-	"\x0eaccount_number\x18\x01 \x01(\tB\x03\xe0A\x02R\raccountNumber\x1a\xc3\x01\n" +
-	"\x19SalesforceLiveAgentConfig\x12,\n" +
-	"\x0forganization_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eorganizationId\x12(\n" +
-	"\rdeployment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fdeploymentId\x12 \n" +
-	"\tbutton_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bbuttonId\x12,\n" +
-	"\x0fendpoint_domain\x18\x04 \x01(\tB\x03\xe0A\x02R\x0eendpointDomainB\x0f\n" +
+	"\x1csalesforce_live_agent_config\x18\x02 \x01(\v2M.google.cloud.dialogflow.v2.HumanAgentHandoffConfig.SalesforceLiveAgentConfigH\x00R\x19salesforceLiveAgentConfig\x1a?\n" +
+	"\x10LivePersonConfig\x12+\n" +
+	"\x0eaccount_number\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\raccountNumber\x1a\xc7\x01\n" +
+	"\x19SalesforceLiveAgentConfig\x12-\n" +
+	"\x0forganization_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eorganizationId\x12)\n" +
+	"\rdeployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fdeploymentId\x12!\n" +
+	"\tbutton_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bbuttonId\x12-\n" +
+	"\x0fendpoint_domain\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0eendpointDomainB\x0f\n" +
 	"\ragent_service\"\xd5\x01\n" +
 	"\x12NotificationConfig\x12\x14\n" +
 	"\x05topic\x18\x01 \x01(\tR\x05topic\x12c\n" +
@@ -3034,25 +3035,25 @@ const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"\vSMART_REPLY\x10\x03\x12\x1e\n" +
 	"\x1aCONVERSATION_SUMMARIZATION\x10\b\x12\x14\n" +
 	"\x10KNOWLEDGE_SEARCH\x10\x0e\x12\x14\n" +
-	"\x10KNOWLEDGE_ASSIST\x10\x0f\"\xca\x02\n" +
-	"!SetSuggestionFeatureConfigRequest\x126\n" +
-	"\x14conversation_profile\x18\x01 \x01(\tB\x03\xe0A\x02R\x13conversationProfile\x12\\\n" +
-	"\x10participant_role\x18\x02 \x01(\x0e2,.google.cloud.dialogflow.v2.Participant.RoleB\x03\xe0A\x02R\x0fparticipantRole\x12\x8e\x01\n" +
-	"\x19suggestion_feature_config\x18\x03 \x01(\v2M.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfigB\x03\xe0A\x02R\x17suggestionFeatureConfig\"\xac\x02\n" +
-	"#ClearSuggestionFeatureConfigRequest\x126\n" +
-	"\x14conversation_profile\x18\x01 \x01(\tB\x03\xe0A\x02R\x13conversationProfile\x12\\\n" +
-	"\x10participant_role\x18\x02 \x01(\x0e2,.google.cloud.dialogflow.v2.Participant.RoleB\x03\xe0A\x02R\x0fparticipantRole\x12o\n" +
-	"\x17suggestion_feature_type\x18\x03 \x01(\x0e22.google.cloud.dialogflow.v2.SuggestionFeature.TypeB\x03\xe0A\x02R\x15suggestionFeatureType\"\xec\x02\n" +
+	"\x10KNOWLEDGE_ASSIST\x10\x0f\"\xcd\x02\n" +
+	"!SetSuggestionFeatureConfigRequest\x127\n" +
+	"\x14conversation_profile\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x13conversationProfile\x12]\n" +
+	"\x10participant_role\x18\x02 \x01(\x0e2,.google.cloud.dialogflow.v2.Participant.RoleB\x04\xe2A\x01\x02R\x0fparticipantRole\x12\x8f\x01\n" +
+	"\x19suggestion_feature_config\x18\x03 \x01(\v2M.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfigB\x04\xe2A\x01\x02R\x17suggestionFeatureConfig\"\xaf\x02\n" +
+	"#ClearSuggestionFeatureConfigRequest\x127\n" +
+	"\x14conversation_profile\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x13conversationProfile\x12]\n" +
+	"\x10participant_role\x18\x02 \x01(\x0e2,.google.cloud.dialogflow.v2.Participant.RoleB\x04\xe2A\x01\x02R\x0fparticipantRole\x12p\n" +
+	"\x17suggestion_feature_type\x18\x03 \x01(\x0e22.google.cloud.dialogflow.v2.SuggestionFeature.TypeB\x04\xe2A\x01\x02R\x15suggestionFeatureType\"\xee\x02\n" +
 	"+SetSuggestionFeatureConfigOperationMetadata\x121\n" +
-	"\x14conversation_profile\x18\x01 \x01(\tR\x13conversationProfile\x12\\\n" +
-	"\x10participant_role\x18\x02 \x01(\x0e2,.google.cloud.dialogflow.v2.Participant.RoleB\x03\xe0A\x02R\x0fparticipantRole\x12o\n" +
-	"\x17suggestion_feature_type\x18\x03 \x01(\x0e22.google.cloud.dialogflow.v2.SuggestionFeature.TypeB\x03\xe0A\x02R\x15suggestionFeatureType\x12;\n" +
+	"\x14conversation_profile\x18\x01 \x01(\tR\x13conversationProfile\x12]\n" +
+	"\x10participant_role\x18\x02 \x01(\x0e2,.google.cloud.dialogflow.v2.Participant.RoleB\x04\xe2A\x01\x02R\x0fparticipantRole\x12p\n" +
+	"\x17suggestion_feature_type\x18\x03 \x01(\x0e22.google.cloud.dialogflow.v2.SuggestionFeature.TypeB\x04\xe2A\x01\x02R\x15suggestionFeatureType\x12;\n" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\"\xee\x02\n" +
+	"createTime\"\xf0\x02\n" +
 	"-ClearSuggestionFeatureConfigOperationMetadata\x121\n" +
-	"\x14conversation_profile\x18\x01 \x01(\tR\x13conversationProfile\x12\\\n" +
-	"\x10participant_role\x18\x02 \x01(\x0e2,.google.cloud.dialogflow.v2.Participant.RoleB\x03\xe0A\x02R\x0fparticipantRole\x12o\n" +
-	"\x17suggestion_feature_type\x18\x03 \x01(\x0e22.google.cloud.dialogflow.v2.SuggestionFeature.TypeB\x03\xe0A\x02R\x15suggestionFeatureType\x12;\n" +
+	"\x14conversation_profile\x18\x01 \x01(\tR\x13conversationProfile\x12]\n" +
+	"\x10participant_role\x18\x02 \x01(\x0e2,.google.cloud.dialogflow.v2.Participant.RoleB\x04\xe2A\x01\x02R\x0fparticipantRole\x12p\n" +
+	"\x17suggestion_feature_type\x18\x03 \x01(\x0e22.google.cloud.dialogflow.v2.SuggestionFeature.TypeB\x04\xe2A\x01\x02R\x15suggestionFeatureType\x12;\n" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime2\xb3\x14\n" +
 	"\x14ConversationProfiles\x12\x90\x02\n" +

@@ -594,6 +594,11 @@ func (c *organizationSecurityPoliciesRESTClient) AddAssociation(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v/addAssociation", req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -670,6 +675,11 @@ func (c *organizationSecurityPoliciesRESTClient) AddRule(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v/addRule", req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -735,6 +745,11 @@ func (c *organizationSecurityPoliciesRESTClient) AddRule(ctx context.Context, re
 func (c *organizationSecurityPoliciesRESTClient) CopyRules(ctx context.Context, req *computepb.CopyRulesOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v/copyRules", req.GetSecurityPolicy())
@@ -806,6 +821,11 @@ func (c *organizationSecurityPoliciesRESTClient) Delete(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v", req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -872,6 +892,11 @@ func (c *organizationSecurityPoliciesRESTClient) Get(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v", req.GetSecurityPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -924,6 +949,11 @@ func (c *organizationSecurityPoliciesRESTClient) Get(ctx context.Context, req *c
 func (c *organizationSecurityPoliciesRESTClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyAssociation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v/getAssociation", req.GetSecurityPolicy())
@@ -984,6 +1014,11 @@ func (c *organizationSecurityPoliciesRESTClient) GetAssociation(ctx context.Cont
 func (c *organizationSecurityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v/getRule", req.GetSecurityPolicy())
@@ -1335,6 +1370,11 @@ func (c *organizationSecurityPoliciesRESTClient) Move(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v/move", req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -1411,6 +1451,11 @@ func (c *organizationSecurityPoliciesRESTClient) Patch(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v", req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -1485,6 +1530,11 @@ func (c *organizationSecurityPoliciesRESTClient) PatchRule(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v/patchRule", req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -1555,6 +1605,11 @@ func (c *organizationSecurityPoliciesRESTClient) RemoveAssociation(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v/removeAssociation", req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -1623,6 +1678,11 @@ func (c *organizationSecurityPoliciesRESTClient) RemoveAssociation(ctx context.C
 func (c *organizationSecurityPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/securityPolicies/%v/removeRule", req.GetSecurityPolicy())

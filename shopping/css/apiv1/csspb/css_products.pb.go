@@ -328,26 +328,26 @@ var File_google_shopping_css_v1_css_products_proto protoreflect.FileDescriptor
 
 const file_google_shopping_css_v1_css_products_proto_rawDesc = "" +
 	"\n" +
-	")google/shopping/css/v1/css_products.proto\x12\x16google.shopping.css.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/shopping/css/v1/css_product_common.proto\x1a google/shopping/type/types.proto\"Q\n" +
-	"\x14GetCssProductRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dcss.googleapis.com/CssProductR\x04name\"\x8b\x04\n" +
+	")google/shopping/css/v1/css_products.proto\x12\x16google.shopping.css.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/shopping/css/v1/css_product_common.proto\x1a google/shopping/type/types.proto\"R\n" +
+	"\x14GetCssProductRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dcss.googleapis.com/CssProductR\x04name\"\x91\x04\n" +
 	"\n" +
 	"CssProduct\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12+\n" +
-	"\x0fraw_provided_id\x18\x02 \x01(\tB\x03\xe0A\x03R\rrawProvidedId\x12.\n" +
-	"\x10content_language\x18\x03 \x01(\tB\x03\xe0A\x03R\x0fcontentLanguage\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12,\n" +
+	"\x0fraw_provided_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rrawProvidedId\x12/\n" +
+	"\x10content_language\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0fcontentLanguage\x12#\n" +
 	"\n" +
-	"feed_label\x18\x04 \x01(\tB\x03\xe0A\x03R\tfeedLabel\x12G\n" +
+	"feed_label\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\tfeedLabel\x12H\n" +
 	"\n" +
-	"attributes\x18\x05 \x01(\v2\".google.shopping.css.v1.AttributesB\x03\xe0A\x03R\n" +
-	"attributes\x12W\n" +
-	"\x11custom_attributes\x18\x06 \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x03R\x10customAttributes\x12[\n" +
-	"\x12css_product_status\x18\b \x01(\v2(.google.shopping.css.v1.CssProductStatusB\x03\xe0A\x03R\x10cssProductStatus:i\xeaAf\n" +
+	"attributes\x18\x05 \x01(\v2\".google.shopping.css.v1.AttributesB\x04\xe2A\x01\x03R\n" +
+	"attributes\x12X\n" +
+	"\x11custom_attributes\x18\x06 \x03(\v2%.google.shopping.type.CustomAttributeB\x04\xe2A\x01\x03R\x10customAttributes\x12\\\n" +
+	"\x12css_product_status\x18\b \x01(\v2(.google.shopping.css.v1.CssProductStatusB\x04\xe2A\x01\x03R\x10cssProductStatus:i\xeaAf\n" +
 	"\x1dcss.googleapis.com/CssProduct\x12,accounts/{account}/cssProducts/{css_product}*\vcssProducts2\n" +
-	"cssProduct\"\x93\x01\n" +
-	"\x16ListCssProductsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dcss.googleapis.com/CssProductR\x06parent\x12\x1b\n" +
+	"cssProduct\"\x94\x01\n" +
+	"\x16ListCssProductsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dcss.googleapis.com/CssProductR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x88\x01\n" +

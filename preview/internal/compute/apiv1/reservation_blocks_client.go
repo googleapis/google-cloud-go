@@ -349,6 +349,14 @@ func (c *reservationBlocksRESTClient) Get(ctx context.Context, req *computepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetReservation(),
+		req.GetReservationBlock(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/reservationBlocks/%v", req.GetProject(), req.GetZone(), req.GetReservation(), req.GetReservationBlock())
 
 	params := url.Values{}
@@ -404,6 +412,14 @@ func (c *reservationBlocksRESTClient) Get(ctx context.Context, req *computepb.Ge
 func (c *reservationBlocksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyReservationBlockRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetParentResource(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/reservationBlocks/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetParentResource(), req.GetResource())
@@ -473,6 +489,13 @@ func (c *reservationBlocksRESTClient) List(ctx context.Context, req *computepb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetReservation(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/reservationBlocks", req.GetProject(), req.GetZone(), req.GetReservation())
@@ -552,6 +575,14 @@ func (c *reservationBlocksRESTClient) PerformMaintenance(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetReservation(),
+		req.GetReservationBlock(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/reservationBlocks/%v/performMaintenance", req.GetProject(), req.GetZone(), req.GetReservation(), req.GetReservationBlock())
 
 	params := url.Values{}
@@ -624,6 +655,14 @@ func (c *reservationBlocksRESTClient) SetIamPolicy(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetParentResource(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/reservationBlocks/%v/setIamPolicy", req.GetProject(), req.GetZone(), req.GetParentResource(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -678,6 +717,14 @@ func (c *reservationBlocksRESTClient) TestIamPermissions(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetParentResource(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/reservationBlocks/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetParentResource(), req.GetResource())

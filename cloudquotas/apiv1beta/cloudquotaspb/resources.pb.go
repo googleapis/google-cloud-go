@@ -1009,35 +1009,35 @@ const file_google_api_cloudquotas_v1beta_resources_proto_rawDesc = "" +
 	"\x18NO_VALID_BILLING_ACCOUNT\x10\x01\x12\x11\n" +
 	"\rNOT_SUPPORTED\x10\x03\x12\x1c\n" +
 	"\x18NOT_ENOUGH_USAGE_HISTORY\x10\x04\x12\t\n" +
-	"\x05OTHER\x10\x02\"\x92\a\n" +
+	"\x05OTHER\x10\x02\"\x9b\a\n" +
 	"\x0fQuotaPreference\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12c\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12d\n" +
 	"\n" +
-	"dimensions\x18\x02 \x03(\v2>.google.api.cloudquotas.v1beta.QuotaPreference.DimensionsEntryB\x03\xe0A\x05R\n" +
-	"dimensions\x12R\n" +
-	"\fquota_config\x18\x03 \x01(\v2*.google.api.cloudquotas.v1beta.QuotaConfigB\x03\xe0A\x02R\vquotaConfig\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1d\n" +
-	"\aservice\x18\a \x01(\tB\x03\xe0A\x02R\aservice\x12\x1e\n" +
-	"\bquota_id\x18\b \x01(\tB\x03\xe0A\x02R\aquotaId\x12%\n" +
+	"dimensions\x18\x02 \x03(\v2>.google.api.cloudquotas.v1beta.QuotaPreference.DimensionsEntryB\x04\xe2A\x01\x05R\n" +
+	"dimensions\x12S\n" +
+	"\fquota_config\x18\x03 \x01(\v2*.google.api.cloudquotas.v1beta.QuotaConfigB\x04\xe2A\x01\x02R\vquotaConfig\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1e\n" +
+	"\aservice\x18\a \x01(\tB\x04\xe2A\x01\x02R\aservice\x12\x1f\n" +
+	"\bquota_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\aquotaId\x12&\n" +
 	"\vreconciling\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\vreconciling\x12$\n" +
-	"\rjustification\x18\v \x01(\tR\rjustification\x12(\n" +
-	"\rcontact_email\x18\f \x01(\tB\x03\xe0A\x04R\fcontactEmail\x1a=\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12$\n" +
+	"\rjustification\x18\v \x01(\tR\rjustification\x12)\n" +
+	"\rcontact_email\x18\f \x01(\tB\x04\xe2A\x01\x04R\fcontactEmail\x1a=\n" +
 	"\x0fDimensionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9f\x02\xeaA\x9b\x02\n" +
-	"*cloudquotas.googleapis.com/QuotaPreference\x12Kprojects/{project}/locations/{location}/quotaPreferences/{quota_preference}\x12Ifolders/{folder}/locations/{location}/quotaPreferences/{quota_preference}\x12Uorganizations/{organization}/locations/{location}/quotaPreferences/{quota_preference}\"\x95\x04\n" +
-	"\vQuotaConfig\x12,\n" +
-	"\x0fpreferred_value\x18\x01 \x01(\x03B\x03\xe0A\x02R\x0epreferredValue\x12&\n" +
-	"\fstate_detail\x18\x02 \x01(\tB\x03\xe0A\x03R\vstateDetail\x12E\n" +
-	"\rgranted_value\x18\x03 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\fgrantedValue\x12\x1e\n" +
-	"\btrace_id\x18\x04 \x01(\tB\x03\xe0A\x03R\atraceId\x12b\n" +
-	"\vannotations\x18\x05 \x03(\v2;.google.api.cloudquotas.v1beta.QuotaConfig.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12]\n" +
-	"\x0erequest_origin\x18\x06 \x01(\x0e21.google.api.cloudquotas.v1beta.QuotaConfig.OriginB\x03\xe0A\x03R\rrequestOrigin\x1a>\n" +
+	"*cloudquotas.googleapis.com/QuotaPreference\x12Kprojects/{project}/locations/{location}/quotaPreferences/{quota_preference}\x12Ifolders/{folder}/locations/{location}/quotaPreferences/{quota_preference}\x12Uorganizations/{organization}/locations/{location}/quotaPreferences/{quota_preference}\"\x9b\x04\n" +
+	"\vQuotaConfig\x12-\n" +
+	"\x0fpreferred_value\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x0epreferredValue\x12'\n" +
+	"\fstate_detail\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vstateDetail\x12F\n" +
+	"\rgranted_value\x18\x03 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x03R\fgrantedValue\x12\x1f\n" +
+	"\btrace_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\atraceId\x12c\n" +
+	"\vannotations\x18\x05 \x03(\v2;.google.api.cloudquotas.v1beta.QuotaConfig.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12^\n" +
+	"\x0erequest_origin\x18\x06 \x01(\x0e21.google.api.cloudquotas.v1beta.QuotaConfig.OriginB\x04\xe2A\x01\x03R\rrequestOrigin\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"F\n" +

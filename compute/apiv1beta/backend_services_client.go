@@ -552,6 +552,12 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v/addSignedUrlKey", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -630,6 +636,11 @@ func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *com
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/backendServices", req.GetProject())
@@ -718,6 +729,12 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -780,6 +797,12 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v/deleteSignedUrlKey", req.GetProject(), req.GetBackendService())
@@ -846,6 +869,12 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	// Build HTTP headers from client and context metadata.
@@ -893,6 +922,12 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 func (c *backendServicesRESTClient) GetEffectiveSecurityPolicies(ctx context.Context, req *computepb.GetEffectiveSecurityPoliciesBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServicesGetEffectiveSecurityPoliciesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v/getEffectiveSecurityPolicies", req.GetProject(), req.GetBackendService())
@@ -958,6 +993,12 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v/getHealth", req.GetProject(), req.GetBackendService())
 
 	// Build HTTP headers from client and context metadata.
@@ -1006,6 +1047,12 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 func (c *backendServicesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -1071,6 +1118,11 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices", req.GetProject())
@@ -1148,6 +1200,11 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices", req.GetProject())
@@ -1239,6 +1296,11 @@ func (c *backendServicesRESTClient) ListUsable(ctx context.Context, req *compute
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/listUsable", req.GetProject())
 
 		params := url.Values{}
@@ -1323,6 +1385,12 @@ func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -1391,6 +1459,12 @@ func (c *backendServicesRESTClient) SetEdgeSecurityPolicy(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v/setEdgeSecurityPolicy", req.GetProject(), req.GetBackendService())
@@ -1464,6 +1538,12 @@ func (c *backendServicesRESTClient) SetIamPolicy(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1520,6 +1600,12 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v/setSecurityPolicy", req.GetProject(), req.GetBackendService())
@@ -1592,6 +1678,12 @@ func (c *backendServicesRESTClient) TestIamPermissions(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1648,6 +1740,12 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())

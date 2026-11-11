@@ -1009,28 +1009,28 @@ var File_google_cloud_backupdr_v1_protection_summary_proto protoreflect.FileDesc
 
 const file_google_cloud_backupdr_v1_protection_summary_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/backupdr/v1/protection_summary.proto\x12\x18google.cloud.backupdr.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe8\x01\n" +
-	" ListResourceBackupConfigsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"1google/cloud/backupdr/v1/protection_summary.proto\x12\x18google.cloud.backupdr.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\x01\n" +
+	" ListResourceBackupConfigsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb3\x01\n" +
 	"!ListResourceBackupConfigsResponse\x12f\n" +
 	"\x17resource_backup_configs\x18\x01 \x03(\v2..google.cloud.backupdr.v1.ResourceBackupConfigR\x15resourceBackupConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x89\b\n" +
-	"\x14ResourceBackupConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12,\n" +
-	"\x0ftarget_resource\x18\x03 \x01(\tB\x03\xe0A\x03R\x0etargetResource\x12D\n" +
-	"\x1ctarget_resource_display_name\x18\x04 \x01(\tB\x03\xe0A\x03R\x19targetResourceDisplayName\x12r\n" +
-	"\x14target_resource_type\x18\x05 \x01(\x0e2;.google.cloud.backupdr.v1.ResourceBackupConfig.ResourceTypeB\x03\xe0A\x03R\x12targetResourceType\x12~\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x90\b\n" +
+	"\x14ResourceBackupConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12-\n" +
+	"\x0ftarget_resource\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0etargetResource\x12E\n" +
+	"\x1ctarget_resource_display_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x19targetResourceDisplayName\x12s\n" +
+	"\x14target_resource_type\x18\x05 \x01(\x0e2;.google.cloud.backupdr.v1.ResourceBackupConfig.ResourceTypeB\x04\xe2A\x01\x03R\x12targetResourceType\x12~\n" +
 	"\x16target_resource_labels\x18\x06 \x03(\v2H.google.cloud.backupdr.v1.ResourceBackupConfig.TargetResourceLabelsEntryR\x14targetResourceLabels\x12c\n" +
-	"\x16backup_configs_details\x18\a \x03(\v2-.google.cloud.backupdr.v1.BackupConfigDetailsR\x14backupConfigsDetails\x120\n" +
-	"\x11backup_configured\x18\b \x01(\bB\x03\xe0A\x03R\x10backupConfigured\x12\x1d\n" +
-	"\avaulted\x18\t \x01(\bB\x03\xe0A\x03R\avaulted\x1aG\n" +
+	"\x16backup_configs_details\x18\a \x03(\v2-.google.cloud.backupdr.v1.BackupConfigDetailsR\x14backupConfigsDetails\x121\n" +
+	"\x11backup_configured\x18\b \x01(\bB\x04\xe2A\x01\x03R\x10backupConfigured\x12\x1e\n" +
+	"\avaulted\x18\t \x01(\bB\x04\xe2A\x01\x03R\avaulted\x1aG\n" +
 	"\x19TargetResourceLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x97\x01\n" +
@@ -1040,16 +1040,16 @@ const file_google_cloud_backupdr_v1_protection_summary_proto_rawDesc = "" +
 	"\x11COMPUTE_ENGINE_VM\x10\x02\x12\x17\n" +
 	"\x13COMPUTE_ENGINE_DISK\x10\x03\x12 \n" +
 	"\x1cCOMPUTE_ENGINE_REGIONAL_DISK\x10\x04:\xb7\x01\xeaA\xb3\x01\n" +
-	",backupdr.googleapis.com/ResourceBackupConfig\x12Vprojects/{project}/locations/{location}/resourceBackupConfigs/{resource_backup_config}*\x15resourceBackupConfigs2\x14resourceBackupConfig\"\xea\b\n" +
-	"\x13BackupConfigDetails\x125\n" +
-	"\x14backup_config_source\x18\x01 \x01(\tB\x03\xe0A\x03R\x12backupConfigSource\x12M\n" +
-	"!backup_config_source_display_name\x18\x02 \x01(\tB\x03\xe0A\x03R\x1dbackupConfigSourceDisplayName\x12K\n" +
-	"\x04type\x18\x03 \x01(\x0e22.google.cloud.backupdr.v1.BackupConfigDetails.TypeB\x03\xe0A\x03R\x04type\x12N\n" +
-	"\x05state\x18\x04 \x01(\x0e23.google.cloud.backupdr.v1.BackupConfigDetails.StateB\x03\xe0A\x03R\x05state\x12P\n" +
-	"\rpitr_settings\x18\x05 \x01(\v2&.google.cloud.backupdr.v1.PitrSettingsB\x03\xe0A\x03R\fpitrSettings\x12b\n" +
-	"\x1dlatest_successful_backup_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1alatestSuccessfulBackupTime\x124\n" +
-	"\x13applicable_resource\x18\a \x01(\tB\x03\xe0A\x03R\x12applicableResource\x12&\n" +
-	"\fbackup_vault\x18\b \x01(\tB\x03\xe0A\x03R\vbackupVault\x12S\n" +
+	",backupdr.googleapis.com/ResourceBackupConfig\x12Vprojects/{project}/locations/{location}/resourceBackupConfigs/{resource_backup_config}*\x15resourceBackupConfigs2\x14resourceBackupConfig\"\xf2\b\n" +
+	"\x13BackupConfigDetails\x126\n" +
+	"\x14backup_config_source\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x12backupConfigSource\x12N\n" +
+	"!backup_config_source_display_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x1dbackupConfigSourceDisplayName\x12L\n" +
+	"\x04type\x18\x03 \x01(\x0e22.google.cloud.backupdr.v1.BackupConfigDetails.TypeB\x04\xe2A\x01\x03R\x04type\x12O\n" +
+	"\x05state\x18\x04 \x01(\x0e23.google.cloud.backupdr.v1.BackupConfigDetails.StateB\x04\xe2A\x01\x03R\x05state\x12Q\n" +
+	"\rpitr_settings\x18\x05 \x01(\v2&.google.cloud.backupdr.v1.PitrSettingsB\x04\xe2A\x01\x03R\fpitrSettings\x12c\n" +
+	"\x1dlatest_successful_backup_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1alatestSuccessfulBackupTime\x125\n" +
+	"\x13applicable_resource\x18\a \x01(\tB\x04\xe2A\x01\x03R\x12applicableResource\x12'\n" +
+	"\fbackup_vault\x18\b \x01(\tB\x04\xe2A\x01\x03R\vbackupVault\x12S\n" +
 	"\x10backup_locations\x18\f \x03(\v2(.google.cloud.backupdr.v1.BackupLocationR\x0fbackupLocations\x12a\n" +
 	"\x15backup_dr_plan_config\x18\n" +
 	" \x01(\v2,.google.cloud.backupdr.v1.BackupDrPlanConfigH\x00R\x12backupDrPlanConfig\x12m\n" +
@@ -1066,20 +1066,20 @@ const file_google_cloud_backupdr_v1_protection_summary_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x01\x12\f\n" +
 	"\bINACTIVE\x10\x02\x12\t\n" +
 	"\x05ERROR\x10\x03B\x16\n" +
-	"\x14plan_specific_config\":\n" +
-	"\fPitrSettings\x12*\n" +
-	"\x0eretention_days\x18\x01 \x01(\x05B\x03\xe0A\x03R\rretentionDays\"\x9c\x01\n" +
-	"\x16BackupDrTemplateConfig\x12@\n" +
-	"\x1afirst_party_management_uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x17firstPartyManagementUri\x12@\n" +
-	"\x1athird_party_management_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\x17thirdPartyManagementUri\"q\n" +
+	"\x14plan_specific_config\";\n" +
+	"\fPitrSettings\x12+\n" +
+	"\x0eretention_days\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\rretentionDays\"\x9e\x01\n" +
+	"\x16BackupDrTemplateConfig\x12A\n" +
+	"\x1afirst_party_management_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x17firstPartyManagementUri\x12A\n" +
+	"\x1athird_party_management_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x17thirdPartyManagementUri\"q\n" +
 	"\x12BackupDrPlanConfig\x12[\n" +
-	"\x14backup_dr_plan_rules\x18\x01 \x03(\v2*.google.cloud.backupdr.v1.BackupDrPlanRuleR\x11backupDrPlanRules\"\x90\x01\n" +
-	"\x10BackupDrPlanRule\x12\x1c\n" +
-	"\arule_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x06ruleId\x12^\n" +
-	"\x1blast_successful_backup_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x18lastSuccessfulBackupTime\"\xc9\x01\n" +
-	"\x0eBackupLocation\x12F\n" +
-	"\x04type\x18\x01 \x01(\x0e2-.google.cloud.backupdr.v1.BackupLocation.TypeB\x03\xe0A\x03R\x04type\x12$\n" +
-	"\vlocation_id\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
+	"\x14backup_dr_plan_rules\x18\x01 \x03(\v2*.google.cloud.backupdr.v1.BackupDrPlanRuleR\x11backupDrPlanRules\"\x92\x01\n" +
+	"\x10BackupDrPlanRule\x12\x1d\n" +
+	"\arule_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06ruleId\x12_\n" +
+	"\x1blast_successful_backup_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x18lastSuccessfulBackupTime\"\xcb\x01\n" +
+	"\x0eBackupLocation\x12G\n" +
+	"\x04type\x18\x01 \x01(\x0e2-.google.cloud.backupdr.v1.BackupLocation.TypeB\x04\xe2A\x01\x03R\x04type\x12%\n" +
+	"\vlocation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"locationId\"I\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\t\n" +

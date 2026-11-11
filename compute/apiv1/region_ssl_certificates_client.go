@@ -316,6 +316,13 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSslCertificate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/%v", req.GetProject(), req.GetRegion(), req.GetSslCertificate())
 
 	params := url.Values{}
@@ -382,6 +389,13 @@ func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSslCertificate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/%v", req.GetProject(), req.GetRegion(), req.GetSslCertificate())
 
 	// Build HTTP headers from client and context metadata.
@@ -437,6 +451,12 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates", req.GetProject(), req.GetRegion())
@@ -515,6 +535,12 @@ func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *compute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates", req.GetProject(), req.GetRegion())

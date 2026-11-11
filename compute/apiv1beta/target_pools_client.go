@@ -451,6 +451,13 @@ func (c *targetPoolsRESTClient) AddHealthCheck(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetPool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v/addHealthCheck", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
 	params := url.Values{}
@@ -520,6 +527,13 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetPool(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v/addInstance", req.GetProject(), req.GetRegion(), req.GetTargetPool())
@@ -600,6 +614,11 @@ func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *compute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/targetPools", req.GetProject())
@@ -688,6 +707,13 @@ func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetPool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
 	params := url.Values{}
@@ -752,6 +778,13 @@ func (c *targetPoolsRESTClient) Get(ctx context.Context, req *computepb.GetTarge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetPool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
 	// Build HTTP headers from client and context metadata.
@@ -809,6 +842,13 @@ func (c *targetPoolsRESTClient) GetHealth(ctx context.Context, req *computepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetPool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v/getHealth", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
 	// Build HTTP headers from client and context metadata.
@@ -864,6 +904,12 @@ func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools", req.GetProject(), req.GetRegion())
@@ -942,6 +988,12 @@ func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTar
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools", req.GetProject(), req.GetRegion())
@@ -1024,6 +1076,13 @@ func (c *targetPoolsRESTClient) RemoveHealthCheck(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetPool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v/removeHealthCheck", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
 	params := url.Values{}
@@ -1095,6 +1154,13 @@ func (c *targetPoolsRESTClient) RemoveInstance(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetPool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v/removeInstance", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
 	params := url.Values{}
@@ -1164,6 +1230,13 @@ func (c *targetPoolsRESTClient) SetBackup(ctx context.Context, req *computepb.Se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetPool(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v/setBackup", req.GetProject(), req.GetRegion(), req.GetTargetPool())
@@ -1242,6 +1315,13 @@ func (c *targetPoolsRESTClient) SetSecurityPolicy(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetPool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v/setSecurityPolicy", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
 	params := url.Values{}
@@ -1311,6 +1391,13 @@ func (c *targetPoolsRESTClient) TestIamPermissions(ctx context.Context, req *com
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetPools/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

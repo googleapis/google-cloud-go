@@ -468,6 +468,11 @@ func (c *feedRESTClient) ShowFeed(ctx context.Context, req *supportpb.ShowFeedRe
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v:showFeed", req.GetParent())
 
 		params := url.Values{}

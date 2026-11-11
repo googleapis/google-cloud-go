@@ -263,6 +263,13 @@ func (c *acceleratorInterconnectMemberInstancesRESTClient) List(ctx context.Cont
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetAcceleratorInterconnect(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorInterconnects/%v/memberInstances", req.GetProject(), req.GetZone(), req.GetAcceleratorInterconnect())
 
 		params := url.Values{}

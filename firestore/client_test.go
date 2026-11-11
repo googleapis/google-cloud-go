@@ -20,12 +20,18 @@ import (
 	"io"
 	"net"
 	"os"
+	"sync"
 	"syscall"
 	"testing"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	"cloud.google.com/go/internal/testutil"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -729,5 +735,96 @@ func TestIsRetryableStreamError(t *testing.T) {
 		if got != tc.want {
 			t.Errorf("isRetryableStreamError(%v) = %t; want %t", tc.err, got, tc.want)
 		}
+	}
+}
+
+func TestTransactionRoutingHeader(t *testing.T) {
+	ctx := withResourceHeader(context.Background(), "projects/p/databases/d")
+	md, _ := metadata.FromOutgoingContext(ctx)
+	if got := md.Get(isTransactionHeader); len(got) != 1 || got[0] != "false" {
+		t.Fatalf("non-transactional context: got %v, want [false]", got)
+	}
+
+	txCtx := withResourceHeader(withTransactionHeader(context.Background()), "projects/p/databases/d")
+	txMD, _ := metadata.FromOutgoingContext(txCtx)
+	if got := txMD.Get(isTransactionHeader); len(got) != 1 || got[0] != "true" {
+		t.Fatalf("transactional context: got %v, want [true]", got)
+	}
+}
+
+// isTransactionHeaderRecorder serves the Firestore API from the embedded
+// mockServer and records the x-goog-is-transaction header received by each
+// BatchGetDocuments call, in call order.
+type isTransactionHeaderRecorder struct {
+	*mockServer
+	mu      sync.Mutex
+	headers [][]string
+}
+
+func (r *isTransactionHeaderRecorder) BatchGetDocuments(req *pb.BatchGetDocumentsRequest, bs pb.Firestore_BatchGetDocumentsServer) error {
+	md, _ := metadata.FromIncomingContext(bs.Context())
+	r.mu.Lock()
+	r.headers = append(r.headers, md.Get(isTransactionHeader))
+	r.mu.Unlock()
+	return r.mockServer.BatchGetDocuments(req, bs)
+}
+
+// TestRunTransaction_IsTransactionHeader verifies on the wire that, inside a
+// RunTransaction callback, only requests that carry the transaction ID are
+// sent with x-goog-is-transaction: true. A non-transactional read issued with
+// the callback context has no transaction on the request and must be sent
+// with x-goog-is-transaction: false.
+func TestRunTransaction_IsTransactionHeader(t *testing.T) {
+	gsrv, err := testutil.NewServer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	rec := &isTransactionHeaderRecorder{mockServer: &mockServer{Addr: gsrv.Addr}}
+	pb.RegisterFirestoreServer(gsrv.Gsrv, rec)
+	gsrv.Start()
+	defer gsrv.Close()
+	conn, err := grpc.Dial(gsrv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	c, err := NewClient(context.Background(), "projectID", option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+
+	const db = "projects/projectID/databases/(default)"
+	tid := []byte{1}
+	docName := db + "/documents/C/a"
+	found := []interface{}{&pb.BatchGetDocumentsResponse{
+		Result:   &pb.BatchGetDocumentsResponse_Found{Found: &pb.Document{Name: docName, CreateTime: aTimestamp, UpdateTime: aTimestamp2}},
+		ReadTime: aTimestamp2,
+	}}
+	rec.addRPC(&pb.BeginTransactionRequest{Database: db}, &pb.BeginTransactionResponse{Transaction: tid})
+	// Non-transactional read issued with the callback context: no transaction on the request.
+	rec.addRPC(&pb.BatchGetDocumentsRequest{Database: db, Documents: []string{docName}}, found)
+	// Transactional read: the request carries the transaction ID.
+	rec.addRPC(&pb.BatchGetDocumentsRequest{
+		Database:            db,
+		Documents:           []string{docName},
+		ConsistencySelector: &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid},
+	}, found)
+	rec.addRPC(&pb.CommitRequest{Database: db, Transaction: tid}, &pb.CommitResponse{CommitTime: aTimestamp3})
+
+	err = c.RunTransaction(context.Background(), func(cbCtx context.Context, tx *Transaction) error {
+		dr := c.Collection("C").Doc("a")
+		if _, err := c.GetAll(cbCtx, []*DocumentRef{dr}); err != nil {
+			return err
+		}
+		_, err := tx.Get(dr)
+		return err
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := [][]string{{"false"}, {"true"}}
+	if !testutil.Equal(rec.headers, want) {
+		t.Errorf("%s per BatchGetDocuments call: got %v, want %v", isTransactionHeader, rec.headers, want)
 	}
 }

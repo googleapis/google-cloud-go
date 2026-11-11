@@ -379,21 +379,21 @@ var File_google_cloud_eventarc_publishing_v1_cloud_event_proto protoreflect.File
 
 const file_google_cloud_eventarc_publishing_v1_cloud_event_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/eventarc/publishing/v1/cloud_event.proto\x12#google.cloud.eventarc.publishing.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9c\x06\n" +
+	"5google/cloud/eventarc/publishing/v1/cloud_event.proto\x12#google.cloud.eventarc.publishing.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa4\x06\n" +
 	"\n" +
-	"CloudEvent\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\x1b\n" +
-	"\x06source\x18\x02 \x01(\tB\x03\xe0A\x02R\x06source\x12&\n" +
-	"\fspec_version\x18\x03 \x01(\tB\x03\xe0A\x02R\vspecVersion\x12\x17\n" +
-	"\x04type\x18\x04 \x01(\tB\x03\xe0A\x02R\x04type\x12d\n" +
+	"CloudEvent\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12\x1c\n" +
+	"\x06source\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06source\x12'\n" +
+	"\fspec_version\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vspecVersion\x12\x18\n" +
+	"\x04type\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12e\n" +
 	"\n" +
-	"attributes\x18\x05 \x03(\v2?.google.cloud.eventarc.publishing.v1.CloudEvent.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12&\n" +
-	"\vbinary_data\x18\x06 \x01(\fB\x03\xe0A\x01H\x00R\n" +
-	"binaryData\x12\"\n" +
-	"\ttext_data\x18\a \x01(\tB\x03\xe0A\x01H\x00R\btextData\x12:\n" +
+	"attributes\x18\x05 \x03(\v2?.google.cloud.eventarc.publishing.v1.CloudEvent.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12'\n" +
+	"\vbinary_data\x18\x06 \x01(\fB\x04\xe2A\x01\x01H\x00R\n" +
+	"binaryData\x12#\n" +
+	"\ttext_data\x18\a \x01(\tB\x04\xe2A\x01\x01H\x00R\btextData\x12;\n" +
 	"\n" +
-	"proto_data\x18\b \x01(\v2\x14.google.protobuf.AnyB\x03\xe0A\x01H\x00R\tprotoData\x1a\x9a\x02\n" +
+	"proto_data\x18\b \x01(\v2\x14.google.protobuf.AnyB\x04\xe2A\x01\x01H\x00R\tprotoData\x1a\x9a\x02\n" +
 	"\x18CloudEventAttributeValue\x12\x1f\n" +
 	"\n" +
 	"ce_boolean\x18\x01 \x01(\bH\x00R\tceBoolean\x12\x1f\n" +

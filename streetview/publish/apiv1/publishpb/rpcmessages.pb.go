@@ -1310,67 +1310,67 @@ var File_google_streetview_publish_v1_rpcmessages_proto protoreflect.FileDescrip
 
 const file_google_streetview_publish_v1_rpcmessages_proto_rawDesc = "" +
 	"\n" +
-	".google/streetview/publish/v1/rpcmessages.proto\x12\x1cgoogle.streetview.publish.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x17google/rpc/status.proto\x1a,google/streetview/publish/v1/resources.proto\"T\n" +
-	"\x12CreatePhotoRequest\x12>\n" +
-	"\x05photo\x18\x01 \x01(\v2#.google.streetview.publish.v1.PhotoB\x03\xe0A\x02R\x05photo\"\x98\x01\n" +
-	"\x0fGetPhotoRequest\x12\x1e\n" +
-	"\bphoto_id\x18\x01 \x01(\tB\x03\xe0A\x02R\aphotoId\x12@\n" +
-	"\x04view\x18\x02 \x01(\x0e2'.google.streetview.publish.v1.PhotoViewB\x03\xe0A\x02R\x04view\x12#\n" +
-	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"\xa5\x01\n" +
-	"\x15BatchGetPhotosRequest\x12 \n" +
-	"\tphoto_ids\x18\x01 \x03(\tB\x03\xe0A\x02R\bphotoIds\x12@\n" +
-	"\x04view\x18\x02 \x01(\x0e2'.google.streetview.publish.v1.PhotoViewB\x03\xe0A\x02R\x04view\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\"_\n" +
+	".google/streetview/publish/v1/rpcmessages.proto\x12\x1cgoogle.streetview.publish.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x17google/rpc/status.proto\x1a,google/streetview/publish/v1/resources.proto\"U\n" +
+	"\x12CreatePhotoRequest\x12?\n" +
+	"\x05photo\x18\x01 \x01(\v2#.google.streetview.publish.v1.PhotoB\x04\xe2A\x01\x02R\x05photo\"\x9a\x01\n" +
+	"\x0fGetPhotoRequest\x12\x1f\n" +
+	"\bphoto_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aphotoId\x12A\n" +
+	"\x04view\x18\x02 \x01(\x0e2'.google.streetview.publish.v1.PhotoViewB\x04\xe2A\x01\x02R\x04view\x12#\n" +
+	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"\xa8\x01\n" +
+	"\x15BatchGetPhotosRequest\x12!\n" +
+	"\tphoto_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\bphotoIds\x12A\n" +
+	"\x04view\x18\x02 \x01(\x0e2'.google.streetview.publish.v1.PhotoViewB\x04\xe2A\x01\x02R\x04view\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"_\n" +
 	"\x16BatchGetPhotosResponse\x12E\n" +
 	"\aresults\x18\x01 \x03(\v2+.google.streetview.publish.v1.PhotoResponseR\aresults\"v\n" +
 	"\rPhotoResponse\x12*\n" +
 	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusR\x06status\x129\n" +
-	"\x05photo\x18\x02 \x01(\v2#.google.streetview.publish.v1.PhotoR\x05photo\"\xe2\x01\n" +
-	"\x11ListPhotosRequest\x12@\n" +
-	"\x04view\x18\x01 \x01(\x0e2'.google.streetview.publish.v1.PhotoViewB\x03\xe0A\x02R\x04view\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05photo\x18\x02 \x01(\v2#.google.streetview.publish.v1.PhotoR\x05photo\"\xe7\x01\n" +
+	"\x11ListPhotosRequest\x12A\n" +
+	"\x04view\x18\x01 \x01(\x0e2'.google.streetview.publish.v1.PhotoViewB\x04\xe2A\x01\x02R\x04view\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12(\n" +
-	"\rlanguage_code\x18\x05 \x01(\tB\x03\xe0A\x01R\flanguageCode\"y\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12)\n" +
+	"\rlanguage_code\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"y\n" +
 	"\x12ListPhotosResponse\x12;\n" +
 	"\x06photos\x18\x01 \x03(\v2#.google.streetview.publish.v1.PhotoR\x06photos\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x96\x01\n" +
-	"\x12UpdatePhotoRequest\x12>\n" +
-	"\x05photo\x18\x01 \x01(\v2#.google.streetview.publish.v1.PhotoB\x03\xe0A\x02R\x05photo\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x85\x01\n" +
-	"\x18BatchUpdatePhotosRequest\x12i\n" +
-	"\x15update_photo_requests\x18\x01 \x03(\v20.google.streetview.publish.v1.UpdatePhotoRequestB\x03\xe0A\x02R\x13updatePhotoRequests\"b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x01\n" +
+	"\x12UpdatePhotoRequest\x12?\n" +
+	"\x05photo\x18\x01 \x01(\v2#.google.streetview.publish.v1.PhotoB\x04\xe2A\x01\x02R\x05photo\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x86\x01\n" +
+	"\x18BatchUpdatePhotosRequest\x12j\n" +
+	"\x15update_photo_requests\x18\x01 \x03(\v20.google.streetview.publish.v1.UpdatePhotoRequestB\x04\xe2A\x01\x02R\x13updatePhotoRequests\"b\n" +
 	"\x19BatchUpdatePhotosResponse\x12E\n" +
-	"\aresults\x18\x01 \x03(\v2+.google.streetview.publish.v1.PhotoResponseR\aresults\"4\n" +
-	"\x12DeletePhotoRequest\x12\x1e\n" +
-	"\bphoto_id\x18\x01 \x01(\tB\x03\xe0A\x02R\aphotoId\"<\n" +
-	"\x18BatchDeletePhotosRequest\x12 \n" +
-	"\tphoto_ids\x18\x01 \x03(\tB\x03\xe0A\x02R\bphotoIds\"\x9a\x02\n" +
-	"\x1aCreatePhotoSequenceRequest\x12W\n" +
-	"\x0ephoto_sequence\x18\x01 \x01(\v2+.google.streetview.publish.v1.PhotoSequenceB\x03\xe0A\x02R\rphotoSequence\x12f\n" +
+	"\aresults\x18\x01 \x03(\v2+.google.streetview.publish.v1.PhotoResponseR\aresults\"5\n" +
+	"\x12DeletePhotoRequest\x12\x1f\n" +
+	"\bphoto_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aphotoId\"=\n" +
+	"\x18BatchDeletePhotosRequest\x12!\n" +
+	"\tphoto_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\bphotoIds\"\x9c\x02\n" +
+	"\x1aCreatePhotoSequenceRequest\x12X\n" +
+	"\x0ephoto_sequence\x18\x01 \x01(\v2+.google.streetview.publish.v1.PhotoSequenceB\x04\xe2A\x01\x02R\rphotoSequence\x12g\n" +
 	"\n" +
-	"input_type\x18\x02 \x01(\x0e2B.google.streetview.publish.v1.CreatePhotoSequenceRequest.InputTypeB\x03\xe0A\x02R\tinputType\";\n" +
+	"input_type\x18\x02 \x01(\x0e2B.google.streetview.publish.v1.CreatePhotoSequenceRequest.InputTypeB\x04\xe2A\x01\x02R\tinputType\";\n" +
 	"\tInputType\x12\x1a\n" +
 	"\x16INPUT_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05VIDEO\x10\x01\x12\a\n" +
-	"\x03XDM\x10\x02\"\x9d\x01\n" +
-	"\x17GetPhotoSequenceRequest\x12$\n" +
-	"\vsequence_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x03XDM\x10\x02\"\x9f\x01\n" +
+	"\x17GetPhotoSequenceRequest\x12%\n" +
+	"\vsequence_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"sequenceId\x12?\n" +
-	"\x04view\x18\x02 \x01(\x0e2'.google.streetview.publish.v1.PhotoViewB\x02\x18\x01R\x04view\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"B\n" +
-	"\x1aDeletePhotoSequenceRequest\x12$\n" +
-	"\vsequence_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x04view\x18\x02 \x01(\x0e2'.google.streetview.publish.v1.PhotoViewB\x02\x18\x01R\x04view\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"C\n" +
+	"\x1aDeletePhotoSequenceRequest\x12%\n" +
+	"\vsequence_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"sequenceId\"G\n" +
 	"\x19BatchDeletePhotosResponse\x12*\n" +
-	"\x06status\x18\x01 \x03(\v2\x12.google.rpc.StatusR\x06status\"~\n" +
-	"\x19ListPhotoSequencesRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x06status\x18\x01 \x03(\v2\x12.google.rpc.StatusR\x06status\"\x81\x01\n" +
+	"\x19ListPhotoSequencesRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x8c\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x8c\x01\n" +
 	"\x1aListPhotoSequencesResponse\x12F\n" +
 	"\x0fphoto_sequences\x18\x01 \x03(\v2\x1d.google.longrunning.OperationR\x0ephotoSequences\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken*0\n" +

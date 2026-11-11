@@ -3181,35 +3181,35 @@ var File_google_spanner_v1_vtinternal_spanner_proto protoreflect.FileDescriptor
 
 const file_google_spanner_v1_vtinternal_spanner_proto_rawDesc = "" +
 	"\n" +
-	"*google/spanner/v1/vtinternal/spanner.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a2google/spanner/v1/vtinternal/commit_response.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a'google/spanner/v1/vtinternal/keys.proto\x1a+google/spanner/v1/vtinternal/location.proto\x1a+google/spanner/v1/vtinternal/mutation.proto\x1a-google/spanner/v1/vtinternal/result_set.proto\x1a.google/spanner/v1/vtinternal/transaction.proto\x1a'google/spanner/v1/vtinternal/type.proto\"\xa1\x01\n" +
-	"\x14CreateSessionRequest\x12C\n" +
-	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12D\n" +
-	"\asession\x18\x02 \x01(\v2%.google.spanner.v1.vtinternal.SessionB\x03\xe0A\x02R\asession\"\xdd\x01\n" +
-	"\x1aBatchCreateSessionsRequest\x12C\n" +
-	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"*google/spanner/v1/vtinternal/spanner.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a2google/spanner/v1/vtinternal/commit_response.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a'google/spanner/v1/vtinternal/keys.proto\x1a+google/spanner/v1/vtinternal/location.proto\x1a+google/spanner/v1/vtinternal/mutation.proto\x1a-google/spanner/v1/vtinternal/result_set.proto\x1a.google/spanner/v1/vtinternal/transaction.proto\x1a'google/spanner/v1/vtinternal/type.proto\"\xa3\x01\n" +
+	"\x14CreateSessionRequest\x12D\n" +
+	"\bdatabase\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12E\n" +
+	"\asession\x18\x02 \x01(\v2%.google.spanner.v1.vtinternal.SessionB\x04\xe2A\x01\x02R\asession\"\xdf\x01\n" +
+	"\x1aBatchCreateSessionsRequest\x12D\n" +
+	"\bdatabase\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12P\n" +
-	"\x10session_template\x18\x02 \x01(\v2%.google.spanner.v1.vtinternal.SessionR\x0fsessionTemplate\x12(\n" +
-	"\rsession_count\x18\x03 \x01(\x05B\x03\xe0A\x02R\fsessionCount\"^\n" +
+	"\x10session_template\x18\x02 \x01(\v2%.google.spanner.v1.vtinternal.SessionR\x0fsessionTemplate\x12)\n" +
+	"\rsession_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x02R\fsessionCount\"^\n" +
 	"\x1bBatchCreateSessionsResponse\x12?\n" +
-	"\asession\x18\x01 \x03(\v2%.google.spanner.v1.vtinternal.SessionR\asession\"\x9b\x04\n" +
-	"\aSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12I\n" +
-	"\x06labels\x18\x02 \x03(\v21.google.spanner.v1.vtinternal.Session.LabelsEntryR\x06labels\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12Z\n" +
-	"\x19approximate_last_use_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x16approximateLastUseTime\x12!\n" +
-	"\fcreator_role\x18\x05 \x01(\tR\vcreatorRole\x12%\n" +
-	"\vmultiplexed\x18\x06 \x01(\bB\x03\xe0A\x01R\vmultiplexed\x1a9\n" +
+	"\asession\x18\x01 \x03(\v2%.google.spanner.v1.vtinternal.SessionR\asession\"\x9f\x04\n" +
+	"\aSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12I\n" +
+	"\x06labels\x18\x02 \x03(\v21.google.spanner.v1.vtinternal.Session.LabelsEntryR\x06labels\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12[\n" +
+	"\x19approximate_last_use_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x16approximateLastUseTime\x12!\n" +
+	"\fcreator_role\x18\x05 \x01(\tR\vcreatorRole\x12&\n" +
+	"\vmultiplexed\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\vmultiplexed\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x88\x01\xeaA\x84\x01\n" +
-	"\x1espanner.googleapis.com/Session\x12Oprojects/{project}/instances/{instance}/databases/{database}/sessions/{session}*\bsessions2\asession\"O\n" +
-	"\x11GetSessionRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1espanner.googleapis.com/SessionR\x04name\"\xae\x01\n" +
-	"\x13ListSessionsRequest\x12C\n" +
-	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x1espanner.googleapis.com/Session\x12Oprojects/{project}/instances/{instance}/databases/{database}/sessions/{session}*\bsessions2\asession\"P\n" +
+	"\x11GetSessionRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1espanner.googleapis.com/SessionR\x04name\"\xaf\x01\n" +
+	"\x13ListSessionsRequest\x12D\n" +
+	"\bdatabase\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -3217,18 +3217,18 @@ const file_google_spanner_v1_vtinternal_spanner_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x81\x01\n" +
 	"\x14ListSessionsResponse\x12A\n" +
 	"\bsessions\x18\x01 \x03(\v2%.google.spanner.v1.vtinternal.SessionR\bsessions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x14DeleteSessionRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1espanner.googleapis.com/SessionR\x04name\"\xdc\x04\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x14DeleteSessionRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1espanner.googleapis.com/SessionR\x04name\"\xde\x04\n" +
 	"\x0eRequestOptions\x12Q\n" +
 	"\bpriority\x18\x01 \x01(\x0e25.google.spanner.v1.vtinternal.RequestOptions.PriorityR\bpriority\x12\x1f\n" +
 	"\vrequest_tag\x18\x02 \x01(\tR\n" +
 	"requestTag\x12'\n" +
-	"\x0ftransaction_tag\x18\x03 \x01(\tR\x0etransactionTag\x12f\n" +
-	"\x0eclient_context\x18\x04 \x01(\v2:.google.spanner.v1.vtinternal.RequestOptions.ClientContextB\x03\xe0A\x01R\rclientContext\x1a\xe4\x01\n" +
-	"\rClientContext\x12y\n" +
-	"\x0esecure_context\x18\x01 \x03(\v2M.google.spanner.v1.vtinternal.RequestOptions.ClientContext.SecureContextEntryB\x03\xe0A\x01R\rsecureContext\x1aX\n" +
+	"\x0ftransaction_tag\x18\x03 \x01(\tR\x0etransactionTag\x12g\n" +
+	"\x0eclient_context\x18\x04 \x01(\v2:.google.spanner.v1.vtinternal.RequestOptions.ClientContextB\x04\xe2A\x01\x01R\rclientContext\x1a\xe5\x01\n" +
+	"\rClientContext\x12z\n" +
+	"\x0esecure_context\x18\x01 \x03(\v2M.google.spanner.v1.vtinternal.RequestOptions.ClientContext.SecureContextEntryB\x04\xe2A\x01\x01R\rsecureContext\x1aX\n" +
 	"\x12SecureContextEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
 	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01\"^\n" +
@@ -3254,13 +3254,13 @@ const file_google_spanner_v1_vtinternal_spanner_proto_rawDesc = "" +
 	"\x0fExcludeReplicas\x12q\n" +
 	"\x12replica_selections\x18\x01 \x03(\v2B.google.spanner.v1.vtinternal.DirectedReadOptions.ReplicaSelectionR\x11replicaSelectionsB\n" +
 	"\n" +
-	"\breplicas\"\x99\n" +
+	"\breplicas\"\x9d\n" +
 	"\n" +
-	"\x11ExecuteSqlRequest\x12@\n" +
-	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x11ExecuteSqlRequest\x12A\n" +
+	"\asession\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1espanner.googleapis.com/SessionR\asession\x12S\n" +
-	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorR\vtransaction\x12\x15\n" +
-	"\x03sql\x18\x03 \x01(\tB\x03\xe0A\x02R\x03sql\x12/\n" +
+	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorR\vtransaction\x12\x16\n" +
+	"\x03sql\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x03sql\x12/\n" +
 	"\x06params\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x06params\x12`\n" +
 	"\vparam_types\x18\x05 \x03(\v2?.google.spanner.v1.vtinternal.ExecuteSqlRequest.ParamTypesEntryR\n" +
 	"paramTypes\x12!\n" +
@@ -3273,9 +3273,9 @@ const file_google_spanner_v1_vtinternal_spanner_proto_rawDesc = "" +
 	" \x01(\v2<.google.spanner.v1.vtinternal.ExecuteSqlRequest.QueryOptionsR\fqueryOptions\x12U\n" +
 	"\x0frequest_options\x18\v \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12e\n" +
 	"\x15directed_read_options\x18\x0f \x01(\v21.google.spanner.v1.vtinternal.DirectedReadOptionsR\x13directedReadOptions\x12,\n" +
-	"\x12data_boost_enabled\x18\x10 \x01(\bR\x10dataBoostEnabled\x12*\n" +
-	"\x0elast_statement\x18\x11 \x01(\bB\x03\xe0A\x01R\rlastStatement\x12Q\n" +
-	"\frouting_hint\x18\x12 \x01(\v2).google.spanner.v1.vtinternal.RoutingHintB\x03\xe0A\x01R\vroutingHint\x1a}\n" +
+	"\x12data_boost_enabled\x18\x10 \x01(\bR\x10dataBoostEnabled\x12+\n" +
+	"\x0elast_statement\x18\x11 \x01(\bB\x04\xe2A\x01\x01R\rlastStatement\x12R\n" +
+	"\frouting_hint\x18\x12 \x01(\v2).google.spanner.v1.vtinternal.RoutingHintB\x04\xe2A\x01\x01R\vroutingHint\x1a}\n" +
 	"\fQueryOptions\x12+\n" +
 	"\x11optimizer_version\x18\x01 \x01(\tR\x10optimizerVersion\x12@\n" +
 	"\x1coptimizer_statistics_package\x18\x02 \x01(\tR\x1aoptimizerStatisticsPackage\x1aa\n" +
@@ -3289,53 +3289,53 @@ const file_google_spanner_v1_vtinternal_spanner_proto_rawDesc = "" +
 	"\aPROFILE\x10\x02\x12\x0e\n" +
 	"\n" +
 	"WITH_STATS\x10\x03\x12\x17\n" +
-	"\x13WITH_PLAN_AND_STATS\x10\x04\"\xe3\x05\n" +
-	"\x16ExecuteBatchDmlRequest\x12@\n" +
-	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1espanner.googleapis.com/SessionR\asession\x12X\n" +
-	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorB\x03\xe0A\x02R\vtransaction\x12c\n" +
+	"\x13WITH_PLAN_AND_STATS\x10\x04\"\xe9\x05\n" +
+	"\x16ExecuteBatchDmlRequest\x12A\n" +
+	"\asession\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1espanner.googleapis.com/SessionR\asession\x12Y\n" +
+	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorB\x04\xe2A\x01\x02R\vtransaction\x12d\n" +
 	"\n" +
-	"statements\x18\x03 \x03(\v2>.google.spanner.v1.vtinternal.ExecuteBatchDmlRequest.StatementB\x03\xe0A\x02R\n" +
-	"statements\x12\x19\n" +
-	"\x05seqno\x18\x04 \x01(\x03B\x03\xe0A\x02R\x05seqno\x12U\n" +
-	"\x0frequest_options\x18\x05 \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12,\n" +
-	"\x0flast_statements\x18\x06 \x01(\bB\x03\xe0A\x01R\x0elastStatements\x1a\xa7\x02\n" +
-	"\tStatement\x12\x15\n" +
-	"\x03sql\x18\x01 \x01(\tB\x03\xe0A\x02R\x03sql\x12/\n" +
+	"statements\x18\x03 \x03(\v2>.google.spanner.v1.vtinternal.ExecuteBatchDmlRequest.StatementB\x04\xe2A\x01\x02R\n" +
+	"statements\x12\x1a\n" +
+	"\x05seqno\x18\x04 \x01(\x03B\x04\xe2A\x01\x02R\x05seqno\x12U\n" +
+	"\x0frequest_options\x18\x05 \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12-\n" +
+	"\x0flast_statements\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x0elastStatements\x1a\xa8\x02\n" +
+	"\tStatement\x12\x16\n" +
+	"\x03sql\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03sql\x12/\n" +
 	"\x06params\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x06params\x12o\n" +
 	"\vparam_types\x18\x03 \x03(\v2N.google.spanner.v1.vtinternal.ExecuteBatchDmlRequest.Statement.ParamTypesEntryR\n" +
 	"paramTypes\x1aa\n" +
 	"\x0fParamTypesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x128\n" +
-	"\x05value\x18\x02 \x01(\v2\".google.spanner.v1.vtinternal.TypeR\x05value:\x028\x01\"\xfd\x01\n" +
+	"\x05value\x18\x02 \x01(\v2\".google.spanner.v1.vtinternal.TypeR\x05value:\x028\x01\"\xfe\x01\n" +
 	"\x17ExecuteBatchDmlResponse\x12H\n" +
 	"\vresult_sets\x18\x01 \x03(\v2'.google.spanner.v1.vtinternal.ResultSetR\n" +
 	"resultSets\x12*\n" +
-	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\x12l\n" +
-	"\x0fprecommit_token\x18\x03 \x01(\v2>.google.spanner.v1.vtinternal.MultiplexedSessionPrecommitTokenB\x03\xe0A\x01R\x0eprecommitToken\"k\n" +
+	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\x12m\n" +
+	"\x0fprecommit_token\x18\x03 \x01(\v2>.google.spanner.v1.vtinternal.MultiplexedSessionPrecommitTokenB\x04\xe2A\x01\x01R\x0eprecommitToken\"k\n" +
 	"\x10PartitionOptions\x120\n" +
 	"\x14partition_size_bytes\x18\x01 \x01(\x03R\x12partitionSizeBytes\x12%\n" +
-	"\x0emax_partitions\x18\x02 \x01(\x03R\rmaxPartitions\"\xa6\x04\n" +
-	"\x15PartitionQueryRequest\x12@\n" +
-	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x0emax_partitions\x18\x02 \x01(\x03R\rmaxPartitions\"\xaa\x04\n" +
+	"\x15PartitionQueryRequest\x12A\n" +
+	"\asession\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1espanner.googleapis.com/SessionR\asession\x12S\n" +
-	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorR\vtransaction\x12\x15\n" +
-	"\x03sql\x18\x03 \x01(\tB\x03\xe0A\x02R\x03sql\x124\n" +
-	"\x06params\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06params\x12i\n" +
-	"\vparam_types\x18\x05 \x03(\v2C.google.spanner.v1.vtinternal.PartitionQueryRequest.ParamTypesEntryB\x03\xe0A\x01R\n" +
+	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorR\vtransaction\x12\x16\n" +
+	"\x03sql\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x03sql\x125\n" +
+	"\x06params\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06params\x12j\n" +
+	"\vparam_types\x18\x05 \x03(\v2C.google.spanner.v1.vtinternal.PartitionQueryRequest.ParamTypesEntryB\x04\xe2A\x01\x01R\n" +
 	"paramTypes\x12[\n" +
 	"\x11partition_options\x18\x06 \x01(\v2..google.spanner.v1.vtinternal.PartitionOptionsR\x10partitionOptions\x1aa\n" +
 	"\x0fParamTypesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x128\n" +
-	"\x05value\x18\x02 \x01(\v2\".google.spanner.v1.vtinternal.TypeR\x05value:\x028\x01\"\x99\x03\n" +
-	"\x14PartitionReadRequest\x12@\n" +
-	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x05value\x18\x02 \x01(\v2\".google.spanner.v1.vtinternal.TypeR\x05value:\x028\x01\"\x9c\x03\n" +
+	"\x14PartitionReadRequest\x12A\n" +
+	"\asession\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1espanner.googleapis.com/SessionR\asession\x12S\n" +
-	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorR\vtransaction\x12\x19\n" +
-	"\x05table\x18\x03 \x01(\tB\x03\xe0A\x02R\x05table\x12\x14\n" +
+	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorR\vtransaction\x12\x1a\n" +
+	"\x05table\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05table\x12\x14\n" +
 	"\x05index\x18\x04 \x01(\tR\x05index\x12\x18\n" +
-	"\acolumns\x18\x05 \x03(\tR\acolumns\x12B\n" +
-	"\akey_set\x18\x06 \x01(\v2$.google.spanner.v1.vtinternal.KeySetB\x03\xe0A\x02R\x06keySet\x12[\n" +
+	"\acolumns\x18\x05 \x03(\tR\acolumns\x12C\n" +
+	"\akey_set\x18\x06 \x01(\v2$.google.spanner.v1.vtinternal.KeySetB\x04\xe2A\x01\x02R\x06keySet\x12[\n" +
 	"\x11partition_options\x18\t \x01(\v2..google.spanner.v1.vtinternal.PartitionOptionsR\x10partitionOptions\"4\n" +
 	"\tPartition\x12'\n" +
 	"\x0fpartition_token\x18\x01 \x01(\fR\x0epartitionToken\"\xa9\x01\n" +
@@ -3343,25 +3343,25 @@ const file_google_spanner_v1_vtinternal_spanner_proto_rawDesc = "" +
 	"\n" +
 	"partitions\x18\x01 \x03(\v2'.google.spanner.v1.vtinternal.PartitionR\n" +
 	"partitions\x12K\n" +
-	"\vtransaction\x18\x02 \x01(\v2).google.spanner.v1.vtinternal.TransactionR\vtransaction\"\xae\b\n" +
-	"\vReadRequest\x12@\n" +
-	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\vtransaction\x18\x02 \x01(\v2).google.spanner.v1.vtinternal.TransactionR\vtransaction\"\xb5\b\n" +
+	"\vReadRequest\x12A\n" +
+	"\asession\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1espanner.googleapis.com/SessionR\asession\x12S\n" +
-	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorR\vtransaction\x12\x19\n" +
-	"\x05table\x18\x03 \x01(\tB\x03\xe0A\x02R\x05table\x12\x14\n" +
-	"\x05index\x18\x04 \x01(\tR\x05index\x12\x1d\n" +
-	"\acolumns\x18\x05 \x03(\tB\x03\xe0A\x02R\acolumns\x12B\n" +
-	"\akey_set\x18\x06 \x01(\v2$.google.spanner.v1.vtinternal.KeySetB\x03\xe0A\x02R\x06keySet\x12\x14\n" +
+	"\vtransaction\x18\x02 \x01(\v21.google.spanner.v1.vtinternal.TransactionSelectorR\vtransaction\x12\x1a\n" +
+	"\x05table\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05table\x12\x14\n" +
+	"\x05index\x18\x04 \x01(\tR\x05index\x12\x1e\n" +
+	"\acolumns\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\acolumns\x12C\n" +
+	"\akey_set\x18\x06 \x01(\v2$.google.spanner.v1.vtinternal.KeySetB\x04\xe2A\x01\x02R\x06keySet\x12\x14\n" +
 	"\x05limit\x18\b \x01(\x03R\x05limit\x12!\n" +
 	"\fresume_token\x18\t \x01(\fR\vresumeToken\x12'\n" +
 	"\x0fpartition_token\x18\n" +
 	" \x01(\fR\x0epartitionToken\x12U\n" +
 	"\x0frequest_options\x18\v \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12e\n" +
 	"\x15directed_read_options\x18\x0e \x01(\v21.google.spanner.v1.vtinternal.DirectedReadOptionsR\x13directedReadOptions\x12,\n" +
-	"\x12data_boost_enabled\x18\x0f \x01(\bR\x10dataBoostEnabled\x12Q\n" +
-	"\border_by\x18\x10 \x01(\x0e21.google.spanner.v1.vtinternal.ReadRequest.OrderByB\x03\xe0A\x01R\aorderBy\x12T\n" +
-	"\tlock_hint\x18\x11 \x01(\x0e22.google.spanner.v1.vtinternal.ReadRequest.LockHintB\x03\xe0A\x01R\blockHint\x12Q\n" +
-	"\frouting_hint\x18\x12 \x01(\v2).google.spanner.v1.vtinternal.RoutingHintB\x03\xe0A\x01R\vroutingHint\"T\n" +
+	"\x12data_boost_enabled\x18\x0f \x01(\bR\x10dataBoostEnabled\x12R\n" +
+	"\border_by\x18\x10 \x01(\x0e21.google.spanner.v1.vtinternal.ReadRequest.OrderByB\x04\xe2A\x01\x01R\aorderBy\x12U\n" +
+	"\tlock_hint\x18\x11 \x01(\x0e22.google.spanner.v1.vtinternal.ReadRequest.LockHintB\x04\xe2A\x01\x01R\blockHint\x12R\n" +
+	"\frouting_hint\x18\x12 \x01(\v2).google.spanner.v1.vtinternal.RoutingHintB\x04\xe2A\x01\x01R\vroutingHint\"T\n" +
 	"\aOrderBy\x12\x18\n" +
 	"\x14ORDER_BY_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14ORDER_BY_PRIMARY_KEY\x10\x01\x12\x15\n" +
@@ -3369,48 +3369,48 @@ const file_google_spanner_v1_vtinternal_spanner_proto_rawDesc = "" +
 	"\bLockHint\x12\x19\n" +
 	"\x15LOCK_HINT_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10LOCK_HINT_SHARED\x10\x01\x12\x17\n" +
-	"\x13LOCK_HINT_EXCLUSIVE\x10\x02\"\xa6\x03\n" +
-	"\x17BeginTransactionRequest\x12@\n" +
-	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1espanner.googleapis.com/SessionR\asession\x12O\n" +
-	"\aoptions\x18\x02 \x01(\v20.google.spanner.v1.vtinternal.TransactionOptionsB\x03\xe0A\x02R\aoptions\x12U\n" +
-	"\x0frequest_options\x18\x03 \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12N\n" +
-	"\fmutation_key\x18\x04 \x01(\v2&.google.spanner.v1.vtinternal.MutationB\x03\xe0A\x01R\vmutationKey\x12Q\n" +
-	"\frouting_hint\x18\x05 \x01(\v2).google.spanner.v1.vtinternal.RoutingHintB\x03\xe0A\x01R\vroutingHint\"\xcb\x05\n" +
-	"\rCommitRequest\x12@\n" +
-	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x13LOCK_HINT_EXCLUSIVE\x10\x02\"\xaa\x03\n" +
+	"\x17BeginTransactionRequest\x12A\n" +
+	"\asession\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1espanner.googleapis.com/SessionR\asession\x12P\n" +
+	"\aoptions\x18\x02 \x01(\v20.google.spanner.v1.vtinternal.TransactionOptionsB\x04\xe2A\x01\x02R\aoptions\x12U\n" +
+	"\x0frequest_options\x18\x03 \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12O\n" +
+	"\fmutation_key\x18\x04 \x01(\v2&.google.spanner.v1.vtinternal.MutationB\x04\xe2A\x01\x01R\vmutationKey\x12R\n" +
+	"\frouting_hint\x18\x05 \x01(\v2).google.spanner.v1.vtinternal.RoutingHintB\x04\xe2A\x01\x01R\vroutingHint\"\xcf\x05\n" +
+	"\rCommitRequest\x12A\n" +
+	"\asession\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1espanner.googleapis.com/SessionR\asession\x12'\n" +
 	"\x0etransaction_id\x18\x02 \x01(\fH\x00R\rtransactionId\x12h\n" +
 	"\x16single_use_transaction\x18\x03 \x01(\v20.google.spanner.v1.vtinternal.TransactionOptionsH\x00R\x14singleUseTransaction\x12D\n" +
 	"\tmutations\x18\x04 \x03(\v2&.google.spanner.v1.vtinternal.MutationR\tmutations\x12.\n" +
-	"\x13return_commit_stats\x18\x05 \x01(\bR\x11returnCommitStats\x12H\n" +
-	"\x10max_commit_delay\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0emaxCommitDelay\x12U\n" +
-	"\x0frequest_options\x18\x06 \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12l\n" +
-	"\x0fprecommit_token\x18\t \x01(\v2>.google.spanner.v1.vtinternal.MultiplexedSessionPrecommitTokenB\x03\xe0A\x01R\x0eprecommitToken\x12Q\n" +
+	"\x13return_commit_stats\x18\x05 \x01(\bR\x11returnCommitStats\x12I\n" +
+	"\x10max_commit_delay\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0emaxCommitDelay\x12U\n" +
+	"\x0frequest_options\x18\x06 \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12m\n" +
+	"\x0fprecommit_token\x18\t \x01(\v2>.google.spanner.v1.vtinternal.MultiplexedSessionPrecommitTokenB\x04\xe2A\x01\x01R\x0eprecommitToken\x12R\n" +
 	"\frouting_hint\x18\n" +
-	" \x01(\v2).google.spanner.v1.vtinternal.RoutingHintB\x03\xe0A\x01R\vroutingHintB\r\n" +
-	"\vtransaction\"\x7f\n" +
-	"\x0fRollbackRequest\x12@\n" +
-	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1espanner.googleapis.com/SessionR\asession\x12*\n" +
-	"\x0etransaction_id\x18\x02 \x01(\fB\x03\xe0A\x02R\rtransactionId\"\xc0\x03\n" +
-	"\x11BatchWriteRequest\x12@\n" +
-	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	" \x01(\v2).google.spanner.v1.vtinternal.RoutingHintB\x04\xe2A\x01\x01R\vroutingHintB\r\n" +
+	"\vtransaction\"\x81\x01\n" +
+	"\x0fRollbackRequest\x12A\n" +
+	"\asession\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1espanner.googleapis.com/SessionR\asession\x12+\n" +
+	"\x0etransaction_id\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\rtransactionId\"\xc4\x03\n" +
+	"\x11BatchWriteRequest\x12A\n" +
+	"\asession\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1espanner.googleapis.com/SessionR\asession\x12U\n" +
-	"\x0frequest_options\x18\x03 \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12k\n" +
-	"\x0fmutation_groups\x18\x04 \x03(\v2=.google.spanner.v1.vtinternal.BatchWriteRequest.MutationGroupB\x03\xe0A\x02R\x0emutationGroups\x12I\n" +
-	"\x1fexclude_txn_from_change_streams\x18\x05 \x01(\bB\x03\xe0A\x01R\x1bexcludeTxnFromChangeStreams\x1aZ\n" +
-	"\rMutationGroup\x12I\n" +
-	"\tmutations\x18\x01 \x03(\v2&.google.spanner.v1.vtinternal.MutationB\x03\xe0A\x02R\tmutations\"\xa1\x01\n" +
+	"\x0frequest_options\x18\x03 \x01(\v2,.google.spanner.v1.vtinternal.RequestOptionsR\x0erequestOptions\x12l\n" +
+	"\x0fmutation_groups\x18\x04 \x03(\v2=.google.spanner.v1.vtinternal.BatchWriteRequest.MutationGroupB\x04\xe2A\x01\x02R\x0emutationGroups\x12J\n" +
+	"\x1fexclude_txn_from_change_streams\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x1bexcludeTxnFromChangeStreams\x1a[\n" +
+	"\rMutationGroup\x12J\n" +
+	"\tmutations\x18\x01 \x03(\v2&.google.spanner.v1.vtinternal.MutationB\x04\xe2A\x01\x02R\tmutations\"\xa1\x01\n" +
 	"\x12BatchWriteResponse\x12\x18\n" +
 	"\aindexes\x18\x01 \x03(\x05R\aindexes\x12*\n" +
 	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\x12E\n" +
-	"\x10commit_timestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0fcommitTimestamp\"\xba\x01\n" +
-	"\x17FetchCacheUpdateRequest\x12C\n" +
-	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12-\n" +
-	"\x10max_recipe_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0emaxRecipeCount\x12+\n" +
-	"\x0fmax_range_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\rmaxRangeCountB\x8a\x02\xeaA_\n" +
+	"\x10commit_timestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0fcommitTimestamp\"\xbd\x01\n" +
+	"\x17FetchCacheUpdateRequest\x12D\n" +
+	"\bdatabase\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12.\n" +
+	"\x10max_recipe_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0emaxRecipeCount\x12,\n" +
+	"\x0fmax_range_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\rmaxRangeCountB\x8a\x02\xeaA_\n" +
 	"\x1fspanner.googleapis.com/Database\x12<projects/{project}/instances/{instance}/databases/{database}\n" +
 	"\x15com.google.spanner.v1B\fSpannerProtoP\x01Z.cloud.google.com/go/spanner/internal/vtpb;vtpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1P\x00b\x06proto3"
 

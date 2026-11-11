@@ -429,6 +429,11 @@ func (c *lfpMerchantStateRESTClient) GetLfpMerchantState(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/lfp/v1beta/%v", req.GetName())
 
 	params := url.Values{}

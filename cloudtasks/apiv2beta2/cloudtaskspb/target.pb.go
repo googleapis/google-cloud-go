@@ -1648,9 +1648,9 @@ const file_google_cloud_tasks_v2beta2_target_proto_rawDesc = "" +
 	"\aservice\x18\x01 \x01(\tR\aservice\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x1a\n" +
 	"\binstance\x18\x03 \x01(\tR\binstance\x12\x12\n" +
-	"\x04host\x18\x04 \x01(\tR\x04host\"\xb8\x03\n" +
-	"\vHttpRequest\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12G\n" +
+	"\x04host\x18\x04 \x01(\tR\x04host\"\xb9\x03\n" +
+	"\vHttpRequest\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03url\x12G\n" +
 	"\vhttp_method\x18\x02 \x01(\x0e2&.google.cloud.tasks.v2beta2.HttpMethodR\n" +
 	"httpMethod\x12N\n" +
 	"\aheaders\x18\x03 \x03(\v24.google.cloud.tasks.v2beta2.HttpRequest.HeadersEntryR\aheaders\x12\x12\n" +

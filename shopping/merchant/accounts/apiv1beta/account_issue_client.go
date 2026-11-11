@@ -466,6 +466,11 @@ func (c *accountIssueRESTClient) ListAccountIssues(ctx context.Context, req *acc
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/issues", req.GetParent())
 
 		params := url.Values{}

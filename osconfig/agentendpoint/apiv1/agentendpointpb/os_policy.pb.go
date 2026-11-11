@@ -2019,57 +2019,57 @@ var File_google_cloud_osconfig_agentendpoint_v1_os_policy_proto protoreflect.Fil
 
 const file_google_cloud_osconfig_agentendpoint_v1_os_policy_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/osconfig/agentendpoint/v1/os_policy.proto\x12&google.cloud.osconfig.agentendpoint.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xb8$\n" +
-	"\bOSPolicy\x1a\xec#\n" +
-	"\bResource\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12]\n" +
+	"6google/cloud/osconfig/agentendpoint/v1/os_policy.proto\x12&google.cloud.osconfig.agentendpoint.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xd4$\n" +
+	"\bOSPolicy\x1a\x88$\n" +
+	"\bResource\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12]\n" +
 	"\x03pkg\x18\x02 \x01(\v2I.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResourceH\x00R\x03pkg\x12n\n" +
 	"\n" +
 	"repository\x18\x03 \x01(\v2L.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.RepositoryResourceH\x00R\n" +
 	"repository\x12\\\n" +
 	"\x04exec\x18\x04 \x01(\v2F.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.ExecResourceH\x00R\x04exec\x12\\\n" +
-	"\x04file\x18\x05 \x01(\v2F.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileResourceH\x00R\x04file\x1a\xba\x03\n" +
+	"\x04file\x18\x05 \x01(\v2F.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileResourceH\x00R\x04file\x1a\xbd\x03\n" +
 	"\x04File\x12_\n" +
 	"\x06remote\x18\x01 \x01(\v2E.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.File.RemoteH\x00R\x06remote\x12V\n" +
 	"\x03gcs\x18\x02 \x01(\v2B.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.File.GcsH\x00R\x03gcs\x12\x1f\n" +
 	"\n" +
 	"local_path\x18\x03 \x01(\tH\x00R\tlocalPath\x12%\n" +
-	"\x0eallow_insecure\x18\x04 \x01(\bR\rallowInsecure\x1aH\n" +
-	"\x06Remote\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12'\n" +
-	"\x0fsha256_checksum\x18\x02 \x01(\tR\x0esha256Checksum\x1a_\n" +
-	"\x03Gcs\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\x1b\n" +
-	"\x06object\x18\x02 \x01(\tB\x03\xe0A\x02R\x06object\x12\x1e\n" +
+	"\x0eallow_insecure\x18\x04 \x01(\bR\rallowInsecure\x1aI\n" +
+	"\x06Remote\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12'\n" +
+	"\x0fsha256_checksum\x18\x02 \x01(\tR\x0esha256Checksum\x1aa\n" +
+	"\x03Gcs\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12\x1c\n" +
+	"\x06object\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06object\x12\x1e\n" +
 	"\n" +
 	"generation\x18\x03 \x01(\x03R\n" +
 	"generationB\x06\n" +
-	"\x04type\x1a\xc5\v\n" +
-	"\x0fPackageResource\x12\x80\x01\n" +
-	"\rdesired_state\x18\x01 \x01(\x0e2V.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.DesiredStateB\x03\xe0A\x02R\fdesiredState\x12a\n" +
+	"\x04type\x1a\xcf\v\n" +
+	"\x0fPackageResource\x12\x81\x01\n" +
+	"\rdesired_state\x18\x01 \x01(\x0e2V.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.DesiredStateB\x04\xe2A\x01\x02R\fdesiredState\x12a\n" +
 	"\x03apt\x18\x02 \x01(\v2M.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.APTH\x00R\x03apt\x12a\n" +
 	"\x03deb\x18\x03 \x01(\v2M.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.DebH\x00R\x03deb\x12a\n" +
 	"\x03yum\x18\x04 \x01(\v2M.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.YUMH\x00R\x03yum\x12j\n" +
 	"\x06zypper\x18\x05 \x01(\v2P.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.ZypperH\x00R\x06zypper\x12a\n" +
 	"\x03rpm\x18\x06 \x01(\v2M.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.RPMH\x00R\x03rpm\x12j\n" +
 	"\x06googet\x18\a \x01(\v2P.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.GooGetH\x00R\x06googet\x12a\n" +
-	"\x03msi\x18\b \x01(\v2M.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.MSIH\x00R\x03msi\x1a\x7f\n" +
-	"\x03Deb\x12[\n" +
-	"\x06source\x18\x01 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileB\x03\xe0A\x02R\x06source\x12\x1b\n" +
-	"\tpull_deps\x18\x02 \x01(\bR\bpullDeps\x1a\x1e\n" +
-	"\x03APT\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x1a\x7f\n" +
-	"\x03RPM\x12[\n" +
-	"\x06source\x18\x01 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileB\x03\xe0A\x02R\x06source\x12\x1b\n" +
-	"\tpull_deps\x18\x02 \x01(\bR\bpullDeps\x1a\x1e\n" +
-	"\x03YUM\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x1a!\n" +
-	"\x06Zypper\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x1a!\n" +
-	"\x06GooGet\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x1a\x82\x01\n" +
-	"\x03MSI\x12[\n" +
-	"\x06source\x18\x01 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileB\x03\xe0A\x02R\x06source\x12\x1e\n" +
+	"\x03msi\x18\b \x01(\v2M.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.PackageResource.MSIH\x00R\x03msi\x1a\x80\x01\n" +
+	"\x03Deb\x12\\\n" +
+	"\x06source\x18\x01 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileB\x04\xe2A\x01\x02R\x06source\x12\x1b\n" +
+	"\tpull_deps\x18\x02 \x01(\bR\bpullDeps\x1a\x1f\n" +
+	"\x03APT\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x1a\x80\x01\n" +
+	"\x03RPM\x12\\\n" +
+	"\x06source\x18\x01 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileB\x04\xe2A\x01\x02R\x06source\x12\x1b\n" +
+	"\tpull_deps\x18\x02 \x01(\bR\bpullDeps\x1a\x1f\n" +
+	"\x03YUM\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x1a\"\n" +
+	"\x06Zypper\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x1a\"\n" +
+	"\x06GooGet\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x1a\x83\x01\n" +
+	"\x03MSI\x12\\\n" +
+	"\x06source\x18\x01 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileB\x04\xe2A\x01\x02R\x06source\x12\x1e\n" +
 	"\n" +
 	"properties\x18\x02 \x03(\tR\n" +
 	"properties\"I\n" +
@@ -2077,47 +2077,47 @@ const file_google_cloud_osconfig_agentendpoint_v1_os_policy_proto_rawDesc = "" +
 	"\x19DESIRED_STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tINSTALLED\x10\x01\x12\v\n" +
 	"\aREMOVED\x10\x02B\x10\n" +
-	"\x0esystem_package\x1a\x9d\t\n" +
+	"\x0esystem_package\x1a\xa7\t\n" +
 	"\x12RepositoryResource\x12n\n" +
 	"\x03apt\x18\x01 \x01(\v2Z.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.RepositoryResource.AptRepositoryH\x00R\x03apt\x12n\n" +
 	"\x03yum\x18\x02 \x01(\v2Z.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.RepositoryResource.YumRepositoryH\x00R\x03yum\x12w\n" +
 	"\x06zypper\x18\x03 \x01(\v2].google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.RepositoryResource.ZypperRepositoryH\x00R\x06zypper\x12n\n" +
-	"\x03goo\x18\x04 \x01(\v2Z.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.RepositoryResource.GooRepositoryH\x00R\x03goo\x1a\xe1\x02\n" +
-	"\rAptRepository\x12\x8e\x01\n" +
-	"\farchive_type\x18\x01 \x01(\x0e2f.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.RepositoryResource.AptRepository.ArchiveTypeB\x03\xe0A\x02R\varchiveType\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x03uri\x12'\n" +
-	"\fdistribution\x18\x03 \x01(\tB\x03\xe0A\x02R\fdistribution\x12#\n" +
+	"\x03goo\x18\x04 \x01(\v2Z.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.RepositoryResource.GooRepositoryH\x00R\x03goo\x1a\xe5\x02\n" +
+	"\rAptRepository\x12\x8f\x01\n" +
+	"\farchive_type\x18\x01 \x01(\x0e2f.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.RepositoryResource.AptRepository.ArchiveTypeB\x04\xe2A\x01\x02R\varchiveType\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12(\n" +
+	"\fdistribution\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fdistribution\x12$\n" +
 	"\n" +
-	"components\x18\x04 \x03(\tB\x03\xe0A\x02R\n" +
+	"components\x18\x04 \x03(\tB\x04\xe2A\x01\x02R\n" +
 	"components\x12\x17\n" +
 	"\agpg_key\x18\x05 \x01(\tR\x06gpgKey\"A\n" +
 	"\vArchiveType\x12\x1c\n" +
 	"\x18ARCHIVE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03DEB\x10\x01\x12\v\n" +
-	"\aDEB_SRC\x10\x02\x1a\x82\x01\n" +
-	"\rYumRepository\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1e\n" +
-	"\bbase_url\x18\x03 \x01(\tB\x03\xe0A\x02R\abaseUrl\x12\x19\n" +
-	"\bgpg_keys\x18\x04 \x03(\tR\agpgKeys\x1a\x85\x01\n" +
-	"\x10ZypperRepository\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1e\n" +
-	"\bbase_url\x18\x03 \x01(\tB\x03\xe0A\x02R\abaseUrl\x12\x19\n" +
-	"\bgpg_keys\x18\x04 \x03(\tR\agpgKeys\x1a?\n" +
-	"\rGooRepository\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x15\n" +
-	"\x03url\x18\x02 \x01(\tB\x03\xe0A\x02R\x03urlB\f\n" +
+	"\aDEB_SRC\x10\x02\x1a\x84\x01\n" +
+	"\rYumRepository\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1f\n" +
+	"\bbase_url\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\abaseUrl\x12\x19\n" +
+	"\bgpg_keys\x18\x04 \x03(\tR\agpgKeys\x1a\x87\x01\n" +
+	"\x10ZypperRepository\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1f\n" +
+	"\bbase_url\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\abaseUrl\x12\x19\n" +
+	"\bgpg_keys\x18\x04 \x03(\tR\agpgKeys\x1aA\n" +
+	"\rGooRepository\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x16\n" +
+	"\x03url\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03urlB\f\n" +
 	"\n" +
-	"repository\x1a\xf5\x04\n" +
-	"\fExecResource\x12l\n" +
-	"\bvalidate\x18\x01 \x01(\v2K.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.ExecResource.ExecB\x03\xe0A\x02R\bvalidate\x12e\n" +
-	"\aenforce\x18\x02 \x01(\v2K.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.ExecResource.ExecR\aenforce\x1a\x8f\x03\n" +
+	"repository\x1a\xf7\x04\n" +
+	"\fExecResource\x12m\n" +
+	"\bvalidate\x18\x01 \x01(\v2K.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.ExecResource.ExecB\x04\xe2A\x01\x02R\bvalidate\x12e\n" +
+	"\aenforce\x18\x02 \x01(\v2K.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.ExecResource.ExecR\aenforce\x1a\x90\x03\n" +
 	"\x04Exec\x12T\n" +
 	"\x04file\x18\x01 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileH\x00R\x04file\x12\x18\n" +
 	"\x06script\x18\x02 \x01(\tH\x00R\x06script\x12\x12\n" +
-	"\x04args\x18\x03 \x03(\tR\x04args\x12~\n" +
-	"\vinterpreter\x18\x04 \x01(\x0e2W.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.ExecResource.Exec.InterpreterB\x03\xe0A\x02R\vinterpreter\x12(\n" +
+	"\x04args\x18\x03 \x03(\tR\x04args\x12\x7f\n" +
+	"\vinterpreter\x18\x04 \x01(\x0e2W.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.ExecResource.Exec.InterpreterB\x04\xe2A\x01\x02R\vinterpreter\x12(\n" +
 	"\x10output_file_path\x18\x05 \x01(\tR\x0eoutputFilePath\"O\n" +
 	"\vInterpreter\x12\x1b\n" +
 	"\x17INTERPRETER_UNSPECIFIED\x10\x00\x12\b\n" +
@@ -2125,12 +2125,12 @@ const file_google_cloud_osconfig_agentendpoint_v1_os_policy_proto_rawDesc = "" +
 	"\x05SHELL\x10\x02\x12\x0e\n" +
 	"\n" +
 	"POWERSHELL\x10\x03B\b\n" +
-	"\x06source\x1a\x91\x03\n" +
+	"\x06source\x1a\x93\x03\n" +
 	"\fFileResource\x12T\n" +
 	"\x04file\x18\x01 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileH\x00R\x04file\x12\x1a\n" +
-	"\acontent\x18\x02 \x01(\tH\x00R\acontent\x12\x17\n" +
-	"\x04path\x18\x03 \x01(\tB\x03\xe0A\x02R\x04path\x12n\n" +
-	"\x05state\x18\x04 \x01(\x0e2S.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileResource.DesiredStateB\x03\xe0A\x02R\x05state\x12 \n" +
+	"\acontent\x18\x02 \x01(\tH\x00R\acontent\x12\x18\n" +
+	"\x04path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12o\n" +
+	"\x05state\x18\x04 \x01(\x0e2S.google.cloud.osconfig.agentendpoint.v1.OSPolicy.Resource.FileResource.DesiredStateB\x04\xe2A\x01\x02R\x05state\x12 \n" +
 	"\vpermissions\x18\x05 \x01(\tR\vpermissions\"Z\n" +
 	"\fDesiredState\x12\x1d\n" +
 	"\x19DESIRED_STATE_UNSPECIFIED\x10\x00\x12\v\n" +

@@ -630,18 +630,18 @@ var File_google_cloud_notebooks_v2_instance_proto protoreflect.FileDescriptor
 
 const file_google_cloud_notebooks_v2_instance_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/notebooks/v2/instance.proto\x12\x19google.cloud.notebooks.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/notebooks/v2/gce_setup.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xde\x04\n" +
-	"\x13UpgradeHistoryEntry\x12\x1f\n" +
-	"\bsnapshot\x18\x01 \x01(\tB\x03\xe0A\x01R\bsnapshot\x12\x1e\n" +
-	"\bvm_image\x18\x02 \x01(\tB\x03\xe0A\x01R\avmImage\x12,\n" +
-	"\x0fcontainer_image\x18\x03 \x01(\tB\x03\xe0A\x01R\x0econtainerImage\x12!\n" +
-	"\tframework\x18\x04 \x01(\tB\x03\xe0A\x01R\tframework\x12\x1d\n" +
-	"\aversion\x18\x05 \x01(\tB\x03\xe0A\x01R\aversion\x12O\n" +
-	"\x05state\x18\x06 \x01(\x0e24.google.cloud.notebooks.v2.UpgradeHistoryEntry.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x05R\n" +
-	"createTime\x12R\n" +
-	"\x06action\x18\b \x01(\x0e25.google.cloud.notebooks.v2.UpgradeHistoryEntry.ActionB\x03\xe0A\x01R\x06action\x12*\n" +
-	"\x0etarget_version\x18\t \x01(\tB\x03\xe0A\x01R\rtargetVersion\"F\n" +
+	"(google/cloud/notebooks/v2/instance.proto\x12\x19google.cloud.notebooks.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/notebooks/v2/gce_setup.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe7\x04\n" +
+	"\x13UpgradeHistoryEntry\x12 \n" +
+	"\bsnapshot\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bsnapshot\x12\x1f\n" +
+	"\bvm_image\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\avmImage\x12-\n" +
+	"\x0fcontainer_image\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0econtainerImage\x12\"\n" +
+	"\tframework\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tframework\x12\x1e\n" +
+	"\aversion\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aversion\x12P\n" +
+	"\x05state\x18\x06 \x01(\x0e24.google.cloud.notebooks.v2.UpgradeHistoryEntry.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x05R\n" +
+	"createTime\x12S\n" +
+	"\x06action\x18\b \x01(\x0e25.google.cloud.notebooks.v2.UpgradeHistoryEntry.ActionB\x04\xe2A\x01\x01R\x06action\x12+\n" +
+	"\x0etarget_version\x18\t \x01(\tB\x04\xe2A\x01\x01R\rtargetVersion\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSTARTED\x10\x01\x12\r\n" +
@@ -651,26 +651,26 @@ const file_google_cloud_notebooks_v2_instance_proto_rawDesc = "" +
 	"\x06Action\x12\x16\n" +
 	"\x12ACTION_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aUPGRADE\x10\x01\x12\f\n" +
-	"\bROLLBACK\x10\x02\"\xc9\b\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12G\n" +
-	"\tgce_setup\x18\x02 \x01(\v2#.google.cloud.notebooks.v2.GceSetupB\x03\xe0A\x01H\x00R\bgceSetup\x12 \n" +
-	"\tproxy_uri\x18\x03 \x01(\tB\x03\xe0A\x03R\bproxyUri\x12/\n" +
-	"\x0finstance_owners\x18\x04 \x03(\tB\x06\xe0A\x04\xe0A\x01R\x0einstanceOwners\x12\x1d\n" +
-	"\acreator\x18\x05 \x01(\tB\x03\xe0A\x03R\acreator\x12;\n" +
-	"\x05state\x18\x06 \x01(\x0e2 .google.cloud.notebooks.v2.StateB\x03\xe0A\x03R\x05state\x12\\\n" +
-	"\x0fupgrade_history\x18\a \x03(\v2..google.cloud.notebooks.v2.UpgradeHistoryEntryB\x03\xe0A\x03R\x0eupgradeHistory\x12\x13\n" +
-	"\x02id\x18\b \x01(\tB\x03\xe0A\x03R\x02id\x12N\n" +
-	"\fhealth_state\x18\t \x01(\x0e2&.google.cloud.notebooks.v2.HealthStateB\x03\xe0A\x03R\vhealthState\x12Y\n" +
+	"\bROLLBACK\x10\x02\"\xd5\b\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12H\n" +
+	"\tgce_setup\x18\x02 \x01(\v2#.google.cloud.notebooks.v2.GceSetupB\x04\xe2A\x01\x01H\x00R\bgceSetup\x12!\n" +
+	"\tproxy_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bproxyUri\x12.\n" +
+	"\x0finstance_owners\x18\x04 \x03(\tB\x05\xe2A\x02\x04\x01R\x0einstanceOwners\x12\x1e\n" +
+	"\acreator\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\acreator\x12<\n" +
+	"\x05state\x18\x06 \x01(\x0e2 .google.cloud.notebooks.v2.StateB\x04\xe2A\x01\x03R\x05state\x12]\n" +
+	"\x0fupgrade_history\x18\a \x03(\v2..google.cloud.notebooks.v2.UpgradeHistoryEntryB\x04\xe2A\x01\x03R\x0eupgradeHistory\x12\x14\n" +
+	"\x02id\x18\b \x01(\tB\x04\xe2A\x01\x03R\x02id\x12O\n" +
+	"\fhealth_state\x18\t \x01(\x0e2&.google.cloud.notebooks.v2.HealthStateB\x04\xe2A\x01\x03R\vhealthState\x12Z\n" +
 	"\vhealth_info\x18\n" +
-	" \x03(\v23.google.cloud.notebooks.v2.Instance.HealthInfoEntryB\x03\xe0A\x03R\n" +
-	"healthInfo\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x125\n" +
-	"\x14disable_proxy_access\x18\r \x01(\bB\x03\xe0A\x01R\x12disableProxyAccess\x12L\n" +
-	"\x06labels\x18\x0e \x03(\v2/.google.cloud.notebooks.v2.Instance.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a=\n" +
+	" \x03(\v23.google.cloud.notebooks.v2.Instance.HealthInfoEntryB\x04\xe2A\x01\x03R\n" +
+	"healthInfo\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x126\n" +
+	"\x14disable_proxy_access\x18\r \x01(\bB\x04\xe2A\x01\x01R\x12disableProxyAccess\x12M\n" +
+	"\x06labels\x18\x0e \x03(\v2/.google.cloud.notebooks.v2.Instance.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a=\n" +
 	"\x0fHealthInfoEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +

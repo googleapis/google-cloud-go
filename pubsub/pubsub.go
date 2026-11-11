@@ -163,10 +163,7 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 		}
 		opts = append(emulatorOpts, opts...)
 	} else {
-		numConns := runtime.GOMAXPROCS(0)
-		if numConns > 4 {
-			numConns = 4
-		}
+		numConns := min(runtime.GOMAXPROCS(0), 4)
 		o = []option.ClientOption{
 			// Create multiple connections to increase throughput.
 			option.WithGRPCConnectionPool(numConns),

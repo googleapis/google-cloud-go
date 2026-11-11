@@ -327,22 +327,22 @@ var File_google_cloud_dialogflow_v2_agent_coaching_instruction_proto protoreflec
 
 const file_google_cloud_dialogflow_v2_agent_coaching_instruction_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/dialogflow/v2/agent_coaching_instruction.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xce\a\n" +
-	"\x18AgentCoachingInstruction\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12,\n" +
-	"\x0fdisplay_details\x18\x02 \x01(\tB\x03\xe0A\x01R\x0edisplayDetails\x12!\n" +
-	"\tcondition\x18\x03 \x01(\tB\x03\xe0A\x01R\tcondition\x12&\n" +
-	"\fagent_action\x18\x04 \x01(\tB\x03\xe0A\x01R\vagentAction\x12(\n" +
-	"\rsystem_action\x18\x05 \x01(\tB\x03\xe0A\x01R\fsystemAction\x12\x84\x01\n" +
-	"\x16duplicate_check_result\x18\b \x01(\v2I.google.cloud.dialogflow.v2.AgentCoachingInstruction.DuplicateCheckResultB\x03\xe0A\x03R\x14duplicateCheckResult\x12q\n" +
+	";google/cloud/dialogflow/v2/agent_coaching_instruction.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xd9\a\n" +
+	"\x18AgentCoachingInstruction\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12-\n" +
+	"\x0fdisplay_details\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0edisplayDetails\x12\"\n" +
+	"\tcondition\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tcondition\x12'\n" +
+	"\fagent_action\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vagentAction\x12)\n" +
+	"\rsystem_action\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\fsystemAction\x12\x85\x01\n" +
+	"\x16duplicate_check_result\x18\b \x01(\v2I.google.cloud.dialogflow.v2.AgentCoachingInstruction.DuplicateCheckResultB\x04\xe2A\x01\x03R\x14duplicateCheckResult\x12r\n" +
 	"\x10triggering_event\x18\n" +
-	" \x01(\x0e2A.google.cloud.dialogflow.v2.AgentCoachingInstruction.TriggerEventB\x03\xe0A\x01R\x0ftriggeringEvent\x1a\xd2\x02\n" +
-	"\x14DuplicateCheckResult\x12\x97\x01\n" +
-	"\x15duplicate_suggestions\x18\x01 \x03(\v2].google.cloud.dialogflow.v2.AgentCoachingInstruction.DuplicateCheckResult.DuplicateSuggestionB\x03\xe0A\x03R\x14duplicateSuggestions\x1a\x9f\x01\n" +
-	"\x13DuplicateSuggestion\x12(\n" +
-	"\ranswer_record\x18\x01 \x01(\tB\x03\xe0A\x03R\fanswerRecord\x12.\n" +
-	"\x10suggestion_index\x18\x03 \x01(\x05B\x03\xe0A\x03R\x0fsuggestionIndex\x12.\n" +
-	"\x10similarity_score\x18\x04 \x01(\x02B\x03\xe0A\x03R\x0fsimilarityScore\"\x97\x01\n" +
+	" \x01(\x0e2A.google.cloud.dialogflow.v2.AgentCoachingInstruction.TriggerEventB\x04\xe2A\x01\x01R\x0ftriggeringEvent\x1a\xd6\x02\n" +
+	"\x14DuplicateCheckResult\x12\x98\x01\n" +
+	"\x15duplicate_suggestions\x18\x01 \x03(\v2].google.cloud.dialogflow.v2.AgentCoachingInstruction.DuplicateCheckResult.DuplicateSuggestionB\x04\xe2A\x01\x03R\x14duplicateSuggestions\x1a\xa2\x01\n" +
+	"\x13DuplicateSuggestion\x12)\n" +
+	"\ranswer_record\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fanswerRecord\x12/\n" +
+	"\x10suggestion_index\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x0fsuggestionIndex\x12/\n" +
+	"\x10similarity_score\x18\x04 \x01(\x02B\x04\xe2A\x01\x03R\x0fsimilarityScore\"\x97\x01\n" +
 	"\fTriggerEvent\x12\x1d\n" +
 	"\x19TRIGGER_EVENT_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10END_OF_UTTERANCE\x10\x01\x12\x0f\n" +

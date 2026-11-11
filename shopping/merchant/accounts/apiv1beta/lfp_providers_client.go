@@ -533,6 +533,11 @@ func (c *lfpProvidersRESTClient) FindLfpProviders(ctx context.Context, req *acco
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/lfpProviders:find", req.GetParent())
 
 		params := url.Values{}
@@ -602,6 +607,11 @@ func (c *lfpProvidersRESTClient) LinkLfpProvider(ctx context.Context, req *accou
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v:linkLfpProvider", req.GetName())

@@ -1556,37 +1556,37 @@ var File_google_cloud_bigquery_connection_v1_connection_proto protoreflect.FileD
 
 const file_google_cloud_bigquery_connection_v1_connection_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/bigquery/connection/v1/connection.proto\x12#google.cloud.bigquery.connection.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xdc\x01\n" +
-	"\x17CreateConnectionRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12(\n" +
-	"\rconnection_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fconnectionId\x12T\n" +
+	"4google/cloud/bigquery/connection/v1/connection.proto\x12#google.cloud.bigquery.connection.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xdf\x01\n" +
+	"\x17CreateConnectionRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12)\n" +
+	"\rconnection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fconnectionId\x12U\n" +
 	"\n" +
-	"connection\x18\x03 \x01(\v2/.google.cloud.bigquery.connection.v1.ConnectionB\x03\xe0A\x02R\n" +
-	"connection\"`\n" +
-	"\x14GetConnectionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",bigqueryconnection.googleapis.com/ConnectionR\x04name\"\x9c\x01\n" +
-	"\x16ListConnectionsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x02R\bpageSize\x12\x1d\n" +
+	"connection\x18\x03 \x01(\v2/.google.cloud.bigquery.connection.v1.ConnectionB\x04\xe2A\x01\x02R\n" +
+	"connection\"a\n" +
+	"\x14GetConnectionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",bigqueryconnection.googleapis.com/ConnectionR\x04name\"\x9e\x01\n" +
+	"\x16ListConnectionsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x02R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x94\x01\n" +
 	"\x17ListConnectionsResponse\x12&\n" +
 	"\x0fnext_page_token\x18\x01 \x01(\tR\rnextPageToken\x12Q\n" +
-	"\vconnections\x18\x02 \x03(\v2/.google.cloud.bigquery.connection.v1.ConnectionR\vconnections\"\xfb\x01\n" +
-	"\x17UpdateConnectionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",bigqueryconnection.googleapis.com/ConnectionR\x04name\x12T\n" +
+	"\vconnections\x18\x02 \x03(\v2/.google.cloud.bigquery.connection.v1.ConnectionR\vconnections\"\xfe\x01\n" +
+	"\x17UpdateConnectionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",bigqueryconnection.googleapis.com/ConnectionR\x04name\x12U\n" +
 	"\n" +
-	"connection\x18\x02 \x01(\v2/.google.cloud.bigquery.connection.v1.ConnectionB\x03\xe0A\x02R\n" +
-	"connection\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"c\n" +
-	"\x17DeleteConnectionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",bigqueryconnection.googleapis.com/ConnectionR\x04name\"\xf9\a\n" +
+	"connection\x18\x02 \x01(\v2/.google.cloud.bigquery.connection.v1.ConnectionB\x04\xe2A\x01\x02R\n" +
+	"connection\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"d\n" +
+	"\x17DeleteConnectionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",bigqueryconnection.googleapis.com/ConnectionR\x04name\"\xfd\a\n" +
 	"\n" +
 	"Connection\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12#\n" +
@@ -1597,73 +1597,73 @@ const file_google_cloud_bigquery_connection_v1_connection_proto_rawDesc = "" +
 	"\x05azure\x18\v \x01(\v24.google.cloud.bigquery.connection.v1.AzurePropertiesH\x00R\x05azure\x12b\n" +
 	"\rcloud_spanner\x18\x15 \x01(\v2;.google.cloud.bigquery.connection.v1.CloudSpannerPropertiesH\x00R\fcloudSpanner\x12e\n" +
 	"\x0ecloud_resource\x18\x16 \x01(\v2<.google.cloud.bigquery.connection.v1.CloudResourcePropertiesH\x00R\rcloudResource\x12L\n" +
-	"\x05spark\x18\x17 \x01(\v24.google.cloud.bigquery.connection.v1.SparkPropertiesH\x00R\x05spark\x12}\n" +
-	"\x15salesforce_data_cloud\x18\x18 \x01(\v2B.google.cloud.bigquery.connection.v1.SalesforceDataCloudPropertiesB\x03\xe0A\x01H\x00R\x13salesforceDataCloud\x12(\n" +
-	"\rcreation_time\x18\x05 \x01(\x03B\x03\xe0A\x03R\fcreationTime\x121\n" +
-	"\x12last_modified_time\x18\x06 \x01(\x03B\x03\xe0A\x03R\x10lastModifiedTime\x12*\n" +
-	"\x0ehas_credential\x18\a \x01(\bB\x03\xe0A\x03R\rhasCredential:s\xeaAp\n" +
+	"\x05spark\x18\x17 \x01(\v24.google.cloud.bigquery.connection.v1.SparkPropertiesH\x00R\x05spark\x12~\n" +
+	"\x15salesforce_data_cloud\x18\x18 \x01(\v2B.google.cloud.bigquery.connection.v1.SalesforceDataCloudPropertiesB\x04\xe2A\x01\x01H\x00R\x13salesforceDataCloud\x12)\n" +
+	"\rcreation_time\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\fcreationTime\x122\n" +
+	"\x12last_modified_time\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\x10lastModifiedTime\x12+\n" +
+	"\x0ehas_credential\x18\a \x01(\bB\x04\xe2A\x01\x03R\rhasCredential:s\xeaAp\n" +
 	",bigqueryconnection.googleapis.com/Connection\x12@projects/{project}/locations/{location}/connections/{connection}B\f\n" +
 	"\n" +
-	"properties\"\x84\x03\n" +
+	"properties\"\x86\x03\n" +
 	"\x12CloudSqlProperties\x12\x1f\n" +
 	"\vinstance_id\x18\x01 \x01(\tR\n" +
 	"instanceId\x12\x1a\n" +
 	"\bdatabase\x18\x02 \x01(\tR\bdatabase\x12X\n" +
-	"\x04type\x18\x03 \x01(\x0e2D.google.cloud.bigquery.connection.v1.CloudSqlProperties.DatabaseTypeR\x04type\x12\\\n" +
+	"\x04type\x18\x03 \x01(\x0e2D.google.cloud.bigquery.connection.v1.CloudSqlProperties.DatabaseTypeR\x04type\x12]\n" +
 	"\n" +
-	"credential\x18\x04 \x01(\v27.google.cloud.bigquery.connection.v1.CloudSqlCredentialB\x03\xe0A\x04R\n" +
-	"credential\x121\n" +
-	"\x12service_account_id\x18\x05 \x01(\tB\x03\xe0A\x03R\x10serviceAccountId\"F\n" +
+	"credential\x18\x04 \x01(\v27.google.cloud.bigquery.connection.v1.CloudSqlCredentialB\x04\xe2A\x01\x04R\n" +
+	"credential\x122\n" +
+	"\x12service_account_id\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x10serviceAccountId\"F\n" +
 	"\fDatabaseType\x12\x1d\n" +
 	"\x19DATABASE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bPOSTGRES\x10\x01\x12\t\n" +
 	"\x05MYSQL\x10\x02\"L\n" +
 	"\x12CloudSqlCredential\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"\x90\x02\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"\x91\x02\n" +
 	"\x16CloudSpannerProperties\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12'\n" +
 	"\x0fuse_parallelism\x18\x02 \x01(\bR\x0euseParallelism\x12'\n" +
 	"\x0fmax_parallelism\x18\x05 \x01(\x05R\x0emaxParallelism\x128\n" +
 	"\x18use_serverless_analytics\x18\x03 \x01(\bR\x16useServerlessAnalytics\x12$\n" +
-	"\x0euse_data_boost\x18\x06 \x01(\bR\fuseDataBoost\x12(\n" +
-	"\rdatabase_role\x18\x04 \x01(\tB\x03\xe0A\x01R\fdatabaseRole\"\xed\x01\n" +
+	"\x0euse_data_boost\x18\x06 \x01(\bR\fuseDataBoost\x12)\n" +
+	"\rdatabase_role\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fdatabaseRole\"\xed\x01\n" +
 	"\rAwsProperties\x12l\n" +
 	"\x12cross_account_role\x18\x02 \x01(\v28.google.cloud.bigquery.connection.v1.AwsCrossAccountRoleB\x02\x18\x01H\x00R\x10crossAccountRole\x12U\n" +
 	"\vaccess_role\x18\x03 \x01(\v22.google.cloud.bigquery.connection.v1.AwsAccessRoleH\x00R\n" +
 	"accessRoleB\x17\n" +
-	"\x15authentication_method\"\x80\x01\n" +
+	"\x15authentication_method\"\x82\x01\n" +
 	"\x13AwsCrossAccountRole\x12\x1e\n" +
-	"\viam_role_id\x18\x01 \x01(\tR\tiamRoleId\x12#\n" +
-	"\viam_user_id\x18\x02 \x01(\tB\x03\xe0A\x03R\tiamUserId\x12$\n" +
-	"\vexternal_id\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
+	"\viam_role_id\x18\x01 \x01(\tR\tiamRoleId\x12$\n" +
+	"\viam_user_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tiamUserId\x12%\n" +
+	"\vexternal_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"externalId\"K\n" +
 	"\rAwsAccessRole\x12\x1e\n" +
 	"\viam_role_id\x18\x01 \x01(\tR\tiamRoleId\x12\x1a\n" +
-	"\bidentity\x18\x02 \x01(\tR\bidentity\"\xb5\x02\n" +
-	"\x0fAzureProperties\x12%\n" +
-	"\vapplication\x18\x01 \x01(\tB\x03\xe0A\x03R\vapplication\x12 \n" +
-	"\tclient_id\x18\x02 \x01(\tB\x03\xe0A\x03R\bclientId\x12 \n" +
-	"\tobject_id\x18\x03 \x01(\tB\x03\xe0A\x03R\bobjectId\x12,\n" +
+	"\bidentity\x18\x02 \x01(\tR\bidentity\"\xb9\x02\n" +
+	"\x0fAzureProperties\x12&\n" +
+	"\vapplication\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vapplication\x12!\n" +
+	"\tclient_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\bclientId\x12!\n" +
+	"\tobject_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bobjectId\x12,\n" +
 	"\x12customer_tenant_id\x18\x04 \x01(\tR\x10customerTenantId\x12!\n" +
 	"\fredirect_uri\x18\x05 \x01(\tR\vredirectUri\x12E\n" +
-	"\x1ffederated_application_client_id\x18\x06 \x01(\tR\x1cfederatedApplicationClientId\x12\x1f\n" +
-	"\bidentity\x18\a \x01(\tB\x03\xe0A\x03R\bidentity\"L\n" +
-	"\x17CloudResourceProperties\x121\n" +
-	"\x12service_account_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x10serviceAccountId\"o\n" +
-	"\x16MetastoreServiceConfig\x12U\n" +
-	"\x11metastore_service\x18\x01 \x01(\tB(\xe0A\x01\xfaA\"\n" +
-	" metastore.googleapis.com/ServiceR\x10metastoreService\"n\n" +
-	"\x18SparkHistoryServerConfig\x12R\n" +
-	"\x10dataproc_cluster\x18\x01 \x01(\tB'\xe0A\x01\xfaA!\n" +
-	"\x1fdataproc.googleapis.com/ClusterR\x0fdataprocCluster\"\xc4\x02\n" +
-	"\x0fSparkProperties\x121\n" +
-	"\x12service_account_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x10serviceAccountId\x12z\n" +
-	"\x18metastore_service_config\x18\x03 \x01(\v2;.google.cloud.bigquery.connection.v1.MetastoreServiceConfigB\x03\xe0A\x01R\x16metastoreServiceConfig\x12\x81\x01\n" +
-	"\x1bspark_history_server_config\x18\x04 \x01(\v2=.google.cloud.bigquery.connection.v1.SparkHistoryServerConfigB\x03\xe0A\x01R\x18sparkHistoryServerConfig\"\x80\x01\n" +
+	"\x1ffederated_application_client_id\x18\x06 \x01(\tR\x1cfederatedApplicationClientId\x12 \n" +
+	"\bidentity\x18\a \x01(\tB\x04\xe2A\x01\x03R\bidentity\"M\n" +
+	"\x17CloudResourceProperties\x122\n" +
+	"\x12service_account_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x10serviceAccountId\"p\n" +
+	"\x16MetastoreServiceConfig\x12V\n" +
+	"\x11metastore_service\x18\x01 \x01(\tB)\xe2A\x01\x01\xfaA\"\n" +
+	" metastore.googleapis.com/ServiceR\x10metastoreService\"o\n" +
+	"\x18SparkHistoryServerConfig\x12S\n" +
+	"\x10dataproc_cluster\x18\x01 \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
+	"\x1fdataproc.googleapis.com/ClusterR\x0fdataprocCluster\"\xc7\x02\n" +
+	"\x0fSparkProperties\x122\n" +
+	"\x12service_account_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x10serviceAccountId\x12{\n" +
+	"\x18metastore_service_config\x18\x03 \x01(\v2;.google.cloud.bigquery.connection.v1.MetastoreServiceConfigB\x04\xe2A\x01\x01R\x16metastoreServiceConfig\x12\x82\x01\n" +
+	"\x1bspark_history_server_config\x18\x04 \x01(\v2=.google.cloud.bigquery.connection.v1.SparkHistoryServerConfigB\x04\xe2A\x01\x01R\x18sparkHistoryServerConfig\"\x81\x01\n" +
 	"\x1dSalesforceDataCloudProperties\x12!\n" +
-	"\finstance_uri\x18\x01 \x01(\tR\vinstanceUri\x12\x1f\n" +
-	"\bidentity\x18\x02 \x01(\tB\x03\xe0A\x03R\bidentity\x12\x1b\n" +
+	"\finstance_uri\x18\x01 \x01(\tR\vinstanceUri\x12 \n" +
+	"\bidentity\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\bidentity\x12\x1b\n" +
 	"\ttenant_id\x18\x03 \x01(\tR\btenantId2\xcc\r\n" +
 	"\x11ConnectionService\x12\xe8\x01\n" +
 	"\x10CreateConnection\x12<.google.cloud.bigquery.connection.v1.CreateConnectionRequest\x1a/.google.cloud.bigquery.connection.v1.Connection\"e\xdaA\x1fparent,connection,connection_id\x82\xd3\xe4\x93\x02=:\n" +

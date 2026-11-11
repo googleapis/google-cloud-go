@@ -98,10 +98,10 @@ var File_google_cloud_discoveryengine_v1beta_logging_proto protoreflect.FileDesc
 
 const file_google_cloud_discoveryengine_v1beta_logging_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/discoveryengine/v1beta/logging.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x90\x01\n" +
-	"\x13ObservabilityConfig\x128\n" +
-	"\x15observability_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x14observabilityEnabled\x12?\n" +
-	"\x19sensitive_logging_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x17sensitiveLoggingEnabledB\x93\x02\n" +
+	"1google/cloud/discoveryengine/v1beta/logging.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x92\x01\n" +
+	"\x13ObservabilityConfig\x129\n" +
+	"\x15observability_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x14observabilityEnabled\x12@\n" +
+	"\x19sensitive_logging_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x17sensitiveLoggingEnabledB\x93\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\fLoggingProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (

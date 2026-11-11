@@ -1,6 +1,28 @@
 # Changes
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.18.1...shopping/v1.19.0) (2026-10-29)
+
+
+### Features
+
+* **google/shopping/merchant/reviews/v1:** Add shopping ([#20734](https://github.com/googleapis/google-cloud-go/issues/20734)) ([4504821](https://github.com/googleapis/google-cloud-go/commit/45048211eed1d41cce1c5542da2900c305e1a94c))
+* Update API sources and regenerate ([#20773](https://github.com/googleapis/google-cloud-go/issues/20773)) ([f5f113a](https://github.com/googleapis/google-cloud-go/commit/f5f113a0432b80df2608417c8a496198f5a0c026))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.18.0...shopping/v1.18.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.17.0...shopping/v1.18.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.16.0...shopping/v1.17.0) (2026-10-01)
 
 

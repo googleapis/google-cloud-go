@@ -644,51 +644,51 @@ var File_google_cloud_gkebackup_v1_backup_proto protoreflect.FileDescriptor
 
 const file_google_cloud_gkebackup_v1_backup_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/gkebackup/v1/backup.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\x12\n" +
-	"\x06Backup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1b\n" +
-	"\x06manual\x18\x05 \x01(\bB\x03\xe0A\x03R\x06manual\x12J\n" +
-	"\x06labels\x18\x06 \x03(\v2-.google.cloud.gkebackup.v1.Backup.LabelsEntryB\x03\xe0A\x01R\x06labels\x12-\n" +
-	"\x10delete_lock_days\x18\a \x01(\x05B\x03\xe0A\x01R\x0edeleteLockDays\x12V\n" +
-	"\x17delete_lock_expire_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14deleteLockExpireTime\x12$\n" +
-	"\vretain_days\x18\t \x01(\x05B\x03\xe0A\x01R\n" +
-	"retainDays\x12M\n" +
+	"&google/cloud/gkebackup/v1/backup.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xda\x12\n" +
+	"\x06Backup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1c\n" +
+	"\x06manual\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x06manual\x12K\n" +
+	"\x06labels\x18\x06 \x03(\v2-.google.cloud.gkebackup.v1.Backup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12.\n" +
+	"\x10delete_lock_days\x18\a \x01(\x05B\x04\xe2A\x01\x01R\x0edeleteLockDays\x12W\n" +
+	"\x17delete_lock_expire_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14deleteLockExpireTime\x12%\n" +
+	"\vretain_days\x18\t \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"retainDays\x12N\n" +
 	"\x12retain_expire_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x10retainExpireTime\x12T\n" +
-	"\x0eencryption_key\x18\v \x01(\v2(.google.cloud.gkebackup.v1.EncryptionKeyB\x03\xe0A\x03R\rencryptionKey\x12,\n" +
-	"\x0eall_namespaces\x18\f \x01(\bB\x03\xe0A\x03H\x00R\rallNamespaces\x12]\n" +
-	"\x13selected_namespaces\x18\r \x01(\v2%.google.cloud.gkebackup.v1.NamespacesB\x03\xe0A\x03H\x00R\x12selectedNamespaces\x12f\n" +
-	"\x15selected_applications\x18\x0e \x01(\v2*.google.cloud.gkebackup.v1.NamespacedNamesB\x03\xe0A\x03H\x00R\x14selectedApplications\x125\n" +
-	"\x14contains_volume_data\x18\x0f \x01(\bB\x03\xe0A\x03R\x12containsVolumeData\x12.\n" +
-	"\x10contains_secrets\x18\x10 \x01(\bB\x03\xe0A\x03R\x0fcontainsSecrets\x12a\n" +
-	"\x10cluster_metadata\x18\x11 \x01(\v21.google.cloud.gkebackup.v1.Backup.ClusterMetadataB\x03\xe0A\x03R\x0fclusterMetadata\x12B\n" +
-	"\x05state\x18\x12 \x01(\x0e2'.google.cloud.gkebackup.v1.Backup.StateB\x03\xe0A\x03R\x05state\x12&\n" +
-	"\fstate_reason\x18\x13 \x01(\tB\x03\xe0A\x03R\vstateReason\x12D\n" +
-	"\rcomplete_time\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12*\n" +
-	"\x0eresource_count\x18\x15 \x01(\x05B\x03\xe0A\x03R\rresourceCount\x12&\n" +
-	"\fvolume_count\x18\x16 \x01(\x05B\x03\xe0A\x03R\vvolumeCount\x12\"\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x10retainExpireTime\x12U\n" +
+	"\x0eencryption_key\x18\v \x01(\v2(.google.cloud.gkebackup.v1.EncryptionKeyB\x04\xe2A\x01\x03R\rencryptionKey\x12-\n" +
+	"\x0eall_namespaces\x18\f \x01(\bB\x04\xe2A\x01\x03H\x00R\rallNamespaces\x12^\n" +
+	"\x13selected_namespaces\x18\r \x01(\v2%.google.cloud.gkebackup.v1.NamespacesB\x04\xe2A\x01\x03H\x00R\x12selectedNamespaces\x12g\n" +
+	"\x15selected_applications\x18\x0e \x01(\v2*.google.cloud.gkebackup.v1.NamespacedNamesB\x04\xe2A\x01\x03H\x00R\x14selectedApplications\x126\n" +
+	"\x14contains_volume_data\x18\x0f \x01(\bB\x04\xe2A\x01\x03R\x12containsVolumeData\x12/\n" +
+	"\x10contains_secrets\x18\x10 \x01(\bB\x04\xe2A\x01\x03R\x0fcontainsSecrets\x12b\n" +
+	"\x10cluster_metadata\x18\x11 \x01(\v21.google.cloud.gkebackup.v1.Backup.ClusterMetadataB\x04\xe2A\x01\x03R\x0fclusterMetadata\x12C\n" +
+	"\x05state\x18\x12 \x01(\x0e2'.google.cloud.gkebackup.v1.Backup.StateB\x04\xe2A\x01\x03R\x05state\x12'\n" +
+	"\fstate_reason\x18\x13 \x01(\tB\x04\xe2A\x01\x03R\vstateReason\x12E\n" +
+	"\rcomplete_time\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12+\n" +
+	"\x0eresource_count\x18\x15 \x01(\x05B\x04\xe2A\x01\x03R\rresourceCount\x12'\n" +
+	"\fvolume_count\x18\x16 \x01(\x05B\x04\xe2A\x01\x03R\vvolumeCount\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x17 \x01(\x03B\x03\xe0A\x03R\tsizeBytes\x12\x17\n" +
-	"\x04etag\x18\x18 \x01(\tB\x03\xe0A\x03R\x04etag\x12%\n" +
-	"\vdescription\x18\x19 \x01(\tB\x03\xe0A\x01R\vdescription\x12 \n" +
-	"\tpod_count\x18\x1a \x01(\x05B\x03\xe0A\x03R\bpodCount\x12<\n" +
-	"\x18config_backup_size_bytes\x18\x1b \x01(\x03B\x03\xe0A\x03R\x15configBackupSizeBytes\x12,\n" +
-	"\x0fpermissive_mode\x18\x1c \x01(\bB\x03\xe0A\x03R\x0epermissiveMode\x12(\n" +
-	"\rsatisfies_pzs\x18\x1d \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\x1e \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x1a\x85\x03\n" +
-	"\x0fClusterMetadata\x12\x1d\n" +
-	"\acluster\x18\x01 \x01(\tB\x03\xe0A\x03R\acluster\x12$\n" +
-	"\vk8s_version\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"k8sVersion\x12}\n" +
-	"\x13backup_crd_versions\x18\x03 \x03(\v2H.google.cloud.gkebackup.v1.Backup.ClusterMetadata.BackupCrdVersionsEntryB\x03\xe0A\x03R\x11backupCrdVersions\x12&\n" +
-	"\vgke_version\x18\x04 \x01(\tB\x03\xe0A\x03H\x00R\n" +
-	"gkeVersion\x12,\n" +
-	"\x0eanthos_version\x18\x05 \x01(\tB\x03\xe0A\x03H\x00R\ranthosVersion\x1aD\n" +
+	"size_bytes\x18\x17 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes\x12\x18\n" +
+	"\x04etag\x18\x18 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12&\n" +
+	"\vdescription\x18\x19 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12!\n" +
+	"\tpod_count\x18\x1a \x01(\x05B\x04\xe2A\x01\x03R\bpodCount\x12=\n" +
+	"\x18config_backup_size_bytes\x18\x1b \x01(\x03B\x04\xe2A\x01\x03R\x15configBackupSizeBytes\x12-\n" +
+	"\x0fpermissive_mode\x18\x1c \x01(\bB\x04\xe2A\x01\x03R\x0epermissiveMode\x12)\n" +
+	"\rsatisfies_pzs\x18\x1d \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\x1e \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x1a\x8a\x03\n" +
+	"\x0fClusterMetadata\x12\x1e\n" +
+	"\acluster\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\acluster\x12%\n" +
+	"\vk8s_version\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"k8sVersion\x12~\n" +
+	"\x13backup_crd_versions\x18\x03 \x03(\v2H.google.cloud.gkebackup.v1.Backup.ClusterMetadata.BackupCrdVersionsEntryB\x04\xe2A\x01\x03R\x11backupCrdVersions\x12'\n" +
+	"\vgke_version\x18\x04 \x01(\tB\x04\xe2A\x01\x03H\x00R\n" +
+	"gkeVersion\x12-\n" +
+	"\x0eanthos_version\x18\x05 \x01(\tB\x04\xe2A\x01\x03H\x00R\ranthosVersion\x1aD\n" +
 	"\x16BackupCrdVersionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x12\n" +

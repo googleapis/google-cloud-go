@@ -239,26 +239,26 @@ var File_google_cloud_ces_v1_app_version_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_app_version_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/ces/v1/app_version.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/cloud/ces/v1/agent.proto\x1a\x1dgoogle/cloud/ces/v1/app.proto\x1a!google/cloud/ces/v1/example.proto\x1a#google/cloud/ces/v1/guardrail.proto\x1a\x1egoogle/cloud/ces/v1/tool.proto\x1a!google/cloud/ces/v1/toolset.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf0\x02\n" +
-	"\vAppSnapshot\x12/\n" +
-	"\x03app\x18\x01 \x01(\v2\x18.google.cloud.ces.v1.AppB\x03\xe0A\x01R\x03app\x127\n" +
-	"\x06agents\x18\x02 \x03(\v2\x1a.google.cloud.ces.v1.AgentB\x03\xe0A\x01R\x06agents\x124\n" +
-	"\x05tools\x18\x03 \x03(\v2\x19.google.cloud.ces.v1.ToolB\x03\xe0A\x01R\x05tools\x12=\n" +
-	"\bexamples\x18\x04 \x03(\v2\x1c.google.cloud.ces.v1.ExampleB\x03\xe0A\x01R\bexamples\x12C\n" +
+	"%google/cloud/ces/v1/app_version.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/cloud/ces/v1/agent.proto\x1a\x1dgoogle/cloud/ces/v1/app.proto\x1a!google/cloud/ces/v1/example.proto\x1a#google/cloud/ces/v1/guardrail.proto\x1a\x1egoogle/cloud/ces/v1/tool.proto\x1a!google/cloud/ces/v1/toolset.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf6\x02\n" +
+	"\vAppSnapshot\x120\n" +
+	"\x03app\x18\x01 \x01(\v2\x18.google.cloud.ces.v1.AppB\x04\xe2A\x01\x01R\x03app\x128\n" +
+	"\x06agents\x18\x02 \x03(\v2\x1a.google.cloud.ces.v1.AgentB\x04\xe2A\x01\x01R\x06agents\x125\n" +
+	"\x05tools\x18\x03 \x03(\v2\x19.google.cloud.ces.v1.ToolB\x04\xe2A\x01\x01R\x05tools\x12>\n" +
+	"\bexamples\x18\x04 \x03(\v2\x1c.google.cloud.ces.v1.ExampleB\x04\xe2A\x01\x01R\bexamples\x12D\n" +
 	"\n" +
-	"guardrails\x18\x05 \x03(\v2\x1e.google.cloud.ces.v1.GuardrailB\x03\xe0A\x01R\n" +
-	"guardrails\x12=\n" +
-	"\btoolsets\x18\x06 \x03(\v2\x1c.google.cloud.ces.v1.ToolsetB\x03\xe0A\x01R\btoolsets\"\xb6\x03\n" +
+	"guardrails\x18\x05 \x03(\v2\x1e.google.cloud.ces.v1.GuardrailB\x04\xe2A\x01\x01R\n" +
+	"guardrails\x12>\n" +
+	"\btoolsets\x18\x06 \x03(\v2\x1c.google.cloud.ces.v1.ToolsetB\x04\xe2A\x01\x01R\btoolsets\"\xbd\x03\n" +
 	"\n" +
-	"AppVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1d\n" +
-	"\acreator\x18\x04 \x01(\tB\x03\xe0A\x03R\acreator\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\bsnapshot\x18\b \x01(\v2 .google.cloud.ces.v1.AppSnapshotB\x03\xe0A\x03R\bsnapshot\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x03R\x04etag:\x82\x01\xeaA\x7f\n" +
+	"AppVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1e\n" +
+	"\acreator\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\acreator\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\bsnapshot\x18\b \x01(\v2 .google.cloud.ces.v1.AppSnapshotB\x04\xe2A\x01\x03R\bsnapshot\x12\x18\n" +
+	"\x04etag\x18\a \x01(\tB\x04\xe2A\x01\x03R\x04etag:\x82\x01\xeaA\x7f\n" +
 	"\x1dces.googleapis.com/AppVersion\x12Eprojects/{project}/locations/{location}/apps/{app}/versions/{version}*\vappVersions2\n" +
 	"appVersionBW\n" +
 	"\x17com.google.cloud.ces.v1B\x0fAppVersionProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"

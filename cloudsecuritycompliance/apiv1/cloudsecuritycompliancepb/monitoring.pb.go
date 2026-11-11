@@ -2039,111 +2039,111 @@ var File_google_cloud_cloudsecuritycompliance_v1_monitoring_proto protoreflect.F
 
 const file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/cloudsecuritycompliance/v1/monitoring.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\xd1\x02\n" +
-	"'ListFrameworkComplianceSummariesRequest\x12a\n" +
-	"\x06parent\x18\x01 \x01(\tBI\xe0A\x02\xfaAC\x12Acloudsecuritycompliance.googleapis.com/FrameworkComplianceSummaryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"8google/cloud/cloudsecuritycompliance/v1/monitoring.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\xd6\x02\n" +
+	"'ListFrameworkComplianceSummariesRequest\x12b\n" +
+	"\x06parent\x18\x01 \x01(\tBJ\xe2A\x01\x02\xfaAC\x12Acloudsecuritycompliance.googleapis.com/FrameworkComplianceSummaryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12`\n" +
-	"\x04view\x18\x05 \x01(\x0e2G.google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummaryViewB\x03\xe0A\x01R\x04view\"\xe3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12a\n" +
+	"\x04view\x18\x05 \x01(\x0e2G.google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummaryViewB\x04\xe2A\x01\x01R\x04view\"\xe4\x01\n" +
 	"(ListFrameworkComplianceSummariesResponse\x12\x89\x01\n" +
-	"\x1eframework_compliance_summaries\x18\x01 \x03(\v2C.google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummaryR\x1cframeworkComplianceSummaries\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xcf\n" +
+	"\x1eframework_compliance_summaries\x18\x01 \x03(\v2C.google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummaryR\x1cframeworkComplianceSummaries\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xd2\n" +
 	"\n" +
 	"\x19FrameworkComplianceReport\x12\x1c\n" +
 	"\tframework\x18\x01 \x01(\tR\tframework\x123\n" +
-	"\x15framework_description\x18\x02 \x01(\tR\x14frameworkDescription\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x15framework_description\x18\x02 \x01(\tR\x14frameworkDescription\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x7f\n" +
 	"\x1acontrol_assessment_details\x18\x04 \x01(\v2A.google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetailsR\x18controlAssessmentDetails\x12g\n" +
 	"\x0eframework_type\x18\x05 \x01(\x0e2@.google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkTypeR\rframeworkType\x12r\n" +
 	"\x19supported_cloud_providers\x18\x06 \x03(\x0e26.google.cloud.cloudsecuritycompliance.v1.CloudProviderR\x17supportedCloudProviders\x12m\n" +
-	"\x14framework_categories\x18\a \x03(\x0e2:.google.cloud.cloudsecuritycompliance.v1.FrameworkCategoryR\x13frameworkCategories\x129\n" +
-	"\x16framework_display_name\x18\b \x01(\tB\x03\xe0A\x01R\x14frameworkDisplayName\x12\x17\n" +
-	"\x04name\x18\t \x01(\tB\x03\xe0A\bR\x04name\x12*\n" +
+	"\x14framework_categories\x18\a \x03(\x0e2:.google.cloud.cloudsecuritycompliance.v1.FrameworkCategoryR\x13frameworkCategories\x12:\n" +
+	"\x16framework_display_name\x18\b \x01(\tB\x04\xe2A\x01\x01R\x14frameworkDisplayName\x12\x18\n" +
+	"\x04name\x18\t \x01(\tB\x04\xe2A\x01\bR\x04name\x12*\n" +
 	"\x11major_revision_id\x18\n" +
 	" \x01(\x03R\x0fmajorRevisionId\x12*\n" +
 	"\x11minor_revision_id\x18\v \x01(\x03R\x0fminorRevisionId\x12v\n" +
 	"\x17target_resource_details\x18\f \x03(\v2>.google.cloud.cloudsecuritycompliance.v1.TargetResourceDetailsR\x15targetResourceDetails:\xab\x03\xeaA\xa7\x03\n" +
-	"@cloudsecuritycompliance.googleapis.com/FrameworkComplianceReport\x12`projects/{project}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}\x12^folders/{folder}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}\x12jorganizations/{organization}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}*\x1aframeworkComplianceReports2\x19frameworkComplianceReport\"\xde\x01\n" +
-	"%FetchFrameworkComplianceReportRequest\x12\\\n" +
-	"\x04name\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\n" +
-	"@cloudsecuritycompliance.googleapis.com/FrameworkComplianceReportR\x04name\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"\x95\x02\n" +
-	"\x1bListFindingSummariesRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125cloudsecuritycompliance.googleapis.com/FindingSummaryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"@cloudsecuritycompliance.googleapis.com/FrameworkComplianceReport\x12`projects/{project}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}\x12^folders/{folder}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}\x12jorganizations/{organization}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}*\x1aframeworkComplianceReports2\x19frameworkComplianceReport\"\xe1\x01\n" +
+	"%FetchFrameworkComplianceReportRequest\x12]\n" +
+	"\x04name\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\n" +
+	"@cloudsecuritycompliance.googleapis.com/FrameworkComplianceReportR\x04name\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\aendTime\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x9a\x02\n" +
+	"\x1bListFindingSummariesRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125cloudsecuritycompliance.googleapis.com/FindingSummaryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12<\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe0A\x01\x18\x01R\aendTime\"\xb1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12=\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe2A\x01\x01\x18\x01R\aendTime\"\xb2\x01\n" +
 	"\x1cListFindingSummariesResponse\x12d\n" +
-	"\x11finding_summaries\x18\x01 \x03(\v27.google.cloud.cloudsecuritycompliance.v1.FindingSummaryR\x10findingSummaries\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xa9\x02\n" +
-	"%ListControlComplianceSummariesRequest\x12_\n" +
-	"\x06parent\x18\x01 \x01(\tBG\xe0A\x02\xfaAA\x12?cloudsecuritycompliance.googleapis.com/ControlComplianceSummaryR\x06parent\x12<\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe0A\x01\x18\x01R\aendTime\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x11finding_summaries\x18\x01 \x03(\v27.google.cloud.cloudsecuritycompliance.v1.FindingSummaryR\x10findingSummaries\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xae\x02\n" +
+	"%ListControlComplianceSummariesRequest\x12`\n" +
+	"\x06parent\x18\x01 \x01(\tBH\xe2A\x01\x02\xfaAA\x12?cloudsecuritycompliance.googleapis.com/ControlComplianceSummaryR\x06parent\x12=\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe2A\x01\x01\x18\x01R\aendTime\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xdb\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xdc\x01\n" +
 	"&ListControlComplianceSummariesResponse\x12\x83\x01\n" +
-	"\x1ccontrol_compliance_summaries\x18\x01 \x03(\v2A.google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummaryR\x1acontrolComplianceSummaries\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xde\x01\n" +
-	")AggregateFrameworkComplianceReportRequest\x12\\\n" +
-	"\x04name\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\n" +
-	"@cloudsecuritycompliance.googleapis.com/FrameworkComplianceReportR\x04name\x126\n" +
-	"\binterval\x18\x02 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x01R\binterval\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"\xb6\x01\n" +
+	"\x1ccontrol_compliance_summaries\x18\x01 \x03(\v2A.google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummaryR\x1acontrolComplianceSummaries\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xe1\x01\n" +
+	")AggregateFrameworkComplianceReportRequest\x12]\n" +
+	"\x04name\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\n" +
+	"@cloudsecuritycompliance.googleapis.com/FrameworkComplianceReportR\x04name\x127\n" +
+	"\binterval\x18\x02 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x01R\binterval\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xb6\x01\n" +
 	"*AggregateFrameworkComplianceReportResponse\x12\x87\x01\n" +
 	"\x1daggregated_compliance_reports\x18\x01 \x03(\v2C.google.cloud.cloudsecuritycompliance.v1.AggregatedComplianceReportR\x1baggregatedComplianceReports\"\xe0\x01\n" +
 	"\x18ControlAssessmentDetails\x12)\n" +
 	"\x10passing_controls\x18\x01 \x01(\x05R\x0fpassingControls\x12)\n" +
 	"\x10failing_controls\x18\x02 \x01(\x05R\x0ffailingControls\x12:\n" +
 	"\x19assessed_passing_controls\x18\x03 \x01(\x05R\x17assessedPassingControls\x122\n" +
-	"\x15not_assessed_controls\x18\x04 \x01(\x05R\x13notAssessedControls\"\xfb\n" +
+	"\x15not_assessed_controls\x18\x04 \x01(\x05R\x13notAssessedControls\"\xff\n" +
 	"\n" +
 	"\x1aFrameworkComplianceSummary\x12\x1c\n" +
 	"\tframework\x18\x01 \x01(\tR\tframework\x12\x7f\n" +
 	"\x1acontrol_assessment_details\x18\x02 \x01(\v2A.google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetailsR\x18controlAssessmentDetails\x12g\n" +
 	"\x0eframework_type\x18\x03 \x01(\x0e2@.google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkTypeR\rframeworkType\x12r\n" +
 	"\x19supported_cloud_providers\x18\x04 \x03(\x0e26.google.cloud.cloudsecuritycompliance.v1.CloudProviderR\x17supportedCloudProviders\x12m\n" +
-	"\x14framework_categories\x18\x05 \x03(\x0e2:.google.cloud.cloudsecuritycompliance.v1.FrameworkCategoryR\x13frameworkCategories\x129\n" +
-	"\x16framework_display_name\x18\x06 \x01(\tB\x03\xe0A\x01R\x14frameworkDisplayName\x12\x17\n" +
-	"\x04name\x18\a \x01(\tB\x03\xe0A\bR\x04name\x12*\n" +
+	"\x14framework_categories\x18\x05 \x03(\x0e2:.google.cloud.cloudsecuritycompliance.v1.FrameworkCategoryR\x13frameworkCategories\x12:\n" +
+	"\x16framework_display_name\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x14frameworkDisplayName\x12\x18\n" +
+	"\x04name\x18\a \x01(\tB\x04\xe2A\x01\bR\x04name\x12*\n" +
 	"\x11major_revision_id\x18\b \x01(\x03R\x0fmajorRevisionId\x12*\n" +
 	"\x11minor_revision_id\x18\t \x01(\x03R\x0fminorRevisionId\x12v\n" +
 	"\x17target_resource_details\x18\n" +
-	" \x03(\v2>.google.cloud.cloudsecuritycompliance.v1.TargetResourceDetailsR\x15targetResourceDetails\x12(\n" +
-	"\rfinding_count\x18\v \x01(\x03B\x03\xe0A\x03R\ffindingCount\x12i\n" +
-	"\x16controls_passing_trend\x18\f \x01(\v2..google.cloud.cloudsecuritycompliance.v1.TrendB\x03\xe0A\x03R\x14controlsPassingTrend:\xb8\x03\xeaA\xb4\x03\n" +
-	"Acloudsecuritycompliance.googleapis.com/FrameworkComplianceSummary\x12cprojects/{project}/locations/{location}/frameworkComplianceSummaries/{framework_compliance_summary}\x12afolders/{folder}/locations/{location}/frameworkComplianceSummaries/{framework_compliance_summary}\x12morganizations/{organization}/locations/{location}/frameworkComplianceSummaries/{framework_compliance_summary}*\x1cframeworkComplianceSummaries2\x1aframeworkComplianceSummary\"\xe6\x05\n" +
+	" \x03(\v2>.google.cloud.cloudsecuritycompliance.v1.TargetResourceDetailsR\x15targetResourceDetails\x12)\n" +
+	"\rfinding_count\x18\v \x01(\x03B\x04\xe2A\x01\x03R\ffindingCount\x12j\n" +
+	"\x16controls_passing_trend\x18\f \x01(\v2..google.cloud.cloudsecuritycompliance.v1.TrendB\x04\xe2A\x01\x03R\x14controlsPassingTrend:\xb8\x03\xeaA\xb4\x03\n" +
+	"Acloudsecuritycompliance.googleapis.com/FrameworkComplianceSummary\x12cprojects/{project}/locations/{location}/frameworkComplianceSummaries/{framework_compliance_summary}\x12afolders/{folder}/locations/{location}/frameworkComplianceSummaries/{framework_compliance_summary}\x12morganizations/{organization}/locations/{location}/frameworkComplianceSummaries/{framework_compliance_summary}*\x1cframeworkComplianceSummaries2\x1aframeworkComplianceSummary\"\xe9\x05\n" +
 	"\x0eFindingSummary\x12)\n" +
 	"\x10finding_category\x18\x01 \x01(\tR\x0ffindingCategory\x12Z\n" +
 	"\rfinding_class\x18\x02 \x01(\x0e25.google.cloud.cloudsecuritycompliance.v1.FindingClassR\ffindingClass\x12M\n" +
 	"\bseverity\x18\x03 \x01(\x0e21.google.cloud.cloudsecuritycompliance.v1.SeverityR\bseverity\x12#\n" +
-	"\rfinding_count\x18\x04 \x01(\x03R\ffindingCount\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x122\n" +
-	"\x12related_frameworks\x18\x06 \x03(\tB\x03\xe0A\x01R\x11relatedFrameworks\x12\x17\n" +
-	"\x04name\x18\a \x01(\tB\x03\xe0A\bR\x04name:\xc9\x02\xeaA\xc5\x02\n" +
-	"5cloudsecuritycompliance.googleapis.com/FindingSummary\x12Jprojects/{project}/locations/{location}/findingSummaries/{finding_summary}\x12Hfolders/{folder}/locations/{location}/findingSummaries/{finding_summary}\x12Torganizations/{organization}/locations/{location}/findingSummaries/{finding_summary}*\x10findingSummaries2\x0efindingSummary\"\xd6\n" +
+	"\rfinding_count\x18\x04 \x01(\x03R\ffindingCount\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x123\n" +
+	"\x12related_frameworks\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\x11relatedFrameworks\x12\x18\n" +
+	"\x04name\x18\a \x01(\tB\x04\xe2A\x01\bR\x04name:\xc9\x02\xeaA\xc5\x02\n" +
+	"5cloudsecuritycompliance.googleapis.com/FindingSummary\x12Jprojects/{project}/locations/{location}/findingSummaries/{finding_summary}\x12Hfolders/{folder}/locations/{location}/findingSummaries/{finding_summary}\x12Torganizations/{organization}/locations/{location}/findingSummaries/{finding_summary}*\x10findingSummaries2\x0efindingSummary\"\xd8\n" +
 	"\n" +
 	"\x18ControlComplianceSummary\x12\x18\n" +
 	"\acontrol\x18\x01 \x01(\tR\acontrol\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12w\n" +
-	"\x18overall_evaluation_state\x18\x04 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.EvaluationStateB\x03\xe0A\x03R\x16overallEvaluationState\x120\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12x\n" +
+	"\x18overall_evaluation_state\x18\x04 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.EvaluationStateB\x04\xe2A\x01\x03R\x16overallEvaluationState\x120\n" +
 	"\x14total_findings_count\x18\x05 \x01(\x05R\x12totalFindingsCount\x123\n" +
 	"\x15compliance_frameworks\x18\x06 \x03(\tR\x14complianceFrameworks\x12c\n" +
 	"\x10similar_controls\x18\a \x03(\v28.google.cloud.cloudsecuritycompliance.v1.SimilarControlsR\x0fsimilarControls\x12o\n" +
 	"\x15cloud_control_reports\x18\b \x03(\v2;.google.cloud.cloudsecuritycompliance.v1.CloudControlReportR\x13cloudControlReports\x12\x8c\x01\n" +
 	"\x1bcontrol_responsibility_type\x18\t \x01(\x0e2L.google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityTypeR\x19controlResponsibilityType\x12&\n" +
 	"\x0fis_fake_control\x18\n" +
-	" \x01(\bR\risFakeControl\x12\x17\n" +
-	"\x04name\x18\v \x01(\tB\x03\xe0A\bR\x04name:\xd4\x04\xeaA\xd0\x04\n" +
+	" \x01(\bR\risFakeControl\x12\x18\n" +
+	"\x04name\x18\v \x01(\tB\x04\xe2A\x01\bR\x04name:\xd4\x04\xeaA\xd0\x04\n" +
 	"?cloudsecuritycompliance.googleapis.com/ControlComplianceSummary\x12\x98\x01projects/{project}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}/controlComplianceSummaries/{control_compliance_summary}\x12\x96\x01folders/{folder}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}/controlComplianceSummaries/{control_compliance_summary}\x12\xa2\x01organizations/{organization}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}/controlComplianceSummaries/{control_compliance_summary}*\x1acontrolComplianceSummaries2\x18controlComplianceSummary\"\xc4\t\n" +
 	"\x12CloudControlReport\x12\xa4\x01\n" +
 	"'manual_cloud_control_assessment_details\x18\r \x01(\v2L.google.cloud.cloudsecuritycompliance.v1.ManualCloudControlAssessmentDetailsH\x00R#manualCloudControlAssessmentDetails\x12\x91\x01\n" +
@@ -2167,10 +2167,10 @@ const file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc = ""
 	"\x1cframework_major_revision_ids\x18\x14 \x03(\x03R\x19frameworkMajorRevisionIdsB\x14\n" +
 	"\x12assessment_details\"b\n" +
 	"#ManualCloudControlAssessmentDetails\x12;\n" +
-	"\x1amanual_cloud_control_guide\x18\x01 \x03(\tR\x17manualCloudControlGuide\"\xb0\x01\n" +
+	"\x1amanual_cloud_control_guide\x18\x01 \x03(\tR\x17manualCloudControlGuide\"\xb1\x01\n" +
 	"\x1dCloudControlAssessmentDetails\x12%\n" +
-	"\x0efindings_count\x18\x01 \x01(\x05R\rfindingsCount\x12h\n" +
-	"\x10evaluation_state\x18\x02 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.EvaluationStateB\x03\xe0A\x03R\x0fevaluationState\"N\n" +
+	"\x0efindings_count\x18\x01 \x01(\x05R\rfindingsCount\x12i\n" +
+	"\x10evaluation_state\x18\x02 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.EvaluationStateB\x04\xe2A\x01\x03R\x0fevaluationState\"N\n" +
 	"\x0fSimilarControls\x12\x1c\n" +
 	"\tframework\x18\x01 \x01(\tR\tframework\x12\x1d\n" +
 	"\n" +
@@ -2188,10 +2188,10 @@ const file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc = ""
 	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12*\n" +
 	"\x11major_revision_id\x18\x06 \x01(\x03R\x0fmajorRevisionId\x12*\n" +
-	"\x11minor_revision_id\x18\a \x01(\x03R\x0fminorRevisionId\"m\n" +
-	"\x05Trend\x12:\n" +
-	"\bduration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\bduration\x12(\n" +
-	"\rvalue_percent\x18\x02 \x01(\x01B\x03\xe0A\x03R\fvaluePercent*\x90\x01\n" +
+	"\x11minor_revision_id\x18\a \x01(\x03R\x0fminorRevisionId\"o\n" +
+	"\x05Trend\x12;\n" +
+	"\bduration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\bduration\x12)\n" +
+	"\rvalue_percent\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\fvaluePercent*\x90\x01\n" +
 	"\x0fEvaluationState\x12 \n" +
 	"\x1cEVALUATION_STATE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17EVALUATION_STATE_PASSED\x10\x01\x12\x1b\n" +

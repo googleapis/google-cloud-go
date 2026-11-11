@@ -660,29 +660,29 @@ var File_google_cloud_discoveryengine_v1beta_data_store_service_proto protorefle
 
 const file_google_cloud_discoveryengine_v1beta_data_store_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1beta/data_store_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/data_store.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf1\x03\n" +
+	"<google/cloud/discoveryengine/v1beta/data_store_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/data_store.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf4\x03\n" +
 	"\x16CreateDataStoreRequest\x12Z\n" +
 	"\x10cmek_config_name\x18\x05 \x01(\tB.\xfaA+\n" +
 	")discoveryengine.googleapis.com/CmekConfigH\x00R\x0ecmekConfigName\x12#\n" +
-	"\fdisable_cmek\x18\x06 \x01(\bH\x00R\vdisableCmek\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")discoveryengine.googleapis.com/CollectionR\x06parent\x12R\n" +
+	"\fdisable_cmek\x18\x06 \x01(\bH\x00R\vdisableCmek\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")discoveryengine.googleapis.com/CollectionR\x06parent\x12S\n" +
 	"\n" +
-	"data_store\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1beta.DataStoreB\x03\xe0A\x02R\tdataStore\x12'\n" +
-	"\rdata_store_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vdataStoreId\x12=\n" +
+	"data_store\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1beta.DataStoreB\x04\xe2A\x01\x02R\tdataStore\x12(\n" +
+	"\rdata_store_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdataStoreId\x12=\n" +
 	"\x1bcreate_advanced_site_search\x18\x04 \x01(\bR\x18createAdvancedSiteSearch\x12?\n" +
 	"\x1cskip_default_schema_creation\x18\a \x01(\bR\x19skipDefaultSchemaCreationB\x0e\n" +
-	"\fcmek_options\"[\n" +
-	"\x13GetDataStoreRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\fcmek_options\"\\\n" +
+	"\x13GetDataStoreRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x04name\"\x93\x01\n" +
 	"\x17CreateDataStoreMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\xb6\x01\n" +
-	"\x15ListDataStoresRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"updateTime\"\xb7\x01\n" +
+	"\x15ListDataStoresRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")discoveryengine.googleapis.com/CollectionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -691,13 +691,13 @@ const file_google_cloud_discoveryengine_v1beta_data_store_service_proto_rawDesc 
 	"\x16ListDataStoresResponse\x12O\n" +
 	"\vdata_stores\x18\x01 \x03(\v2..google.cloud.discoveryengine.v1beta.DataStoreR\n" +
 	"dataStores\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x16DeleteDataStoreRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x04name\"\xa9\x01\n" +
-	"\x16UpdateDataStoreRequest\x12R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x16DeleteDataStoreRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x04name\"\xaa\x01\n" +
+	"\x16UpdateDataStoreRequest\x12S\n" +
 	"\n" +
-	"data_store\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1beta.DataStoreB\x03\xe0A\x02R\tdataStore\x12;\n" +
+	"data_store\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1beta.DataStoreB\x04\xe2A\x01\x02R\tdataStore\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"\x93\x01\n" +
 	"\x17DeleteDataStoreMetadata\x12;\n" +

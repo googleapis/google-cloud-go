@@ -218,18 +218,18 @@ var File_google_shopping_merchant_accounts_v1beta_autofeedsettings_proto protore
 
 const file_google_shopping_merchant_accounts_v1beta_autofeedsettings_proto_rawDesc = "" +
 	"\n" +
-	"?google/shopping/merchant/accounts/v1beta/autofeedsettings.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xf5\x01\n" +
-	"\x10AutofeedSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12,\n" +
-	"\x0fenable_products\x18\x02 \x01(\bB\x03\xe0A\x02R\x0eenableProducts\x12\x1f\n" +
-	"\beligible\x18\x03 \x01(\bB\x03\xe0A\x03R\beligible:y\xeaAv\n" +
-	"+merchantapi.googleapis.com/AutofeedSettings\x12#accounts/{account}/autofeedSettings*\x10autofeedSettings2\x10autofeedSettings\"e\n" +
-	"\x1aGetAutofeedSettingsRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+merchantapi.googleapis.com/AutofeedSettingsR\x04name\"\xcf\x01\n" +
-	"\x1dUpdateAutofeedSettingsRequest\x12l\n" +
-	"\x11autofeed_settings\x18\x01 \x01(\v2:.google.shopping.merchant.accounts.v1beta.AutofeedSettingsB\x03\xe0A\x02R\x10autofeedSettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"?google/shopping/merchant/accounts/v1beta/autofeedsettings.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xf8\x01\n" +
+	"\x10AutofeedSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12-\n" +
+	"\x0fenable_products\x18\x02 \x01(\bB\x04\xe2A\x01\x02R\x0eenableProducts\x12 \n" +
+	"\beligible\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\beligible:y\xeaAv\n" +
+	"+merchantapi.googleapis.com/AutofeedSettings\x12#accounts/{account}/autofeedSettings*\x10autofeedSettings2\x10autofeedSettings\"f\n" +
+	"\x1aGetAutofeedSettingsRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/AutofeedSettingsR\x04name\"\xd1\x01\n" +
+	"\x1dUpdateAutofeedSettingsRequest\x12m\n" +
+	"\x11autofeed_settings\x18\x01 \x01(\v2:.google.shopping.merchant.accounts.v1beta.AutofeedSettingsB\x04\xe2A\x01\x02R\x10autofeedSettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask2\xe3\x04\n" +
 	"\x17AutofeedSettingsService\x12\xdb\x01\n" +
 	"\x13GetAutofeedSettings\x12D.google.shopping.merchant.accounts.v1beta.GetAutofeedSettingsRequest\x1a:.google.shopping.merchant.accounts.v1beta.AutofeedSettings\"B\xdaA\x04name\x82\xd3\xe4\x93\x025\x123/accounts/v1beta/{name=accounts/*/autofeedSettings}\x12\xa0\x02\n" +

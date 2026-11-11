@@ -1138,75 +1138,75 @@ var File_google_cloud_dialogflow_cx_v3_trace_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_cx_v3_trace_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/dialogflow/cx/v3/trace.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x97\x06\n" +
+	")google/cloud/dialogflow/cx/v3/trace.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9a\x06\n" +
 	"\n" +
 	"TraceBlock\x12n\n" +
 	"\x17playbook_trace_metadata\x18\x01 \x01(\v24.google.cloud.dialogflow.cx.v3.PlaybookTraceMetadataH\x00R\x15playbookTraceMetadata\x12b\n" +
 	"\x13flow_trace_metadata\x18\x02 \x01(\v20.google.cloud.dialogflow.cx.v3.FlowTraceMetadataH\x00R\x11flowTraceMetadata\x12w\n" +
 	"\x1aspeech_processing_metadata\x18\b \x01(\v27.google.cloud.dialogflow.cx.v3.SpeechProcessingMetadataH\x00R\x18speechProcessingMetadata\x12?\n" +
-	"\aactions\x18\x03 \x03(\v2%.google.cloud.dialogflow.cx.v3.ActionR\aactions\x12>\n" +
+	"\aactions\x18\x03 \x03(\v2%.google.cloud.dialogflow.cx.v3.ActionR\aactions\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12D\n" +
-	"\rcomplete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12G\n" +
-	"\x10input_parameters\x18\t \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x0finputParameters\x12I\n" +
-	"\x11output_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x10outputParameters\x12O\n" +
-	"\tend_state\x18\a \x01(\x0e2*.google.cloud.dialogflow.cx.v3.OutputStateB\x06\xe0A\x03\xe0A\x01R\bendStateB\x10\n" +
-	"\x0etrace_metadata\"B\n" +
-	"\x18SpeechProcessingMetadata\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x03R\vdisplayName\"\x87\x01\n" +
-	"\x15PlaybookTraceMetadata\x12F\n" +
-	"\bplaybook\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\"w\n" +
-	"\x11FlowTraceMetadata\x12:\n" +
-	"\x04flow\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\"Z\n" +
-	"\rPlaybookInput\x12I\n" +
-	"\x1epreceding_conversation_summary\x18\x01 \x01(\tB\x03\xe0A\x01R\x1cprecedingConversationSummary\"B\n" +
-	"\x0ePlaybookOutput\x120\n" +
-	"\x11execution_summary\x18\x01 \x01(\tB\x03\xe0A\x01R\x10executionSummary\"\xab\x05\n" +
-	"\x06Action\x12Z\n" +
-	"\x0euser_utterance\x18\x01 \x01(\v2,.google.cloud.dialogflow.cx.v3.UserUtteranceB\x03\xe0A\x01H\x00R\ruserUtterance\x12]\n" +
-	"\x0fagent_utterance\x18\x02 \x01(\v2-.google.cloud.dialogflow.cx.v3.AgentUtteranceB\x03\xe0A\x01H\x00R\x0eagentUtterance\x12H\n" +
-	"\btool_use\x18\x03 \x01(\v2&.google.cloud.dialogflow.cx.v3.ToolUseB\x03\xe0A\x01H\x00R\atoolUse\x12i\n" +
-	"\x13playbook_invocation\x18\x04 \x01(\v21.google.cloud.dialogflow.cx.v3.PlaybookInvocationB\x03\xe0A\x01H\x00R\x12playbookInvocation\x12]\n" +
-	"\x0fflow_invocation\x18\x05 \x01(\v2-.google.cloud.dialogflow.cx.v3.FlowInvocationB\x03\xe0A\x01H\x00R\x0eflowInvocation\x12i\n" +
-	"\x13playbook_transition\x18\f \x01(\v21.google.cloud.dialogflow.cx.v3.PlaybookTransitionB\x03\xe0A\x01H\x00R\x12playbookTransition\x12]\n" +
-	"\x0fflow_transition\x18\r \x01(\v2-.google.cloud.dialogflow.cx.v3.FlowTransitionB\x03\xe0A\x01H\x00R\x0eflowTransitionB\b\n" +
-	"\x06action\"(\n" +
-	"\rUserUtterance\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\")\n" +
-	"\x0eAgentUtterance\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\"\xb8\x02\n" +
-	"\aToolUse\x12:\n" +
-	"\x04tool\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolR\x04tool\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x03R\vdisplayName\x12\x1b\n" +
-	"\x06action\x18\x02 \x01(\tB\x03\xe0A\x01R\x06action\x12T\n" +
-	"\x17input_action_parameters\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x15inputActionParameters\x12V\n" +
-	"\x18output_action_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x16outputActionParameters\"\x93\x03\n" +
-	"\x12PlaybookInvocation\x12F\n" +
-	"\bplaybook\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12X\n" +
-	"\x0eplaybook_input\x18\x02 \x01(\v2,.google.cloud.dialogflow.cx.v3.PlaybookInputB\x03\xe0A\x01R\rplaybookInput\x12[\n" +
-	"\x0fplaybook_output\x18\x03 \x01(\v2-.google.cloud.dialogflow.cx.v3.PlaybookOutputB\x03\xe0A\x01R\x0eplaybookOutput\x12V\n" +
-	"\x0eplaybook_state\x18\x04 \x01(\x0e2*.google.cloud.dialogflow.cx.v3.OutputStateB\x03\xe0A\x02R\rplaybookState\"\xc4\x01\n" +
-	"\x0eFlowInvocation\x12:\n" +
-	"\x04flow\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12&\n" +
-	"\fdisplay_name\x18\a \x01(\tB\x03\xe0A\x03R\vdisplayName\x12N\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12E\n" +
+	"\rcomplete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12H\n" +
+	"\x10input_parameters\x18\t \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x0finputParameters\x12J\n" +
+	"\x11output_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x10outputParameters\x12N\n" +
+	"\tend_state\x18\a \x01(\x0e2*.google.cloud.dialogflow.cx.v3.OutputStateB\x05\xe2A\x02\x03\x01R\bendStateB\x10\n" +
+	"\x0etrace_metadata\"C\n" +
+	"\x18SpeechProcessingMetadata\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"\x89\x01\n" +
+	"\x15PlaybookTraceMetadata\x12G\n" +
+	"\bplaybook\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"y\n" +
+	"\x11FlowTraceMetadata\x12;\n" +
+	"\x04flow\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"[\n" +
+	"\rPlaybookInput\x12J\n" +
+	"\x1epreceding_conversation_summary\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x1cprecedingConversationSummary\"C\n" +
+	"\x0ePlaybookOutput\x121\n" +
+	"\x11execution_summary\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x10executionSummary\"\xb2\x05\n" +
+	"\x06Action\x12[\n" +
+	"\x0euser_utterance\x18\x01 \x01(\v2,.google.cloud.dialogflow.cx.v3.UserUtteranceB\x04\xe2A\x01\x01H\x00R\ruserUtterance\x12^\n" +
+	"\x0fagent_utterance\x18\x02 \x01(\v2-.google.cloud.dialogflow.cx.v3.AgentUtteranceB\x04\xe2A\x01\x01H\x00R\x0eagentUtterance\x12I\n" +
+	"\btool_use\x18\x03 \x01(\v2&.google.cloud.dialogflow.cx.v3.ToolUseB\x04\xe2A\x01\x01H\x00R\atoolUse\x12j\n" +
+	"\x13playbook_invocation\x18\x04 \x01(\v21.google.cloud.dialogflow.cx.v3.PlaybookInvocationB\x04\xe2A\x01\x01H\x00R\x12playbookInvocation\x12^\n" +
+	"\x0fflow_invocation\x18\x05 \x01(\v2-.google.cloud.dialogflow.cx.v3.FlowInvocationB\x04\xe2A\x01\x01H\x00R\x0eflowInvocation\x12j\n" +
+	"\x13playbook_transition\x18\f \x01(\v21.google.cloud.dialogflow.cx.v3.PlaybookTransitionB\x04\xe2A\x01\x01H\x00R\x12playbookTransition\x12^\n" +
+	"\x0fflow_transition\x18\r \x01(\v2-.google.cloud.dialogflow.cx.v3.FlowTransitionB\x04\xe2A\x01\x01H\x00R\x0eflowTransitionB\b\n" +
+	"\x06action\")\n" +
+	"\rUserUtterance\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\"*\n" +
+	"\x0eAgentUtterance\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\"\xbd\x02\n" +
+	"\aToolUse\x12;\n" +
+	"\x04tool\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolR\x04tool\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12\x1c\n" +
+	"\x06action\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06action\x12U\n" +
+	"\x17input_action_parameters\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x15inputActionParameters\x12W\n" +
+	"\x18output_action_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x16outputActionParameters\"\x98\x03\n" +
+	"\x12PlaybookInvocation\x12G\n" +
+	"\bplaybook\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12Y\n" +
+	"\x0eplaybook_input\x18\x02 \x01(\v2,.google.cloud.dialogflow.cx.v3.PlaybookInputB\x04\xe2A\x01\x01R\rplaybookInput\x12\\\n" +
+	"\x0fplaybook_output\x18\x03 \x01(\v2-.google.cloud.dialogflow.cx.v3.PlaybookOutputB\x04\xe2A\x01\x01R\x0eplaybookOutput\x12W\n" +
+	"\x0eplaybook_state\x18\x04 \x01(\x0e2*.google.cloud.dialogflow.cx.v3.OutputStateB\x04\xe2A\x01\x02R\rplaybookState\"\xc7\x01\n" +
+	"\x0eFlowInvocation\x12;\n" +
+	"\x04flow\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12'\n" +
+	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12O\n" +
 	"\n" +
-	"flow_state\x18\x04 \x01(\x0e2*.google.cloud.dialogflow.cx.v3.OutputStateB\x03\xe0A\x02R\tflowState\"\x84\x01\n" +
-	"\x12PlaybookTransition\x12F\n" +
-	"\bplaybook\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\"t\n" +
-	"\x0eFlowTransition\x12:\n" +
-	"\x04flow\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName*\xab\x01\n" +
+	"flow_state\x18\x04 \x01(\x0e2*.google.cloud.dialogflow.cx.v3.OutputStateB\x04\xe2A\x01\x02R\tflowState\"\x86\x01\n" +
+	"\x12PlaybookTransition\x12G\n" +
+	"\bplaybook\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"v\n" +
+	"\x0eFlowTransition\x12;\n" +
+	"\x04flow\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName*\xab\x01\n" +
 	"\vOutputState\x12\x1c\n" +
 	"\x18OUTPUT_STATE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fOUTPUT_STATE_OK\x10\x01\x12\x1a\n" +

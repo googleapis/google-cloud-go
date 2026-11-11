@@ -829,9 +829,14 @@ type GenerateAuditScopeReportRequest struct {
 	//     validation in custom UIs before submitting requests.
 	//   - **CI/CD & Automation**: Test your scripts, permissions, and parameters
 	//     safely without consuming resource quotas.
-	ValidateOnly  bool `protobuf:"varint,6,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ValidateOnly bool `protobuf:"varint,6,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	// Optional. Maps dynamic parameter overrides by Cloud Control resource name
+	// at execution time. For example,
+	// `{"organizations/123/locations/global/cloudControls/control-1":
+	// {parameters: [...]}}`
+	ParameterOverrides map[string]*ParameterOverrides `protobuf:"bytes,7,rep,name=parameter_overrides,json=parameterOverrides,proto3" json:"parameter_overrides,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *GenerateAuditScopeReportRequest) Reset() {
@@ -900,6 +905,13 @@ func (x *GenerateAuditScopeReportRequest) GetValidateOnly() bool {
 	return false
 }
 
+func (x *GenerateAuditScopeReportRequest) GetParameterOverrides() map[string]*ParameterOverrides {
+	if x != nil {
+		return x.ParameterOverrides
+	}
+	return nil
+}
+
 // Request message for
 // [GenerateAuditReport][google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport].
 type GenerateAuditReportRequest struct {
@@ -928,6 +940,11 @@ type GenerateAuditReportRequest struct {
 	// Required. The framework that's used for the audit report. For example,
 	// `NIST_800_53`.
 	ComplianceFramework string `protobuf:"bytes,5,opt,name=compliance_framework,json=complianceFramework,proto3" json:"compliance_framework,omitempty"`
+	// Optional. Maps dynamic parameter overrides by Cloud Control resource name
+	// at execution time. For example,
+	// `{"organizations/123/locations/global/cloudControls/control-1":
+	// {parameters: [...]}}`
+	ParameterOverrides map[string]*ParameterOverrides `protobuf:"bytes,7,rep,name=parameter_overrides,json=parameterOverrides,proto3" json:"parameter_overrides,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Optional. If `true`, only validates the request and does not generate the
 	// audit report. This executes standard request validation (such as schema,
 	// framework existence, scope, and IAM checks) and skips the apply phase.
@@ -1019,6 +1036,13 @@ func (x *GenerateAuditReportRequest) GetComplianceFramework() string {
 		return x.ComplianceFramework
 	}
 	return ""
+}
+
+func (x *GenerateAuditReportRequest) GetParameterOverrides() map[string]*ParameterOverrides {
+	if x != nil {
+		return x.ParameterOverrides
+	}
+	return nil
 }
 
 func (x *GenerateAuditReportRequest) GetValidateOnly() bool {
@@ -2027,9 +2051,12 @@ type AuditReport struct {
 	ComplianceFramework string `protobuf:"bytes,10,opt,name=compliance_framework,json=complianceFramework,proto3" json:"compliance_framework,omitempty"`
 	// Output only. Project number, folder ID, or organization ID that the audit
 	// report was generated for.
-	ScopeId       string `protobuf:"bytes,11,opt,name=scope_id,json=scopeId,proto3" json:"scope_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ScopeId string `protobuf:"bytes,11,opt,name=scope_id,json=scopeId,proto3" json:"scope_id,omitempty"`
+	// Output only. Parameter values provided by the user and values for
+	// tunable parameters, stored in the DB, keyed by control name.
+	CloudControlParameterStates map[string]*CloudControlParameterStates `protobuf:"bytes,16,rep,name=cloud_control_parameter_states,json=cloudControlParameterStates,proto3" json:"cloud_control_parameter_states,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *AuditReport) Reset() {
@@ -2138,6 +2165,13 @@ func (x *AuditReport) GetScopeId() string {
 		return x.ScopeId
 	}
 	return ""
+}
+
+func (x *AuditReport) GetCloudControlParameterStates() map[string]*CloudControlParameterStates {
+	if x != nil {
+		return x.CloudControlParameterStates
+	}
+	return nil
 }
 
 // Regulatory family of the control.
@@ -2946,9 +2980,14 @@ type AuditSchedule struct {
 	// Output only. Timestamp when the audit run was last triggered.
 	LastTriggerTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=last_trigger_time,json=lastTriggerTime,proto3" json:"last_trigger_time,omitempty"`
 	// Output only. Describes the error if the schedule is in an error state.
-	ErrorMessage  string `protobuf:"bytes,13,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ErrorMessage string `protobuf:"bytes,13,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	// Optional. Maps dynamic parameter overrides by Cloud Control resource name
+	// at execution time. For example,
+	// `{"organizations/123/locations/global/cloudControls/control-1":
+	// {parameters: [...]}}`
+	ParameterOverrides map[string]*ParameterOverrides `protobuf:"bytes,14,rep,name=parameter_overrides,json=parameterOverrides,proto3" json:"parameter_overrides,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *AuditSchedule) Reset() {
@@ -3063,6 +3102,13 @@ func (x *AuditSchedule) GetErrorMessage() string {
 		return x.ErrorMessage
 	}
 	return ""
+}
+
+func (x *AuditSchedule) GetParameterOverrides() map[string]*ParameterOverrides {
+	if x != nil {
+		return x.ParameterOverrides
+	}
+	return nil
 }
 
 // Timing and frequency parameters for recurring audit runs.
@@ -3221,124 +3267,136 @@ var File_google_cloud_auditmanager_v1_auditmanager_proto protoreflect.FileDescri
 
 const file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/auditmanager/v1/auditmanager.proto\x12\x1cgoogle.cloud.auditmanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x02\n" +
-	"\x15EnrollResourceRequest\x12\x19\n" +
-	"\x05scope\x18\x01 \x01(\tB\x03\xe0A\x02R\x05scope\x12p\n" +
-	"\fdestinations\x18\x02 \x03(\v2G.google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestinationB\x03\xe0A\x02R\fdestinations\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x1a`\n" +
+	"/google/cloud/auditmanager/v1/auditmanager.proto\x12\x1cgoogle.cloud.auditmanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/auditmanager/v1/parameters.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\x02\n" +
+	"\x15EnrollResourceRequest\x12\x1a\n" +
+	"\x05scope\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05scope\x12q\n" +
+	"\fdestinations\x18\x02 \x03(\v2G.google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestinationB\x04\xe2A\x01\x02R\fdestinations\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x1a`\n" +
 	"\x13EligibleDestination\x120\n" +
 	"\x13eligible_gcs_bucket\x18\x03 \x01(\tH\x00R\x11eligibleGcsBucketB\x17\n" +
-	"\x15eligible_destinations\"\xbe\x03\n" +
-	"\x1fGenerateAuditScopeReportRequest\x12\x19\n" +
-	"\x05scope\x18\x02 \x01(\tB\x03\xe0A\x02R\x05scope\x126\n" +
-	"\x13compliance_standard\x18\x03 \x01(\tB\x05\xe0A\x01\x18\x01R\x12complianceStandard\x12~\n" +
-	"\rreport_format\x18\x04 \x01(\x0e2T.google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.AuditScopeReportFormatB\x03\xe0A\x02R\freportFormat\x126\n" +
-	"\x14compliance_framework\x18\x05 \x01(\tB\x03\xe0A\x02R\x13complianceFramework\x12(\n" +
-	"\rvalidate_only\x18\x06 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"f\n" +
+	"\x15eligible_destinations\"\xcb\x05\n" +
+	"\x1fGenerateAuditScopeReportRequest\x12\x1a\n" +
+	"\x05scope\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05scope\x127\n" +
+	"\x13compliance_standard\x18\x03 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\x12complianceStandard\x12\x7f\n" +
+	"\rreport_format\x18\x04 \x01(\x0e2T.google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.AuditScopeReportFormatB\x04\xe2A\x01\x02R\freportFormat\x127\n" +
+	"\x14compliance_framework\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x13complianceFramework\x12)\n" +
+	"\rvalidate_only\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x8c\x01\n" +
+	"\x13parameter_overrides\x18\a \x03(\v2U.google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.ParameterOverridesEntryB\x04\xe2A\x01\x01R\x12parameterOverrides\x1aw\n" +
+	"\x17ParameterOverridesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12F\n" +
+	"\x05value\x18\x02 \x01(\v20.google.cloud.auditmanager.v1.ParameterOverridesR\x05value:\x028\x01\"f\n" +
 	"\x16AuditScopeReportFormat\x12)\n" +
 	"%AUDIT_SCOPE_REPORT_FORMAT_UNSPECIFIED\x10\x00\x12!\n" +
-	"\x1dAUDIT_SCOPE_REPORT_FORMAT_ODF\x10\x01\"\xc8\x03\n" +
+	"\x1dAUDIT_SCOPE_REPORT_FORMAT_ODF\x10\x01\"\xd0\x05\n" +
 	"\x1aGenerateAuditReportRequest\x12\x19\n" +
-	"\agcs_uri\x18\x02 \x01(\tH\x00R\x06gcsUri\x12\x19\n" +
-	"\x05scope\x18\x01 \x01(\tB\x03\xe0A\x02R\x05scope\x126\n" +
-	"\x13compliance_standard\x18\x03 \x01(\tB\x05\xe0A\x01\x18\x01R\x12complianceStandard\x12t\n" +
-	"\rreport_format\x18\x04 \x01(\x0e2J.google.cloud.auditmanager.v1.GenerateAuditReportRequest.AuditReportFormatB\x03\xe0A\x02R\freportFormat\x126\n" +
-	"\x14compliance_framework\x18\x05 \x01(\tB\x03\xe0A\x02R\x13complianceFramework\x12(\n" +
-	"\rvalidate_only\x18\b \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"U\n" +
+	"\agcs_uri\x18\x02 \x01(\tH\x00R\x06gcsUri\x12\x1a\n" +
+	"\x05scope\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05scope\x127\n" +
+	"\x13compliance_standard\x18\x03 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\x12complianceStandard\x12u\n" +
+	"\rreport_format\x18\x04 \x01(\x0e2J.google.cloud.auditmanager.v1.GenerateAuditReportRequest.AuditReportFormatB\x04\xe2A\x01\x02R\freportFormat\x127\n" +
+	"\x14compliance_framework\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x13complianceFramework\x12\x87\x01\n" +
+	"\x13parameter_overrides\x18\a \x03(\v2P.google.cloud.auditmanager.v1.GenerateAuditReportRequest.ParameterOverridesEntryB\x04\xe2A\x01\x01R\x12parameterOverrides\x12)\n" +
+	"\rvalidate_only\x18\b \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x1aw\n" +
+	"\x17ParameterOverridesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12F\n" +
+	"\x05value\x18\x02 \x01(\v20.google.cloud.auditmanager.v1.ParameterOverridesR\x05value:\x028\x01\"U\n" +
 	"\x11AuditReportFormat\x12#\n" +
 	"\x1fAUDIT_REPORT_FORMAT_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17AUDIT_REPORT_FORMAT_ODF\x10\x01B\r\n" +
-	"\vdestination\"v\n" +
-	"\"GetResourceEnrollmentStatusRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4auditmanager.googleapis.com/ResourceEnrollmentStatusR\x04name\"\xc0\x01\n" +
-	"%ListResourceEnrollmentStatusesRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1auditmanager.googleapis.com/EnrollmentStatusScopeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vdestination\"w\n" +
+	"\"GetResourceEnrollmentStatusRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4auditmanager.googleapis.com/ResourceEnrollmentStatusR\x04name\"\xc3\x01\n" +
+	"%ListResourceEnrollmentStatusesRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1auditmanager.googleapis.com/EnrollmentStatusScopeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xcf\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xd0\x01\n" +
 	"&ListResourceEnrollmentStatusesResponse\x12x\n" +
-	"\x1cresource_enrollment_statuses\x18\x01 \x03(\v26.google.cloud.auditmanager.v1.ResourceEnrollmentStatusR\x1aresourceEnrollmentStatuses\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xa8\x01\n" +
-	"\x17ListAuditReportsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'auditmanager.googleapis.com/AuditReportR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1cresource_enrollment_statuses\x18\x01 \x03(\v26.google.cloud.auditmanager.v1.ResourceEnrollmentStatusR\x1aresourceEnrollmentStatuses\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xab\x01\n" +
+	"\x17ListAuditReportsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'auditmanager.googleapis.com/AuditReportR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9c\x01\n" +
-	"\x18ListAuditReportsResponse\x12S\n" +
-	"\raudit_reports\x18\x01 \x03(\v2).google.cloud.auditmanager.v1.AuditReportB\x03\xe0A\x03R\fauditReports\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\\\n" +
-	"\x15GetAuditReportRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'auditmanager.googleapis.com/AuditReportR\x04name\"\xa1\x01\n" +
-	"\x13ListControlsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$auditmanager.googleapis.com/StandardR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9e\x01\n" +
+	"\x18ListAuditReportsResponse\x12T\n" +
+	"\raudit_reports\x18\x01 \x03(\v2).google.cloud.auditmanager.v1.AuditReportB\x04\xe2A\x01\x03R\fauditReports\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"]\n" +
+	"\x15GetAuditReportRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'auditmanager.googleapis.com/AuditReportR\x04name\"\xa4\x01\n" +
+	"\x13ListControlsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$auditmanager.googleapis.com/StandardR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8b\x01\n" +
-	"\x14ListControlsResponse\x12F\n" +
-	"\bcontrols\x18\x01 \x03(\v2%.google.cloud.auditmanager.v1.ControlB\x03\xe0A\x03R\bcontrols\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xf6\x03\n" +
-	"\x18ReportGenerationProgress\x12G\n" +
-	"\x05state\x18\x01 \x01(\x0e2,.google.cloud.auditmanager.v1.OperationStateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0efailure_reason\x18\x02 \x01(\tB\x03\xe0A\x03R\rfailureReason\x12>\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8d\x01\n" +
+	"\x14ListControlsResponse\x12G\n" +
+	"\bcontrols\x18\x01 \x03(\v2%.google.cloud.auditmanager.v1.ControlB\x04\xe2A\x01\x03R\bcontrols\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xfa\x03\n" +
+	"\x18ReportGenerationProgress\x12H\n" +
+	"\x05state\x18\x01 \x01(\x0e2,.google.cloud.auditmanager.v1.OperationStateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0efailure_reason\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rfailureReason\x12>\n" +
 	"\x1bevaluation_percent_complete\x18\x14 \x01(\x01R\x19evaluationPercentComplete\x12K\n" +
 	"\"report_generation_percent_complete\x18\x1e \x01(\x01R\x1freportGenerationPercentComplete\x12I\n" +
-	"!report_uploading_percent_complete\x18( \x01(\x01R\x1ereportUploadingPercentComplete\x129\n" +
-	"\x16destination_gcs_bucket\x182 \x01(\tB\x03\xe0A\x03R\x14destinationGcsBucket\x12R\n" +
-	"\faudit_report\x183 \x01(\tB/\xe0A\x03\xfaA)\n" +
-	"'auditmanager.googleapis.com/AuditReportR\vauditReport\"\xa3\x03\n" +
+	"!report_uploading_percent_complete\x18( \x01(\x01R\x1ereportUploadingPercentComplete\x12:\n" +
+	"\x16destination_gcs_bucket\x182 \x01(\tB\x04\xe2A\x01\x03R\x14destinationGcsBucket\x12S\n" +
+	"\faudit_report\x183 \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
+	"'auditmanager.googleapis.com/AuditReportR\vauditReport\"\xa5\x03\n" +
 	"\n" +
-	"Enrollment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12f\n" +
-	"\x13destination_details\x18\x03 \x03(\v20.google.cloud.auditmanager.v1.DestinationDetailsB\x03\xe0A\x03R\x12destinationDetails:\x93\x02\xeaA\x8f\x02\n" +
+	"Enrollment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12g\n" +
+	"\x13destination_details\x18\x03 \x03(\v20.google.cloud.auditmanager.v1.DestinationDetailsB\x04\xe2A\x01\x03R\x12destinationDetails:\x93\x02\xeaA\x8f\x02\n" +
 	"&auditmanager.googleapis.com/Enrollment\x12@projects/{project}/locations/{location}/enrollments/{enrollment}\x12>folders/{folder}/locations/{location}/enrollments/{enrollment}\x12Jorganizations/{organization}/locations/{location}/enrollments/{enrollment}*\venrollments2\n" +
-	"enrollment\"\xc3\x03\n" +
+	"enrollment\"\xc4\x03\n" +
 	"\x10AuditScopeReport\x124\n" +
-	"\x15scope_report_contents\x18\x01 \x01(\fH\x00R\x13scopeReportContents\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\bR\x04name:\xcf\x02\xeaA\xcb\x02\n" +
+	"\x15scope_report_contents\x18\x01 \x01(\fH\x00R\x13scopeReportContents\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\bR\x04name:\xcf\x02\xeaA\xcb\x02\n" +
 	",auditmanager.googleapis.com/AuditScopeReport\x12Nprojects/{project}/locations/{location}/auditScopeReports/{audit_scope_report}\x12Lfolders/{folder}/locations/{location}/auditScopeReports/{audit_scope_report}\x12Xorganizations/{organization}/locations/{location}/auditScopeReports/{audit_scope_report}*\x11auditScopeReports2\x10auditScopeReportB\x0e\n" +
-	"\faudit_report\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xe0\x06\n" +
-	"\x18ResourceEnrollmentStatus\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12M\n" +
+	"\faudit_report\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xe5\x06\n" +
+	"\x18ResourceEnrollmentStatus\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12N\n" +
 	"\n" +
-	"enrollment\x18\x02 \x01(\v2(.google.cloud.auditmanager.v1.EnrollmentB\x03\xe0A\x03R\n" +
-	"enrollment\x12!\n" +
-	"\benrolled\x18\x03 \x01(\bB\x05\xe0A\x03\x18\x01R\benrolled\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12~\n" +
-	"\x10enrollment_state\x18\x05 \x01(\x0e2N.google.cloud.auditmanager.v1.ResourceEnrollmentStatus.ResourceEnrollmentStateB\x03\xe0A\x03R\x0fenrollmentState\"s\n" +
+	"enrollment\x18\x02 \x01(\v2(.google.cloud.auditmanager.v1.EnrollmentB\x04\xe2A\x01\x03R\n" +
+	"enrollment\x12\"\n" +
+	"\benrolled\x18\x03 \x01(\bB\x06\xe2A\x01\x03\x18\x01R\benrolled\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12\x7f\n" +
+	"\x10enrollment_state\x18\x05 \x01(\x0e2N.google.cloud.auditmanager.v1.ResourceEnrollmentStatus.ResourceEnrollmentStateB\x04\xe2A\x01\x03R\x0fenrollmentState\"s\n" +
 	"\x17ResourceEnrollmentState\x12)\n" +
 	"%RESOURCE_ENROLLMENT_STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fNOT_ENROLLED\x10\x01\x12\r\n" +
 	"\tINHERITED\x10\x02\x12\f\n" +
 	"\bENROLLED\x10\x03:\x9b\x03\xeaA\x97\x03\n" +
-	"4auditmanager.googleapis.com/ResourceEnrollmentStatus\x12]folders/{folder}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}\x12_projects/{project}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}\x12iorganizations/{organization}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}*\x1aresourceEnrollmentStatuses2\x18resourceEnrollmentStatus\"\xfc\b\n" +
-	"\vAuditReport\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
-	"\x0ereport_summary\x18\x02 \x01(\v2+.google.cloud.auditmanager.v1.ReportSummaryB\x03\xe0A\x03R\rreportSummary\x12&\n" +
-	"\foperation_id\x18\x03 \x01(\tB\x03\xe0A\x03R\voperationId\x12f\n" +
-	"\x13destination_details\x18\x04 \x01(\v20.google.cloud.auditmanager.v1.DestinationDetailsB\x03\xe0A\x03R\x12destinationDetails\x126\n" +
-	"\x13compliance_standard\x18\x05 \x01(\tB\x05\xe0A\x03\x18\x01R\x12complianceStandard\x12\x19\n" +
-	"\x05scope\x18\x06 \x01(\tB\x03\xe0A\x03R\x05scope\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12Z\n" +
-	"\x0fcontrol_details\x18\b \x03(\v2,.google.cloud.auditmanager.v1.ControlDetailsB\x03\xe0A\x03R\x0econtrolDetails\x12|\n" +
-	"\x17report_generation_state\x18\t \x01(\x0e2?.google.cloud.auditmanager.v1.AuditReport.ReportGenerationStateB\x03\xe0A\x03R\x15reportGenerationState\x126\n" +
+	"4auditmanager.googleapis.com/ResourceEnrollmentStatus\x12]folders/{folder}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}\x12_projects/{project}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}\x12iorganizations/{organization}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}*\x1aresourceEnrollmentStatuses2\x18resourceEnrollmentStatus\"\xab\v\n" +
+	"\vAuditReport\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12X\n" +
+	"\x0ereport_summary\x18\x02 \x01(\v2+.google.cloud.auditmanager.v1.ReportSummaryB\x04\xe2A\x01\x03R\rreportSummary\x12'\n" +
+	"\foperation_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\voperationId\x12g\n" +
+	"\x13destination_details\x18\x04 \x01(\v20.google.cloud.auditmanager.v1.DestinationDetailsB\x04\xe2A\x01\x03R\x12destinationDetails\x127\n" +
+	"\x13compliance_standard\x18\x05 \x01(\tB\x06\xe2A\x01\x03\x18\x01R\x12complianceStandard\x12\x1a\n" +
+	"\x05scope\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x05scope\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12[\n" +
+	"\x0fcontrol_details\x18\b \x03(\v2,.google.cloud.auditmanager.v1.ControlDetailsB\x04\xe2A\x01\x03R\x0econtrolDetails\x12}\n" +
+	"\x17report_generation_state\x18\t \x01(\x0e2?.google.cloud.auditmanager.v1.AuditReport.ReportGenerationStateB\x04\xe2A\x01\x03R\x15reportGenerationState\x127\n" +
 	"\x14compliance_framework\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x13complianceFramework\x12\x1e\n" +
-	"\bscope_id\x18\v \x01(\tB\x03\xe0A\x03R\ascopeId\"\x81\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x13complianceFramework\x12\x1f\n" +
+	"\bscope_id\x18\v \x01(\tB\x04\xe2A\x01\x03R\ascopeId\x12\x95\x01\n" +
+	"\x1ecloud_control_parameter_states\x18\x10 \x03(\v2J.google.cloud.auditmanager.v1.AuditReport.CloudControlParameterStatesEntryB\x04\xe2A\x01\x03R\x1bcloudControlParameterStates\x1a\x89\x01\n" +
+	" CloudControlParameterStatesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12O\n" +
+	"\x05value\x18\x02 \x01(\v29.google.cloud.auditmanager.v1.CloudControlParameterStatesR\x05value:\x028\x01\"\x81\x01\n" +
 	"\x15ReportGenerationState\x12'\n" +
 	"#REPORT_GENERATION_STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01\x12\r\n" +
@@ -3349,19 +3407,19 @@ const file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc = "" +
 	"'auditmanager.googleapis.com/AuditReport\x12Cprojects/{project}/locations/{location}/auditReports/{audit_report}\x12Afolders/{folder}/locations/{location}/auditReports/{audit_report}\x12Morganizations/{organization}/locations/{location}/auditReports/{audit_report}*\fauditReports2\vauditReport\"O\n" +
 	"\rControlFamily\x12\x1b\n" +
 	"\tfamily_id\x18\x01 \x01(\tR\bfamilyId\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\"\xd2\x06\n" +
-	"\aControl\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12I\n" +
-	"\x06family\x18\x03 \x01(\x0e2,.google.cloud.auditmanager.v1.Control.FamilyB\x03\xe0A\x03R\x06family\x12W\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\"\xdc\x06\n" +
+	"\aControl\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12J\n" +
+	"\x06family\x18\x03 \x01(\x0e2,.google.cloud.auditmanager.v1.Control.FamilyB\x04\xe2A\x01\x03R\x06family\x12X\n" +
 	"\x0econtrol_family\x18\n" +
-	" \x01(\v2+.google.cloud.auditmanager.v1.ControlFamilyB\x03\xe0A\x03R\rcontrolFamily\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x03R\vdescription\x124\n" +
-	"\x13responsibility_type\x18\x05 \x01(\tB\x03\xe0A\x03R\x12responsibilityType\x12O\n" +
-	"!google_responsibility_description\x18\x06 \x01(\tB\x03\xe0A\x03R\x1fgoogleResponsibilityDescription\x12U\n" +
-	"$google_responsibility_implementation\x18\a \x01(\tB\x03\xe0A\x03R\"googleResponsibilityImplementation\x12S\n" +
-	"#customer_responsibility_description\x18\b \x01(\tB\x03\xe0A\x03R!customerResponsibilityDescription\x12Y\n" +
-	"&customer_responsibility_implementation\x18\t \x01(\tB\x03\xe0A\x03R$customerResponsibilityImplementation\"\xb0\x01\n" +
+	" \x01(\v2+.google.cloud.auditmanager.v1.ControlFamilyB\x04\xe2A\x01\x03R\rcontrolFamily\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x125\n" +
+	"\x13responsibility_type\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x12responsibilityType\x12P\n" +
+	"!google_responsibility_description\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x1fgoogleResponsibilityDescription\x12V\n" +
+	"$google_responsibility_implementation\x18\a \x01(\tB\x04\xe2A\x01\x03R\"googleResponsibilityImplementation\x12T\n" +
+	"#customer_responsibility_description\x18\b \x01(\tB\x04\xe2A\x01\x03R!customerResponsibilityDescription\x12Z\n" +
+	"&customer_responsibility_implementation\x18\t \x01(\tB\x04\xe2A\x01\x03R$customerResponsibilityImplementation\"\xb0\x01\n" +
 	"\x06Family\x12\x16\n" +
 	"\x12FAMILY_UNSPECIFIED\x10\x00\x12\x06\n" +
 	"\x02AC\x10\x01\x12\x06\n" +
@@ -3393,59 +3451,64 @@ const file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc = "" +
 	"\x0fviolation_count\x18\x03 \x01(\x05R\x0eviolationCount\x12;\n" +
 	"\x1amanual_review_needed_count\x18\x04 \x01(\x05R\x17manualReviewNeededCount\x12\x1f\n" +
 	"\verror_count\x18\x05 \x01(\x05R\n" +
-	"errorCount\"\x93\x02\n" +
+	"errorCount\"\x94\x02\n" +
 	"\x0eControlDetails\x12?\n" +
-	"\acontrol\x18\x01 \x01(\v2%.google.cloud.auditmanager.v1.ControlR\acontrol\x12]\n" +
-	"\x10compliance_state\x18\x02 \x01(\x0e2-.google.cloud.auditmanager.v1.ComplianceStateB\x03\xe0A\x03R\x0fcomplianceState\x12a\n" +
-	"\x16control_report_summary\x18\x03 \x01(\v2+.google.cloud.auditmanager.v1.ReportSummaryR\x14controlReportSummary\"\x9b\x02\n" +
-	"\x1aCreateAuditScheduleRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)auditmanager.googleapis.com/AuditScheduleR\x06parent\x12W\n" +
-	"\x0eaudit_schedule\x18\x02 \x01(\v2+.google.cloud.auditmanager.v1.AuditScheduleB\x03\xe0A\x02R\rauditSchedule\x12/\n" +
-	"\x11audit_schedule_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fauditScheduleId\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xe1\x01\n" +
-	"\x1aUpdateAuditScheduleRequest\x12W\n" +
-	"\x0eaudit_schedule\x18\x01 \x01(\v2+.google.cloud.auditmanager.v1.AuditScheduleB\x03\xe0A\x02R\rauditSchedule\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"`\n" +
-	"\x17GetAuditScheduleRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")auditmanager.googleapis.com/AuditScheduleR\x04name\"\xac\x01\n" +
-	"\x19ListAuditSchedulesRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)auditmanager.googleapis.com/AuditScheduleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\acontrol\x18\x01 \x01(\v2%.google.cloud.auditmanager.v1.ControlR\acontrol\x12^\n" +
+	"\x10compliance_state\x18\x02 \x01(\x0e2-.google.cloud.auditmanager.v1.ComplianceStateB\x04\xe2A\x01\x03R\x0fcomplianceState\x12a\n" +
+	"\x16control_report_summary\x18\x03 \x01(\v2+.google.cloud.auditmanager.v1.ReportSummaryR\x14controlReportSummary\"\x9f\x02\n" +
+	"\x1aCreateAuditScheduleRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)auditmanager.googleapis.com/AuditScheduleR\x06parent\x12X\n" +
+	"\x0eaudit_schedule\x18\x02 \x01(\v2+.google.cloud.auditmanager.v1.AuditScheduleB\x04\xe2A\x01\x02R\rauditSchedule\x120\n" +
+	"\x11audit_schedule_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fauditScheduleId\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xe4\x01\n" +
+	"\x1aUpdateAuditScheduleRequest\x12X\n" +
+	"\x0eaudit_schedule\x18\x01 \x01(\v2+.google.cloud.auditmanager.v1.AuditScheduleB\x04\xe2A\x01\x02R\rauditSchedule\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"a\n" +
+	"\x17GetAuditScheduleRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")auditmanager.googleapis.com/AuditScheduleR\x04name\"\xaf\x01\n" +
+	"\x19ListAuditSchedulesRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)auditmanager.googleapis.com/AuditScheduleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xbc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xbc\x01\n" +
 	"\x1aListAuditSchedulesResponse\x12T\n" +
 	"\x0faudit_schedules\x18\x01 \x03(\v2+.google.cloud.auditmanager.v1.AuditScheduleR\x0eauditSchedules\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xfe\b\n" +
-	"\rAuditSchedule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x1c\n" +
-	"\agcs_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\x06gcsUri\x126\n" +
-	"\x14compliance_framework\x18\x04 \x01(\tB\x03\xe0A\x02R\x13complianceFramework\x12g\n" +
-	"\rreport_format\x18\x05 \x01(\x0e2=.google.cloud.auditmanager.v1.AuditSchedule.AuditReportFormatB\x03\xe0A\x02R\freportFormat\x12Z\n" +
-	"\x0fschedule_config\x18\x06 \x01(\v2,.google.cloud.auditmanager.v1.ScheduleConfigB\x03\xe0A\x02R\x0escheduleConfig\x12F\n" +
-	"\x05state\x18\a \x01(\x0e2+.google.cloud.auditmanager.v1.ScheduleStateB\x03\xe0A\x01R\x05state\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12C\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xff\n" +
+	"\n" +
+	"\rAuditSchedule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1d\n" +
+	"\agcs_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06gcsUri\x127\n" +
+	"\x14compliance_framework\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x13complianceFramework\x12h\n" +
+	"\rreport_format\x18\x05 \x01(\x0e2=.google.cloud.auditmanager.v1.AuditSchedule.AuditReportFormatB\x04\xe2A\x01\x02R\freportFormat\x12[\n" +
+	"\x0fschedule_config\x18\x06 \x01(\v2,.google.cloud.auditmanager.v1.ScheduleConfigB\x04\xe2A\x01\x02R\x0escheduleConfig\x12G\n" +
+	"\x05state\x18\a \x01(\x0e2+.google.cloud.auditmanager.v1.ScheduleStateB\x04\xe2A\x01\x01R\x05state\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12D\n" +
 	"\rnext_run_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vnextRunTime\x12K\n" +
-	"\x11last_trigger_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0flastTriggerTime\x12(\n" +
-	"\rerror_message\x18\r \x01(\tB\x03\xe0A\x03R\ferrorMessage\"U\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vnextRunTime\x12L\n" +
+	"\x11last_trigger_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0flastTriggerTime\x12)\n" +
+	"\rerror_message\x18\r \x01(\tB\x04\xe2A\x01\x03R\ferrorMessage\x12z\n" +
+	"\x13parameter_overrides\x18\x0e \x03(\v2C.google.cloud.auditmanager.v1.AuditSchedule.ParameterOverridesEntryB\x04\xe2A\x01\x01R\x12parameterOverrides\x1aw\n" +
+	"\x17ParameterOverridesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12F\n" +
+	"\x05value\x18\x02 \x01(\v20.google.cloud.auditmanager.v1.ParameterOverridesR\x05value:\x028\x01\"U\n" +
 	"\x11AuditReportFormat\x12#\n" +
 	"\x1fAUDIT_REPORT_FORMAT_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17AUDIT_REPORT_FORMAT_ODF\x10\x01:\xb1\x02\xeaA\xad\x02\n" +
-	")auditmanager.googleapis.com/AuditSchedule\x12Gprojects/{project}/locations/{location}/auditSchedules/{audit_schedule}\x12Efolders/{folder}/locations/{location}/auditSchedules/{audit_schedule}\x12Qorganizations/{organization}/locations/{location}/auditSchedules/{audit_schedule}*\x0eauditSchedules2\rauditSchedule\"\xf2\x02\n" +
-	"\x0eScheduleConfig\x12>\n" +
+	")auditmanager.googleapis.com/AuditSchedule\x12Gprojects/{project}/locations/{location}/auditSchedules/{audit_schedule}\x12Efolders/{folder}/locations/{location}/auditSchedules/{audit_schedule}\x12Qorganizations/{organization}/locations/{location}/auditSchedules/{audit_schedule}*\x0eauditSchedules2\rauditSchedule\"\xf6\x02\n" +
+	"\x0eScheduleConfig\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime\x12Y\n" +
-	"\tfrequency\x18\x03 \x01(\x0e26.google.cloud.auditmanager.v1.ScheduleConfig.FrequencyB\x03\xe0A\x02R\tfrequency\x12 \n" +
-	"\ttime_zone\x18\x04 \x01(\tB\x03\xe0A\x01R\btimeZone\"g\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\aendTime\x12Z\n" +
+	"\tfrequency\x18\x03 \x01(\x0e26.google.cloud.auditmanager.v1.ScheduleConfig.FrequencyB\x04\xe2A\x01\x02R\tfrequency\x12!\n" +
+	"\ttime_zone\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\"g\n" +
 	"\tFrequency\x12\x19\n" +
 	"\x15FREQUENCY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05DAILY\x10\x01\x12\n" +
@@ -3513,7 +3576,7 @@ func file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
-var file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
+var file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
 var file_google_cloud_auditmanager_v1_auditmanager_proto_goTypes = []any{
 	(OperationState)(0),  // 0: google.cloud.auditmanager.v1.OperationState
 	(ComplianceState)(0), // 1: google.cloud.auditmanager.v1.ComplianceState
@@ -3555,76 +3618,90 @@ var file_google_cloud_auditmanager_v1_auditmanager_proto_goTypes = []any{
 	(*AuditSchedule)(nil),                                       // 37: google.cloud.auditmanager.v1.AuditSchedule
 	(*ScheduleConfig)(nil),                                      // 38: google.cloud.auditmanager.v1.ScheduleConfig
 	(*EnrollResourceRequest_EligibleDestination)(nil),           // 39: google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestination
-	(*timestamppb.Timestamp)(nil),                               // 40: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),                               // 41: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil),                             // 42: google.longrunning.Operation
+	nil,                                 // 40: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.ParameterOverridesEntry
+	nil,                                 // 41: google.cloud.auditmanager.v1.GenerateAuditReportRequest.ParameterOverridesEntry
+	nil,                                 // 42: google.cloud.auditmanager.v1.AuditReport.CloudControlParameterStatesEntry
+	nil,                                 // 43: google.cloud.auditmanager.v1.AuditSchedule.ParameterOverridesEntry
+	(*timestamppb.Timestamp)(nil),       // 44: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),       // 45: google.protobuf.FieldMask
+	(*ParameterOverrides)(nil),          // 46: google.cloud.auditmanager.v1.ParameterOverrides
+	(*CloudControlParameterStates)(nil), // 47: google.cloud.auditmanager.v1.CloudControlParameterStates
+	(*longrunningpb.Operation)(nil),     // 48: google.longrunning.Operation
 }
 var file_google_cloud_auditmanager_v1_auditmanager_proto_depIdxs = []int32{
 	39, // 0: google.cloud.auditmanager.v1.EnrollResourceRequest.destinations:type_name -> google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestination
 	3,  // 1: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.report_format:type_name -> google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.AuditScopeReportFormat
-	4,  // 2: google.cloud.auditmanager.v1.GenerateAuditReportRequest.report_format:type_name -> google.cloud.auditmanager.v1.GenerateAuditReportRequest.AuditReportFormat
-	25, // 3: google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse.resource_enrollment_statuses:type_name -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus
-	26, // 4: google.cloud.auditmanager.v1.ListAuditReportsResponse.audit_reports:type_name -> google.cloud.auditmanager.v1.AuditReport
-	28, // 5: google.cloud.auditmanager.v1.ListControlsResponse.controls:type_name -> google.cloud.auditmanager.v1.Control
-	0,  // 6: google.cloud.auditmanager.v1.ReportGenerationProgress.state:type_name -> google.cloud.auditmanager.v1.OperationState
-	29, // 7: google.cloud.auditmanager.v1.Enrollment.destination_details:type_name -> google.cloud.auditmanager.v1.DestinationDetails
-	40, // 8: google.cloud.auditmanager.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	40, // 9: google.cloud.auditmanager.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	22, // 10: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.enrollment:type_name -> google.cloud.auditmanager.v1.Enrollment
-	5,  // 11: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.enrollment_state:type_name -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus.ResourceEnrollmentState
-	30, // 12: google.cloud.auditmanager.v1.AuditReport.report_summary:type_name -> google.cloud.auditmanager.v1.ReportSummary
-	29, // 13: google.cloud.auditmanager.v1.AuditReport.destination_details:type_name -> google.cloud.auditmanager.v1.DestinationDetails
-	40, // 14: google.cloud.auditmanager.v1.AuditReport.create_time:type_name -> google.protobuf.Timestamp
-	31, // 15: google.cloud.auditmanager.v1.AuditReport.control_details:type_name -> google.cloud.auditmanager.v1.ControlDetails
-	6,  // 16: google.cloud.auditmanager.v1.AuditReport.report_generation_state:type_name -> google.cloud.auditmanager.v1.AuditReport.ReportGenerationState
-	7,  // 17: google.cloud.auditmanager.v1.Control.family:type_name -> google.cloud.auditmanager.v1.Control.Family
-	27, // 18: google.cloud.auditmanager.v1.Control.control_family:type_name -> google.cloud.auditmanager.v1.ControlFamily
-	28, // 19: google.cloud.auditmanager.v1.ControlDetails.control:type_name -> google.cloud.auditmanager.v1.Control
-	1,  // 20: google.cloud.auditmanager.v1.ControlDetails.compliance_state:type_name -> google.cloud.auditmanager.v1.ComplianceState
-	30, // 21: google.cloud.auditmanager.v1.ControlDetails.control_report_summary:type_name -> google.cloud.auditmanager.v1.ReportSummary
-	37, // 22: google.cloud.auditmanager.v1.CreateAuditScheduleRequest.audit_schedule:type_name -> google.cloud.auditmanager.v1.AuditSchedule
-	37, // 23: google.cloud.auditmanager.v1.UpdateAuditScheduleRequest.audit_schedule:type_name -> google.cloud.auditmanager.v1.AuditSchedule
-	41, // 24: google.cloud.auditmanager.v1.UpdateAuditScheduleRequest.update_mask:type_name -> google.protobuf.FieldMask
-	37, // 25: google.cloud.auditmanager.v1.ListAuditSchedulesResponse.audit_schedules:type_name -> google.cloud.auditmanager.v1.AuditSchedule
-	8,  // 26: google.cloud.auditmanager.v1.AuditSchedule.report_format:type_name -> google.cloud.auditmanager.v1.AuditSchedule.AuditReportFormat
-	38, // 27: google.cloud.auditmanager.v1.AuditSchedule.schedule_config:type_name -> google.cloud.auditmanager.v1.ScheduleConfig
-	2,  // 28: google.cloud.auditmanager.v1.AuditSchedule.state:type_name -> google.cloud.auditmanager.v1.ScheduleState
-	40, // 29: google.cloud.auditmanager.v1.AuditSchedule.create_time:type_name -> google.protobuf.Timestamp
-	40, // 30: google.cloud.auditmanager.v1.AuditSchedule.update_time:type_name -> google.protobuf.Timestamp
-	40, // 31: google.cloud.auditmanager.v1.AuditSchedule.next_run_time:type_name -> google.protobuf.Timestamp
-	40, // 32: google.cloud.auditmanager.v1.AuditSchedule.last_trigger_time:type_name -> google.protobuf.Timestamp
-	40, // 33: google.cloud.auditmanager.v1.ScheduleConfig.start_time:type_name -> google.protobuf.Timestamp
-	40, // 34: google.cloud.auditmanager.v1.ScheduleConfig.end_time:type_name -> google.protobuf.Timestamp
-	9,  // 35: google.cloud.auditmanager.v1.ScheduleConfig.frequency:type_name -> google.cloud.auditmanager.v1.ScheduleConfig.Frequency
-	32, // 36: google.cloud.auditmanager.v1.AuditManager.CreateAuditSchedule:input_type -> google.cloud.auditmanager.v1.CreateAuditScheduleRequest
-	33, // 37: google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule:input_type -> google.cloud.auditmanager.v1.UpdateAuditScheduleRequest
-	34, // 38: google.cloud.auditmanager.v1.AuditManager.GetAuditSchedule:input_type -> google.cloud.auditmanager.v1.GetAuditScheduleRequest
-	35, // 39: google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules:input_type -> google.cloud.auditmanager.v1.ListAuditSchedulesRequest
-	10, // 40: google.cloud.auditmanager.v1.AuditManager.EnrollResource:input_type -> google.cloud.auditmanager.v1.EnrollResourceRequest
-	11, // 41: google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport:input_type -> google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest
-	12, // 42: google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport:input_type -> google.cloud.auditmanager.v1.GenerateAuditReportRequest
-	16, // 43: google.cloud.auditmanager.v1.AuditManager.ListAuditReports:input_type -> google.cloud.auditmanager.v1.ListAuditReportsRequest
-	18, // 44: google.cloud.auditmanager.v1.AuditManager.GetAuditReport:input_type -> google.cloud.auditmanager.v1.GetAuditReportRequest
-	13, // 45: google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus:input_type -> google.cloud.auditmanager.v1.GetResourceEnrollmentStatusRequest
-	14, // 46: google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses:input_type -> google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesRequest
-	19, // 47: google.cloud.auditmanager.v1.AuditManager.ListControls:input_type -> google.cloud.auditmanager.v1.ListControlsRequest
-	37, // 48: google.cloud.auditmanager.v1.AuditManager.CreateAuditSchedule:output_type -> google.cloud.auditmanager.v1.AuditSchedule
-	37, // 49: google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule:output_type -> google.cloud.auditmanager.v1.AuditSchedule
-	37, // 50: google.cloud.auditmanager.v1.AuditManager.GetAuditSchedule:output_type -> google.cloud.auditmanager.v1.AuditSchedule
-	36, // 51: google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules:output_type -> google.cloud.auditmanager.v1.ListAuditSchedulesResponse
-	22, // 52: google.cloud.auditmanager.v1.AuditManager.EnrollResource:output_type -> google.cloud.auditmanager.v1.Enrollment
-	23, // 53: google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport:output_type -> google.cloud.auditmanager.v1.AuditScopeReport
-	42, // 54: google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport:output_type -> google.longrunning.Operation
-	17, // 55: google.cloud.auditmanager.v1.AuditManager.ListAuditReports:output_type -> google.cloud.auditmanager.v1.ListAuditReportsResponse
-	26, // 56: google.cloud.auditmanager.v1.AuditManager.GetAuditReport:output_type -> google.cloud.auditmanager.v1.AuditReport
-	25, // 57: google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus:output_type -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus
-	15, // 58: google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses:output_type -> google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse
-	20, // 59: google.cloud.auditmanager.v1.AuditManager.ListControls:output_type -> google.cloud.auditmanager.v1.ListControlsResponse
-	48, // [48:60] is the sub-list for method output_type
-	36, // [36:48] is the sub-list for method input_type
-	36, // [36:36] is the sub-list for extension type_name
-	36, // [36:36] is the sub-list for extension extendee
-	0,  // [0:36] is the sub-list for field type_name
+	40, // 2: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.parameter_overrides:type_name -> google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.ParameterOverridesEntry
+	4,  // 3: google.cloud.auditmanager.v1.GenerateAuditReportRequest.report_format:type_name -> google.cloud.auditmanager.v1.GenerateAuditReportRequest.AuditReportFormat
+	41, // 4: google.cloud.auditmanager.v1.GenerateAuditReportRequest.parameter_overrides:type_name -> google.cloud.auditmanager.v1.GenerateAuditReportRequest.ParameterOverridesEntry
+	25, // 5: google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse.resource_enrollment_statuses:type_name -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus
+	26, // 6: google.cloud.auditmanager.v1.ListAuditReportsResponse.audit_reports:type_name -> google.cloud.auditmanager.v1.AuditReport
+	28, // 7: google.cloud.auditmanager.v1.ListControlsResponse.controls:type_name -> google.cloud.auditmanager.v1.Control
+	0,  // 8: google.cloud.auditmanager.v1.ReportGenerationProgress.state:type_name -> google.cloud.auditmanager.v1.OperationState
+	29, // 9: google.cloud.auditmanager.v1.Enrollment.destination_details:type_name -> google.cloud.auditmanager.v1.DestinationDetails
+	44, // 10: google.cloud.auditmanager.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	44, // 11: google.cloud.auditmanager.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	22, // 12: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.enrollment:type_name -> google.cloud.auditmanager.v1.Enrollment
+	5,  // 13: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.enrollment_state:type_name -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus.ResourceEnrollmentState
+	30, // 14: google.cloud.auditmanager.v1.AuditReport.report_summary:type_name -> google.cloud.auditmanager.v1.ReportSummary
+	29, // 15: google.cloud.auditmanager.v1.AuditReport.destination_details:type_name -> google.cloud.auditmanager.v1.DestinationDetails
+	44, // 16: google.cloud.auditmanager.v1.AuditReport.create_time:type_name -> google.protobuf.Timestamp
+	31, // 17: google.cloud.auditmanager.v1.AuditReport.control_details:type_name -> google.cloud.auditmanager.v1.ControlDetails
+	6,  // 18: google.cloud.auditmanager.v1.AuditReport.report_generation_state:type_name -> google.cloud.auditmanager.v1.AuditReport.ReportGenerationState
+	42, // 19: google.cloud.auditmanager.v1.AuditReport.cloud_control_parameter_states:type_name -> google.cloud.auditmanager.v1.AuditReport.CloudControlParameterStatesEntry
+	7,  // 20: google.cloud.auditmanager.v1.Control.family:type_name -> google.cloud.auditmanager.v1.Control.Family
+	27, // 21: google.cloud.auditmanager.v1.Control.control_family:type_name -> google.cloud.auditmanager.v1.ControlFamily
+	28, // 22: google.cloud.auditmanager.v1.ControlDetails.control:type_name -> google.cloud.auditmanager.v1.Control
+	1,  // 23: google.cloud.auditmanager.v1.ControlDetails.compliance_state:type_name -> google.cloud.auditmanager.v1.ComplianceState
+	30, // 24: google.cloud.auditmanager.v1.ControlDetails.control_report_summary:type_name -> google.cloud.auditmanager.v1.ReportSummary
+	37, // 25: google.cloud.auditmanager.v1.CreateAuditScheduleRequest.audit_schedule:type_name -> google.cloud.auditmanager.v1.AuditSchedule
+	37, // 26: google.cloud.auditmanager.v1.UpdateAuditScheduleRequest.audit_schedule:type_name -> google.cloud.auditmanager.v1.AuditSchedule
+	45, // 27: google.cloud.auditmanager.v1.UpdateAuditScheduleRequest.update_mask:type_name -> google.protobuf.FieldMask
+	37, // 28: google.cloud.auditmanager.v1.ListAuditSchedulesResponse.audit_schedules:type_name -> google.cloud.auditmanager.v1.AuditSchedule
+	8,  // 29: google.cloud.auditmanager.v1.AuditSchedule.report_format:type_name -> google.cloud.auditmanager.v1.AuditSchedule.AuditReportFormat
+	38, // 30: google.cloud.auditmanager.v1.AuditSchedule.schedule_config:type_name -> google.cloud.auditmanager.v1.ScheduleConfig
+	2,  // 31: google.cloud.auditmanager.v1.AuditSchedule.state:type_name -> google.cloud.auditmanager.v1.ScheduleState
+	44, // 32: google.cloud.auditmanager.v1.AuditSchedule.create_time:type_name -> google.protobuf.Timestamp
+	44, // 33: google.cloud.auditmanager.v1.AuditSchedule.update_time:type_name -> google.protobuf.Timestamp
+	44, // 34: google.cloud.auditmanager.v1.AuditSchedule.next_run_time:type_name -> google.protobuf.Timestamp
+	44, // 35: google.cloud.auditmanager.v1.AuditSchedule.last_trigger_time:type_name -> google.protobuf.Timestamp
+	43, // 36: google.cloud.auditmanager.v1.AuditSchedule.parameter_overrides:type_name -> google.cloud.auditmanager.v1.AuditSchedule.ParameterOverridesEntry
+	44, // 37: google.cloud.auditmanager.v1.ScheduleConfig.start_time:type_name -> google.protobuf.Timestamp
+	44, // 38: google.cloud.auditmanager.v1.ScheduleConfig.end_time:type_name -> google.protobuf.Timestamp
+	9,  // 39: google.cloud.auditmanager.v1.ScheduleConfig.frequency:type_name -> google.cloud.auditmanager.v1.ScheduleConfig.Frequency
+	46, // 40: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.ParameterOverridesEntry.value:type_name -> google.cloud.auditmanager.v1.ParameterOverrides
+	46, // 41: google.cloud.auditmanager.v1.GenerateAuditReportRequest.ParameterOverridesEntry.value:type_name -> google.cloud.auditmanager.v1.ParameterOverrides
+	47, // 42: google.cloud.auditmanager.v1.AuditReport.CloudControlParameterStatesEntry.value:type_name -> google.cloud.auditmanager.v1.CloudControlParameterStates
+	46, // 43: google.cloud.auditmanager.v1.AuditSchedule.ParameterOverridesEntry.value:type_name -> google.cloud.auditmanager.v1.ParameterOverrides
+	32, // 44: google.cloud.auditmanager.v1.AuditManager.CreateAuditSchedule:input_type -> google.cloud.auditmanager.v1.CreateAuditScheduleRequest
+	33, // 45: google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule:input_type -> google.cloud.auditmanager.v1.UpdateAuditScheduleRequest
+	34, // 46: google.cloud.auditmanager.v1.AuditManager.GetAuditSchedule:input_type -> google.cloud.auditmanager.v1.GetAuditScheduleRequest
+	35, // 47: google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules:input_type -> google.cloud.auditmanager.v1.ListAuditSchedulesRequest
+	10, // 48: google.cloud.auditmanager.v1.AuditManager.EnrollResource:input_type -> google.cloud.auditmanager.v1.EnrollResourceRequest
+	11, // 49: google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport:input_type -> google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest
+	12, // 50: google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport:input_type -> google.cloud.auditmanager.v1.GenerateAuditReportRequest
+	16, // 51: google.cloud.auditmanager.v1.AuditManager.ListAuditReports:input_type -> google.cloud.auditmanager.v1.ListAuditReportsRequest
+	18, // 52: google.cloud.auditmanager.v1.AuditManager.GetAuditReport:input_type -> google.cloud.auditmanager.v1.GetAuditReportRequest
+	13, // 53: google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus:input_type -> google.cloud.auditmanager.v1.GetResourceEnrollmentStatusRequest
+	14, // 54: google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses:input_type -> google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesRequest
+	19, // 55: google.cloud.auditmanager.v1.AuditManager.ListControls:input_type -> google.cloud.auditmanager.v1.ListControlsRequest
+	37, // 56: google.cloud.auditmanager.v1.AuditManager.CreateAuditSchedule:output_type -> google.cloud.auditmanager.v1.AuditSchedule
+	37, // 57: google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule:output_type -> google.cloud.auditmanager.v1.AuditSchedule
+	37, // 58: google.cloud.auditmanager.v1.AuditManager.GetAuditSchedule:output_type -> google.cloud.auditmanager.v1.AuditSchedule
+	36, // 59: google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules:output_type -> google.cloud.auditmanager.v1.ListAuditSchedulesResponse
+	22, // 60: google.cloud.auditmanager.v1.AuditManager.EnrollResource:output_type -> google.cloud.auditmanager.v1.Enrollment
+	23, // 61: google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport:output_type -> google.cloud.auditmanager.v1.AuditScopeReport
+	48, // 62: google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport:output_type -> google.longrunning.Operation
+	17, // 63: google.cloud.auditmanager.v1.AuditManager.ListAuditReports:output_type -> google.cloud.auditmanager.v1.ListAuditReportsResponse
+	26, // 64: google.cloud.auditmanager.v1.AuditManager.GetAuditReport:output_type -> google.cloud.auditmanager.v1.AuditReport
+	25, // 65: google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus:output_type -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus
+	15, // 66: google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses:output_type -> google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse
+	20, // 67: google.cloud.auditmanager.v1.AuditManager.ListControls:output_type -> google.cloud.auditmanager.v1.ListControlsResponse
+	56, // [56:68] is the sub-list for method output_type
+	44, // [44:56] is the sub-list for method input_type
+	44, // [44:44] is the sub-list for extension type_name
+	44, // [44:44] is the sub-list for extension extendee
+	0,  // [0:44] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_auditmanager_v1_auditmanager_proto_init() }
@@ -3632,6 +3709,7 @@ func file_google_cloud_auditmanager_v1_auditmanager_proto_init() {
 	if File_google_cloud_auditmanager_v1_auditmanager_proto != nil {
 		return
 	}
+	file_google_cloud_auditmanager_v1_parameters_proto_init()
 	file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[2].OneofWrappers = []any{
 		(*GenerateAuditReportRequest_GcsUri)(nil),
 	}
@@ -3650,7 +3728,7 @@ func file_google_cloud_auditmanager_v1_auditmanager_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc), len(file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc)),
 			NumEnums:      10,
-			NumMessages:   30,
+			NumMessages:   34,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

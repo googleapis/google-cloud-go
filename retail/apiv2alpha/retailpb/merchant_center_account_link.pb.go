@@ -383,21 +383,21 @@ var File_google_cloud_retail_v2alpha_merchant_center_account_link_proto protoref
 
 const file_google_cloud_retail_v2alpha_merchant_center_account_link_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/retail/v2alpha/merchant_center_account_link.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x93\a\n" +
-	"\x19MerchantCenterAccountLink\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\x03R\x04name\x12\x16\n" +
-	"\x02id\x18\b \x01(\tB\x06\xe0A\x05\xe0A\x03R\x02id\x12@\n" +
-	"\x1amerchant_center_account_id\x18\x02 \x01(\x03B\x03\xe0A\x02R\x17merchantCenterAccountId\x12 \n" +
-	"\tbranch_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bbranchId\x12\x1d\n" +
+	">google/cloud/retail/v2alpha/merchant_center_account_link.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96\a\n" +
+	"\x19MerchantCenterAccountLink\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\x03R\x04name\x12\x15\n" +
+	"\x02id\x18\b \x01(\tB\x05\xe2A\x02\x05\x03R\x02id\x12A\n" +
+	"\x1amerchant_center_account_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\x17merchantCenterAccountId\x12!\n" +
+	"\tbranch_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bbranchId\x12\x1d\n" +
 	"\n" +
 	"feed_label\x18\x04 \x01(\tR\tfeedLabel\x12#\n" +
 	"\rlanguage_code\x18\x05 \x01(\tR\flanguageCode\x12r\n" +
-	"\ffeed_filters\x18\x06 \x03(\v2O.google.cloud.retail.v2alpha.MerchantCenterAccountLink.MerchantCenterFeedFilterR\vfeedFilters\x12W\n" +
-	"\x05state\x18\a \x01(\x0e2<.google.cloud.retail.v2alpha.MerchantCenterAccountLink.StateB\x03\xe0A\x03R\x05state\x12\"\n" +
+	"\ffeed_filters\x18\x06 \x03(\v2O.google.cloud.retail.v2alpha.MerchantCenterAccountLink.MerchantCenterFeedFilterR\vfeedFilters\x12X\n" +
+	"\x05state\x18\a \x01(\x0e2<.google.cloud.retail.v2alpha.MerchantCenterAccountLink.StateB\x04\xe2A\x01\x03R\x05state\x12#\n" +
 	"\n" +
-	"project_id\x18\t \x01(\tB\x03\xe0A\x03R\tprojectId\x12\x1b\n" +
+	"project_id\x18\t \x01(\tB\x04\xe2A\x01\x03R\tprojectId\x12\x1c\n" +
 	"\x06source\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x06source\x1a\x98\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x06source\x1a\x98\x01\n" +
 	"\x18MerchantCenterFeedFilter\x12*\n" +
 	"\x0fprimary_feed_id\x18\x01 \x01(\x03B\x02\x18\x01R\rprimaryFeedId\x12$\n" +
 	"\x0edata_source_id\x18\x03 \x01(\x03R\fdataSourceId\x12*\n" +

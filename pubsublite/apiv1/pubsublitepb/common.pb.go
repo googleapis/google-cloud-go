@@ -1251,11 +1251,11 @@ const file_google_cloud_pubsublite_v1_common_proto_rawDesc = "" +
 	" DELIVERY_REQUIREMENT_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13DELIVER_IMMEDIATELY\x10\x01\x12\x18\n" +
 	"\x14DELIVER_AFTER_STORED\x10\x02:q\xeaAn\n" +
-	"&pubsublite.googleapis.com/Subscription\x12Dprojects/{project}/locations/{location}/subscriptions/{subscription}\"\x83\x04\n" +
+	"&pubsublite.googleapis.com/Subscription\x12Dprojects/{project}/locations/{location}/subscriptions/{subscription}\"\x85\x04\n" +
 	"\fExportConfig\x12S\n" +
-	"\rdesired_state\x18\x01 \x01(\x0e2..google.cloud.pubsublite.v1.ExportConfig.StateR\fdesiredState\x12X\n" +
-	"\rcurrent_state\x18\x06 \x01(\x0e2..google.cloud.pubsublite.v1.ExportConfig.StateB\x03\xe0A\x03R\fcurrentState\x12S\n" +
-	"\x11dead_letter_topic\x18\x05 \x01(\tB'\xe0A\x01\xfaA!\n" +
+	"\rdesired_state\x18\x01 \x01(\x0e2..google.cloud.pubsublite.v1.ExportConfig.StateR\fdesiredState\x12Y\n" +
+	"\rcurrent_state\x18\x06 \x01(\x0e2..google.cloud.pubsublite.v1.ExportConfig.StateB\x04\xe2A\x01\x03R\fcurrentState\x12T\n" +
+	"\x11dead_letter_topic\x18\x05 \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
 	"\x1fpubsublite.googleapis.com/TopicR\x0fdeadLetterTopic\x12\\\n" +
 	"\rpubsub_config\x18\x03 \x01(\v25.google.cloud.pubsublite.v1.ExportConfig.PubSubConfigH\x00R\fpubsubConfig\x1a$\n" +
 	"\fPubSubConfig\x12\x14\n" +

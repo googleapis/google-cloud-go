@@ -473,6 +473,11 @@ func (c *restClient) CreateTrip(ctx context.Context, req *navconnectpb.CreateTri
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/trips", req.GetParent())
 
 	params := url.Values{}
@@ -528,10 +533,18 @@ func (c *restClient) GetTrip(ctx context.Context, req *navconnectpb.GetTripReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRoutePolylineFormat() != 0 {
+		params.Add("routePolylineFormat", fmt.Sprintf("%v", req.GetRoutePolylineFormat()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

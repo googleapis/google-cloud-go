@@ -46,6 +46,8 @@ const (
 	EmptyDirVolumeSource_MEDIUM_UNSPECIFIED EmptyDirVolumeSource_Medium = 0
 	// Explicitly set the EmptyDir to be in memory. Uses tmpfs.
 	EmptyDirVolumeSource_MEMORY EmptyDirVolumeSource_Medium = 1
+	// Explicitly sets the EmptyDir to be a disk.
+	EmptyDirVolumeSource_DISK EmptyDirVolumeSource_Medium = 2
 )
 
 // Enum value maps for EmptyDirVolumeSource_Medium.
@@ -53,10 +55,12 @@ var (
 	EmptyDirVolumeSource_Medium_name = map[int32]string{
 		0: "MEDIUM_UNSPECIFIED",
 		1: "MEMORY",
+		2: "DISK",
 	}
 	EmptyDirVolumeSource_Medium_value = map[string]int32{
 		"MEDIUM_UNSPECIFIED": 0,
 		"MEMORY":             1,
+		"DISK":               2,
 	}
 )
 
@@ -100,7 +104,8 @@ type Container struct {
 	// Registry, or Google Container Registry. If the host is not provided,
 	// Dockerhub is assumed.
 	Image string `protobuf:"bytes,2,opt,name=image,proto3" json:"image,omitempty"`
-	// Optional. Location of the source.
+	// Optional. Location of the source. This field is only supported in Cloud Run
+	// Service.
 	SourceCode *SourceCode `protobuf:"bytes,17,opt,name=source_code,json=sourceCode,proto3" json:"source_code,omitempty"`
 	// Entrypoint array. Not executed within a shell.
 	// The docker image's ENTRYPOINT is used if this is not provided.
@@ -141,9 +146,12 @@ type Container struct {
 	// indicates that the service is enrolled into automatic base image update.
 	BaseImageUri string `protobuf:"bytes,13,opt,name=base_image_uri,json=baseImageUri,proto3" json:"base_image_uri,omitempty"`
 	// Output only. The build info of the container image.
-	BuildInfo     *BuildInfo `protobuf:"bytes,15,opt,name=build_info,json=buildInfo,proto3" json:"build_info,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	BuildInfo *BuildInfo `protobuf:"bytes,15,opt,name=build_info,json=buildInfo,proto3" json:"build_info,omitempty"`
+	// Optional. Indicates that this container can act as a sandbox supervisor and
+	// launch sandboxes.
+	SandboxLauncher *bool `protobuf:"varint,22,opt,name=sandbox_launcher,json=sandboxLauncher,proto3,oneof" json:"sandbox_launcher,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Container) Reset() {
@@ -286,6 +294,13 @@ func (x *Container) GetBuildInfo() *BuildInfo {
 		return x.BuildInfo
 	}
 	return nil
+}
+
+func (x *Container) GetSandboxLauncher() bool {
+	if x != nil && x.SandboxLauncher != nil {
+		return *x.SandboxLauncher
+	}
+	return false
 }
 
 // ResourceRequirements describes the compute resource requirements.
@@ -638,6 +653,8 @@ type VolumeMount struct {
 	MountPath string `protobuf:"bytes,3,opt,name=mount_path,json=mountPath,proto3" json:"mount_path,omitempty"`
 	// Optional. Path within the volume from which the container's volume should
 	// be mounted. Defaults to "" (volume's root).
+	//
+	// This field is currently rejected in Secret volume mounts.
 	SubPath       string `protobuf:"bytes,4,opt,name=sub_path,json=subPath,proto3" json:"sub_path,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1016,11 +1033,25 @@ func (x *VersionToPath) GetMode() int32 {
 // how to connect Cloud SQL and Cloud Run.
 type CloudSqlInstance struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The Cloud SQL instance connection names, as can be found in
-	// https://console.cloud.google.com/sql/instances. Visit
-	// https://cloud.google.com/sql/docs/mysql/connect-run for more information on
-	// how to connect Cloud SQL and Cloud Run. Format:
-	// {project}:{location}:{instance}
+	// A list of Cloud SQL instance connection names. Cloud Run uses these
+	// to establish connections to the specified Cloud SQL instances.
+	// While the SQL instance name itself is unique within a project,
+	// the full connection name requires the location for proper routing.
+	// Format: `{project}:{location}:{instance}`
+	// Example: `my-project:us-central1:my-instance`
+	//
+	// You can find this value on the instance's **Overview** page in the
+	// Google Cloud console or by using the following `gcloud` command:
+	//
+	// ```sh
+	//
+	//	gcloud sql instances describe INSTANCE_NAME \
+	//	  --format='value(connectionName)'
+	//
+	// ```
+	//
+	// Visit https://cloud.google.com/sql/docs/mysql/connect-run for more
+	// information on how to connect Cloud SQL and Cloud Run.
 	Instances     []string `protobuf:"bytes,1,rep,name=instances,proto3" json:"instances,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1063,24 +1094,25 @@ func (x *CloudSqlInstance) GetInstances() []string {
 	return nil
 }
 
-// In memory (tmpfs) ephemeral storage.
+// Represents in-memory (tmpfs) or disk-backed ephemeral storage.
 // It is ephemeral in the sense that when the sandbox is taken down, the data is
 // destroyed with it (it does not persist across sandbox runs).
 type EmptyDirVolumeSource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The medium on which the data is stored. Acceptable values today is only
-	// MEMORY or none. When none, the default will currently be backed by memory
-	// but could change over time. +optional
+	// The medium on which the data is stored. Acceptable values are `MEMORY`,
+	// `DISK`, or unset (`MEDIUM_UNSPECIFIED`). When unset, the default is
+	// currently memory-backed but could change over time.
 	Medium EmptyDirVolumeSource_Medium `protobuf:"varint,1,opt,name=medium,proto3,enum=google.cloud.run.v2.EmptyDirVolumeSource_Medium" json:"medium,omitempty"`
 	// Limit on the storage usable by this EmptyDir volume.
 	// The size limit is also applicable for memory medium.
 	// The maximum usage on memory medium EmptyDir would be the minimum value
 	// between the SizeLimit specified here and the sum of memory limits of all
 	// containers. The default is nil which means that the limit is undefined.
-	// More info:
-	// https://cloud.google.com/run/docs/configuring/in-memory-volumes#configure-volume.
-	// Info in Kubernetes:
-	// https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
+	// For more information, see
+	// [Configure in-memory volume
+	// mounts](https://cloud.google.com/run/docs/configuring/in-memory-volumes#configure-volume)
+	// and the [Kubernetes `emptyDir` volume
+	// documentation](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir).
 	SizeLimit     string `protobuf:"bytes,2,opt,name=size_limit,json=sizeLimit,proto3" json:"size_limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1194,8 +1226,8 @@ func (x *NFSVolumeSource) GetReadOnly() bool {
 	return false
 }
 
-// Represents a volume backed by a Cloud Storage bucket using Cloud Storage
-// FUSE.
+// Represents a volume backed by a Cloud Storage bucket (mounted via Cloud
+// Storage FUSE or as a block device disk).
 type GCSVolumeSource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud Storage Bucket name.
@@ -1704,6 +1736,7 @@ type SourceCode struct {
 	// Types that are valid to be assigned to SourceType:
 	//
 	//	*SourceCode_CloudStorageSource_
+	//	*SourceCode_InlinedSource_
 	SourceType    isSourceCode_SourceType `protobuf_oneof:"source_type"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1755,6 +1788,15 @@ func (x *SourceCode) GetCloudStorageSource() *SourceCode_CloudStorageSource {
 	return nil
 }
 
+func (x *SourceCode) GetInlinedSource() *SourceCode_InlinedSource {
+	if x != nil {
+		if x, ok := x.SourceType.(*SourceCode_InlinedSource_); ok {
+			return x.InlinedSource
+		}
+	}
+	return nil
+}
+
 type isSourceCode_SourceType interface {
 	isSourceCode_SourceType()
 }
@@ -1764,7 +1806,16 @@ type SourceCode_CloudStorageSource_ struct {
 	CloudStorageSource *SourceCode_CloudStorageSource `protobuf:"bytes,1,opt,name=cloud_storage_source,json=cloudStorageSource,proto3,oneof"`
 }
 
+type SourceCode_InlinedSource_ struct {
+	// Optional. Input only. Source code inlined in the request. Cloud Run will
+	// store the inlined_source to Cloud Storage and replace the field with
+	// cloud_storage_source. This field is only supported in Cloud Run Service.
+	InlinedSource *SourceCode_InlinedSource `protobuf:"bytes,2,opt,name=inlined_source,json=inlinedSource,proto3,oneof"`
+}
+
 func (*SourceCode_CloudStorageSource_) isSourceCode_SourceType() {}
+
+func (*SourceCode_InlinedSource_) isSourceCode_SourceType() {}
 
 // Cloud Storage source.
 type SourceCode_CloudStorageSource struct {
@@ -1830,15 +1881,125 @@ func (x *SourceCode_CloudStorageSource) GetGeneration() int64 {
 	return 0
 }
 
+// Source file.
+type SourceCode_SourceFile struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Input only. The file name for the source code. e.g.,
+	// `"index.js"` or
+	// `"node_modules/dependency.js"`. The filename must be less than 255
+	// characters and cannot contain `..`, `./`, `//`, or end with a `/`.
+	// Cloud Run will place the files in the container subdirectories, please
+	// use relative path to access the file.
+	Filename string `protobuf:"bytes,1,opt,name=filename,proto3" json:"filename,omitempty"`
+	// Required. Input only. Represents the exact, literal, and complete source
+	// code of the file. Placeholders like `...` or comments such as `# [rest of
+	// code]` should NEVER be used as omission. Every character in this field
+	// will be built into the final container. Any omission will result in a
+	// broken application.
+	Content       string `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SourceCode_SourceFile) Reset() {
+	*x = SourceCode_SourceFile{}
+	mi := &file_google_cloud_run_v2_k8s_min_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SourceCode_SourceFile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SourceCode_SourceFile) ProtoMessage() {}
+
+func (x *SourceCode_SourceFile) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_run_v2_k8s_min_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SourceCode_SourceFile.ProtoReflect.Descriptor instead.
+func (*SourceCode_SourceFile) Descriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_k8s_min_proto_rawDescGZIP(), []int{20, 1}
+}
+
+func (x *SourceCode_SourceFile) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+func (x *SourceCode_SourceFile) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+// Inlined source.
+type SourceCode_InlinedSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Input only. The source code.
+	Sources       []*SourceCode_SourceFile `protobuf:"bytes,1,rep,name=sources,proto3" json:"sources,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SourceCode_InlinedSource) Reset() {
+	*x = SourceCode_InlinedSource{}
+	mi := &file_google_cloud_run_v2_k8s_min_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SourceCode_InlinedSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SourceCode_InlinedSource) ProtoMessage() {}
+
+func (x *SourceCode_InlinedSource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_run_v2_k8s_min_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SourceCode_InlinedSource.ProtoReflect.Descriptor instead.
+func (*SourceCode_InlinedSource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_k8s_min_proto_rawDescGZIP(), []int{20, 2}
+}
+
+func (x *SourceCode_InlinedSource) GetSources() []*SourceCode_SourceFile {
+	if x != nil {
+		return x.Sources
+	}
+	return nil
+}
+
 var File_google_cloud_run_v2_k8s_min_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_k8s_min_proto_rawDesc = "" +
 	"\n" +
-	"!google/cloud/run/v2/k8s.min.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9b\x06\n" +
+	"!google/cloud/run/v2/k8s.min.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe9\x06\n" +
 	"\tContainer\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
-	"\x05image\x18\x02 \x01(\tB\x03\xe0A\x02R\x05image\x12E\n" +
-	"\vsource_code\x18\x11 \x01(\v2\x1f.google.cloud.run.v2.SourceCodeB\x03\xe0A\x01R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
+	"\x05image\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05image\x12F\n" +
+	"\vsource_code\x18\x11 \x01(\v2\x1f.google.cloud.run.v2.SourceCodeB\x04\xe2A\x01\x01R\n" +
 	"sourceCode\x12\x18\n" +
 	"\acommand\x18\x03 \x03(\tR\acommand\x12\x12\n" +
 	"\x04args\x18\x04 \x03(\tR\x04args\x12-\n" +
@@ -1854,62 +2015,65 @@ const file_google_cloud_run_v2_k8s_min_proto_rawDesc = "" +
 	"\x0freadiness_probe\x18\x0e \x01(\v2\x1a.google.cloud.run.v2.ProbeR\x0ereadinessProbe\x12\x1d\n" +
 	"\n" +
 	"depends_on\x18\f \x03(\tR\tdependsOn\x12$\n" +
-	"\x0ebase_image_uri\x18\r \x01(\tR\fbaseImageUri\x12B\n" +
+	"\x0ebase_image_uri\x18\r \x01(\tR\fbaseImageUri\x12C\n" +
 	"\n" +
-	"build_info\x18\x0f \x01(\v2\x1e.google.cloud.run.v2.BuildInfoB\x03\xe0A\x03R\tbuildInfo\"\xe7\x01\n" +
+	"build_info\x18\x0f \x01(\v2\x1e.google.cloud.run.v2.BuildInfoB\x04\xe2A\x01\x03R\tbuildInfo\x124\n" +
+	"\x10sandbox_launcher\x18\x16 \x01(\bB\x04\xe2A\x01\x01H\x00R\x0fsandboxLauncher\x88\x01\x01B\x13\n" +
+	"\x11_sandbox_launcher\"\xe7\x01\n" +
 	"\x14ResourceRequirements\x12M\n" +
 	"\x06limits\x18\x01 \x03(\v25.google.cloud.run.v2.ResourceRequirements.LimitsEntryR\x06limits\x12\x19\n" +
 	"\bcpu_idle\x18\x02 \x01(\bR\acpuIdle\x12*\n" +
 	"\x11startup_cpu_boost\x18\x03 \x01(\bR\x0fstartupCpuBoost\x1a9\n" +
 	"\vLimitsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8b\x01\n" +
-	"\x06EnvVar\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x16\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8c\x01\n" +
+	"\x06EnvVar\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x16\n" +
 	"\x05value\x18\x02 \x01(\tH\x00R\x05value\x12F\n" +
 	"\fvalue_source\x18\x03 \x01(\v2!.google.cloud.run.v2.EnvVarSourceH\x00R\vvalueSourceB\b\n" +
 	"\x06values\"\\\n" +
 	"\fEnvVarSource\x12L\n" +
-	"\x0esecret_key_ref\x18\x01 \x01(\v2&.google.cloud.run.v2.SecretKeySelectorR\fsecretKeyRef\"\xa3\x01\n" +
-	"\x11SecretKeySelector\x12C\n" +
-	"\x06secret\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0esecret_key_ref\x18\x01 \x01(\v2&.google.cloud.run.v2.SecretKeySelectorR\fsecretKeyRef\"\xa4\x01\n" +
+	"\x11SecretKeySelector\x12D\n" +
+	"\x06secret\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#secretmanager.googleapis.com/SecretR\x06secret\x12I\n" +
 	"\aversion\x18\x02 \x01(\tB/\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\aversion\"J\n" +
 	"\rContainerPort\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
-	"\x0econtainer_port\x18\x03 \x01(\x05R\rcontainerPort\"j\n" +
-	"\vVolumeMount\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\"\n" +
+	"\x0econtainer_port\x18\x03 \x01(\x05R\rcontainerPort\"m\n" +
+	"\vVolumeMount\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12#\n" +
 	"\n" +
-	"mount_path\x18\x03 \x01(\tB\x03\xe0A\x02R\tmountPath\x12\x1e\n" +
-	"\bsub_path\x18\x04 \x01(\tB\x03\xe0A\x01R\asubPath\"\x88\x03\n" +
-	"\x06Volume\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12A\n" +
+	"mount_path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tmountPath\x12\x1f\n" +
+	"\bsub_path\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\asubPath\"\x89\x03\n" +
+	"\x06Volume\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
 	"\x06secret\x18\x02 \x01(\v2'.google.cloud.run.v2.SecretVolumeSourceH\x00R\x06secret\x12U\n" +
 	"\x12cloud_sql_instance\x18\x03 \x01(\v2%.google.cloud.run.v2.CloudSqlInstanceH\x00R\x10cloudSqlInstance\x12H\n" +
 	"\tempty_dir\x18\x04 \x01(\v2).google.cloud.run.v2.EmptyDirVolumeSourceH\x00R\bemptyDir\x128\n" +
 	"\x03nfs\x18\x05 \x01(\v2$.google.cloud.run.v2.NFSVolumeSourceH\x00R\x03nfs\x128\n" +
 	"\x03gcs\x18\x06 \x01(\v2$.google.cloud.run.v2.GCSVolumeSourceH\x00R\x03gcsB\r\n" +
-	"\vvolume_type\"\x8e\x01\n" +
-	"\x12SecretVolumeSource\x12\x1b\n" +
-	"\x06secret\x18\x01 \x01(\tB\x03\xe0A\x02R\x06secret\x128\n" +
+	"\vvolume_type\"\x8f\x01\n" +
+	"\x12SecretVolumeSource\x12\x1c\n" +
+	"\x06secret\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06secret\x128\n" +
 	"\x05items\x18\x02 \x03(\v2\".google.cloud.run.v2.VersionToPathR\x05items\x12!\n" +
-	"\fdefault_mode\x18\x03 \x01(\x05R\vdefaultMode\"V\n" +
-	"\rVersionToPath\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x02R\x04path\x12\x18\n" +
+	"\fdefault_mode\x18\x03 \x01(\x05R\vdefaultMode\"W\n" +
+	"\rVersionToPath\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\x05R\x04mode\"0\n" +
 	"\x10CloudSqlInstance\x12\x1c\n" +
-	"\tinstances\x18\x01 \x03(\tR\tinstances\"\xad\x01\n" +
+	"\tinstances\x18\x01 \x03(\tR\tinstances\"\xb7\x01\n" +
 	"\x14EmptyDirVolumeSource\x12H\n" +
 	"\x06medium\x18\x01 \x01(\x0e20.google.cloud.run.v2.EmptyDirVolumeSource.MediumR\x06medium\x12\x1d\n" +
 	"\n" +
-	"size_limit\x18\x02 \x01(\tR\tsizeLimit\",\n" +
+	"size_limit\x18\x02 \x01(\tR\tsizeLimit\"6\n" +
 	"\x06Medium\x12\x16\n" +
 	"\x12MEDIUM_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06MEMORY\x10\x01\"Z\n" +
+	"\x06MEMORY\x10\x01\x12\b\n" +
+	"\x04DISK\x10\x02\"Z\n" +
 	"\x0fNFSVolumeSource\x12\x16\n" +
 	"\x06server\x18\x01 \x01(\tR\x06server\x12\x12\n" +
 	"\x04path\x18\x02 \x01(\tR\x04path\x12\x1b\n" +
@@ -1917,44 +2081,51 @@ const file_google_cloud_run_v2_k8s_min_proto_rawDesc = "" +
 	"\x0fGCSVolumeSource\x12\x16\n" +
 	"\x06bucket\x18\x01 \x01(\tR\x06bucket\x12\x1b\n" +
 	"\tread_only\x18\x02 \x01(\bR\breadOnly\x12#\n" +
-	"\rmount_options\x18\x03 \x03(\tR\fmountOptions\"\xa8\x03\n" +
-	"\x05Probe\x127\n" +
-	"\x15initial_delay_seconds\x18\x01 \x01(\x05B\x03\xe0A\x01R\x13initialDelaySeconds\x12,\n" +
-	"\x0ftimeout_seconds\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0etimeoutSeconds\x12*\n" +
-	"\x0eperiod_seconds\x18\x03 \x01(\x05B\x03\xe0A\x01R\rperiodSeconds\x120\n" +
-	"\x11failure_threshold\x18\x04 \x01(\x05B\x03\xe0A\x01R\x10failureThreshold\x12D\n" +
-	"\bhttp_get\x18\x05 \x01(\v2\".google.cloud.run.v2.HTTPGetActionB\x03\xe0A\x01H\x00R\ahttpGet\x12J\n" +
+	"\rmount_options\x18\x03 \x03(\tR\fmountOptions\"\xaf\x03\n" +
+	"\x05Probe\x128\n" +
+	"\x15initial_delay_seconds\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x13initialDelaySeconds\x12-\n" +
+	"\x0ftimeout_seconds\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0etimeoutSeconds\x12+\n" +
+	"\x0eperiod_seconds\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\rperiodSeconds\x121\n" +
+	"\x11failure_threshold\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x10failureThreshold\x12E\n" +
+	"\bhttp_get\x18\x05 \x01(\v2\".google.cloud.run.v2.HTTPGetActionB\x04\xe2A\x01\x01H\x00R\ahttpGet\x12K\n" +
 	"\n" +
-	"tcp_socket\x18\x06 \x01(\v2$.google.cloud.run.v2.TCPSocketActionB\x03\xe0A\x01H\x00R\ttcpSocket\x12:\n" +
-	"\x04grpc\x18\a \x01(\v2\x1f.google.cloud.run.v2.GRPCActionB\x03\xe0A\x01H\x00R\x04grpcB\f\n" +
+	"tcp_socket\x18\x06 \x01(\v2$.google.cloud.run.v2.TCPSocketActionB\x04\xe2A\x01\x01H\x00R\ttcpSocket\x12;\n" +
+	"\x04grpc\x18\a \x01(\v2\x1f.google.cloud.run.v2.GRPCActionB\x04\xe2A\x01\x01H\x00R\x04grpcB\f\n" +
 	"\n" +
-	"probe_type\"\x8a\x01\n" +
-	"\rHTTPGetAction\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x01R\x04path\x12G\n" +
-	"\fhttp_headers\x18\x04 \x03(\v2\x1f.google.cloud.run.v2.HTTPHeaderB\x03\xe0A\x01R\vhttpHeaders\x12\x17\n" +
-	"\x04port\x18\x05 \x01(\x05B\x03\xe0A\x01R\x04port\"@\n" +
+	"probe_type\"\x8d\x01\n" +
+	"\rHTTPGetAction\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12H\n" +
+	"\fhttp_headers\x18\x04 \x03(\v2\x1f.google.cloud.run.v2.HTTPHeaderB\x04\xe2A\x01\x01R\vhttpHeaders\x12\x18\n" +
+	"\x04port\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x04port\"B\n" +
 	"\n" +
-	"HTTPHeader\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\"*\n" +
-	"\x0fTCPSocketAction\x12\x17\n" +
-	"\x04port\x18\x01 \x01(\x05B\x03\xe0A\x01R\x04port\"D\n" +
+	"HTTPHeader\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05value\"+\n" +
+	"\x0fTCPSocketAction\x12\x18\n" +
+	"\x04port\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x04port\"F\n" +
 	"\n" +
-	"GRPCAction\x12\x17\n" +
-	"\x04port\x18\x01 \x01(\x05B\x03\xe0A\x01R\x04port\x12\x1d\n" +
-	"\aservice\x18\x02 \x01(\tB\x03\xe0A\x01R\aservice\"g\n" +
-	"\tBuildInfo\x12,\n" +
-	"\x0ffunction_target\x18\x01 \x01(\tB\x03\xe0A\x03R\x0efunctionTarget\x12,\n" +
-	"\x0fsource_location\x18\x02 \x01(\tB\x03\xe0A\x03R\x0esourceLocation\"\xf8\x01\n" +
+	"GRPCAction\x12\x18\n" +
+	"\x04port\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12\x1e\n" +
+	"\aservice\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aservice\"i\n" +
+	"\tBuildInfo\x12-\n" +
+	"\x0ffunction_target\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0efunctionTarget\x12-\n" +
+	"\x0fsource_location\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0esourceLocation\"\x8a\x04\n" +
 	"\n" +
 	"SourceCode\x12f\n" +
-	"\x14cloud_storage_source\x18\x01 \x01(\v22.google.cloud.run.v2.SourceCode.CloudStorageSourceH\x00R\x12cloudStorageSource\x1as\n" +
-	"\x12CloudStorageSource\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\x1b\n" +
-	"\x06object\x18\x02 \x01(\tB\x03\xe0A\x02R\x06object\x12#\n" +
+	"\x14cloud_storage_source\x18\x01 \x01(\v22.google.cloud.run.v2.SourceCode.CloudStorageSourceH\x00R\x12cloudStorageSource\x12]\n" +
+	"\x0einlined_source\x18\x02 \x01(\v2-.google.cloud.run.v2.SourceCode.InlinedSourceB\x05\xe2A\x02\x01\x04H\x00R\rinlinedSource\x1av\n" +
+	"\x12CloudStorageSource\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12\x1c\n" +
+	"\x06object\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06object\x12$\n" +
 	"\n" +
-	"generation\x18\x03 \x01(\x03B\x03\xe0A\x01R\n" +
-	"generationB\r\n" +
+	"generation\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"generation\x1aP\n" +
+	"\n" +
+	"SourceFile\x12!\n" +
+	"\bfilename\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x04R\bfilename\x12\x1f\n" +
+	"\acontent\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x04R\acontent\x1a\\\n" +
+	"\rInlinedSource\x12K\n" +
+	"\asources\x18\x01 \x03(\v2*.google.cloud.run.v2.SourceCode.SourceFileB\x05\xe2A\x02\x02\x04R\asourcesB\r\n" +
 	"\vsource_typeB\xe9\x03\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaAJ\n" +
 	"#secretmanager.googleapis.com/Secret\x12#projects/{project}/secrets/{secret}\xeaAd\n" +
@@ -1975,7 +2146,7 @@ func file_google_cloud_run_v2_k8s_min_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_run_v2_k8s_min_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_run_v2_k8s_min_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_google_cloud_run_v2_k8s_min_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_google_cloud_run_v2_k8s_min_proto_goTypes = []any{
 	(EmptyDirVolumeSource_Medium)(0),      // 0: google.cloud.run.v2.EmptyDirVolumeSource.Medium
 	(*Container)(nil),                     // 1: google.cloud.run.v2.Container
@@ -2001,6 +2172,8 @@ var file_google_cloud_run_v2_k8s_min_proto_goTypes = []any{
 	(*SourceCode)(nil),                    // 21: google.cloud.run.v2.SourceCode
 	nil,                                   // 22: google.cloud.run.v2.ResourceRequirements.LimitsEntry
 	(*SourceCode_CloudStorageSource)(nil), // 23: google.cloud.run.v2.SourceCode.CloudStorageSource
+	(*SourceCode_SourceFile)(nil),         // 24: google.cloud.run.v2.SourceCode.SourceFile
+	(*SourceCode_InlinedSource)(nil),      // 25: google.cloud.run.v2.SourceCode.InlinedSource
 }
 var file_google_cloud_run_v2_k8s_min_proto_depIdxs = []int32{
 	21, // 0: google.cloud.run.v2.Container.source_code:type_name -> google.cloud.run.v2.SourceCode
@@ -2027,11 +2200,13 @@ var file_google_cloud_run_v2_k8s_min_proto_depIdxs = []int32{
 	19, // 21: google.cloud.run.v2.Probe.grpc:type_name -> google.cloud.run.v2.GRPCAction
 	17, // 22: google.cloud.run.v2.HTTPGetAction.http_headers:type_name -> google.cloud.run.v2.HTTPHeader
 	23, // 23: google.cloud.run.v2.SourceCode.cloud_storage_source:type_name -> google.cloud.run.v2.SourceCode.CloudStorageSource
-	24, // [24:24] is the sub-list for method output_type
-	24, // [24:24] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	25, // 24: google.cloud.run.v2.SourceCode.inlined_source:type_name -> google.cloud.run.v2.SourceCode.InlinedSource
+	24, // 25: google.cloud.run.v2.SourceCode.InlinedSource.sources:type_name -> google.cloud.run.v2.SourceCode.SourceFile
+	26, // [26:26] is the sub-list for method output_type
+	26, // [26:26] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_k8s_min_proto_init() }
@@ -2039,6 +2214,7 @@ func file_google_cloud_run_v2_k8s_min_proto_init() {
 	if File_google_cloud_run_v2_k8s_min_proto != nil {
 		return
 	}
+	file_google_cloud_run_v2_k8s_min_proto_msgTypes[0].OneofWrappers = []any{}
 	file_google_cloud_run_v2_k8s_min_proto_msgTypes[2].OneofWrappers = []any{
 		(*EnvVar_Value)(nil),
 		(*EnvVar_ValueSource)(nil),
@@ -2057,6 +2233,7 @@ func file_google_cloud_run_v2_k8s_min_proto_init() {
 	}
 	file_google_cloud_run_v2_k8s_min_proto_msgTypes[20].OneofWrappers = []any{
 		(*SourceCode_CloudStorageSource_)(nil),
+		(*SourceCode_InlinedSource_)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2064,7 +2241,7 @@ func file_google_cloud_run_v2_k8s_min_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_run_v2_k8s_min_proto_rawDesc), len(file_google_cloud_run_v2_k8s_min_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   23,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

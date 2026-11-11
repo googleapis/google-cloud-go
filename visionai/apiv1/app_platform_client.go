@@ -1976,6 +1976,11 @@ func (c *appPlatformRESTClient) ListApplications(ctx context.Context, req *visio
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/applications", req.GetParent())
 
 		params := url.Values{}
@@ -2047,6 +2052,11 @@ func (c *appPlatformRESTClient) GetApplication(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2106,6 +2116,11 @@ func (c *appPlatformRESTClient) CreateApplication(ctx context.Context, req *visi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/applications", req.GetParent())
@@ -2180,6 +2195,11 @@ func (c *appPlatformRESTClient) UpdateApplication(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetApplication().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetApplication().GetName())
 
 	params := url.Values{}
@@ -2249,6 +2269,11 @@ func (c *appPlatformRESTClient) UpdateApplication(ctx context.Context, req *visi
 func (c *appPlatformRESTClient) DeleteApplication(ctx context.Context, req *visionaipb.DeleteApplicationRequest, opts ...gax.CallOption) (*DeleteApplicationOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2324,6 +2349,11 @@ func (c *appPlatformRESTClient) DeployApplication(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deploy", req.GetName())
 
 	params := url.Values{}
@@ -2389,6 +2419,11 @@ func (c *appPlatformRESTClient) UndeployApplication(ctx context.Context, req *vi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:undeploy", req.GetName())
@@ -2461,6 +2496,11 @@ func (c *appPlatformRESTClient) AddApplicationStreamInput(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addStreamInput", req.GetName())
 
 	params := url.Values{}
@@ -2530,6 +2570,11 @@ func (c *appPlatformRESTClient) RemoveApplicationStreamInput(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeStreamInput", req.GetName())
 
 	params := url.Values{}
@@ -2597,6 +2642,11 @@ func (c *appPlatformRESTClient) UpdateApplicationStreamInput(ctx context.Context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:updateStreamInput", req.GetName())
@@ -2673,6 +2723,11 @@ func (c *appPlatformRESTClient) ListInstances(ctx context.Context, req *visionai
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
 
 		params := url.Values{}
@@ -2744,6 +2799,11 @@ func (c *appPlatformRESTClient) GetInstance(ctx context.Context, req *visionaipb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2805,6 +2865,11 @@ func (c *appPlatformRESTClient) CreateApplicationInstances(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:createApplicationInstances", req.GetName())
@@ -2876,6 +2941,11 @@ func (c *appPlatformRESTClient) DeleteApplicationInstances(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deleteApplicationInstances", req.GetName())
 
 	params := url.Values{}
@@ -2944,6 +3014,11 @@ func (c *appPlatformRESTClient) UpdateApplicationInstances(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:updateApplicationInstances", req.GetName())
@@ -3020,6 +3095,11 @@ func (c *appPlatformRESTClient) ListDrafts(ctx context.Context, req *visionaipb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/drafts", req.GetParent())
 
 		params := url.Values{}
@@ -3091,6 +3171,11 @@ func (c *appPlatformRESTClient) GetDraft(ctx context.Context, req *visionaipb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3150,6 +3235,11 @@ func (c *appPlatformRESTClient) CreateDraft(ctx context.Context, req *visionaipb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/drafts", req.GetParent())
@@ -3224,6 +3314,11 @@ func (c *appPlatformRESTClient) UpdateDraft(ctx context.Context, req *visionaipb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDraft().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDraft().GetName())
 
 	params := url.Values{}
@@ -3296,6 +3391,11 @@ func (c *appPlatformRESTClient) UpdateDraft(ctx context.Context, req *visionaipb
 func (c *appPlatformRESTClient) DeleteDraft(ctx context.Context, req *visionaipb.DeleteDraftRequest, opts ...gax.CallOption) (*DeleteDraftOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3373,6 +3473,11 @@ func (c *appPlatformRESTClient) ListProcessors(ctx context.Context, req *visiona
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/processors", req.GetParent())
@@ -3453,6 +3558,11 @@ func (c *appPlatformRESTClient) ListPrebuiltProcessors(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/processors:prebuilt", req.GetParent())
 
 	params := url.Values{}
@@ -3505,6 +3615,11 @@ func (c *appPlatformRESTClient) ListPrebuiltProcessors(ctx context.Context, req 
 func (c *appPlatformRESTClient) GetProcessor(ctx context.Context, req *visionaipb.GetProcessorRequest, opts ...gax.CallOption) (*visionaipb.Processor, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3566,6 +3681,11 @@ func (c *appPlatformRESTClient) CreateProcessor(ctx context.Context, req *vision
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/processors", req.GetParent())
@@ -3640,6 +3760,11 @@ func (c *appPlatformRESTClient) UpdateProcessor(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProcessor().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetProcessor().GetName())
 
 	params := url.Values{}
@@ -3711,6 +3836,11 @@ func (c *appPlatformRESTClient) DeleteProcessor(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3773,6 +3903,11 @@ func (c *appPlatformRESTClient) DeleteProcessor(ctx context.Context, req *vision
 func (c *appPlatformRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3840,6 +3975,11 @@ func (c *appPlatformRESTClient) ListLocations(ctx context.Context, req *location
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -3916,6 +4056,11 @@ func (c *appPlatformRESTClient) CancelOperation(ctx context.Context, req *longru
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3955,6 +4100,11 @@ func (c *appPlatformRESTClient) DeleteOperation(ctx context.Context, req *longru
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3992,6 +4142,11 @@ func (c *appPlatformRESTClient) DeleteOperation(ctx context.Context, req *longru
 func (c *appPlatformRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4059,6 +4214,11 @@ func (c *appPlatformRESTClient) ListOperations(ctx context.Context, req *longrun
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

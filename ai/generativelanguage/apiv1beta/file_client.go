@@ -878,6 +878,11 @@ func (c *fileRESTClient) GetFile(ctx context.Context, req *generativelanguagepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -932,6 +937,11 @@ func (c *fileRESTClient) DeleteFile(ctx context.Context, req *generativelanguage
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -969,6 +979,11 @@ func (c *fileRESTClient) DeleteFile(ctx context.Context, req *generativelanguage
 func (c *fileRESTClient) DownloadFile(ctx context.Context, req *generativelanguagepb.DownloadFileRequest, opts ...gax.CallOption) (*generativelanguagepb.DownloadFileResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:download", req.GetName())
@@ -1025,6 +1040,11 @@ func (c *fileRESTClient) CancelOperation(ctx context.Context, req *longrunningpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1064,6 +1084,11 @@ func (c *fileRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1101,6 +1126,11 @@ func (c *fileRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 func (c *fileRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1168,6 +1198,11 @@ func (c *fileRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

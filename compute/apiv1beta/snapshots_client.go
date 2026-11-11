@@ -467,6 +467,11 @@ func (c *snapshotsRESTClient) AggregatedList(ctx context.Context, req *computepb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/snapshots", req.GetProject())
 
 		params := url.Values{}
@@ -560,6 +565,12 @@ func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteS
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots/%v", req.GetProject(), req.GetSnapshot())
 
 	params := url.Values{}
@@ -623,6 +634,12 @@ func (c *snapshotsRESTClient) Get(ctx context.Context, req *computepb.GetSnapsho
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots/%v", req.GetProject(), req.GetSnapshot())
 
 	// Build HTTP headers from client and context metadata.
@@ -674,6 +691,12 @@ func (c *snapshotsRESTClient) GetEffectiveRecycleBinRule(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots/%v/getEffectiveRecycleBinRule", req.GetProject(), req.GetSnapshot())
 
 	// Build HTTP headers from client and context metadata.
@@ -722,6 +745,12 @@ func (c *snapshotsRESTClient) GetEffectiveRecycleBinRule(ctx context.Context, re
 func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -789,6 +818,11 @@ func (c *snapshotsRESTClient) Insert(ctx context.Context, req *computepb.InsertS
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots", req.GetProject())
@@ -866,6 +900,11 @@ func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnaps
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots", req.GetProject())
@@ -949,6 +988,12 @@ func (c *snapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1004,6 +1049,12 @@ func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots/%v/setLabels", req.GetProject(), req.GetResource())
@@ -1069,6 +1120,12 @@ func (c *snapshotsRESTClient) TestIamPermissions(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1124,6 +1181,12 @@ func (c *snapshotsRESTClient) UpdateKmsKey(ctx context.Context, req *computepb.U
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSnapshot(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshots/%v/updateKmsKey", req.GetProject(), req.GetSnapshot())

@@ -532,24 +532,24 @@ const file_google_cloud_rapidmigrationassessment_v1_api_entities_proto_rawDesc =
 	"coreSource\".\n" +
 	"\vVSphereScan\x12\x1f\n" +
 	"\vcore_source\x18\x01 \x01(\tR\n" +
-	"coreSource\"\xbb\t\n" +
+	"coreSource\"\xc2\t\n" +
 	"\tCollector\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12W\n" +
 	"\x06labels\x18\x04 \x03(\v2?.google.cloud.rapidmigrationassessment.v1.Collector.LabelsEntryR\x06labels\x12!\n" +
 	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12 \n" +
 	"\vdescription\x18\x06 \x01(\tR\vdescription\x12'\n" +
-	"\x0fservice_account\x18\a \x01(\tR\x0eserviceAccount\x12\x1b\n" +
-	"\x06bucket\x18\b \x01(\tB\x03\xe0A\x03R\x06bucket\x120\n" +
-	"\x14expected_asset_count\x18\t \x01(\x03R\x12expectedAssetCount\x12T\n" +
+	"\x0fservice_account\x18\a \x01(\tR\x0eserviceAccount\x12\x1c\n" +
+	"\x06bucket\x18\b \x01(\tB\x04\xe2A\x01\x03R\x06bucket\x120\n" +
+	"\x14expected_asset_count\x18\t \x01(\x03R\x12expectedAssetCount\x12U\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e29.google.cloud.rapidmigrationassessment.v1.Collector.StateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0eclient_version\x18\v \x01(\tB\x03\xe0A\x03R\rclientVersion\x12^\n" +
-	"\rguest_os_scan\x18\f \x01(\v25.google.cloud.rapidmigrationassessment.v1.GuestOsScanB\x03\xe0A\x03R\vguestOsScan\x12]\n" +
-	"\fvsphere_scan\x18\r \x01(\v25.google.cloud.rapidmigrationassessment.v1.VSphereScanB\x03\xe0A\x03R\vvsphereScan\x12'\n" +
+	" \x01(\x0e29.google.cloud.rapidmigrationassessment.v1.Collector.StateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0eclient_version\x18\v \x01(\tB\x04\xe2A\x01\x03R\rclientVersion\x12_\n" +
+	"\rguest_os_scan\x18\f \x01(\v25.google.cloud.rapidmigrationassessment.v1.GuestOsScanB\x04\xe2A\x01\x03R\vguestOsScan\x12^\n" +
+	"\fvsphere_scan\x18\r \x01(\v25.google.cloud.rapidmigrationassessment.v1.VSphereScanB\x04\xe2A\x01\x03R\vvsphereScan\x12'\n" +
 	"\x0fcollection_days\x18\x0e \x01(\x05R\x0ecollectionDays\x12\x19\n" +
 	"\beula_uri\x18\x0f \x01(\tR\aeulaUri\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
@@ -565,13 +565,13 @@ const file_google_cloud_rapidmigrationassessment_v1_api_entities_proto_rawDesc =
 	"\x0eSTATE_DELETING\x10\x06\x12\x18\n" +
 	"\x14STATE_DECOMMISSIONED\x10\a\x12\x0f\n" +
 	"\vSTATE_ERROR\x10\b:v\xeaAs\n" +
-	"1rapidmigrationassessment.googleapis.com/Collector\x12>projects/{project}/locations/{location}/collectors/{collector}\"\xd3\x04\n" +
+	"1rapidmigrationassessment.googleapis.com/Collector\x12>projects/{project}/locations/{location}/collectors/{collector}\"\xd5\x04\n" +
 	"\n" +
 	"Annotation\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12X\n" +
 	"\x06labels\x18\x04 \x03(\v2@.google.cloud.rapidmigrationassessment.v1.Annotation.LabelsEntryR\x06labels\x12M\n" +
 	"\x04type\x18\x05 \x01(\x0e29.google.cloud.rapidmigrationassessment.v1.Annotation.TypeR\x04type\x1a9\n" +

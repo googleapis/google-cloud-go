@@ -316,6 +316,13 @@ func (c *regionInstanceTemplatesRESTClient) Delete(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetInstanceTemplate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceTemplates/%v", req.GetProject(), req.GetRegion(), req.GetInstanceTemplate())
 
 	params := url.Values{}
@@ -380,6 +387,13 @@ func (c *regionInstanceTemplatesRESTClient) Get(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetInstanceTemplate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceTemplates/%v", req.GetProject(), req.GetRegion(), req.GetInstanceTemplate())
 
 	// Build HTTP headers from client and context metadata.
@@ -435,6 +449,12 @@ func (c *regionInstanceTemplatesRESTClient) Insert(ctx context.Context, req *com
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceTemplates", req.GetProject(), req.GetRegion())
@@ -513,6 +533,12 @@ func (c *regionInstanceTemplatesRESTClient) List(ctx context.Context, req *compu
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceTemplates", req.GetProject(), req.GetRegion())

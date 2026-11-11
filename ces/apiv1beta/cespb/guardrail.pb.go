@@ -52,6 +52,11 @@ const (
 	Guardrail_ContentFilter_WORD_BOUNDARY_STRING_MATCH Guardrail_ContentFilter_MatchType = 2
 	// Content is matched using regular expression syntax.
 	Guardrail_ContentFilter_REGEXP_MATCH Guardrail_ContentFilter_MatchType = 3
+	// Content is matched against a system-managed list of sensitive words
+	// and phrases. Attaching a guardrail with this match type to an app or
+	// agent replaces the default sensitive words filter for the affected
+	// agents; disable the guardrail to opt out of the default filter.
+	Guardrail_ContentFilter_SENSITIVE_WORDS Guardrail_ContentFilter_MatchType = 4
 )
 
 // Enum value maps for Guardrail_ContentFilter_MatchType.
@@ -61,12 +66,14 @@ var (
 		1: "SIMPLE_STRING_MATCH",
 		2: "WORD_BOUNDARY_STRING_MATCH",
 		3: "REGEXP_MATCH",
+		4: "SENSITIVE_WORDS",
 	}
 	Guardrail_ContentFilter_MatchType_value = map[string]int32{
 		"MATCH_TYPE_UNSPECIFIED":     0,
 		"SIMPLE_STRING_MATCH":        1,
 		"WORD_BOUNDARY_STRING_MATCH": 2,
 		"REGEXP_MATCH":               3,
+		"SENSITIVE_WORDS":            4,
 	}
 )
 
@@ -171,6 +178,10 @@ const (
 	Guardrail_ModelSafety_HARM_CATEGORY_HARASSMENT Guardrail_ModelSafety_HarmCategory = 3
 	// The harm category is sexually explicit content.
 	Guardrail_ModelSafety_HARM_CATEGORY_SEXUALLY_EXPLICIT Guardrail_ModelSafety_HarmCategory = 4
+	// The harm category is profanity.
+	Guardrail_ModelSafety_HARM_CATEGORY_PROFANITY Guardrail_ModelSafety_HarmCategory = 5
+	// The harm category is toxic.
+	Guardrail_ModelSafety_HARM_CATEGORY_TOXIC Guardrail_ModelSafety_HarmCategory = 6
 )
 
 // Enum value maps for Guardrail_ModelSafety_HarmCategory.
@@ -181,6 +192,8 @@ var (
 		2: "HARM_CATEGORY_DANGEROUS_CONTENT",
 		3: "HARM_CATEGORY_HARASSMENT",
 		4: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+		5: "HARM_CATEGORY_PROFANITY",
+		6: "HARM_CATEGORY_TOXIC",
 	}
 	Guardrail_ModelSafety_HarmCategory_value = map[string]int32{
 		"HARM_CATEGORY_UNSPECIFIED":       0,
@@ -188,6 +201,8 @@ var (
 		"HARM_CATEGORY_DANGEROUS_CONTENT": 2,
 		"HARM_CATEGORY_HARASSMENT":        3,
 		"HARM_CATEGORY_SEXUALLY_EXPLICIT": 4,
+		"HARM_CATEGORY_PROFANITY":         5,
+		"HARM_CATEGORY_TOXIC":             6,
 	}
 )
 
@@ -283,6 +298,138 @@ func (Guardrail_ModelSafety_HarmBlockThreshold) EnumDescriptor() ([]byte, []int)
 	return file_google_cloud_ces_v1beta_guardrail_proto_rawDescGZIP(), []int{0, 3, 1}
 }
 
+// Type of supervisor.
+type Guardrail_Supervisor_Type int32
+
+const (
+	// Type is unspecified.
+	Guardrail_Supervisor_TYPE_UNSPECIFIED Guardrail_Supervisor_Type = 0
+	// Invalid text issue type.
+	Guardrail_Supervisor_INVALID_TEXT Guardrail_Supervisor_Type = 1
+	// Language shift issue type.
+	Guardrail_Supervisor_LANGUAGE_SHIFT Guardrail_Supervisor_Type = 2
+	// Speaker shift issue type.
+	Guardrail_Supervisor_SPEAKER_SHIFT Guardrail_Supervisor_Type = 3
+	// Audio mismatch issue type.
+	Guardrail_Supervisor_AUDIO_MISMATCH Guardrail_Supervisor_Type = 4
+	// Missing tool call issue type.
+	Guardrail_Supervisor_MISSING_TOOL_CALL Guardrail_Supervisor_Type = 5
+	// Custom issue type.
+	Guardrail_Supervisor_CUSTOM Guardrail_Supervisor_Type = 6
+	// Choppy audio issue type.
+	Guardrail_Supervisor_CHOPPY_AUDIO Guardrail_Supervisor_Type = 7
+	// Agent profanity issue type.
+	Guardrail_Supervisor_PROFANITY Guardrail_Supervisor_Type = 8
+)
+
+// Enum value maps for Guardrail_Supervisor_Type.
+var (
+	Guardrail_Supervisor_Type_name = map[int32]string{
+		0: "TYPE_UNSPECIFIED",
+		1: "INVALID_TEXT",
+		2: "LANGUAGE_SHIFT",
+		3: "SPEAKER_SHIFT",
+		4: "AUDIO_MISMATCH",
+		5: "MISSING_TOOL_CALL",
+		6: "CUSTOM",
+		7: "CHOPPY_AUDIO",
+		8: "PROFANITY",
+	}
+	Guardrail_Supervisor_Type_value = map[string]int32{
+		"TYPE_UNSPECIFIED":  0,
+		"INVALID_TEXT":      1,
+		"LANGUAGE_SHIFT":    2,
+		"SPEAKER_SHIFT":     3,
+		"AUDIO_MISMATCH":    4,
+		"MISSING_TOOL_CALL": 5,
+		"CUSTOM":            6,
+		"CHOPPY_AUDIO":      7,
+		"PROFANITY":         8,
+	}
+)
+
+func (x Guardrail_Supervisor_Type) Enum() *Guardrail_Supervisor_Type {
+	p := new(Guardrail_Supervisor_Type)
+	*p = x
+	return p
+}
+
+func (x Guardrail_Supervisor_Type) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Guardrail_Supervisor_Type) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_guardrail_proto_enumTypes[4].Descriptor()
+}
+
+func (Guardrail_Supervisor_Type) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_guardrail_proto_enumTypes[4]
+}
+
+func (x Guardrail_Supervisor_Type) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Guardrail_Supervisor_Type.Descriptor instead.
+func (Guardrail_Supervisor_Type) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_guardrail_proto_rawDescGZIP(), []int{0, 5, 0}
+}
+
+// Detection mode of the supervisor.
+type Guardrail_Supervisor_DetectionMode int32
+
+const (
+	// Detection mode is unspecified. Default to NON_BLOCKING.
+	Guardrail_Supervisor_DETECTION_MODE_UNSPECIFIED Guardrail_Supervisor_DetectionMode = 0
+	// Non blocking detection mode.
+	// Response is not blocked when the supervisor detection is ongoing.
+	Guardrail_Supervisor_NON_BLOCKING Guardrail_Supervisor_DetectionMode = 1
+	// Blocking detection mode.
+	// Response is blocked when the supervisor detection is ongoing.
+	Guardrail_Supervisor_BLOCKING Guardrail_Supervisor_DetectionMode = 2
+)
+
+// Enum value maps for Guardrail_Supervisor_DetectionMode.
+var (
+	Guardrail_Supervisor_DetectionMode_name = map[int32]string{
+		0: "DETECTION_MODE_UNSPECIFIED",
+		1: "NON_BLOCKING",
+		2: "BLOCKING",
+	}
+	Guardrail_Supervisor_DetectionMode_value = map[string]int32{
+		"DETECTION_MODE_UNSPECIFIED": 0,
+		"NON_BLOCKING":               1,
+		"BLOCKING":                   2,
+	}
+)
+
+func (x Guardrail_Supervisor_DetectionMode) Enum() *Guardrail_Supervisor_DetectionMode {
+	p := new(Guardrail_Supervisor_DetectionMode)
+	*p = x
+	return p
+}
+
+func (x Guardrail_Supervisor_DetectionMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Guardrail_Supervisor_DetectionMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_guardrail_proto_enumTypes[5].Descriptor()
+}
+
+func (Guardrail_Supervisor_DetectionMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_guardrail_proto_enumTypes[5]
+}
+
+func (x Guardrail_Supervisor_DetectionMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Guardrail_Supervisor_DetectionMode.Descriptor instead.
+func (Guardrail_Supervisor_DetectionMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_guardrail_proto_rawDescGZIP(), []int{0, 5, 1}
+}
+
 // Guardrail contains a list of checks and balances to keep the agents safe and
 // secure.
 type Guardrail struct {
@@ -296,6 +443,7 @@ type Guardrail struct {
 	//	*Guardrail_LlmPolicy_
 	//	*Guardrail_ModelSafety_
 	//	*Guardrail_CodeCallback_
+	//	*Guardrail_Supervisor_
 	GuardrailType isGuardrail_GuardrailType `protobuf_oneof:"guardrail_type"`
 	// Identifier. The unique identifier of the guardrail.
 	// Format:
@@ -403,6 +551,15 @@ func (x *Guardrail) GetCodeCallback() *Guardrail_CodeCallback {
 	return nil
 }
 
+func (x *Guardrail) GetSupervisor() *Guardrail_Supervisor {
+	if x != nil {
+		if x, ok := x.GuardrailType.(*Guardrail_Supervisor_); ok {
+			return x.Supervisor
+		}
+	}
+	return nil
+}
+
 func (x *Guardrail) GetName() string {
 	if x != nil {
 		return x.Name
@@ -493,6 +650,11 @@ type Guardrail_CodeCallback_ struct {
 	CodeCallback *Guardrail_CodeCallback `protobuf:"bytes,14,opt,name=code_callback,json=codeCallback,proto3,oneof"`
 }
 
+type Guardrail_Supervisor_ struct {
+	// Optional. Guardrail that runs supervisor intervention.
+	Supervisor *Guardrail_Supervisor `protobuf:"bytes,16,opt,name=supervisor,proto3,oneof"`
+}
+
 func (*Guardrail_ContentFilter_) isGuardrail_GuardrailType() {}
 
 func (*Guardrail_LlmPromptSecurity_) isGuardrail_GuardrailType() {}
@@ -502,6 +664,8 @@ func (*Guardrail_LlmPolicy_) isGuardrail_GuardrailType() {}
 func (*Guardrail_ModelSafety_) isGuardrail_GuardrailType() {}
 
 func (*Guardrail_CodeCallback_) isGuardrail_GuardrailType() {}
+
+func (*Guardrail_Supervisor_) isGuardrail_GuardrailType() {}
 
 // Guardrail that bans certain content from being used in the conversation.
 type Guardrail_ContentFilter struct {
@@ -517,8 +681,14 @@ type Guardrail_ContentFilter struct {
 	MatchType Guardrail_ContentFilter_MatchType `protobuf:"varint,4,opt,name=match_type,json=matchType,proto3,enum=google.cloud.ces.v1beta.Guardrail_ContentFilter_MatchType" json:"match_type,omitempty"`
 	// Optional. If true, diacritics are ignored during matching.
 	DisregardDiacritics bool `protobuf:"varint,5,opt,name=disregard_diacritics,json=disregardDiacritics,proto3" json:"disregard_diacritics,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. Entries of the sensitive words list that this guardrail allows.
+	// Only valid when match_type is SENSITIVE_WORDS. Each value must equal a
+	// list entry (case-insensitive, surrounding whitespace ignored); other
+	// values have no effect. Applies to this guardrail only. At most 1000
+	// entries of up to 256 characters each.
+	SensitiveWordsExemptions []string `protobuf:"bytes,7,rep,name=sensitive_words_exemptions,json=sensitiveWordsExemptions,proto3" json:"sensitive_words_exemptions,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *Guardrail_ContentFilter) Reset() {
@@ -584,6 +754,13 @@ func (x *Guardrail_ContentFilter) GetDisregardDiacritics() bool {
 		return x.DisregardDiacritics
 	}
 	return false
+}
+
+func (x *Guardrail_ContentFilter) GetSensitiveWordsExemptions() []string {
+	if x != nil {
+		return x.SensitiveWordsExemptions
+	}
+	return nil
 }
 
 // Guardrail that blocks the conversation if the input is considered unsafe
@@ -703,7 +880,9 @@ type Guardrail_LlmPolicy struct {
 	MaxConversationMessages int32 `protobuf:"varint,1,opt,name=max_conversation_messages,json=maxConversationMessages,proto3" json:"max_conversation_messages,omitempty"`
 	// Optional. Model settings.
 	ModelSettings *ModelSettings `protobuf:"bytes,2,opt,name=model_settings,json=modelSettings,proto3" json:"model_settings,omitempty"`
-	// Required. Policy prompt.
+	// Required. Policy prompt. Supports session variable placeholders (`{var}`)
+	// as well as `{agent_system_instruction}` to inject the agent's resolved
+	// system instructions.
 	Prompt string `protobuf:"bytes,3,opt,name=prompt,proto3" json:"prompt,omitempty"`
 	// Required. Defines when to apply the policy check during the conversation.
 	// If set to `POLICY_SCOPE_UNSPECIFIED`, the policy will be applied to the
@@ -941,6 +1120,61 @@ func (x *Guardrail_CodeCallback) GetAfterModelCallback() *Callback {
 	return nil
 }
 
+// Guardrail that runs supervisor intervention.
+type Guardrail_Supervisor struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The type of the supervisor.
+	Type Guardrail_Supervisor_Type `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.ces.v1beta.Guardrail_Supervisor_Type" json:"type,omitempty"`
+	// Optional. The detection mode of the supervisor.
+	DetectionMode Guardrail_Supervisor_DetectionMode `protobuf:"varint,2,opt,name=detection_mode,json=detectionMode,proto3,enum=google.cloud.ces.v1beta.Guardrail_Supervisor_DetectionMode" json:"detection_mode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Guardrail_Supervisor) Reset() {
+	*x = Guardrail_Supervisor{}
+	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Guardrail_Supervisor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Guardrail_Supervisor) ProtoMessage() {}
+
+func (x *Guardrail_Supervisor) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Guardrail_Supervisor.ProtoReflect.Descriptor instead.
+func (*Guardrail_Supervisor) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_guardrail_proto_rawDescGZIP(), []int{0, 5}
+}
+
+func (x *Guardrail_Supervisor) GetType() Guardrail_Supervisor_Type {
+	if x != nil {
+		return x.Type
+	}
+	return Guardrail_Supervisor_TYPE_UNSPECIFIED
+}
+
+func (x *Guardrail_Supervisor) GetDetectionMode() Guardrail_Supervisor_DetectionMode {
+	if x != nil {
+		return x.DetectionMode
+	}
+	return Guardrail_Supervisor_DETECTION_MODE_UNSPECIFIED
+}
+
 // Configuration for default system security settings.
 type Guardrail_LlmPromptSecurity_DefaultSecuritySettings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -954,7 +1188,7 @@ type Guardrail_LlmPromptSecurity_DefaultSecuritySettings struct {
 
 func (x *Guardrail_LlmPromptSecurity_DefaultSecuritySettings) Reset() {
 	*x = Guardrail_LlmPromptSecurity_DefaultSecuritySettings{}
-	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[6]
+	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -966,7 +1200,7 @@ func (x *Guardrail_LlmPromptSecurity_DefaultSecuritySettings) String() string {
 func (*Guardrail_LlmPromptSecurity_DefaultSecuritySettings) ProtoMessage() {}
 
 func (x *Guardrail_LlmPromptSecurity_DefaultSecuritySettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[6]
+	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1002,7 +1236,7 @@ type Guardrail_ModelSafety_SafetySetting struct {
 
 func (x *Guardrail_ModelSafety_SafetySetting) Reset() {
 	*x = Guardrail_ModelSafety_SafetySetting{}
-	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[7]
+	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1014,7 +1248,7 @@ func (x *Guardrail_ModelSafety_SafetySetting) String() string {
 func (*Guardrail_ModelSafety_SafetySetting) ProtoMessage() {}
 
 func (x *Guardrail_ModelSafety_SafetySetting) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[7]
+	mi := &file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1048,68 +1282,75 @@ var File_google_cloud_ces_v1beta_guardrail_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_guardrail_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/ces/v1beta/guardrail.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\x1a\n" +
-	"\tGuardrail\x12^\n" +
-	"\x0econtent_filter\x18\b \x01(\v20.google.cloud.ces.v1beta.Guardrail.ContentFilterB\x03\xe0A\x01H\x00R\rcontentFilter\x12k\n" +
-	"\x13llm_prompt_security\x18\t \x01(\v24.google.cloud.ces.v1beta.Guardrail.LlmPromptSecurityB\x03\xe0A\x01H\x00R\x11llmPromptSecurity\x12R\n" +
+	"'google/cloud/ces/v1beta/guardrail.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7 \n" +
+	"\tGuardrail\x12_\n" +
+	"\x0econtent_filter\x18\b \x01(\v20.google.cloud.ces.v1beta.Guardrail.ContentFilterB\x04\xe2A\x01\x01H\x00R\rcontentFilter\x12l\n" +
+	"\x13llm_prompt_security\x18\t \x01(\v24.google.cloud.ces.v1beta.Guardrail.LlmPromptSecurityB\x04\xe2A\x01\x01H\x00R\x11llmPromptSecurity\x12S\n" +
 	"\n" +
 	"llm_policy\x18\n" +
-	" \x01(\v2,.google.cloud.ces.v1beta.Guardrail.LlmPolicyB\x03\xe0A\x01H\x00R\tllmPolicy\x12X\n" +
-	"\fmodel_safety\x18\r \x01(\v2..google.cloud.ces.v1beta.Guardrail.ModelSafetyB\x03\xe0A\x01H\x00R\vmodelSafety\x12[\n" +
-	"\rcode_callback\x18\x0e \x01(\v2/.google.cloud.ces.v1beta.Guardrail.CodeCallbackB\x03\xe0A\x01H\x00R\fcodeCallback\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1d\n" +
-	"\aenabled\x18\x04 \x01(\bB\x03\xe0A\x01R\aenabled\x12C\n" +
-	"\x06action\x18\x05 \x01(\v2&.google.cloud.ces.v1beta.TriggerActionB\x03\xe0A\x01R\x06action\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x12\n" +
-	"\x04etag\x18\v \x01(\tR\x04etag\x1a\xdf\x03\n" +
-	"\rContentFilter\x12,\n" +
-	"\x0fbanned_contents\x18\x01 \x03(\tB\x03\xe0A\x01R\x0ebannedContents\x12E\n" +
-	"\x1dbanned_contents_in_user_input\x18\x02 \x03(\tB\x03\xe0A\x01R\x19bannedContentsInUserInput\x12M\n" +
-	"!banned_contents_in_agent_response\x18\x03 \x03(\tB\x03\xe0A\x01R\x1dbannedContentsInAgentResponse\x12^\n" +
+	" \x01(\v2,.google.cloud.ces.v1beta.Guardrail.LlmPolicyB\x04\xe2A\x01\x01H\x00R\tllmPolicy\x12Y\n" +
+	"\fmodel_safety\x18\r \x01(\v2..google.cloud.ces.v1beta.Guardrail.ModelSafetyB\x04\xe2A\x01\x01H\x00R\vmodelSafety\x12\\\n" +
+	"\rcode_callback\x18\x0e \x01(\v2/.google.cloud.ces.v1beta.Guardrail.CodeCallbackB\x04\xe2A\x01\x01H\x00R\fcodeCallback\x12U\n" +
 	"\n" +
-	"match_type\x18\x04 \x01(\x0e2:.google.cloud.ces.v1beta.Guardrail.ContentFilter.MatchTypeB\x03\xe0A\x02R\tmatchType\x126\n" +
-	"\x14disregard_diacritics\x18\x05 \x01(\bB\x03\xe0A\x01R\x13disregardDiacritics\"r\n" +
+	"supervisor\x18\x10 \x01(\v2-.google.cloud.ces.v1beta.Guardrail.SupervisorB\x04\xe2A\x01\x01H\x00R\n" +
+	"supervisor\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1e\n" +
+	"\aenabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12D\n" +
+	"\x06action\x18\x05 \x01(\v2&.google.cloud.ces.v1beta.TriggerActionB\x04\xe2A\x01\x01R\x06action\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x12\n" +
+	"\x04etag\x18\v \x01(\tR\x04etag\x1a\xbe\x04\n" +
+	"\rContentFilter\x12-\n" +
+	"\x0fbanned_contents\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0ebannedContents\x12F\n" +
+	"\x1dbanned_contents_in_user_input\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x19bannedContentsInUserInput\x12N\n" +
+	"!banned_contents_in_agent_response\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x1dbannedContentsInAgentResponse\x12_\n" +
+	"\n" +
+	"match_type\x18\x04 \x01(\x0e2:.google.cloud.ces.v1beta.Guardrail.ContentFilter.MatchTypeB\x04\xe2A\x01\x02R\tmatchType\x127\n" +
+	"\x14disregard_diacritics\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x13disregardDiacritics\x12B\n" +
+	"\x1asensitive_words_exemptions\x18\a \x03(\tB\x04\xe2A\x01\x01R\x18sensitiveWordsExemptions\"\x87\x01\n" +
 	"\tMatchType\x12\x1a\n" +
 	"\x16MATCH_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13SIMPLE_STRING_MATCH\x10\x01\x12\x1e\n" +
 	"\x1aWORD_BOUNDARY_STRING_MATCH\x10\x02\x12\x10\n" +
-	"\fREGEXP_MATCH\x10\x03\x1a\xfa\x02\n" +
-	"\x11LlmPromptSecurity\x12~\n" +
-	"\x10default_settings\x18\x01 \x01(\v2L.google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.DefaultSecuritySettingsB\x03\xe0A\x01H\x00R\x0fdefaultSettings\x12X\n" +
-	"\rcustom_policy\x18\x02 \x01(\v2,.google.cloud.ces.v1beta.Guardrail.LlmPolicyB\x03\xe0A\x01H\x00R\fcustomPolicy\x12 \n" +
-	"\tfail_open\x18\x03 \x01(\bB\x03\xe0A\x01R\bfailOpen\x1aV\n" +
-	"\x17DefaultSecuritySettings\x12;\n" +
-	"\x17default_prompt_template\x18\x01 \x01(\tB\x03\xe0A\x03R\x15defaultPromptTemplateB\x11\n" +
-	"\x0fsecurity_config\x1a\xee\x03\n" +
-	"\tLlmPolicy\x12?\n" +
-	"\x19max_conversation_messages\x18\x01 \x01(\x05B\x03\xe0A\x01R\x17maxConversationMessages\x12R\n" +
-	"\x0emodel_settings\x18\x02 \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x03\xe0A\x01R\rmodelSettings\x12\x1b\n" +
-	"\x06prompt\x18\x03 \x01(\tB\x03\xe0A\x02R\x06prompt\x12`\n" +
-	"\fpolicy_scope\x18\x04 \x01(\x0e28.google.cloud.ces.v1beta.Guardrail.LlmPolicy.PolicyScopeB\x03\xe0A\x02R\vpolicyScope\x12 \n" +
-	"\tfail_open\x18\x05 \x01(\bB\x03\xe0A\x01R\bfailOpen\x127\n" +
-	"\x15allow_short_utterance\x18\x06 \x01(\bB\x03\xe0A\x01R\x13allowShortUtterance\"r\n" +
+	"\fREGEXP_MATCH\x10\x03\x12\x13\n" +
+	"\x0fSENSITIVE_WORDS\x10\x04\x1a\xfe\x02\n" +
+	"\x11LlmPromptSecurity\x12\x7f\n" +
+	"\x10default_settings\x18\x01 \x01(\v2L.google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.DefaultSecuritySettingsB\x04\xe2A\x01\x01H\x00R\x0fdefaultSettings\x12Y\n" +
+	"\rcustom_policy\x18\x02 \x01(\v2,.google.cloud.ces.v1beta.Guardrail.LlmPolicyB\x04\xe2A\x01\x01H\x00R\fcustomPolicy\x12!\n" +
+	"\tfail_open\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\bfailOpen\x1aW\n" +
+	"\x17DefaultSecuritySettings\x12<\n" +
+	"\x17default_prompt_template\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x15defaultPromptTemplateB\x11\n" +
+	"\x0fsecurity_config\x1a\xf4\x03\n" +
+	"\tLlmPolicy\x12@\n" +
+	"\x19max_conversation_messages\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x17maxConversationMessages\x12S\n" +
+	"\x0emodel_settings\x18\x02 \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x04\xe2A\x01\x01R\rmodelSettings\x12\x1c\n" +
+	"\x06prompt\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06prompt\x12a\n" +
+	"\fpolicy_scope\x18\x04 \x01(\x0e28.google.cloud.ces.v1beta.Guardrail.LlmPolicy.PolicyScopeB\x04\xe2A\x01\x02R\vpolicyScope\x12!\n" +
+	"\tfail_open\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\bfailOpen\x128\n" +
+	"\x15allow_short_utterance\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x13allowShortUtterance\"r\n" +
 	"\vPolicyScope\x12\x1c\n" +
 	"\x18POLICY_SCOPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"USER_QUERY\x10\x01\x12\x12\n" +
 	"\x0eAGENT_RESPONSE\x10\x02\x12!\n" +
-	"\x1dUSER_QUERY_AND_AGENT_RESPONSE\x10\x03\x1a\xa6\x05\n" +
-	"\vModelSafety\x12j\n" +
-	"\x0fsafety_settings\x18\x01 \x03(\v2<.google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySettingB\x03\xe0A\x02R\x0esafetySettings\x1a\xd3\x01\n" +
-	"\rSafetySetting\x12\\\n" +
-	"\bcategory\x18\x01 \x01(\x0e2;.google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmCategoryB\x03\xe0A\x02R\bcategory\x12d\n" +
-	"\tthreshold\x18\x02 \x01(\x0e2A.google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmBlockThresholdB\x03\xe0A\x02R\tthreshold\"\xb4\x01\n" +
+	"\x1dUSER_QUERY_AND_AGENT_RESPONSE\x10\x03\x1a\xdf\x05\n" +
+	"\vModelSafety\x12k\n" +
+	"\x0fsafety_settings\x18\x01 \x03(\v2<.google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySettingB\x04\xe2A\x01\x02R\x0esafetySettings\x1a\xd5\x01\n" +
+	"\rSafetySetting\x12]\n" +
+	"\bcategory\x18\x01 \x01(\x0e2;.google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmCategoryB\x04\xe2A\x01\x02R\bcategory\x12e\n" +
+	"\tthreshold\x18\x02 \x01(\x0e2A.google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmBlockThresholdB\x04\xe2A\x01\x02R\tthreshold\"\xea\x01\n" +
 	"\fHarmCategory\x12\x1d\n" +
 	"\x19HARM_CATEGORY_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19HARM_CATEGORY_HATE_SPEECH\x10\x01\x12#\n" +
 	"\x1fHARM_CATEGORY_DANGEROUS_CONTENT\x10\x02\x12\x1c\n" +
 	"\x18HARM_CATEGORY_HARASSMENT\x10\x03\x12#\n" +
-	"\x1fHARM_CATEGORY_SEXUALLY_EXPLICIT\x10\x04\"\x9d\x01\n" +
+	"\x1fHARM_CATEGORY_SEXUALLY_EXPLICIT\x10\x04\x12\x1b\n" +
+	"\x17HARM_CATEGORY_PROFANITY\x10\x05\x12\x17\n" +
+	"\x13HARM_CATEGORY_TOXIC\x10\x06\"\x9d\x01\n" +
 	"\x12HarmBlockThreshold\x12$\n" +
 	" HARM_BLOCK_THRESHOLD_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13BLOCK_LOW_AND_ABOVE\x10\x01\x12\x1a\n" +
@@ -1117,12 +1358,31 @@ const file_google_cloud_ces_v1beta_guardrail_proto_rawDesc = "" +
 	"\x0fBLOCK_ONLY_HIGH\x10\x03\x12\x0e\n" +
 	"\n" +
 	"BLOCK_NONE\x10\x04\x12\a\n" +
-	"\x03OFF\x10\x05\x1a\xfa\x02\n" +
-	"\fCodeCallback\x12Z\n" +
-	"\x15before_agent_callback\x18\x01 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x03\xe0A\x01R\x13beforeAgentCallback\x12X\n" +
-	"\x14after_agent_callback\x18\x02 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x03\xe0A\x01R\x12afterAgentCallback\x12Z\n" +
-	"\x15before_model_callback\x18\x03 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x03\xe0A\x01R\x13beforeModelCallback\x12X\n" +
-	"\x14after_model_callback\x18\x04 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x03\xe0A\x01R\x12afterModelCallback:\x84\x01\xeaA\x80\x01\n" +
+	"\x03OFF\x10\x05\x1a\xfe\x02\n" +
+	"\fCodeCallback\x12[\n" +
+	"\x15before_agent_callback\x18\x01 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x04\xe2A\x01\x01R\x13beforeAgentCallback\x12Y\n" +
+	"\x14after_agent_callback\x18\x02 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x04\xe2A\x01\x01R\x12afterAgentCallback\x12[\n" +
+	"\x15before_model_callback\x18\x03 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x04\xe2A\x01\x01R\x13beforeModelCallback\x12Y\n" +
+	"\x14after_model_callback\x18\x04 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x04\xe2A\x01\x01R\x12afterModelCallback\x1a\xc5\x03\n" +
+	"\n" +
+	"Supervisor\x12L\n" +
+	"\x04type\x18\x01 \x01(\x0e22.google.cloud.ces.v1beta.Guardrail.Supervisor.TypeB\x04\xe2A\x01\x01R\x04type\x12h\n" +
+	"\x0edetection_mode\x18\x02 \x01(\x0e2;.google.cloud.ces.v1beta.Guardrail.Supervisor.DetectionModeB\x04\xe2A\x01\x01R\rdetectionMode\"\xad\x01\n" +
+	"\x04Type\x12\x14\n" +
+	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
+	"\fINVALID_TEXT\x10\x01\x12\x12\n" +
+	"\x0eLANGUAGE_SHIFT\x10\x02\x12\x11\n" +
+	"\rSPEAKER_SHIFT\x10\x03\x12\x12\n" +
+	"\x0eAUDIO_MISMATCH\x10\x04\x12\x15\n" +
+	"\x11MISSING_TOOL_CALL\x10\x05\x12\n" +
+	"\n" +
+	"\x06CUSTOM\x10\x06\x12\x10\n" +
+	"\fCHOPPY_AUDIO\x10\a\x12\r\n" +
+	"\tPROFANITY\x10\b\"O\n" +
+	"\rDetectionMode\x12\x1e\n" +
+	"\x1aDETECTION_MODE_UNSPECIFIED\x10\x00\x12\x10\n" +
+	"\fNON_BLOCKING\x10\x01\x12\f\n" +
+	"\bBLOCKING\x10\x02:\x84\x01\xeaA\x80\x01\n" +
 	"\x1cces.googleapis.com/Guardrail\x12Iprojects/{project}/locations/{location}/apps/{app}/guardrails/{guardrail}*\n" +
 	"guardrails2\tguardrailB\x10\n" +
 	"\x0eguardrail_typeB^\n" +
@@ -1140,52 +1400,58 @@ func file_google_cloud_ces_v1beta_guardrail_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1beta_guardrail_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1beta_guardrail_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_ces_v1beta_guardrail_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_google_cloud_ces_v1beta_guardrail_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_google_cloud_ces_v1beta_guardrail_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_ces_v1beta_guardrail_proto_goTypes = []any{
 	(Guardrail_ContentFilter_MatchType)(0),                      // 0: google.cloud.ces.v1beta.Guardrail.ContentFilter.MatchType
 	(Guardrail_LlmPolicy_PolicyScope)(0),                        // 1: google.cloud.ces.v1beta.Guardrail.LlmPolicy.PolicyScope
 	(Guardrail_ModelSafety_HarmCategory)(0),                     // 2: google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmCategory
 	(Guardrail_ModelSafety_HarmBlockThreshold)(0),               // 3: google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmBlockThreshold
-	(*Guardrail)(nil),                                           // 4: google.cloud.ces.v1beta.Guardrail
-	(*Guardrail_ContentFilter)(nil),                             // 5: google.cloud.ces.v1beta.Guardrail.ContentFilter
-	(*Guardrail_LlmPromptSecurity)(nil),                         // 6: google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity
-	(*Guardrail_LlmPolicy)(nil),                                 // 7: google.cloud.ces.v1beta.Guardrail.LlmPolicy
-	(*Guardrail_ModelSafety)(nil),                               // 8: google.cloud.ces.v1beta.Guardrail.ModelSafety
-	(*Guardrail_CodeCallback)(nil),                              // 9: google.cloud.ces.v1beta.Guardrail.CodeCallback
-	(*Guardrail_LlmPromptSecurity_DefaultSecuritySettings)(nil), // 10: google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.DefaultSecuritySettings
-	(*Guardrail_ModelSafety_SafetySetting)(nil),                 // 11: google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySetting
-	(*TriggerAction)(nil),                                       // 12: google.cloud.ces.v1beta.TriggerAction
-	(*timestamppb.Timestamp)(nil),                               // 13: google.protobuf.Timestamp
-	(*ModelSettings)(nil),                                       // 14: google.cloud.ces.v1beta.ModelSettings
-	(*Callback)(nil),                                            // 15: google.cloud.ces.v1beta.Callback
+	(Guardrail_Supervisor_Type)(0),                              // 4: google.cloud.ces.v1beta.Guardrail.Supervisor.Type
+	(Guardrail_Supervisor_DetectionMode)(0),                     // 5: google.cloud.ces.v1beta.Guardrail.Supervisor.DetectionMode
+	(*Guardrail)(nil),                                           // 6: google.cloud.ces.v1beta.Guardrail
+	(*Guardrail_ContentFilter)(nil),                             // 7: google.cloud.ces.v1beta.Guardrail.ContentFilter
+	(*Guardrail_LlmPromptSecurity)(nil),                         // 8: google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity
+	(*Guardrail_LlmPolicy)(nil),                                 // 9: google.cloud.ces.v1beta.Guardrail.LlmPolicy
+	(*Guardrail_ModelSafety)(nil),                               // 10: google.cloud.ces.v1beta.Guardrail.ModelSafety
+	(*Guardrail_CodeCallback)(nil),                              // 11: google.cloud.ces.v1beta.Guardrail.CodeCallback
+	(*Guardrail_Supervisor)(nil),                                // 12: google.cloud.ces.v1beta.Guardrail.Supervisor
+	(*Guardrail_LlmPromptSecurity_DefaultSecuritySettings)(nil), // 13: google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.DefaultSecuritySettings
+	(*Guardrail_ModelSafety_SafetySetting)(nil),                 // 14: google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySetting
+	(*TriggerAction)(nil),                                       // 15: google.cloud.ces.v1beta.TriggerAction
+	(*timestamppb.Timestamp)(nil),                               // 16: google.protobuf.Timestamp
+	(*ModelSettings)(nil),                                       // 17: google.cloud.ces.v1beta.ModelSettings
+	(*Callback)(nil),                                            // 18: google.cloud.ces.v1beta.Callback
 }
 var file_google_cloud_ces_v1beta_guardrail_proto_depIdxs = []int32{
-	5,  // 0: google.cloud.ces.v1beta.Guardrail.content_filter:type_name -> google.cloud.ces.v1beta.Guardrail.ContentFilter
-	6,  // 1: google.cloud.ces.v1beta.Guardrail.llm_prompt_security:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity
-	7,  // 2: google.cloud.ces.v1beta.Guardrail.llm_policy:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPolicy
-	8,  // 3: google.cloud.ces.v1beta.Guardrail.model_safety:type_name -> google.cloud.ces.v1beta.Guardrail.ModelSafety
-	9,  // 4: google.cloud.ces.v1beta.Guardrail.code_callback:type_name -> google.cloud.ces.v1beta.Guardrail.CodeCallback
-	12, // 5: google.cloud.ces.v1beta.Guardrail.action:type_name -> google.cloud.ces.v1beta.TriggerAction
-	13, // 6: google.cloud.ces.v1beta.Guardrail.create_time:type_name -> google.protobuf.Timestamp
-	13, // 7: google.cloud.ces.v1beta.Guardrail.update_time:type_name -> google.protobuf.Timestamp
-	0,  // 8: google.cloud.ces.v1beta.Guardrail.ContentFilter.match_type:type_name -> google.cloud.ces.v1beta.Guardrail.ContentFilter.MatchType
-	10, // 9: google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.default_settings:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.DefaultSecuritySettings
-	7,  // 10: google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.custom_policy:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPolicy
-	14, // 11: google.cloud.ces.v1beta.Guardrail.LlmPolicy.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
-	1,  // 12: google.cloud.ces.v1beta.Guardrail.LlmPolicy.policy_scope:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPolicy.PolicyScope
-	11, // 13: google.cloud.ces.v1beta.Guardrail.ModelSafety.safety_settings:type_name -> google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySetting
-	15, // 14: google.cloud.ces.v1beta.Guardrail.CodeCallback.before_agent_callback:type_name -> google.cloud.ces.v1beta.Callback
-	15, // 15: google.cloud.ces.v1beta.Guardrail.CodeCallback.after_agent_callback:type_name -> google.cloud.ces.v1beta.Callback
-	15, // 16: google.cloud.ces.v1beta.Guardrail.CodeCallback.before_model_callback:type_name -> google.cloud.ces.v1beta.Callback
-	15, // 17: google.cloud.ces.v1beta.Guardrail.CodeCallback.after_model_callback:type_name -> google.cloud.ces.v1beta.Callback
-	2,  // 18: google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySetting.category:type_name -> google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmCategory
-	3,  // 19: google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySetting.threshold:type_name -> google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmBlockThreshold
-	20, // [20:20] is the sub-list for method output_type
-	20, // [20:20] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	7,  // 0: google.cloud.ces.v1beta.Guardrail.content_filter:type_name -> google.cloud.ces.v1beta.Guardrail.ContentFilter
+	8,  // 1: google.cloud.ces.v1beta.Guardrail.llm_prompt_security:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity
+	9,  // 2: google.cloud.ces.v1beta.Guardrail.llm_policy:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPolicy
+	10, // 3: google.cloud.ces.v1beta.Guardrail.model_safety:type_name -> google.cloud.ces.v1beta.Guardrail.ModelSafety
+	11, // 4: google.cloud.ces.v1beta.Guardrail.code_callback:type_name -> google.cloud.ces.v1beta.Guardrail.CodeCallback
+	12, // 5: google.cloud.ces.v1beta.Guardrail.supervisor:type_name -> google.cloud.ces.v1beta.Guardrail.Supervisor
+	15, // 6: google.cloud.ces.v1beta.Guardrail.action:type_name -> google.cloud.ces.v1beta.TriggerAction
+	16, // 7: google.cloud.ces.v1beta.Guardrail.create_time:type_name -> google.protobuf.Timestamp
+	16, // 8: google.cloud.ces.v1beta.Guardrail.update_time:type_name -> google.protobuf.Timestamp
+	0,  // 9: google.cloud.ces.v1beta.Guardrail.ContentFilter.match_type:type_name -> google.cloud.ces.v1beta.Guardrail.ContentFilter.MatchType
+	13, // 10: google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.default_settings:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.DefaultSecuritySettings
+	9,  // 11: google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.custom_policy:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPolicy
+	17, // 12: google.cloud.ces.v1beta.Guardrail.LlmPolicy.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
+	1,  // 13: google.cloud.ces.v1beta.Guardrail.LlmPolicy.policy_scope:type_name -> google.cloud.ces.v1beta.Guardrail.LlmPolicy.PolicyScope
+	14, // 14: google.cloud.ces.v1beta.Guardrail.ModelSafety.safety_settings:type_name -> google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySetting
+	18, // 15: google.cloud.ces.v1beta.Guardrail.CodeCallback.before_agent_callback:type_name -> google.cloud.ces.v1beta.Callback
+	18, // 16: google.cloud.ces.v1beta.Guardrail.CodeCallback.after_agent_callback:type_name -> google.cloud.ces.v1beta.Callback
+	18, // 17: google.cloud.ces.v1beta.Guardrail.CodeCallback.before_model_callback:type_name -> google.cloud.ces.v1beta.Callback
+	18, // 18: google.cloud.ces.v1beta.Guardrail.CodeCallback.after_model_callback:type_name -> google.cloud.ces.v1beta.Callback
+	4,  // 19: google.cloud.ces.v1beta.Guardrail.Supervisor.type:type_name -> google.cloud.ces.v1beta.Guardrail.Supervisor.Type
+	5,  // 20: google.cloud.ces.v1beta.Guardrail.Supervisor.detection_mode:type_name -> google.cloud.ces.v1beta.Guardrail.Supervisor.DetectionMode
+	2,  // 21: google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySetting.category:type_name -> google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmCategory
+	3,  // 22: google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySetting.threshold:type_name -> google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmBlockThreshold
+	23, // [23:23] is the sub-list for method output_type
+	23, // [23:23] is the sub-list for method input_type
+	23, // [23:23] is the sub-list for extension type_name
+	23, // [23:23] is the sub-list for extension extendee
+	0,  // [0:23] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_guardrail_proto_init() }
@@ -1200,6 +1466,7 @@ func file_google_cloud_ces_v1beta_guardrail_proto_init() {
 		(*Guardrail_LlmPolicy_)(nil),
 		(*Guardrail_ModelSafety_)(nil),
 		(*Guardrail_CodeCallback_)(nil),
+		(*Guardrail_Supervisor_)(nil),
 	}
 	file_google_cloud_ces_v1beta_guardrail_proto_msgTypes[2].OneofWrappers = []any{
 		(*Guardrail_LlmPromptSecurity_DefaultSettings)(nil),
@@ -1210,8 +1477,8 @@ func file_google_cloud_ces_v1beta_guardrail_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_guardrail_proto_rawDesc), len(file_google_cloud_ces_v1beta_guardrail_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   8,
+			NumEnums:      6,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

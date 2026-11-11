@@ -5005,35 +5005,35 @@ var File_google_cloud_bigquery_analyticshub_v1_analyticshub_proto protoreflect.F
 
 const file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/bigquery/analyticshub/v1/analyticshub.proto\x12%google.cloud.bigquery.analyticshub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/bigquery/analyticshub/v1/pubsub.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x86\x06\n" +
-	"\fDataExchange\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12,\n" +
-	"\x0fprimary_contact\x18\x04 \x01(\tB\x03\xe0A\x01R\x0eprimaryContact\x12)\n" +
-	"\rdocumentation\x18\x05 \x01(\tB\x03\xe0A\x01R\rdocumentation\x12(\n" +
-	"\rlisting_count\x18\x06 \x01(\x05B\x03\xe0A\x03R\flistingCount\x12\x17\n" +
-	"\x04icon\x18\a \x01(\fB\x03\xe0A\x01R\x04icon\x12\x82\x01\n" +
-	"\x1asharing_environment_config\x18\b \x01(\v2?.google.cloud.bigquery.analyticshub.v1.SharingEnvironmentConfigB\x03\xe0A\x01R\x18sharingEnvironmentConfig\x12e\n" +
-	"\x0ediscovery_type\x18\t \x01(\x0e24.google.cloud.bigquery.analyticshub.v1.DiscoveryTypeB\x03\xe0A\x01H\x00R\rdiscoveryType\x88\x01\x01\x12U\n" +
+	"8google/cloud/bigquery/analyticshub/v1/analyticshub.proto\x12%google.cloud.bigquery.analyticshub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/bigquery/analyticshub/v1/pubsub.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x90\x06\n" +
+	"\fDataExchange\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12-\n" +
+	"\x0fprimary_contact\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0eprimaryContact\x12*\n" +
+	"\rdocumentation\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\rdocumentation\x12)\n" +
+	"\rlisting_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x03R\flistingCount\x12\x18\n" +
+	"\x04icon\x18\a \x01(\fB\x04\xe2A\x01\x01R\x04icon\x12\x83\x01\n" +
+	"\x1asharing_environment_config\x18\b \x01(\v2?.google.cloud.bigquery.analyticshub.v1.SharingEnvironmentConfigB\x04\xe2A\x01\x01R\x18sharingEnvironmentConfig\x12f\n" +
+	"\x0ediscovery_type\x18\t \x01(\x0e24.google.cloud.bigquery.analyticshub.v1.DiscoveryTypeB\x04\xe2A\x01\x01H\x00R\rdiscoveryType\x88\x01\x01\x12V\n" +
 	"#log_linked_dataset_query_user_email\x18\n" +
-	" \x01(\bB\x03\xe0A\x01H\x01R\x1elogLinkedDatasetQueryUserEmail\x88\x01\x01:t\xeaAq\n" +
+	" \x01(\bB\x04\xe2A\x01\x01H\x01R\x1elogLinkedDatasetQueryUserEmail\x88\x01\x01:t\xeaAq\n" +
 	"(analyticshub.googleapis.com/DataExchange\x12Eprojects/{project}/locations/{location}/dataExchanges/{data_exchange}B\x11\n" +
 	"\x0f_discovery_typeB&\n" +
-	"$_log_linked_dataset_query_user_email\"\xa8\x06\n" +
-	"\rQueryTemplate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1f\n" +
-	"\bproposer\x18\x04 \x01(\tB\x03\xe0A\x01R\bproposer\x12,\n" +
+	"$_log_linked_dataset_query_user_email\"\xb2\x06\n" +
+	"\rQueryTemplate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12 \n" +
+	"\bproposer\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bproposer\x12-\n" +
 	"\x0fprimary_contact\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x0eprimaryContact\x12)\n" +
-	"\rdocumentation\x18\x05 \x01(\tB\x03\xe0A\x01R\rdocumentation\x12U\n" +
-	"\x05state\x18\x06 \x01(\x0e2:.google.cloud.bigquery.analyticshub.v1.QueryTemplate.StateB\x03\xe0A\x03R\x05state\x12M\n" +
-	"\aroutine\x18\a \x01(\v2..google.cloud.bigquery.analyticshub.v1.RoutineB\x03\xe0A\x01R\aroutine\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x0eprimaryContact\x12*\n" +
+	"\rdocumentation\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\rdocumentation\x12V\n" +
+	"\x05state\x18\x06 \x01(\x0e2:.google.cloud.bigquery.analyticshub.v1.QueryTemplate.StateB\x04\xe2A\x01\x03R\x05state\x12N\n" +
+	"\aroutine\x18\a \x01(\v2..google.cloud.bigquery.analyticshub.v1.RoutineB\x04\xe2A\x01\x01R\aroutine\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"S\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
@@ -5041,122 +5041,122 @@ const file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_rawDesc = ""
 	"\aPENDING\x10\x02\x12\v\n" +
 	"\aDELETED\x10\x03\x12\f\n" +
 	"\bAPPROVED\x10\x04:\xb5\x01\xeaA\xb1\x01\n" +
-	")analyticshub.googleapis.com/QueryTemplate\x12eprojects/{project}/locations/{location}/dataExchanges/{data_exchange}/queryTemplates/{query_template}*\x0equeryTemplates2\rqueryTemplate\"\xe3\x01\n" +
-	"\aRoutine\x12b\n" +
-	"\froutine_type\x18\x01 \x01(\x0e2:.google.cloud.bigquery.analyticshub.v1.Routine.RoutineTypeB\x03\xe0A\x02R\vroutineType\x12,\n" +
-	"\x0fdefinition_body\x18\x02 \x01(\tB\x03\xe0A\x01R\x0edefinitionBody\"F\n" +
+	")analyticshub.googleapis.com/QueryTemplate\x12eprojects/{project}/locations/{location}/dataExchanges/{data_exchange}/queryTemplates/{query_template}*\x0equeryTemplates2\rqueryTemplate\"\xe5\x01\n" +
+	"\aRoutine\x12c\n" +
+	"\froutine_type\x18\x01 \x01(\x0e2:.google.cloud.bigquery.analyticshub.v1.Routine.RoutineTypeB\x04\xe2A\x01\x02R\vroutineType\x12-\n" +
+	"\x0fdefinition_body\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0edefinitionBody\"F\n" +
 	"\vRoutineType\x12\x1c\n" +
 	"\x18ROUTINE_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
-	"\x15TABLE_VALUED_FUNCTION\x10\x01\"\xf9\x01\n" +
-	"\x1aCreateQueryTemplateRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticshub.googleapis.com/DataExchangeR\x06parent\x12/\n" +
-	"\x11query_template_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fqueryTemplateId\x12`\n" +
-	"\x0equery_template\x18\x03 \x01(\v24.google.cloud.bigquery.analyticshub.v1.QueryTemplateB\x03\xe0A\x02R\rqueryTemplate\"`\n" +
-	"\x17GetQueryTemplateRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")analyticshub.googleapis.com/QueryTemplateR\x04name\"\xab\x01\n" +
-	"\x19ListQueryTemplatesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticshub.googleapis.com/DataExchangeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15TABLE_VALUED_FUNCTION\x10\x01\"\xfc\x01\n" +
+	"\x1aCreateQueryTemplateRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticshub.googleapis.com/DataExchangeR\x06parent\x120\n" +
+	"\x11query_template_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fqueryTemplateId\x12a\n" +
+	"\x0equery_template\x18\x03 \x01(\v24.google.cloud.bigquery.analyticshub.v1.QueryTemplateB\x04\xe2A\x01\x02R\rqueryTemplate\"a\n" +
+	"\x17GetQueryTemplateRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")analyticshub.googleapis.com/QueryTemplateR\x04name\"\xae\x01\n" +
+	"\x19ListQueryTemplatesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticshub.googleapis.com/DataExchangeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa3\x01\n" +
 	"\x1aListQueryTemplatesResponse\x12]\n" +
 	"\x0fquery_templates\x18\x01 \x03(\v24.google.cloud.bigquery.analyticshub.v1.QueryTemplateR\x0equeryTemplates\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc0\x01\n" +
-	"\x1aUpdateQueryTemplateRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12`\n" +
-	"\x0equery_template\x18\x02 \x01(\v24.google.cloud.bigquery.analyticshub.v1.QueryTemplateB\x03\xe0A\x02R\rqueryTemplate\"c\n" +
-	"\x1aDeleteQueryTemplateRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")analyticshub.googleapis.com/QueryTemplateR\x04name\"c\n" +
-	"\x1aSubmitQueryTemplateRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc2\x01\n" +
+	"\x1aUpdateQueryTemplateRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12a\n" +
+	"\x0equery_template\x18\x02 \x01(\v24.google.cloud.bigquery.analyticshub.v1.QueryTemplateB\x04\xe2A\x01\x02R\rqueryTemplate\"d\n" +
+	"\x1aDeleteQueryTemplateRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")analyticshub.googleapis.com/QueryTemplateR\x04name\"d\n" +
-	"\x1bApproveQueryTemplateRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")analyticshub.googleapis.com/QueryTemplateR\x04name\"\x8b\x05\n" +
+	"\x1aSubmitQueryTemplateRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")analyticshub.googleapis.com/QueryTemplateR\x04name\"e\n" +
+	"\x1bApproveQueryTemplateRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")analyticshub.googleapis.com/QueryTemplateR\x04name\"\x8d\x05\n" +
 	"\x18SharingEnvironmentConfig\x12\x8f\x01\n" +
 	"\x17default_exchange_config\x18\x01 \x01(\v2U.google.cloud.bigquery.analyticshub.v1.SharingEnvironmentConfig.DefaultExchangeConfigH\x00R\x15defaultExchangeConfig\x12\x83\x01\n" +
 	"\x13dcr_exchange_config\x18\x02 \x01(\v2Q.google.cloud.bigquery.analyticshub.v1.SharingEnvironmentConfig.DcrExchangeConfigH\x00R\x11dcrExchangeConfig\x1a\x17\n" +
-	"\x15DefaultExchangeConfig\x1a\xae\x02\n" +
-	"\x11DcrExchangeConfig\x12h\n" +
-	",single_selected_resource_sharing_restriction\x18\x01 \x01(\bB\x03\xe0A\x03H\x00R(singleSelectedResourceSharingRestriction\x88\x01\x01\x12V\n" +
-	"#single_linked_dataset_per_cleanroom\x18\x02 \x01(\bB\x03\xe0A\x03H\x01R\x1fsingleLinkedDatasetPerCleanroom\x88\x01\x01B/\n" +
+	"\x15DefaultExchangeConfig\x1a\xb0\x02\n" +
+	"\x11DcrExchangeConfig\x12i\n" +
+	",single_selected_resource_sharing_restriction\x18\x01 \x01(\bB\x04\xe2A\x01\x03H\x00R(singleSelectedResourceSharingRestriction\x88\x01\x01\x12W\n" +
+	"#single_linked_dataset_per_cleanroom\x18\x02 \x01(\bB\x04\xe2A\x01\x03H\x01R\x1fsingleLinkedDatasetPerCleanroom\x88\x01\x01B/\n" +
 	"-_single_selected_resource_sharing_restrictionB&\n" +
 	"$_single_linked_dataset_per_cleanroomB\r\n" +
-	"\venvironment\"U\n" +
-	"\fDataProvider\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12,\n" +
-	"\x0fprimary_contact\x18\x02 \x01(\tB\x03\xe0A\x01R\x0eprimaryContact\"R\n" +
-	"\tPublisher\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12,\n" +
-	"\x0fprimary_contact\x18\x02 \x01(\tB\x03\xe0A\x01R\x0eprimaryContact\"e\n" +
-	"\x1bDestinationDatasetReference\x12\"\n" +
+	"\venvironment\"W\n" +
+	"\fDataProvider\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12-\n" +
+	"\x0fprimary_contact\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0eprimaryContact\"T\n" +
+	"\tPublisher\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12-\n" +
+	"\x0fprimary_contact\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0eprimaryContact\"g\n" +
+	"\x1bDestinationDatasetReference\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\"\n" +
+	"dataset_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12#\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tprojectId\"\x89\x04\n" +
-	"\x12DestinationDataset\x12t\n" +
-	"\x11dataset_reference\x18\x01 \x01(\v2B.google.cloud.bigquery.analyticshub.v1.DestinationDatasetReferenceB\x03\xe0A\x02R\x10datasetReference\x12F\n" +
-	"\rfriendly_name\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\ffriendlyName\x12C\n" +
-	"\vdescription\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\vdescription\x12b\n" +
-	"\x06labels\x18\x04 \x03(\v2E.google.cloud.bigquery.analyticshub.v1.DestinationDataset.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x1f\n" +
-	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x02R\blocation\x120\n" +
-	"\x11replica_locations\x18\x06 \x03(\tB\x03\xe0A\x01R\x10replicaLocations\x1a9\n" +
+	"project_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\"\x8f\x04\n" +
+	"\x12DestinationDataset\x12u\n" +
+	"\x11dataset_reference\x18\x01 \x01(\v2B.google.cloud.bigquery.analyticshub.v1.DestinationDatasetReferenceB\x04\xe2A\x01\x02R\x10datasetReference\x12G\n" +
+	"\rfriendly_name\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\ffriendlyName\x12D\n" +
+	"\vdescription\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\vdescription\x12c\n" +
+	"\x06labels\x18\x04 \x03(\v2E.google.cloud.bigquery.analyticshub.v1.DestinationDataset.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12 \n" +
+	"\blocation\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\blocation\x121\n" +
+	"\x11replica_locations\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\x10replicaLocations\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x90\x01\n" +
-	"\x1dDestinationPubSubSubscription\x12o\n" +
-	"\x13pubsub_subscription\x18\x01 \x01(\v29.google.cloud.bigquery.analyticshub.v1.PubSubSubscriptionB\x03\xe0A\x02R\x12pubsubSubscription\"\x8c&\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x91\x01\n" +
+	"\x1dDestinationPubSubSubscription\x12p\n" +
+	"\x13pubsub_subscription\x18\x01 \x01(\v29.google.cloud.bigquery.analyticshub.v1.PubSubSubscriptionB\x04\xe2A\x01\x02R\x12pubsubSubscription\"\xb3&\n" +
 	"\aListing\x12q\n" +
 	"\x10bigquery_dataset\x18\x06 \x01(\v2D.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSourceH\x00R\x0fbigqueryDataset\x12e\n" +
-	"\fpubsub_topic\x18\x10 \x01(\v2@.google.cloud.bigquery.analyticshub.v1.Listing.PubSubTopicSourceH\x00R\vpubsubTopic\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12,\n" +
-	"\x0fprimary_contact\x18\x04 \x01(\tB\x03\xe0A\x01R\x0eprimaryContact\x12)\n" +
-	"\rdocumentation\x18\x05 \x01(\tB\x03\xe0A\x01R\rdocumentation\x12O\n" +
-	"\x05state\x18\a \x01(\x0e24.google.cloud.bigquery.analyticshub.v1.Listing.StateB\x03\xe0A\x03R\x05state\x12\x17\n" +
-	"\x04icon\x18\b \x01(\fB\x03\xe0A\x01R\x04icon\x12]\n" +
-	"\rdata_provider\x18\t \x01(\v23.google.cloud.bigquery.analyticshub.v1.DataProviderB\x03\xe0A\x01R\fdataProvider\x12\\\n" +
+	"\fpubsub_topic\x18\x10 \x01(\v2@.google.cloud.bigquery.analyticshub.v1.Listing.PubSubTopicSourceH\x00R\vpubsubTopic\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12-\n" +
+	"\x0fprimary_contact\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0eprimaryContact\x12*\n" +
+	"\rdocumentation\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\rdocumentation\x12P\n" +
+	"\x05state\x18\a \x01(\x0e24.google.cloud.bigquery.analyticshub.v1.Listing.StateB\x04\xe2A\x01\x03R\x05state\x12\x18\n" +
+	"\x04icon\x18\b \x01(\fB\x04\xe2A\x01\x01R\x04icon\x12^\n" +
+	"\rdata_provider\x18\t \x01(\v23.google.cloud.bigquery.analyticshub.v1.DataProviderB\x04\xe2A\x01\x01R\fdataProvider\x12]\n" +
 	"\n" +
 	"categories\x18\n" +
-	" \x03(\x0e27.google.cloud.bigquery.analyticshub.v1.Listing.CategoryB\x03\xe0A\x01R\n" +
-	"categories\x12S\n" +
-	"\tpublisher\x18\v \x01(\v20.google.cloud.bigquery.analyticshub.v1.PublisherB\x03\xe0A\x01R\tpublisher\x12*\n" +
-	"\x0erequest_access\x18\f \x01(\tB\x03\xe0A\x01R\rrequestAccess\x12\x84\x01\n" +
-	"\x18restricted_export_config\x18\r \x01(\v2E.google.cloud.bigquery.analyticshub.v1.Listing.RestrictedExportConfigB\x03\xe0A\x01R\x16restrictedExportConfig\x12y\n" +
-	"\x17stored_procedure_config\x18\x14 \x01(\v2<.google.cloud.bigquery.analyticshub.v1.StoredProcedureConfigB\x03\xe0A\x01R\x15storedProcedureConfig\x12e\n" +
-	"\x0ediscovery_type\x18\x0e \x01(\x0e24.google.cloud.bigquery.analyticshub.v1.DiscoveryTypeB\x03\xe0A\x01H\x01R\rdiscoveryType\x88\x01\x01\x12c\n" +
-	"\rresource_type\x18\x0f \x01(\x0e29.google.cloud.bigquery.analyticshub.v1.SharedResourceTypeB\x03\xe0A\x03R\fresourceType\x12p\n" +
-	"\x0fcommercial_info\x18\x11 \x01(\v2=.google.cloud.bigquery.analyticshub.v1.Listing.CommercialInfoB\x03\xe0A\x03H\x02R\x0ecommercialInfo\x88\x01\x01\x12U\n" +
-	"#log_linked_dataset_query_user_email\x18\x12 \x01(\bB\x03\xe0A\x01H\x03R\x1elogLinkedDatasetQueryUserEmail\x88\x01\x01\x12G\n" +
-	"\x1ballow_only_metadata_sharing\x18\x13 \x01(\bB\x03\xe0A\x01H\x04R\x18allowOnlyMetadataSharing\x88\x01\x01\x1a\xd0\v\n" +
-	"\x15BigQueryDatasetSource\x12A\n" +
-	"\adataset\x18\x01 \x01(\tB'\xe0A\x01\xfaA!\n" +
-	"\x1fbigquery.googleapis.com/DatasetR\adataset\x12\x89\x01\n" +
-	"\x12selected_resources\x18\x02 \x03(\v2U.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.SelectedResourceB\x03\xe0A\x01R\x11selectedResources\x12\x9a\x01\n" +
-	"\x18restricted_export_policy\x18\x03 \x01(\v2[.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.RestrictedExportPolicyB\x03\xe0A\x01R\x16restrictedExportPolicy\x120\n" +
-	"\x11replica_locations\x18\x05 \x03(\tB\x03\xe0A\x01R\x10replicaLocations\x12\x80\x01\n" +
-	"\x12effective_replicas\x18\x06 \x03(\v2L.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.ReplicaB\x03\xe0A\x03R\x11effectiveReplicas\x1a\xa2\x01\n" +
-	"\x10SelectedResource\x12=\n" +
-	"\x05table\x18\x01 \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableH\x00R\x05table\x12C\n" +
-	"\aroutine\x18\x02 \x01(\tB'\xe0A\x01\xfaA!\n" +
+	" \x03(\x0e27.google.cloud.bigquery.analyticshub.v1.Listing.CategoryB\x04\xe2A\x01\x01R\n" +
+	"categories\x12T\n" +
+	"\tpublisher\x18\v \x01(\v20.google.cloud.bigquery.analyticshub.v1.PublisherB\x04\xe2A\x01\x01R\tpublisher\x12+\n" +
+	"\x0erequest_access\x18\f \x01(\tB\x04\xe2A\x01\x01R\rrequestAccess\x12\x85\x01\n" +
+	"\x18restricted_export_config\x18\r \x01(\v2E.google.cloud.bigquery.analyticshub.v1.Listing.RestrictedExportConfigB\x04\xe2A\x01\x01R\x16restrictedExportConfig\x12z\n" +
+	"\x17stored_procedure_config\x18\x14 \x01(\v2<.google.cloud.bigquery.analyticshub.v1.StoredProcedureConfigB\x04\xe2A\x01\x01R\x15storedProcedureConfig\x12f\n" +
+	"\x0ediscovery_type\x18\x0e \x01(\x0e24.google.cloud.bigquery.analyticshub.v1.DiscoveryTypeB\x04\xe2A\x01\x01H\x01R\rdiscoveryType\x88\x01\x01\x12d\n" +
+	"\rresource_type\x18\x0f \x01(\x0e29.google.cloud.bigquery.analyticshub.v1.SharedResourceTypeB\x04\xe2A\x01\x03R\fresourceType\x12q\n" +
+	"\x0fcommercial_info\x18\x11 \x01(\v2=.google.cloud.bigquery.analyticshub.v1.Listing.CommercialInfoB\x04\xe2A\x01\x03H\x02R\x0ecommercialInfo\x88\x01\x01\x12V\n" +
+	"#log_linked_dataset_query_user_email\x18\x12 \x01(\bB\x04\xe2A\x01\x01H\x03R\x1elogLinkedDatasetQueryUserEmail\x88\x01\x01\x12H\n" +
+	"\x1ballow_only_metadata_sharing\x18\x13 \x01(\bB\x04\xe2A\x01\x01H\x04R\x18allowOnlyMetadataSharing\x88\x01\x01\x1a\xdd\v\n" +
+	"\x15BigQueryDatasetSource\x12B\n" +
+	"\adataset\x18\x01 \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
+	"\x1fbigquery.googleapis.com/DatasetR\adataset\x12\x8a\x01\n" +
+	"\x12selected_resources\x18\x02 \x03(\v2U.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.SelectedResourceB\x04\xe2A\x01\x01R\x11selectedResources\x12\x9b\x01\n" +
+	"\x18restricted_export_policy\x18\x03 \x01(\v2[.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.RestrictedExportPolicyB\x04\xe2A\x01\x01R\x16restrictedExportPolicy\x121\n" +
+	"\x11replica_locations\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x10replicaLocations\x12\x81\x01\n" +
+	"\x12effective_replicas\x18\x06 \x03(\v2L.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.ReplicaB\x04\xe2A\x01\x03R\x11effectiveReplicas\x1a\xa4\x01\n" +
+	"\x10SelectedResource\x12>\n" +
+	"\x05table\x18\x01 \x01(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableH\x00R\x05table\x12D\n" +
+	"\aroutine\x18\x02 \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
 	"\x1fbigquery.googleapis.com/RoutineH\x00R\aroutineB\n" +
 	"\n" +
-	"\bresource\x1a\x8a\x02\n" +
-	"\x16RestrictedExportPolicy\x129\n" +
-	"\aenabled\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\aenabled\x12`\n" +
-	"\x1crestrict_direct_table_access\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x19restrictDirectTableAccess\x12S\n" +
-	"\x15restrict_query_result\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x13restrictQueryResult\x1a\xe3\x03\n" +
-	"\aReplica\x12\x1f\n" +
-	"\blocation\x18\x01 \x01(\tB\x03\xe0A\x03R\blocation\x12\x83\x01\n" +
-	"\rreplica_state\x18\x02 \x01(\x0e2Y.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.Replica.ReplicaStateB\x03\xe0A\x03R\freplicaState\x12\x88\x01\n" +
-	"\rprimary_state\x18\x03 \x01(\x0e2Y.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.Replica.PrimaryStateB\x03\xe0A\x03H\x00R\fprimaryState\x88\x01\x01\"P\n" +
+	"\bresource\x1a\x8d\x02\n" +
+	"\x16RestrictedExportPolicy\x12:\n" +
+	"\aenabled\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\aenabled\x12a\n" +
+	"\x1crestrict_direct_table_access\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x19restrictDirectTableAccess\x12T\n" +
+	"\x15restrict_query_result\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x13restrictQueryResult\x1a\xe6\x03\n" +
+	"\aReplica\x12 \n" +
+	"\blocation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12\x84\x01\n" +
+	"\rreplica_state\x18\x02 \x01(\x0e2Y.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.Replica.ReplicaStateB\x04\xe2A\x01\x03R\freplicaState\x12\x89\x01\n" +
+	"\rprimary_state\x18\x03 \x01(\x0e2Y.google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource.Replica.PrimaryStateB\x04\xe2A\x01\x03H\x00R\fprimaryState\x88\x01\x01\"P\n" +
 	"\fReplicaState\x12\x1d\n" +
 	"\x19REPLICA_STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fREADY_TO_USE\x10\x01\x12\x0f\n" +
@@ -5164,21 +5164,21 @@ const file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_rawDesc = ""
 	"\fPrimaryState\x12\x1d\n" +
 	"\x19PRIMARY_STATE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fPRIMARY_REPLICA\x10\x01B\x10\n" +
-	"\x0e_primary_state\x1a\x87\x01\n" +
-	"\x11PubSubTopicSource\x129\n" +
-	"\x05topic\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bpubsub.googleapis.com/TopicR\x05topic\x127\n" +
-	"\x15data_affinity_regions\x18\x02 \x03(\tB\x03\xe0A\x01R\x13dataAffinityRegions\x1a\xb6\x01\n" +
-	"\x16RestrictedExportConfig\x12\x1d\n" +
-	"\aenabled\x18\x03 \x01(\bB\x03\xe0A\x01R\aenabled\x12D\n" +
-	"\x1crestrict_direct_table_access\x18\x01 \x01(\bB\x03\xe0A\x03R\x19restrictDirectTableAccess\x127\n" +
-	"\x15restrict_query_result\x18\x02 \x01(\bB\x03\xe0A\x01R\x13restrictQueryResult\x1a\xc1\x04\n" +
-	"\x0eCommercialInfo\x12\x8f\x01\n" +
-	"\x11cloud_marketplace\x18\x01 \x01(\v2X.google.cloud.bigquery.analyticshub.v1.Listing.CommercialInfo.GoogleCloudMarketplaceInfoB\x03\xe0A\x03H\x00R\x10cloudMarketplace\x88\x01\x01\x1a\x86\x03\n" +
-	"\x1aGoogleCloudMarketplaceInfo\x12V\n" +
-	"\aservice\x18\x01 \x01(\tB7\xe0A\x03\xfaA1\n" +
-	"/servicemanagement.googleapis.com/ManagedServiceH\x00R\aservice\x88\x01\x01\x12\x9d\x01\n" +
-	"\x10commercial_state\x18\x03 \x01(\x0e2h.google.cloud.bigquery.analyticshub.v1.Listing.CommercialInfo.GoogleCloudMarketplaceInfo.CommercialStateB\x03\xe0A\x03H\x01R\x0fcommercialState\x88\x01\x01\"O\n" +
+	"\x0e_primary_state\x1a\x89\x01\n" +
+	"\x11PubSubTopicSource\x12:\n" +
+	"\x05topic\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bpubsub.googleapis.com/TopicR\x05topic\x128\n" +
+	"\x15data_affinity_regions\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x13dataAffinityRegions\x1a\xb9\x01\n" +
+	"\x16RestrictedExportConfig\x12\x1e\n" +
+	"\aenabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12E\n" +
+	"\x1crestrict_direct_table_access\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\x19restrictDirectTableAccess\x128\n" +
+	"\x15restrict_query_result\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x13restrictQueryResult\x1a\xc4\x04\n" +
+	"\x0eCommercialInfo\x12\x90\x01\n" +
+	"\x11cloud_marketplace\x18\x01 \x01(\v2X.google.cloud.bigquery.analyticshub.v1.Listing.CommercialInfo.GoogleCloudMarketplaceInfoB\x04\xe2A\x01\x03H\x00R\x10cloudMarketplace\x88\x01\x01\x1a\x88\x03\n" +
+	"\x1aGoogleCloudMarketplaceInfo\x12W\n" +
+	"\aservice\x18\x01 \x01(\tB8\xe2A\x01\x03\xfaA1\n" +
+	"/servicemanagement.googleapis.com/ManagedServiceH\x00R\aservice\x88\x01\x01\x12\x9e\x01\n" +
+	"\x10commercial_state\x18\x03 \x01(\x0e2h.google.cloud.bigquery.analyticshub.v1.Listing.CommercialInfo.GoogleCloudMarketplaceInfo.CommercialStateB\x04\xe2A\x01\x03H\x01R\x0fcommercialState\x88\x01\x01\"O\n" +
 	"\x0fCommercialState\x12 \n" +
 	"\x1cCOMMERCIAL_STATE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -5221,37 +5221,37 @@ const file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_rawDesc = ""
 	"\x0f_discovery_typeB\x12\n" +
 	"\x10_commercial_infoB&\n" +
 	"$_log_linked_dataset_query_user_emailB\x1e\n" +
-	"\x1c_allow_only_metadata_sharing\"\xa4\x02\n" +
-	"\x15StoredProcedureConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x12\x9a\x01\n" +
-	"\x1eallowed_stored_procedure_types\x18\x02 \x03(\x0e2P.google.cloud.bigquery.analyticshub.v1.StoredProcedureConfig.StoredProcedureTypeB\x03\xe0A\x03R\x1ballowedStoredProcedureTypes\"O\n" +
+	"\x1c_allow_only_metadata_sharing\"\xa6\x02\n" +
+	"\x15StoredProcedureConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12\x9b\x01\n" +
+	"\x1eallowed_stored_procedure_types\x18\x02 \x03(\x0e2P.google.cloud.bigquery.analyticshub.v1.StoredProcedureConfig.StoredProcedureTypeB\x04\xe2A\x01\x03R\x1ballowedStoredProcedureTypes\"O\n" +
 	"\x13StoredProcedureType\x12%\n" +
 	"!STORED_PROCEDURE_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
-	"\rSQL_PROCEDURE\x10\x01\"\xe5\x0f\n" +
-	"\fSubscription\x12\x1f\n" +
-	"\alisting\x18\x05 \x01(\tB\x03\xe0A\x03H\x00R\alisting\x12*\n" +
-	"\rdata_exchange\x18\x06 \x01(\tB\x03\xe0A\x03H\x00R\fdataExchange\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12D\n" +
-	"\rcreation_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcreationTime\x12I\n" +
-	"\x10last_modify_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastModifyTime\x12,\n" +
-	"\x0forganization_id\x18\x04 \x01(\tB\x03\xe0A\x03R\x0eorganizationId\x12?\n" +
+	"\rSQL_PROCEDURE\x10\x01\"\xf8\x0f\n" +
+	"\fSubscription\x12 \n" +
+	"\alisting\x18\x05 \x01(\tB\x04\xe2A\x01\x03H\x00R\alisting\x12+\n" +
+	"\rdata_exchange\x18\x06 \x01(\tB\x04\xe2A\x01\x03H\x00R\fdataExchange\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12E\n" +
+	"\rcreation_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcreationTime\x12J\n" +
+	"\x10last_modify_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastModifyTime\x12-\n" +
+	"\x0forganization_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0eorganizationId\x12@\n" +
 	"\x19organization_display_name\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x17organizationDisplayName\x12T\n" +
-	"\x05state\x18\a \x01(\x0e29.google.cloud.bigquery.analyticshub.v1.Subscription.StateB\x03\xe0A\x03R\x05state\x12|\n" +
-	"\x12linked_dataset_map\x18\b \x03(\v2I.google.cloud.bigquery.analyticshub.v1.Subscription.LinkedDatasetMapEntryB\x03\xe0A\x03R\x10linkedDatasetMap\x122\n" +
-	"\x12subscriber_contact\x18\t \x01(\tB\x03\xe0A\x03R\x11subscriberContact\x12r\n" +
-	"\x10linked_resources\x18\v \x03(\v2B.google.cloud.bigquery.analyticshub.v1.Subscription.LinkedResourceB\x03\xe0A\x03R\x0flinkedResources\x12c\n" +
-	"\rresource_type\x18\f \x01(\x0e29.google.cloud.bigquery.analyticshub.v1.SharedResourceTypeB\x03\xe0A\x03R\fresourceType\x12p\n" +
-	"\x0fcommercial_info\x18\r \x01(\v2B.google.cloud.bigquery.analyticshub.v1.Subscription.CommercialInfoB\x03\xe0A\x03R\x0ecommercialInfo\x12U\n" +
-	"#log_linked_dataset_query_user_email\x18\x0e \x01(\bB\x03\xe0A\x03H\x01R\x1elogLinkedDatasetQueryUserEmail\x88\x01\x01\x12o\n" +
-	"\x13destination_dataset\x18\x0f \x01(\v29.google.cloud.bigquery.analyticshub.v1.DestinationDatasetB\x03\xe0A\x01R\x12destinationDataset\x1a\xaf\x01\n" +
-	"\x0eLinkedResource\x12,\n" +
-	"\x0elinked_dataset\x18\x01 \x01(\tB\x03\xe0A\x03H\x00R\rlinkedDataset\x12C\n" +
-	"\x1alinked_pubsub_subscription\x18\x03 \x01(\tB\x03\xe0A\x03H\x00R\x18linkedPubsubSubscription\x12\x1d\n" +
-	"\alisting\x18\x02 \x01(\tB\x03\xe0A\x03R\alistingB\v\n" +
-	"\treference\x1a\x92\x02\n" +
-	"\x0eCommercialInfo\x12\x8f\x01\n" +
-	"\x11cloud_marketplace\x18\x01 \x01(\v2].google.cloud.bigquery.analyticshub.v1.Subscription.CommercialInfo.GoogleCloudMarketplaceInfoB\x03\xe0A\x03R\x10cloudMarketplace\x1an\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x17organizationDisplayName\x12U\n" +
+	"\x05state\x18\a \x01(\x0e29.google.cloud.bigquery.analyticshub.v1.Subscription.StateB\x04\xe2A\x01\x03R\x05state\x12}\n" +
+	"\x12linked_dataset_map\x18\b \x03(\v2I.google.cloud.bigquery.analyticshub.v1.Subscription.LinkedDatasetMapEntryB\x04\xe2A\x01\x03R\x10linkedDatasetMap\x123\n" +
+	"\x12subscriber_contact\x18\t \x01(\tB\x04\xe2A\x01\x03R\x11subscriberContact\x12s\n" +
+	"\x10linked_resources\x18\v \x03(\v2B.google.cloud.bigquery.analyticshub.v1.Subscription.LinkedResourceB\x04\xe2A\x01\x03R\x0flinkedResources\x12d\n" +
+	"\rresource_type\x18\f \x01(\x0e29.google.cloud.bigquery.analyticshub.v1.SharedResourceTypeB\x04\xe2A\x01\x03R\fresourceType\x12q\n" +
+	"\x0fcommercial_info\x18\r \x01(\v2B.google.cloud.bigquery.analyticshub.v1.Subscription.CommercialInfoB\x04\xe2A\x01\x03R\x0ecommercialInfo\x12V\n" +
+	"#log_linked_dataset_query_user_email\x18\x0e \x01(\bB\x04\xe2A\x01\x03H\x01R\x1elogLinkedDatasetQueryUserEmail\x88\x01\x01\x12p\n" +
+	"\x13destination_dataset\x18\x0f \x01(\v29.google.cloud.bigquery.analyticshub.v1.DestinationDatasetB\x04\xe2A\x01\x01R\x12destinationDataset\x1a\xb2\x01\n" +
+	"\x0eLinkedResource\x12-\n" +
+	"\x0elinked_dataset\x18\x01 \x01(\tB\x04\xe2A\x01\x03H\x00R\rlinkedDataset\x12D\n" +
+	"\x1alinked_pubsub_subscription\x18\x03 \x01(\tB\x04\xe2A\x01\x03H\x00R\x18linkedPubsubSubscription\x12\x1e\n" +
+	"\alisting\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\alistingB\v\n" +
+	"\treference\x1a\x93\x02\n" +
+	"\x0eCommercialInfo\x12\x90\x01\n" +
+	"\x11cloud_marketplace\x18\x01 \x01(\v2].google.cloud.bigquery.analyticshub.v1.Subscription.CommercialInfo.GoogleCloudMarketplaceInfoB\x04\xe2A\x01\x03R\x10cloudMarketplace\x1an\n" +
 	"\x1aGoogleCloudMarketplaceInfo\x12P\n" +
 	"\x05order\x18\x01 \x01(\tB:\xfaA7\n" +
 	"5cloudcommerceconsumerprocurement.googleapis.com/OrderR\x05order\x1a\x87\x01\n" +
@@ -5265,100 +5265,101 @@ const file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_rawDesc = ""
 	"\x0eSTATE_INACTIVE\x10\x03:s\xeaAp\n" +
 	"(analyticshub.googleapis.com/Subscription\x12Dprojects/{project}/locations/{location}/subscriptions/{subscription}B\x0f\n" +
 	"\rresource_nameB&\n" +
-	"$_log_linked_dataset_query_user_email\"\xa0\x01\n" +
-	"\x18ListDataExchangesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(analyticshub.googleapis.com/DataExchangeR\x06parent\x12\x1b\n" +
+	"$_log_linked_dataset_query_user_email\"\xa1\x01\n" +
+	"\x18ListDataExchangesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(analyticshub.googleapis.com/DataExchangeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9f\x01\n" +
 	"\x19ListDataExchangesResponse\x12Z\n" +
 	"\x0edata_exchanges\x18\x01 \x03(\v23.google.cloud.bigquery.analyticshub.v1.DataExchangeR\rdataExchanges\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x82\x01\n" +
-	"\x1bListOrgDataExchangesRequest\x12'\n" +
-	"\forganization\x18\x01 \x01(\tB\x03\xe0A\x02R\forganization\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x83\x01\n" +
+	"\x1bListOrgDataExchangesRequest\x12(\n" +
+	"\forganization\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\forganization\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa2\x01\n" +
 	"\x1cListOrgDataExchangesResponse\x12Z\n" +
 	"\x0edata_exchanges\x18\x01 \x03(\v23.google.cloud.bigquery.analyticshub.v1.DataExchangeR\rdataExchanges\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x16GetDataExchangeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticshub.googleapis.com/DataExchangeR\x04name\"\xf3\x01\n" +
-	"\x19CreateDataExchangeRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(analyticshub.googleapis.com/DataExchangeR\x06parent\x12-\n" +
-	"\x10data_exchange_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0edataExchangeId\x12]\n" +
-	"\rdata_exchange\x18\x03 \x01(\v23.google.cloud.bigquery.analyticshub.v1.DataExchangeB\x03\xe0A\x02R\fdataExchange\"\xbc\x01\n" +
-	"\x19UpdateDataExchangeRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12]\n" +
-	"\rdata_exchange\x18\x02 \x01(\v23.google.cloud.bigquery.analyticshub.v1.DataExchangeB\x03\xe0A\x02R\fdataExchange\"a\n" +
-	"\x19DeleteDataExchangeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticshub.googleapis.com/DataExchangeR\x04name\"\x9b\x01\n" +
-	"\x13ListListingsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x16GetDataExchangeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticshub.googleapis.com/DataExchangeR\x04name\"\xf6\x01\n" +
+	"\x19CreateDataExchangeRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(analyticshub.googleapis.com/DataExchangeR\x06parent\x12.\n" +
+	"\x10data_exchange_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0edataExchangeId\x12^\n" +
+	"\rdata_exchange\x18\x03 \x01(\v23.google.cloud.bigquery.analyticshub.v1.DataExchangeB\x04\xe2A\x01\x02R\fdataExchange\"\xbe\x01\n" +
+	"\x19UpdateDataExchangeRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12^\n" +
+	"\rdata_exchange\x18\x02 \x01(\v23.google.cloud.bigquery.analyticshub.v1.DataExchangeB\x04\xe2A\x01\x02R\fdataExchange\"b\n" +
+	"\x19DeleteDataExchangeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticshub.googleapis.com/DataExchangeR\x04name\"\x9c\x01\n" +
+	"\x13ListListingsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(analyticshub.googleapis.com/DataExchangeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8a\x01\n" +
 	"\x14ListListingsResponse\x12J\n" +
 	"\blistings\x18\x01 \x03(\v2..google.cloud.bigquery.analyticshub.v1.ListingR\blistings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
-	"\x11GetListingRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#analyticshub.googleapis.com/ListingR\x04name\"\xd3\x01\n" +
-	"\x14CreateListingRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticshub.googleapis.com/DataExchangeR\x06parent\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
+	"\x11GetListingRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#analyticshub.googleapis.com/ListingR\x04name\"\xd6\x01\n" +
+	"\x14CreateListingRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticshub.googleapis.com/DataExchangeR\x06parent\x12#\n" +
 	"\n" +
-	"listing_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tlistingId\x12M\n" +
-	"\alisting\x18\x03 \x01(\v2..google.cloud.bigquery.analyticshub.v1.ListingB\x03\xe0A\x02R\alisting\"\xa7\x01\n" +
-	"\x14UpdateListingRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12M\n" +
-	"\alisting\x18\x02 \x01(\v2..google.cloud.bigquery.analyticshub.v1.ListingB\x03\xe0A\x02R\alisting\"\x89\x01\n" +
-	"\x14DeleteListingRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#analyticshub.googleapis.com/ListingR\x04name\x120\n" +
-	"\x11delete_commercial\x18\x02 \x01(\bB\x03\xe0A\x01R\x10deleteCommercial\"\xf2\x02\n" +
-	"\x17SubscribeListingRequest\x12q\n" +
-	"\x13destination_dataset\x18\x03 \x01(\v29.google.cloud.bigquery.analyticshub.v1.DestinationDatasetB\x03\xe0A\x04H\x00R\x12destinationDataset\x12\x93\x01\n" +
-	"\x1fdestination_pubsub_subscription\x18\x05 \x01(\v2D.google.cloud.bigquery.analyticshub.v1.DestinationPubSubSubscriptionB\x03\xe0A\x04H\x00R\x1ddestinationPubsubSubscription\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"listing_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tlistingId\x12N\n" +
+	"\alisting\x18\x03 \x01(\v2..google.cloud.bigquery.analyticshub.v1.ListingB\x04\xe2A\x01\x02R\alisting\"\xa9\x01\n" +
+	"\x14UpdateListingRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12N\n" +
+	"\alisting\x18\x02 \x01(\v2..google.cloud.bigquery.analyticshub.v1.ListingB\x04\xe2A\x01\x02R\alisting\"\x8b\x01\n" +
+	"\x14DeleteListingRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#analyticshub.googleapis.com/ListingR\x04name\x121\n" +
+	"\x11delete_commercial\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x10deleteCommercial\"\xf5\x02\n" +
+	"\x17SubscribeListingRequest\x12r\n" +
+	"\x13destination_dataset\x18\x03 \x01(\v29.google.cloud.bigquery.analyticshub.v1.DestinationDatasetB\x04\xe2A\x01\x04H\x00R\x12destinationDataset\x12\x94\x01\n" +
+	"\x1fdestination_pubsub_subscription\x18\x05 \x01(\v2D.google.cloud.bigquery.analyticshub.v1.DestinationPubSubSubscriptionB\x04\xe2A\x01\x04H\x00R\x1ddestinationPubsubSubscription\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#analyticshub.googleapis.com/ListingR\x04nameB\r\n" +
 	"\vdestination\"s\n" +
 	"\x18SubscribeListingResponse\x12W\n" +
-	"\fsubscription\x18\x01 \x01(\v23.google.cloud.bigquery.analyticshub.v1.SubscriptionR\fsubscription\"\xfa\x02\n" +
-	"\x1cSubscribeDataExchangeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticshub.googleapis.com/DataExchangeR\x04name\x12K\n" +
-	"\vdestination\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\vdestination\x12o\n" +
-	"\x13destination_dataset\x18\x05 \x01(\v29.google.cloud.bigquery.analyticshub.v1.DestinationDatasetB\x03\xe0A\x01R\x12destinationDataset\x12'\n" +
-	"\fsubscription\x18\x04 \x01(\tB\x03\xe0A\x02R\fsubscription\x12-\n" +
+	"\fsubscription\x18\x01 \x01(\v23.google.cloud.bigquery.analyticshub.v1.SubscriptionR\fsubscription\"\xfe\x02\n" +
+	"\x1cSubscribeDataExchangeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticshub.googleapis.com/DataExchangeR\x04name\x12L\n" +
+	"\vdestination\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\vdestination\x12p\n" +
+	"\x13destination_dataset\x18\x05 \x01(\v29.google.cloud.bigquery.analyticshub.v1.DestinationDatasetB\x04\xe2A\x01\x01R\x12destinationDataset\x12(\n" +
+	"\fsubscription\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\fsubscription\x12-\n" +
 	"\x12subscriber_contact\x18\x03 \x01(\tR\x11subscriberContact\"x\n" +
 	"\x1dSubscribeDataExchangeResponse\x12W\n" +
-	"\fsubscription\x18\x01 \x01(\v23.google.cloud.bigquery.analyticshub.v1.SubscriptionR\fsubscription\"b\n" +
-	"\x1aRefreshSubscriptionRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\fsubscription\x18\x01 \x01(\v23.google.cloud.bigquery.analyticshub.v1.SubscriptionR\fsubscription\"c\n" +
+	"\x1aRefreshSubscriptionRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(analyticshub.googleapis.com/SubscriptionR\x04name\"v\n" +
 	"\x1bRefreshSubscriptionResponse\x12W\n" +
-	"\fsubscription\x18\x01 \x01(\v23.google.cloud.bigquery.analyticshub.v1.SubscriptionR\fsubscription\"^\n" +
-	"\x16GetSubscriptionRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticshub.googleapis.com/SubscriptionR\x04name\"\xb8\x01\n" +
-	"\x18ListSubscriptionsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(analyticshub.googleapis.com/SubscriptionR\x06parent\x12\x16\n" +
+	"\fsubscription\x18\x01 \x01(\v23.google.cloud.bigquery.analyticshub.v1.SubscriptionR\fsubscription\"_\n" +
+	"\x16GetSubscriptionRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticshub.googleapis.com/SubscriptionR\x04name\"\xb9\x01\n" +
+	"\x18ListSubscriptionsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(analyticshub.googleapis.com/SubscriptionR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x9e\x01\n" +
 	"\x19ListSubscriptionsResponse\x12Y\n" +
 	"\rsubscriptions\x18\x01 \x03(\v23.google.cloud.bigquery.analyticshub.v1.SubscriptionR\rsubscriptions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcf\x01\n" +
-	"&ListSharedResourceSubscriptionsRequest\x12%\n" +
-	"\bresource\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd0\x01\n" +
+	"&ListSharedResourceSubscriptionsRequest\x12&\n" +
+	"\bresource\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
 	"\x01*R\bresource\x12B\n" +
 	"\x1dinclude_deleted_subscriptions\x18\x02 \x01(\bR\x1bincludeDeletedSubscriptions\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -5366,24 +5367,24 @@ const file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_rawDesc = ""
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\xca\x01\n" +
 	"'ListSharedResourceSubscriptionsResponse\x12w\n" +
 	"\x1dshared_resource_subscriptions\x18\x01 \x03(\v23.google.cloud.bigquery.analyticshub.v1.SubscriptionR\x1bsharedResourceSubscriptions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x93\x01\n" +
-	"\x19RevokeSubscriptionRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticshub.googleapis.com/SubscriptionR\x04name\x120\n" +
-	"\x11revoke_commercial\x18\x02 \x01(\bB\x03\xe0A\x01R\x10revokeCommercial\"\x1c\n" +
-	"\x1aRevokeSubscriptionResponse\"a\n" +
-	"\x19DeleteSubscriptionRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticshub.googleapis.com/SubscriptionR\x04name\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x95\x01\n" +
+	"\x19RevokeSubscriptionRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticshub.googleapis.com/SubscriptionR\x04name\x121\n" +
+	"\x11revoke_commercial\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x10revokeCommercial\"\x1c\n" +
+	"\x1aRevokeSubscriptionResponse\"b\n" +
+	"\x19DeleteSubscriptionRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticshub.googleapis.com/SubscriptionR\x04name\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion*f\n" +
 	"\rDiscoveryType\x12\x1e\n" +
 	"\x1aDISCOVERY_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +

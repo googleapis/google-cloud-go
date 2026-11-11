@@ -403,6 +403,13 @@ func (c *regionBackendBucketsRESTClient) Delete(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetBackendBucket(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendBuckets/%v", req.GetProject(), req.GetRegion(), req.GetBackendBucket())
 
 	params := url.Values{}
@@ -467,6 +474,13 @@ func (c *regionBackendBucketsRESTClient) Get(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetBackendBucket(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendBuckets/%v", req.GetProject(), req.GetRegion(), req.GetBackendBucket())
 
 	// Build HTTP headers from client and context metadata.
@@ -515,6 +529,13 @@ func (c *regionBackendBucketsRESTClient) Get(ctx context.Context, req *computepb
 func (c *regionBackendBucketsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendBuckets/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -579,6 +600,12 @@ func (c *regionBackendBucketsRESTClient) Insert(ctx context.Context, req *comput
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendBuckets", req.GetProject(), req.GetRegion())
@@ -657,6 +684,12 @@ func (c *regionBackendBucketsRESTClient) List(ctx context.Context, req *computep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendBuckets", req.GetProject(), req.GetRegion())
@@ -743,6 +776,12 @@ func (c *regionBackendBucketsRESTClient) ListUsable(ctx context.Context, req *co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendBuckets/listUsable", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -823,6 +862,13 @@ func (c *regionBackendBucketsRESTClient) Patch(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetBackendBucket(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendBuckets/%v", req.GetProject(), req.GetRegion(), req.GetBackendBucket())
 
 	params := url.Values{}
@@ -895,6 +941,13 @@ func (c *regionBackendBucketsRESTClient) SetIamPolicy(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendBuckets/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -949,6 +1002,13 @@ func (c *regionBackendBucketsRESTClient) TestIamPermissions(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendBuckets/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

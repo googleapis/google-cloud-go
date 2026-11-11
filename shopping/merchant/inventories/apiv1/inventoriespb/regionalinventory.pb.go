@@ -509,28 +509,28 @@ var File_google_shopping_merchant_inventories_v1_regionalinventory_proto protore
 
 const file_google_shopping_merchant_inventories_v1_regionalinventory_proto_rawDesc = "" +
 	"\n" +
-	"?google/shopping/merchant/inventories/v1/regionalinventory.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a@google/shopping/merchant/inventories/v1/inventories_common.proto\"\xa7\x03\n" +
-	"\x11RegionalInventory\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x123\n" +
+	"?google/shopping/merchant/inventories/v1/regionalinventory.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a@google/shopping/merchant/inventories/v1/inventories_common.proto\"\xaa\x03\n" +
+	"\x11RegionalInventory\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x124\n" +
 	"\x13base64_encoded_name\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x11base64EncodedName\x12\x1d\n" +
-	"\aaccount\x18\x02 \x01(\x03B\x03\xe0A\x03R\aaccount\x12\x1e\n" +
-	"\x06region\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x06region\x12\x8d\x01\n" +
-	"\x1dregional_inventory_attributes\x18\t \x01(\v2D.google.shopping.merchant.inventories.v1.RegionalInventoryAttributesB\x03\xe0A\x01R\x1bregionalInventoryAttributes:u\xeaAr\n" +
-	",merchantapi.googleapis.com/RegionalInventory\x12Baccounts/{account}/products/{product}/regionalInventories/{region}\"\xaa\x01\n" +
-	"\x1eListRegionalInventoriesRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,merchantapi.googleapis.com/RegionalInventoryR\x06parent\x12\x1b\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x11base64EncodedName\x12\x1e\n" +
+	"\aaccount\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\aaccount\x12\x1d\n" +
+	"\x06region\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\x06region\x12\x8e\x01\n" +
+	"\x1dregional_inventory_attributes\x18\t \x01(\v2D.google.shopping.merchant.inventories.v1.RegionalInventoryAttributesB\x04\xe2A\x01\x01R\x1bregionalInventoryAttributes:u\xeaAr\n" +
+	",merchantapi.googleapis.com/RegionalInventory\x12Baccounts/{account}/products/{product}/regionalInventories/{region}\"\xab\x01\n" +
+	"\x1eListRegionalInventoriesRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,merchantapi.googleapis.com/RegionalInventoryR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb8\x01\n" +
 	"\x1fListRegionalInventoriesResponse\x12m\n" +
 	"\x14regional_inventories\x18\x01 \x03(\v2:.google.shopping.merchant.inventories.v1.RegionalInventoryR\x13regionalInventories\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xde\x01\n" +
-	"\x1eInsertRegionalInventoryRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,merchantapi.googleapis.com/RegionalInventoryR\x06parent\x12n\n" +
-	"\x12regional_inventory\x18\x02 \x01(\v2:.google.shopping.merchant.inventories.v1.RegionalInventoryB\x03\xe0A\x02R\x11regionalInventory\"j\n" +
-	"\x1eDeleteRegionalInventoryRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe0\x01\n" +
+	"\x1eInsertRegionalInventoryRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,merchantapi.googleapis.com/RegionalInventoryR\x06parent\x12o\n" +
+	"\x12regional_inventory\x18\x02 \x01(\v2:.google.shopping.merchant.inventories.v1.RegionalInventoryB\x04\xe2A\x01\x02R\x11regionalInventory\"k\n" +
+	"\x1eDeleteRegionalInventoryRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",merchantapi.googleapis.com/RegionalInventoryR\x04name2\xbf\x06\n" +
 	"\x18RegionalInventoryService\x12\x81\x02\n" +
 	"\x17ListRegionalInventories\x12G.google.shopping.merchant.inventories.v1.ListRegionalInventoriesRequest\x1aH.google.shopping.merchant.inventories.v1.ListRegionalInventoriesResponse\"S\xdaA\x06parent\x82\xd3\xe4\x93\x02D\x12B/inventories/v1/{parent=accounts/*/products/*}/regionalInventories\x12\x85\x02\n" +

@@ -1793,33 +1793,33 @@ const file_google_cloud_automl_v1_io_proto_rawDesc = "" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
-	"\x06source\"l\n" +
-	"\x17BatchPredictInputConfig\x12G\n" +
+	"\x06source\"m\n" +
+	"\x17BatchPredictInputConfig\x12H\n" +
 	"\n" +
-	"gcs_source\x18\x01 \x01(\v2!.google.cloud.automl.v1.GcsSourceB\x03\xe0A\x02H\x00R\tgcsSourceB\b\n" +
+	"gcs_source\x18\x01 \x01(\v2!.google.cloud.automl.v1.GcsSourceB\x04\xe2A\x01\x02H\x00R\tgcsSourceB\b\n" +
 	"\x06source\"W\n" +
 	"\x13DocumentInputConfig\x12@\n" +
 	"\n" +
-	"gcs_source\x18\x01 \x01(\v2!.google.cloud.automl.v1.GcsSourceR\tgcsSource\"u\n" +
-	"\fOutputConfig\x12V\n" +
-	"\x0fgcs_destination\x18\x01 \x01(\v2&.google.cloud.automl.v1.GcsDestinationB\x03\xe0A\x02H\x00R\x0egcsDestinationB\r\n" +
-	"\vdestination\"\x81\x01\n" +
-	"\x18BatchPredictOutputConfig\x12V\n" +
-	"\x0fgcs_destination\x18\x01 \x01(\v2&.google.cloud.automl.v1.GcsDestinationB\x03\xe0A\x02H\x00R\x0egcsDestinationB\r\n" +
-	"\vdestination\"\xb3\x02\n" +
-	"\x17ModelExportOutputConfig\x12V\n" +
-	"\x0fgcs_destination\x18\x01 \x01(\v2&.google.cloud.automl.v1.GcsDestinationB\x03\xe0A\x02H\x00R\x0egcsDestination\x12!\n" +
+	"gcs_source\x18\x01 \x01(\v2!.google.cloud.automl.v1.GcsSourceR\tgcsSource\"v\n" +
+	"\fOutputConfig\x12W\n" +
+	"\x0fgcs_destination\x18\x01 \x01(\v2&.google.cloud.automl.v1.GcsDestinationB\x04\xe2A\x01\x02H\x00R\x0egcsDestinationB\r\n" +
+	"\vdestination\"\x82\x01\n" +
+	"\x18BatchPredictOutputConfig\x12W\n" +
+	"\x0fgcs_destination\x18\x01 \x01(\v2&.google.cloud.automl.v1.GcsDestinationB\x04\xe2A\x01\x02H\x00R\x0egcsDestinationB\r\n" +
+	"\vdestination\"\xb4\x02\n" +
+	"\x17ModelExportOutputConfig\x12W\n" +
+	"\x0fgcs_destination\x18\x01 \x01(\v2&.google.cloud.automl.v1.GcsDestinationB\x04\xe2A\x01\x02H\x00R\x0egcsDestination\x12!\n" +
 	"\fmodel_format\x18\x04 \x01(\tR\vmodelFormat\x12S\n" +
 	"\x06params\x18\x02 \x03(\v2;.google.cloud.automl.v1.ModelExportOutputConfig.ParamsEntryR\x06params\x1a9\n" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\r\n" +
-	"\vdestination\"/\n" +
-	"\tGcsSource\x12\"\n" +
+	"\vdestination\"0\n" +
+	"\tGcsSource\x12#\n" +
 	"\n" +
-	"input_uris\x18\x01 \x03(\tB\x03\xe0A\x02R\tinputUris\"A\n" +
-	"\x0eGcsDestination\x12/\n" +
-	"\x11output_uri_prefix\x18\x01 \x01(\tB\x03\xe0A\x02R\x0foutputUriPrefixB\xa0\x01\n" +
+	"input_uris\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\tinputUris\"B\n" +
+	"\x0eGcsDestination\x120\n" +
+	"\x11output_uri_prefix\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0foutputUriPrefixB\xa0\x01\n" +
 	"\x1acom.google.cloud.automl.v1P\x01Z2cloud.google.com/go/automl/apiv1/automlpb;automlpb\xaa\x02\x16Google.Cloud.AutoML.V1\xca\x02\x16Google\\Cloud\\AutoMl\\V1\xea\x02\x19Google::Cloud::AutoML::V1b\x06proto3"
 
 var (

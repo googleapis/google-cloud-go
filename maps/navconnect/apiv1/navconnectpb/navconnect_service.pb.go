@@ -31,6 +31,7 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -108,6 +109,182 @@ func (x Trip_State) Number() protoreflect.EnumNumber {
 // Deprecated: Use Trip_State.Descriptor instead.
 func (Trip_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{0, 0}
+}
+
+// The source that triggered the route deviation.
+type RouteDeviation_TriggerSource int32
+
+const (
+	// The trigger source is unspecified.
+	RouteDeviation_TRIGGER_SOURCE_UNSPECIFIED RouteDeviation_TriggerSource = 0
+	// The route deviation was triggered by the driver (e.g. wrong turn).
+	RouteDeviation_DRIVER_INITIATED_REROUTE RouteDeviation_TriggerSource = 1
+	// The route deviation was triggered by the system (e.g. traffic closure).
+	RouteDeviation_SYSTEM_INITIATED_REROUTE RouteDeviation_TriggerSource = 2
+)
+
+// Enum value maps for RouteDeviation_TriggerSource.
+var (
+	RouteDeviation_TriggerSource_name = map[int32]string{
+		0: "TRIGGER_SOURCE_UNSPECIFIED",
+		1: "DRIVER_INITIATED_REROUTE",
+		2: "SYSTEM_INITIATED_REROUTE",
+	}
+	RouteDeviation_TriggerSource_value = map[string]int32{
+		"TRIGGER_SOURCE_UNSPECIFIED": 0,
+		"DRIVER_INITIATED_REROUTE":   1,
+		"SYSTEM_INITIATED_REROUTE":   2,
+	}
+)
+
+func (x RouteDeviation_TriggerSource) Enum() *RouteDeviation_TriggerSource {
+	p := new(RouteDeviation_TriggerSource)
+	*p = x
+	return p
+}
+
+func (x RouteDeviation_TriggerSource) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RouteDeviation_TriggerSource) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_enumTypes[1].Descriptor()
+}
+
+func (RouteDeviation_TriggerSource) Type() protoreflect.EnumType {
+	return &file_google_maps_navconnect_v1_navconnect_service_proto_enumTypes[1]
+}
+
+func (x RouteDeviation_TriggerSource) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RouteDeviation_TriggerSource.Descriptor instead.
+func (RouteDeviation_TriggerSource) EnumDescriptor() ([]byte, []int) {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{4, 0}
+}
+
+// The classification of polyline speed based on traffic data.
+type SpeedReadingInterval_Speed int32
+
+const (
+	// The speed is unspecified.
+	SpeedReadingInterval_SPEED_UNSPECIFIED SpeedReadingInterval_Speed = 0
+	// Normal speed, no traffic delays.
+	SpeedReadingInterval_NORMAL SpeedReadingInterval_Speed = 1
+	// Slowdown detected, light to medium amount of traffic.
+	SpeedReadingInterval_SLOW SpeedReadingInterval_Speed = 2
+	// Traffic delays, including standstill traffic.
+	SpeedReadingInterval_TRAFFIC_JAM SpeedReadingInterval_Speed = 3
+)
+
+// Enum value maps for SpeedReadingInterval_Speed.
+var (
+	SpeedReadingInterval_Speed_name = map[int32]string{
+		0: "SPEED_UNSPECIFIED",
+		1: "NORMAL",
+		2: "SLOW",
+		3: "TRAFFIC_JAM",
+	}
+	SpeedReadingInterval_Speed_value = map[string]int32{
+		"SPEED_UNSPECIFIED": 0,
+		"NORMAL":            1,
+		"SLOW":              2,
+		"TRAFFIC_JAM":       3,
+	}
+)
+
+func (x SpeedReadingInterval_Speed) Enum() *SpeedReadingInterval_Speed {
+	p := new(SpeedReadingInterval_Speed)
+	*p = x
+	return p
+}
+
+func (x SpeedReadingInterval_Speed) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpeedReadingInterval_Speed) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_enumTypes[2].Descriptor()
+}
+
+func (SpeedReadingInterval_Speed) Type() protoreflect.EnumType {
+	return &file_google_maps_navconnect_v1_navconnect_service_proto_enumTypes[2]
+}
+
+func (x SpeedReadingInterval_Speed) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpeedReadingInterval_Speed.Descriptor instead.
+func (SpeedReadingInterval_Speed) EnumDescriptor() ([]byte, []int) {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{8, 0}
+}
+
+// Specifies the format of the route polyline.
+type GetTripRequest_RoutePolylineFormat int32
+
+const (
+	// The route polyline format is unspecified.
+	GetTripRequest_ROUTE_POLYLINE_FORMAT_UNSPECIFIED GetTripRequest_RoutePolylineFormat = 0
+	// The route polyline is returned as a simple array of points represented as
+	// `google.type.LatLng`.
+	GetTripRequest_SIMPLE GetTripRequest_RoutePolylineFormat = 1
+	// The route polyline is returned as an encoded string.
+	// See
+	// https://developers.google.com/maps/documentation/utilities/polylinealgorithm.
+	GetTripRequest_ENCODED GetTripRequest_RoutePolylineFormat = 4
+	// The route polyline is encoded as a S2Polyline.
+	// See https://s2geometry.io/devguide/basic_types.html.
+	GetTripRequest_S2ENCODED GetTripRequest_RoutePolylineFormat = 2
+	// The route polyline is returned as a GeoJSON LineString.
+	// See https://tools.ietf.org/html/rfc7946#section-3.1.4.
+	GetTripRequest_GEO_JSON GetTripRequest_RoutePolylineFormat = 3
+)
+
+// Enum value maps for GetTripRequest_RoutePolylineFormat.
+var (
+	GetTripRequest_RoutePolylineFormat_name = map[int32]string{
+		0: "ROUTE_POLYLINE_FORMAT_UNSPECIFIED",
+		1: "SIMPLE",
+		4: "ENCODED",
+		2: "S2ENCODED",
+		3: "GEO_JSON",
+	}
+	GetTripRequest_RoutePolylineFormat_value = map[string]int32{
+		"ROUTE_POLYLINE_FORMAT_UNSPECIFIED": 0,
+		"SIMPLE":                            1,
+		"ENCODED":                           4,
+		"S2ENCODED":                         2,
+		"GEO_JSON":                          3,
+	}
+)
+
+func (x GetTripRequest_RoutePolylineFormat) Enum() *GetTripRequest_RoutePolylineFormat {
+	p := new(GetTripRequest_RoutePolylineFormat)
+	*p = x
+	return p
+}
+
+func (x GetTripRequest_RoutePolylineFormat) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GetTripRequest_RoutePolylineFormat) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_enumTypes[3].Descriptor()
+}
+
+func (GetTripRequest_RoutePolylineFormat) Type() protoreflect.EnumType {
+	return &file_google_maps_navconnect_v1_navconnect_service_proto_enumTypes[3]
+}
+
+func (x GetTripRequest_RoutePolylineFormat) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GetTripRequest_RoutePolylineFormat.Descriptor instead.
+func (GetTripRequest_RoutePolylineFormat) EnumDescriptor() ([]byte, []int) {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{11, 0}
 }
 
 // A trip.
@@ -239,7 +416,7 @@ func (x *Trip) GetUpdateTime() *timestamppb.Timestamp {
 // Configuration for the trip.
 type TripConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. Whether to enable high frequency trip updates.
+	// Optional. Whether to enable high-frequency trip updates.
 	//
 	// NOTE: Enabling this feature logs the trip under Enterprise Tier usage, and
 	// is subject to Enterprise Tier rates.
@@ -261,8 +438,18 @@ type TripConfig struct {
 	//
 	// NOTE: This field is ignored if `enable_pubsub` is false.
 	PubsubFieldMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=pubsub_field_mask,json=pubsubFieldMask,proto3" json:"pubsub_field_mask,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. Whether to enable remaining route reporting for the trip.
+	//
+	// NOTE: Enabling this feature logs the trip under Enterprise Tier usage, and
+	// is subject to Enterprise Tier rates.
+	EnableRemainingRouteReporting bool `protobuf:"varint,4,opt,name=enable_remaining_route_reporting,json=enableRemainingRouteReporting,proto3" json:"enable_remaining_route_reporting,omitempty"`
+	// Optional. Whether to enable route deviation reporting for the trip.
+	//
+	// NOTE: Enabling this feature logs the trip under Enterprise Tier usage, and
+	// is subject to Enterprise Tier rates.
+	EnableRouteDeviationReporting bool `protobuf:"varint,5,opt,name=enable_route_deviation_reporting,json=enableRouteDeviationReporting,proto3" json:"enable_route_deviation_reporting,omitempty"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
 }
 
 func (x *TripConfig) Reset() {
@@ -314,6 +501,20 @@ func (x *TripConfig) GetPubsubFieldMask() *fieldmaskpb.FieldMask {
 		return x.PubsubFieldMask
 	}
 	return nil
+}
+
+func (x *TripConfig) GetEnableRemainingRouteReporting() bool {
+	if x != nil {
+		return x.EnableRemainingRouteReporting
+	}
+	return false
+}
+
+func (x *TripConfig) GetEnableRouteDeviationReporting() bool {
+	if x != nil {
+		return x.EnableRouteDeviationReporting
+	}
+	return false
 }
 
 // An authentication token.
@@ -384,6 +585,11 @@ type TripExecution struct {
 	// Output only. The location signal representing the last known location of
 	// the transporter. This will be the road snapped location if available.
 	Location *Location `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
+	// Output only. Provides the polyline for the remaining portion of the route.
+	RemainingRoute *Route `protobuf:"bytes,9,opt,name=remaining_route,json=remainingRoute,proto3" json:"remaining_route,omitempty"`
+	// Output only. The most recent route deviation event captured during the
+	// trip.
+	LastRouteDeviation *RouteDeviation `protobuf:"bytes,10,opt,name=last_route_deviation,json=lastRouteDeviation,proto3" json:"last_route_deviation,omitempty"`
 	// Output only. Time traveled thus far.
 	TraveledDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=traveled_duration,json=traveledDuration,proto3" json:"traveled_duration,omitempty"`
 	// Output only. Time left on this trip as estimated by Google.
@@ -449,6 +655,20 @@ func (x *TripExecution) GetLocation() *Location {
 	return nil
 }
 
+func (x *TripExecution) GetRemainingRoute() *Route {
+	if x != nil {
+		return x.RemainingRoute
+	}
+	return nil
+}
+
+func (x *TripExecution) GetLastRouteDeviation() *RouteDeviation {
+	if x != nil {
+		return x.LastRouteDeviation
+	}
+	return nil
+}
+
 func (x *TripExecution) GetTraveledDuration() *durationpb.Duration {
 	if x != nil {
 		return x.TraveledDuration
@@ -484,6 +704,61 @@ func (x *TripExecution) GetStopAddedInRoute() bool {
 	return false
 }
 
+// Route deviation information.
+type RouteDeviation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Location where the deviation occurred.
+	Location *Location `protobuf:"bytes,1,opt,name=location,proto3" json:"location,omitempty"`
+	// Output only. Source for the deviation trigger.
+	Source        RouteDeviation_TriggerSource `protobuf:"varint,2,opt,name=source,proto3,enum=google.maps.navconnect.v1.RouteDeviation_TriggerSource" json:"source,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RouteDeviation) Reset() {
+	*x = RouteDeviation{}
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RouteDeviation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RouteDeviation) ProtoMessage() {}
+
+func (x *RouteDeviation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RouteDeviation.ProtoReflect.Descriptor instead.
+func (*RouteDeviation) Descriptor() ([]byte, []int) {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *RouteDeviation) GetLocation() *Location {
+	if x != nil {
+		return x.Location
+	}
+	return nil
+}
+
+func (x *RouteDeviation) GetSource() RouteDeviation_TriggerSource {
+	if x != nil {
+		return x.Source
+	}
+	return RouteDeviation_TRIGGER_SOURCE_UNSPECIFIED
+}
+
 // A stop in the trip where some task is to be performed.
 type Stop struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -495,7 +770,7 @@ type Stop struct {
 
 func (x *Stop) Reset() {
 	*x = Stop{}
-	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[4]
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -507,7 +782,7 @@ func (x *Stop) String() string {
 func (*Stop) ProtoMessage() {}
 
 func (x *Stop) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[4]
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -520,7 +795,7 @@ func (x *Stop) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Stop.ProtoReflect.Descriptor instead.
 func (*Stop) Descriptor() ([]byte, []int) {
-	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{4}
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Stop) GetPoint() *latlng.LatLng {
@@ -546,7 +821,7 @@ type Location struct {
 
 func (x *Location) Reset() {
 	*x = Location{}
-	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[5]
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -558,7 +833,7 @@ func (x *Location) String() string {
 func (*Location) ProtoMessage() {}
 
 func (x *Location) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[5]
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -571,7 +846,7 @@ func (x *Location) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Location.ProtoReflect.Descriptor instead.
 func (*Location) Descriptor() ([]byte, []int) {
-	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{5}
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Location) GetPoint() *latlng.LatLng {
@@ -595,6 +870,264 @@ func (x *Location) GetServerTime() *timestamppb.Timestamp {
 	return nil
 }
 
+// Represents a polyline using a simple list of points.
+type SimplePolyline struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Ordered list of points representing the polyline.
+	Points        []*latlng.LatLng `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SimplePolyline) Reset() {
+	*x = SimplePolyline{}
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SimplePolyline) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SimplePolyline) ProtoMessage() {}
+
+func (x *SimplePolyline) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SimplePolyline.ProtoReflect.Descriptor instead.
+func (*SimplePolyline) Descriptor() ([]byte, []int) {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *SimplePolyline) GetPoints() []*latlng.LatLng {
+	if x != nil {
+		return x.Points
+	}
+	return nil
+}
+
+// Traffic density indicator on a contiguous segment of a path. Given a path
+// with points P_0, P_1, ... , P_N (zero-based index), the SpeedReadingInterval
+// defines an interval and describes its traffic using the `Speed` categories.
+type SpeedReadingInterval struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The starting index of this interval in the path.
+	StartPolylinePointIndex *int32 `protobuf:"varint,1,opt,name=start_polyline_point_index,json=startPolylinePointIndex,proto3,oneof" json:"start_polyline_point_index,omitempty"`
+	// Output only. The ending index of this interval in the path.
+	EndPolylinePointIndex *int32 `protobuf:"varint,2,opt,name=end_polyline_point_index,json=endPolylinePointIndex,proto3,oneof" json:"end_polyline_point_index,omitempty"`
+	// Output only. Traffic speed in this interval.
+	Speed         SpeedReadingInterval_Speed `protobuf:"varint,3,opt,name=speed,proto3,enum=google.maps.navconnect.v1.SpeedReadingInterval_Speed" json:"speed,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SpeedReadingInterval) Reset() {
+	*x = SpeedReadingInterval{}
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpeedReadingInterval) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpeedReadingInterval) ProtoMessage() {}
+
+func (x *SpeedReadingInterval) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpeedReadingInterval.ProtoReflect.Descriptor instead.
+func (*SpeedReadingInterval) Descriptor() ([]byte, []int) {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *SpeedReadingInterval) GetStartPolylinePointIndex() int32 {
+	if x != nil && x.StartPolylinePointIndex != nil {
+		return *x.StartPolylinePointIndex
+	}
+	return 0
+}
+
+func (x *SpeedReadingInterval) GetEndPolylinePointIndex() int32 {
+	if x != nil && x.EndPolylinePointIndex != nil {
+		return *x.EndPolylinePointIndex
+	}
+	return 0
+}
+
+func (x *SpeedReadingInterval) GetSpeed() SpeedReadingInterval_Speed {
+	if x != nil {
+		return x.Speed
+	}
+	return SpeedReadingInterval_SPEED_UNSPECIFIED
+}
+
+// A route polyline.
+type Route struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The route format.
+	//
+	// The format populated is controlled by the `route_polyline_format`
+	// parameter. If not set, it defaults to a simple polyline.
+	//
+	// Types that are valid to be assigned to Format:
+	//
+	//	*Route_SimplePolyline
+	//	*Route_EncodedPolyline
+	//	*Route_S2Polyline
+	//	*Route_GeoJson
+	Format isRoute_Format `protobuf_oneof:"format"`
+	// Output only. Traffic information on the polyline described as speed reading
+	// intervals.
+	//
+	// NOTES:
+	//
+	// * The intervals are non-overlapping.
+	// * The intervals are contiguous.
+	// * The intervals cover the entire polyline.
+	// * The intervals are sorted by increasing index.
+	// * Speed is specified for each interval.
+	TrafficInformation []*SpeedReadingInterval `protobuf:"bytes,4,rep,name=traffic_information,json=trafficInformation,proto3" json:"traffic_information,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *Route) Reset() {
+	*x = Route{}
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Route) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Route) ProtoMessage() {}
+
+func (x *Route) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Route.ProtoReflect.Descriptor instead.
+func (*Route) Descriptor() ([]byte, []int) {
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *Route) GetFormat() isRoute_Format {
+	if x != nil {
+		return x.Format
+	}
+	return nil
+}
+
+func (x *Route) GetSimplePolyline() *SimplePolyline {
+	if x != nil {
+		if x, ok := x.Format.(*Route_SimplePolyline); ok {
+			return x.SimplePolyline
+		}
+	}
+	return nil
+}
+
+func (x *Route) GetEncodedPolyline() string {
+	if x != nil {
+		if x, ok := x.Format.(*Route_EncodedPolyline); ok {
+			return x.EncodedPolyline
+		}
+	}
+	return ""
+}
+
+func (x *Route) GetS2Polyline() []byte {
+	if x != nil {
+		if x, ok := x.Format.(*Route_S2Polyline); ok {
+			return x.S2Polyline
+		}
+	}
+	return nil
+}
+
+func (x *Route) GetGeoJson() *structpb.Struct {
+	if x != nil {
+		if x, ok := x.Format.(*Route_GeoJson); ok {
+			return x.GeoJson
+		}
+	}
+	return nil
+}
+
+func (x *Route) GetTrafficInformation() []*SpeedReadingInterval {
+	if x != nil {
+		return x.TrafficInformation
+	}
+	return nil
+}
+
+type isRoute_Format interface {
+	isRoute_Format()
+}
+
+type Route_SimplePolyline struct {
+	// Output only. The route as a simple list of latlngs.
+	SimplePolyline *SimplePolyline `protobuf:"bytes,1,opt,name=simple_polyline,json=simplePolyline,proto3,oneof"`
+}
+
+type Route_EncodedPolyline struct {
+	// Output only. The route as an encoded polyline.
+	// See
+	// https://developers.google.com/maps/documentation/utilities/polylinealgorithm.
+	EncodedPolyline string `protobuf:"bytes,5,opt,name=encoded_polyline,json=encodedPolyline,proto3,oneof"`
+}
+
+type Route_S2Polyline struct {
+	// Output only. The route as an encoded S2Polyline.
+	// See https://s2geometry.io/devguide/basic_types.html.
+	S2Polyline []byte `protobuf:"bytes,2,opt,name=s2_polyline,json=s2Polyline,proto3,oneof"`
+}
+
+type Route_GeoJson struct {
+	// Output only. The route as a GeoJSON LineString.
+	// See https://tools.ietf.org/html/rfc7946#section-3.1.4.
+	GeoJson *structpb.Struct `protobuf:"bytes,3,opt,name=geo_json,json=geoJson,proto3,oneof"`
+}
+
+func (*Route_SimplePolyline) isRoute_Format() {}
+
+func (*Route_EncodedPolyline) isRoute_Format() {}
+
+func (*Route_S2Polyline) isRoute_Format() {}
+
+func (*Route_GeoJson) isRoute_Format() {}
+
 // Request message for NavConnectService.CreateTrip.
 type CreateTripRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -614,7 +1147,7 @@ type CreateTripRequest struct {
 
 func (x *CreateTripRequest) Reset() {
 	*x = CreateTripRequest{}
-	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[6]
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -626,7 +1159,7 @@ func (x *CreateTripRequest) String() string {
 func (*CreateTripRequest) ProtoMessage() {}
 
 func (x *CreateTripRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[6]
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -639,7 +1172,7 @@ func (x *CreateTripRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTripRequest.ProtoReflect.Descriptor instead.
 func (*CreateTripRequest) Descriptor() ([]byte, []int) {
-	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{6}
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CreateTripRequest) GetParent() string {
@@ -668,14 +1201,17 @@ type GetTripRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the trip to get.
 	// Format: projects/{project}/trips/{trip_id}
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. The format of the route polyline to return.
+	// If not set, `SIMPLE` route polyline will be returned.
+	RoutePolylineFormat GetTripRequest_RoutePolylineFormat `protobuf:"varint,2,opt,name=route_polyline_format,json=routePolylineFormat,proto3,enum=google.maps.navconnect.v1.GetTripRequest_RoutePolylineFormat" json:"route_polyline_format,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *GetTripRequest) Reset() {
 	*x = GetTripRequest{}
-	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[7]
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -687,7 +1223,7 @@ func (x *GetTripRequest) String() string {
 func (*GetTripRequest) ProtoMessage() {}
 
 func (x *GetTripRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[7]
+	mi := &file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -700,7 +1236,7 @@ func (x *GetTripRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTripRequest.ProtoReflect.Descriptor instead.
 func (*GetTripRequest) Descriptor() ([]byte, []int) {
-	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{7}
+	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetTripRequest) GetName() string {
@@ -710,24 +1246,31 @@ func (x *GetTripRequest) GetName() string {
 	return ""
 }
 
+func (x *GetTripRequest) GetRoutePolylineFormat() GetTripRequest_RoutePolylineFormat {
+	if x != nil {
+		return x.RoutePolylineFormat
+	}
+	return GetTripRequest_ROUTE_POLYLINE_FORMAT_UNSPECIFIED
+}
+
 var File_google_maps_navconnect_v1_navconnect_service_proto protoreflect.FileDescriptor
 
 const file_google_maps_navconnect_v1_navconnect_service_proto_rawDesc = "" +
 	"\n" +
-	"2google/maps/navconnect/v1/navconnect_service.proto\x12\x19google.maps.navconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18google/type/latlng.proto\"\xda\x05\n" +
-	"\x04Trip\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12B\n" +
-	"\x06config\x18\a \x01(\v2%.google.maps.navconnect.v1.TripConfigB\x03\xe0A\x05R\x06config\x12,\n" +
-	"\x0eandroid_app_id\x18\b \x01(\tB\x06\xe0A\x04\xe0A\x05R\fandroidAppId\x12$\n" +
+	"2google/maps/navconnect/v1/navconnect_service.proto\x12\x19google.maps.navconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18google/type/latlng.proto\"\xdd\x05\n" +
+	"\x04Trip\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12C\n" +
+	"\x06config\x18\a \x01(\v2%.google.maps.navconnect.v1.TripConfigB\x04\xe2A\x01\x05R\x06config\x12+\n" +
+	"\x0eandroid_app_id\x18\b \x01(\tB\x05\xe2A\x02\x04\x05R\fandroidAppId\x12#\n" +
 	"\n" +
-	"ios_app_id\x18\t \x01(\tB\x06\xe0A\x04\xe0A\x05R\biosAppId\x12H\n" +
+	"ios_app_id\x18\t \x01(\tB\x05\xe2A\x02\x04\x05R\biosAppId\x12I\n" +
 	"\n" +
-	"auth_token\x18\x02 \x01(\v2$.google.maps.navconnect.v1.AuthTokenB\x03\xe0A\x03R\tauthToken\x12@\n" +
-	"\x05state\x18\x03 \x01(\x0e2%.google.maps.navconnect.v1.Trip.StateB\x03\xe0A\x03R\x05state\x12K\n" +
-	"\texecution\x18\x04 \x01(\v2(.google.maps.navconnect.v1.TripExecutionB\x03\xe0A\x03R\texecution\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"auth_token\x18\x02 \x01(\v2$.google.maps.navconnect.v1.AuthTokenB\x04\xe2A\x01\x03R\tauthToken\x12A\n" +
+	"\x05state\x18\x03 \x01(\x0e2%.google.maps.navconnect.v1.Trip.StateB\x04\xe2A\x01\x03R\x05state\x12L\n" +
+	"\texecution\x18\x04 \x01(\v2(.google.maps.navconnect.v1.TripExecutionB\x04\xe2A\x01\x03R\texecution\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"n\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\a\n" +
@@ -738,43 +1281,85 @@ const file_google_maps_navconnect_v1_navconnect_service_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x05\x12\x10\n" +
 	"\fCLIENT_ERROR\x10\x06:Q\xeaAN\n" +
-	"\x1enavconnect.googleapis.com/Trip\x12\x1fprojects/{project}/trips/{trip}*\x05trips2\x04trip\"\xcb\x01\n" +
+	"\x1enavconnect.googleapis.com/Trip\x12\x1fprojects/{project}/trips/{trip}*\x05trips2\x04trip\"\xec\x02\n" +
 	"\n" +
-	"TripConfig\x12F\n" +
-	"\x1denable_high_frequency_updates\x18\x01 \x01(\bB\x03\xe0A\x01R\x1aenableHighFrequencyUpdates\x12(\n" +
-	"\renable_pubsub\x18\x02 \x01(\bB\x03\xe0A\x01R\fenablePubsub\x12K\n" +
-	"\x11pubsub_field_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\x0fpubsubFieldMask\"h\n" +
-	"\tAuthToken\x12\x19\n" +
-	"\x05token\x18\x01 \x01(\tB\x03\xe0A\x03R\x05token\x12@\n" +
-	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\"\x91\x05\n" +
-	"\rTripExecution\x12@\n" +
-	"\x06origin\x18\x01 \x01(\v2#.google.maps.navconnect.v1.LocationB\x03\xe0A\x03R\x06origin\x12F\n" +
-	"\vdestination\x18\x02 \x01(\v2\x1f.google.maps.navconnect.v1.StopB\x03\xe0A\x03R\vdestination\x12D\n" +
-	"\blocation\x18\x03 \x01(\v2#.google.maps.navconnect.v1.LocationB\x03\xe0A\x03R\blocation\x12K\n" +
-	"\x11traveled_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x10traveledDuration\x12M\n" +
-	"\x12remaining_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x11remainingDuration\x12B\n" +
-	"\x18traveled_distance_meters\x18\x06 \x01(\x05B\x03\xe0A\x03H\x00R\x16traveledDistanceMeters\x88\x01\x01\x12D\n" +
-	"\x19remaining_distance_meters\x18\a \x01(\x05B\x03\xe0A\x03H\x01R\x17remainingDistanceMeters\x88\x01\x01\x127\n" +
-	"\x13stop_added_in_route\x18\b \x01(\bB\x03\xe0A\x03H\x02R\x10stopAddedInRoute\x88\x01\x01B\x1b\n" +
+	"TripConfig\x12G\n" +
+	"\x1denable_high_frequency_updates\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1aenableHighFrequencyUpdates\x12)\n" +
+	"\renable_pubsub\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fenablePubsub\x12L\n" +
+	"\x11pubsub_field_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\x0fpubsubFieldMask\x12M\n" +
+	" enable_remaining_route_reporting\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x1denableRemainingRouteReporting\x12M\n" +
+	" enable_route_deviation_reporting\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x1denableRouteDeviationReporting\"j\n" +
+	"\tAuthToken\x12\x1a\n" +
+	"\x05token\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05token\x12A\n" +
+	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\"\xcd\x06\n" +
+	"\rTripExecution\x12A\n" +
+	"\x06origin\x18\x01 \x01(\v2#.google.maps.navconnect.v1.LocationB\x04\xe2A\x01\x03R\x06origin\x12G\n" +
+	"\vdestination\x18\x02 \x01(\v2\x1f.google.maps.navconnect.v1.StopB\x04\xe2A\x01\x03R\vdestination\x12E\n" +
+	"\blocation\x18\x03 \x01(\v2#.google.maps.navconnect.v1.LocationB\x04\xe2A\x01\x03R\blocation\x12O\n" +
+	"\x0fremaining_route\x18\t \x01(\v2 .google.maps.navconnect.v1.RouteB\x04\xe2A\x01\x03R\x0eremainingRoute\x12a\n" +
+	"\x14last_route_deviation\x18\n" +
+	" \x01(\v2).google.maps.navconnect.v1.RouteDeviationB\x04\xe2A\x01\x03R\x12lastRouteDeviation\x12L\n" +
+	"\x11traveled_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x10traveledDuration\x12N\n" +
+	"\x12remaining_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x11remainingDuration\x12C\n" +
+	"\x18traveled_distance_meters\x18\x06 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x16traveledDistanceMeters\x88\x01\x01\x12E\n" +
+	"\x19remaining_distance_meters\x18\a \x01(\x05B\x04\xe2A\x01\x03H\x01R\x17remainingDistanceMeters\x88\x01\x01\x128\n" +
+	"\x13stop_added_in_route\x18\b \x01(\bB\x04\xe2A\x01\x03H\x02R\x10stopAddedInRoute\x88\x01\x01B\x1b\n" +
 	"\x19_traveled_distance_metersB\x1c\n" +
 	"\x1a_remaining_distance_metersB\x16\n" +
-	"\x14_stop_added_in_route\"6\n" +
-	"\x04Stop\x12.\n" +
-	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x02R\x05point\"\xbe\x01\n" +
-	"\bLocation\x12.\n" +
-	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x03R\x05point\x12@\n" +
-	"\vsource_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"sourceTime\x12@\n" +
-	"\vserver_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"serverTime\"\x90\x01\n" +
-	"\x11CreateTripRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12$\n" +
-	"\atrip_id\x18\x02 \x01(\tB\v\xe0A\x02\xe2\x8c\xcf\xd7\b\x02\b\x01R\x06tripId\x128\n" +
-	"\x04trip\x18\x03 \x01(\v2\x1f.google.maps.navconnect.v1.TripB\x03\xe0A\x02R\x04trip\"L\n" +
-	"\x0eGetTripRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1enavconnect.googleapis.com/TripR\x04name2\x90\x03\n" +
+	"\x14_stop_added_in_route\"\x9b\x02\n" +
+	"\x0eRouteDeviation\x12E\n" +
+	"\blocation\x18\x01 \x01(\v2#.google.maps.navconnect.v1.LocationB\x04\xe2A\x01\x03R\blocation\x12U\n" +
+	"\x06source\x18\x02 \x01(\x0e27.google.maps.navconnect.v1.RouteDeviation.TriggerSourceB\x04\xe2A\x01\x03R\x06source\"k\n" +
+	"\rTriggerSource\x12\x1e\n" +
+	"\x1aTRIGGER_SOURCE_UNSPECIFIED\x10\x00\x12\x1c\n" +
+	"\x18DRIVER_INITIATED_REROUTE\x10\x01\x12\x1c\n" +
+	"\x18SYSTEM_INITIATED_REROUTE\x10\x02\"7\n" +
+	"\x04Stop\x12/\n" +
+	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x02R\x05point\"\xc1\x01\n" +
+	"\bLocation\x12/\n" +
+	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x03R\x05point\x12A\n" +
+	"\vsource_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"sourceTime\x12A\n" +
+	"\vserver_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"serverTime\"C\n" +
+	"\x0eSimplePolyline\x121\n" +
+	"\x06points\x18\x01 \x03(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x03R\x06points\"\xf8\x02\n" +
+	"\x14SpeedReadingInterval\x12F\n" +
+	"\x1astart_polyline_point_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x17startPolylinePointIndex\x88\x01\x01\x12B\n" +
+	"\x18end_polyline_point_index\x18\x02 \x01(\x05B\x04\xe2A\x01\x03H\x01R\x15endPolylinePointIndex\x88\x01\x01\x12Q\n" +
+	"\x05speed\x18\x03 \x01(\x0e25.google.maps.navconnect.v1.SpeedReadingInterval.SpeedB\x04\xe2A\x01\x03R\x05speed\"E\n" +
+	"\x05Speed\x12\x15\n" +
+	"\x11SPEED_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06NORMAL\x10\x01\x12\b\n" +
+	"\x04SLOW\x10\x02\x12\x0f\n" +
+	"\vTRAFFIC_JAM\x10\x03B\x1d\n" +
+	"\x1b_start_polyline_point_indexB\x1b\n" +
+	"\x19_end_polyline_point_index\"\xed\x02\n" +
+	"\x05Route\x12Z\n" +
+	"\x0fsimple_polyline\x18\x01 \x01(\v2).google.maps.navconnect.v1.SimplePolylineB\x04\xe2A\x01\x03H\x00R\x0esimplePolyline\x121\n" +
+	"\x10encoded_polyline\x18\x05 \x01(\tB\x04\xe2A\x01\x03H\x00R\x0fencodedPolyline\x12'\n" +
+	"\vs2_polyline\x18\x02 \x01(\fB\x04\xe2A\x01\x03H\x00R\n" +
+	"s2Polyline\x12:\n" +
+	"\bgeo_json\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03H\x00R\ageoJson\x12f\n" +
+	"\x13traffic_information\x18\x04 \x03(\v2/.google.maps.navconnect.v1.SpeedReadingIntervalB\x04\xe2A\x01\x03R\x12trafficInformationB\b\n" +
+	"\x06format\"\x93\x01\n" +
+	"\x11CreateTripRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12%\n" +
+	"\atrip_id\x18\x02 \x01(\tB\f\xe2A\x01\x02\xe2\x8c\xcf\xd7\b\x02\b\x01R\x06tripId\x129\n" +
+	"\x04trip\x18\x03 \x01(\v2\x1f.google.maps.navconnect.v1.TripB\x04\xe2A\x01\x02R\x04trip\"\xba\x02\n" +
+	"\x0eGetTripRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1enavconnect.googleapis.com/TripR\x04name\x12w\n" +
+	"\x15route_polyline_format\x18\x02 \x01(\x0e2=.google.maps.navconnect.v1.GetTripRequest.RoutePolylineFormatB\x04\xe2A\x01\x01R\x13routePolylineFormat\"r\n" +
+	"\x13RoutePolylineFormat\x12%\n" +
+	"!ROUTE_POLYLINE_FORMAT_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06SIMPLE\x10\x01\x12\v\n" +
+	"\aENCODED\x10\x04\x12\r\n" +
+	"\tS2ENCODED\x10\x02\x12\f\n" +
+	"\bGEO_JSON\x10\x032\x90\x03\n" +
 	"\x11NavConnectService\x12\x9e\x01\n" +
 	"\n" +
 	"CreateTrip\x12,.google.maps.navconnect.v1.CreateTripRequest\x1a\x1f.google.maps.navconnect.v1.Trip\"A\xdaA\x13parent,trip,trip_id\x82\xd3\xe4\x93\x02%:\x04trip\"\x1d/v1/{parent=projects/*}/trips\x12\x83\x01\n" +
@@ -793,51 +1378,69 @@ func file_google_maps_navconnect_v1_navconnect_service_proto_rawDescGZIP() []byt
 	return file_google_maps_navconnect_v1_navconnect_service_proto_rawDescData
 }
 
-var file_google_maps_navconnect_v1_navconnect_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_google_maps_navconnect_v1_navconnect_service_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_google_maps_navconnect_v1_navconnect_service_proto_goTypes = []any{
-	(Trip_State)(0),               // 0: google.maps.navconnect.v1.Trip.State
-	(*Trip)(nil),                  // 1: google.maps.navconnect.v1.Trip
-	(*TripConfig)(nil),            // 2: google.maps.navconnect.v1.TripConfig
-	(*AuthToken)(nil),             // 3: google.maps.navconnect.v1.AuthToken
-	(*TripExecution)(nil),         // 4: google.maps.navconnect.v1.TripExecution
-	(*Stop)(nil),                  // 5: google.maps.navconnect.v1.Stop
-	(*Location)(nil),              // 6: google.maps.navconnect.v1.Location
-	(*CreateTripRequest)(nil),     // 7: google.maps.navconnect.v1.CreateTripRequest
-	(*GetTripRequest)(nil),        // 8: google.maps.navconnect.v1.GetTripRequest
-	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil), // 10: google.protobuf.FieldMask
-	(*durationpb.Duration)(nil),   // 11: google.protobuf.Duration
-	(*latlng.LatLng)(nil),         // 12: google.type.LatLng
+	(Trip_State)(0),                         // 0: google.maps.navconnect.v1.Trip.State
+	(RouteDeviation_TriggerSource)(0),       // 1: google.maps.navconnect.v1.RouteDeviation.TriggerSource
+	(SpeedReadingInterval_Speed)(0),         // 2: google.maps.navconnect.v1.SpeedReadingInterval.Speed
+	(GetTripRequest_RoutePolylineFormat)(0), // 3: google.maps.navconnect.v1.GetTripRequest.RoutePolylineFormat
+	(*Trip)(nil),                            // 4: google.maps.navconnect.v1.Trip
+	(*TripConfig)(nil),                      // 5: google.maps.navconnect.v1.TripConfig
+	(*AuthToken)(nil),                       // 6: google.maps.navconnect.v1.AuthToken
+	(*TripExecution)(nil),                   // 7: google.maps.navconnect.v1.TripExecution
+	(*RouteDeviation)(nil),                  // 8: google.maps.navconnect.v1.RouteDeviation
+	(*Stop)(nil),                            // 9: google.maps.navconnect.v1.Stop
+	(*Location)(nil),                        // 10: google.maps.navconnect.v1.Location
+	(*SimplePolyline)(nil),                  // 11: google.maps.navconnect.v1.SimplePolyline
+	(*SpeedReadingInterval)(nil),            // 12: google.maps.navconnect.v1.SpeedReadingInterval
+	(*Route)(nil),                           // 13: google.maps.navconnect.v1.Route
+	(*CreateTripRequest)(nil),               // 14: google.maps.navconnect.v1.CreateTripRequest
+	(*GetTripRequest)(nil),                  // 15: google.maps.navconnect.v1.GetTripRequest
+	(*timestamppb.Timestamp)(nil),           // 16: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),           // 17: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),             // 18: google.protobuf.Duration
+	(*latlng.LatLng)(nil),                   // 19: google.type.LatLng
+	(*structpb.Struct)(nil),                 // 20: google.protobuf.Struct
 }
 var file_google_maps_navconnect_v1_navconnect_service_proto_depIdxs = []int32{
-	2,  // 0: google.maps.navconnect.v1.Trip.config:type_name -> google.maps.navconnect.v1.TripConfig
-	3,  // 1: google.maps.navconnect.v1.Trip.auth_token:type_name -> google.maps.navconnect.v1.AuthToken
+	5,  // 0: google.maps.navconnect.v1.Trip.config:type_name -> google.maps.navconnect.v1.TripConfig
+	6,  // 1: google.maps.navconnect.v1.Trip.auth_token:type_name -> google.maps.navconnect.v1.AuthToken
 	0,  // 2: google.maps.navconnect.v1.Trip.state:type_name -> google.maps.navconnect.v1.Trip.State
-	4,  // 3: google.maps.navconnect.v1.Trip.execution:type_name -> google.maps.navconnect.v1.TripExecution
-	9,  // 4: google.maps.navconnect.v1.Trip.create_time:type_name -> google.protobuf.Timestamp
-	9,  // 5: google.maps.navconnect.v1.Trip.update_time:type_name -> google.protobuf.Timestamp
-	10, // 6: google.maps.navconnect.v1.TripConfig.pubsub_field_mask:type_name -> google.protobuf.FieldMask
-	9,  // 7: google.maps.navconnect.v1.AuthToken.expire_time:type_name -> google.protobuf.Timestamp
-	6,  // 8: google.maps.navconnect.v1.TripExecution.origin:type_name -> google.maps.navconnect.v1.Location
-	5,  // 9: google.maps.navconnect.v1.TripExecution.destination:type_name -> google.maps.navconnect.v1.Stop
-	6,  // 10: google.maps.navconnect.v1.TripExecution.location:type_name -> google.maps.navconnect.v1.Location
-	11, // 11: google.maps.navconnect.v1.TripExecution.traveled_duration:type_name -> google.protobuf.Duration
-	11, // 12: google.maps.navconnect.v1.TripExecution.remaining_duration:type_name -> google.protobuf.Duration
-	12, // 13: google.maps.navconnect.v1.Stop.point:type_name -> google.type.LatLng
-	12, // 14: google.maps.navconnect.v1.Location.point:type_name -> google.type.LatLng
-	9,  // 15: google.maps.navconnect.v1.Location.source_time:type_name -> google.protobuf.Timestamp
-	9,  // 16: google.maps.navconnect.v1.Location.server_time:type_name -> google.protobuf.Timestamp
-	1,  // 17: google.maps.navconnect.v1.CreateTripRequest.trip:type_name -> google.maps.navconnect.v1.Trip
-	7,  // 18: google.maps.navconnect.v1.NavConnectService.CreateTrip:input_type -> google.maps.navconnect.v1.CreateTripRequest
-	8,  // 19: google.maps.navconnect.v1.NavConnectService.GetTrip:input_type -> google.maps.navconnect.v1.GetTripRequest
-	1,  // 20: google.maps.navconnect.v1.NavConnectService.CreateTrip:output_type -> google.maps.navconnect.v1.Trip
-	1,  // 21: google.maps.navconnect.v1.NavConnectService.GetTrip:output_type -> google.maps.navconnect.v1.Trip
-	20, // [20:22] is the sub-list for method output_type
-	18, // [18:20] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	7,  // 3: google.maps.navconnect.v1.Trip.execution:type_name -> google.maps.navconnect.v1.TripExecution
+	16, // 4: google.maps.navconnect.v1.Trip.create_time:type_name -> google.protobuf.Timestamp
+	16, // 5: google.maps.navconnect.v1.Trip.update_time:type_name -> google.protobuf.Timestamp
+	17, // 6: google.maps.navconnect.v1.TripConfig.pubsub_field_mask:type_name -> google.protobuf.FieldMask
+	16, // 7: google.maps.navconnect.v1.AuthToken.expire_time:type_name -> google.protobuf.Timestamp
+	10, // 8: google.maps.navconnect.v1.TripExecution.origin:type_name -> google.maps.navconnect.v1.Location
+	9,  // 9: google.maps.navconnect.v1.TripExecution.destination:type_name -> google.maps.navconnect.v1.Stop
+	10, // 10: google.maps.navconnect.v1.TripExecution.location:type_name -> google.maps.navconnect.v1.Location
+	13, // 11: google.maps.navconnect.v1.TripExecution.remaining_route:type_name -> google.maps.navconnect.v1.Route
+	8,  // 12: google.maps.navconnect.v1.TripExecution.last_route_deviation:type_name -> google.maps.navconnect.v1.RouteDeviation
+	18, // 13: google.maps.navconnect.v1.TripExecution.traveled_duration:type_name -> google.protobuf.Duration
+	18, // 14: google.maps.navconnect.v1.TripExecution.remaining_duration:type_name -> google.protobuf.Duration
+	10, // 15: google.maps.navconnect.v1.RouteDeviation.location:type_name -> google.maps.navconnect.v1.Location
+	1,  // 16: google.maps.navconnect.v1.RouteDeviation.source:type_name -> google.maps.navconnect.v1.RouteDeviation.TriggerSource
+	19, // 17: google.maps.navconnect.v1.Stop.point:type_name -> google.type.LatLng
+	19, // 18: google.maps.navconnect.v1.Location.point:type_name -> google.type.LatLng
+	16, // 19: google.maps.navconnect.v1.Location.source_time:type_name -> google.protobuf.Timestamp
+	16, // 20: google.maps.navconnect.v1.Location.server_time:type_name -> google.protobuf.Timestamp
+	19, // 21: google.maps.navconnect.v1.SimplePolyline.points:type_name -> google.type.LatLng
+	2,  // 22: google.maps.navconnect.v1.SpeedReadingInterval.speed:type_name -> google.maps.navconnect.v1.SpeedReadingInterval.Speed
+	11, // 23: google.maps.navconnect.v1.Route.simple_polyline:type_name -> google.maps.navconnect.v1.SimplePolyline
+	20, // 24: google.maps.navconnect.v1.Route.geo_json:type_name -> google.protobuf.Struct
+	12, // 25: google.maps.navconnect.v1.Route.traffic_information:type_name -> google.maps.navconnect.v1.SpeedReadingInterval
+	4,  // 26: google.maps.navconnect.v1.CreateTripRequest.trip:type_name -> google.maps.navconnect.v1.Trip
+	3,  // 27: google.maps.navconnect.v1.GetTripRequest.route_polyline_format:type_name -> google.maps.navconnect.v1.GetTripRequest.RoutePolylineFormat
+	14, // 28: google.maps.navconnect.v1.NavConnectService.CreateTrip:input_type -> google.maps.navconnect.v1.CreateTripRequest
+	15, // 29: google.maps.navconnect.v1.NavConnectService.GetTrip:input_type -> google.maps.navconnect.v1.GetTripRequest
+	4,  // 30: google.maps.navconnect.v1.NavConnectService.CreateTrip:output_type -> google.maps.navconnect.v1.Trip
+	4,  // 31: google.maps.navconnect.v1.NavConnectService.GetTrip:output_type -> google.maps.navconnect.v1.Trip
+	30, // [30:32] is the sub-list for method output_type
+	28, // [28:30] is the sub-list for method input_type
+	28, // [28:28] is the sub-list for extension type_name
+	28, // [28:28] is the sub-list for extension extendee
+	0,  // [0:28] is the sub-list for field type_name
 }
 
 func init() { file_google_maps_navconnect_v1_navconnect_service_proto_init() }
@@ -846,13 +1449,20 @@ func file_google_maps_navconnect_v1_navconnect_service_proto_init() {
 		return
 	}
 	file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[3].OneofWrappers = []any{}
+	file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[8].OneofWrappers = []any{}
+	file_google_maps_navconnect_v1_navconnect_service_proto_msgTypes[9].OneofWrappers = []any{
+		(*Route_SimplePolyline)(nil),
+		(*Route_EncodedPolyline)(nil),
+		(*Route_S2Polyline)(nil),
+		(*Route_GeoJson)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_maps_navconnect_v1_navconnect_service_proto_rawDesc), len(file_google_maps_navconnect_v1_navconnect_service_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   8,
+			NumEnums:      4,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

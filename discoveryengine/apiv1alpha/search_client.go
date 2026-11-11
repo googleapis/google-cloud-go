@@ -672,6 +672,11 @@ func (c *searchRESTClient) Search(ctx context.Context, req *discoveryenginepb.Se
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetServingConfig(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v:search", req.GetServingConfig())
 
 		params := url.Values{}
@@ -737,6 +742,11 @@ func (c *searchRESTClient) CancelOperation(ctx context.Context, req *longrunning
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -774,6 +784,11 @@ func (c *searchRESTClient) CancelOperation(ctx context.Context, req *longrunning
 func (c *searchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -841,6 +856,11 @@ func (c *searchRESTClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

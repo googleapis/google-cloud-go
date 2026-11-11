@@ -511,9 +511,9 @@ var File_google_cloud_identitytoolkit_v2_account_management_service_proto protor
 
 const file_google_cloud_identitytoolkit_v2_account_management_service_proto_rawDesc = "" +
 	"\n" +
-	"@google/cloud/identitytoolkit/v2/account_management_service.proto\x12\x1fgoogle.cloud.identitytoolkit.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/cloud/identitytoolkit/v2/mfa_info.proto\"\x8b\x02\n" +
-	"\x1cFinalizeMfaEnrollmentRequest\x12\x1e\n" +
-	"\bid_token\x18\x01 \x01(\tB\x03\xe0A\x02R\aidToken\x12!\n" +
+	"@google/cloud/identitytoolkit/v2/account_management_service.proto\x12\x1fgoogle.cloud.identitytoolkit.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/cloud/identitytoolkit/v2/mfa_info.proto\"\x8c\x02\n" +
+	"\x1cFinalizeMfaEnrollmentRequest\x12\x1f\n" +
+	"\bid_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aidToken\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12v\n" +
 	"\x17phone_verification_info\x18\x04 \x01(\v2<.google.cloud.identitytoolkit.v2.FinalizeMfaPhoneRequestInfoH\x00R\x15phoneVerificationInfo\x12\x1b\n" +
 	"\ttenant_id\x18\x05 \x01(\tR\btenantIdB\x13\n" +
@@ -522,18 +522,18 @@ const file_google_cloud_identitytoolkit_v2_account_management_service_proto_rawD
 	"\bid_token\x18\x01 \x01(\tR\aidToken\x12#\n" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12g\n" +
 	"\x0fphone_auth_info\x18\x03 \x01(\v2=.google.cloud.identitytoolkit.v2.FinalizeMfaPhoneResponseInfoH\x00R\rphoneAuthInfoB\x15\n" +
-	"\x13auxiliary_auth_info\"\xdc\x01\n" +
-	"\x19StartMfaEnrollmentRequest\x12\x1e\n" +
-	"\bid_token\x18\x01 \x01(\tB\x03\xe0A\x02R\aidToken\x12o\n" +
+	"\x13auxiliary_auth_info\"\xdd\x01\n" +
+	"\x19StartMfaEnrollmentRequest\x12\x1f\n" +
+	"\bid_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aidToken\x12o\n" +
 	"\x15phone_enrollment_info\x18\x03 \x01(\v29.google.cloud.identitytoolkit.v2.StartMfaPhoneRequestInfoH\x00R\x13phoneEnrollmentInfo\x12\x1b\n" +
 	"\ttenant_id\x18\x04 \x01(\tR\btenantIdB\x11\n" +
 	"\x0fenrollment_info\"\x9f\x01\n" +
 	"\x1aStartMfaEnrollmentResponse\x12j\n" +
 	"\x12phone_session_info\x18\x01 \x01(\v2:.google.cloud.identitytoolkit.v2.StartMfaPhoneResponseInfoH\x00R\x10phoneSessionInfoB\x15\n" +
-	"\x13enrollment_response\"\x82\x01\n" +
-	"\x12WithdrawMfaRequest\x12\x1e\n" +
-	"\bid_token\x18\x01 \x01(\tB\x03\xe0A\x02R\aidToken\x12/\n" +
-	"\x11mfa_enrollment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fmfaEnrollmentId\x12\x1b\n" +
+	"\x13enrollment_response\"\x84\x01\n" +
+	"\x12WithdrawMfaRequest\x12\x1f\n" +
+	"\bid_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aidToken\x120\n" +
+	"\x11mfa_enrollment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fmfaEnrollmentId\x12\x1b\n" +
 	"\ttenant_id\x18\x03 \x01(\tR\btenantId\"U\n" +
 	"\x13WithdrawMfaResponse\x12\x19\n" +
 	"\bid_token\x18\x01 \x01(\tR\aidToken\x12#\n" +

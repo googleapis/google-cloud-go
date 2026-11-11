@@ -465,6 +465,11 @@ func (c *eventRESTClient) CreateClientEvent(ctx context.Context, req *talentpb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v/clientEvents", req.GetParent())
 
 	params := url.Values{}
@@ -517,6 +522,11 @@ func (c *eventRESTClient) CreateClientEvent(ctx context.Context, req *talentpb.C
 func (c *eventRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v", req.GetName())

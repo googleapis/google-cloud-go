@@ -506,6 +506,11 @@ func (c *loyaltyCustomerMatchRESTClient) ManageLoyaltyCustomerMatch(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/loyaltyCustomers/v1/%v/loyaltyCustomers:manage", req.GetParent())
 
 	params := url.Values{}

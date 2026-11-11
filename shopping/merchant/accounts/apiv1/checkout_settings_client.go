@@ -597,6 +597,11 @@ func (c *checkoutSettingsRESTClient) GetCheckoutSettings(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -656,6 +661,11 @@ func (c *checkoutSettingsRESTClient) CreateCheckoutSettings(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/checkoutSettings", req.GetParent())
@@ -719,6 +729,11 @@ func (c *checkoutSettingsRESTClient) UpdateCheckoutSettings(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCheckoutSettings().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetCheckoutSettings().GetName())
 
 	params := url.Values{}
@@ -779,6 +794,11 @@ func (c *checkoutSettingsRESTClient) UpdateCheckoutSettings(ctx context.Context,
 func (c *checkoutSettingsRESTClient) DeleteCheckoutSettings(ctx context.Context, req *accountspb.DeleteCheckoutSettingsRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())

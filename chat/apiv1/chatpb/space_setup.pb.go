@@ -172,12 +172,12 @@ var File_google_chat_v1_space_setup_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_space_setup_proto_rawDesc = "" +
 	"\n" +
-	" google/chat/v1/space_setup.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/chat/v1/membership.proto\x1a\x1agoogle/chat/v1/space.proto\"\xac\x01\n" +
-	"\x11SetUpSpaceRequest\x120\n" +
-	"\x05space\x18\x01 \x01(\v2\x15.google.chat.v1.SpaceB\x03\xe0A\x02R\x05space\x12\"\n" +
+	" google/chat/v1/space_setup.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/chat/v1/membership.proto\x1a\x1agoogle/chat/v1/space.proto\"\xaf\x01\n" +
+	"\x11SetUpSpaceRequest\x121\n" +
+	"\x05space\x18\x01 \x01(\v2\x15.google.chat.v1.SpaceB\x04\xe2A\x01\x02R\x05space\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12A\n" +
-	"\vmemberships\x18\x04 \x03(\v2\x1a.google.chat.v1.MembershipB\x03\xe0A\x01R\vmembershipsB\xa8\x01\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12B\n" +
+	"\vmemberships\x18\x04 \x03(\v2\x1a.google.chat.v1.MembershipB\x04\xe2A\x01\x01R\vmembershipsB\xa8\x01\n" +
 	"\x12com.google.chat.v1B\x0fSpaceSetupProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 
 var (

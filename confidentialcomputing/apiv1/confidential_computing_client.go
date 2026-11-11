@@ -726,6 +726,11 @@ func (c *restClient) CreateChallenge(ctx context.Context, req *confidentialcompu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/challenges", req.GetParent())
 
 	params := url.Values{}
@@ -785,6 +790,11 @@ func (c *restClient) VerifyAttestation(ctx context.Context, req *confidentialcom
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChallenge(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:verifyAttestation", req.GetChallenge())
@@ -848,6 +858,11 @@ func (c *restClient) VerifyConfidentialSpace(ctx context.Context, req *confident
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChallenge(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:verifyConfidentialSpace", req.GetChallenge())
 
 	params := url.Values{}
@@ -909,6 +924,11 @@ func (c *restClient) VerifyConfidentialGke(ctx context.Context, req *confidentia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChallenge(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:verifyConfidentialGke", req.GetChallenge())
 
 	params := url.Values{}
@@ -961,6 +981,11 @@ func (c *restClient) VerifyConfidentialGke(ctx context.Context, req *confidentia
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1043,6 +1068,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())

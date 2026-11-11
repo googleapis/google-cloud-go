@@ -389,6 +389,11 @@ func (c *runtimeProjectAttachmentRESTClient) CreateRuntimeProjectAttachment(ctx 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/runtimeProjectAttachments", req.GetParent())
 
 	params := url.Values{}
@@ -442,6 +447,11 @@ func (c *runtimeProjectAttachmentRESTClient) CreateRuntimeProjectAttachment(ctx 
 func (c *runtimeProjectAttachmentRESTClient) GetRuntimeProjectAttachment(ctx context.Context, req *apihubpb.GetRuntimeProjectAttachmentRequest, opts ...gax.CallOption) (*apihubpb.RuntimeProjectAttachment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -509,6 +519,11 @@ func (c *runtimeProjectAttachmentRESTClient) ListRuntimeProjectAttachments(ctx c
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/runtimeProjectAttachments", req.GetParent())
@@ -583,6 +598,11 @@ func (c *runtimeProjectAttachmentRESTClient) DeleteRuntimeProjectAttachment(ctx 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -621,6 +641,11 @@ func (c *runtimeProjectAttachmentRESTClient) DeleteRuntimeProjectAttachment(ctx 
 func (c *runtimeProjectAttachmentRESTClient) LookupRuntimeProjectAttachment(ctx context.Context, req *apihubpb.LookupRuntimeProjectAttachmentRequest, opts ...gax.CallOption) (*apihubpb.LookupRuntimeProjectAttachmentResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:lookupRuntimeProjectAttachment", req.GetName())
@@ -675,6 +700,11 @@ func (c *runtimeProjectAttachmentRESTClient) LookupRuntimeProjectAttachment(ctx 
 func (c *runtimeProjectAttachmentRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -742,6 +772,11 @@ func (c *runtimeProjectAttachmentRESTClient) ListLocations(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -818,6 +853,11 @@ func (c *runtimeProjectAttachmentRESTClient) CancelOperation(ctx context.Context
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -857,6 +897,11 @@ func (c *runtimeProjectAttachmentRESTClient) DeleteOperation(ctx context.Context
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -894,6 +939,11 @@ func (c *runtimeProjectAttachmentRESTClient) DeleteOperation(ctx context.Context
 func (c *runtimeProjectAttachmentRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -961,6 +1011,11 @@ func (c *runtimeProjectAttachmentRESTClient) ListOperations(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

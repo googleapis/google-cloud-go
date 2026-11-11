@@ -1381,6 +1381,11 @@ func (c *conferenceRecordsRESTClient) GetConferenceRecord(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1517,6 +1522,11 @@ func (c *conferenceRecordsRESTClient) GetParticipant(ctx context.Context, req *m
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1587,6 +1597,11 @@ func (c *conferenceRecordsRESTClient) ListParticipants(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/participants", req.GetParent())
 
 		params := url.Values{}
@@ -1653,6 +1668,11 @@ func (c *conferenceRecordsRESTClient) ListParticipants(ctx context.Context, req 
 func (c *conferenceRecordsRESTClient) GetParticipantSession(ctx context.Context, req *meetpb.GetParticipantSessionRequest, opts ...gax.CallOption) (*meetpb.ParticipantSession, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1726,6 +1746,11 @@ func (c *conferenceRecordsRESTClient) ListParticipantSessions(ctx context.Contex
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/participantSessions", req.GetParent())
 
 		params := url.Values{}
@@ -1792,6 +1817,11 @@ func (c *conferenceRecordsRESTClient) ListParticipantSessions(ctx context.Contex
 func (c *conferenceRecordsRESTClient) GetRecording(ctx context.Context, req *meetpb.GetRecordingRequest, opts ...gax.CallOption) (*meetpb.Recording, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1862,6 +1892,11 @@ func (c *conferenceRecordsRESTClient) ListRecordings(ctx context.Context, req *m
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/recordings", req.GetParent())
 
 		params := url.Values{}
@@ -1925,6 +1960,11 @@ func (c *conferenceRecordsRESTClient) ListRecordings(ctx context.Context, req *m
 func (c *conferenceRecordsRESTClient) GetTranscript(ctx context.Context, req *meetpb.GetTranscriptRequest, opts ...gax.CallOption) (*meetpb.Transcript, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1995,6 +2035,11 @@ func (c *conferenceRecordsRESTClient) ListTranscripts(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/transcripts", req.GetParent())
 
 		params := url.Values{}
@@ -2063,6 +2108,11 @@ func (c *conferenceRecordsRESTClient) ListTranscripts(ctx context.Context, req *
 func (c *conferenceRecordsRESTClient) GetTranscriptEntry(ctx context.Context, req *meetpb.GetTranscriptEntryRequest, opts ...gax.CallOption) (*meetpb.TranscriptEntry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2138,6 +2188,11 @@ func (c *conferenceRecordsRESTClient) ListTranscriptEntries(ctx context.Context,
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/entries", req.GetParent())
 
 		params := url.Values{}
@@ -2201,6 +2256,11 @@ func (c *conferenceRecordsRESTClient) ListTranscriptEntries(ctx context.Context,
 func (c *conferenceRecordsRESTClient) GetSmartNote(ctx context.Context, req *meetpb.GetSmartNoteRequest, opts ...gax.CallOption) (*meetpb.SmartNote, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2269,6 +2329,11 @@ func (c *conferenceRecordsRESTClient) ListSmartNotes(ctx context.Context, req *m
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/smartNotes", req.GetParent())

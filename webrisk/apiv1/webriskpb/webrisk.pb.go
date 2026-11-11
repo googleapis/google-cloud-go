@@ -1958,12 +1958,12 @@ var File_google_cloud_webrisk_v1_webrisk_proto protoreflect.FileDescriptor
 
 const file_google_cloud_webrisk_v1_webrisk_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/webrisk/v1/webrisk.proto\x12\x17google.cloud.webrisk.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x03\n" +
-	"\x1cComputeThreatListDiffRequest\x12I\n" +
-	"\vthreat_type\x18\x01 \x01(\x0e2#.google.cloud.webrisk.v1.ThreatTypeB\x03\xe0A\x02R\n" +
+	"%google/cloud/webrisk/v1/webrisk.proto\x12\x17google.cloud.webrisk.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\x03\n" +
+	"\x1cComputeThreatListDiffRequest\x12J\n" +
+	"\vthreat_type\x18\x01 \x01(\x0e2#.google.cloud.webrisk.v1.ThreatTypeB\x04\xe2A\x01\x02R\n" +
 	"threatType\x12#\n" +
-	"\rversion_token\x18\x02 \x01(\fR\fversionToken\x12h\n" +
-	"\vconstraints\x18\x03 \x01(\v2A.google.cloud.webrisk.v1.ComputeThreatListDiffRequest.ConstraintsB\x03\xe0A\x02R\vconstraints\x1a\xca\x01\n" +
+	"\rversion_token\x18\x02 \x01(\fR\fversionToken\x12i\n" +
+	"\vconstraints\x18\x03 \x01(\v2A.google.cloud.webrisk.v1.ComputeThreatListDiffRequest.ConstraintsB\x04\xe2A\x01\x02R\vconstraints\x1a\xca\x01\n" +
 	"\vConstraints\x12(\n" +
 	"\x10max_diff_entries\x18\x01 \x01(\x05R\x0emaxDiffEntries\x120\n" +
 	"\x14max_database_entries\x18\x02 \x01(\x05R\x12maxDatabaseEntries\x12_\n" +
@@ -1980,20 +1980,20 @@ const file_google_cloud_webrisk_v1_webrisk_proto_rawDesc = "" +
 	"\fResponseType\x12\x1d\n" +
 	"\x19RESPONSE_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04DIFF\x10\x01\x12\t\n" +
-	"\x05RESET\x10\x02\"w\n" +
-	"\x11SearchUrisRequest\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12K\n" +
-	"\fthreat_types\x18\x02 \x03(\x0e2#.google.cloud.webrisk.v1.ThreatTypeB\x03\xe0A\x02R\vthreatTypes\"\xf6\x01\n" +
+	"\x05RESET\x10\x02\"y\n" +
+	"\x11SearchUrisRequest\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12L\n" +
+	"\fthreat_types\x18\x02 \x03(\x0e2#.google.cloud.webrisk.v1.ThreatTypeB\x04\xe2A\x01\x02R\vthreatTypes\"\xf6\x01\n" +
 	"\x12SearchUrisResponse\x12M\n" +
 	"\x06threat\x18\x01 \x01(\v25.google.cloud.webrisk.v1.SearchUrisResponse.ThreatUriR\x06threat\x1a\x90\x01\n" +
 	"\tThreatUri\x12F\n" +
 	"\fthreat_types\x18\x01 \x03(\x0e2#.google.cloud.webrisk.v1.ThreatTypeR\vthreatTypes\x12;\n" +
 	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"expireTime\"\x83\x01\n" +
+	"expireTime\"\x84\x01\n" +
 	"\x13SearchHashesRequest\x12\x1f\n" +
 	"\vhash_prefix\x18\x01 \x01(\fR\n" +
-	"hashPrefix\x12K\n" +
-	"\fthreat_types\x18\x02 \x03(\x0e2#.google.cloud.webrisk.v1.ThreatTypeB\x03\xe0A\x02R\vthreatTypes\"\xe0\x02\n" +
+	"hashPrefix\x12L\n" +
+	"\fthreat_types\x18\x02 \x03(\x0e2#.google.cloud.webrisk.v1.ThreatTypeB\x04\xe2A\x01\x02R\vthreatTypes\"\xe0\x02\n" +
 	"\x14SearchHashesResponse\x12R\n" +
 	"\athreats\x18\x01 \x03(\v28.google.cloud.webrisk.v1.SearchHashesResponse.ThreatHashR\athreats\x12L\n" +
 	"\x14negative_expire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x12negativeExpireTime\x1a\xa5\x01\n" +
@@ -2026,11 +2026,11 @@ const file_google_cloud_webrisk_v1_webrisk_proto_rawDesc = "" +
 	"\x0erice_parameter\x18\x02 \x01(\x05R\rriceParameter\x12\x1f\n" +
 	"\ventry_count\x18\x03 \x01(\x05R\n" +
 	"entryCount\x12!\n" +
-	"\fencoded_data\x18\x04 \x01(\fR\vencodedData\"p\n" +
+	"\fencoded_data\x18\x04 \x01(\fR\vencodedData\"r\n" +
 	"\n" +
-	"Submission\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12K\n" +
-	"\fthreat_types\x18\x02 \x03(\x0e2#.google.cloud.webrisk.v1.ThreatTypeB\x03\xe0A\x03R\vthreatTypes\"\xf7\x06\n" +
+	"Submission\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12L\n" +
+	"\fthreat_types\x18\x02 \x03(\x0e2#.google.cloud.webrisk.v1.ThreatTypeB\x04\xe2A\x01\x03R\vthreatTypes\"\xf7\x06\n" +
 	"\n" +
 	"ThreatInfo\x12L\n" +
 	"\n" +
@@ -2069,18 +2069,18 @@ const file_google_cloud_webrisk_v1_webrisk_proto_rawDesc = "" +
 	"\aANDROID\x10\x01\x12\a\n" +
 	"\x03IOS\x10\x02\x12\t\n" +
 	"\x05MACOS\x10\x03\x12\v\n" +
-	"\aWINDOWS\x10\x04\"\xb0\x01\n" +
-	"\x17CreateSubmissionRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12H\n" +
+	"\aWINDOWS\x10\x04\"\xb2\x01\n" +
+	"\x17CreateSubmissionRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12I\n" +
 	"\n" +
-	"submission\x18\x02 \x01(\v2#.google.cloud.webrisk.v1.SubmissionB\x03\xe0A\x02R\n" +
-	"submission\"\xc4\x02\n" +
-	"\x10SubmitUriRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12H\n" +
+	"submission\x18\x02 \x01(\v2#.google.cloud.webrisk.v1.SubmissionB\x04\xe2A\x01\x02R\n" +
+	"submission\"\xc6\x02\n" +
+	"\x10SubmitUriRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12I\n" +
 	"\n" +
-	"submission\x18\x02 \x01(\v2#.google.cloud.webrisk.v1.SubmissionB\x03\xe0A\x02R\n" +
+	"submission\x18\x02 \x01(\v2#.google.cloud.webrisk.v1.SubmissionB\x04\xe2A\x01\x02R\n" +
 	"submission\x12D\n" +
 	"\vthreat_info\x18\x03 \x01(\v2#.google.cloud.webrisk.v1.ThreatInfoR\n" +
 	"threatInfo\x12S\n" +

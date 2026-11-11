@@ -621,21 +621,21 @@ var File_google_cloud_networksecurity_v1_backend_authentication_config_proto pro
 
 const file_google_cloud_networksecurity_v1_backend_authentication_config_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/cloud/networksecurity/v1/backend_authentication_config.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\a\n" +
-	"\x1bBackendAuthenticationConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"Cgoogle/cloud/networksecurity/v1/backend_authentication_config.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\a\n" +
+	"\x1bBackendAuthenticationConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12`\n" +
-	"\x06labels\x18\x05 \x03(\v2H.google.cloud.networksecurity.v1.BackendAuthenticationConfig.LabelsEntryR\x06labels\x12d\n" +
-	"\x12client_certificate\x18\x06 \x01(\tB5\xe0A\x01\xfaA/\n" +
-	"-certificatemanager.googleapis.com/CertificateR\x11clientCertificate\x12X\n" +
-	"\ftrust_config\x18\a \x01(\tB5\xe0A\x01\xfaA/\n" +
+	"\x06labels\x18\x05 \x03(\v2H.google.cloud.networksecurity.v1.BackendAuthenticationConfig.LabelsEntryR\x06labels\x12e\n" +
+	"\x12client_certificate\x18\x06 \x01(\tB6\xe2A\x01\x01\xfaA/\n" +
+	"-certificatemanager.googleapis.com/CertificateR\x11clientCertificate\x12Y\n" +
+	"\ftrust_config\x18\a \x01(\tB6\xe2A\x01\x01\xfaA/\n" +
 	"-certificatemanager.googleapis.com/TrustConfigR\vtrustConfig\x12u\n" +
-	"\x10well_known_roots\x18\b \x01(\x0e2K.google.cloud.networksecurity.v1.BackendAuthenticationConfig.WellKnownRootsR\x0ewellKnownRoots\x12\x17\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x03R\x04etag\x1a9\n" +
+	"\x10well_known_roots\x18\b \x01(\x0e2K.google.cloud.networksecurity.v1.BackendAuthenticationConfig.WellKnownRootsR\x0ewellKnownRoots\x12\x18\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"N\n" +
@@ -643,9 +643,9 @@ const file_google_cloud_networksecurity_v1_backend_authentication_config_proto_r
 	"\x1cWELL_KNOWN_ROOTS_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\x10\n" +
 	"\fPUBLIC_ROOTS\x10\x02:\xa6\x01\xeaA\xa2\x01\n" +
-	":networksecurity.googleapis.com/BackendAuthenticationConfig\x12dprojects/{project}/locations/{location}/backendAuthenticationConfigs/{backend_authentication_config}\"\xa8\x01\n" +
-	"'ListBackendAuthenticationConfigsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	":networksecurity.googleapis.com/BackendAuthenticationConfig\x12dprojects/{project}/locations/{location}/backendAuthenticationConfigs/{backend_authentication_config}\"\xa9\x01\n" +
+	"'ListBackendAuthenticationConfigsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -653,22 +653,22 @@ const file_google_cloud_networksecurity_v1_backend_authentication_config_proto_r
 	"(ListBackendAuthenticationConfigsResponse\x12\x82\x01\n" +
 	"\x1ebackend_authentication_configs\x18\x01 \x03(\v2<.google.cloud.networksecurity.v1.BackendAuthenticationConfigR\x1cbackendAuthenticationConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x7f\n" +
-	"%GetBackendAuthenticationConfigRequest\x12V\n" +
-	"\x04name\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":networksecurity.googleapis.com/BackendAuthenticationConfigR\x04name\"\xdc\x02\n" +
-	"(CreateBackendAuthenticationConfigRequest\x12Z\n" +
-	"\x06parent\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\x12:networksecurity.googleapis.com/BackendAuthenticationConfigR\x06parent\x12L\n" +
-	" backend_authentication_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x1dbackendAuthenticationConfigId\x12\x85\x01\n" +
-	"\x1dbackend_authentication_config\x18\x03 \x01(\v2<.google.cloud.networksecurity.v1.BackendAuthenticationConfigB\x03\xe0A\x02R\x1bbackendAuthenticationConfig\"\xf4\x01\n" +
-	"(UpdateBackendAuthenticationConfigRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12\x85\x01\n" +
-	"\x1dbackend_authentication_config\x18\x02 \x01(\v2<.google.cloud.networksecurity.v1.BackendAuthenticationConfigB\x03\xe0A\x02R\x1bbackendAuthenticationConfig\"\x9b\x01\n" +
-	"(DeleteBackendAuthenticationConfigRequest\x12V\n" +
-	"\x04name\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":networksecurity.googleapis.com/BackendAuthenticationConfigR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etagB\xee\x03\xeaAs\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x80\x01\n" +
+	"%GetBackendAuthenticationConfigRequest\x12W\n" +
+	"\x04name\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":networksecurity.googleapis.com/BackendAuthenticationConfigR\x04name\"\xdf\x02\n" +
+	"(CreateBackendAuthenticationConfigRequest\x12[\n" +
+	"\x06parent\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\x12:networksecurity.googleapis.com/BackendAuthenticationConfigR\x06parent\x12M\n" +
+	" backend_authentication_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x1dbackendAuthenticationConfigId\x12\x86\x01\n" +
+	"\x1dbackend_authentication_config\x18\x03 \x01(\v2<.google.cloud.networksecurity.v1.BackendAuthenticationConfigB\x04\xe2A\x01\x02R\x1bbackendAuthenticationConfig\"\xf6\x01\n" +
+	"(UpdateBackendAuthenticationConfigRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12\x86\x01\n" +
+	"\x1dbackend_authentication_config\x18\x02 \x01(\v2<.google.cloud.networksecurity.v1.BackendAuthenticationConfigB\x04\xe2A\x01\x02R\x1bbackendAuthenticationConfig\"\x9d\x01\n" +
+	"(DeleteBackendAuthenticationConfigRequest\x12W\n" +
+	"\x04name\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":networksecurity.googleapis.com/BackendAuthenticationConfigR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etagB\xee\x03\xeaAs\n" +
 	"-certificatemanager.googleapis.com/Certificate\x12Bprojects/{project}/locations/{location}/certificates/{certificate}\xeaAt\n" +
 	"-certificatemanager.googleapis.com/TrustConfig\x12Cprojects/{project}/locations/{location}/trustConfigs/{trust_config}\n" +
 	"#com.google.cloud.networksecurity.v1B BackendAuthenticationConfigProtoP\x01ZMcloud.google.com/go/networksecurity/apiv1/networksecuritypb;networksecuritypb\xaa\x02\x1fGoogle.Cloud.NetworkSecurity.V1\xca\x02\x1fGoogle\\Cloud\\NetworkSecurity\\V1\xea\x02\"Google::Cloud::NetworkSecurity::V1b\x06proto3"

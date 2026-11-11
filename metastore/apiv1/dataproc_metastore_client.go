@@ -1990,6 +1990,11 @@ func (c *dataprocMetastoreRESTClient) ListServices(ctx context.Context, req *met
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/services", req.GetParent())
 
 		params := url.Values{}
@@ -2061,6 +2066,11 @@ func (c *dataprocMetastoreRESTClient) GetService(ctx context.Context, req *metas
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2120,6 +2130,11 @@ func (c *dataprocMetastoreRESTClient) CreateService(ctx context.Context, req *me
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/services", req.GetParent())
@@ -2194,6 +2209,11 @@ func (c *dataprocMetastoreRESTClient) UpdateService(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetService().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetService().GetName())
 
 	params := url.Values{}
@@ -2263,6 +2283,11 @@ func (c *dataprocMetastoreRESTClient) UpdateService(ctx context.Context, req *me
 func (c *dataprocMetastoreRESTClient) DeleteService(ctx context.Context, req *metastorepb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2342,6 +2367,11 @@ func (c *dataprocMetastoreRESTClient) ListMetadataImports(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/metadataImports", req.GetParent())
 
 		params := url.Values{}
@@ -2413,6 +2443,11 @@ func (c *dataprocMetastoreRESTClient) GetMetadataImport(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2472,6 +2507,11 @@ func (c *dataprocMetastoreRESTClient) CreateMetadataImport(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/metadataImports", req.GetParent())
@@ -2545,6 +2585,11 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImport(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMetadataImport().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMetadataImport().GetName())
@@ -2624,6 +2669,11 @@ func (c *dataprocMetastoreRESTClient) ExportMetadata(ctx context.Context, req *m
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportMetadata", req.GetService())
 
 	params := url.Values{}
@@ -2689,6 +2739,11 @@ func (c *dataprocMetastoreRESTClient) RestoreService(ctx context.Context, req *m
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetService(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:restore", req.GetService())
@@ -2765,6 +2820,11 @@ func (c *dataprocMetastoreRESTClient) ListBackups(ctx context.Context, req *meta
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
 
 		params := url.Values{}
@@ -2836,6 +2896,11 @@ func (c *dataprocMetastoreRESTClient) GetBackup(ctx context.Context, req *metast
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2895,6 +2960,11 @@ func (c *dataprocMetastoreRESTClient) CreateBackup(ctx context.Context, req *met
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
@@ -2960,6 +3030,11 @@ func (c *dataprocMetastoreRESTClient) CreateBackup(ctx context.Context, req *met
 func (c *dataprocMetastoreRESTClient) DeleteBackup(ctx context.Context, req *metastorepb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3032,6 +3107,11 @@ func (c *dataprocMetastoreRESTClient) QueryMetadata(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:queryMetadata", req.GetService())
 
 	params := url.Values{}
@@ -3097,6 +3177,11 @@ func (c *dataprocMetastoreRESTClient) MoveTableToDatabase(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetService(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:moveTableToDatabase", req.GetService())
@@ -3169,6 +3254,11 @@ func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocation(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:alterLocation", req.GetService())
 
 	params := url.Values{}
@@ -3228,6 +3318,11 @@ func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocation(ctx context.
 func (c *dataprocMetastoreRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3295,6 +3390,11 @@ func (c *dataprocMetastoreRESTClient) ListLocations(ctx context.Context, req *lo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -3366,6 +3466,11 @@ func (c *dataprocMetastoreRESTClient) GetIamPolicy(ctx context.Context, req *iam
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3431,6 +3536,11 @@ func (c *dataprocMetastoreRESTClient) SetIamPolicy(ctx context.Context, req *iam
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -3499,6 +3609,11 @@ func (c *dataprocMetastoreRESTClient) TestIamPermissions(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -3559,6 +3674,11 @@ func (c *dataprocMetastoreRESTClient) CancelOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3598,6 +3718,11 @@ func (c *dataprocMetastoreRESTClient) DeleteOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3635,6 +3760,11 @@ func (c *dataprocMetastoreRESTClient) DeleteOperation(ctx context.Context, req *
 func (c *dataprocMetastoreRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3702,6 +3832,11 @@ func (c *dataprocMetastoreRESTClient) ListOperations(ctx context.Context, req *l
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

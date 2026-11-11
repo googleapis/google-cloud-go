@@ -584,6 +584,11 @@ func (c *restClient) InsertPromotion(ctx context.Context, req *promotionspb.Inse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/promotions/v1/%v/promotions:insert", req.GetParent())
 
 	params := url.Values{}
@@ -639,6 +644,11 @@ func (c *restClient) InsertPromotion(ctx context.Context, req *promotionspb.Inse
 func (c *restClient) GetPromotion(ctx context.Context, req *promotionspb.GetPromotionRequest, opts ...gax.CallOption) (*promotionspb.Promotion, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/promotions/v1/%v", req.GetName())
@@ -711,6 +721,11 @@ func (c *restClient) ListPromotions(ctx context.Context, req *promotionspb.ListP
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/promotions/v1/%v/promotions", req.GetParent())

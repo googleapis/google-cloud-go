@@ -985,7 +985,7 @@ var File_google_cloud_osconfig_agentendpoint_v1_inventory_proto protoreflect.Fil
 
 const file_google_cloud_osconfig_agentendpoint_v1_inventory_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/osconfig/agentendpoint/v1/inventory.proto\x12&google.cloud.osconfig.agentendpoint.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xa2\x17\n" +
+	"6google/cloud/osconfig/agentendpoint/v1/inventory.proto\x12&google.cloud.osconfig.agentendpoint.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xa5\x17\n" +
 	"\tInventory\x12Q\n" +
 	"\aos_info\x18\x01 \x01(\v28.google.cloud.osconfig.agentendpoint.v1.Inventory.OsInfoR\x06osInfo\x12p\n" +
 	"\x12installed_packages\x18\x02 \x03(\v2A.google.cloud.osconfig.agentendpoint.v1.Inventory.SoftwarePackageR\x11installedPackages\x12p\n" +
@@ -1015,15 +1015,15 @@ const file_google_cloud_osconfig_agentendpoint_v1_inventory_proto_rawDesc = "" +
 	"\vcos_package\x18\b \x01(\v2B.google.cloud.osconfig.agentendpoint.v1.Inventory.VersionedPackageH\x00R\n" +
 	"cosPackage\x12w\n" +
 	"\x13windows_application\x18\t \x01(\v2D.google.cloud.osconfig.agentendpoint.v1.Inventory.WindowsApplicationH\x00R\x12windowsApplicationB\t\n" +
-	"\adetails\x1a\x9d\x02\n" +
+	"\adetails\x1a\xa0\x02\n" +
 	"\x10VersionedPackage\x12!\n" +
 	"\fpackage_name\x18\x01 \x01(\tR\vpackageName\x12\"\n" +
 	"\farchitecture\x18\x02 \x01(\tR\farchitecture\x12\x18\n" +
-	"\aversion\x18\x03 \x01(\tR\aversion\x12f\n" +
-	"\x06source\x18\x04 \x01(\v2I.google.cloud.osconfig.agentendpoint.v1.Inventory.VersionedPackage.SourceB\x03\xe0A\x01R\x06source\x1a@\n" +
-	"\x06Source\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x01R\aversion\x1a~\n" +
+	"\aversion\x18\x03 \x01(\tR\aversion\x12g\n" +
+	"\x06source\x18\x04 \x01(\v2I.google.cloud.osconfig.agentendpoint.v1.Inventory.VersionedPackage.SourceB\x04\xe2A\x01\x01R\x06source\x1aB\n" +
+	"\x06Source\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aversion\x1a~\n" +
 	"\vZypperPatch\x12\x1d\n" +
 	"\n" +
 	"patch_name\x18\x01 \x01(\tR\tpatchName\x12\x1a\n" +

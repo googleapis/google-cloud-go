@@ -630,6 +630,11 @@ func (c *tagHoldsRESTClient) CreateTagHold(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/tagHolds", req.GetParent())
 
 	params := url.Values{}
@@ -692,6 +697,11 @@ func (c *tagHoldsRESTClient) CreateTagHold(ctx context.Context, req *resourceman
 func (c *tagHoldsRESTClient) DeleteTagHold(ctx context.Context, req *resourcemanagerpb.DeleteTagHoldRequest, opts ...gax.CallOption) (*DeleteTagHoldOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -771,6 +781,11 @@ func (c *tagHoldsRESTClient) ListTagHolds(ctx context.Context, req *resourcemana
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/tagHolds", req.GetParent())
 
 		params := url.Values{}
@@ -837,6 +852,11 @@ func (c *tagHoldsRESTClient) ListTagHolds(ctx context.Context, req *resourcemana
 func (c *tagHoldsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())

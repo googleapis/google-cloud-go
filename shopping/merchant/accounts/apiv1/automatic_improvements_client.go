@@ -487,6 +487,11 @@ func (c *automaticImprovementsRESTClient) GetAutomaticImprovements(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -546,6 +551,11 @@ func (c *automaticImprovementsRESTClient) UpdateAutomaticImprovements(ctx contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAutomaticImprovements().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetAutomaticImprovements().GetName())

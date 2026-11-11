@@ -336,24 +336,24 @@ var File_google_shopping_merchant_accounts_v1beta_account_tax_proto protoreflect
 
 const file_google_shopping_merchant_accounts_v1beta_account_tax_proto_rawDesc = "" +
 	"\n" +
-	":google/shopping/merchant/accounts/v1beta/account_tax.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a7google/shopping/merchant/accounts/v1beta/tax_rule.proto\"\xff\x01\n" +
+	":google/shopping/merchant/accounts/v1beta/account_tax.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a7google/shopping/merchant/accounts/v1beta/tax_rule.proto\"\x81\x02\n" +
 	"\n" +
-	"AccountTax\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\aaccount\x18\x02 \x01(\x03B\x03\xe0A\x03R\aaccount\x12N\n" +
+	"AccountTax\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\aaccount\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\aaccount\x12N\n" +
 	"\ttax_rules\x18\x03 \x03(\v21.google.shopping.merchant.accounts.v1beta.TaxRuleR\btaxRules:i\xeaAf\n" +
 	"%merchantapi.googleapis.com/AccountTax\x12#accounts/{account}/accounttax/{tax}*\faccountTaxes2\n" +
-	"accountTax\"Y\n" +
-	"\x14GetAccountTaxRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%merchantapi.googleapis.com/AccountTaxR\x04name\"\xb2\x01\n" +
-	"\x17UpdateAccountTaxRequest\x12Z\n" +
-	"\vaccount_tax\x18\x01 \x01(\v24.google.shopping.merchant.accounts.v1beta.AccountTaxB\x03\xe0A\x02R\n" +
+	"accountTax\"Z\n" +
+	"\x14GetAccountTaxRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%merchantapi.googleapis.com/AccountTaxR\x04name\"\xb3\x01\n" +
+	"\x17UpdateAccountTaxRequest\x12[\n" +
+	"\vaccount_tax\x18\x01 \x01(\v24.google.shopping.merchant.accounts.v1beta.AccountTaxB\x04\xe2A\x01\x02R\n" +
 	"accountTax\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x9a\x01\n" +
-	"\x15ListAccountTaxRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%merchantapi.googleapis.com/AccountTaxR\x06parent\x12\x1b\n" +
+	"updateMask\"\x9b\x01\n" +
+	"\x15ListAccountTaxRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%merchantapi.googleapis.com/AccountTaxR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9b\x01\n" +

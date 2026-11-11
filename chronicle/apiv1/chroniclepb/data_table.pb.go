@@ -1856,120 +1856,120 @@ var File_google_cloud_chronicle_v1_data_table_proto protoreflect.FileDescriptor
 
 const file_google_cloud_chronicle_v1_data_table_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/chronicle/v1/data_table.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xcf\x01\n" +
-	"\x16CreateDataTableRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"chronicle.googleapis.com/DataTableR\x06parent\x12H\n" +
+	"*google/cloud/chronicle/v1/data_table.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd2\x01\n" +
+	"\x16CreateDataTableRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"chronicle.googleapis.com/DataTableR\x06parent\x12I\n" +
 	"\n" +
-	"data_table\x18\x02 \x01(\v2$.google.cloud.chronicle.v1.DataTableB\x03\xe0A\x02R\tdataTable\x12'\n" +
-	"\rdata_table_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vdataTableId\"U\n" +
-	"\x13GetDataTableRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"chronicle.googleapis.com/DataTableR\x04name\"\xa4\x01\n" +
-	"\x16UpdateDataTableRequest\x12H\n" +
+	"data_table\x18\x02 \x01(\v2$.google.cloud.chronicle.v1.DataTableB\x04\xe2A\x01\x02R\tdataTable\x12(\n" +
+	"\rdata_table_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdataTableId\"V\n" +
+	"\x13GetDataTableRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"chronicle.googleapis.com/DataTableR\x04name\"\xa6\x01\n" +
+	"\x16UpdateDataTableRequest\x12I\n" +
 	"\n" +
-	"data_table\x18\x01 \x01(\v2$.google.cloud.chronicle.v1.DataTableB\x03\xe0A\x02R\tdataTable\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xc1\x01\n" +
-	"\x15ListDataTablesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"chronicle.googleapis.com/DataTableR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"data_table\x18\x01 \x01(\v2$.google.cloud.chronicle.v1.DataTableB\x04\xe2A\x01\x02R\tdataTable\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xc5\x01\n" +
+	"\x15ListDataTablesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"chronicle.googleapis.com/DataTableR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\"s\n" +
-	"\x16DeleteDataTableRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"chronicle.googleapis.com/DataTableR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\x87\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"u\n" +
+	"\x16DeleteDataTableRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"chronicle.googleapis.com/DataTableR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\x87\x01\n" +
 	"\x16ListDataTablesResponse\x12E\n" +
 	"\vdata_tables\x18\x01 \x03(\v2$.google.cloud.chronicle.v1.DataTableR\n" +
 	"dataTables\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb6\x01\n" +
-	"\x19CreateDataTableRowRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12R\n" +
-	"\x0edata_table_row\x18\x02 \x01(\v2'.google.cloud.chronicle.v1.DataTableRowB\x03\xe0A\x02R\fdataTableRow\"\xb1\x01\n" +
-	"\x19UpdateDataTableRowRequest\x12R\n" +
-	"\x0edata_table_row\x18\x01 \x01(\v2'.google.cloud.chronicle.v1.DataTableRowB\x03\xe0A\x02R\fdataTableRow\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xe4\x01\n" +
-	"\x18ListDataTableRowsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb8\x01\n" +
+	"\x19CreateDataTableRowRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12S\n" +
+	"\x0edata_table_row\x18\x02 \x01(\v2'.google.cloud.chronicle.v1.DataTableRowB\x04\xe2A\x01\x02R\fdataTableRow\"\xb3\x01\n" +
+	"\x19UpdateDataTableRowRequest\x12S\n" +
+	"\x0edata_table_row\x18\x01 \x01(\v2'.google.cloud.chronicle.v1.DataTableRowB\x04\xe2A\x01\x02R\fdataTableRow\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xe9\x01\n" +
+	"\x18ListDataTableRowsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\x99\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x9a\x01\n" +
 	"\x19ListDataTableRowsResponse\x12O\n" +
-	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"[\n" +
-	"\x16GetDataTableRowRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%chronicle.googleapis.com/DataTableRowR\x04name\"^\n" +
-	"\x19DeleteDataTableRowRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%chronicle.googleapis.com/DataTableRowR\x04name\"\xbe\x01\n" +
-	"\x1eBulkCreateDataTableRowsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12U\n" +
-	"\brequests\x18\x02 \x03(\v24.google.cloud.chronicle.v1.CreateDataTableRowRequestB\x03\xe0A\x02R\brequests\"r\n" +
+	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\"\\\n" +
+	"\x16GetDataTableRowRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%chronicle.googleapis.com/DataTableRowR\x04name\"_\n" +
+	"\x19DeleteDataTableRowRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%chronicle.googleapis.com/DataTableRowR\x04name\"\xc0\x01\n" +
+	"\x1eBulkCreateDataTableRowsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12V\n" +
+	"\brequests\x18\x02 \x03(\v24.google.cloud.chronicle.v1.CreateDataTableRowRequestB\x04\xe2A\x01\x02R\brequests\"r\n" +
 	"\x1fBulkCreateDataTableRowsResponse\x12O\n" +
-	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\"\xb8\x01\n" +
-	"\x1bBulkGetDataTableRowsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12R\n" +
-	"\brequests\x18\x02 \x03(\v21.google.cloud.chronicle.v1.GetDataTableRowRequestB\x03\xe0A\x02R\brequests\"o\n" +
+	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\"\xba\x01\n" +
+	"\x1bBulkGetDataTableRowsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12S\n" +
+	"\brequests\x18\x02 \x03(\v21.google.cloud.chronicle.v1.GetDataTableRowRequestB\x04\xe2A\x01\x02R\brequests\"o\n" +
 	"\x1cBulkGetDataTableRowsResponse\x12O\n" +
-	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\"\xbf\x01\n" +
-	"\x1fBulkReplaceDataTableRowsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12U\n" +
-	"\brequests\x18\x02 \x03(\v24.google.cloud.chronicle.v1.CreateDataTableRowRequestB\x03\xe0A\x02R\brequests\"s\n" +
+	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\"\xc1\x01\n" +
+	"\x1fBulkReplaceDataTableRowsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12V\n" +
+	"\brequests\x18\x02 \x03(\v24.google.cloud.chronicle.v1.CreateDataTableRowRequestB\x04\xe2A\x01\x02R\brequests\"s\n" +
 	" BulkReplaceDataTableRowsResponse\x12O\n" +
-	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\"\xbe\x01\n" +
-	"\x1eBulkUpdateDataTableRowsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12U\n" +
-	"\brequests\x18\x02 \x03(\v24.google.cloud.chronicle.v1.UpdateDataTableRowRequestB\x03\xe0A\x02R\brequests\"r\n" +
+	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\"\xc0\x01\n" +
+	"\x1eBulkUpdateDataTableRowsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%chronicle.googleapis.com/DataTableRowR\x06parent\x12V\n" +
+	"\brequests\x18\x02 \x03(\v24.google.cloud.chronicle.v1.UpdateDataTableRowRequestB\x04\xe2A\x01\x02R\brequests\"r\n" +
 	"\x1fBulkUpdateDataTableRowsResponse\x12O\n" +
-	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\"t\n" +
-	"\x12DataTableScopeInfo\x12^\n" +
-	"\x12data_access_scopes\x18\x01 \x03(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/DataAccessScopeR\x10dataAccessScopes\"\xe0\a\n" +
-	"\tDataTable\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x02R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12T\n" +
-	"\vcolumn_info\x18\x06 \x03(\v2..google.cloud.chronicle.v1.DataTableColumnInfoB\x03\xe0A\x05R\n" +
-	"columnInfo\x12+\n" +
-	"\x0fdata_table_uuid\x18\a \x01(\tB\x03\xe0A\x03R\rdataTableUuid\x12\x19\n" +
-	"\x05rules\x18\b \x03(\tB\x03\xe0A\x03R\x05rules\x12;\n" +
-	"\x17rule_associations_count\x18\t \x01(\x05B\x03\xe0A\x03R\x15ruleAssociationsCount\x12,\n" +
+	"\x0fdata_table_rows\x18\x01 \x03(\v2'.google.cloud.chronicle.v1.DataTableRowR\rdataTableRows\"u\n" +
+	"\x12DataTableScopeInfo\x12_\n" +
+	"\x12data_access_scopes\x18\x01 \x03(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/DataAccessScopeR\x10dataAccessScopes\"\xee\a\n" +
+	"\tDataTable\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12U\n" +
+	"\vcolumn_info\x18\x06 \x03(\v2..google.cloud.chronicle.v1.DataTableColumnInfoB\x04\xe2A\x01\x05R\n" +
+	"columnInfo\x12,\n" +
+	"\x0fdata_table_uuid\x18\a \x01(\tB\x04\xe2A\x01\x03R\rdataTableUuid\x12\x1a\n" +
+	"\x05rules\x18\b \x03(\tB\x04\xe2A\x01\x03R\x05rules\x12<\n" +
+	"\x17rule_associations_count\x18\t \x01(\x05B\x04\xe2A\x01\x03R\x15ruleAssociationsCount\x12-\n" +
 	"\x10row_time_to_live\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\rrowTimeToLive\x127\n" +
-	"\x15approximate_row_count\x18\v \x01(\x03B\x03\xe0A\x03R\x13approximateRowCount\x12Q\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\rrowTimeToLive\x128\n" +
+	"\x15approximate_row_count\x18\v \x01(\x03B\x04\xe2A\x01\x03R\x13approximateRowCount\x12R\n" +
 	"\n" +
-	"scope_info\x18\f \x01(\v2-.google.cloud.chronicle.v1.DataTableScopeInfoB\x03\xe0A\x01R\tscopeInfo\x12Z\n" +
-	"\rupdate_source\x18\r \x01(\x0e20.google.cloud.chronicle.v1.DataTableUpdateSourceB\x03\xe0A\x03R\fupdateSource\x12^\n" +
-	"\x1crow_time_to_live_update_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x17rowTimeToLiveUpdateTime:\x95\x01\xeaA\x91\x01\n" +
+	"scope_info\x18\f \x01(\v2-.google.cloud.chronicle.v1.DataTableScopeInfoB\x04\xe2A\x01\x01R\tscopeInfo\x12[\n" +
+	"\rupdate_source\x18\r \x01(\x0e20.google.cloud.chronicle.v1.DataTableUpdateSourceB\x04\xe2A\x01\x03R\fupdateSource\x12_\n" +
+	"\x1crow_time_to_live_update_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x17rowTimeToLiveUpdateTime:\x95\x01\xeaA\x91\x01\n" +
 	"\"chronicle.googleapis.com/DataTable\x12Tprojects/{project}/locations/{location}/instances/{instance}/dataTables/{data_table}*\n" +
-	"dataTables2\tdataTable\"\xb6\x03\n" +
-	"\fDataTableRow\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1b\n" +
-	"\x06values\x18\x02 \x03(\tB\x03\xe0A\x02R\x06values\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12,\n" +
-	"\x10row_time_to_live\x18\x05 \x01(\tB\x03\xe0A\x01R\rrowTimeToLive:\xbd\x01\xeaA\xb9\x01\n" +
-	"%chronicle.googleapis.com/DataTableRow\x12sprojects/{project}/locations/{location}/instances/{instance}/dataTables/{data_table}/dataTableRows/{data_table_row}*\rdataTableRows2\fdataTableRow\"\xd0\x03\n" +
+	"dataTables2\tdataTable\"\xbb\x03\n" +
+	"\fDataTableRow\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1c\n" +
+	"\x06values\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x06values\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12-\n" +
+	"\x10row_time_to_live\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\rrowTimeToLive:\xbd\x01\xeaA\xb9\x01\n" +
+	"%chronicle.googleapis.com/DataTableRow\x12sprojects/{project}/locations/{location}/instances/{instance}/dataTables/{data_table}/dataTableRows/{data_table_row}*\rdataTableRows2\fdataTableRow\"\xd4\x03\n" +
 	"\x13DataTableColumnInfo\x12.\n" +
 	"\x12mapped_column_path\x18\x03 \x01(\tH\x00R\x10mappedColumnPath\x12e\n" +
 	"\vcolumn_type\x18\x04 \x01(\x0e2B.google.cloud.chronicle.v1.DataTableColumnInfo.DataTableColumnTypeH\x00R\n" +
-	"columnType\x12&\n" +
-	"\fcolumn_index\x18\x01 \x01(\x05B\x03\xe0A\x02R\vcolumnIndex\x12,\n" +
-	"\x0foriginal_column\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eoriginalColumn\x12\"\n" +
+	"columnType\x12'\n" +
+	"\fcolumn_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\vcolumnIndex\x12-\n" +
+	"\x0foriginal_column\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eoriginalColumn\x12#\n" +
 	"\n" +
-	"key_column\x18\x05 \x01(\bB\x03\xe0A\x01R\tkeyColumn\x12,\n" +
-	"\x0frepeated_values\x18\x06 \x01(\bB\x03\xe0A\x01R\x0erepeatedValues\"j\n" +
+	"key_column\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\tkeyColumn\x12-\n" +
+	"\x0frepeated_values\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x0erepeatedValues\"j\n" +
 	"\x13DataTableColumnType\x12&\n" +
 	"\"DATA_TABLE_COLUMN_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -1978,12 +1978,12 @@ const file_google_cloud_chronicle_v1_data_table_proto_rawDesc = "" +
 	"\x04CIDR\x10\x03\x12\n" +
 	"\n" +
 	"\x06NUMBER\x10\x04B\x0e\n" +
-	"\fpath_or_type\"s\n" +
-	"\"GetDataTableOperationErrorsRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1chronicle.googleapis.com/DataTableOperationErrorsR\x04name\"\xc9\x02\n" +
-	"\x18DataTableOperationErrors\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x121\n" +
+	"\fpath_or_type\"t\n" +
+	"\"GetDataTableOperationErrorsRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1chronicle.googleapis.com/DataTableOperationErrorsR\x04name\"\xca\x02\n" +
+	"\x18DataTableOperationErrors\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x121\n" +
 	"\n" +
 	"rpc_errors\x18\x03 \x03(\v2\x12.google.rpc.StatusR\trpcErrors:\xe0\x01\xeaA\xdc\x01\n" +
 	"1chronicle.googleapis.com/DataTableOperationErrors\x12sprojects/{project}/locations/{location}/instances/{instance}/dataTableOperationErrors/{data_table_operation_errors}*\x18dataTableOperationErrors2\x18dataTableOperationErrors*a\n" +

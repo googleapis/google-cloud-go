@@ -377,36 +377,36 @@ var File_google_shopping_merchant_accounts_v1_termsofserviceagreementstate_proto
 
 const file_google_shopping_merchant_accounts_v1_termsofserviceagreementstate_proto_rawDesc = "" +
 	"\n" +
-	"Ggoogle/shopping/merchant/accounts/v1/termsofserviceagreementstate.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a=google/shopping/merchant/accounts/v1/termsofservicekind.proto\x1a\x16google/type/date.proto\"\xd1\x04\n" +
-	"\x1cTermsOfServiceAgreementState\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
-	"\vregion_code\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"regionCode\x12p\n" +
-	"\x15terms_of_service_kind\x18\x03 \x01(\x0e28.google.shopping.merchant.accounts.v1.TermsOfServiceKindB\x03\xe0A\x02R\x12termsOfServiceKind\x12T\n" +
-	"\baccepted\x18\x04 \x01(\v2..google.shopping.merchant.accounts.v1.AcceptedB\x03\xe0A\x01H\x00R\baccepted\x88\x01\x01\x12T\n" +
-	"\brequired\x18\x05 \x01(\v2..google.shopping.merchant.accounts.v1.RequiredB\x03\xe0A\x01H\x01R\brequired\x88\x01\x01:\xb9\x01\xeaA\xb5\x01\n" +
+	"Ggoogle/shopping/merchant/accounts/v1/termsofserviceagreementstate.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a=google/shopping/merchant/accounts/v1/termsofservicekind.proto\x1a\x16google/type/date.proto\"\xd6\x04\n" +
+	"\x1cTermsOfServiceAgreementState\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12%\n" +
+	"\vregion_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"regionCode\x12q\n" +
+	"\x15terms_of_service_kind\x18\x03 \x01(\x0e28.google.shopping.merchant.accounts.v1.TermsOfServiceKindB\x04\xe2A\x01\x02R\x12termsOfServiceKind\x12U\n" +
+	"\baccepted\x18\x04 \x01(\v2..google.shopping.merchant.accounts.v1.AcceptedB\x04\xe2A\x01\x01H\x00R\baccepted\x88\x01\x01\x12U\n" +
+	"\brequired\x18\x05 \x01(\v2..google.shopping.merchant.accounts.v1.RequiredB\x04\xe2A\x01\x01H\x01R\brequired\x88\x01\x01:\xb9\x01\xeaA\xb5\x01\n" +
 	"7merchantapi.googleapis.com/TermsOfServiceAgreementState\x12=accounts/{account}/termsOfServiceAgreementStates/{identifier}*\x1dtermsOfServiceAgreementStates2\x1ctermsOfServiceAgreementStateB\v\n" +
 	"\t_acceptedB\v\n" +
-	"\t_required\"\x82\x02\n" +
-	"\bAccepted\x12[\n" +
-	"\x10terms_of_service\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")merchantapi.googleapis.com/TermsOfServiceR\x0etermsOfService\x12K\n" +
-	"\vaccepted_by\x18\x02 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\t_required\"\x85\x02\n" +
+	"\bAccepted\x12\\\n" +
+	"\x10terms_of_service\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")merchantapi.googleapis.com/TermsOfServiceR\x0etermsOfService\x12L\n" +
+	"\vaccepted_by\x18\x02 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"merchantapi.googleapis.com/AccountR\n" +
-	"acceptedBy\x12<\n" +
-	"\vvalid_until\x18\x03 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01H\x00R\n" +
+	"acceptedBy\x12=\n" +
+	"\vvalid_until\x18\x03 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01H\x00R\n" +
 	"validUntil\x88\x01\x01B\x0e\n" +
-	"\f_valid_until\"\x8e\x01\n" +
-	"\bRequired\x12[\n" +
-	"\x10terms_of_service\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")merchantapi.googleapis.com/TermsOfServiceR\x0etermsOfService\x12%\n" +
-	"\ftos_file_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"tosFileUri\"}\n" +
-	"&GetTermsOfServiceAgreementStateRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7merchantapi.googleapis.com/TermsOfServiceAgreementStateR\x04name\"\x94\x01\n" +
-	"9RetrieveForApplicationTermsOfServiceAgreementStateRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127merchantapi.googleapis.com/TermsOfServiceAgreementStateR\x06parent2\xb7\x05\n" +
+	"\f_valid_until\"\x90\x01\n" +
+	"\bRequired\x12\\\n" +
+	"\x10terms_of_service\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")merchantapi.googleapis.com/TermsOfServiceR\x0etermsOfService\x12&\n" +
+	"\ftos_file_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"tosFileUri\"~\n" +
+	"&GetTermsOfServiceAgreementStateRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7merchantapi.googleapis.com/TermsOfServiceAgreementStateR\x04name\"\x95\x01\n" +
+	"9RetrieveForApplicationTermsOfServiceAgreementStateRequest\x12X\n" +
+	"\x06parent\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\x127merchantapi.googleapis.com/TermsOfServiceAgreementStateR\x06parent2\xb7\x05\n" +
 	"#TermsOfServiceAgreementStateService\x12\x82\x02\n" +
 	"\x1fGetTermsOfServiceAgreementState\x12L.google.shopping.merchant.accounts.v1.GetTermsOfServiceAgreementStateRequest\x1aB.google.shopping.merchant.accounts.v1.TermsOfServiceAgreementState\"M\xdaA\x04name\x82\xd3\xe4\x93\x02@\x12>/accounts/v1/{name=accounts/*/termsOfServiceAgreementStates/*}\x12\xc1\x02\n" +
 	"2RetrieveForApplicationTermsOfServiceAgreementState\x12_.google.shopping.merchant.accounts.v1.RetrieveForApplicationTermsOfServiceAgreementStateRequest\x1aB.google.shopping.merchant.accounts.v1.TermsOfServiceAgreementState\"f\xdaA\x06parent\x82\xd3\xe4\x93\x02W\x12U/accounts/v1/{parent=accounts/*}/termsOfServiceAgreementStates:retrieveForApplication\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\x94\x02\n" +

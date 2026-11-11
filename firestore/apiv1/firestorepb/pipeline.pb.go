@@ -100,10 +100,10 @@ var File_google_firestore_v1_pipeline_proto protoreflect.FileDescriptor
 
 const file_google_firestore_v1_pipeline_proto_rawDesc = "" +
 	"\n" +
-	"\"google/firestore/v1/pipeline.proto\x12\x13google.firestore.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/firestore/v1/document.proto\"\x81\x02\n" +
-	"\x12StructuredPipeline\x12>\n" +
-	"\bpipeline\x18\x01 \x01(\v2\x1d.google.firestore.v1.PipelineB\x03\xe0A\x02R\bpipeline\x12S\n" +
-	"\aoptions\x18\x02 \x03(\v24.google.firestore.v1.StructuredPipeline.OptionsEntryB\x03\xe0A\x01R\aoptions\x1aV\n" +
+	"\"google/firestore/v1/pipeline.proto\x12\x13google.firestore.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/firestore/v1/document.proto\"\x83\x02\n" +
+	"\x12StructuredPipeline\x12?\n" +
+	"\bpipeline\x18\x01 \x01(\v2\x1d.google.firestore.v1.PipelineB\x04\xe2A\x01\x02R\bpipeline\x12T\n" +
+	"\aoptions\x18\x02 \x03(\v24.google.firestore.v1.StructuredPipeline.OptionsEntryB\x04\xe2A\x01\x01R\aoptions\x1aV\n" +
 	"\fOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x120\n" +
 	"\x05value\x18\x02 \x01(\v2\x1a.google.firestore.v1.ValueR\x05value:\x028\x01B\xc5\x01\n" +

@@ -488,11 +488,11 @@ var File_google_cloud_retail_v2beta_completion_service_proto protoreflect.FileDe
 
 const file_google_cloud_retail_v2beta_completion_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/retail/v2beta/completion_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/retail/v2beta/common.proto\x1a.google/cloud/retail/v2beta/import_config.proto\x1a#google/longrunning/operations.proto\"\xf6\x02\n" +
-	"\x14CompleteQueryRequest\x12?\n" +
-	"\acatalog\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\acatalog\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12\x1d\n" +
+	"3google/cloud/retail/v2beta/completion_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/retail/v2beta/common.proto\x1a.google/cloud/retail/v2beta/import_config.proto\x1a#google/longrunning/operations.proto\"\xf8\x02\n" +
+	"\x14CompleteQueryRequest\x12@\n" +
+	"\acatalog\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\acatalog\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x1d\n" +
 	"\n" +
 	"visitor_id\x18\a \x01(\tR\tvisitorId\x12%\n" +
 	"\x0elanguage_codes\x18\x03 \x03(\tR\rlanguageCodes\x12\x1f\n" +

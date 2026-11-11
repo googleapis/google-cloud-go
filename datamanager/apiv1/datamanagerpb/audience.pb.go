@@ -675,9 +675,9 @@ var File_google_ads_datamanager_v1_audience_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_audience_proto_rawDesc = "" +
 	"\n" +
-	"(google/ads/datamanager/v1/audience.proto\x12\x19google.ads.datamanager.v1\x1a'google/ads/datamanager/v1/consent.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96\x06\n" +
-	"\x0eAudienceMember\x12:\n" +
-	"\x16destination_references\x18\x01 \x03(\tB\x03\xe0A\x01R\x15destinationReferences\x12B\n" +
+	"(google/ads/datamanager/v1/audience.proto\x12\x19google.ads.datamanager.v1\x1a'google/ads/datamanager/v1/consent.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x98\x06\n" +
+	"\x0eAudienceMember\x12;\n" +
+	"\x16destination_references\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x15destinationReferences\x12B\n" +
 	"\tuser_data\x18\x02 \x01(\v2#.google.ads.datamanager.v1.UserDataH\x00R\buserData\x12B\n" +
 	"\tpair_data\x18\x04 \x01(\v2#.google.ads.datamanager.v1.PairDataH\x00R\bpairData\x12H\n" +
 	"\vmobile_data\x18\x05 \x01(\v2%.google.ads.datamanager.v1.MobileDataH\x00R\n" +
@@ -688,32 +688,32 @@ const file_google_ads_datamanager_v1_audience_proto_rawDesc = "" +
 	"\x0ecomposite_data\x18\b \x01(\v2(.google.ads.datamanager.v1.CompositeDataH\x00R\rcompositeData\x12\\\n" +
 	"\x13google_user_id_data\x18\t \x01(\v2+.google.ads.datamanager.v1.GoogleUserIdDataH\x00R\x10googleUserIdData\x12k\n" +
 	"\x18partner_provided_id_data\x18\n" +
-	" \x01(\v20.google.ads.datamanager.v1.PartnerProvidedIdDataH\x00R\x15partnerProvidedIdData\x12A\n" +
-	"\aconsent\x18\x03 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x03\xe0A\x01R\aconsentB\x06\n" +
-	"\x04data\"*\n" +
-	"\bPairData\x12\x1e\n" +
-	"\bpair_ids\x18\x01 \x03(\tB\x03\xe0A\x02R\apairIds\"0\n" +
+	" \x01(\v20.google.ads.datamanager.v1.PartnerProvidedIdDataH\x00R\x15partnerProvidedIdData\x12B\n" +
+	"\aconsent\x18\x03 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x04\xe2A\x01\x01R\aconsentB\x06\n" +
+	"\x04data\"+\n" +
+	"\bPairData\x12\x1f\n" +
+	"\bpair_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\apairIds\"1\n" +
 	"\n" +
-	"MobileData\x12\"\n" +
+	"MobileData\x12#\n" +
 	"\n" +
-	"mobile_ids\x18\x01 \x03(\tB\x03\xe0A\x02R\tmobileIds\"*\n" +
+	"mobile_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\tmobileIds\"+\n" +
 	"\n" +
-	"UserIdData\x12\x1c\n" +
-	"\auser_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x06userId\"%\n" +
-	"\bPpidData\x12\x19\n" +
-	"\x05ppids\x18\x01 \x03(\tB\x03\xe0A\x02R\x05ppids\"\x97\x01\n" +
-	"\rCompositeData\x12E\n" +
-	"\tuser_data\x18\x01 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x01R\buserData\x12?\n" +
-	"\aip_data\x18\x02 \x03(\v2!.google.ads.datamanager.v1.IpDataB\x03\xe0A\x01R\x06ipData\"\xce\x01\n" +
-	"\x06IpData\x12*\n" +
+	"UserIdData\x12\x1d\n" +
+	"\auser_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06userId\"&\n" +
+	"\bPpidData\x12\x1a\n" +
+	"\x05ppids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x05ppids\"\x99\x01\n" +
+	"\rCompositeData\x12F\n" +
+	"\tuser_data\x18\x01 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x04\xe2A\x01\x01R\buserData\x12@\n" +
+	"\aip_data\x18\x02 \x03(\v2!.google.ads.datamanager.v1.IpDataB\x04\xe2A\x01\x01R\x06ipData\"\xd1\x01\n" +
+	"\x06IpData\x12+\n" +
 	"\n" +
-	"ip_address\x18\x01 \x01(\tB\v\xe0A\x02\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12M\n" +
-	"\x12observe_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x10observeStartTime\x12I\n" +
-	"\x10observe_end_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x0eobserveEndTime\"?\n" +
-	"\x10GoogleUserIdData\x12+\n" +
-	"\x0fgoogle_user_ids\x18\x01 \x03(\tB\x03\xe0A\x02R\rgoogleUserIds\"N\n" +
-	"\x15PartnerProvidedIdData\x125\n" +
-	"\x14partner_provided_ids\x18\x01 \x03(\tB\x03\xe0A\x02R\x12partnerProvidedIdsB\xca\x01\n" +
+	"ip_address\x18\x01 \x01(\tB\f\xe2A\x01\x02\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12N\n" +
+	"\x12observe_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x10observeStartTime\x12J\n" +
+	"\x10observe_end_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x0eobserveEndTime\"@\n" +
+	"\x10GoogleUserIdData\x12,\n" +
+	"\x0fgoogle_user_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\rgoogleUserIds\"O\n" +
+	"\x15PartnerProvidedIdData\x126\n" +
+	"\x14partner_provided_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x12partnerProvidedIdsB\xca\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\rAudienceProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (
