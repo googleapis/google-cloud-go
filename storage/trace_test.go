@@ -2290,17 +2290,34 @@ func TestWriterUploadChunkSpans(t *testing.T) {
 }
 
 // appendChunkTraceTestServer is a fake storage server for appendable
-// BidiWriteObject uploads. Like GCS, it acknowledges each flush of an
-// unfinalized object with the object resource, whose size is the persisted
-// size, and the first message of a takeover with the current object.
+// BidiWriteObject uploads. The first response on each stream returns the
+// object, whose size is the persisted size (zero for a new object, or the
+// takeover offset), with a write handle. Later flushes are acknowledged with
+// the persisted size, and a finalizing request with the finalized object.
 type appendChunkTraceTestServer struct {
 	storagepb.UnimplementedStorageServer
+	// failAt, if positive, makes the stream fail once with codes.Unavailable
+	// on the first request whose data ends past failAt.
+	failAt int64
+	// holdFlushes, if positive, makes the server hold its acks of the first
+	// holdFlushes flushes. Once it has received them, it closes gotFlushes
+	// and sends the held acks after release is closed.
+	holdFlushes int
+	gotFlushes  chan struct{}
+	release     chan struct{}
 
 	mu        sync.Mutex
 	persisted int64
+	failed    bool
+}
+
+func (s *appendChunkTraceTestServer) object() *storagepb.Object {
+	return &storagepb.Object{Bucket: "projects/_/buckets/bucket", Name: "object", Generation: 1, Size: s.persisted}
 }
 
 func (s *appendChunkTraceTestServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	first := true
+	var held []int64
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
@@ -2310,29 +2327,81 @@ func (s *appendChunkTraceTestServer) BidiWriteObject(stream storagepb.Storage_Bi
 			return err
 		}
 		n := int64(len(req.GetChecksummedData().GetContent()))
-		flush := req.GetFlush() || req.GetFinishWrite()
+		size := req.GetWriteOffset() + n
 
 		s.mu.Lock()
-		if size := req.GetWriteOffset() + n; flush && size > s.persisted {
-			s.persisted = size
+		if s.failAt > 0 && !s.failed && size > s.failAt {
+			s.failed = true
+			s.mu.Unlock()
+			return status.Error(codes.Unavailable, "injected stream failure")
 		}
-		obj := &storagepb.Object{Bucket: "projects/_/buckets/bucket", Name: "object", Generation: 1, Size: s.persisted}
-		s.mu.Unlock()
-
-		if req.GetFinishWrite() {
-			obj.FinalizeTime = timestamppb.Now()
-		}
-		if flush || (req.GetAppendObjectSpec() != nil && n == 0) {
+		if first {
+			first = false
+			obj := s.object()
+			s.mu.Unlock()
 			if err := stream.Send(&storagepb.BidiWriteObjectResponse{
 				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{Resource: obj},
+				WriteHandle: &storagepb.BidiWriteHandle{Handle: []byte("write-handle")},
+			}); err != nil {
+				return err
+			}
+			s.mu.Lock()
+		}
+		flush := req.GetFlush() || req.GetFinishWrite()
+		if flush && size > s.persisted {
+			s.persisted = size
+		}
+		persisted := s.persisted
+		obj := s.object()
+		s.mu.Unlock()
+
+		switch {
+		case req.GetFinishWrite():
+			obj.FinalizeTime = timestamppb.Now()
+			return stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{Resource: obj},
+			})
+		case !flush:
+			continue
+		case s.holdFlushes > 0:
+			held = append(held, persisted)
+			if len(held) < s.holdFlushes {
+				continue
+			}
+			s.holdFlushes = 0
+			close(s.gotFlushes)
+			<-s.release
+		default:
+			held = append(held, persisted)
+		}
+		for _, p := range held {
+			if err := stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{PersistedSize: p},
 			}); err != nil {
 				return err
 			}
 		}
-		if req.GetFinishWrite() {
-			return nil
-		}
+		held = nil
 	}
+}
+
+// newAppendChunkTraceTestClient starts srv and returns a gRPC client for it
+// with dev tracing enabled, and an exporter of the client's spans.
+func newAppendChunkTraceTestClient(t *testing.T, srv *appendChunkTraceTestServer, opts ...option.ClientOption) (*Client, *testutil.OpenTelemetryTestExporter) {
+	t.Helper()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() { te.Unregister(context.Background()) })
+	t.Setenv(storageOtelTracingDevVar, "true")
+	t.Setenv(storageBucketMetadataDisabledVar, "true")
+
+	startFakeStorageServer(t, srv)
+	client, err := NewGRPCClient(t.Context(), opts...)
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	t.Cleanup(func() { client.Close() })
+	client.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}))
+	return client, te
 }
 
 func TestAppendableWriterUploadChunkSpans(t *testing.T) {
@@ -2346,7 +2415,10 @@ func TestAppendableWriterUploadChunkSpans(t *testing.T) {
 		// takeoverOffset, if positive, is the size of an existing
 		// unfinalized object that the Writer takes over.
 		takeoverOffset int64
-		want           []uploadChunkSpanInfo
+		// failAt, if positive, fails the stream once with
+		// codes.Unavailable when a request's data ends past failAt.
+		failAt int64
+		want   []uploadChunkSpanInfo
 	}{
 		{
 			name:            "multiple chunks",
@@ -2403,29 +2475,40 @@ func TestAppendableWriterUploadChunkSpans(t *testing.T) {
 				{Number: 3, Offset: 612 * kib, SizeBytes: 88 * kib},
 			},
 		},
+		{
+			// Chunk 3 covers [512 KiB, 768 KiB). The stream fails before
+			// GCS persists it, so its span ends with the error and the
+			// Writer resends it on a new stream with its write handle.
+			name:            "retry failed chunk",
+			chunkSize:       256 * kib,
+			payloadSize:     mib,
+			finalizeOnClose: true,
+			failAt:          600 * kib,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "UNAVAILABLE"},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+				{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			ctx := t.Context()
-			te := testutil.NewOpenTelemetryTestExporter()
-			t.Cleanup(func() { te.Unregister(context.Background()) })
-			t.Setenv(storageOtelTracingDevVar, "true")
-			t.Setenv(storageBucketMetadataDisabledVar, "true")
-
-			startFakeStorageServer(t, &appendChunkTraceTestServer{persisted: tc.takeoverOffset})
-			client, err := NewGRPCClient(ctx)
-			if err != nil {
-				t.Fatalf("NewGRPCClient: %v", err)
-			}
-			t.Cleanup(func() { client.Close() })
+			srv := &appendChunkTraceTestServer{persisted: tc.takeoverOffset, failAt: tc.failAt}
+			client, te := newAppendChunkTraceTestClient(t, srv)
 
 			obj := client.Bucket("bucket").Object("object")
 			parentName := "Object.Writer"
 			var w *Writer
 			if tc.takeoverOffset > 0 {
 				parentName = "Object.WriterFromAppendableObject"
-				var off int64
+				var (
+					off int64
+					err error
+				)
 				w, off, err = obj.Generation(1).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
 					ChunkSize:           tc.chunkSize,
 					FinalizeOnClose:     tc.finalizeOnClose,
@@ -2451,15 +2534,179 @@ func TestAppendableWriterUploadChunkSpans(t *testing.T) {
 				t.Fatalf("Close: %v", err)
 			}
 
-			if diff := cmp.Diff(tc.want, extractAndVerifyUploadChunkSpansWithParent(t, te.Spans(), parentName)); diff != "" {
+			// Chunk 4 can be in flight when the stream fails, so it may
+			// also fail before the retry.
+			got := slices.DeleteFunc(extractAndVerifyUploadChunkSpansWithParent(t, te.Spans(), parentName), func(s uploadChunkSpanInfo) bool {
+				return tc.failAt > 0 && s.Failed && s.Number == 4
+			})
+			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+			}
+			if tc.failAt > 0 {
+				srv.mu.Lock()
+				failed := srv.failed
+				srv.mu.Unlock()
+				if !failed {
+					t.Error("server did not inject the stream failure")
+				}
 			}
 		})
 	}
 }
 
+// resourceSeenStream signals seen once it receives a BidiWriteObjectResponse
+// carrying the object resource. gRPC runs the client's stats handlers before
+// RecvMsg returns, so the chunk tracker has handled the response by then.
+type resourceSeenStream struct {
+	grpc.ClientStream
+	once *sync.Once
+	seen chan struct{}
+}
+
+func (s *resourceSeenStream) RecvMsg(m any) error {
+	err := s.ClientStream.RecvMsg(m)
+	if resp, ok := m.(*storagepb.BidiWriteObjectResponse); ok && err == nil && resp.GetResource() != nil {
+		s.once.Do(func() { close(s.seen) })
+	}
+	return err
+}
+
+// TestAppendableWriterUploadChunkSpansHeldAcks verifies that the object
+// returned in the first response of an appendable stream does not complete
+// chunks that GCS has not yet acknowledged.
+func TestAppendableWriterUploadChunkSpansHeldAcks(t *testing.T) {
+	const chunk = googleapi.MinUploadChunkSize
+	for _, takeoverOffset := range []int64{0, 100 * 1024} {
+		t.Run(fmt.Sprintf("takeover offset %d", takeoverOffset), func(t *testing.T) {
+			ctx := t.Context()
+			srv := &appendChunkTraceTestServer{
+				persisted:   takeoverOffset,
+				holdFlushes: 2,
+				gotFlushes:  make(chan struct{}),
+				release:     make(chan struct{}),
+			}
+			var once sync.Once
+			resourceSeen := make(chan struct{})
+			interceptor := grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+				cs, err := streamer(ctx, desc, cc, method, opts...)
+				if err != nil {
+					return nil, err
+				}
+				return &resourceSeenStream{ClientStream: cs, once: &once, seen: resourceSeen}, nil
+			})
+			client, te := newAppendChunkTraceTestClient(t, srv, option.WithGRPCDialOption(interceptor))
+
+			obj := client.Bucket("bucket").Object("object")
+			var w *Writer
+			if takeoverOffset > 0 {
+				var err error
+				w, _, err = obj.Generation(1).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
+					ChunkSize:           chunk,
+					FinalizeOnClose:     true,
+					DisableAutoChecksum: true,
+				})
+				if err != nil {
+					t.Fatalf("NewWriterFromAppendableObject: %v", err)
+				}
+			} else {
+				w = obj.NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = true
+				w.ChunkSize = chunk
+				w.DisableAutoChecksum = true
+			}
+			const payloadSize = 4 * chunk
+			writeErr := make(chan error, 1)
+			go func() {
+				_, err := w.Write(make([]byte, payloadSize))
+				writeErr <- err
+			}()
+
+			// The server has sent the object but holds its acks of the first
+			// two chunks, so no chunk span may end yet.
+			<-srv.gotFlushes
+			<-resourceSeen
+			if got := len(findSpans(te.Spans(), uploadChunkSpanName)); got != 0 {
+				t.Errorf("while acks are held: got %d ended %s spans, want 0", got, uploadChunkSpanName)
+			}
+			close(srv.release)
+			if err := <-writeErr; err != nil {
+				t.Fatalf("Write: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("Close: %v", err)
+			}
+			if got, want := len(findSpans(te.Spans(), uploadChunkSpanName)), 4; got != want {
+				t.Errorf("after Close: got %d ended %s spans, want %d", got, uploadChunkSpanName, want)
+			}
+		})
+	}
+}
+
+// TestAppendableWriterUploadChunkSpansFlush verifies the chunk spans of an
+// appendable upload that the application flushes.
+func TestAppendableWriterUploadChunkSpansFlush(t *testing.T) {
+	const kib = 1024
+	const mib = 1024 * kib
+
+	t.Run("empty flush", func(t *testing.T) {
+		// A 2 MiB write is sent as one unflushed message, so Flush sends a
+		// flush without data, which completes the chunk.
+		client, te := newAppendChunkTraceTestClient(t, &appendChunkTraceTestServer{})
+		w := client.Bucket("bucket").Object("object").NewWriter(t.Context())
+		w.Append = true
+		w.ChunkSize = 4 * mib
+		w.DisableAutoChecksum = true
+		if _, err := w.Write(make([]byte, 2*mib)); err != nil {
+			t.Fatalf("Write: %v", err)
+		}
+		if _, err := w.Flush(); err != nil {
+			t.Fatalf("Flush: %v", err)
+		}
+		if got := len(findSpans(te.Spans(), uploadChunkSpanName)); got != 1 {
+			t.Errorf("after Flush: got %d ended %s spans, want 1", got, uploadChunkSpanName)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("Close: %v", err)
+		}
+	})
+
+	t.Run("flush mid chunk", func(t *testing.T) {
+		// Chunk numbers come from the chunkSize window holding each
+		// chunk's first byte, so the first chunk after a mid-chunk Flush
+		// shares its number with the flushed chunk.
+		client, te := newAppendChunkTraceTestClient(t, &appendChunkTraceTestServer{})
+		w := client.Bucket("bucket").Object("object").NewWriter(t.Context())
+		w.Append = true
+		w.FinalizeOnClose = true
+		w.ChunkSize = 256 * kib
+		w.DisableAutoChecksum = true
+		if _, err := w.Write(make([]byte, 100*kib)); err != nil {
+			t.Fatalf("Write: %v", err)
+		}
+		if _, err := w.Flush(); err != nil {
+			t.Fatalf("Flush: %v", err)
+		}
+		if _, err := w.Write(make([]byte, 300*kib)); err != nil {
+			t.Fatalf("Write: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("Close: %v", err)
+		}
+		want := []uploadChunkSpanInfo{
+			{Number: 1, Offset: 0, SizeBytes: 100 * kib},
+			{Number: 1, Offset: 100 * kib, SizeBytes: 256 * kib},
+			{Number: 2, Offset: 356 * kib, SizeBytes: 44 * kib},
+		}
+		if diff := cmp.Diff(want, extractAndVerifyUploadChunkSpans(t, te.Spans())); diff != "" {
+			t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+		}
+	})
+}
+
 // TestGRPCUploadChunkTrackerResourceAck verifies which chunk spans a
-// BidiWriteObjectResponse carrying the object resource completes.
+// BidiWriteObjectResponse carrying the object resource completes: those
+// within the object's size.
 func TestGRPCUploadChunkTrackerResourceAck(t *testing.T) {
 	const chunk = googleapi.MinUploadChunkSize
 	data := func(offset int64) *storagepb.BidiWriteObjectRequest {
@@ -2480,16 +2727,25 @@ func TestGRPCUploadChunkTrackerResourceAck(t *testing.T) {
 			WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{Resource: obj},
 		}
 	}
+	newTracker := func(t *testing.T) (*grpcUploadChunkTracker, *testutil.OpenTelemetryTestExporter) {
+		te := testutil.NewOpenTelemetryTestExporter()
+		t.Cleanup(func() { te.Unregister(context.Background()) })
+		t.Setenv(storageOtelTracingDevVar, "true")
+		ctx, _ := startSpan(context.Background(), "Object.Writer")
+		return &grpcUploadChunkTracker{parentCtx: ctx, chunkSize: chunk}, te
+	}
 	testCases := []struct {
 		name  string
 		first *storagepb.BidiWriteObjectRequest
-		// resp acknowledges the first chunk of two in flight.
+		// resp is the first response while two chunks are in flight.
 		resp *storagepb.BidiWriteObjectResponse
 		// wantEnded is the number of chunk spans that resp ends.
 		wantEnded int
 	}{
 		{
-			name: "appendable new object, unfinalized",
+			// The object of an unfinalized appendable upload covers only
+			// the bytes persisted so far.
+			name: "appendable unfinalized mid-stream",
 			first: &storagepb.BidiWriteObjectRequest{
 				FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
 					WriteObjectSpec: &storagepb.WriteObjectSpec{Appendable: proto.Bool(true)},
@@ -2499,7 +2755,7 @@ func TestGRPCUploadChunkTrackerResourceAck(t *testing.T) {
 			wantEnded: 1,
 		},
 		{
-			name: "appendable takeover, unfinalized",
+			name: "appendable takeover, unfinalized mid-stream",
 			first: &storagepb.BidiWriteObjectRequest{
 				FirstMessage: &storagepb.BidiWriteObjectRequest_AppendObjectSpec{
 					AppendObjectSpec: &storagepb.AppendObjectSpec{Generation: 1},
@@ -2515,28 +2771,23 @@ func TestGRPCUploadChunkTrackerResourceAck(t *testing.T) {
 					WriteObjectSpec: &storagepb.WriteObjectSpec{Appendable: proto.Bool(true)},
 				},
 			},
-			resp:      resource(chunk, true),
+			resp:      resource(2*chunk, true),
 			wantEnded: 2,
 		},
 		{
 			// A resumable upload returns the object only once it is
-			// finalized, so the resource completes every chunk.
+			// finalized, when its size covers every chunk.
 			name: "resumable",
 			first: &storagepb.BidiWriteObjectRequest{
 				FirstMessage: &storagepb.BidiWriteObjectRequest_UploadId{UploadId: "upload-id"},
 			},
-			resp:      resource(chunk, false),
+			resp:      resource(2*chunk, false),
 			wantEnded: 2,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			te := testutil.NewOpenTelemetryTestExporter()
-			t.Cleanup(func() { te.Unregister(context.Background()) })
-			t.Setenv(storageOtelTracingDevVar, "true")
-			ctx, _ := startSpan(context.Background(), "Object.Writer")
-
-			ct := &grpcUploadChunkTracker{parentCtx: ctx, chunkSize: chunk}
+			ct, te := newTracker(t)
 			first := data(0)
 			proto.Merge(first, tc.first)
 			ct.onRequest(first)
@@ -2551,6 +2802,19 @@ func TestGRPCUploadChunkTrackerResourceAck(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("resource before first request", func(t *testing.T) {
+		// The object's size confirms only the chunks it covers, even when
+		// it arrives before the chunks are sent.
+		ct, te := newTracker(t)
+		ct.onResponse(resource(chunk, false))
+		for i := range int64(3) {
+			ct.onRequest(data(i * chunk))
+		}
+		if got := len(findSpans(te.Spans(), uploadChunkSpanName)); got != 1 {
+			t.Errorf("got %d ended %s spans, want 1", got, uploadChunkSpanName)
+		}
+	})
 }
 
 // TestGRPCUploadChunkTrackerEmptyFlush verifies that a flush carrying no data,
@@ -2573,11 +2837,14 @@ func TestGRPCUploadChunkTrackerEmptyFlush(t *testing.T) {
 		},
 	})
 	ct.onRequest(&storagepb.BidiWriteObjectRequest{WriteOffset: 100, Flush: true})
+	if got := len(findSpans(te.Spans(), uploadChunkSpanName)); got != 0 {
+		t.Errorf("before ack: got %d ended %s spans, want 0", got, uploadChunkSpanName)
+	}
 	ct.onResponse(&storagepb.BidiWriteObjectResponse{
 		WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{PersistedSize: 100},
 	})
 	if got := len(findSpans(te.Spans(), uploadChunkSpanName)); got != 1 {
-		t.Errorf("got %d ended %s spans, want 1", got, uploadChunkSpanName)
+		t.Errorf("after ack: got %d ended %s spans, want 1", got, uploadChunkSpanName)
 	}
 }
 

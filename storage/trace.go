@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -647,36 +646,31 @@ type grpcUploadChunkTracker struct {
 	confirmedOffset int64
 	ended           bool
 	endErr          error
-	// appendable is set once the stream is known to upload an appendable
-	// object, which stays unfinalized after flushes.
-	appendable bool
 }
 
 func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectRequest) {
 	n := writeRequestDataLen(req)
 	flushed := req.GetFlush() || req.GetFinishWrite()
-	// The first message of an appendable stream carries an appendable
-	// WriteObjectSpec or, for takeovers and reconnects, an AppendObjectSpec.
-	appendable := req.GetAppendObjectSpec() != nil || req.GetWriteObjectSpec().GetAppendable()
-	if n == 0 && !flushed && !appendable {
+	if n == 0 && !flushed {
 		return
 	}
 
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
-	if appendable {
-		ct.appendable = true
-	}
 	if n == 0 {
 		// A flush without data, such as one sent by Writer.Flush or Close
 		// after all buffered data was sent, completes the open chunk.
-		if m := len(ct.spans); m > 0 && flushed {
+		if m := len(ct.spans); m > 0 {
 			ct.spans[m-1].flushed = true
 			ct.finishConfirmedLocked()
 		}
 		return
 	}
 	offset := req.GetWriteOffset()
+	// number is the 1-based index of the chunkSize window that holds the
+	// chunk's first byte. Spans can share a number after a Flush in the
+	// middle of a chunk or an unaligned takeover offset; their
+	// gcp.storage.payload.offset attributes tell them apart.
 	number := offset/ct.chunkSize + 1
 	if ct.ended && number <= (ct.lastEndOffset+ct.chunkSize-1)/ct.chunkSize {
 		return
@@ -710,27 +704,20 @@ func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectReques
 }
 
 func (ct *grpcUploadChunkTracker) onResponse(resp *storagepb.BidiWriteObjectResponse) {
-	ct.mu.Lock()
-	defer ct.mu.Unlock()
 	var flushOffset int64
 	switch ws := resp.GetWriteStatus().(type) {
 	case *storagepb.BidiWriteObjectResponse_PersistedSize:
 		flushOffset = ws.PersistedSize
 	case *storagepb.BidiWriteObjectResponse_Resource:
-		if ws.Resource == nil {
-			return
-		}
-		// The object is returned once it is finalized, when every chunk is
-		// persisted. GCS also acknowledges flushes of an unfinalized
-		// appendable object with the object, whose size is the persisted
-		// size; later chunks may still be in flight.
-		flushOffset = math.MaxInt64
-		if ct.appendable && ws.Resource.GetFinalizeTime() == nil {
-			flushOffset = ws.Resource.GetSize()
-		}
+		// The object's size is its persisted size: every chunk once it is
+		// finalized, or the bytes persisted so far for an unfinalized
+		// appendable object, whose later chunks may still be in flight.
+		flushOffset = ws.Resource.GetSize()
 	default:
 		return
 	}
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
 	if flushOffset > ct.confirmedOffset {
 		ct.confirmedOffset = flushOffset
 	}
