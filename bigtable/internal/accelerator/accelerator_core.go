@@ -344,13 +344,11 @@ func (c *Channel) useSession(instanceID, reqAppProfile string) bool {
 	appProfile, err := c.resolveAppProfile(reqAppProfile)
 	if err != nil {
 		btransport.RecordDebugTag(btransport.TagAcceleratorSessionDiverterError)
-		btopt.Debugf(nil, "accelerator: useSession app profile check failed for instance=%q app_profile=%q: %v; routing to classic", instanceID, reqAppProfile, err)
 		return false
 	}
 	_, d, err := c.getOrCreateSessionClientAndDiverter(instanceID, appProfile)
 	if err != nil || d == nil {
 		btransport.RecordDebugTag(btransport.TagAcceleratorSessionDiverterError)
-		btopt.Debugf(nil, "accelerator: useSession failed to resolve diverter for instance=%q app_profile=%q (err=%v, diverter=%v); routing to classic", instanceID, appProfile, err, d)
 		return false
 	}
 	return d.UseSession()
