@@ -14,12 +14,12 @@
 
 // Binary accelerator runs the in-process gRPC proxy daemon: it listens on a
 // Unix domain socket, accepts standard google.bigtable.v2.Bigtable RPCs, and
-// forwards each one through an Channel that rides the Jetstream
+// forwards each one through a Channel that rides the Jetstream
 // session transport.
 //
-// One daemon serves one (project, instance, appProfile) tuple. Cross-language
-// clients spawn the binary, wait for the UDS to become connectable, then talk
-// standard Bigtable V2 protos over it.
+// One daemon serves one GCP project (and optionally a pinned instance /
+// appProfile). Cross-language clients spawn the binary, wait for the UDS to
+// become connectable, then talk standard Bigtable V2 protos over it.
 package main
 
 import (
@@ -45,8 +45,8 @@ const identityResolveTimeout = 15 * time.Second
 func main() {
 	udsPath := flag.String("uds-path", "", "path to unix domain socket (required)")
 	project := flag.String("project", "", "GCP project ID (required)")
-	instance := flag.String("instance", "", "Bigtable instance ID (required)")
-	appProfile := flag.String("app-profile", "", "Bigtable app profile (optional)")
+	instance := flag.String("instance", "", "Bigtable instance ID (optional; resolved per RPC when omitted)")
+	appProfile := flag.String("app-profile", "", "Bigtable app profile (optional; resolved per RPC when omitted)")
 	// Fallback flag for client without any native implementations
 	fallback := flag.Bool("fallback", false, "fall back to the classic bigtable.Client when the session backend returns Unimplemented (e.g. instance lacks session serving)")
 	// Endpoint overrides. When empty, NewChannel falls back to the
@@ -68,9 +68,6 @@ func main() {
 	}
 	if *project == "" {
 		log.Fatal("Missing required flag: --project")
-	}
-	if *instance == "" {
-		log.Fatal("Missing required flag: --instance")
 	}
 
 	// Only forward overrides that were actually set; leaving them unset lets

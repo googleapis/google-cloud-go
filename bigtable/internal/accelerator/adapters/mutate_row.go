@@ -46,9 +46,9 @@ func (a *MutateRowRequestAdapter) ExtractResource(from *v2pb.MutateRowRequest) (
 	}
 	switch {
 	case from.AuthorizedViewName != "":
-		return Resource{Kind: ResourceAuthorizedView, Name: from.AuthorizedViewName}, nil
+		return Resource{Kind: ResourceAuthorizedView, Name: from.AuthorizedViewName, AppProfile: from.AppProfileId}, nil
 	case from.TableName != "":
-		return Resource{Kind: ResourceTable, Name: from.TableName}, nil
+		return Resource{Kind: ResourceTable, Name: from.TableName, AppProfile: from.AppProfileId}, nil
 	default:
 		return Resource{}, status.Errorf(codes.InvalidArgument, "MutateRowRequest names no table or authorized view")
 	}

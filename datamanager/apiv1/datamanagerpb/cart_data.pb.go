@@ -147,7 +147,7 @@ type Item struct {
 	// Optional. A unique identifier to reference the item.
 	ItemId string `protobuf:"bytes,4,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
 	// Optional. A bucket of any [event parameters related to an
-	// item](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference/events)
+	// item](https://developers.google.com/data-manager/api/reference/analytics/recommended-events)
 	// to be included within the event that were not already specified using other
 	// structured fields.
 	AdditionalItemParameters []*ItemParameter `protobuf:"bytes,5,rep,name=additional_item_parameters,json=additionalItemParameters,proto3" json:"additional_item_parameters,omitempty"`

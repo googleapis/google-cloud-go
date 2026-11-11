@@ -21,6 +21,8 @@ import (
 
 	"cloud.google.com/go/bigtable"
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"cloud.google.com/go/bigtable/internal/session"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	gmetadata "google.golang.org/grpc/metadata"
@@ -401,7 +403,7 @@ func TestFallbackChannel_Close_BothErrors(t *testing.T) {
 	_ = sessionChannel.Close()
 
 	// Build a classic fallback with a nil client so it returns nil too.
-	cf := &classicFallback{c: nil}
+	cf := &classicFallback{}
 	fc := newTestFallbackChannel(sessionChannel, cf)
 
 	if err := fc.Close(); err != nil {
@@ -415,12 +417,121 @@ func TestFallbackChannel_Close_ClassicCloseNilClientNoError(t *testing.T) {
 	sessionChannel := newTestChannel(t, &mockSessionClient{table: &mockSessionTableAPI{}})
 	_ = sessionChannel.Close()
 
-	cf := &classicFallback{c: nil}
+	cf := &classicFallback{}
 	fc := newTestFallbackChannel(sessionChannel, cf)
 
 	// nil client → Close returns nil — just verify no panic.
 	if err := fc.Close(); err != nil {
 		t.Errorf("Close() = %v, want nil", err)
+	}
+}
+
+func TestFallbackChannel_MultiInstance_PerInstanceTripping(t *testing.T) {
+	origSession := newSessionClient
+	sessionCalls := make(map[string]int)
+	newSessionClient = func(
+		_ context.Context,
+		_, instance, _, _ string,
+		_ ...option.ClientOption,
+	) (session.Client, error) {
+		tbl := &mockSessionTableAPI{
+			mutateRowFn: func(_ context.Context, _ *v2pb.SessionMutateRowRequest) (*v2pb.SessionMutateRowResponse, error) {
+				sessionCalls[instance]++
+				if instance == "inst-legacy" {
+					return nil, status.Error(codes.Unimplemented, "session not enabled on inst-legacy")
+				}
+				return &v2pb.SessionMutateRowResponse{}, nil
+			},
+			readRowFn: func(_ context.Context, _ *v2pb.SessionReadRowRequest) (*v2pb.SessionReadRowResponse, error) {
+				sessionCalls[instance]++
+				if instance == "inst-legacy" {
+					return nil, status.Error(codes.Unimplemented, "session not enabled on inst-legacy")
+				}
+				return &v2pb.SessionReadRowResponse{}, nil
+			},
+		}
+		return &mockSessionClient{table: tbl}, nil
+	}
+	t.Cleanup(func() { newSessionClient = origSession })
+
+	sessionChannel, err := NewChannel(context.Background(), "p", "", "", "")
+	if err != nil {
+		t.Fatalf("NewChannel: %v", err)
+	}
+	t.Cleanup(func() { _ = sessionChannel.Close() })
+
+	classicCalls := make(map[string]int)
+	cf := &classicFallback{
+		project:     "p",
+		scopePrefix: scopePrefixFor("p", ""),
+		tables: map[string]bigtable.TableAPI{
+			"projects/p/instances/inst-legacy/tables/t": &mockTableAPI{
+				applyFn: func(_ context.Context, _ string, _ *bigtable.Mutation, _ ...bigtable.ApplyOption) error {
+					classicCalls["inst-legacy"]++
+					return nil
+				},
+				readRowFn: func(_ context.Context, _ string, _ ...bigtable.ReadOption) (bigtable.Row, error) {
+					classicCalls["inst-legacy"]++
+					return nil, nil
+				},
+			},
+			"projects/p/instances/inst-session/tables/t": &mockTableAPI{
+				applyFn: func(_ context.Context, _ string, _ *bigtable.Mutation, _ ...bigtable.ApplyOption) error {
+					classicCalls["inst-session"]++
+					return nil
+				},
+			},
+		},
+	}
+	fc := newTestFallbackChannel(sessionChannel, cf)
+
+	// 1. MutateRow on inst-legacy returns Unimplemented from session, trips inst-legacy, and falls back to classic.
+	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
+		TableName: "projects/p/instances/inst-legacy/tables/t",
+		RowKey:    []byte("k"),
+	}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("Invoke(inst-legacy, 1): %v", err)
+	}
+	// 2. Second MutateRow and ReadRows on inst-legacy skip session completely and go straight to classic.
+	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
+		TableName: "projects/p/instances/inst-legacy/tables/t",
+		RowKey:    []byte("k"),
+	}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("Invoke(inst-legacy, 2): %v", err)
+	}
+	stream, err := fc.NewStream(context.Background(), &grpc.StreamDesc{}, v2pb.Bigtable_ReadRows_FullMethodName)
+	if err != nil {
+		t.Fatalf("NewStream(inst-legacy): %v", err)
+	}
+	if err := stream.SendMsg(&v2pb.ReadRowsRequest{
+		TableName: "projects/p/instances/inst-legacy/tables/t",
+		Rows:      &v2pb.RowSet{RowKeys: [][]byte{[]byte("k")}},
+	}); err != nil {
+		t.Fatalf("SendMsg(inst-legacy): %v", err)
+	}
+	if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); err != nil {
+		t.Fatalf("RecvMsg(inst-legacy): %v", err)
+	}
+
+	if sessionCalls["inst-legacy"] != 1 {
+		t.Errorf("sessionCalls[inst-legacy] = %d; want 1 (tripped after first call)", sessionCalls["inst-legacy"])
+	}
+	if classicCalls["inst-legacy"] != 3 {
+		t.Errorf("classicCalls[inst-legacy] = %d; want 3", classicCalls["inst-legacy"])
+	}
+
+	// 3. MutateRow on inst-session still uses the session fast path (not tripped by inst-legacy!).
+	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
+		TableName: "projects/p/instances/inst-session/tables/t",
+		RowKey:    []byte("k"),
+	}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("Invoke(inst-session): %v", err)
+	}
+	if sessionCalls["inst-session"] != 1 {
+		t.Errorf("sessionCalls[inst-session] = %d; want 1", sessionCalls["inst-session"])
+	}
+	if classicCalls["inst-session"] != 0 {
+		t.Errorf("classicCalls[inst-session] = %d; want 0", classicCalls["inst-session"])
 	}
 }
 
