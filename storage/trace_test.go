@@ -50,6 +50,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
@@ -1168,6 +1169,11 @@ func (s *retryAttemptTestServer) ReadObject(req *storagepb.ReadObjectRequest, st
 // StartResumableWrite starts a resumable upload.
 func (s *retryAttemptTestServer) StartResumableWrite(context.Context, *storagepb.StartResumableWriteRequest) (*storagepb.StartResumableWriteResponse, error) {
 	return &storagepb.StartResumableWriteResponse{UploadId: "upload"}, nil
+}
+
+// ListObjects returns an empty list of objects.
+func (s *retryAttemptTestServer) ListObjects(context.Context, *storagepb.ListObjectsRequest) (*storagepb.ListObjectsResponse, error) {
+	return &storagepb.ListObjectsResponse{}, nil
 }
 
 // BidiWriteObject receives messages, acknowledging flushes, until the write is
@@ -3301,5 +3307,273 @@ func TestPayloadTracing(t *testing.T) {
 				t.Errorf("attempt span (offset, size) mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+// attemptSpanAttrs holds the retry attempt number (0 if absent) and the
+// (gcp.resource.destination.id, gcp.resource.destination.location) attributes
+// (empty if absent) of a span.
+type attemptSpanAttrs struct {
+	Attempt     int64
+	Destination [2]string
+}
+
+func spanAttemptAttrs(attrs []attribute.KeyValue) attemptSpanAttrs {
+	var got attemptSpanAttrs
+	got.Attempt, _ = retryAttemptNumber(attrs)
+	for _, a := range attrs {
+		switch a.Key {
+		case "gcp.resource.destination.id":
+			got.Destination[0] = a.Value.AsString()
+		case "gcp.resource.destination.location":
+			got.Destination[1] = a.Value.AsString()
+		}
+	}
+	return got
+}
+
+func TestAttemptAndListSpanDestinationAttributes(t *testing.T) {
+	const bucket = "bucket"
+	ctx := context.Background()
+	resolved := bucketMetadata{resource: "projects/123/buckets/" + bucket, location: "us-east1"}
+	dest := [2]string{storageResourceNamePrefix + resolved.resource, resolved.location}
+
+	grpcClient := func(failures int) func(*testing.T) *Client {
+		return func(t *testing.T) *Client {
+			startFakeStorageServer(t, &retryAttemptTestServer{failures: failures})
+			c, err := NewGRPCClient(ctx)
+			if err != nil {
+				t.Fatalf("NewGRPCClient: %v", err)
+			}
+			return c
+		}
+	}
+	httpClient := func(responses ...*http.Response) func(*testing.T) *Client {
+		return func(t *testing.T) *Client {
+			mock := &mockTransport{}
+			for _, r := range responses {
+				mock.addResult(r, nil)
+			}
+			c, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: otelhttp.NewTransport(mock)}))
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			return c
+		}
+	}
+	jsonResp := func(body string) *http.Response {
+		return &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": {"application/json"}}, Body: bodyReader(body)}
+	}
+	unavailable := func() *http.Response {
+		return &http.Response{StatusCode: 503, Body: bodyReader("")}
+	}
+
+	getBucket := func(t *testing.T, c *Client) {
+		if _, err := c.Bucket(bucket).Attrs(ctx); err != nil {
+			t.Fatalf("Bucket.Attrs: %v", err)
+		}
+	}
+	listObjects := func(t *testing.T, c *Client) {
+		if _, err := c.Bucket(bucket).Objects(ctx, nil).Next(); !errors.Is(err, iterator.Done) {
+			t.Fatalf("ObjectIterator.Next: got %v, want iterator.Done", err)
+		}
+	}
+	const chunk = googleapi.MinUploadChunkSize // 256 KiB.
+	session := func() *http.Response {
+		return &http.Response{StatusCode: 200, Header: http.Header{"Location": {"https://example.com/upload?uploadType=resumable&upload_id=abc"}}, Body: bodyReader("")}
+	}
+	incomplete := func() *http.Response {
+		return &http.Response{StatusCode: 200, Header: http.Header{"X-Http-Status-Code-Override": {"308"}}, Body: bodyReader("")}
+	}
+	writtenObject := func() *http.Response {
+		return jsonResp(fmt.Sprintf(`{"bucket":"bucket","name":"object","size":"%d"}`, 2*chunk))
+	}
+	resumableWrite := func(t *testing.T, c *Client) {
+		w := c.Bucket(bucket).Object("object").NewWriter(ctx)
+		w.ChunkSize = chunk
+		w.DisableAutoChecksum = true // The HTTP responses carry no checksum.
+		if _, err := w.Write(make([]byte, 2*chunk)); err != nil {
+			t.Fatalf("Write: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("Close: %v", err)
+		}
+	}
+
+	for _, tc := range []struct {
+		name       string
+		devTracing bool
+		client     func(*testing.T) *Client
+		run        func(*testing.T, *Client)
+		// listSpan is the storage span that must carry the destination
+		// attributes, if any.
+		listSpan string
+		// wantAttempts are the attributes of the attempt spans, sorted by
+		// attempt number.
+		wantAttempts []attemptSpanAttrs
+	}{
+		{
+			name:         "grpc/Bucket.Attrs retried",
+			devTracing:   true,
+			client:       grpcClient(1),
+			run:          getBucket,
+			wantAttempts: []attemptSpanAttrs{{1, dest}, {2, dest}},
+		},
+		{
+			name:         "grpc/Bucket.Objects",
+			devTracing:   true,
+			client:       grpcClient(0),
+			run:          listObjects,
+			listSpan:     "grpcStorageClient.ObjectsListCall",
+			wantAttempts: []attemptSpanAttrs{{1, dest}},
+		},
+		{
+			name:         "http/Bucket.Attrs retried",
+			devTracing:   true,
+			client:       httpClient(unavailable(), jsonResp(`{"name":"bucket"}`)),
+			run:          getBucket,
+			wantAttempts: []attemptSpanAttrs{{1, dest}, {2, dest}},
+		},
+		{
+			name:         "http/Bucket.Objects",
+			devTracing:   true,
+			client:       httpClient(jsonResp(`{"kind":"storage#objects"}`)),
+			run:          listObjects,
+			listSpan:     "httpStorageClient.ObjectsListCall",
+			wantAttempts: []attemptSpanAttrs{{1, dest}},
+		},
+		{
+			// The session start, both chunks (attempt spans under
+			// Storage.UploadChunk spans) and the final request are sent by
+			// the googleapi media uploader, not run, so they carry no
+			// attempt number.
+			name:         "http/resumable write",
+			devTracing:   true,
+			client:       httpClient(session(), incomplete(), incomplete(), writtenObject()),
+			run:          resumableWrite,
+			wantAttempts: []attemptSpanAttrs{{0, dest}, {0, dest}, {0, dest}, {0, dest}},
+		},
+		{
+			name:   "grpc/dev tracing disabled",
+			client: grpcClient(1),
+			run:    getBucket,
+		},
+		{
+			name:   "http/dev tracing disabled",
+			client: httpClient(unavailable(), jsonResp(`{"name":"bucket"}`)),
+			run:    getBucket,
+		},
+		{
+			name:   "http/Bucket.Objects dev tracing disabled",
+			client: httpClient(jsonResp(`{"kind":"storage#objects"}`)),
+			run:    listObjects,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() { te.Unregister(ctx) })
+			t.Setenv(storageOtelTracingDevVar, strconv.FormatBool(tc.devTracing))
+			t.Setenv(storageBucketMetadataDisabledVar, "false")
+			c := tc.client(t)
+			t.Cleanup(func() { c.Close() })
+			c.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}))
+			// A cached bucket avoids the background metadata fetch.
+			c.bucketMetadataCache.put(bucket, resolved)
+
+			tc.run(t, c)
+
+			spans := te.Spans()
+			if !tc.devTracing {
+				attemptSpans := 0
+				for _, s := range spans {
+					if s.InstrumentationScope.Name != defaultTracerName {
+						attemptSpans++
+					}
+					if got := spanAttemptAttrs(s.Attributes); got != (attemptSpanAttrs{}) {
+						t.Errorf("span %s has attributes %+v, want none when dev tracing is disabled", s.Name, got)
+					}
+				}
+				if attemptSpans == 0 {
+					t.Error("got no attempt spans")
+				}
+				return
+			}
+			var gotAttempts []attemptSpanAttrs
+			for _, s := range spans {
+				// Attempt spans come from otelgrpc or otelhttp.
+				if s.InstrumentationScope.Name != defaultTracerName {
+					gotAttempts = append(gotAttempts, spanAttemptAttrs(s.Attributes))
+				}
+			}
+			slices.SortFunc(gotAttempts, func(a, b attemptSpanAttrs) int { return int(a.Attempt - b.Attempt) })
+			if diff := cmp.Diff(tc.wantAttempts, gotAttempts); diff != "" {
+				t.Errorf("attempt span attributes mismatch (-want +got):\n%s", diff)
+			}
+			if tc.listSpan != "" {
+				listSpans := findSpans(spans, tc.listSpan)
+				if len(listSpans) == 0 {
+					t.Errorf("%s span not found", tc.listSpan)
+				}
+				for _, s := range listSpans {
+					if got := spanAttemptAttrs(s.Attributes).Destination; got != dest {
+						t.Errorf("%s destination = %v, want %v", tc.listSpan, got, dest)
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestStartObjectsListCallSpan(t *testing.T) {
+	t.Setenv(storageOtelTracingDevVar, "true")
+	const bucket = "list-bucket"
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() { te.Unregister(ctx) })
+
+	cache := newBucketMetadataCache(10, &mockMetadataFetcher{
+		fetchFunc: func(context.Context, string) (string, string, error) {
+			return "projects/p1/buckets/" + bucket, "us-west1", nil
+		},
+	})
+	done := make(chan struct{}, 1)
+	cache.fetchDone = done
+	listCtx := contextWithListObjectsCache(ctx, cache)
+
+	startPage := func(ctx context.Context) {
+		t.Helper()
+		pageCtx, _ := startObjectsListCallSpan(ctx, bucket, "ObjectsListCall")
+		endSpan(pageCtx, nil)
+	}
+	// The first page records the placeholder while the metadata is fetched.
+	startPage(listCtx)
+	select {
+	case <-done:
+	case <-time.After(fetchBackgroundTimeout):
+		t.Fatal("timeout waiting for fetchBackground completion")
+	}
+	// Later pages record the fetched metadata.
+	startPage(listCtx)
+	// Without the cache, no destination is recorded.
+	startPage(ctx)
+
+	var got [][2]string
+	for _, s := range te.Spans() {
+		got = append(got, spanAttemptAttrs(s.Attributes).Destination)
+	}
+	want := [][2]string{
+		{storageResourceNamePrefix + "projects/_/buckets/" + bucket, "global"},
+		{storageResourceNamePrefix + "projects/p1/buckets/" + bucket, "us-west1"},
+		{},
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("ObjectsListCall destination attributes mismatch (-want +got):\n%s", diff)
+	}
+
+	// A page failing because the bucket does not exist evicts the bucket.
+	pageCtx, _ := startObjectsListCallSpan(listCtx, bucket, "ObjectsListCall")
+	endSpan(pageCtx, ErrBucketNotExist)
+	if _, found := cache.get(bucket); found {
+		t.Error("bucket remains in cache after ErrBucketNotExist; want it evicted")
 	}
 }
