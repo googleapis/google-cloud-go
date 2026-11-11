@@ -59,6 +59,8 @@ import (
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -1755,6 +1757,11 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "appendable"),
 			},
+			// Appendable uploads always use an upload session, so even a
+			// single chunk smaller than the default ChunkSize is traced.
+			wantChunks: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 1024},
+			},
 			grpcOnly: true,
 		},
 		{
@@ -2053,9 +2060,17 @@ type uploadChunkSpanInfo struct {
 // Object.Writer span and that no other span carries chunk attributes.
 func extractAndVerifyUploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) []uploadChunkSpanInfo {
 	t.Helper()
+	return extractAndVerifyUploadChunkSpansWithParent(t, spans, "Object.Writer")
+}
+
+// extractAndVerifyUploadChunkSpansWithParent is like
+// extractAndVerifyUploadChunkSpans, but verifies that each Storage.UploadChunk
+// span is a child of the span named parentName.
+func extractAndVerifyUploadChunkSpansWithParent(t *testing.T, spans tracetest.SpanStubs, parentName string) []uploadChunkSpanInfo {
+	t.Helper()
 	var writer *tracetest.SpanStub
 	for i := range spans {
-		if spans[i].Name == appendPackageName("Object.Writer") {
+		if spans[i].Name == appendPackageName(parentName) {
 			writer = &spans[i]
 		}
 	}
@@ -2063,10 +2078,10 @@ func extractAndVerifyUploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) [
 	for _, s := range spans {
 		if s.Name == appendPackageName(uploadChunkSpanName) {
 			if writer == nil {
-				t.Fatalf("got %s span without an Object.Writer span", uploadChunkSpanName)
+				t.Fatalf("got %s span without an %s span", uploadChunkSpanName, parentName)
 			}
 			if gotID, wantID := s.Parent.SpanID(), writer.SpanContext.SpanID(); gotID != wantID {
-				t.Errorf("%s span parent = %v, want Object.Writer span %v", uploadChunkSpanName, gotID, wantID)
+				t.Errorf("%s span parent = %v, want %s span %v", uploadChunkSpanName, gotID, parentName, wantID)
 			}
 			info := uploadChunkSpanInfo{Number: -1, Offset: -1, SizeBytes: -1, Failed: s.Status.Code == otcodes.Error}
 			for _, a := range s.Attributes {
@@ -2271,6 +2286,298 @@ func TestWriterUploadChunkSpans(t *testing.T) {
 				})
 			}
 		})
+	}
+}
+
+// appendChunkTraceTestServer is a fake storage server for appendable
+// BidiWriteObject uploads. Like GCS, it acknowledges each flush of an
+// unfinalized object with the object resource, whose size is the persisted
+// size, and the first message of a takeover with the current object.
+type appendChunkTraceTestServer struct {
+	storagepb.UnimplementedStorageServer
+
+	mu        sync.Mutex
+	persisted int64
+}
+
+func (s *appendChunkTraceTestServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		n := int64(len(req.GetChecksummedData().GetContent()))
+		flush := req.GetFlush() || req.GetFinishWrite()
+
+		s.mu.Lock()
+		if size := req.GetWriteOffset() + n; flush && size > s.persisted {
+			s.persisted = size
+		}
+		obj := &storagepb.Object{Bucket: "projects/_/buckets/bucket", Name: "object", Generation: 1, Size: s.persisted}
+		s.mu.Unlock()
+
+		if req.GetFinishWrite() {
+			obj.FinalizeTime = timestamppb.Now()
+		}
+		if flush || (req.GetAppendObjectSpec() != nil && n == 0) {
+			if err := stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{Resource: obj},
+			}); err != nil {
+				return err
+			}
+		}
+		if req.GetFinishWrite() {
+			return nil
+		}
+	}
+}
+
+func TestAppendableWriterUploadChunkSpans(t *testing.T) {
+	const kib = 1024
+	const mib = 1024 * kib
+	testCases := []struct {
+		name            string
+		chunkSize       int
+		payloadSize     int
+		finalizeOnClose bool
+		// takeoverOffset, if positive, is the size of an existing
+		// unfinalized object that the Writer takes over.
+		takeoverOffset int64
+		want           []uploadChunkSpanInfo
+	}{
+		{
+			name:            "multiple chunks",
+			chunkSize:       256 * kib,
+			payloadSize:     mib,
+			finalizeOnClose: true,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+				{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
+			},
+		},
+		{
+			name:        "final partial chunk without finalizing",
+			chunkSize:   256 * kib,
+			payloadSize: mib + 100*kib,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+				{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
+				{Number: 5, Offset: mib, SizeBytes: 100 * kib},
+			},
+		},
+		{
+			// Unlike a resumable upload, an appendable upload that fits in
+			// one chunk still uses an upload session, so its chunk is traced.
+			name:            "payload smaller than one chunk",
+			chunkSize:       256 * kib,
+			payloadSize:     100 * kib,
+			finalizeOnClose: true,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 100 * kib},
+			},
+		},
+		{
+			name:            "zero chunk size",
+			chunkSize:       0,
+			payloadSize:     mib,
+			finalizeOnClose: true,
+		},
+		{
+			// Chunks start at the takeover offset, so numbering follows the
+			// object offset of each chunk.
+			name:            "takeover",
+			chunkSize:       256 * kib,
+			payloadSize:     600 * kib,
+			finalizeOnClose: true,
+			takeoverOffset:  100 * kib,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 100 * kib, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 356 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 612 * kib, SizeBytes: 88 * kib},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := t.Context()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() { te.Unregister(context.Background()) })
+			t.Setenv(storageOtelTracingDevVar, "true")
+			t.Setenv(storageBucketMetadataDisabledVar, "true")
+
+			startFakeStorageServer(t, &appendChunkTraceTestServer{persisted: tc.takeoverOffset})
+			client, err := NewGRPCClient(ctx)
+			if err != nil {
+				t.Fatalf("NewGRPCClient: %v", err)
+			}
+			t.Cleanup(func() { client.Close() })
+
+			obj := client.Bucket("bucket").Object("object")
+			parentName := "Object.Writer"
+			var w *Writer
+			if tc.takeoverOffset > 0 {
+				parentName = "Object.WriterFromAppendableObject"
+				var off int64
+				w, off, err = obj.Generation(1).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
+					ChunkSize:           tc.chunkSize,
+					FinalizeOnClose:     tc.finalizeOnClose,
+					DisableAutoChecksum: true,
+				})
+				if err != nil {
+					t.Fatalf("NewWriterFromAppendableObject: %v", err)
+				}
+				if off != tc.takeoverOffset {
+					t.Fatalf("takeover offset = %d, want %d", off, tc.takeoverOffset)
+				}
+			} else {
+				w = obj.NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = tc.finalizeOnClose
+				w.ChunkSize = tc.chunkSize
+				w.DisableAutoChecksum = true
+			}
+			if _, err := w.Write(make([]byte, tc.payloadSize)); err != nil {
+				t.Fatalf("Write: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("Close: %v", err)
+			}
+
+			if diff := cmp.Diff(tc.want, extractAndVerifyUploadChunkSpansWithParent(t, te.Spans(), parentName)); diff != "" {
+				t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+			}
+		})
+	}
+}
+
+// TestGRPCUploadChunkTrackerResourceAck verifies which chunk spans a
+// BidiWriteObjectResponse carrying the object resource completes.
+func TestGRPCUploadChunkTrackerResourceAck(t *testing.T) {
+	const chunk = googleapi.MinUploadChunkSize
+	data := func(offset int64) *storagepb.BidiWriteObjectRequest {
+		return &storagepb.BidiWriteObjectRequest{
+			WriteOffset: offset,
+			Data: &storagepb.BidiWriteObjectRequest_ChecksummedData{
+				ChecksummedData: &storagepb.ChecksummedData{Content: make([]byte, chunk)},
+			},
+			Flush: true,
+		}
+	}
+	resource := func(size int64, finalized bool) *storagepb.BidiWriteObjectResponse {
+		obj := &storagepb.Object{Size: size}
+		if finalized {
+			obj.FinalizeTime = timestamppb.Now()
+		}
+		return &storagepb.BidiWriteObjectResponse{
+			WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{Resource: obj},
+		}
+	}
+	testCases := []struct {
+		name  string
+		first *storagepb.BidiWriteObjectRequest
+		// resp acknowledges the first chunk of two in flight.
+		resp *storagepb.BidiWriteObjectResponse
+		// wantEnded is the number of chunk spans that resp ends.
+		wantEnded int
+	}{
+		{
+			name: "appendable new object, unfinalized",
+			first: &storagepb.BidiWriteObjectRequest{
+				FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
+					WriteObjectSpec: &storagepb.WriteObjectSpec{Appendable: proto.Bool(true)},
+				},
+			},
+			resp:      resource(chunk, false),
+			wantEnded: 1,
+		},
+		{
+			name: "appendable takeover, unfinalized",
+			first: &storagepb.BidiWriteObjectRequest{
+				FirstMessage: &storagepb.BidiWriteObjectRequest_AppendObjectSpec{
+					AppendObjectSpec: &storagepb.AppendObjectSpec{Generation: 1},
+				},
+			},
+			resp:      resource(chunk, false),
+			wantEnded: 1,
+		},
+		{
+			name: "appendable finalized",
+			first: &storagepb.BidiWriteObjectRequest{
+				FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
+					WriteObjectSpec: &storagepb.WriteObjectSpec{Appendable: proto.Bool(true)},
+				},
+			},
+			resp:      resource(chunk, true),
+			wantEnded: 2,
+		},
+		{
+			// A resumable upload returns the object only once it is
+			// finalized, so the resource completes every chunk.
+			name: "resumable",
+			first: &storagepb.BidiWriteObjectRequest{
+				FirstMessage: &storagepb.BidiWriteObjectRequest_UploadId{UploadId: "upload-id"},
+			},
+			resp:      resource(chunk, false),
+			wantEnded: 2,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() { te.Unregister(context.Background()) })
+			t.Setenv(storageOtelTracingDevVar, "true")
+			ctx, _ := startSpan(context.Background(), "Object.Writer")
+
+			ct := &grpcUploadChunkTracker{parentCtx: ctx, chunkSize: chunk}
+			first := data(0)
+			proto.Merge(first, tc.first)
+			ct.onRequest(first)
+			ct.onRequest(data(chunk))
+			ct.onResponse(tc.resp)
+			if got := len(findSpans(te.Spans(), uploadChunkSpanName)); got != tc.wantEnded {
+				t.Errorf("after first ack: got %d ended %s spans, want %d", got, uploadChunkSpanName, tc.wantEnded)
+			}
+			ct.onResponse(resource(2*chunk, false))
+			if got := len(findSpans(te.Spans(), uploadChunkSpanName)); got != 2 {
+				t.Errorf("after second ack: got %d ended %s spans, want 2", got, uploadChunkSpanName)
+			}
+		})
+	}
+}
+
+// TestGRPCUploadChunkTrackerEmptyFlush verifies that a flush carrying no data,
+// such as one sent by Writer.Flush after the buffered data was already sent,
+// completes the open chunk span once it is acknowledged.
+func TestGRPCUploadChunkTrackerEmptyFlush(t *testing.T) {
+	const chunk = googleapi.MinUploadChunkSize
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() { te.Unregister(context.Background()) })
+	t.Setenv(storageOtelTracingDevVar, "true")
+	ctx, _ := startSpan(context.Background(), "Object.Writer")
+
+	ct := &grpcUploadChunkTracker{parentCtx: ctx, chunkSize: chunk}
+	ct.onRequest(&storagepb.BidiWriteObjectRequest{
+		FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
+			WriteObjectSpec: &storagepb.WriteObjectSpec{Appendable: proto.Bool(true)},
+		},
+		Data: &storagepb.BidiWriteObjectRequest_ChecksummedData{
+			ChecksummedData: &storagepb.ChecksummedData{Content: make([]byte, 100)},
+		},
+	})
+	ct.onRequest(&storagepb.BidiWriteObjectRequest{WriteOffset: 100, Flush: true})
+	ct.onResponse(&storagepb.BidiWriteObjectResponse{
+		WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{PersistedSize: 100},
+	})
+	if got := len(findSpans(te.Spans(), uploadChunkSpanName)); got != 1 {
+		t.Errorf("got %d ended %s spans, want 1", got, uploadChunkSpanName)
 	}
 }
 

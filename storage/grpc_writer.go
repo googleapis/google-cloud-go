@@ -231,15 +231,16 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		appendGen:             params.appendGen,
 		finalizeOnClose:       params.finalizeOnClose,
 
-		buf:              nil, // Allocated lazily on first buffered write.
-		chunkSize:        chunkSize,
-		writeQuantum:     writeQuantum,
-		lastSegmentStart: lastSegmentStart,
-		sendableUnits:    sendableUnits,
-		bufUnsentIdx:     0,
-		bufFlushedIdx:    0,
-		bufBaseOffset:    0,
-		awaitingFirstAck: true,
+		buf:                nil, // Allocated lazily on first buffered write.
+		chunkSize:          chunkSize,
+		requestedChunkSize: params.chunkSize,
+		writeQuantum:       writeQuantum,
+		lastSegmentStart:   lastSegmentStart,
+		sendableUnits:      sendableUnits,
+		bufUnsentIdx:       0,
+		bufFlushedIdx:      0,
+		bufBaseOffset:      0,
+		awaitingFirstAck:   true,
 
 		budget: chunkRetryBudget{
 			deadline: chunkRetryDeadline,
@@ -313,6 +314,9 @@ type gRPCWriter struct {
 
 	buf       []byte
 	chunkSize int
+	// requestedChunkSize is the ChunkSize set by the application, before
+	// alignment. It is zero or negative if chunking was not requested.
+	requestedChunkSize int
 	// A writeQuantum is the largest quantity of data which can be sent to the
 	// service in a single message.
 	writeQuantum     int
@@ -445,6 +449,13 @@ func (w *gRPCWriter) flushOutstanding() bool {
 
 func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
 	if w.append {
+		// Appendable uploads always use an upload session, even for objects
+		// that fit in one chunk, so record Storage.UploadChunk spans whenever
+		// the application requested chunking. w.forceOneShot cannot be used
+		// here: gatherFirstBuffer also sets it for objects that fit in w.buf.
+		if w.requestedChunkSize > 0 {
+			w.preRunCtx = withUploadChunkSize(w.preRunCtx, w.chunkSize)
+		}
 		// Appendable object semantics
 		if w.appendGen >= 0 {
 			return w.newGRPCAppendTakeoverWriteBufferSender()

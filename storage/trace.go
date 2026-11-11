@@ -360,7 +360,7 @@ func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 
 // attemptStatsHandler records gcp.client.retry.attempt_number and the payload
 // offset and size on the transport's gRPC attempt span, and Storage.UploadChunk
-// spans for resumable BidiWriteObject streams.
+// spans for resumable and appendable BidiWriteObject streams.
 type attemptStatsHandler struct{}
 
 // payloadAttempt tracks the object bytes sent or received on one gRPC stream.
@@ -611,7 +611,7 @@ func isOneshotUpload(w *Writer) bool {
 }
 
 // withUploadChunkSize attaches the 256 KiB-aligned chunk size to ctx for
-// resumable uploads when dev tracing is enabled.
+// resumable and appendable uploads when dev tracing is enabled.
 func withUploadChunkSize(ctx context.Context, chunkSize int) context.Context {
 	if _, ok := recordingSpan(ctx); !ok || chunkSize <= 0 {
 		return ctx
@@ -620,7 +620,8 @@ func withUploadChunkSize(ctx context.Context, chunkSize int) context.Context {
 }
 
 // uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
-// gRPC resumable upload, which may be sent across several messages.
+// gRPC resumable or appendable upload, which may be sent across several
+// messages.
 type uploadChunkSpan struct {
 	ctx       context.Context
 	span      trace.Span
@@ -646,19 +647,37 @@ type grpcUploadChunkTracker struct {
 	confirmedOffset int64
 	ended           bool
 	endErr          error
+	// appendable is set once the stream is known to upload an appendable
+	// object, which stays unfinalized after flushes.
+	appendable bool
 }
 
 func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectRequest) {
 	n := writeRequestDataLen(req)
+	flushed := req.GetFlush() || req.GetFinishWrite()
+	// The first message of an appendable stream carries an appendable
+	// WriteObjectSpec or, for takeovers and reconnects, an AppendObjectSpec.
+	appendable := req.GetAppendObjectSpec() != nil || req.GetWriteObjectSpec().GetAppendable()
+	if n == 0 && !flushed && !appendable {
+		return
+	}
+
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
+	if appendable {
+		ct.appendable = true
+	}
 	if n == 0 {
+		// A flush without data, such as one sent by Writer.Flush or Close
+		// after all buffered data was sent, completes the open chunk.
+		if m := len(ct.spans); m > 0 && flushed {
+			ct.spans[m-1].flushed = true
+			ct.finishConfirmedLocked()
+		}
 		return
 	}
 	offset := req.GetWriteOffset()
 	number := offset/ct.chunkSize + 1
-	flushed := req.GetFlush() || req.GetFinishWrite()
-
-	ct.mu.Lock()
-	defer ct.mu.Unlock()
 	if ct.ended && number <= (ct.lastEndOffset+ct.chunkSize-1)/ct.chunkSize {
 		return
 	}
@@ -691,19 +710,27 @@ func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectReques
 }
 
 func (ct *grpcUploadChunkTracker) onResponse(resp *storagepb.BidiWriteObjectResponse) {
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
 	var flushOffset int64
 	switch ws := resp.GetWriteStatus().(type) {
 	case *storagepb.BidiWriteObjectResponse_PersistedSize:
 		flushOffset = ws.PersistedSize
 	case *storagepb.BidiWriteObjectResponse_Resource:
-		if ws.Resource != nil {
-			flushOffset = math.MaxInt64
+		if ws.Resource == nil {
+			return
+		}
+		// The object is returned once it is finalized, when every chunk is
+		// persisted. GCS also acknowledges flushes of an unfinalized
+		// appendable object with the object, whose size is the persisted
+		// size; later chunks may still be in flight.
+		flushOffset = math.MaxInt64
+		if ct.appendable && ws.Resource.GetFinalizeTime() == nil {
+			flushOffset = ws.Resource.GetSize()
 		}
 	default:
 		return
 	}
-	ct.mu.Lock()
-	defer ct.mu.Unlock()
 	if flushOffset > ct.confirmedOffset {
 		ct.confirmedOffset = flushOffset
 	}
