@@ -2487,6 +2487,9 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("error opening multirangedownloader: %v", err)
 		}
+		if reader.Attrs.Unfinalized {
+			t.Errorf("Attrs.Unfinalized = true, want false")
+		}
 		callback1 := func(x, y int64, err error) {
 			res[0].offset = x
 			res[0].limit = y

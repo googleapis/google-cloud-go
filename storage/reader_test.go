@@ -869,6 +869,7 @@ func TestReaderUnfinalizedAttrs(t *testing.T) {
 	if got := r.Remain(); got != -1 {
 		t.Errorf("Remain() with Unfinalized=true: got %d, want -1", got)
 	}
+	r.recordRead(10, nil)
 	r.Attrs.Unfinalized = false
 	if got := r.Remain(); got != 42 {
 		t.Errorf("Remain() with Unfinalized=false: got %d, want 42", got)
