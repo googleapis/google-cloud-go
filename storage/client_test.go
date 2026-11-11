@@ -884,6 +884,9 @@ func TestNewRangeReaderRemainEmulated(t *testing.T) {
 						if err != nil {
 							t.Fatalf("NewRangeReader: %v", err)
 						}
+						if r.Attrs.Unfinalized {
+							t.Errorf("Attrs.Unfinalized = true, want false")
+						}
 						if got := r.Remain(); got != tc.wantLen {
 							t.Errorf("Remain() before read = %d, want %d", got, tc.wantLen)
 						}
@@ -1884,6 +1887,12 @@ func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 	if err != nil {
 		t.Errorf("NewRangeReader: %v", err)
 	}
+	if !r.Attrs.Unfinalized {
+		t.Errorf("Attrs.Unfinalized = false, want true")
+	}
+	if got := r.Remain(); got != -1 {
+		t.Errorf("Remain() = %d, want -1", got)
+	}
 
 	// Copy exactly the same amount of bytes as object size. This would
 	// trigger a seen == size check for the next copy.
@@ -2481,6 +2490,9 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
 		if err != nil {
 			t.Fatalf("error opening multirangedownloader: %v", err)
+		}
+		if reader.Attrs.Unfinalized {
+			t.Errorf("Attrs.Unfinalized = true, want false")
 		}
 		callback1 := func(x, y int64, err error) {
 			res[0].offset = x
