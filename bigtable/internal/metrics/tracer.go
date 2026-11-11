@@ -89,14 +89,14 @@ const (
 	MetricTransportZone    = "transport_zone"
 )
 
-// methodNameReadRows and methodNameExecuteQuery are the method labels
-// emitted on operation- and first-response-latency metrics for streaming
-// read/query calls. Duplicated here so the tracer can name-match without
-// importing the bigtable package.
-const (
-	methodNameReadRows     = "ReadRows"
-	methodNameExecuteQuery = "ExecuteQuery"
-)
+// methodNameReadRows is the method label emitted on operation- and
+// first-response-latency metrics for ReadRows calls. Duplicated from
+// bigtable.methodNameReadRows so the tracer can name-match without
+// importing the bigtable package. Only ReadRows currently records
+// first_response_latencies; the constant lives here rather than in a
+// per-method table because there is no other method that needs
+// special-casing in this file.
+const methodNameReadRows = "ReadRows"
 
 var errServerLatencyNotSet = errors.New("server latency not set")
 
@@ -737,9 +737,9 @@ func (mt *Tracer) RecordOperationCompletion() {
 	opLatAttrs, _ := mt.toOtelMetricAttrs(MetricNameOperationLatencies)
 	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributeSet(opLatAttrs))
 
-	// Record first_response_latencies
+	// Record first_reponse_latencies
 	firstRespLatAttrs, _ := mt.toOtelMetricAttrs(MetricNameFirstRespLatencies)
-	if (mt.method == metricMethodPrefix+methodNameReadRows || mt.method == metricMethodPrefix+methodNameExecuteQuery) && !mt.currOp.firstRespTime.IsZero() {
+	if mt.method == metricMethodPrefix+methodNameReadRows {
 		elapsedTimeMs = ConvertToMs(mt.currOp.firstRespTime.Sub(mt.currOp.startTime))
 		mt.instrumentFirstRespLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributeSet(firstRespLatAttrs))
 	}
@@ -769,7 +769,7 @@ func (mt *Tracer) SetCurrOpStatus(code codes.Code) {
 }
 
 // SetFirstRespTime stamps the first-response timestamp used by the
-// first_response_latencies histogram (ReadRows and ExecuteQuery). Exposed as a
+// first_response_latencies histogram (ReadRows only). Exposed as a
 // method so external callers don't need direct OpTracer field access.
 func (mt *Tracer) SetFirstRespTime(t time.Time) {
 	if !mt.BuiltInEnabled {

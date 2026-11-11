@@ -380,7 +380,6 @@ func (bs *BoundStatement) execute(execCtx context.Context, f func(ResultRow) boo
 	var prevError error
 
 	mt := metrics.FromContext(execCtx)
-	firstResponseRecorded := false
 
 	// Metadata could change on planned query refresh.
 	// E.g.
@@ -449,10 +448,6 @@ func (bs *BoundStatement) execute(execCtx context.Context, f func(ResultRow) boo
 		for {
 			proto.Reset(eqResp)
 			err := stream.RecvMsg(eqResp)
-			if !firstResponseRecorded && (err == nil || err == io.EOF) {
-				firstResponseRecorded = true
-				mt.SetFirstRespTime(time.Now())
-			}
 			if err != nil {
 				if receivedResumeToken && isQueryExpiredViolation(err) {
 					err = status.Error(codes.Internal, "bigtable: Query plan expired during a retry attempt")

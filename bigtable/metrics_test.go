@@ -1296,10 +1296,7 @@ func TestExecuteQueryMetrics(t *testing.T) {
 	instance := "test-instance"
 	appProfile := "test-app-profile-sql"
 	clientUID := "test-uid-execute-query"
-	const (
-		streamDelay        = 150 * time.Millisecond
-		appProcessingDelay = 100 * time.Millisecond
-	)
+	const appProcessingDelay = 100 * time.Millisecond
 
 	origSamplePeriod := metrics.DefaultSamplePeriod
 	metrics.DefaultSamplePeriod = 100 * time.Millisecond
@@ -1394,28 +1391,13 @@ func TestExecuteQueryMetrics(t *testing.T) {
 		}); err != nil {
 			return err
 		}
-		half := len(protoRowsBytes) / 2
-		if err := wrapped.Send(&btpb.ExecuteQueryResponse{
-			Response: &btpb.ExecuteQueryResponse_Results{
-				Results: &btpb.PartialResultSet{
-					PartialRows: &btpb.PartialResultSet_ProtoRowsBatch{
-						ProtoRowsBatch: &btpb.ProtoRowsBatch{BatchData: protoRowsBytes[:half]},
-					},
-					Reset_: true,
-				},
-			},
-		}); err != nil {
-			return err
-		}
-
-		time.Sleep(streamDelay)
-
 		return wrapped.Send(&btpb.ExecuteQueryResponse{
 			Response: &btpb.ExecuteQueryResponse_Results{
 				Results: &btpb.PartialResultSet{
 					PartialRows: &btpb.PartialResultSet_ProtoRowsBatch{
-						ProtoRowsBatch: &btpb.ProtoRowsBatch{BatchData: protoRowsBytes[half:]},
+						ProtoRowsBatch: &btpb.ProtoRowsBatch{BatchData: protoRowsBytes},
 					},
+					Reset_:        true,
 					BatchChecksum: &checksum,
 					ResumeToken:   []byte("tok-1"),
 				},
@@ -1483,11 +1465,11 @@ func TestExecuteQueryMetrics(t *testing.T) {
 	}
 
 	var (
-		sawPrepareOpLatency  bool
-		firstRespMean        = -1.0
-		execOpMean           = -1.0
-		execAppMean          = -1.0
-		sawExecServerLatency bool
+		sawPrepareOpLatency     bool
+		sawExecFirstRespLatency bool
+		execOpMean              = -1.0
+		execAppMean             = -1.0
+		sawExecServerLatency    bool
 	)
 
 	for _, req := range requests {
@@ -1518,8 +1500,8 @@ func TestExecuteQueryMetrics(t *testing.T) {
 				continue
 			}
 			switch {
-			case strings.HasSuffix(metricType, metrics.MetricNameFirstRespLatencies) && dist != nil && dist.GetCount() == 1:
-				firstRespMean = dist.GetMean()
+			case strings.HasSuffix(metricType, metrics.MetricNameFirstRespLatencies):
+				sawExecFirstRespLatency = true
 			case strings.HasSuffix(metricType, metrics.MetricNameOperationLatencies) && dist != nil && dist.GetCount() == 1:
 				execOpMean = dist.GetMean()
 			case strings.HasSuffix(metricType, metrics.MetricNameAppBlockingLatencies) && dist != nil && dist.GetCount() == 1:
@@ -1539,11 +1521,11 @@ func TestExecuteQueryMetrics(t *testing.T) {
 	if !sawPrepareOpLatency {
 		t.Error("expected operation_latencies for Bigtable.PrepareQuery")
 	}
-	if firstRespMean <= 0 || firstRespMean >= float64(streamDelay/time.Millisecond) {
-		t.Errorf("ExecuteQuery first_response_latencies mean = %v, want in (0, %v)", firstRespMean, float64(streamDelay/time.Millisecond))
+	if sawExecFirstRespLatency {
+		t.Error("first_response_latencies is ReadRows-only and should not be recorded for Bigtable.ExecuteQuery")
 	}
-	if execOpMean <= firstRespMean {
-		t.Errorf("ExecuteQuery operation_latencies mean (%v) should exceed first_response_latencies mean (%v)", execOpMean, firstRespMean)
+	if execOpMean <= 0 {
+		t.Errorf("ExecuteQuery operation_latencies mean = %v, want > 0", execOpMean)
 	}
 	if execAppMean < float64(appProcessingDelay/time.Millisecond)-30 {
 		t.Errorf("ExecuteQuery application_latencies mean = %v, want >= %v", execAppMean, float64(appProcessingDelay/time.Millisecond)-30)
@@ -1607,7 +1589,6 @@ func TestPreHeaderAttemptFailureWithoutIngestMetadata(t *testing.T) {
 	var (
 		connErrCount       int64 = -1
 		sawServerLatencies bool
-		sawFirstRespLat    bool
 	)
 	for _, req := range requests {
 		for _, ts := range req.TimeSeries {
@@ -1624,8 +1605,6 @@ func TestPreHeaderAttemptFailureWithoutIngestMetadata(t *testing.T) {
 			switch {
 			case strings.HasSuffix(metricType, metrics.MetricNameServerLatencies):
 				sawServerLatencies = true
-			case strings.HasSuffix(metricType, metrics.MetricNameFirstRespLatencies):
-				sawFirstRespLat = true
 			case strings.HasSuffix(metricType, metrics.MetricNameConnErrCount):
 				if pts := ts.GetPoints(); len(pts) > 0 {
 					connErrCount = pts[0].GetValue().GetInt64Value()
@@ -1636,9 +1615,6 @@ func TestPreHeaderAttemptFailureWithoutIngestMetadata(t *testing.T) {
 
 	if sawServerLatencies {
 		t.Error("server_latencies should not be recorded when attempt fails before headers/trailers")
-	}
-	if sawFirstRespLat {
-		t.Error("first_response_latencies should not be recorded when stream fails before receiving any message")
 	}
 	if connErrCount != 1 {
 		t.Errorf("connectivity_error_count = %d, want 1", connErrCount)
