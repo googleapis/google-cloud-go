@@ -416,6 +416,39 @@ func (sl *sessionList) ReadyCount() int {
 	return sl.readyCount
 }
 
+// AfeSnapshot is a value view of a ready afeHandle returned by ReadyAfes;
+// hot-path selection + dequeue uses CheckoutWithPicker directly under sl.mu.
+type AfeSnapshot struct {
+	ID             AfeID
+	IdleCount      int
+	NumOutstanding int     // refCount − IdleCount − closingCount, ≥ 0 (active in-flight only)
+	TransportCost  float64 // PeakEwma nanoseconds
+	E2eCost        float64 // PeakEwma nanoseconds
+}
+
+// ReadyAfes returns a snapshot of AFEs with at least one idle session
+// (len(afe.sessions) > 0, matching I3). Hot-path dispatch uses
+// CheckoutWithPicker under sl.mu; ReadyAfes serves slow-path readiness
+// re-checks and unit tests.
+func (sl *sessionList) ReadyAfes() []AfeSnapshot {
+	sl.mu.Lock()
+	defer sl.mu.Unlock()
+	if len(sl.afesWithReady) == 0 {
+		return nil
+	}
+	out := make([]AfeSnapshot, 0, len(sl.afesWithReady))
+	for _, afe := range sl.afesWithReady {
+		out = append(out, AfeSnapshot{
+			ID:             afe.id,
+			IdleCount:      len(afe.sessions),
+			NumOutstanding: afe.inFlightLocked(),
+			TransportCost:  afe.transportEwma.Value(),
+			E2eCost:        afe.e2eEwma.Value(),
+		})
+	}
+	return out
+}
+
 // AfeSnapshotRow is one row of the pool's per-AFE view — mirrors the
 // fields of the internal afeHandle that operators care about. Emitted
 // by sessionList.Snapshot(); consumed by the debug UI (afez / sessionz)

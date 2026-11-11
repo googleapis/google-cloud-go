@@ -45,16 +45,6 @@ func makeHandleWithAfe(t *testing.T, id AfeID) *SessionHandle {
 	return newSessionHandle(s, time.Time{})
 }
 
-// AfeSnapshot is a test-only value view of a ready afeHandle returned by
-// ReadyAfes; production dispatch uses sessionList.CheckoutWithPicker.
-type AfeSnapshot struct {
-	ID             AfeID
-	IdleCount      int
-	NumOutstanding int     // refCount − IdleCount − closingCount, ≥ 0 (active in-flight only)
-	TransportCost  float64 // PeakEwma nanoseconds
-	E2eCost        float64 // PeakEwma nanoseconds
-}
-
 // Checkout dequeues one idle session from the AFE bucket with id
 // (Idle → InFlight). Test-only direct-AFE helper; production callers use
 // CheckoutWithPicker.
@@ -73,28 +63,6 @@ func (sl *sessionList) Checkout(id AfeID) *SessionHandle {
 		sl.removeFromReadyLocked(afe)
 	}
 	return sh
-}
-
-// ReadyAfes returns a test-only snapshot of AFEs with at least one idle
-// session (len(afe.sessions) > 0, matching I3); production callers use
-// CheckoutWithPicker.
-func (sl *sessionList) ReadyAfes() []AfeSnapshot {
-	sl.mu.Lock()
-	defer sl.mu.Unlock()
-	if len(sl.afesWithReady) == 0 {
-		return nil
-	}
-	out := make([]AfeSnapshot, 0, len(sl.afesWithReady))
-	for _, afe := range sl.afesWithReady {
-		out = append(out, AfeSnapshot{
-			ID:             afe.id,
-			IdleCount:      len(afe.sessions),
-			NumOutstanding: afe.inFlightLocked(),
-			TransportCost:  afe.transportEwma.Value(),
-			E2eCost:        afe.e2eEwma.Value(),
-		})
-	}
-	return out
 }
 
 // verifyInvariantsLocked re-derives sessionList's bookkeeping from

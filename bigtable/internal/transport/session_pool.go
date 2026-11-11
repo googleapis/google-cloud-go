@@ -276,11 +276,10 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 			return idle, nil
 		}
 
-		// Slow path: CheckoutWithPicker found no idle session on any ready
-		// AFE. Dying sessions leave sl.readyCount the instant they transition
-		// out of Ready (OnClosing), so the maxSessions gate reflects only
-		// live-or-starting sessions — a miss just means all live sessions are
-		// busy.
+		// Slow path: picker returned nil or 2 checkoutSession raced and returned the same AFE id. Dying sessions leave sl.readyCount
+		// the instant they transition out of Ready (OnClosing), so the
+		// maxSessions gate reflects only live-or-starting sessions —
+		// a miss just means all live sessions are busy.
 		if p.sl.ReadyCount() < p.sizer.MaxSessions() {
 			p.spawnTickOnce(p.poolCtx)
 		}
