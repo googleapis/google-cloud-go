@@ -45,12 +45,64 @@ func makeHandleWithAfe(t *testing.T, id AfeID) *SessionHandle {
 	return newSessionHandle(s, time.Time{})
 }
 
+// AfeSnapshot is a test-only value view of a ready afeHandle returned by
+// ReadyAfes; production dispatch uses sessionList.CheckoutWithPicker.
+type AfeSnapshot struct {
+	ID             AfeID
+	IdleCount      int
+	NumOutstanding int     // refCount − IdleCount − closingCount, ≥ 0 (active in-flight only)
+	TransportCost  float64 // PeakEwma nanoseconds
+	E2eCost        float64 // PeakEwma nanoseconds
+}
+
+// Checkout dequeues one idle session from the AFE bucket with id
+// (Idle → InFlight). Test-only direct-AFE helper; production callers use
+// CheckoutWithPicker.
+func (sl *sessionList) Checkout(id AfeID) *SessionHandle {
+	sl.mu.Lock()
+	defer sl.mu.Unlock()
+	afe := sl.afeHandles[id]
+	if afe == nil {
+		return nil
+	}
+	sh, nowEmpty := afe.dequeueLocked()
+	if sh == nil {
+		return nil
+	}
+	if nowEmpty { // afe leaves the ready set (I3)
+		sl.removeFromReadyLocked(afe)
+	}
+	return sh
+}
+
+// ReadyAfes returns a test-only snapshot of AFEs with at least one idle
+// session (len(afe.sessions) > 0, matching I3); production callers use
+// CheckoutWithPicker.
+func (sl *sessionList) ReadyAfes() []AfeSnapshot {
+	sl.mu.Lock()
+	defer sl.mu.Unlock()
+	if len(sl.afesWithReady) == 0 {
+		return nil
+	}
+	out := make([]AfeSnapshot, 0, len(sl.afesWithReady))
+	for _, afe := range sl.afesWithReady {
+		out = append(out, AfeSnapshot{
+			ID:             afe.id,
+			IdleCount:      len(afe.sessions),
+			NumOutstanding: afe.inFlightLocked(),
+			TransportCost:  afe.transportEwma.Value(),
+			E2eCost:        afe.e2eEwma.Value(),
+		})
+	}
+	return out
+}
+
 // verifyInvariantsLocked re-derives sessionList's bookkeeping from
 // scratch and returns a description of the first invariant violation
 // found (empty string == all invariants hold). Test-only. Caller must
 // hold sl.mu.
 //
-// Checks state invariants I1–I5 documented in session_list.go:65-72.
+// Checks state invariants I1–I5 and I7 documented in session_list.go.
 // I6 is temporal (refCount decrements only in OnSessionClosed) and
 // cannot be verified from a snapshot alone — indirectly guarded via
 // the sequence of assertions in individual tests.
@@ -92,9 +144,14 @@ func (sl *sessionList) verifyInvariantsLocked() string {
 	}
 
 	// I5: every sh in afe.sessions maps back to that afe with
-	// inExpectedCount==true.
+	// inExpectedCount==true and appears at most once in the idle queue.
 	for id, afe := range sl.afeHandles {
+		seenInQueue := make(map[*SessionHandle]bool, len(afe.sessions))
 		for i, sh := range afe.sessions {
+			if seenInQueue[sh] {
+				return fmt.Sprintf("I5: afe=%d sessions[%d] (%p) appears twice in idle queue", id, i, sh)
+			}
+			seenInQueue[sh] = true
 			if got := sl.handleToAfe[sh]; got != afe {
 				return fmt.Sprintf("I5: afe=%d sessions[%d] maps to afe=%v, want %v",
 					id, i, got, afe)
@@ -106,11 +163,16 @@ func (sl *sessionList) verifyInvariantsLocked() string {
 		}
 	}
 
-	// I3: afesWithReady == { afe : len(sessions) > 0 } as a set (no dupes).
+	// I3: afesWithReady == { afe : len(sessions) > 0 } with exact readyIdx
+	// correspondence (afe.readyIdx == slice index when present, -1 when absent).
 	seen := map[*afeHandle]bool{}
-	for _, afe := range sl.afesWithReady {
+	for i, afe := range sl.afesWithReady {
 		if seen[afe] {
 			return fmt.Sprintf("I3: afe=%d appears twice in afesWithReady", afe.id)
+		}
+		if afe.readyIdx != i {
+			return fmt.Sprintf("I3: afesWithReady[%d] (afe=%d) has readyIdx=%d, want %d",
+				i, afe.id, afe.readyIdx, i)
 		}
 		seen[afe] = true
 	}
@@ -122,6 +184,9 @@ func (sl *sessionList) verifyInvariantsLocked() string {
 		}
 		if !hasSessions && seen[afe] {
 			return fmt.Sprintf("I3: afe=%d has 0 sessions but present in afesWithReady", id)
+		}
+		if !hasSessions && afe.readyIdx != -1 {
+			return fmt.Sprintf("I3: afe=%d has 0 sessions but readyIdx=%d, want -1", id, afe.readyIdx)
 		}
 	}
 
@@ -683,10 +748,12 @@ func TestSessionList_OnSessionClosed_ThenClosing_LateClosingNoOp(t *testing.T) {
 // per worker, ~10ms wall clock on modern hardware).
 func TestSessionList_ConcurrentOps_MaintainsInvariants(t *testing.T) {
 	const (
-		workers  = 8
-		opsEach  = 200
-		numAfes  = 4
-		poolSize = 32
+		workers      = 8
+		opsEach      = 250
+		numAfes      = 6
+		poolSize     = 96
+		initialReady = 36 // 6 idle handles per AFE so len(afesWithReady) == 6 from op 0
+		maxRetired   = 36 // cap Closing/Closed churn so ≥60 handles keep >2 AFEs populated
 	)
 
 	sl := newSessionList()
@@ -698,17 +765,40 @@ func TestSessionList_ConcurrentOps_MaintainsInvariants(t *testing.T) {
 		handles[i] = makeHandleWithAfe(t, AfeID(1+i%numAfes))
 	}
 
-	// Track per-handle state (unregistered / registered / closed) with
-	// a small stateMu so workers don't double-register the same handle
-	// (which would be a legitimate no-op but skews the invariant walk).
+	// Track per-handle lifecycle state and checked-out handles under stateMu so:
+	//   1. OnSessionStarted runs at most once per handle;
+	//   2. ReleaseToPool is only invoked once per checked-out lease (never
+	//      duplicating an already-Idle handle in afe.sessions);
+	//   3. Closing/Closed churn is capped at maxRetired so len(afesWithReady) > 2
+	//      holds throughout the run while swapReadyAfesLocked permutes buckets.
 	type handleState int
 	const (
 		unregistered handleState = iota
 		registered
+		closing
 		closed
 	)
 	states := make([]handleState, poolSize)
+	for i := 0; i < initialReady; i++ {
+		states[i] = registered
+		sl.OnSessionStarted(handles[i])
+	}
+	retiredCount := 0
+	var inFlight []*SessionHandle
 	var stateMu sync.Mutex
+
+	stashOrRelease := func(sh *SessionHandle, rng *rand.Rand) {
+		if sh == nil {
+			return
+		}
+		if rng.IntN(2) == 0 {
+			sl.ReleaseToPool(sh)
+			return
+		}
+		stateMu.Lock()
+		inFlight = append(inFlight, sh)
+		stateMu.Unlock()
+	}
 
 	// Deterministic per-worker seed so failures reproduce AND workers
 	// don't serialize on a shared rand mutex — the whole point of a
@@ -723,6 +813,8 @@ func TestSessionList_ConcurrentOps_MaintainsInvariants(t *testing.T) {
 			rng := rand.New(rand.NewPCG(baseSeed+uint64(worker), 0xdeadbeefcafebabe))
 			randHandle := func() int { return rng.IntN(poolSize) }
 			randAfe := func() AfeID { return AfeID(1 + rng.IntN(numAfes)) }
+			leastInFlight := NewLeastInFlightAfePicker(2, false)
+			leastLatency := NewLeastLatencyAfePicker(2, false)
 			for i := 0; i < opsEach; i++ {
 				switch rng.IntN(8) {
 				case 0: // OnSessionStarted (once per handle)
@@ -735,34 +827,51 @@ func TestSessionList_ConcurrentOps_MaintainsInvariants(t *testing.T) {
 					} else {
 						stateMu.Unlock()
 					}
-				case 1: // Checkout (may return nil legitimately)
-					sl.Checkout(randAfe())
-				case 2: // ReleaseToPool (only safe on registered handles)
-					idx := randHandle()
+				case 1: // Checkout (direct AFE)
+					stashOrRelease(sl.Checkout(randAfe()), rng)
+				case 2: // ReleaseToPool (pop one checked-out handle lease)
+					var sh *SessionHandle
 					stateMu.Lock()
-					if states[idx] == registered {
-						stateMu.Unlock()
-						sl.ReleaseToPool(handles[idx])
-					} else {
-						stateMu.Unlock()
+					if n := len(inFlight); n > 0 {
+						pick := rng.IntN(n)
+						sh = inFlight[pick]
+						inFlight[pick] = inFlight[n-1]
+						inFlight[n-1] = nil
+						inFlight = inFlight[:n-1]
 					}
-				case 3: // OnSessionClosing
+					stateMu.Unlock()
+					if sh != nil {
+						sl.ReleaseToPool(sh)
+					}
+				case 3: // OnSessionClosing (bounded churn so ready AFEs stay populated)
 					idx := randHandle()
 					stateMu.Lock()
-					if states[idx] == registered {
+					if states[idx] == registered && retiredCount < maxRetired {
+						states[idx] = closing
+						retiredCount++
 						stateMu.Unlock()
 						sl.OnSessionClosing(handles[idx])
 					} else {
 						stateMu.Unlock()
 					}
-				case 4: // OnSessionClosed (transition registered→closed)
+				case 4: // OnSessionClosed (transition registered/closing → closed)
 					idx := randHandle()
 					stateMu.Lock()
-					if states[idx] == registered {
+					switch states[idx] {
+					case closing:
 						states[idx] = closed
 						stateMu.Unlock()
 						sl.OnSessionClosed(handles[idx])
-					} else {
+					case registered:
+						if retiredCount < maxRetired {
+							states[idx] = closed
+							retiredCount++
+							stateMu.Unlock()
+							sl.OnSessionClosed(handles[idx])
+						} else {
+							stateMu.Unlock()
+						}
+					default:
 						stateMu.Unlock()
 					}
 				case 5: // RecordVRpcOutcome — safe on any handle (lookup gates it)
@@ -774,15 +883,26 @@ func TestSessionList_ConcurrentOps_MaintainsInvariants(t *testing.T) {
 					backend := time.Duration(1+rng.IntN(20)) * time.Millisecond
 					sl.RecordVRpcOutcome(handles[idx], e2e, backend, rng.IntN(2) == 0)
 				case 6: // CheckoutWithPicker (exercises in-place Fisher-Yates + readyIdx update)
-					sl.CheckoutWithPicker(NewLeastInFlightAfePicker(2, false))
+					sh, _ := sl.CheckoutWithPicker(leastInFlight)
+					stashOrRelease(sh, rng)
 				case 7: // CheckoutWithPicker (LeastLatency)
-					sl.CheckoutWithPicker(NewLeastLatencyAfePicker(2, false))
+					sh, _ := sl.CheckoutWithPicker(leastLatency)
+					stashOrRelease(sh, rng)
+				}
+				if i%50 == 49 {
+					checkInvariants(t, sl)
 				}
 			}
 		}(w)
 	}
 	wg.Wait()
 
+	for _, sh := range inFlight {
+		sl.ReleaseToPool(sh)
+	}
+	if got := len(sl.ReadyAfes()); got <= 2 {
+		t.Errorf("len(ReadyAfes()) at quiesce = %d, want > 2 so K=2 swapReadyAfesLocked stayed active", got)
+	}
 	checkInvariants(t, sl)
 }
 
@@ -846,37 +966,76 @@ func TestSessionList_ReadyAfes_ExcludesClosingFromNumOutstanding(t *testing.T) {
 }
 
 func TestSessionList_CheckoutWithPicker_AtomicPickAndDequeue(t *testing.T) {
-	sl := newSessionList()
-	picker := NewLeastInFlightAfePicker(3, true)
-	if sh, dec := sl.CheckoutWithPicker(picker); sh != nil || dec.Reason != "no-candidates" {
-		t.Fatalf("CheckoutWithPicker() on empty = (%v, %+v), want (nil, no-candidates)", sh, dec)
-	}
+	t.Run("tie_breaks_on_higher_idle_count", func(t *testing.T) {
+		sl := newSessionList()
+		picker := NewLeastInFlightAfePicker(3, true)
+		if sh, dec := sl.CheckoutWithPicker(picker); sh != nil || dec.Reason != "no-candidates" {
+			t.Fatalf("CheckoutWithPicker() on empty = (%v, %+v), want (nil, no-candidates)", sh, dec)
+		}
 
-	// AFE 1: 1 idle, 1 in-flight (NumOutstanding=1)
-	h1a := makeHandleWithAfe(t, 1)
-	h1b := makeHandleWithAfe(t, 1)
-	sl.OnSessionStarted(h1a)
-	sl.OnSessionStarted(h1b)
-	sl.Checkout(1)
+		// AFE 1: 1 idle, 1 in-flight (NumOutstanding=1)
+		h1a := makeHandleWithAfe(t, 1)
+		h1b := makeHandleWithAfe(t, 1)
+		sl.OnSessionStarted(h1a)
+		sl.OnSessionStarted(h1b)
+		sl.Checkout(1)
 
-	// AFE 2: 1 idle, 0 in-flight
-	h2 := makeHandleWithAfe(t, 2)
-	sl.OnSessionStarted(h2)
+		// AFE 2: 1 idle, 0 in-flight
+		h2 := makeHandleWithAfe(t, 2)
+		sl.OnSessionStarted(h2)
 
-	// AFE 3: 3 idle, 0 in-flight + 1 Closing (ties AFE 2 on in-flight=0, wins on idle=3 > 1)
-	h3a := makeHandleWithAfe(t, 3)
-	h3b := makeHandleWithAfe(t, 3)
-	h3c := makeHandleWithAfe(t, 3)
-	h3Closing := makeHandleWithAfe(t, 3)
-	sl.OnSessionStarted(h3a)
-	sl.OnSessionStarted(h3b)
-	sl.OnSessionStarted(h3c)
-	sl.OnSessionStarted(h3Closing)
-	sl.OnSessionClosing(h3Closing)
+		// AFE 3: 3 idle, 0 in-flight + 1 Closing (ties AFE 2 on in-flight=0, wins on idle=3 > 1)
+		h3a := makeHandleWithAfe(t, 3)
+		h3b := makeHandleWithAfe(t, 3)
+		h3c := makeHandleWithAfe(t, 3)
+		h3Closing := makeHandleWithAfe(t, 3)
+		sl.OnSessionStarted(h3a)
+		sl.OnSessionStarted(h3b)
+		sl.OnSessionStarted(h3c)
+		sl.OnSessionStarted(h3Closing)
+		sl.OnSessionClosing(h3Closing)
 
-	got, dec := sl.CheckoutWithPicker(picker)
-	if got == nil || dec.Winner != 3 || dec.Reason != "min-inflight" {
-		t.Fatalf("CheckoutWithPicker() = (%v, %+v), want non-nil handle from AFE 3", got, dec)
-	}
-	checkInvariants(t, sl)
+		got, dec := sl.CheckoutWithPicker(picker)
+		if got == nil || dec.Winner != 3 || dec.Reason != "min-inflight" {
+			t.Fatalf("CheckoutWithPicker() = (%v, %+v), want non-nil handle from AFE 3", got, dec)
+		}
+		checkInvariants(t, sl)
+	})
+
+	t.Run("closing_excluded_from_inflight_at_equal_idle_count", func(t *testing.T) {
+		sl := newSessionList()
+		picker := NewLeastInFlightAfePicker(2, true)
+
+		// AFE 1: 1 idle, 1 active in-flight, 0 Closing → inFlightLocked() = 1
+		h1Idle := makeHandleWithAfe(t, 1)
+		h1InFlight := makeHandleWithAfe(t, 1)
+		sl.OnSessionStarted(h1Idle)
+		sl.OnSessionStarted(h1InFlight)
+		if got := sl.Checkout(1); got != h1Idle {
+			t.Fatalf("Checkout(1) = %p, want %p", got, h1Idle)
+		}
+		if got := sl.Checkout(1); got != h1InFlight {
+			t.Fatalf("Checkout(1) = %p, want %p", got, h1InFlight)
+		}
+		sl.ReleaseToPool(h1Idle)
+
+		// AFE 2: 1 idle, 0 active in-flight, 2 Closing → refCount=3, IdleCount=1
+		// (equal to AFE 1, so IdleCount tie-breaker cannot decide), inFlightLocked() = 0.
+		h2Idle := makeHandleWithAfe(t, 2)
+		h2ClosingA := makeHandleWithAfe(t, 2)
+		h2ClosingB := makeHandleWithAfe(t, 2)
+		sl.OnSessionStarted(h2Idle)
+		sl.OnSessionStarted(h2ClosingA)
+		sl.OnSessionStarted(h2ClosingB)
+		sl.OnSessionClosing(h2ClosingA)
+		sl.OnSessionClosing(h2ClosingB)
+
+		checkInvariants(t, sl)
+
+		got, dec := sl.CheckoutWithPicker(picker)
+		if got != h2Idle || dec.Winner != 2 || dec.Reason != "min-inflight" {
+			t.Fatalf("CheckoutWithPicker() = (%p, %+v), want (%p from AFE 2, min-inflight)", got, dec, h2Idle)
+		}
+		checkInvariants(t, sl)
+	})
 }

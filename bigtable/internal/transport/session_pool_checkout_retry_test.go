@@ -88,6 +88,16 @@ func TestCheckoutSession_Concurrent1SessionAfesNeverParksWhenIdleExists(t *testi
 				t.Fatalf("round %d caller %d: CheckoutSession failed (spurious waiter park): %v", round, i, err)
 			}
 		}
+		seen := make(map[*SessionHandle]int, numCallers)
+		for i, sh := range checkedOut {
+			if sh == nil {
+				t.Fatalf("round %d caller %d: CheckoutSession returned nil handle without error", round, i)
+			}
+			if prev, dup := seen[sh]; dup {
+				t.Fatalf("round %d: duplicate *SessionHandle %p returned to callers %d and %d", round, sh, prev, i)
+			}
+			seen[sh] = i
+		}
 		for _, sh := range checkedOut {
 			sh.DecOutstanding()
 			p.sl.ReleaseToPool(sh)

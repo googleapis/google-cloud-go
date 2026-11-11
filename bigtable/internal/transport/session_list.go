@@ -55,7 +55,7 @@ const (
 //
 // Transitions:
 //   NotRegistered → Idle       OnSessionStarted
-//   Idle          → InFlight   CheckoutWithPicker / Checkout
+//   Idle          → InFlight   CheckoutWithPicker
 //   InFlight      → Idle       ReleaseToPool     (only if inExpectedCount)
 //   {Idle,InFlight} → Closing  OnSessionClosing
 //   {Idle,InFlight,Closing} → Closed  OnSessionClosed
@@ -64,7 +64,7 @@ const (
 //
 //   I1  sh.inExpectedCount == true  ⇒  handleToAfe[sh] != nil
 //   I2  readyCount == count of sh in handleToAfe with inExpectedCount==true
-//   I3  afesWithReady == { afe : len(afe.sessions) > 0 }, as a set, order irrelevant
+//   I3  afesWithReady == { afe : len(afe.sessions) > 0 } with afe.readyIdx == slice index (-1 when absent)
 //   I4  afe.refCount == count of sh in handleToAfe pointing at afe (idle + inFlight + closing)
 //   I5  sh in afe.sessions  ⇒  handleToAfe[sh] == afe  and  inExpectedCount==true
 //   I6  refCount is decremented ONLY on OnSessionClosed (Closing keeps the slot warm)
@@ -82,18 +82,6 @@ const (
 // handshake did not carry a peer-info header (older backends / tests).
 type AfeID int64
 
-// AfeSnapshot is a value-typed view of an afeHandle for pickers to
-// score without holding sessionList.mu. The picker returns an AfeID
-// which Checkout re-resolves under sl.mu — no *afeHandle escapes.
-// Cost fields are PeakEwma nanoseconds as float64.
-type AfeSnapshot struct {
-	ID             AfeID
-	IdleCount      int
-	NumOutstanding int     // refCount − IdleCount − closingCount, ≥ 0 (active in-flight only)
-	TransportCost  float64 // PeakEwma nanoseconds; 0 if never updated
-	E2eCost        float64 // PeakEwma nanoseconds; 0 if never updated
-}
-
 // afeHandle is the per-AFE bucket in sessionList: FIFO idle queue,
 // refCount (idle + inFlight + closing per I4/I6), closingCount (handles
 // draining after OnSessionClosing per I7), and the two PeakEwma
@@ -106,8 +94,9 @@ type afeHandle struct {
 	closingCount int              // handles on this AFE with inExpectedCount==false (I7)
 	// readyIdx is this handle's index in sl.afesWithReady, or -1 when
 	// absent. Maintained inline by OnSessionStarted / ReleaseToPool
-	// (append) and removeFromReadyLocked (swap-with-last) so removal is
-	// O(1) instead of an O(N) scan-and-shift.
+	// (append), swapReadyAfesLocked (in-place K-choice swap), and
+	// removeFromReadyLocked (swap-with-last) so removal is O(1) instead
+	// of an O(N) scan-and-shift.
 	readyIdx      int
 	lastConnected time.Time // touched on OnSessionStarted + ReleaseToPool; drives Prune
 	transportEwma *PeakEwma // OK-gated
@@ -184,8 +173,8 @@ func (h *SessionHandle) GetLastActivity() time.Time {
 }
 
 // sessionList groups sessions by the AFE they landed on. See the State
-// model block above for the handle state machine and the six invariants
-// (I1–I6) every method preserves. Lock ordering: sl.mu is always
+// model block above for the handle state machine and the seven invariants
+// (I1–I7) every method preserves. Lock ordering: sl.mu is always
 // innermost — pool.mu is never taken while holding sl.mu
 // (SESSION_COMPONENT_SPEC §B8).
 type sessionList struct {
@@ -248,42 +237,12 @@ func (sl *sessionList) OnSessionStarted(sh *SessionHandle) {
 	sl.readyCount++ // I2
 }
 
-// Checkout dequeues one idle session from the AFE bucket with id
-// (Idle → InFlight). Callers should have picked from ReadyAfes() first.
-// The bucket is re-resolved under sl.mu and the dequeue completes
-// before the lock releases, so a picker holding a stale AfeID from a
-// prior ReadyAfes() snapshot cannot dereference a detached bucket.
-// Returns nil when id has no bucket or its queue is empty — legitimate
-// races with a concurrent Checkout or an OnSessionClosing that drained
-// the last idle handle.
-//
-// Under the drain-driven slot lifecycle the AFE queue only holds
-// sessions with an empty in-flight slot (Invoke's return path no longer
-// re-enqueues, drainSlot success does) — claimSlot at the caller can't
-// lose except via a pool-bypass bug.
-func (sl *sessionList) Checkout(id AfeID) *SessionHandle {
-	sl.mu.Lock()
-	defer sl.mu.Unlock()
-	afe := sl.afeHandles[id]
-	if afe == nil {
-		return nil
-	}
-	sh, nowEmpty := afe.dequeueLocked()
-	if sh == nil {
-		return nil
-	}
-	if nowEmpty { // afe leaves the ready set (I3)
-		sl.removeFromReadyLocked(afe)
-	}
-	return sh
-}
-
 // CheckoutWithPicker atomically selects a ready AFE via picker and
 // dequeues one idle session under a single sl.mu hold (Idle → InFlight).
 // Holding sl.mu across selection and dequeue eliminates lock-split
 // checkout races by construction (every entry in afesWithReady satisfies
-// len(sessions) > 0 per I3), avoids allocating a per-RPC AfeSnapshot
-// slice, and evaluates cost on at most K sampled AFEs instead of all N.
+// len(sessions) > 0 per I3), avoids allocating a per-RPC snapshot slice,
+// and evaluates cost on at most K sampled AFEs instead of all N.
 func (sl *sessionList) CheckoutWithPicker(picker AfePicker) (*SessionHandle, PickDecision) {
 	sl.mu.Lock()
 	defer sl.mu.Unlock()
@@ -430,30 +389,6 @@ func (sl *sessionList) RecordVRpcOutcome(sh *SessionHandle, e2e, backend time.Du
 	if transport := e2e - backend; transport > 0 {
 		afe.transportEwma.Update(transport)
 	}
-}
-
-// ReadyAfes returns an immutable snapshot of AFEs with at least one
-// idle session, plus the per-AFE fields a picker needs to score them
-// (idle/inflight counts and current EWMA costs). Membership matches
-// invariant I3 — len(afe.sessions) > 0. The picker can iterate this
-// slice without holding sessionList.mu.
-func (sl *sessionList) ReadyAfes() []AfeSnapshot {
-	sl.mu.Lock()
-	defer sl.mu.Unlock()
-	if len(sl.afesWithReady) == 0 {
-		return nil
-	}
-	out := make([]AfeSnapshot, 0, len(sl.afesWithReady))
-	for _, afe := range sl.afesWithReady {
-		out = append(out, AfeSnapshot{
-			ID:             afe.id,
-			IdleCount:      len(afe.sessions),
-			NumOutstanding: afe.inFlightLocked(),
-			TransportCost:  afe.transportEwma.Value(),
-			E2eCost:        afe.e2eEwma.Value(),
-		})
-	}
-	return out
 }
 
 // AllHandles returns a snapshot of every registered SessionHandle —
