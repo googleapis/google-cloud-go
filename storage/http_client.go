@@ -263,7 +263,7 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 		outReq = req.WithContext(ctx)
 	}
 	resp, err := baseRT.RoundTrip(outReq)
-	recordHTTPAttemptAttributes(ctx, resp)
+	recordHTTPAttemptAttributes(ctx, req, resp)
 	if isChunk {
 		finishSpan(ctx, httpUploadChunkError(resp, err))
 	} else if resp != nil {

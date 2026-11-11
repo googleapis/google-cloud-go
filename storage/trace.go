@@ -79,11 +79,10 @@ const (
 	uploadChunkNumberAttr = "gcp.storage.upload.chunk.number"
 	payloadOffsetAttr     = "gcp.storage.payload.offset"
 	payloadSizeBytesAttr  = "gcp.storage.payload.size_bytes"
+	// retryAttemptNumberAttr is the attempt number of a transport attempt
+	// span, matching the gccl-attempt-count value sent with the attempt.
+	retryAttemptNumberAttr = "gcp.client.retry.attempt_number"
 )
-
-// retryAttemptNumberAttr is the attempt number of a transport attempt span,
-// matching the gccl-attempt-count value sent with the attempt.
-const retryAttemptNumberAttr = "gcp.client.retry.attempt_number"
 
 // rpcSystemNameKey is the OTel semantic convention attribute key for the RPC
 // system used by a span.
@@ -161,7 +160,7 @@ func contextWithBucketMetadata(ctx context.Context, cache *bucketMetadataCache, 
 			placeholder: true,
 		}
 		cache.put(bucket, placeholder)
-		cache.fetchBackground(ctx, bucket)
+		cache.fetchBackground(contextWithoutMetrics(ctx), bucket)
 		meta = placeholder
 	}
 	attrs := []attribute.KeyValue{
@@ -374,10 +373,14 @@ func recordRetryBackoff(ctx context.Context, start time.Time) {
 // is about to make.
 type retryAttemptKey struct{}
 
-// retryAttempt describes an attempt made by run.
+// retryAttempt describes an attempt made by run. It is read by
+// attemptStatsHandler for gRPC attempt spans and by trackingTransport for HTTP
+// attempt spans.
 type retryAttempt struct {
 	// number is the attempt number, matching the gccl-attempt-count value sent
 	// to the service. It restarts at 1 when run is given withProgressReset.
+	// attemptStatsHandler (gRPC) and trackingTransport (HTTP) record it as
+	// gcp.client.retry.attempt_number.
 	number int
 	// parentCtx is the context passed to run, whose active span is the
 	// operation span.
@@ -389,7 +392,8 @@ type retryAttempt struct {
 }
 
 // withRetryAttempt returns ctx annotated with the given attempt number so that
-// attemptStatsHandler can record it on the gRPC attempt span.
+// attemptStatsHandler (gRPC) and trackingTransport (HTTP) can record it on the
+// transport attempt span.
 func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 	if !isOTelTracingDevEnabled() {
 		return ctx
@@ -936,20 +940,55 @@ func httpAttemptSpan(ctx context.Context, resp *http.Response) (trace.Span, bool
 }
 
 // recordHTTPAttemptAttributes sets the bucket's destination attributes, when
-// ctx carries them, and gcp.client.retry.attempt_number, for attempts made by
-// run, on the otelhttp attempt span of resp. ctx is the context of the request
-// sent to the transport; its span is the parent of the attempt span. Uploads
-// retried by the googleapi media uploader instead of run carry no attempt
-// number. An attempt that fails without a response is not tagged, because
-// otelhttp has already ended its span.
-func recordHTTPAttemptAttributes(ctx context.Context, resp *http.Response) {
+// ctx carries them, and gcp.client.retry.attempt_number on the otelhttp attempt
+// span of resp. ctx is the context of req as sent to the transport; its span
+// is the parent of the attempt span.
+//
+// The attempt number of a request made by run comes from run. Uploads are
+// retried by the googleapi media uploader instead, so their attempt number is
+// read from the gccl-attempt-count token that the uploader sends in the
+// X-Goog-Api-Client header. A resumable session request sent without retries
+// carries no such token and stays unnumbered.
+//
+// An attempt that fails without a response is not tagged, because otelhttp
+// has already ended its span. Tagging it would need a hook in otelhttp that
+// runs when the attempt span starts.
+func recordHTTPAttemptAttributes(ctx context.Context, req *http.Request, resp *http.Response) {
 	span, ok := httpAttemptSpan(ctx, resp)
 	if !ok {
 		return
 	}
-	// The zero attempt of a request not sent by run is not recorded.
-	attempt, _ := ctx.Value(retryAttemptKey{}).(retryAttempt)
-	setAttemptSpanAttributes(ctx, span, attempt.number)
+	var number int
+	if attempt, ok := ctx.Value(retryAttemptKey{}).(retryAttempt); ok {
+		number = attempt.number
+	} else {
+		number = attemptCountFromHeader(req.Header)
+	}
+	// A zero attempt number, for a request with no known attempt, is not
+	// recorded.
+	setAttemptSpanAttributes(ctx, span, number)
+}
+
+// attemptCountTokenPrefix prefixes the attempt number in the
+// X-Goog-Api-Client header.
+const attemptCountTokenPrefix = "gccl-attempt-count/"
+
+// attemptCountFromHeader returns the attempt number in the gccl-attempt-count
+// token of the X-Goog-Api-Client header of h, or 0 if there is no valid one.
+func attemptCountFromHeader(h http.Header) int {
+	for _, v := range h.Values("X-Goog-Api-Client") {
+		for _, tok := range strings.Fields(v) {
+			s, ok := strings.CutPrefix(tok, attemptCountTokenPrefix)
+			if !ok {
+				continue
+			}
+			if n, err := strconv.Atoi(s); err == nil && n >= 1 {
+				return n
+			}
+			return 0
+		}
+	}
+	return 0
 }
 
 // setPayloadAttributes sets the payload offset and, unless size is negative
