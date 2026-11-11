@@ -21,7 +21,8 @@ import (
 
 // type for collecting custom ClientOption values.
 type customClientConfig struct {
-	jobCreationMode JobCreationMode
+	jobCreationMode          JobCreationMode
+	disableJobPollingRetries bool
 }
 
 type customClientOption interface {
@@ -70,4 +71,19 @@ type applierJobCreationMode struct {
 
 func (s *applierJobCreationMode) ApplyCustomClientOpt(c *customClientConfig) {
 	c.jobCreationMode = s.mode
+}
+
+// WithJobPollingRetriesDisabled is a ClientOption that surfaces polling errors
+// from jobs.getQueryResults without retrying them. It does not affect job
+// creation retries for jobs.insert or jobs.query.
+func WithJobPollingRetriesDisabled() option.ClientOption {
+	return &applierJobPollingRetriesDisabled{}
+}
+
+type applierJobPollingRetriesDisabled struct {
+	internaloption.EmbeddableAdapter
+}
+
+func (s *applierJobPollingRetriesDisabled) ApplyCustomClientOpt(c *customClientConfig) {
+	c.disableJobPollingRetries = true
 }
