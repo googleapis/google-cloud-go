@@ -570,9 +570,6 @@ type MultiRangeDownloader struct {
 // Callback will be called with the offset, length of data read, and error
 // of the read. Note that the length of the data read may be less than the
 // requested length if the end of the object is reached.
-//
-// See [MultiRangeDownloader.Wait] and [MultiRangeDownloader.Close] for which
-// callbacks they wait for.
 func (mrd *MultiRangeDownloader) Add(output io.Writer, offset, length int64, callback func(int64, int64, error)) {
 	mrd.impl.add(output, offset, length, callback)
 }
@@ -586,9 +583,7 @@ func (mrd *MultiRangeDownloader) Add(output io.Writer, offset, length int64, cal
 //
 // If the downloader is in a permanent error state, this will return an error.
 //
-// Close waits for the callbacks of all ranges added before it was called.
-// A callback for an Add that races with Close may still be invoked, with an
-// error, after Close returns.
+// Close waits for in-flight callbacks to finish.
 //
 // This must not be called from the callback sent into Add command otherwise
 // it could lead to a deadlock.
@@ -609,9 +604,7 @@ func (mrd *MultiRangeDownloader) Close() error {
 }
 
 // Wait for all the responses to process on the stream.
-// Wait will wait for the callbacks of all ranges added before it was called
-// to finish. Callbacks for ranges added concurrently with, or after, Wait are
-// not guaranteed to have finished when Wait returns.
+// Wait also waits for in-flight callbacks to finish.
 //
 // Wait must not be called from a callback passed to Add, otherwise it will
 // deadlock.

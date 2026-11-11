@@ -36,7 +36,6 @@ import (
 )
 
 const (
-	mrdCommandChannelSize    = 1
 	mrdResponseChannelSize   = 100
 	mrdSendChannelSize       = 100
 	mrdAddStreamsChannelSize = 100
@@ -166,7 +165,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		client:         c,
 		settings:       s,
 		params:         params,
-		cmds:           make(chan mrdCommand, mrdCommandChannelSize),
+		cmds:           make(chan mrdCommand),
 		sessionResps:   make(chan mrdSessionResult, mrdResponseChannelSize),
 		readIDCounter:  1,
 		readSpec:       readSpec,
@@ -396,9 +395,6 @@ type multiRangeDownloaderManager struct {
 	unsentRequests     *requestQueue
 	addStreams         chan mrdCommand
 	atCapacityCount    int
-	// addMu prevents add() from enqueueing a command after cleanup() has
-	// drained cmds, which would lose the callback.
-	addMu sync.RWMutex
 }
 
 type rangeRequest struct {
@@ -417,10 +413,6 @@ type rangeRequest struct {
 
 // Methods implementing internalMultiRangeDownloader
 func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64, callback func(int64, int64, error)) {
-	// Hold the read lock across the ctx check and the cmds send so that
-	// cleanup() cannot drain cmds in between.
-	m.addMu.RLock()
-	defer m.addMu.RUnlock()
 	if err := m.ctx.Err(); err != nil {
 		if pErr := m.getPermanentError(); pErr != nil {
 			err = pErr
@@ -490,7 +482,7 @@ func (m *multiRangeDownloaderManager) wait() {
 		}
 	}
 	if m.ctx.Err() != nil {
-		// Let cleanup finish draining cmds, which may still start callbacks.
+		// Let cleanup finish, as it may still start callbacks.
 		m.wg.Wait()
 	}
 	m.callbacks.wait()
@@ -675,46 +667,11 @@ sessionDrainLoop:
 	m.attrsOnce.Do(func() { close(m.attrsReady) })
 	clear(m.streams)
 	// Stop any session that is still being opened and make new calls to Add,
-	// Wait and Close return immediately.
+	// Wait and Close return immediately. cmds is unbuffered, so no command can
+	// be left in it now that the event loop has stopped receiving; senders
+	// fall back on ctx.Done() instead.
 	m.cancel()
-	// Keep add() out until the drain below is complete, so no command is
-	// enqueued after it and left without a callback.
-	m.addMu.Lock()
-	// Complete any commands leftover in cmds channel.
-cmdDrainLoop:
-	for {
-		select {
-		case cmd, ok := <-m.cmds:
-			if !ok {
-				break cmdDrainLoop
-			}
-			// Parse type of command.
-			switch cmd := cmd.(type) {
-			case *mrdCloseCmd:
-			case *mrdWaitCmd:
-				close(cmd.doneC)
-			case *mrdAddCmd:
-				m.runCallback(cmd.offset, cmd.length, finalErr, cmd.callback)
-			case *mrdGetHandleCmd:
-				// Non-blocking send of handle if attributes are ready, otherwise close.
-				select {
-				case <-m.attrsReady:
-					select {
-					case cmd.respC <- m.lastReadHandle:
-					default:
-						close(cmd.respC)
-					}
-				default:
-					close(cmd.respC)
-				}
-			}
-		default:
-			break cmdDrainLoop
-		}
-	}
-	// Unlock before waiting: a callback may call Add, which takes the read lock.
-	m.addMu.Unlock()
-	// Wait for all callbacks (including any initiated by the drained commands) to finish.
+	// Wait for all callbacks to finish.
 	m.callbacks.wait()
 }
 
@@ -1576,8 +1533,7 @@ func (q *requestQueue) RemoveFront() {
 
 // callbackTracker counts in-flight user callbacks. Unlike sync.WaitGroup, add
 // may be called concurrently with wait, even when the count is zero. The zero
-// value is ready to use. See
-// https://github.com/googleapis/google-cloud-go/issues/20819.
+// value is ready to use.
 type callbackTracker struct {
 	mu   sync.Mutex
 	n    int

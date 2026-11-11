@@ -33,7 +33,6 @@ import (
 	"sync/atomic"
 	"testing"
 	"testing/synctest"
-	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
@@ -915,16 +914,7 @@ func TestCallbackTrackerConcurrentAddWait(t *testing.T) {
 	waitersWg.Wait()
 
 	// A final wait must observe all callbacks complete.
-	done := make(chan struct{})
-	go func() {
-		tr.wait()
-		close(done)
-	}()
-	select {
-	case <-done:
-	case <-time.After(30 * time.Second):
-		t.Fatal("callbackTracker.wait did not return after all callbacks finished")
-	}
+	tr.wait()
 
 	if got, want := finished.Load(), int64(adders*addsPerAdder); got != want {
 		t.Errorf("finished callbacks = %d, want %d", got, want)
@@ -943,30 +933,34 @@ func TestCallbackTrackerWaitBlocksUntilDone(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		const waiters = 3
 		var tr callbackTracker
-		tr.add()
+		// Two cycles, so the second one checks that the tracker can be reused
+		// after its count has returned to zero.
+		for cycle := 0; cycle < 2; cycle++ {
+			tr.add()
 
-		returned := make(chan struct{}, waiters)
-		for i := 0; i < waiters; i++ {
-			go func() {
-				tr.wait()
-				returned <- struct{}{}
-			}()
+			returned := make(chan struct{}, waiters)
+			for i := 0; i < waiters; i++ {
+				go func() {
+					tr.wait()
+					returned <- struct{}{}
+				}()
+			}
+
+			// All waiters must be durably blocked while a callback is in flight.
+			synctest.Wait()
+			if n := len(returned); n != 0 {
+				t.Fatalf("cycle %d: %d waiters returned while a callback was still in flight", cycle, n)
+			}
+
+			tr.done()
+			synctest.Wait()
+			if got := len(returned); got != waiters {
+				t.Fatalf("cycle %d: only %d of %d waiters returned after done", cycle, got, waiters)
+			}
+
+			// Wait on an idle tracker must not block.
+			tr.wait()
 		}
-
-		// All waiters must be durably blocked while a callback is in flight.
-		synctest.Wait()
-		if n := len(returned); n != 0 {
-			t.Fatalf("%d waiters returned while a callback was still in flight", n)
-		}
-
-		tr.done()
-		synctest.Wait()
-		if got := len(returned); got != waiters {
-			t.Fatalf("only %d of %d waiters returned after done", got, waiters)
-		}
-
-		// Wait on an idle tracker must not block.
-		tr.wait()
 	})
 }
 
@@ -980,46 +974,6 @@ func TestCallbackTrackerDoneWithoutAddPanics(t *testing.T) {
 		}
 	}()
 	tr.done()
-}
-
-// TestMRDCleanupDrainsAddEnqueuedUnderLock checks that an Add holding addMu
-// when the manager is cancelled still gets its callback from cleanup().
-func TestMRDCleanupDrainsAddEnqueuedUnderLock(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	m := &multiRangeDownloaderManager{
-		ctx:            ctx,
-		cancel:         cancel,
-		cmds:           make(chan mrdCommand, mrdCommandChannelSize),
-		unsentRequests: newRequestQueue(),
-		attrsReady:     make(chan struct{}),
-		streams:        map[int]*mrdStream{},
-	}
-	// Simulate an Add that passed its ctx check before cancellation and has
-	// not yet enqueued its command.
-	m.addMu.RLock()
-	cancel()
-	cleanupDone := make(chan struct{})
-	go func() {
-		m.cleanup()
-		close(cleanupDone)
-	}()
-	// Wait until cleanup is blocked in addMu.Lock(). A pending writer makes
-	// RWMutex refuse new readers, so TryRLock failing proves it got there.
-	for m.addMu.TryRLock() {
-		m.addMu.RUnlock()
-		runtime.Gosched()
-	}
-	// The late enqueue. Without addMu, cleanup would already have drained cmds.
-	called := make(chan struct{})
-	m.cmds <- &mrdAddCmd{callback: func(int64, int64, error) { close(called) }}
-	m.addMu.RUnlock()
-	for name, c := range map[string]chan struct{}{"callback": called, "cleanup": cleanupDone} {
-		select {
-		case <-c:
-		case <-time.After(10 * time.Second):
-			t.Fatalf("%s did not complete: the Add enqueued during cleanup was lost", name)
-		}
-	}
 }
 
 type roundTripFunc func(*http.Request) (*http.Response, error)

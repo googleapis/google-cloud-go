@@ -2733,16 +2733,15 @@ func TestMRDAddDuringAndAfterFailureEmulated(t *testing.T) {
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
 		}
 
-		var wg sync.WaitGroup
-		var mu sync.Mutex
-		var errs []error // Guarded by mu.
+		var added, called atomic.Int64
+		var sawOutOfRange atomic.Bool
 		add := func(offset int64) {
-			wg.Add(1)
+			added.Add(1)
 			reader.Add(io.Discard, offset, 100, func(_, _ int64, cbErr error) {
-				mu.Lock()
-				errs = append(errs, cbErr)
-				mu.Unlock()
-				wg.Done()
+				if status.Code(cbErr) == codes.OutOfRange {
+					sawOutOfRange.Store(true)
+				}
+				called.Add(1)
 			})
 		}
 
@@ -2766,31 +2765,16 @@ func TestMRDAddDuringAndAfterFailureEmulated(t *testing.T) {
 			add(10)
 		}
 
-		done := make(chan struct{})
-		go func() {
-			wg.Wait()
-			close(done)
-		}()
-		select {
-		case <-done:
-		case <-time.After(30 * time.Second):
-			t.Fatal("not every Add callback fired within 30s")
-		}
+		// Wait covers the callbacks of every Add above.
 		reader.Wait()
+		if got, want := called.Load(), added.Load(); got != want {
+			t.Errorf("callbacks fired = %d, want %d", got, want)
+		}
 		if err := reader.Close(); status.Code(err) != codes.OutOfRange {
 			t.Errorf("Close: got %v, want OutOfRange", err)
 		}
-		mu.Lock()
-		defer mu.Unlock()
-		sawOutOfRange := false
-		for _, e := range errs {
-			if status.Code(e) == codes.OutOfRange {
-				sawOutOfRange = true
-				break
-			}
-		}
-		if !sawOutOfRange {
-			t.Errorf("expected at least one callback to report OutOfRange, got %d callbacks", len(errs))
+		if !sawOutOfRange.Load() {
+			t.Error("expected at least one callback to report OutOfRange")
 		}
 	})
 }
