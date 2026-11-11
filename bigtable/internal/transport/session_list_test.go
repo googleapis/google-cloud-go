@@ -125,6 +125,21 @@ func (sl *sessionList) verifyInvariantsLocked() string {
 		}
 	}
 
+	// I7: closingCount per AFE matches the number of handleToAfe entries
+	// pointing at it with inExpectedCount==false.
+	closingCounts := map[*afeHandle]int{}
+	for sh, afe := range sl.handleToAfe {
+		if !sh.inExpectedCount {
+			closingCounts[afe]++
+		}
+	}
+	for id, afe := range sl.afeHandles {
+		if closingCounts[afe] != afe.closingCount {
+			return fmt.Sprintf("I7: afe=%d closingCount=%d, want %d (derived)",
+				id, afe.closingCount, closingCounts[afe])
+		}
+	}
+
 	return ""
 }
 
@@ -709,7 +724,7 @@ func TestSessionList_ConcurrentOps_MaintainsInvariants(t *testing.T) {
 			randHandle := func() int { return rng.IntN(poolSize) }
 			randAfe := func() AfeID { return AfeID(1 + rng.IntN(numAfes)) }
 			for i := 0; i < opsEach; i++ {
-				switch rng.IntN(6) {
+				switch rng.IntN(8) {
 				case 0: // OnSessionStarted (once per handle)
 					idx := randHandle()
 					stateMu.Lock()
@@ -758,11 +773,110 @@ func TestSessionList_ConcurrentOps_MaintainsInvariants(t *testing.T) {
 					e2e := time.Duration(1+rng.IntN(50)) * time.Millisecond
 					backend := time.Duration(1+rng.IntN(20)) * time.Millisecond
 					sl.RecordVRpcOutcome(handles[idx], e2e, backend, rng.IntN(2) == 0)
+				case 6: // CheckoutWithPicker (exercises in-place Fisher-Yates + readyIdx update)
+					sl.CheckoutWithPicker(NewLeastInFlightAfePicker(2, false))
+				case 7: // CheckoutWithPicker (LeastLatency)
+					sl.CheckoutWithPicker(NewLeastLatencyAfePicker(2, false))
 				}
 			}
 		}(w)
 	}
 	wg.Wait()
 
+	checkInvariants(t, sl)
+}
+
+func TestSessionList_ReadyAfes_ExcludesClosingFromNumOutstanding(t *testing.T) {
+	sl := newSessionList()
+
+	idleH := makeHandleWithAfe(t, 1)
+	inFlightH := makeHandleWithAfe(t, 1)
+	closingIdleH := makeHandleWithAfe(t, 1)
+	closingInFlightH := makeHandleWithAfe(t, 1)
+
+	sl.OnSessionStarted(idleH)
+	sl.OnSessionStarted(inFlightH)
+	sl.OnSessionStarted(closingIdleH)
+	sl.OnSessionStarted(closingInFlightH)
+
+	// Transition inFlightH and closingInFlightH to InFlight (FIFO pop order: idleH, inFlightH).
+	// Re-enqueue idleH so exact roles match names.
+	if got := sl.Checkout(1); got != idleH {
+		t.Fatalf("first Checkout(1) = %p, want idleH %p", got, idleH)
+	}
+	if got := sl.Checkout(1); got != inFlightH {
+		t.Fatalf("second Checkout(1) = %p, want inFlightH %p", got, inFlightH)
+	}
+	if got := sl.Checkout(1); got != closingIdleH {
+		t.Fatalf("third Checkout(1) = %p, want closingIdleH %p", got, closingIdleH)
+	}
+	if got := sl.Checkout(1); got != closingInFlightH {
+		t.Fatalf("fourth Checkout(1) = %p, want closingInFlightH %p", got, closingInFlightH)
+	}
+	sl.ReleaseToPool(idleH)
+	sl.ReleaseToPool(closingIdleH)
+
+	// Move one Idle handle and one InFlight handle to Closing.
+	sl.OnSessionClosing(closingIdleH)
+	sl.OnSessionClosing(closingInFlightH)
+
+	// refCount remains 4 (I6), but only inFlightH is actively in-flight;
+	// the two Closing handles must NOT inflate NumOutstanding.
+	if got, want := sl.afeHandles[1].refCount, 4; got != want {
+		t.Errorf("refCount = %d, want %d", got, want)
+	}
+	snaps := sl.ReadyAfes()
+	if len(snaps) != 1 {
+		t.Fatalf("len(ReadyAfes()) = %d, want 1", len(snaps))
+	}
+	if snaps[0].IdleCount != 1 || snaps[0].NumOutstanding != 1 {
+		t.Errorf("ReadyAfes()[0] = {IdleCount:%d NumOutstanding:%d}, want {IdleCount:1 NumOutstanding:1}",
+			snaps[0].IdleCount, snaps[0].NumOutstanding)
+	}
+	checkInvariants(t, sl)
+
+	// Finalize both Closing handles → refCount drops to 2, NumOutstanding stays 1.
+	sl.OnSessionClosed(closingIdleH)
+	sl.OnSessionClosed(closingInFlightH)
+	snaps = sl.ReadyAfes()
+	if len(snaps) != 1 || snaps[0].IdleCount != 1 || snaps[0].NumOutstanding != 1 {
+		t.Errorf("after OnSessionClosed ReadyAfes() = %+v, want IdleCount=1 NumOutstanding=1", snaps)
+	}
+	checkInvariants(t, sl)
+}
+
+func TestSessionList_CheckoutWithPicker_AtomicPickAndDequeue(t *testing.T) {
+	sl := newSessionList()
+	picker := NewLeastInFlightAfePicker(3, true)
+	if sh, dec := sl.CheckoutWithPicker(picker); sh != nil || dec.Reason != "no-candidates" {
+		t.Fatalf("CheckoutWithPicker() on empty = (%v, %+v), want (nil, no-candidates)", sh, dec)
+	}
+
+	// AFE 1: 1 idle, 1 in-flight (NumOutstanding=1)
+	h1a := makeHandleWithAfe(t, 1)
+	h1b := makeHandleWithAfe(t, 1)
+	sl.OnSessionStarted(h1a)
+	sl.OnSessionStarted(h1b)
+	sl.Checkout(1)
+
+	// AFE 2: 1 idle, 0 in-flight
+	h2 := makeHandleWithAfe(t, 2)
+	sl.OnSessionStarted(h2)
+
+	// AFE 3: 3 idle, 0 in-flight + 1 Closing (ties AFE 2 on in-flight=0, wins on idle=3 > 1)
+	h3a := makeHandleWithAfe(t, 3)
+	h3b := makeHandleWithAfe(t, 3)
+	h3c := makeHandleWithAfe(t, 3)
+	h3Closing := makeHandleWithAfe(t, 3)
+	sl.OnSessionStarted(h3a)
+	sl.OnSessionStarted(h3b)
+	sl.OnSessionStarted(h3c)
+	sl.OnSessionStarted(h3Closing)
+	sl.OnSessionClosing(h3Closing)
+
+	got, dec := sl.CheckoutWithPicker(picker)
+	if got == nil || dec.Winner != 3 || dec.Reason != "min-inflight" {
+		t.Fatalf("CheckoutWithPicker() = (%v, %+v), want non-nil handle from AFE 3", got, dec)
+	}
 	checkInvariants(t, sl)
 }
