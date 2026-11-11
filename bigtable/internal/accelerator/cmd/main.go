@@ -47,9 +47,9 @@ func main() {
 	project := flag.String("project", "", "GCP project ID (required)")
 	instance := flag.String("instance", "", "Bigtable instance ID (optional; resolved per RPC when omitted)")
 	appProfile := flag.String("app-profile", "", "Bigtable app profile (optional; resolved per RPC when omitted)")
-	// Fallback flag defaults to true so the daemon handles session_load <= 1 and
-	// session Unimplemented fallback internally.
-	fallback := flag.Bool("fallback", true, "fall back to the classic bigtable.Client when session_load < 1 or when the session backend returns Unimplemented")
+	// Fallback flag defaults to true so the daemon handles session_load < 1 and
+	// falls back whenever session backend returns unimplemented.
+	fallback := flag.Bool("fallback", true, "fall back to the classic bigtable.Client when session_load < 1 or whenever session backend returns unimplemented")
 	// Endpoint overrides. When empty, NewChannel falls back to the
 	// default Bigtable data-plane endpoint (bigtable.googleapis.com:443). The
 	// spawning client supplies these when it targets a non-default endpoint or a

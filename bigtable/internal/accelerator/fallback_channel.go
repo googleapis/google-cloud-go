@@ -148,21 +148,15 @@ func (fc *FallbackChannel) Invoke(ctx context.Context, method string, args, repl
 	}
 
 	instanceID := extractInstanceFromMutateRowReq(req)
-	if !fc.isInstanceTripped(instanceID) {
-		useSess, err := fc.session.useSession(instanceID, req.GetAppProfileId())
-		if err != nil {
+	if !fc.isInstanceTripped(instanceID) && fc.session.useSession(instanceID, req.GetAppProfileId()) {
+		err := fc.session.Invoke(ctx, method, args, reply, opts...)
+		if err == nil {
+			return nil
+		}
+		if status.Code(err) != codes.Unimplemented {
 			return err
 		}
-		if useSess {
-			err := fc.session.Invoke(ctx, method, args, reply, opts...)
-			if err == nil {
-				return nil
-			}
-			if status.Code(err) != codes.Unimplemented {
-				return err
-			}
-			fc.tripInstance(instanceID)
-		}
+		fc.tripInstance(instanceID)
 	}
 
 	resource, err := adapters.DefaultMutateRowRequestAdapter.ExtractResource(req)
@@ -269,16 +263,8 @@ func (s *fallbackReadRowsStream) SendMsg(m any) error {
 
 	if s.inner != nil && s.fc != nil {
 		instanceID := extractInstanceFromReadRowsReq(req)
-		if s.fc.isInstanceTripped(instanceID) {
+		if s.fc.isInstanceTripped(instanceID) || !s.fc.session.useSession(instanceID, req.GetAppProfileId()) {
 			s.inner = nil
-		} else if s.fc.session != nil {
-			useSess, err := s.fc.session.useSession(instanceID, req.GetAppProfileId())
-			if err != nil {
-				return err
-			}
-			if !useSess {
-				s.inner = nil
-			}
 		}
 	}
 	if s.inner == nil {

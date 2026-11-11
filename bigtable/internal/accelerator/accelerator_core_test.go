@@ -68,9 +68,10 @@ type mockSessionClient struct {
 	lastMVView  string
 	newMVCalled int
 
-	closeCalled  int
-	closeErr     error
-	loadListener func(float64)
+	closeCalled     int
+	closeErr        error
+	loadListener    func(float64)
+	skipInitialLoad bool
 }
 
 func (m *mockSessionClient) OpenTable(name string) session.TableAPI {
@@ -99,6 +100,9 @@ func (m *mockSessionClient) ConfigDebug() btransport.ConfigDebugProvider   { ret
 
 func (m *mockSessionClient) AddSessionLoadListener(fn func(float64)) func() {
 	m.loadListener = fn
+	if !m.skipInitialLoad && fn != nil {
+		fn(1.0)
+	}
 	return func() { m.loadListener = nil }
 }
 
