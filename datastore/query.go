@@ -941,24 +941,18 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 	// Parse the read options.
 	txn := aq.query.trans
 
-	req.ReadOptions, err = parseQueryReadOptions(aq.query.eventual, txn, c.readSettings)
+	var finishRead func([]byte)
+	req.ReadOptions, finishRead, err = acquireQueryReadOptions(aq.query.eventual, txn, c.readSettings)
 	if err != nil {
 		return ar, err
 	}
+	defer finishRead(nil)
 
 	resp, err := c.client.RunAggregationQuery(ctx, req)
 	if err != nil {
 		return ar, err
 	}
-
-	if txn != nil && resp.Transaction != nil {
-		txn.stateLock.Lock()
-		if txn.state == transactionStateNotStarted {
-			txn.id = resp.Transaction
-			txn.state = transactionStateInProgress
-		}
-		txn.stateLock.Unlock()
-	}
+	finishRead(resp.Transaction)
 
 	if req.ExplainOptions == nil || req.ExplainOptions.Analyze {
 		ar.Result = make(AggregationResult)
@@ -975,49 +969,43 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 }
 
 func validateReadOptions(eventual bool, t *Transaction, clientReadSettings *readSettings) error {
-	if !clientReadSettings.readTimeExists() {
-		if t == nil {
-			return nil
-		}
-		if eventual {
-			return errEventualConsistencyTransaction
-		}
-		if t.state == transactionStateExpired {
-			return errExpiredTransaction
-		}
-		return nil
-	}
-
-	if t != nil || eventual {
-		return errEventualConsistencyTxnClientReadTime
-	}
-
-	return nil
+	_, err := parseQueryReadOptions(eventual, t, clientReadSettings)
+	return err
 }
 
 // parseQueryReadOptions translates Query read options into protobuf format.
 func parseQueryReadOptions(eventual bool, t *Transaction, clientReadSettings *readSettings) (*pb.ReadOptions, error) {
-	err := validateReadOptions(eventual, t, clientReadSettings)
-	if err != nil {
-		return nil, err
+	opts, finish, err := acquireQueryReadOptions(eventual, t, clientReadSettings)
+	if err == nil {
+		finish(nil)
 	}
+	return opts, err
+}
 
-	if t != nil {
-		return t.parseReadOptions()
-	}
-
-	if eventual {
-		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
-	}
-
+func acquireQueryReadOptions(eventual bool, t *Transaction, clientReadSettings *readSettings) (*pb.ReadOptions, func([]byte), error) {
 	if clientReadSettings.readTimeExists() {
+		if t != nil || eventual {
+			return nil, nil, errEventualConsistencyTxnClientReadTime
+		}
 		return &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_ReadTime{
 				ReadTime: timestamppb.New(clientReadSettings.readTime),
 			},
-		}, nil
+		}, func([]byte) {}, nil
 	}
-	return nil, nil
+
+	if t != nil {
+		if eventual {
+			return nil, nil, errEventualConsistencyTransaction
+		}
+		return t.acquireReadOptions()
+	}
+
+	if eventual {
+		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, func([]byte) {}, nil
+	}
+
+	return nil, func([]byte) {}, nil
 }
 
 // Iterator is the result of running a query.
@@ -1127,25 +1115,19 @@ func (t *Iterator) nextBatch(ctx context.Context) error {
 	txn := t.trans
 
 	var err error
-	t.req.ReadOptions, err = parseQueryReadOptions(t.eventual, txn, t.client.readSettings)
+	var finishRead func([]byte)
+	t.req.ReadOptions, finishRead, err = acquireQueryReadOptions(t.eventual, txn, t.client.readSettings)
 	if err != nil {
 		return err
 	}
+	defer finishRead(nil)
 
 	// Run the query.
 	resp, err := t.client.client.RunQuery(ctx, t.req)
 	if err != nil {
 		return err
 	}
-
-	if txn != nil && resp.Transaction != nil {
-		txn.stateLock.Lock()
-		if txn.state == transactionStateNotStarted {
-			txn.id = resp.Transaction
-			txn.state = transactionStateInProgress
-		}
-		txn.stateLock.Unlock()
-	}
+	finishRead(resp.Transaction)
 
 	if t.req.ExplainOptions != nil && !t.req.ExplainOptions.Analyze {
 		// No results to process

@@ -17,7 +17,9 @@ package datastore
 import (
 	"context"
 	"errors"
+	"runtime"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -933,5 +935,254 @@ func TestRunInTransaction_PanicRollsBack(t *testing.T) {
 	}
 	if len(srv.reqItems) != 0 {
 		t.Errorf("mock server has %d remaining expected RPCs (Rollback likely not called)", len(srv.reqItems))
+	}
+}
+
+func TestTransaction_ConcurrentMutations(t *testing.T) {
+	ctx := context.Background()
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(&pb.BeginTransactionRequest{ProjectId: mockProjectID}, &pb.BeginTransactionResponse{Transaction: []byte("tid")})
+
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatalf("NewTransaction: %v", err)
+	}
+
+	const numGoroutines = 10
+	errCh := make(chan error, numGoroutines*3)
+	doneCh := make(chan struct{}, numGoroutines*3)
+
+	for i := 0; i < numGoroutines; i++ {
+		go func() {
+			defer func() { doneCh <- struct{}{} }()
+			k := IncompleteKey("Task", nil)
+			if _, err := tx.Put(k, &struct{ N int }{N: i}); err != nil {
+				errCh <- err
+			}
+		}()
+		go func() {
+			defer func() { doneCh <- struct{}{} }()
+			k := NameKey("Task", "del", nil)
+			if err := tx.Delete(k); err != nil {
+				errCh <- err
+			}
+		}()
+		go func() {
+			defer func() { doneCh <- struct{}{} }()
+			k := IncompleteKey("Task", nil)
+			if _, err := tx.Mutate(NewInsert(k, &struct{ N int }{N: i})); err != nil {
+				errCh <- err
+			}
+		}()
+	}
+
+	for i := 0; i < numGoroutines*3; i++ {
+		<-doneCh
+	}
+	close(errCh)
+	for err := range errCh {
+		t.Errorf("unexpected error during concurrent mutations: %v", err)
+	}
+
+	tx.stateLock.Lock()
+	gotMuts := len(tx.mutations)
+	gotPending := len(tx.pending)
+	tx.stateLock.Unlock()
+
+	if want := numGoroutines * 3; gotMuts != want {
+		t.Errorf("len(tx.mutations) = %d, want %d", gotMuts, want)
+	}
+	if want := numGoroutines * 2; gotPending != want {
+		t.Errorf("len(tx.pending) = %d, want %d", gotPending, want)
+	}
+}
+
+func TestTransaction_BeginLaterConcurrentReads(t *testing.T) {
+	ctx := context.Background()
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	key := NameKey("Task", "k1", nil)
+	mockTxnID := []byte("tid-begin-later")
+	mockEntity := &pb.Entity{
+		Key: keyToProto(key),
+		Properties: map[string]*pb.Value{
+			"N": {ValueType: &pb.Value_IntegerValue{IntegerValue: 42}},
+		},
+	}
+
+	firstLookupInFlight := make(chan struct{})
+	releaseFirstLookup := make(chan struct{})
+
+	// Only the first Lookup RPC should request NewTransaction; subsequent
+	// concurrent Lookups must wait for the transaction ID and use Transaction.
+	srv.addRPCAdjust(&pb.LookupRequest{
+		ProjectId: mockProjectID,
+		Keys:      []*pb.Key{keyToProto(key)},
+		ReadOptions: &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_NewTransaction{},
+		},
+	}, &pb.LookupResponse{
+		Transaction: mockTxnID,
+		Found:       []*pb.EntityResult{{Entity: mockEntity, Version: 1}},
+	}, func(proto.Message) {
+		close(firstLookupInFlight)
+		<-releaseFirstLookup
+	})
+
+	const numReaders = 5
+	for i := 1; i < numReaders; i++ {
+		srv.addRPC(&pb.LookupRequest{
+			ProjectId: mockProjectID,
+			Keys:      []*pb.Key{keyToProto(key)},
+			ReadOptions: &pb.ReadOptions{
+				ConsistencyType: &pb.ReadOptions_Transaction{Transaction: mockTxnID},
+			},
+		}, &pb.LookupResponse{
+			Found: []*pb.EntityResult{{Entity: mockEntity, Version: 1}},
+		})
+	}
+
+	tx, err := client.NewTransaction(ctx, BeginLater)
+	if err != nil {
+		t.Fatalf("NewTransaction: %v", err)
+	}
+
+	errCh := make(chan error, numReaders)
+	go func() {
+		var dst struct{ N int }
+		errCh <- tx.Get(key, &dst)
+	}()
+
+	// Wait until the first Lookup RPC (with NewTransaction) is in flight on the
+	// server before launching the remaining concurrent readers.
+	<-firstLookupInFlight
+
+	var ready sync.WaitGroup
+	ready.Add(numReaders - 1)
+	for i := 1; i < numReaders; i++ {
+		go func() {
+			var dst struct{ N int }
+			ready.Done()
+			errCh <- tx.Get(key, &dst)
+		}()
+	}
+	ready.Wait()
+	runtime.Gosched()
+	close(releaseFirstLookup)
+
+	for i := 0; i < numReaders; i++ {
+		if err := <-errCh; err != nil {
+			t.Errorf("concurrent Get failed: %v", err)
+		}
+	}
+	if len(srv.reqItems) != 0 {
+		t.Errorf("remaining expected RPCs = %d, want 0", len(srv.reqItems))
+	}
+}
+
+func TestTransaction_BeginLaterRollbackExpiresTransaction(t *testing.T) {
+	ctx := context.Background()
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	tx, err := client.NewTransaction(ctx, BeginLater)
+	if err != nil {
+		t.Fatalf("NewTransaction: %v", err)
+	}
+
+	key := NameKey("Task", "k1", nil)
+	if _, err := tx.Put(key, &struct{ N int }{N: 1}); err != nil {
+		t.Fatalf("Put before Rollback: %v", err)
+	}
+
+	// Rolling back a BeginLater transaction that has not started on the server
+	// should succeed without sending any RPCs and mark the transaction expired.
+	if err := tx.Rollback(); err != nil {
+		t.Fatalf("Rollback: %v", err)
+	}
+
+	if _, err := tx.Put(key, &struct{ N int }{N: 2}); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Put after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if err := tx.Delete(key); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Delete after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if _, err := tx.Mutate(NewDelete(key)); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Mutate after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	var dst struct{ N int }
+	if err := tx.Get(key, &dst); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Get after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if _, err := tx.Commit(); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Commit after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if err := tx.Rollback(); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("second Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if len(srv.reqItems) != 0 {
+		t.Errorf("remaining expected RPCs = %d, want 0", len(srv.reqItems))
+	}
+}
+
+func TestTransaction_BeginLaterGetNoSuchEntity(t *testing.T) {
+	ctx := context.Background()
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	key := NameKey("Task", "missing", nil)
+	mockTxnID := []byte("tid-missing")
+	mockEntity := &pb.Entity{
+		Key: keyToProto(key),
+		Properties: map[string]*pb.Value{
+			"N": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+		},
+	}
+
+	// First Get returns Missing (ErrNoSuchEntity) along with the new transaction ID.
+	srv.addRPC(&pb.LookupRequest{
+		ProjectId: mockProjectID,
+		Keys:      []*pb.Key{keyToProto(key)},
+		ReadOptions: &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_NewTransaction{},
+		},
+	}, &pb.LookupResponse{
+		Transaction: mockTxnID,
+		Missing:     []*pb.EntityResult{{Entity: &pb.Entity{Key: keyToProto(key)}}},
+	})
+
+	// Subsequent Commit must use mockTxnID without issuing a separate BeginTransaction RPC.
+	srv.addRPC(&pb.CommitRequest{
+		ProjectId:           mockProjectID,
+		Mode:                pb.CommitRequest_TRANSACTIONAL,
+		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: mockTxnID},
+		Mutations: []*pb.Mutation{
+			{Operation: &pb.Mutation_Upsert{Upsert: mockEntity}},
+		},
+	}, &pb.CommitResponse{})
+
+	tx, err := client.NewTransaction(ctx, BeginLater)
+	if err != nil {
+		t.Fatalf("NewTransaction: %v", err)
+	}
+
+	var dst struct{ N int }
+	if err := tx.Get(key, &dst); !errors.Is(err, ErrNoSuchEntity) {
+		t.Fatalf("Get = %v, want %v", err, ErrNoSuchEntity)
+	}
+
+	if _, err := tx.Put(key, &struct{ N int }{N: 1}); err != nil {
+		t.Fatalf("Put: %v", err)
+	}
+
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Commit: %v", err)
+	}
+
+	if len(srv.reqItems) != 0 {
+		t.Errorf("remaining expected RPCs = %d, want 0", len(srv.reqItems))
 	}
 }
