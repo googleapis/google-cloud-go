@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ const (
 	HypercomputeCluster_CreateCluster_FullMethodName = "/google.cloud.hypercomputecluster.v1beta.HypercomputeCluster/CreateCluster"
 	HypercomputeCluster_UpdateCluster_FullMethodName = "/google.cloud.hypercomputecluster.v1beta.HypercomputeCluster/UpdateCluster"
 	HypercomputeCluster_DeleteCluster_FullMethodName = "/google.cloud.hypercomputecluster.v1beta.HypercomputeCluster/DeleteCluster"
+	HypercomputeCluster_ListNodes_FullMethodName     = "/google.cloud.hypercomputecluster.v1beta.HypercomputeCluster/ListNodes"
 )
 
 // HypercomputeClusterClient is the client API for HypercomputeCluster service.
@@ -56,6 +57,8 @@ type HypercomputeClusterClient interface {
 	UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Cluster.
 	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists Nodes in a given cluster.
+	ListNodes(ctx context.Context, in *ListNodesRequest, opts ...grpc.CallOption) (*ListNodesResponse, error)
 }
 
 type hypercomputeClusterClient struct {
@@ -111,6 +114,15 @@ func (c *hypercomputeClusterClient) DeleteCluster(ctx context.Context, in *Delet
 	return out, nil
 }
 
+func (c *hypercomputeClusterClient) ListNodes(ctx context.Context, in *ListNodesRequest, opts ...grpc.CallOption) (*ListNodesResponse, error) {
+	out := new(ListNodesResponse)
+	err := c.cc.Invoke(ctx, HypercomputeCluster_ListNodes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HypercomputeClusterServer is the server API for HypercomputeCluster service.
 // All implementations should embed UnimplementedHypercomputeClusterServer
 // for forward compatibility
@@ -125,6 +137,8 @@ type HypercomputeClusterServer interface {
 	UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Cluster.
 	DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunningpb.Operation, error)
+	// Lists Nodes in a given cluster.
+	ListNodes(context.Context, *ListNodesRequest) (*ListNodesResponse, error)
 }
 
 // UnimplementedHypercomputeClusterServer should be embedded to have forward compatible implementations.
@@ -145,6 +159,9 @@ func (UnimplementedHypercomputeClusterServer) UpdateCluster(context.Context, *Up
 }
 func (UnimplementedHypercomputeClusterServer) DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCluster not implemented")
+}
+func (UnimplementedHypercomputeClusterServer) ListNodes(context.Context, *ListNodesRequest) (*ListNodesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListNodes not implemented")
 }
 
 // UnsafeHypercomputeClusterServer may be embedded to opt out of forward compatibility for this service.
@@ -248,6 +265,24 @@ func _HypercomputeCluster_DeleteCluster_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HypercomputeCluster_ListNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListNodesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HypercomputeClusterServer).ListNodes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HypercomputeCluster_ListNodes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HypercomputeClusterServer).ListNodes(ctx, req.(*ListNodesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // HypercomputeCluster_ServiceDesc is the grpc.ServiceDesc for HypercomputeCluster service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -274,6 +309,10 @@ var HypercomputeCluster_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCluster",
 			Handler:    _HypercomputeCluster_DeleteCluster_Handler,
+		},
+		{
+			MethodName: "ListNodes",
+			Handler:    _HypercomputeCluster_ListNodes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -29,6 +29,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/genproto/googleapis/type/date"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -170,6 +172,11 @@ func TestNewResultRowMetadata(t *testing.T) {
 			),
 			wantErr: true,
 		},
+		{
+			name:    "empty columns",
+			pbMeta:  createMetadata(),
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -184,6 +191,9 @@ func TestNewResultRowMetadata(t *testing.T) {
 				return
 			}
 			if err != nil {
+				if status.Code(err) != codes.Internal {
+					t.Errorf("newResultRowMetadata() status.Code(err) = %v, want %v (err: %v)", status.Code(err), codes.Internal, err)
+				}
 				return
 			}
 			if diff := cmp.Diff(tt.wantMd, gotMd, cmpSQLOpts...); diff != "" {
@@ -807,5 +817,56 @@ func TestResultRow_GetByIndex_MapWithNullKey(t *testing.T) {
 	var gotMapString map[string]*string
 	if err := row.GetByIndex(0, &gotMapString); err == nil {
 		t.Fatalf("GetByIndex(0, &gotMapString) succeeded, want error for nil map key")
+	}
+}
+
+func TestResultRow_GetByIndex_ValidationErrorsReturnInternal(t *testing.T) {
+	pbMeta := createMetadata(
+		colMeta("strCol", typeString),
+		colMeta("mapCol", typeMapStringInt64),
+		colMeta("arrCol", typeArrayString),
+		colMeta("structCol", typeStructSimple),
+		colMeta("shortStructCol", typeStructSimple),
+	)
+	pbValues := []*btpb.Value{
+		pbInt64(42), // type mismatch: int for string
+		pbArray(pbMapEntry(pbString("k"), pbString("wrong"))), // type mismatch within map value
+		pbArray(pbString("ok"), pbInt64(1)),                   // type mismatch within array
+		pbArray(pbString("ok"), pbString("wrong")),            // type mismatch within struct
+		pbArray(pbString("only_one_field")),                   // struct missing field
+	}
+	rrMeta, err := newResultRowMetadata(pbMeta)
+	if err != nil {
+		t.Fatalf("newResultRowMetadata: %v", err)
+	}
+	row, err := newResultRow(pbValues, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow: %v", err)
+	}
+
+	for _, tc := range []struct {
+		name    string
+		index   int
+		wantSub string
+	}{
+		{"scalar type mismatch", 0, "type mismatch: expected StringValue for StringType"},
+		{"map value type mismatch", 1, "type mismatch: expected IntValue for Int64Type"},
+		{"array element type mismatch", 2, "type mismatch: expected StringValue for StringType"},
+		{"struct field type mismatch", 3, "type mismatch: expected IntValue for Int64Type"},
+		{"struct missing field", 4, "struct data/schema mismatch"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var v any
+			err := row.GetByIndex(tc.index, &v)
+			if err == nil {
+				t.Fatalf("GetByIndex(%d) succeeded, want error", tc.index)
+			}
+			if status.Code(err) != codes.Internal {
+				t.Errorf("GetByIndex(%d) status.Code(err) = %v, want %v (err: %v)", tc.index, status.Code(err), codes.Internal, err)
+			}
+			if !strings.Contains(err.Error(), tc.wantSub) {
+				t.Errorf("GetByIndex(%d) err = %q, want substring %q", tc.index, err.Error(), tc.wantSub)
+			}
+		})
 	}
 }

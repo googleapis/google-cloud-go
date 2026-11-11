@@ -183,6 +183,11 @@
                 "DeleteOperation"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
@@ -203,6 +208,11 @@
                 "ListOperations"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "StartInstance": {
               "methods": [
                 "StartInstance"
@@ -211,6 +221,16 @@
             "StopInstance": {
               "methods": [
                 "StopInstance"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
               ]
             },
             "WaitOperation": {
@@ -238,6 +258,11 @@
                 "DeleteOperation"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
@@ -258,6 +283,11 @@
                 "ListOperations"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "StartInstance": {
               "methods": [
                 "StartInstance"
@@ -266,6 +296,16 @@
             "StopInstance": {
               "methods": [
                 "StopInstance"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
               ]
             },
             "WaitOperation": {
@@ -628,6 +668,70 @@
             "UpdateService": {
               "methods": [
                 "UpdateService"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SourceUpload": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SourceUploadClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UploadSource": {
+              "methods": [
+                "UploadSource"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SourceUploadClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UploadSource": {
+              "methods": [
+                "UploadSource"
               ]
             },
             "WaitOperation": {
