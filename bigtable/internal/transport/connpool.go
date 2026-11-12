@@ -1009,14 +1009,35 @@ func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
 }
 
 type entryWithAge struct {
-	entry     *connEntry
-	createdAt int64
+	entry         *connEntry
+	createdAt     int64
+	streamingLoad int32
 }
 
 // removeConnections returns true if the pool size changed. It removes the oldest connections available in the conns.
 func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemoveConns int) bool {
+	return p.removeConnectionsOrdered(decreaseDelta, minConns, maxRemoveConns, func(a, b entryWithAge) bool {
+		return a.createdAt < b.createdAt
+	})
+}
+
+// removeLeastStreamedConnections shrinks the pool preferring connections with
+// zero or the fewest active streaming RPCs (sessions), breaking ties by oldest
+// creation time. Matches Java ChannelPoolDpImpl.pickDrainCandidates so
+// SessionAwareScaleMonitor drains idle/lightly-loaded channels first instead
+// of evicting older channels that carry active long-lived sessions.
+func (p *BigtableChannelPool) removeLeastStreamedConnections(decreaseDelta, minConns, maxRemoveConns int) bool {
+	return p.removeConnectionsOrdered(decreaseDelta, minConns, maxRemoveConns, func(a, b entryWithAge) bool {
+		if a.streamingLoad != b.streamingLoad {
+			return a.streamingLoad < b.streamingLoad
+		}
+		return a.createdAt < b.createdAt
+	})
+}
+
+func (p *BigtableChannelPool) removeConnectionsOrdered(decreaseDelta, minConns, maxRemoveConns int, less func(a, b entryWithAge) bool) bool {
 	// the critical section is very short
-	// as we just need to sort the conns and get rid of n old connections.
+	// as we just need to sort the conns and get rid of n connections.
 	p.dialMu.Lock()
 
 	if decreaseDelta <= 0 {
@@ -1044,16 +1065,27 @@ func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemo
 	for _, entry := range snapshotConns {
 		// Only consider connections not *already* draining for removal via this logic.
 		if !entry.isDraining() {
-			entries = append(entries, entryWithAge{entry: entry, createdAt: entry.conn.creationTime()})
+			entries = append(entries, entryWithAge{
+				entry:         entry,
+				createdAt:     entry.createdAt(),
+				streamingLoad: entry.streamingLoad.Load(),
+			})
 		}
 	}
 
-	// Sort by creation time, oldest first
+	if len(entries) == 0 {
+		p.dialMu.Unlock()
+		return false
+	}
+	if cappedDecrease > len(entries) {
+		cappedDecrease = len(entries)
+	}
+
 	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].entry.createdAt() < entries[j].entry.createdAt()
+		return less(entries[i], entries[j])
 	})
 
-	// Select the oldest non-draining connections to mark for draining.
+	// Select the top non-draining connections to mark for draining.
 	connsToDrain := make([]*connEntry, 0, cappedDecrease)
 	for i := 0; i < cappedDecrease; i++ {
 		connsToDrain = append(connsToDrain, entries[i].entry)

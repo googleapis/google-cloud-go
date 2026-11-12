@@ -138,9 +138,11 @@ type Config struct {
 	// driven sizing keeps per-channel session load under the server-
 	// specified soft cap (ChannelPoolConfiguration.PerServerSessionCount).
 	//
-	// Escape hatch — flip on if a deployment sees pathological churn
-	// under the session-aware policy and needs the classic behavior
-	// while root-cause is investigated.
+	// Because session.Config is internal, production deployments flip this
+	// escape hatch via the CBT_DISABLE_SESSION_AWARE_CHANNEL_POOL=true
+	// environment variable (read in NewClient via
+	// btopt.DisableSessionAwareChannelPool), while unit tests set this
+	// field directly on newSessionClientFromParts.
 	DisableSessionAwareChannelPool bool
 }
 
@@ -456,9 +458,12 @@ func NewClient(
 		return btransport.NewBigtableConn(grpcConn), nil
 	}
 
-	if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), poolSize); err != nil {
-		cleanupOnErr()
-		return nil, fmt.Errorf("session.NewClient: invalid DynamicChannelPoolConfig: %w", err)
+	disableSessionAware := btopt.DisableSessionAwareChannelPool()
+	if disableSessionAware {
+		if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), poolSize); err != nil {
+			cleanupOnErr()
+			return nil, fmt.Errorf("session.NewClient: invalid DynamicChannelPoolConfig: %w", err)
+		}
 	}
 	pool, err := btransport.NewBigtableChannelPool(
 		backgroundCtx,
@@ -483,22 +488,29 @@ func NewClient(
 		cleanupOnErr()
 		return nil, fmt.Errorf("session.NewClient: %w", ctx.Err())
 	}
-	dsm := btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
-	dsm.Start(backgroundCtx)
+	// Only construct and start DynamicScaleMonitor when session-aware channel
+	// pool sizing is explicitly disabled — avoids spawning and immediately
+	// tearing down a throwaway DSM goroutine on the default path.
+	var dsm *btransport.DynamicScaleMonitor
+	if disableSessionAware {
+		dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
+		dsm.Start(backgroundCtx)
+	}
 	connRecycler := btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), pool)
 	connRecycler.Start(backgroundCtx)
 	managed := btransport.NewManagedChannelPool(pool, dsm, connRecycler)
 	stub := btpb.NewBigtableClient(pool)
 
 	sc := newSessionClientFromParts(pool, stub, factory, Config{
-		Project:           project,
-		Instance:          instance,
-		AppProfile:        appProfile,
-		FeatureFlagsMD:    directAccessMD,
-		FeatureFlagsProto: featureFlagsProto,
-		ConfigMD:          configMD,
-		MetricsEnabled:    factory.Enabled,
-		BackgroundCtx:     backgroundCtx,
+		Project:                        project,
+		Instance:                       instance,
+		AppProfile:                     appProfile,
+		FeatureFlagsMD:                 directAccessMD,
+		FeatureFlagsProto:              featureFlagsProto,
+		ConfigMD:                       configMD,
+		MetricsEnabled:                 factory.Enabled,
+		BackgroundCtx:                  backgroundCtx,
+		DisableSessionAwareChannelPool: disableSessionAware,
 		// EnableDebug intentionally left at zero (false): NewClient has
 		// no external caller upstream today, so exposing a positional
 		// bool on the constructor would ship a dead knob. When the
