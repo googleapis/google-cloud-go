@@ -28,8 +28,15 @@ import (
 // capacity when picking the target channel count. Sessions are
 // long-lived bidi streams pinned to one channel — an AFE-side hiccup
 // affects every session on that channel, so oversizing the pool is
-// the correct safety-margin tradeoff. Kept as a named const rather
-// than an inline literal so the intent shows up at every callsite.
+// the correct safety-margin tradeoff.
+//
+// Note: SessionClientConfiguration.ChannelPoolConfiguration in
+// google/bigtable/v2/session.proto only defines min_server_count,
+// max_server_count, per_server_session_count, and mode (unlike
+// SessionPoolConfiguration, it has no headroom field), so this mirrors
+// the client-side constant in Java's ChannelPoolDpImpl (HEADROOM = 2.0).
+// TODO(b/445071688): Source channel-pool headroom from
+// ChannelPoolConfiguration / defaultClientConfig if a proto field is added.
 const SessionAwareHeadroom = 2
 
 // SessionAwareTickInterval is the default cadence for target
@@ -46,10 +53,10 @@ const SessionAwareTickInterval = 1 * time.Minute
 //     per open session), so this equals the total session count
 //     riding on the pool without any cross-package plumbing.
 //  2. Read the latest ChannelPoolConfiguration snapshot fed via
-//     OnConfig (min/max/perServerSessionCount).
+//     OnConfig (minServerCount/maxServerCount/perServerSessionCount).
 //  3. Compute target = ceil((sessions * SessionAwareHeadroom) /
-//     perServerSessionCount), clamped to [min, max].
-//  4. Call pool.addConnections / removeConnections to reach target.
+//     perServerSessionCount), clamped to [minServerCount, maxServerCount].
+//  4. Call pool.addConnections / removeLeastStreamedConnections to reach target.
 //
 // Threading model:
 //   - OnConfig races with the tick — snapshot is stored atomically.
@@ -58,6 +65,9 @@ const SessionAwareTickInterval = 1 * time.Minute
 //     exit via the done channel so callers can rely on "no more
 //     mutations after Stop returns".
 type SessionAwareScaleMonitor struct {
+	// TODO: Support DirectAccess fallback pool sizing per
+	// ChannelPoolConfiguration.Mode (DirectAccessWithFallback /
+	// DirectAccessOnly / CloudPathOnly) in a follow-up.
 	pool         *BigtableChannelPool
 	config       atomic.Pointer[channelPoolConfigSnapshot]
 	tickInterval time.Duration
@@ -70,12 +80,20 @@ type SessionAwareScaleMonitor struct {
 }
 
 // channelPoolConfigSnapshot is the immutable triple loaded on every
-// tick. Kept together in a pointer so the tick reads the tuple
-// atomically — otherwise a config update mid-formula could feed a
-// half-old / half-new (min, max, softMax) into clamp and produce a
-// nonsense target.
+// tick, mirroring ChannelPoolConfiguration's sizing fields. Kept together in a
+// pointer so the tick reads the tuple atomically — otherwise a config update
+// mid-formula could feed a half-old / half-new
+// (minServerCount, maxServerCount, perServerSessionCount) into clamp and
+// produce a nonsense target.
+//
+// TODO: Also enforce perServerSessionCount per channel/AFE during session
+// stream placement and opportunistic scale-up (matching Java's
+// ChannelPoolDpImpl.newStream) in a follow-up; today it drives periodic pool
+// sizing here.
 type channelPoolConfigSnapshot struct {
-	min, max, softMax int
+	minServerCount        int
+	maxServerCount        int
+	perServerSessionCount int
 }
 
 // NewSessionAwareScaleMonitor constructs a monitor bound to pool.
@@ -93,16 +111,32 @@ func NewSessionAwareScaleMonitor(pool *BigtableChannelPool) *SessionAwareScaleMo
 
 // OnConfig accepts a ChannelPoolConfiguration update — designed as
 // the callback registered with ClientConfigurationManager.
-// AddChannelPoolConfigListener. nil config is ignored. Non-positive
-// bounds fall through to the tick, which sees ComputeTarget<=0 and no-ops.
+// AddChannelPoolConfigListener. nil config is ignored. Any unset or
+// non-positive field falls back to defaultClientConfig's
+// ChannelConfiguration so partial server configs inherit client defaults.
 func (m *SessionAwareScaleMonitor) OnConfig(cfg *spb.SessionClientConfiguration_ChannelPoolConfiguration) {
 	if cfg == nil {
 		return
 	}
+	defaults := defaultClientConfig.GetSessionConfiguration().GetChannelConfiguration()
+	minServers := int(cfg.GetMinServerCount())
+	maxServers := int(cfg.GetMaxServerCount())
+	perServerSessions := int(cfg.GetPerServerSessionCount())
+	if defaults != nil {
+		if maxServers <= 0 {
+			maxServers = int(defaults.GetMaxServerCount())
+		}
+		if minServers <= 0 {
+			minServers = min(int(defaults.GetMinServerCount()), maxServers)
+		}
+		if perServerSessions <= 0 {
+			perServerSessions = int(defaults.GetPerServerSessionCount())
+		}
+	}
 	m.config.Store(&channelPoolConfigSnapshot{
-		min:     int(cfg.GetMinServerCount()),
-		max:     int(cfg.GetMaxServerCount()),
-		softMax: int(cfg.GetPerServerSessionCount()),
+		minServerCount:        minServers,
+		maxServerCount:        maxServers,
+		perServerSessionCount: perServerSessions,
 	})
 }
 
@@ -217,7 +251,7 @@ func (m *SessionAwareScaleMonitor) tick() {
 		return
 	}
 	sessions := m.pool.TotalStreamCount()
-	target := ComputeTarget(sessions, cfg.softMax, cfg.min, cfg.max)
+	target := ComputeTarget(sessions, cfg.perServerSessionCount, cfg.minServerCount, cfg.maxServerCount)
 	have := m.pool.Num()
 	// One line per tick: inputs + decision. Operators tailing the debug
 	// log see the sizer's reasoning without a separate metric.
@@ -230,16 +264,16 @@ func (m *SessionAwareScaleMonitor) tick() {
 			action = "shrink"
 		}
 	}
-	btopt.Debugf(nil, "bigtable_connpool: SessionAwareScaleMonitor tick: streams=%d softMax=%d min=%d max=%d target=%d have=%d action=%s\n",
-		sessions, cfg.softMax, cfg.min, cfg.max, target, have, action)
+	btopt.Debugf(nil, "bigtable_connpool: SessionAwareScaleMonitor tick: streams=%d perServerSessionCount=%d min=%d max=%d target=%d have=%d action=%s\n",
+		sessions, cfg.perServerSessionCount, cfg.minServerCount, cfg.maxServerCount, target, have, action)
 	if target <= 0 {
 		return
 	}
-	minFloor := max(cfg.min, 1)
+	minFloor := max(cfg.minServerCount, 1)
 	switch {
 	case target > have:
-		m.pool.addConnections(target-have, cfg.max)
+		m.pool.addConnections(target-have, cfg.maxServerCount)
 	case target < have:
-		m.pool.removeConnections(have-target, minFloor, have-target)
+		m.pool.removeLeastStreamedConnections(have-target, minFloor, have-target)
 	}
 }

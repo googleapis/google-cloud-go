@@ -186,9 +186,23 @@ func TestSessionAwareScaleMonitor_OnConfigStoresSnapshot(t *testing.T) {
 	if snap == nil {
 		t.Fatal("OnConfig(valid) stored nil")
 	}
-	if snap.min != 3 || snap.max != 12 || snap.softMax != 6 {
-		t.Errorf("snapshot = {min=%d max=%d softMax=%d}, want {3 12 6}",
-			snap.min, snap.max, snap.softMax)
+	if snap.minServerCount != 3 || snap.maxServerCount != 12 || snap.perServerSessionCount != 6 {
+		t.Errorf("snapshot = {minServerCount=%d maxServerCount=%d perServerSessionCount=%d}, want {3 12 6}",
+			snap.minServerCount, snap.maxServerCount, snap.perServerSessionCount)
+	}
+
+	// Unset / non-positive fields fall back to defaultClientConfig's ChannelConfiguration.
+	defaults := defaultClientConfig.GetSessionConfiguration().GetChannelConfiguration()
+	m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{})
+	snap = m.config.Load()
+	if snap == nil {
+		t.Fatal("OnConfig(empty) stored nil")
+	}
+	if snap.minServerCount != int(defaults.GetMinServerCount()) ||
+		snap.maxServerCount != int(defaults.GetMaxServerCount()) ||
+		snap.perServerSessionCount != int(defaults.GetPerServerSessionCount()) {
+		t.Errorf("snapshot from empty proto = %+v, want defaults {%d %d %d}",
+			snap, defaults.GetMinServerCount(), defaults.GetMaxServerCount(), defaults.GetPerServerSessionCount())
 	}
 }
 
@@ -306,4 +320,71 @@ func TestSessionAwareScaleMonitor_RealPoolScaleUpAndDown(t *testing.T) {
 	if got := pool.Num(); got != 2 {
 		t.Fatalf("after scale-down tick: pool.Num() = %d, want 2", got)
 	}
+}
+
+// TestSessionAwareScaleMonitor_ShrinkPrefersIdleAndLeastStreamedConns verifies
+// that shrinking drains idle (0 active streams) and least-streamed channels
+// first rather than evicting older channels that carry active sessions.
+func TestSessionAwareScaleMonitor_ShrinkPrefersIdleAndLeastStreamedConns(t *testing.T) {
+	addr := setupTestServer(t, &fakeService{})
+	dial := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	pool, err := NewBigtableChannelPool(
+		context.Background(),
+		4,
+		btopt.RoundRobin,
+		dial,
+		time.Now(),
+		WithChannelPrimer(NoOpChannelPrimer{}),
+		WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)),
+	)
+	if err != nil {
+		t.Fatalf("NewBigtableChannelPool: %v", err)
+	}
+	defer pool.Close()
+
+	// Make the first two (oldest) connections carry active sessions (3 and 1),
+	// while the two newer connections have 0 active streams.
+	conns := pool.getConns()
+	if len(conns) != 4 {
+		t.Fatalf("initial pool size = %d, want 4", len(conns))
+	}
+	busyOldest := conns[0]
+	busySecond := conns[1]
+	idleThird := conns[2]
+	idleFourth := conns[3]
+	busyOldest.streamingLoad.Store(3)
+	busySecond.streamingLoad.Store(1)
+	idleThird.streamingLoad.Store(0)
+	idleFourth.streamingLoad.Store(0)
+
+	m := NewSessionAwareScaleMonitorForTest(pool)
+	m.Start(context.Background())
+	defer m.Stop()
+
+	// total streams = 4, perServerSessionCount = 4 -> target = ceil(4*2 / 4) = 2.
+	// Shrinking from 4 -> 2 must drain the 2 idle connections and keep the 2 busy ones.
+	m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{
+		MinServerCount:        2,
+		MaxServerCount:        6,
+		PerServerSessionCount: 4,
+	})
+	m.TickForTest()
+
+	remaining := pool.getConns()
+	if len(remaining) != 2 {
+		t.Fatalf("remaining conns = %d, want 2", len(remaining))
+	}
+	keepSet := map[*connEntry]bool{remaining[0]: true, remaining[1]: true}
+	if !keepSet[busyOldest] || !keepSet[busySecond] {
+		t.Errorf("shrink evicted busy connections; kept streamingLoads=[%d, %d], want busy conns (3, 1)",
+			remaining[0].streamingLoad.Load(), remaining[1].streamingLoad.Load())
+	}
+	if !idleThird.isDraining() || !idleFourth.isDraining() {
+		t.Errorf("idle connections not marked draining: third=%v fourth=%v",
+			idleThird.isDraining(), idleFourth.isDraining())
+	}
+	// Reset simulated loads so pool.Close() drains cleanly without waiting on phantom streams.
+	busyOldest.streamingLoad.Store(0)
+	busySecond.streamingLoad.Store(0)
 }

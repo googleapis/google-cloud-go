@@ -153,3 +153,13 @@ func TestRegisterScaleMonitor_OptOutFallsBackToDSM(t *testing.T) {
 		t.Fatalf("Close: %v", err)
 	}
 }
+
+func TestDisableSessionAwareChannelPoolEnvVar(t *testing.T) {
+	if btopt.DisableSessionAwareChannelPool() {
+		t.Fatal("DisableSessionAwareChannelPool() = true by default, want false")
+	}
+	t.Setenv(btopt.DisableSessionAwareChannelPoolEnvVar, "true")
+	if !btopt.DisableSessionAwareChannelPool() {
+		t.Fatal("DisableSessionAwareChannelPool() = false with env=true, want true")
+	}
+}
