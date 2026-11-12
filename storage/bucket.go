@@ -2435,6 +2435,7 @@ func ownerEntityFromProto(p *storagepb.Owner) string {
 // Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
 func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 	o := makeStorageOpts(true, b.retry, b.userProject)
+	ctx = contextWithListObjectsCache(ctx, b.c.bucketMetadataCache)
 	return b.c.tc.ListObjects(ctx, b.name, q, o...)
 }
 
