@@ -166,10 +166,11 @@ type Channel struct {
 	scopePrefix   string
 	sessionTables *session.TableCache
 
-	mu      sync.Mutex
-	clients map[clientKey]session.Client
-	loading map[clientKey]*clientLoadState
-	closed  bool
+	mu        sync.RWMutex
+	clients   map[clientKey]session.Client
+	diverters map[clientKey]*btransport.Diverter
+	loading   map[clientKey]*clientLoadState
+	closed    bool
 }
 
 // NewChannel constructs a Channel scoped to project (and optionally instance
@@ -215,6 +216,7 @@ func NewChannel(
 		scopePrefix:   scopePrefixFor(project, instance),
 		sessionTables: session.NewTableCache(session.DefaultTableCacheTTL, session.DefaultTableCacheSweepInterval, nil /* time.Now */),
 		clients:       make(map[clientKey]session.Client),
+		diverters:     make(map[clientKey]*btransport.Diverter),
 		loading:       make(map[clientKey]*clientLoadState),
 	}
 	if instance != "" {
@@ -223,7 +225,11 @@ func NewChannel(
 			ch.sessionTables.Close()
 			return nil, err
 		}
-		ch.clients[clientKey{instance: instance, appProfile: appProfile}] = sc
+		key := clientKey{instance: instance, appProfile: appProfile}
+		d := btransport.NewDiverter(0.0)
+		sc.AddSessionLoadListener(d.SetSessionLoad)
+		ch.clients[key] = sc
+		ch.diverters[key] = d
 	}
 	return ch, nil
 }
@@ -232,16 +238,34 @@ func NewChannel(
 // dialing and caching a new one if needed using per-key single-flight
 // coordination so warm clients return immediately without waiting on cold dials.
 func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (session.Client, error) {
+	sc, _, err := c.getOrCreateSessionClientAndDiverter(instanceID, appProfile)
+	return sc, err
+}
+
+func (c *Channel) getOrCreateSessionClientAndDiverter(instanceID, appProfile string) (session.Client, *btransport.Diverter, error) {
 	key := clientKey{instance: instanceID, appProfile: appProfile}
+	c.mu.RLock()
+	if c.closed {
+		c.mu.RUnlock()
+		return nil, nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
+	}
+	if sc, ok := c.clients[key]; ok {
+		d := c.diverters[key]
+		c.mu.RUnlock()
+		return sc, d, nil
+	}
+	c.mu.RUnlock()
+
 	for {
 		c.mu.Lock()
 		if c.closed {
 			c.mu.Unlock()
-			return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
+			return nil, nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
 		}
 		if sc, ok := c.clients[key]; ok {
+			d := c.diverters[key]
 			c.mu.Unlock()
-			return sc, nil
+			return sc, d, nil
 		}
 		if c.loading == nil {
 			c.loading = make(map[clientKey]*clientLoadState)
@@ -257,6 +281,7 @@ func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (sessi
 
 		var (
 			sc  session.Client
+			d   *btransport.Diverter
 			err error
 		)
 		func() {
@@ -275,23 +300,58 @@ func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (sessi
 			if err != nil {
 				return
 			}
+			d = btransport.NewDiverter(0.0)
+			sc.AddSessionLoadListener(d.SetSessionLoad)
 
 			c.mu.Lock()
 			if c.closed {
 				c.mu.Unlock()
 				_ = sc.Close()
 				sc = nil
+				d = nil
 				err = status.Error(codes.Unavailable, "accelerator: channel is closed")
 				return
 			}
-			if c.clients == nil {
+			if c.clients == nil && c.diverters == nil {
 				c.clients = make(map[clientKey]session.Client)
+				c.diverters = make(map[clientKey]*btransport.Diverter)
+			} else if (c.clients == nil) != (c.diverters == nil) {
+				c.mu.Unlock()
+				_ = sc.Close()
+				sc = nil
+				d = nil
+				err = status.Error(codes.Internal, "accelerator: inconsistent clients and diverters map state")
+				return
 			}
 			c.clients[key] = sc
+			c.diverters[key] = d
 			c.mu.Unlock()
 		}()
-		return sc, err
+		return sc, d, err
 	}
+}
+
+// useSession reports whether the next RPC for (instanceID, reqAppProfile)
+// should be routed to the session data path according to its server-driven
+// SessionLoad ratio. Returns true when c is nil or instanceID is empty
+// (letting downstream resource validation surface any malformed name error).
+// If resolving the session client or diverter fails, records a debug tag and
+// returns false so FallbackChannel routes the traffic to classic.
+func (c *Channel) useSession(instanceID, reqAppProfile string) bool {
+	if c == nil || instanceID == "" {
+		return true
+	}
+	appProfile, err := c.resolveAppProfile(reqAppProfile)
+	if err != nil {
+		btransport.RecordDebugTag(btransport.TagAcceleratorSessionDiverterError)
+		return false
+	}
+	_, d, err := c.getOrCreateSessionClientAndDiverter(instanceID, appProfile)
+	if err != nil || d == nil {
+		btransport.RecordDebugTag(btransport.TagAcceleratorSessionDiverterError)
+		return false
+	}
+	return d.UseSession()
 }
 
 // resolveAppProfile returns the effective app profile for an RPC, checking
@@ -476,6 +536,7 @@ func (c *Channel) Close() error {
 		}
 	}
 	c.clients = nil
+	c.diverters = nil
 	c.mu.Unlock()
 
 	if c.sessionTables != nil {

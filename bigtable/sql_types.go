@@ -28,8 +28,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var int64ReflectType = reflect.TypeOf(int64(0))
-
 // SQLType represents the type of data that can be used to query Cloud Bigtable.
 // It is based on the GoogleSQL standard.
 type SQLType interface {
@@ -139,7 +137,7 @@ func (s Int64SQLType) isValidArrayElemType() bool {
 
 func (s Int64SQLType) isValidPrepareParamType() bool { return true }
 
-// valid value can be of type int64 or nil.
+// valid value can be of a signed integer type (int, int8, int16, int32, int64) or nil.
 func (s Int64SQLType) valueProto(value any) (*btpb.Value, error) {
 	pbType, err := Int64SQLType{}.typeProto()
 	if err != nil {
@@ -152,17 +150,17 @@ func (s Int64SQLType) valueProto(value any) (*btpb.Value, error) {
 	}
 
 	reflectVal := reflect.ValueOf(value)
-	if reflectVal.CanConvert(int64ReflectType) {
-		typedVal := reflectVal.Convert(int64ReflectType).Int()
+	switch reflectVal.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return &btpb.Value{
 			Type: pbType,
 			Kind: &btpb.Value_IntValue{
-				IntValue: typedVal,
+				IntValue: reflectVal.Int(),
 			},
 		}, nil
+	default:
+		return nil, &errTypeMismatch{value: value, psType: Int64SQLType{}}
 	}
-
-	return nil, &errTypeMismatch{value: value, psType: Int64SQLType{}}
 }
 func (s Int64SQLType) typeProto() (*btpb.Type, error) {
 	return &btpb.Type{
@@ -380,7 +378,9 @@ func (s ArraySQLType) isValidArrayElemType() bool {
 	return false
 }
 
-func (s ArraySQLType) isValidPrepareParamType() bool { return true }
+func (s ArraySQLType) isValidPrepareParamType() bool {
+	return s.ElemType != nil && s.ElemType.isValidArrayElemType() && s.ElemType.isValidPrepareParamType()
+}
 
 // valid value can be of type slice, array or nil
 func (s ArraySQLType) valueProto(value any) (*btpb.Value, error) {
@@ -388,18 +388,32 @@ func (s ArraySQLType) valueProto(value any) (*btpb.Value, error) {
 	if err != nil {
 		return nil, err
 	}
+	if !s.isValidPrepareParamType() {
+		return nil, fmt.Errorf("bigtable: %T cannot be used as ArraySQLType element parameter type", s.ElemType)
+	}
 
 	if value == nil {
 		return &btpb.Value{Type: pbType}, nil
 	}
 
-	// Use reflect to check if val is an array.
+	// Use reflect to check if val is a slice or array.
 	valType := reflect.TypeOf(value)
 	if valType.Kind() != reflect.Slice && valType.Kind() != reflect.Array {
 		return nil, &errTypeMismatch{value: value, psType: s}
 	}
 
 	valReflectValue := reflect.ValueOf(value)
+	if valReflectValue.Len() == 0 {
+		if valType.Elem().Kind() != reflect.Interface {
+			if _, err := s.ElemType.valueProto(reflect.Zero(valType.Elem()).Interface()); err != nil {
+				return nil, fmt.Errorf("bigtable: error converting array element: %w", err)
+			}
+		}
+		if valType.Kind() == reflect.Slice && valReflectValue.IsNil() {
+			return &btpb.Value{Type: pbType}, nil
+		}
+	}
+
 	pbValues := make([]*btpb.Value, 0, valReflectValue.Len())
 	for i := 0; i < valReflectValue.Len(); i++ {
 		elem := valReflectValue.Index(i).Interface()

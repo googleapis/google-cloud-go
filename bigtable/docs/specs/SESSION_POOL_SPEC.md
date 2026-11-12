@@ -1,6 +1,6 @@
 # SessionPool + Picking — Behavioral Spec
 
-**Scope.** This file governs the **runtime behavior** of code under `bigtable/internal/transport/session_pool*.go`, `session_list.go`, `session_pool_lifecycle.go`, `pool_sizer.go`, `session_creation_budget.go`, all `AfePicker` implementations (`afe_picker.go`), `bigtable/table_shim.go`, `bigtable/internal/transport/diverter.go`, and `bigtable/debugview/**`. It covers pool topology per resource, the AFE picker + K-choice + PeakEwma discipline, Diverter+TableShim routing, debug-view non-blocking rules, server-driven pool scaling, and the sessionList per-handle state machine that underpins all of the above. Any change to those files MUST be checked against the 6 invariants below.
+**Scope.** This file governs the **runtime behavior** of code under `bigtable/internal/transport/session_pool*.go`, `session_list.go`, `session_pool_lifecycle.go`, `pool_sizer.go`, `session_creation_budget.go`, all `AfePicker` implementations (`afe_picker.go`), `bigtable/table_shim.go`, `bigtable/internal/transport/diverter.go`, and `bigtable/debugview/**`. It covers pool topology per resource, the AFE picker + K-choice + PeakEwma discipline, Diverter+TableShim routing, debug-view non-blocking rules, server-driven pool scaling, and the sessionList per-handle state machine that underpins all of the above. Any change to those files MUST be checked against the 6 behavioral sections below (including the 7 `sessionList` invariants `I1`–`I7` in #6).
 
 **Sibling behavioral specs.** `SESSION_SPEC.md` (per-Session lifecycle, 10 invariants) · `SESSION_CLIENT_SPEC.md` (SessionClient topology, channel pool, config, OpenSession envelope, 4 invariants) · `CLIENT_SIDE_METRICS_SPEC.md` (per-attempt metrics field provenance).
 
@@ -23,11 +23,10 @@
 
 ### 2. The AFE picker is two-tier, K-choice, and PeakEwma-OK-gated — Java-parity
 
-The pool does NOT route to individual sessions directly. Every `CheckoutSession` runs a two-step dispatch (`session_pool.go:360-370`):
+The pool does NOT route to individual sessions directly. Every `CheckoutSession` runs an atomic two-tier dispatch (`session_pool.go`, `session_list.go`):
 
-1. `ready := sl.ReadyAfes()` — snapshot of AFEs with ≥1 idle session (`session_list.go`).
-2. `afe, decision := picker.PickAfe(ready)` — pick an AFE via one of three strategies.
-3. `sh := sl.Checkout(afe)` — dequeue one session from that AFE's idle list.
+1. `sh, decision := sl.CheckoutWithPicker(picker)` — under a single `sl.mu` hold, `picker.pickLocked(sl.afesWithReady)` selects a ready AFE via one of three strategies (reordering `sl.afesWithReady[:K]` in place via `swapReadyAfesLocked` so `afe.readyIdx` stays valid) and immediately dequeues one idle session from that AFE's queue (`dequeueLocked` + `removeFromReadyLocked`).
+2. Holding `sl.mu` across pick and dequeue eliminates lock-split checkout races by construction (every entry in `afesWithReady` satisfies `len(sessions) > 0` per `I3`), avoids allocating a per-RPC `[]AfeSnapshot` slice, and evaluates cost on at most `K` sampled AFEs instead of all `N` ready AFEs.
 
 The old flat `LeastInFlightPicker` over all sessions is gone. `SessionHandle` no longer holds per-session `ewma`/`freeSignal` — those live per-AFE on `afeHandle`, and wake-ups fire centrally from `s.hooks.onSlotDrained()` (the drain-driven `SessionHooks.OnSlotDrained` closure installed by `SessionPoolImpl.createSession` in the `SessionHooks{...}` literal handed to `NewSession`; see `SESSION_SPEC.md #2`). The pool's `Invoke` return path does NOT re-enqueue or wake — under Java-parity slot lifecycle, drain and "caller returned" can be far apart (ctx.Done leaves the slot held until the server response drains it), so folding both actions into the drain site is the only way to keep the queue honest without a busy-skip loop at `Checkout`.
 
@@ -36,7 +35,7 @@ The old flat `LeastInFlightPicker` over all sessions is gone. `SessionHandle` no
 | `Strategy` | Impl | Behavior | Reason string emitted |
 |---|---|---|---|
 | `Random` | `SimpleAfePicker` (`afe_picker.go:76-88`) | Uniform random over all ready AFEs | `"uniform-random"` |
-| `LeastInFlight` (default) | `LeastInFlightAfePicker` (`afe_picker.go:111`) | K-choice: sample `RandomSubsetSize` AFEs, pick min in-flight | `"min-inflight"` |
+| `LeastInFlight` (default) | `LeastInFlightAfePicker` (`afe_picker.go:111`) | K-choice: sample `RandomSubsetSize` AFEs, pick min active in-flight (`NumOutstanding`, excluding `Closing`), breaking ties toward higher `IdleCount` | `"min-inflight"` |
 | `PeakEwma` | `LeastLatencyAfePicker` (`afe_picker.go:136`) | K-choice: sample K AFEs, pick min `e2eEwma.Value()` | `"min-latency"` |
 
 `pickerFromLoadBalancing` (`session_pool.go:553-577`) is the sole factory; unrecognized strategy falls back to `LeastInFlightAfePicker(defaultAfeRandomSubsetSize)`.
@@ -49,26 +48,26 @@ The old flat `LeastInFlightPicker` over all sessions is gone. `SessionHandle` no
 
 **Picker uses `e2eEwma`, NOT `transportEwma`.** `LeastLatencyAfePicker` reads `getE2eCost()` equivalent; `transportEwma` is telemetry-only (visible on `afez`/`loadz`, not consumed by the pick). Java parity: `LeastLatencyPicker.java:59-60` reads `getE2eCost()`; `getTransportCost()` has no callers. Rationale: e2e is what users experience; transport-only would isolate wire+AFE overhead but miss bad-backend AFEs.
 
-**`PickDecision` is the picker's audit trail** (`afe_picker.go:37-55`). Every `PickAfe` returns `PickDecision{Candidates []PickCandidate, Winner *afeHandle, Reason string}` so `loadz` renders the K-choice trace verbatim. Recorded to a 500-slot ring buffer on `SessionPoolImpl.pickHistory` plus an `afePickCounts` map, surfaced via `SessionDebugProvider.LoadBalancingSnapshots()`. The 500-slot bound is a MUST — unbounded history would violate `SESSION_POOL_SPEC.md #4` (debug non-blocking, bounded work per request).
+**`PickDecision` is the picker's audit trail** (`afe_picker.go:37-55`). Every `CheckoutWithPicker` (via `picker.pickLocked`) returns `PickDecision{Candidates []PickCandidate, Winner AfeID, Reason string}` so `loadz` renders the K-choice trace verbatim. Recorded to a 500-slot ring buffer on `SessionPoolImpl.pickHistory` plus an `afePickCounts` map, surfaced via `SessionDebugProvider.LoadBalancingSnapshots()`. The 500-slot bound is a MUST — unbounded history would violate `SESSION_POOL_SPEC.md #4` (debug non-blocking, bounded work per request).
 
-**Deadlock trap — `recordPickDecision` takes `pickerName` as a parameter.** `CheckoutSession` already holds `p.mu` when it calls the picker; re-reading `p.picker.Name()` from a callee would re-acquire `p.mu` and deadlock. The pattern MUST be:
+**Deadlock trap — `recordPickDecision` takes `pickerName` as a parameter.** `CheckoutSession` snapshots `p.picker` under `p.mu`, releases `p.mu`, and passes `pickerName` into `recordPickDecision` rather than having `recordPickDecision` re-acquire `p.mu` (which would add lock-order coupling with `p.pickMu`). The pattern MUST be:
 
 ```
 p.mu.Lock()
 picker := p.picker
-pickerName := picker.Name()
 p.mu.Unlock()
-// ... call picker.PickAfe(...) ...
+pickerName := picker.Name()
+idle, decision := p.sl.CheckoutWithPicker(picker)
 p.recordPickDecision(decision, pickerName)   // pickerName passed in
 ```
 
-Any new pool method that reads `p.picker.Name()` from a method called by `CheckoutSession` is a re-entrant deadlock — pass the name in or read via an atomic snapshot.
+Any new pool method that reads `p.picker.Name()` while holding `p.mu` or `sl.mu` risks lock-order inversions — pass the name in from the unlocked snapshot.
 
 **Zero AFE ID is a legal "unknown" bucket** (`SESSION_SPEC.md #3`) — still routable through the picker like any other AFE, but the PeakEwma trackers on `AfeID=0` are per-bucket, not per-real-backend. Fresh unknown always starts at seed values.
 
-**When no candidates are ready.** `PickAfe` returns `(nil, PickDecision{Reason: "no-candidates"})` and `CheckoutSession` yields a "no ready AFEs" error → classified as `AttemptState=Rejected` per `SESSION_SPEC.md #9` (terminal, caller sees it directly, not retried by `RetryingVRpc`). Waiter queue is bounded by `Session.SessionPool.NewSessionQueueLength` from server config.
+**When no candidates are ready.** `CheckoutWithPicker` (via `picker.pickLocked`) returns `(nil, PickDecision{Reason: "no-candidates"})` and `CheckoutSession` parks on the FIFO waiter queue (kicking scale-up when `ReadyCount() < MaxSessions()`); if `ctx` expires before a session frees up, `CheckoutSession` yields `ErrNoSessionsAvailable` → classified as `AttemptState=Rejected` per `SESSION_SPEC.md #9` (terminal, caller sees it directly, not retried by `RetryingVRpc`).
 
-**GOAWAY re-shapes `ReadyAfes()` — see `SESSION_SPEC.md #6`.** A session in Closing state is removed from its AFE's idle list synchronously via `notifyClosing`, so within one CheckoutSession tick after GOAWAY the pool stops routing new work to that session. The picker doesn't need special-case GOAWAY handling — it just picks over `ReadyAfes()` which reflects the current routing set.
+**GOAWAY re-shapes `sl.afesWithReady` — see `SESSION_SPEC.md #6`.** A session in Closing state is removed from its AFE's idle list synchronously via `notifyClosing` (and counted in `afe.closingCount` per `I7` so it does not inflate active in-flight load), so within one `CheckoutSession` call after GOAWAY the pool stops routing new work to that session. The picker doesn't need special-case GOAWAY handling — `CheckoutWithPicker` picks directly over `sl.afesWithReady`, which reflects the current routing set.
 
 ### 3. Traffic split between session and classic (unary) pools is a two-piece routing tier: `Diverter` (policy) + `TableShim` (mechanism)
 
@@ -124,9 +123,9 @@ Pool size respects `MinSessionCount` / `MaxSessionCount` and `Headroom` from `Ge
 
 **When more sessions are added.** On every `PoolSizer` tick (`pool_sizer.go:161-199`), `DesiredCapacity = clamp(SessionsInUse + IdleHeadroom, MinSessions, MaxSessions)` where `IdleHeadroom = max(minIdleSessions, ceil(SessionsInUse × HeadroomPct))` (default 10%). A scale-up (`Delta > 0`) fires **only** when `DesiredCapacity > EventualCapacity` — i.e., in-use load has grown past what already-open plus already-pending sessions can absorb with headroom. Startup fills to `MinSessions` unconditionally so a fresh pool always has that floor before the first request.
 
-### 6. sessionList tracks a strict per-handle state machine — six named invariants gate every mutator
+### 6. sessionList tracks a strict per-handle state machine — seven named invariants gate every mutator
 
-The AFE grouping data structure (`session_list.go`) owns six interdependent pieces of state — `sh.inExpectedCount`, `handleToAfe[sh]`, `afe.sessions`, `afe.refCount`, `sl.readyCount`, `sl.afesWithReady` — and every public method (`OnSessionStarted`, `Checkout`, `ReleaseToPool`, `OnSessionClosing`, `OnSessionClosed`, `ReadyAfes`, `Prune`) MUST preserve the invariants below. The state model is copied verbatim from the file's top-of-file doc block so specs and code cannot drift.
+The AFE grouping data structure (`session_list.go`) owns seven interdependent pieces of state — `sh.inExpectedCount`, `handleToAfe[sh]`, `afe.sessions`, `afe.refCount`, `afe.closingCount`, `sl.readyCount`, `sl.afesWithReady` — and every mutator/observer method (`OnSessionStarted`, `CheckoutWithPicker`, `ReleaseToPool`, `OnSessionClosing`, `OnSessionClosed`, `Snapshot`, `Prune`) MUST preserve the invariants below. The state model is copied verbatim from the file's top-of-file doc block so specs and code cannot drift.
 
 A registered SessionHandle transitions through:
 
@@ -146,7 +145,7 @@ Transitions:
 | From | To | Method | Triggered by |
 |---|---|---|---|
 | NotRegistered | Idle | `OnSessionStarted` | `SessionPoolImpl.onActive` (fired via the per-session `hooks.OnActive` closure wired in `createSession`) |
-| Idle | InFlight | `Checkout` | `CheckoutSession` after `picker.PickAfe` |
+| Idle | InFlight | `CheckoutWithPicker` | `CheckoutSession` via `picker.pickLocked` under `sl.mu` |
 | InFlight | Idle | `ReleaseToPool` (only if `inExpectedCount`) | `s.hooks.onSlotDrained()` → `SessionHooks.OnSlotDrained` — the drain-driven closure installed by `SessionPoolImpl.createSession` in the `SessionHooks{...}` literal handed to `NewSession`, **not** the pool's Invoke return path (Java-parity slot lifecycle: drain and "caller returned" can be far apart; see `SESSION_SPEC.md #2`) |
 | {Idle, InFlight} | Closing | `OnSessionClosing` | Session's `notifyClosing` hook |
 | {Idle, InFlight, Closing} | Closed | `OnSessionClosed` | Session's `notifyClosed` hook |
@@ -155,10 +154,11 @@ Invariants (all guarded by `sl.mu`):
 
 - **I1** `sh.inExpectedCount == true` ⇒ `handleToAfe[sh] != nil`
 - **I2** `readyCount` == count of `sh` in `handleToAfe` with `inExpectedCount==true`
-- **I3** `afesWithReady == { afe : len(afe.sessions) > 0 }`, as a set (order irrelevant)
+- **I3** `afesWithReady == { afe : len(afe.sessions) > 0 }` with `afe.readyIdx == slice index` (`-1` when absent)
 - **I4** `afe.refCount` == count of `sh` in `handleToAfe` pointing at `afe` (idle + inFlight + closing)
 - **I5** `sh in afe.sessions` ⇒ `handleToAfe[sh] == afe` AND `inExpectedCount==true`
 - **I6** `refCount` is decremented ONLY on `OnSessionClosed` (Closing keeps the slot warm)
+- **I7** `afe.closingCount` == count of `sh` in `handleToAfe` pointing at `afe` with `inExpectedCount==false` (`afe.inFlightLocked()` computes `refCount − len(sessions) − closingCount`, so draining handles do not look like active in-flight load to `LeastInFlightAfePicker`)
 
 **Lock order.** `sl.mu` is always innermost. `pool.mu` MUST NOT be taken while holding `sl.mu` (also stated in `SESSION_COMPONENT_SPEC.md §B8`). Every `sessionList` method takes `sl.mu` itself; production callers never hold both mutexes.
 
