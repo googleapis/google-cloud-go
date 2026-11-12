@@ -587,6 +587,8 @@ func (mrd *MultiRangeDownloader) Add(output io.Writer, offset, length int64, cal
 //
 // If the downloader is in a permanent error state, this will return an error.
 //
+// Close waits for in-flight callbacks to finish.
+//
 // This must not be called from the callback sent into Add command otherwise
 // it could lead to a deadlock.
 func (mrd *MultiRangeDownloader) Close() error {
@@ -606,8 +608,10 @@ func (mrd *MultiRangeDownloader) Close() error {
 }
 
 // Wait for all the responses to process on the stream.
-// Adding new ranges after this has been called will cause an error.
-// Wait will wait for all callbacks to finish.
+// Wait also waits for in-flight callbacks to finish.
+//
+// Wait must not be called from a callback passed to Add, otherwise it will
+// deadlock.
 func (mrd *MultiRangeDownloader) Wait() {
 	mrd.impl.wait()
 }
