@@ -88,9 +88,9 @@ func TestOwner(t *testing.T) {
 	}
 
 	tests := []struct {
-		file     string
-		wantMod  string
-		wantOk   bool
+		file    string
+		wantMod string
+		wantOk  bool
 	}{
 		{
 			file:    "pubsub/apiv1/client.go",
