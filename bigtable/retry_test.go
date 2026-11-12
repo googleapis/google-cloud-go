@@ -617,6 +617,76 @@ func TestRetryReverseReadRows(t *testing.T) {
 	}
 }
 
+// TestReadRowsCellValueSplitAcrossResponses exercises a server that splits a
+// single cell value across two ReadRowsResponse frames — the first chunk
+// advertises ValueSize and carries a partial value (leaving the client in
+// cellInProgress), the second chunk carries the rest plus CommitRow.
+//
+// This is explicitly permitted by ReadRowsResponse_CellChunk's proto doc
+// ("Cell values can be split across multiple CellChunks … even if the first
+// CellChunk came in a previous ReadRowsResponse"). Prior to the fix, the
+// classic readRows path called chunkReader.Close() after every frame; the
+// first frame left state == cellInProgress, so Close() surfaced an
+// unretryable "invalid state for end of stream" error.
+func TestReadRowsCellValueSplitAcrossResponses(t *testing.T) {
+	ctx := context.Background()
+
+	var f func(grpc.ServerStream) error
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "ReadRows") {
+			return f(ss)
+		}
+		return handler(ctx, ss)
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	f = func(ss grpc.ServerStream) error {
+		req := new(btpb.ReadRowsRequest)
+		must(ss.RecvMsg(req))
+		// Frame 1: cell key + first half of the value, ValueSize = total,
+		// no CommitRow — client ends the frame in cellInProgress.
+		must(ss.SendMsg(&btpb.ReadRowsResponse{Chunks: []*btpb.ReadRowsResponse_CellChunk{{
+			RowKey:     []byte("a"),
+			FamilyName: &wrapperspb.StringValue{Value: "fm"},
+			Qualifier:  &wrapperspb.BytesValue{Value: []byte("col")},
+			Value:      []byte("hello"),
+			ValueSize:  10,
+		}}}))
+		// Frame 2: rest of the value, CommitRow completes the row.
+		must(ss.SendMsg(&btpb.ReadRowsResponse{Chunks: []*btpb.ReadRowsResponse_CellChunk{{
+			Value:     []byte("world"),
+			RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true},
+		}}}))
+		return nil
+	}
+
+	var got []Row
+	if err := tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
+		got = append(got, r)
+		return true
+	}); err != nil {
+		t.Fatalf("ReadRows failed: %v", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("row count: got %d, want 1", len(got))
+	}
+	if got[0].Key() != "a" {
+		t.Errorf("row key: got %q, want %q", got[0].Key(), "a")
+	}
+	items := got[0]["fm"]
+	if len(items) != 1 {
+		t.Fatalf("cell count: got %d, want 1", len(items))
+	}
+	if string(items[0].Value) != "helloworld" {
+		t.Errorf("cell value: got %q, want %q", items[0].Value, "helloworld")
+	}
+}
+
 func writeReadRowsResponse(ss grpc.ServerStream, rowKeys ...string) error {
 	var chunks []*btpb.ReadRowsResponse_CellChunk
 	for _, key := range rowKeys {
