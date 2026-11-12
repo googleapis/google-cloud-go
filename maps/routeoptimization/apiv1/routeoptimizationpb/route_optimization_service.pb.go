@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -312,6 +312,7 @@ const (
 	ShipmentTypeIncompatibility_NOT_PERFORMED_BY_SAME_VEHICLE ShipmentTypeIncompatibility_IncompatibilityMode = 1
 	// In this mode, two shipments with incompatible types can never be on the
 	// same vehicle at the same time:
+	//
 	//   - They can share the same vehicle only if one is delivered before the
 	//     other is picked up.
 	//   - When both shipments are pickups-only (no deliveries) or deliveries-only
@@ -446,6 +447,12 @@ const (
 	Vehicle_DRIVING Vehicle_TravelMode = 1
 	// Travel mode corresponding to walking directions.
 	Vehicle_WALKING Vehicle_TravelMode = 2
+	// Two-wheeled, motorized vehicle. For example, motorcycle. Note that this
+	// differs from the BICYCLING travel mode which covers human-powered mode.
+	// This travel mode is supported only in the countries listed at
+	// [Countries and regions supported for two-wheeled
+	// vehicles](https://developers.google.com/maps/documentation/routes/coverage-two-wheeled).
+	Vehicle_TWO_WHEELER Vehicle_TravelMode = 5
 )
 
 // Enum value maps for Vehicle_TravelMode.
@@ -454,11 +461,13 @@ var (
 		0: "TRAVEL_MODE_UNSPECIFIED",
 		1: "DRIVING",
 		2: "WALKING",
+		5: "TWO_WHEELER",
 	}
 	Vehicle_TravelMode_value = map[string]int32{
 		"TRAVEL_MODE_UNSPECIFIED": 0,
 		"DRIVING":                 1,
 		"WALKING":                 2,
+		"TWO_WHEELER":             5,
 	}
 )
 
@@ -545,6 +554,61 @@ func (x Vehicle_UnloadingPolicy) Number() protoreflect.EnumNumber {
 // Deprecated: Use Vehicle_UnloadingPolicy.Descriptor instead.
 func (Vehicle_UnloadingPolicy) EnumDescriptor() ([]byte, []int) {
 	return file_google_maps_routeoptimization_v1_route_optimization_service_proto_rawDescGZIP(), []int{15, 1}
+}
+
+// Indicates whether the visit is a pickup, a delivery, or a visit to a
+// [Stop][google.maps.routeoptimization.v1.Stop]. Visits to a stop are used
+// only when multimodal optimization is enabled.
+type ShipmentRoute_Visit_VisitType int32
+
+const (
+	// Unspecified visit type.
+	ShipmentRoute_Visit_VISIT_TYPE_UNSPECIFIED ShipmentRoute_Visit_VisitType = 0
+	// Visit corresponds to a shipment pickup.
+	ShipmentRoute_Visit_PICKUP_SHIPMENT ShipmentRoute_Visit_VisitType = 1
+	// Visit corresponds to a shipment delivery.
+	ShipmentRoute_Visit_DELIVER_SHIPMENT ShipmentRoute_Visit_VisitType = 2
+)
+
+// Enum value maps for ShipmentRoute_Visit_VisitType.
+var (
+	ShipmentRoute_Visit_VisitType_name = map[int32]string{
+		0: "VISIT_TYPE_UNSPECIFIED",
+		1: "PICKUP_SHIPMENT",
+		2: "DELIVER_SHIPMENT",
+	}
+	ShipmentRoute_Visit_VisitType_value = map[string]int32{
+		"VISIT_TYPE_UNSPECIFIED": 0,
+		"PICKUP_SHIPMENT":        1,
+		"DELIVER_SHIPMENT":       2,
+	}
+)
+
+func (x ShipmentRoute_Visit_VisitType) Enum() *ShipmentRoute_Visit_VisitType {
+	p := new(ShipmentRoute_Visit_VisitType)
+	*p = x
+	return p
+}
+
+func (x ShipmentRoute_Visit_VisitType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ShipmentRoute_Visit_VisitType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[8].Descriptor()
+}
+
+func (ShipmentRoute_Visit_VisitType) Type() protoreflect.EnumType {
+	return &file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[8]
+}
+
+func (x ShipmentRoute_Visit_VisitType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ShipmentRoute_Visit_VisitType.Descriptor instead.
+func (ShipmentRoute_Visit_VisitType) EnumDescriptor() ([]byte, []int) {
+	return file_google_maps_routeoptimization_v1_route_optimization_service_proto_rawDescGZIP(), []int{22, 0, 0}
 }
 
 // Code identifying the reason type. The order here is meaningless. In
@@ -655,11 +719,11 @@ func (x SkippedShipment_Reason_Code) String() string {
 }
 
 func (SkippedShipment_Reason_Code) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[8].Descriptor()
+	return file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[9].Descriptor()
 }
 
 func (SkippedShipment_Reason_Code) Type() protoreflect.EnumType {
-	return &file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[8]
+	return &file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[9]
 }
 
 func (x SkippedShipment_Reason_Code) Number() protoreflect.EnumNumber {
@@ -726,11 +790,11 @@ func (x InjectedSolutionConstraint_ConstraintRelaxation_Relaxation_Level) String
 }
 
 func (InjectedSolutionConstraint_ConstraintRelaxation_Relaxation_Level) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[9].Descriptor()
+	return file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[10].Descriptor()
 }
 
 func (InjectedSolutionConstraint_ConstraintRelaxation_Relaxation_Level) Type() protoreflect.EnumType {
-	return &file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[9]
+	return &file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes[10]
 }
 
 func (x InjectedSolutionConstraint_ConstraintRelaxation_Relaxation_Level) Number() protoreflect.EnumNumber {
@@ -802,10 +866,11 @@ type OptimizeToursUriRequest struct {
 	// Required. Target project or location to make a call.
 	//
 	// Format:
-	// * `projects/{project-id}`
-	// * `projects/{project-id}/locations/{location-id}`
 	//
-	// If no location is specified, a region will be chosen automatically.
+	// * `projects/{project-id}`
+	// * `projects/{project-id}/locations/-`
+	//
+	// Regional `{location-id}` values are not supported.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The URI of the Cloud Storage object containing the
 	// `OptimizeToursRequest`.
@@ -968,10 +1033,11 @@ type BatchOptimizeToursRequest struct {
 	// Required. Target project and location to make a call.
 	//
 	// Format:
-	// * `projects/{project-id}`
-	// * `projects/{project-id}/locations/{location-id}`
 	//
-	// If no location is specified, a region will be chosen automatically.
+	// * `projects/{project-id}`
+	// * `projects/{project-id}/locations/-`
+	//
+	// Regional `{location-id}` values are not supported.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Input/Output information each purchase model, such as file paths
 	// and data formats.
@@ -1143,10 +1209,11 @@ type OptimizeToursRequest struct {
 	// Required. Target project or location to make a call.
 	//
 	// Format:
-	// * `projects/{project-id}`
-	// * `projects/{project-id}/locations/{location-id}`
 	//
-	// If no location is specified, a region will be chosen automatically.
+	// * `projects/{project-id}`
+	// * `projects/{project-id}/locations/-`
+	//
+	// Regional `{location-id}` values are not supported.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// If this timeout is set, the server returns a response before the timeout
 	// period has elapsed or the server deadline for synchronous requests is
@@ -1923,14 +1990,14 @@ type Shipment struct {
 	// If a given key does not appear in the map, the corresponding load is
 	// considered as null.
 	LoadDemands map[string]*Shipment_Load `protobuf:"bytes,14,rep,name=load_demands,json=loadDemands,proto3" json:"load_demands,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// If the shipment is not completed, this penalty is added to the overall
-	// cost of the routes. A shipment is considered completed if one of its pickup
-	// and delivery alternatives is visited. The cost may be expressed in the
-	// same unit used for all other cost-related fields in the model and must be
-	// positive.
+	// Optional. If the shipment is not completed, this penalty is added to the
+	// overall cost of the routes. A shipment is considered completed if one of
+	// its pickup and delivery alternatives is visited. The cost may be expressed
+	// in the same unit used for all other cost-related fields in the model and
+	// must be non-negative.
 	//
-	// *IMPORTANT*: If this penalty is not specified, it is considered infinite,
-	// i.e. the shipment must be completed.
+	// *IMPORTANT*: If this penalty is not specified, it is considered higher
+	// priority than shipments with a specified `penalty cost`.
 	PenaltyCost *float64 `protobuf:"fixed64,4,opt,name=penalty_cost,json=penaltyCost,proto3,oneof" json:"penalty_cost,omitempty"`
 	// The set of vehicles that may perform this shipment. If empty, all vehicles
 	// may perform it. Vehicles are given by their index in the `ShipmentModel`'s
@@ -3769,7 +3836,7 @@ func (x *SkippedShipment) GetReasons() []*SkippedShipment_Reason {
 
 // Aggregated metrics for
 // [ShipmentRoute][google.maps.routeoptimization.v1.ShipmentRoute] (resp. for
-// [OptimizeToursResponse][google.maps.routeoptimization.v1.OptimizeToursResponse]
+// [OptimizeToursResponse][google.maps.routeoptimization.v1.OptimizeToursResponse])
 // over all
 // [Transition][google.maps.routeoptimization.v1.ShipmentRoute.Transition]
 // and/or [Visit][google.maps.routeoptimization.v1.ShipmentRoute.Visit] (resp.
@@ -3780,7 +3847,10 @@ type AggregatedMetrics struct {
 	// Number of shipments performed. Note that a pickup and delivery pair only
 	// counts once.
 	PerformedShipmentCount int32 `protobuf:"varint,1,opt,name=performed_shipment_count,json=performedShipmentCount,proto3" json:"performed_shipment_count,omitempty"`
-	// Number of mandatory shipments performed.
+	// Number of high priority shipments performed. High priority shipments are
+	// those with an unset
+	// [Shipment.penalty_cost][google.maps.routeoptimization.v1.Shipment.penalty_cost]
+	// field.
 	//
 	// Experimental: This field's behavior or existence may change in future.
 	PerformedMandatoryShipmentCount *int32 `protobuf:"varint,12,opt,name=performed_mandatory_shipment_count,json=performedMandatoryShipmentCount,proto3,oneof" json:"performed_mandatory_shipment_count,omitempty"`
@@ -4568,7 +4638,10 @@ type OptimizeToursResponse_Metrics struct {
 	// [ShipmentRoute.metrics][google.maps.routeoptimization.v1.ShipmentRoute.metrics]
 	// fields of the same name.
 	AggregatedRouteMetrics *AggregatedMetrics `protobuf:"bytes,1,opt,name=aggregated_route_metrics,json=aggregatedRouteMetrics,proto3" json:"aggregated_route_metrics,omitempty"`
-	// Number of mandatory shipments skipped.
+	// Number of high priority shipments skipped.
+	// High priority shipments are those with an unset
+	// [Shipment.penalty_cost][google.maps.routeoptimization.v1.Shipment.penalty_cost]
+	// field.
 	SkippedMandatoryShipmentCount int32 `protobuf:"varint,2,opt,name=skipped_mandatory_shipment_count,json=skippedMandatoryShipmentCount,proto3" json:"skipped_mandatory_shipment_count,omitempty"`
 	// Number of vehicles used. Note: if a vehicle route is empty and
 	// [Vehicle.used_if_route_is_empty][google.maps.routeoptimization.v1.Vehicle.used_if_route_is_empty]
@@ -5355,12 +5428,14 @@ type Vehicle_DurationLimit struct {
 	// makes the route incur a cost, quadratic in the duration. This cost adds
 	// up to other costs defined in the model, with the same unit.
 	//
-	// If defined, `quadratic_soft_max_duration` must be nonnegative. If
-	// `max_duration` is also defined, `quadratic_soft_max_duration` must be
-	// less than `max_duration`, and the difference must be no larger than one
-	// day:
+	// If `quadratic_soft_max_duration` is set, the following conditions must be
+	// met:
 	//
-	//	`max_duration - quadratic_soft_max_duration <= 86400 seconds`
+	//   - It must be non-negative.
+	//   - `max_duration` must be defined.
+	//   - `quadratic_soft_max_duration` must be less than `max_duration`.
+	//   - The difference must be no more than one day:
+	//     `max_duration - quadratic_soft_max_duration <= 86400 seconds`
 	QuadraticSoftMaxDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=quadratic_soft_max_duration,json=quadraticSoftMaxDuration,proto3" json:"quadratic_soft_max_duration,omitempty"`
 	// Cost per square hour incurred if the
 	// `quadratic_soft_max_duration` threshold is violated.
@@ -5874,8 +5949,13 @@ type ShipmentRoute_Visit struct {
 	// https://developers.google.com/maps/tt/route-optimization/experimental/u-turn-avoidance/make-request
 	// for more details.
 	InjectedSolutionLocationToken *int32 `protobuf:"varint,13,opt,name=injected_solution_location_token,json=injectedSolutionLocationToken,proto3,oneof" json:"injected_solution_location_token,omitempty"`
-	unknownFields                 protoimpl.UnknownFields
-	sizeCache                     protoimpl.SizeCache
+	// Optional. Specifies the type of the visit.
+	// Overrides the
+	// [Visit.is_pickup][google.maps.routeoptimization.v1.ShipmentRoute.Visit.is_pickup]
+	// field.
+	VisitType     ShipmentRoute_Visit_VisitType `protobuf:"varint,14,opt,name=visit_type,json=visitType,proto3,enum=google.maps.routeoptimization.v1.ShipmentRoute_Visit_VisitType" json:"visit_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ShipmentRoute_Visit) Reset() {
@@ -5969,6 +6049,13 @@ func (x *ShipmentRoute_Visit) GetInjectedSolutionLocationToken() int32 {
 		return *x.InjectedSolutionLocationToken
 	}
 	return 0
+}
+
+func (x *ShipmentRoute_Visit) GetVisitType() ShipmentRoute_Visit_VisitType {
+	if x != nil {
+		return x.VisitType
+	}
+	return ShipmentRoute_Visit_VISIT_TYPE_UNSPECIFIED
 }
 
 // Transition between two events on the route. See the description of
@@ -6828,15 +6915,15 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\x0foffset_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\x0eoffsetDurationB\x0e\n" +
 	"\f_first_indexB\x0f\n" +
 	"\r_second_indexB\x16\n" +
-	"\x14_max_active_vehicles\"\x94\x0f\n" +
+	"\x14_max_active_vehicles\"\x9a\x0f\n" +
 	"\bShipment\x12!\n" +
 	"\fdisplay_name\x18\x10 \x01(\tR\vdisplayName\x12Q\n" +
 	"\apickups\x18\x01 \x03(\v27.google.maps.routeoptimization.v1.Shipment.VisitRequestR\apickups\x12W\n" +
 	"\n" +
 	"deliveries\x18\x02 \x03(\v27.google.maps.routeoptimization.v1.Shipment.VisitRequestR\n" +
 	"deliveries\x12^\n" +
-	"\fload_demands\x18\x0e \x03(\v2;.google.maps.routeoptimization.v1.Shipment.LoadDemandsEntryR\vloadDemands\x12&\n" +
-	"\fpenalty_cost\x18\x04 \x01(\x01H\x00R\vpenaltyCost\x88\x01\x01\x126\n" +
+	"\fload_demands\x18\x0e \x03(\v2;.google.maps.routeoptimization.v1.Shipment.LoadDemandsEntryR\vloadDemands\x12,\n" +
+	"\fpenalty_cost\x18\x04 \x01(\x01B\x04\xe2A\x01\x01H\x00R\vpenaltyCost\x88\x01\x01\x126\n" +
 	"\x17allowed_vehicle_indices\x18\x05 \x03(\x05R\x15allowedVehicleIndices\x12*\n" +
 	"\x11costs_per_vehicle\x18\x06 \x03(\x01R\x0fcostsPerVehicle\x129\n" +
 	"\x19costs_per_vehicle_indices\x18\a \x03(\x05R\x16costsPerVehicleIndices\x12Z\n" +
@@ -6894,7 +6981,7 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"avoidTolls\x12%\n" +
 	"\x0eavoid_highways\x18\x03 \x01(\bR\ravoidHighways\x12#\n" +
 	"\ravoid_ferries\x18\x04 \x01(\bR\favoidFerries\x12'\n" +
-	"\favoid_indoor\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\vavoidIndoor\"\x8f\x1d\n" +
+	"\favoid_indoor\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\vavoidIndoor\"\xa0\x1d\n" +
 	"\aVehicle\x12!\n" +
 	"\fdisplay_name\x18  \x01(\tR\vdisplayName\x12U\n" +
 	"\vtravel_mode\x18\x01 \x01(\x0e24.google.maps.routeoptimization.v1.Vehicle.TravelModeR\n" +
@@ -6963,12 +7050,13 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\x05value\x18\x02 \x01(\v23.google.maps.routeoptimization.v1.Vehicle.LoadLimitR\x05value:\x028\x01\x1al\n" +
 	"#ExtraVisitDurationForVisitTypeEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12/\n" +
-	"\x05value\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x05value:\x028\x01\"C\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x05value:\x028\x01\"T\n" +
 	"\n" +
 	"TravelMode\x12\x1b\n" +
 	"\x17TRAVEL_MODE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aDRIVING\x10\x01\x12\v\n" +
-	"\aWALKING\x10\x02\"b\n" +
+	"\aWALKING\x10\x02\x12\x0f\n" +
+	"\vTWO_WHEELER\x10\x05\"b\n" +
 	"\x0fUnloadingPolicy\x12 \n" +
 	"\x1cUNLOADING_POLICY_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11LAST_IN_FIRST_OUT\x10\x01\x12\x16\n" +
@@ -7025,7 +7113,7 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\fmin_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\vminDuration\x1a\xbe\x01\n" +
 	"\x13FrequencyConstraint\x12M\n" +
 	"\x12min_break_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x10minBreakDuration\x12X\n" +
-	"\x18max_inter_break_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x15maxInterBreakDuration\"\xd9\x15\n" +
+	"\x18max_inter_break_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x15maxInterBreakDuration\"\x93\x17\n" +
 	"\rShipmentRoute\x12#\n" +
 	"\rvehicle_index\x18\x01 \x01(\x05R\fvehicleIndex\x12#\n" +
 	"\rvehicle_label\x18\x02 \x01(\tR\fvehicleLabel\x12H\n" +
@@ -7041,7 +7129,7 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\x10vehicle_fullness\x18\x14 \x01(\v21.google.maps.routeoptimization.v1.VehicleFullnessR\x0fvehicleFullness\x12`\n" +
 	"\vroute_costs\x18\x11 \x03(\v2?.google.maps.routeoptimization.v1.ShipmentRoute.RouteCostsEntryR\n" +
 	"routeCosts\x12(\n" +
-	"\x10route_total_cost\x18\x12 \x01(\x01R\x0erouteTotalCost\x1a\x80\x05\n" +
+	"\x10route_total_cost\x18\x12 \x01(\x01R\x0erouteTotalCost\x1a\xba\x06\n" +
 	"\x05Visit\x12%\n" +
 	"\x0eshipment_index\x18\x01 \x01(\x05R\rshipmentIndex\x12\x1b\n" +
 	"\tis_pickup\x18\x02 \x01(\bR\bisPickup\x12.\n" +
@@ -7053,10 +7141,16 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\x0eshipment_label\x18\a \x01(\tR\rshipmentLabel\x12\x1f\n" +
 	"\vvisit_label\x18\b \x01(\tR\n" +
 	"visitLabel\x12L\n" +
-	" injected_solution_location_token\x18\r \x01(\x05H\x00R\x1dinjectedSolutionLocationToken\x88\x01\x01\x1ao\n" +
+	" injected_solution_location_token\x18\r \x01(\x05H\x00R\x1dinjectedSolutionLocationToken\x88\x01\x01\x12d\n" +
+	"\n" +
+	"visit_type\x18\x0e \x01(\x0e2?.google.maps.routeoptimization.v1.ShipmentRoute.Visit.VisitTypeB\x04\xe2A\x01\x01R\tvisitType\x1ao\n" +
 	"\x10LoadDemandsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12E\n" +
-	"\x05value\x18\x02 \x01(\v2/.google.maps.routeoptimization.v1.Shipment.LoadR\x05value:\x028\x01B#\n" +
+	"\x05value\x18\x02 \x01(\v2/.google.maps.routeoptimization.v1.Shipment.LoadR\x05value:\x028\x01\"R\n" +
+	"\tVisitType\x12\x1a\n" +
+	"\x16VISIT_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fPICKUP_SHIPMENT\x10\x01\x12\x14\n" +
+	"\x10DELIVER_SHIPMENT\x10\x02B#\n" +
 	"!_injected_solution_location_token\x1a\x81\a\n" +
 	"\n" +
 	"Transition\x12B\n" +
@@ -7220,7 +7314,7 @@ func file_google_maps_routeoptimization_v1_route_optimization_service_proto_rawD
 	return file_google_maps_routeoptimization_v1_route_optimization_service_proto_rawDescData
 }
 
-var file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
+var file_google_maps_routeoptimization_v1_route_optimization_service_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
 var file_google_maps_routeoptimization_v1_route_optimization_service_proto_msgTypes = make([]protoimpl.MessageInfo, 64)
 var file_google_maps_routeoptimization_v1_route_optimization_service_proto_goTypes = []any{
 	(DataFormat)(0),                                                       // 0: google.maps.routeoptimization.v1.DataFormat
@@ -7231,228 +7325,230 @@ var file_google_maps_routeoptimization_v1_route_optimization_service_proto_goTyp
 	(ShipmentTypeRequirement_RequirementMode)(0),                          // 5: google.maps.routeoptimization.v1.ShipmentTypeRequirement.RequirementMode
 	(Vehicle_TravelMode)(0),                                               // 6: google.maps.routeoptimization.v1.Vehicle.TravelMode
 	(Vehicle_UnloadingPolicy)(0),                                          // 7: google.maps.routeoptimization.v1.Vehicle.UnloadingPolicy
-	(SkippedShipment_Reason_Code)(0),                                      // 8: google.maps.routeoptimization.v1.SkippedShipment.Reason.Code
-	(InjectedSolutionConstraint_ConstraintRelaxation_Relaxation_Level)(0), // 9: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation.Level
-	(*Uri)(nil),                                        // 10: google.maps.routeoptimization.v1.Uri
-	(*OptimizeToursUriRequest)(nil),                    // 11: google.maps.routeoptimization.v1.OptimizeToursUriRequest
-	(*OptimizeToursUriResponse)(nil),                   // 12: google.maps.routeoptimization.v1.OptimizeToursUriResponse
-	(*OptimizeToursUriMetadata)(nil),                   // 13: google.maps.routeoptimization.v1.OptimizeToursUriMetadata
-	(*BatchOptimizeToursRequest)(nil),                  // 14: google.maps.routeoptimization.v1.BatchOptimizeToursRequest
-	(*BatchOptimizeToursResponse)(nil),                 // 15: google.maps.routeoptimization.v1.BatchOptimizeToursResponse
-	(*BatchOptimizeToursMetadata)(nil),                 // 16: google.maps.routeoptimization.v1.BatchOptimizeToursMetadata
-	(*OptimizeToursLongRunningMetadata)(nil),           // 17: google.maps.routeoptimization.v1.OptimizeToursLongRunningMetadata
-	(*OptimizeToursRequest)(nil),                       // 18: google.maps.routeoptimization.v1.OptimizeToursRequest
-	(*OptimizeToursResponse)(nil),                      // 19: google.maps.routeoptimization.v1.OptimizeToursResponse
-	(*ShipmentModel)(nil),                              // 20: google.maps.routeoptimization.v1.ShipmentModel
-	(*Shipment)(nil),                                   // 21: google.maps.routeoptimization.v1.Shipment
-	(*ShipmentTypeIncompatibility)(nil),                // 22: google.maps.routeoptimization.v1.ShipmentTypeIncompatibility
-	(*ShipmentTypeRequirement)(nil),                    // 23: google.maps.routeoptimization.v1.ShipmentTypeRequirement
-	(*RouteModifiers)(nil),                             // 24: google.maps.routeoptimization.v1.RouteModifiers
-	(*Vehicle)(nil),                                    // 25: google.maps.routeoptimization.v1.Vehicle
-	(*TimeWindow)(nil),                                 // 26: google.maps.routeoptimization.v1.TimeWindow
-	(*DistanceLimit)(nil),                              // 27: google.maps.routeoptimization.v1.DistanceLimit
-	(*TransitionAttributes)(nil),                       // 28: google.maps.routeoptimization.v1.TransitionAttributes
-	(*Waypoint)(nil),                                   // 29: google.maps.routeoptimization.v1.Waypoint
-	(*Location)(nil),                                   // 30: google.maps.routeoptimization.v1.Location
-	(*BreakRule)(nil),                                  // 31: google.maps.routeoptimization.v1.BreakRule
-	(*ShipmentRoute)(nil),                              // 32: google.maps.routeoptimization.v1.ShipmentRoute
-	(*SkippedShipment)(nil),                            // 33: google.maps.routeoptimization.v1.SkippedShipment
-	(*AggregatedMetrics)(nil),                          // 34: google.maps.routeoptimization.v1.AggregatedMetrics
-	(*VehicleFullness)(nil),                            // 35: google.maps.routeoptimization.v1.VehicleFullness
-	(*InjectedSolutionConstraint)(nil),                 // 36: google.maps.routeoptimization.v1.InjectedSolutionConstraint
-	(*OptimizeToursValidationError)(nil),               // 37: google.maps.routeoptimization.v1.OptimizeToursValidationError
-	(*InputConfig)(nil),                                // 38: google.maps.routeoptimization.v1.InputConfig
-	(*OutputConfig)(nil),                               // 39: google.maps.routeoptimization.v1.OutputConfig
-	(*GcsSource)(nil),                                  // 40: google.maps.routeoptimization.v1.GcsSource
-	(*GcsDestination)(nil),                             // 41: google.maps.routeoptimization.v1.GcsDestination
-	(*BatchOptimizeToursRequest_AsyncModelConfig)(nil), // 42: google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfig
-	(*OptimizeToursResponse_Metrics)(nil),              // 43: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics
-	nil,                                                // 44: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.CostsEntry
-	(*ShipmentModel_Objective)(nil),                    // 45: google.maps.routeoptimization.v1.ShipmentModel.Objective
-	(*ShipmentModel_DurationDistanceMatrix)(nil),       // 46: google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix
-	(*ShipmentModel_PrecedenceRule)(nil),               // 47: google.maps.routeoptimization.v1.ShipmentModel.PrecedenceRule
-	(*ShipmentModel_DurationDistanceMatrix_Row)(nil),   // 48: google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix.Row
-	(*Shipment_VisitRequest)(nil),                      // 49: google.maps.routeoptimization.v1.Shipment.VisitRequest
-	(*Shipment_Load)(nil),                              // 50: google.maps.routeoptimization.v1.Shipment.Load
-	nil,                                                // 51: google.maps.routeoptimization.v1.Shipment.LoadDemandsEntry
-	nil,                                                // 52: google.maps.routeoptimization.v1.Shipment.VisitRequest.LoadDemandsEntry
-	(*Vehicle_LoadLimit)(nil),                          // 53: google.maps.routeoptimization.v1.Vehicle.LoadLimit
-	(*Vehicle_DurationLimit)(nil),                      // 54: google.maps.routeoptimization.v1.Vehicle.DurationLimit
-	nil,                                                // 55: google.maps.routeoptimization.v1.Vehicle.LoadLimitsEntry
-	nil,                                                // 56: google.maps.routeoptimization.v1.Vehicle.ExtraVisitDurationForVisitTypeEntry
-	(*Vehicle_LoadLimit_Interval)(nil),                 // 57: google.maps.routeoptimization.v1.Vehicle.LoadLimit.Interval
-	(*Vehicle_LoadLimit_LoadCost)(nil),                 // 58: google.maps.routeoptimization.v1.Vehicle.LoadLimit.LoadCost
-	(*BreakRule_BreakRequest)(nil),                     // 59: google.maps.routeoptimization.v1.BreakRule.BreakRequest
-	(*BreakRule_FrequencyConstraint)(nil),              // 60: google.maps.routeoptimization.v1.BreakRule.FrequencyConstraint
-	(*ShipmentRoute_Visit)(nil),                        // 61: google.maps.routeoptimization.v1.ShipmentRoute.Visit
-	(*ShipmentRoute_Transition)(nil),                   // 62: google.maps.routeoptimization.v1.ShipmentRoute.Transition
-	(*ShipmentRoute_VehicleLoad)(nil),                  // 63: google.maps.routeoptimization.v1.ShipmentRoute.VehicleLoad
-	(*ShipmentRoute_EncodedPolyline)(nil),              // 64: google.maps.routeoptimization.v1.ShipmentRoute.EncodedPolyline
-	(*ShipmentRoute_Break)(nil),                        // 65: google.maps.routeoptimization.v1.ShipmentRoute.Break
-	nil,                                                // 66: google.maps.routeoptimization.v1.ShipmentRoute.RouteCostsEntry
-	nil,                                                // 67: google.maps.routeoptimization.v1.ShipmentRoute.Visit.LoadDemandsEntry
-	nil,                                                // 68: google.maps.routeoptimization.v1.ShipmentRoute.Transition.VehicleLoadsEntry
-	(*SkippedShipment_Reason)(nil),                     // 69: google.maps.routeoptimization.v1.SkippedShipment.Reason
-	nil,                                                // 70: google.maps.routeoptimization.v1.AggregatedMetrics.MaxLoadsEntry
-	(*InjectedSolutionConstraint_ConstraintRelaxation)(nil),            // 71: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation
-	(*InjectedSolutionConstraint_ConstraintRelaxation_Relaxation)(nil), // 72: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation
-	(*OptimizeToursValidationError_FieldReference)(nil),                // 73: google.maps.routeoptimization.v1.OptimizeToursValidationError.FieldReference
-	(*durationpb.Duration)(nil),                                        // 74: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),                                      // 75: google.protobuf.Timestamp
-	(*latlng.LatLng)(nil),                                              // 76: google.type.LatLng
-	(*longrunningpb.Operation)(nil),                                    // 77: google.longrunning.Operation
+	(ShipmentRoute_Visit_VisitType)(0),                                    // 8: google.maps.routeoptimization.v1.ShipmentRoute.Visit.VisitType
+	(SkippedShipment_Reason_Code)(0),                                      // 9: google.maps.routeoptimization.v1.SkippedShipment.Reason.Code
+	(InjectedSolutionConstraint_ConstraintRelaxation_Relaxation_Level)(0), // 10: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation.Level
+	(*Uri)(nil),                                        // 11: google.maps.routeoptimization.v1.Uri
+	(*OptimizeToursUriRequest)(nil),                    // 12: google.maps.routeoptimization.v1.OptimizeToursUriRequest
+	(*OptimizeToursUriResponse)(nil),                   // 13: google.maps.routeoptimization.v1.OptimizeToursUriResponse
+	(*OptimizeToursUriMetadata)(nil),                   // 14: google.maps.routeoptimization.v1.OptimizeToursUriMetadata
+	(*BatchOptimizeToursRequest)(nil),                  // 15: google.maps.routeoptimization.v1.BatchOptimizeToursRequest
+	(*BatchOptimizeToursResponse)(nil),                 // 16: google.maps.routeoptimization.v1.BatchOptimizeToursResponse
+	(*BatchOptimizeToursMetadata)(nil),                 // 17: google.maps.routeoptimization.v1.BatchOptimizeToursMetadata
+	(*OptimizeToursLongRunningMetadata)(nil),           // 18: google.maps.routeoptimization.v1.OptimizeToursLongRunningMetadata
+	(*OptimizeToursRequest)(nil),                       // 19: google.maps.routeoptimization.v1.OptimizeToursRequest
+	(*OptimizeToursResponse)(nil),                      // 20: google.maps.routeoptimization.v1.OptimizeToursResponse
+	(*ShipmentModel)(nil),                              // 21: google.maps.routeoptimization.v1.ShipmentModel
+	(*Shipment)(nil),                                   // 22: google.maps.routeoptimization.v1.Shipment
+	(*ShipmentTypeIncompatibility)(nil),                // 23: google.maps.routeoptimization.v1.ShipmentTypeIncompatibility
+	(*ShipmentTypeRequirement)(nil),                    // 24: google.maps.routeoptimization.v1.ShipmentTypeRequirement
+	(*RouteModifiers)(nil),                             // 25: google.maps.routeoptimization.v1.RouteModifiers
+	(*Vehicle)(nil),                                    // 26: google.maps.routeoptimization.v1.Vehicle
+	(*TimeWindow)(nil),                                 // 27: google.maps.routeoptimization.v1.TimeWindow
+	(*DistanceLimit)(nil),                              // 28: google.maps.routeoptimization.v1.DistanceLimit
+	(*TransitionAttributes)(nil),                       // 29: google.maps.routeoptimization.v1.TransitionAttributes
+	(*Waypoint)(nil),                                   // 30: google.maps.routeoptimization.v1.Waypoint
+	(*Location)(nil),                                   // 31: google.maps.routeoptimization.v1.Location
+	(*BreakRule)(nil),                                  // 32: google.maps.routeoptimization.v1.BreakRule
+	(*ShipmentRoute)(nil),                              // 33: google.maps.routeoptimization.v1.ShipmentRoute
+	(*SkippedShipment)(nil),                            // 34: google.maps.routeoptimization.v1.SkippedShipment
+	(*AggregatedMetrics)(nil),                          // 35: google.maps.routeoptimization.v1.AggregatedMetrics
+	(*VehicleFullness)(nil),                            // 36: google.maps.routeoptimization.v1.VehicleFullness
+	(*InjectedSolutionConstraint)(nil),                 // 37: google.maps.routeoptimization.v1.InjectedSolutionConstraint
+	(*OptimizeToursValidationError)(nil),               // 38: google.maps.routeoptimization.v1.OptimizeToursValidationError
+	(*InputConfig)(nil),                                // 39: google.maps.routeoptimization.v1.InputConfig
+	(*OutputConfig)(nil),                               // 40: google.maps.routeoptimization.v1.OutputConfig
+	(*GcsSource)(nil),                                  // 41: google.maps.routeoptimization.v1.GcsSource
+	(*GcsDestination)(nil),                             // 42: google.maps.routeoptimization.v1.GcsDestination
+	(*BatchOptimizeToursRequest_AsyncModelConfig)(nil), // 43: google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfig
+	(*OptimizeToursResponse_Metrics)(nil),              // 44: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics
+	nil,                                                // 45: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.CostsEntry
+	(*ShipmentModel_Objective)(nil),                    // 46: google.maps.routeoptimization.v1.ShipmentModel.Objective
+	(*ShipmentModel_DurationDistanceMatrix)(nil),       // 47: google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix
+	(*ShipmentModel_PrecedenceRule)(nil),               // 48: google.maps.routeoptimization.v1.ShipmentModel.PrecedenceRule
+	(*ShipmentModel_DurationDistanceMatrix_Row)(nil),   // 49: google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix.Row
+	(*Shipment_VisitRequest)(nil),                      // 50: google.maps.routeoptimization.v1.Shipment.VisitRequest
+	(*Shipment_Load)(nil),                              // 51: google.maps.routeoptimization.v1.Shipment.Load
+	nil,                                                // 52: google.maps.routeoptimization.v1.Shipment.LoadDemandsEntry
+	nil,                                                // 53: google.maps.routeoptimization.v1.Shipment.VisitRequest.LoadDemandsEntry
+	(*Vehicle_LoadLimit)(nil),                          // 54: google.maps.routeoptimization.v1.Vehicle.LoadLimit
+	(*Vehicle_DurationLimit)(nil),                      // 55: google.maps.routeoptimization.v1.Vehicle.DurationLimit
+	nil,                                                // 56: google.maps.routeoptimization.v1.Vehicle.LoadLimitsEntry
+	nil,                                                // 57: google.maps.routeoptimization.v1.Vehicle.ExtraVisitDurationForVisitTypeEntry
+	(*Vehicle_LoadLimit_Interval)(nil),                 // 58: google.maps.routeoptimization.v1.Vehicle.LoadLimit.Interval
+	(*Vehicle_LoadLimit_LoadCost)(nil),                 // 59: google.maps.routeoptimization.v1.Vehicle.LoadLimit.LoadCost
+	(*BreakRule_BreakRequest)(nil),                     // 60: google.maps.routeoptimization.v1.BreakRule.BreakRequest
+	(*BreakRule_FrequencyConstraint)(nil),              // 61: google.maps.routeoptimization.v1.BreakRule.FrequencyConstraint
+	(*ShipmentRoute_Visit)(nil),                        // 62: google.maps.routeoptimization.v1.ShipmentRoute.Visit
+	(*ShipmentRoute_Transition)(nil),                   // 63: google.maps.routeoptimization.v1.ShipmentRoute.Transition
+	(*ShipmentRoute_VehicleLoad)(nil),                  // 64: google.maps.routeoptimization.v1.ShipmentRoute.VehicleLoad
+	(*ShipmentRoute_EncodedPolyline)(nil),              // 65: google.maps.routeoptimization.v1.ShipmentRoute.EncodedPolyline
+	(*ShipmentRoute_Break)(nil),                        // 66: google.maps.routeoptimization.v1.ShipmentRoute.Break
+	nil,                                                // 67: google.maps.routeoptimization.v1.ShipmentRoute.RouteCostsEntry
+	nil,                                                // 68: google.maps.routeoptimization.v1.ShipmentRoute.Visit.LoadDemandsEntry
+	nil,                                                // 69: google.maps.routeoptimization.v1.ShipmentRoute.Transition.VehicleLoadsEntry
+	(*SkippedShipment_Reason)(nil),                     // 70: google.maps.routeoptimization.v1.SkippedShipment.Reason
+	nil,                                                // 71: google.maps.routeoptimization.v1.AggregatedMetrics.MaxLoadsEntry
+	(*InjectedSolutionConstraint_ConstraintRelaxation)(nil),            // 72: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation
+	(*InjectedSolutionConstraint_ConstraintRelaxation_Relaxation)(nil), // 73: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation
+	(*OptimizeToursValidationError_FieldReference)(nil),                // 74: google.maps.routeoptimization.v1.OptimizeToursValidationError.FieldReference
+	(*durationpb.Duration)(nil),                                        // 75: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),                                      // 76: google.protobuf.Timestamp
+	(*latlng.LatLng)(nil),                                              // 77: google.type.LatLng
+	(*longrunningpb.Operation)(nil),                                    // 78: google.longrunning.Operation
 }
 var file_google_maps_routeoptimization_v1_route_optimization_service_proto_depIdxs = []int32{
-	10,  // 0: google.maps.routeoptimization.v1.OptimizeToursUriRequest.input:type_name -> google.maps.routeoptimization.v1.Uri
-	10,  // 1: google.maps.routeoptimization.v1.OptimizeToursUriRequest.output:type_name -> google.maps.routeoptimization.v1.Uri
-	10,  // 2: google.maps.routeoptimization.v1.OptimizeToursUriResponse.output:type_name -> google.maps.routeoptimization.v1.Uri
-	42,  // 3: google.maps.routeoptimization.v1.BatchOptimizeToursRequest.model_configs:type_name -> google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfig
-	74,  // 4: google.maps.routeoptimization.v1.OptimizeToursRequest.timeout:type_name -> google.protobuf.Duration
-	20,  // 5: google.maps.routeoptimization.v1.OptimizeToursRequest.model:type_name -> google.maps.routeoptimization.v1.ShipmentModel
+	11,  // 0: google.maps.routeoptimization.v1.OptimizeToursUriRequest.input:type_name -> google.maps.routeoptimization.v1.Uri
+	11,  // 1: google.maps.routeoptimization.v1.OptimizeToursUriRequest.output:type_name -> google.maps.routeoptimization.v1.Uri
+	11,  // 2: google.maps.routeoptimization.v1.OptimizeToursUriResponse.output:type_name -> google.maps.routeoptimization.v1.Uri
+	43,  // 3: google.maps.routeoptimization.v1.BatchOptimizeToursRequest.model_configs:type_name -> google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfig
+	75,  // 4: google.maps.routeoptimization.v1.OptimizeToursRequest.timeout:type_name -> google.protobuf.Duration
+	21,  // 5: google.maps.routeoptimization.v1.OptimizeToursRequest.model:type_name -> google.maps.routeoptimization.v1.ShipmentModel
 	1,   // 6: google.maps.routeoptimization.v1.OptimizeToursRequest.solving_mode:type_name -> google.maps.routeoptimization.v1.OptimizeToursRequest.SolvingMode
 	2,   // 7: google.maps.routeoptimization.v1.OptimizeToursRequest.search_mode:type_name -> google.maps.routeoptimization.v1.OptimizeToursRequest.SearchMode
-	32,  // 8: google.maps.routeoptimization.v1.OptimizeToursRequest.injected_first_solution_routes:type_name -> google.maps.routeoptimization.v1.ShipmentRoute
-	36,  // 9: google.maps.routeoptimization.v1.OptimizeToursRequest.injected_solution_constraint:type_name -> google.maps.routeoptimization.v1.InjectedSolutionConstraint
-	32,  // 10: google.maps.routeoptimization.v1.OptimizeToursRequest.refresh_details_routes:type_name -> google.maps.routeoptimization.v1.ShipmentRoute
-	32,  // 11: google.maps.routeoptimization.v1.OptimizeToursResponse.routes:type_name -> google.maps.routeoptimization.v1.ShipmentRoute
-	33,  // 12: google.maps.routeoptimization.v1.OptimizeToursResponse.skipped_shipments:type_name -> google.maps.routeoptimization.v1.SkippedShipment
-	37,  // 13: google.maps.routeoptimization.v1.OptimizeToursResponse.validation_errors:type_name -> google.maps.routeoptimization.v1.OptimizeToursValidationError
-	18,  // 14: google.maps.routeoptimization.v1.OptimizeToursResponse.processed_request:type_name -> google.maps.routeoptimization.v1.OptimizeToursRequest
-	43,  // 15: google.maps.routeoptimization.v1.OptimizeToursResponse.metrics:type_name -> google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics
-	21,  // 16: google.maps.routeoptimization.v1.ShipmentModel.shipments:type_name -> google.maps.routeoptimization.v1.Shipment
-	25,  // 17: google.maps.routeoptimization.v1.ShipmentModel.vehicles:type_name -> google.maps.routeoptimization.v1.Vehicle
-	45,  // 18: google.maps.routeoptimization.v1.ShipmentModel.objectives:type_name -> google.maps.routeoptimization.v1.ShipmentModel.Objective
-	75,  // 19: google.maps.routeoptimization.v1.ShipmentModel.global_start_time:type_name -> google.protobuf.Timestamp
-	75,  // 20: google.maps.routeoptimization.v1.ShipmentModel.global_end_time:type_name -> google.protobuf.Timestamp
-	46,  // 21: google.maps.routeoptimization.v1.ShipmentModel.duration_distance_matrices:type_name -> google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix
-	28,  // 22: google.maps.routeoptimization.v1.ShipmentModel.transition_attributes:type_name -> google.maps.routeoptimization.v1.TransitionAttributes
-	22,  // 23: google.maps.routeoptimization.v1.ShipmentModel.shipment_type_incompatibilities:type_name -> google.maps.routeoptimization.v1.ShipmentTypeIncompatibility
-	23,  // 24: google.maps.routeoptimization.v1.ShipmentModel.shipment_type_requirements:type_name -> google.maps.routeoptimization.v1.ShipmentTypeRequirement
-	47,  // 25: google.maps.routeoptimization.v1.ShipmentModel.precedence_rules:type_name -> google.maps.routeoptimization.v1.ShipmentModel.PrecedenceRule
-	49,  // 26: google.maps.routeoptimization.v1.Shipment.pickups:type_name -> google.maps.routeoptimization.v1.Shipment.VisitRequest
-	49,  // 27: google.maps.routeoptimization.v1.Shipment.deliveries:type_name -> google.maps.routeoptimization.v1.Shipment.VisitRequest
-	51,  // 28: google.maps.routeoptimization.v1.Shipment.load_demands:type_name -> google.maps.routeoptimization.v1.Shipment.LoadDemandsEntry
-	74,  // 29: google.maps.routeoptimization.v1.Shipment.pickup_to_delivery_absolute_detour_limit:type_name -> google.protobuf.Duration
-	74,  // 30: google.maps.routeoptimization.v1.Shipment.pickup_to_delivery_time_limit:type_name -> google.protobuf.Duration
+	33,  // 8: google.maps.routeoptimization.v1.OptimizeToursRequest.injected_first_solution_routes:type_name -> google.maps.routeoptimization.v1.ShipmentRoute
+	37,  // 9: google.maps.routeoptimization.v1.OptimizeToursRequest.injected_solution_constraint:type_name -> google.maps.routeoptimization.v1.InjectedSolutionConstraint
+	33,  // 10: google.maps.routeoptimization.v1.OptimizeToursRequest.refresh_details_routes:type_name -> google.maps.routeoptimization.v1.ShipmentRoute
+	33,  // 11: google.maps.routeoptimization.v1.OptimizeToursResponse.routes:type_name -> google.maps.routeoptimization.v1.ShipmentRoute
+	34,  // 12: google.maps.routeoptimization.v1.OptimizeToursResponse.skipped_shipments:type_name -> google.maps.routeoptimization.v1.SkippedShipment
+	38,  // 13: google.maps.routeoptimization.v1.OptimizeToursResponse.validation_errors:type_name -> google.maps.routeoptimization.v1.OptimizeToursValidationError
+	19,  // 14: google.maps.routeoptimization.v1.OptimizeToursResponse.processed_request:type_name -> google.maps.routeoptimization.v1.OptimizeToursRequest
+	44,  // 15: google.maps.routeoptimization.v1.OptimizeToursResponse.metrics:type_name -> google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics
+	22,  // 16: google.maps.routeoptimization.v1.ShipmentModel.shipments:type_name -> google.maps.routeoptimization.v1.Shipment
+	26,  // 17: google.maps.routeoptimization.v1.ShipmentModel.vehicles:type_name -> google.maps.routeoptimization.v1.Vehicle
+	46,  // 18: google.maps.routeoptimization.v1.ShipmentModel.objectives:type_name -> google.maps.routeoptimization.v1.ShipmentModel.Objective
+	76,  // 19: google.maps.routeoptimization.v1.ShipmentModel.global_start_time:type_name -> google.protobuf.Timestamp
+	76,  // 20: google.maps.routeoptimization.v1.ShipmentModel.global_end_time:type_name -> google.protobuf.Timestamp
+	47,  // 21: google.maps.routeoptimization.v1.ShipmentModel.duration_distance_matrices:type_name -> google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix
+	29,  // 22: google.maps.routeoptimization.v1.ShipmentModel.transition_attributes:type_name -> google.maps.routeoptimization.v1.TransitionAttributes
+	23,  // 23: google.maps.routeoptimization.v1.ShipmentModel.shipment_type_incompatibilities:type_name -> google.maps.routeoptimization.v1.ShipmentTypeIncompatibility
+	24,  // 24: google.maps.routeoptimization.v1.ShipmentModel.shipment_type_requirements:type_name -> google.maps.routeoptimization.v1.ShipmentTypeRequirement
+	48,  // 25: google.maps.routeoptimization.v1.ShipmentModel.precedence_rules:type_name -> google.maps.routeoptimization.v1.ShipmentModel.PrecedenceRule
+	50,  // 26: google.maps.routeoptimization.v1.Shipment.pickups:type_name -> google.maps.routeoptimization.v1.Shipment.VisitRequest
+	50,  // 27: google.maps.routeoptimization.v1.Shipment.deliveries:type_name -> google.maps.routeoptimization.v1.Shipment.VisitRequest
+	52,  // 28: google.maps.routeoptimization.v1.Shipment.load_demands:type_name -> google.maps.routeoptimization.v1.Shipment.LoadDemandsEntry
+	75,  // 29: google.maps.routeoptimization.v1.Shipment.pickup_to_delivery_absolute_detour_limit:type_name -> google.protobuf.Duration
+	75,  // 30: google.maps.routeoptimization.v1.Shipment.pickup_to_delivery_time_limit:type_name -> google.protobuf.Duration
 	4,   // 31: google.maps.routeoptimization.v1.ShipmentTypeIncompatibility.incompatibility_mode:type_name -> google.maps.routeoptimization.v1.ShipmentTypeIncompatibility.IncompatibilityMode
 	5,   // 32: google.maps.routeoptimization.v1.ShipmentTypeRequirement.requirement_mode:type_name -> google.maps.routeoptimization.v1.ShipmentTypeRequirement.RequirementMode
 	6,   // 33: google.maps.routeoptimization.v1.Vehicle.travel_mode:type_name -> google.maps.routeoptimization.v1.Vehicle.TravelMode
-	24,  // 34: google.maps.routeoptimization.v1.Vehicle.route_modifiers:type_name -> google.maps.routeoptimization.v1.RouteModifiers
-	76,  // 35: google.maps.routeoptimization.v1.Vehicle.start_location:type_name -> google.type.LatLng
-	29,  // 36: google.maps.routeoptimization.v1.Vehicle.start_waypoint:type_name -> google.maps.routeoptimization.v1.Waypoint
-	76,  // 37: google.maps.routeoptimization.v1.Vehicle.end_location:type_name -> google.type.LatLng
-	29,  // 38: google.maps.routeoptimization.v1.Vehicle.end_waypoint:type_name -> google.maps.routeoptimization.v1.Waypoint
-	26,  // 39: google.maps.routeoptimization.v1.Vehicle.start_time_windows:type_name -> google.maps.routeoptimization.v1.TimeWindow
-	26,  // 40: google.maps.routeoptimization.v1.Vehicle.end_time_windows:type_name -> google.maps.routeoptimization.v1.TimeWindow
+	25,  // 34: google.maps.routeoptimization.v1.Vehicle.route_modifiers:type_name -> google.maps.routeoptimization.v1.RouteModifiers
+	77,  // 35: google.maps.routeoptimization.v1.Vehicle.start_location:type_name -> google.type.LatLng
+	30,  // 36: google.maps.routeoptimization.v1.Vehicle.start_waypoint:type_name -> google.maps.routeoptimization.v1.Waypoint
+	77,  // 37: google.maps.routeoptimization.v1.Vehicle.end_location:type_name -> google.type.LatLng
+	30,  // 38: google.maps.routeoptimization.v1.Vehicle.end_waypoint:type_name -> google.maps.routeoptimization.v1.Waypoint
+	27,  // 39: google.maps.routeoptimization.v1.Vehicle.start_time_windows:type_name -> google.maps.routeoptimization.v1.TimeWindow
+	27,  // 40: google.maps.routeoptimization.v1.Vehicle.end_time_windows:type_name -> google.maps.routeoptimization.v1.TimeWindow
 	7,   // 41: google.maps.routeoptimization.v1.Vehicle.unloading_policy:type_name -> google.maps.routeoptimization.v1.Vehicle.UnloadingPolicy
-	55,  // 42: google.maps.routeoptimization.v1.Vehicle.load_limits:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimitsEntry
-	54,  // 43: google.maps.routeoptimization.v1.Vehicle.route_duration_limit:type_name -> google.maps.routeoptimization.v1.Vehicle.DurationLimit
-	54,  // 44: google.maps.routeoptimization.v1.Vehicle.travel_duration_limit:type_name -> google.maps.routeoptimization.v1.Vehicle.DurationLimit
-	27,  // 45: google.maps.routeoptimization.v1.Vehicle.route_distance_limit:type_name -> google.maps.routeoptimization.v1.DistanceLimit
-	56,  // 46: google.maps.routeoptimization.v1.Vehicle.extra_visit_duration_for_visit_type:type_name -> google.maps.routeoptimization.v1.Vehicle.ExtraVisitDurationForVisitTypeEntry
-	31,  // 47: google.maps.routeoptimization.v1.Vehicle.break_rule:type_name -> google.maps.routeoptimization.v1.BreakRule
-	75,  // 48: google.maps.routeoptimization.v1.TimeWindow.start_time:type_name -> google.protobuf.Timestamp
-	75,  // 49: google.maps.routeoptimization.v1.TimeWindow.end_time:type_name -> google.protobuf.Timestamp
-	75,  // 50: google.maps.routeoptimization.v1.TimeWindow.soft_start_time:type_name -> google.protobuf.Timestamp
-	75,  // 51: google.maps.routeoptimization.v1.TimeWindow.soft_end_time:type_name -> google.protobuf.Timestamp
-	27,  // 52: google.maps.routeoptimization.v1.TransitionAttributes.distance_limit:type_name -> google.maps.routeoptimization.v1.DistanceLimit
-	74,  // 53: google.maps.routeoptimization.v1.TransitionAttributes.delay:type_name -> google.protobuf.Duration
-	30,  // 54: google.maps.routeoptimization.v1.Waypoint.location:type_name -> google.maps.routeoptimization.v1.Location
-	76,  // 55: google.maps.routeoptimization.v1.Location.lat_lng:type_name -> google.type.LatLng
-	59,  // 56: google.maps.routeoptimization.v1.BreakRule.break_requests:type_name -> google.maps.routeoptimization.v1.BreakRule.BreakRequest
-	60,  // 57: google.maps.routeoptimization.v1.BreakRule.frequency_constraints:type_name -> google.maps.routeoptimization.v1.BreakRule.FrequencyConstraint
-	75,  // 58: google.maps.routeoptimization.v1.ShipmentRoute.vehicle_start_time:type_name -> google.protobuf.Timestamp
-	75,  // 59: google.maps.routeoptimization.v1.ShipmentRoute.vehicle_end_time:type_name -> google.protobuf.Timestamp
-	61,  // 60: google.maps.routeoptimization.v1.ShipmentRoute.visits:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Visit
-	62,  // 61: google.maps.routeoptimization.v1.ShipmentRoute.transitions:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Transition
-	64,  // 62: google.maps.routeoptimization.v1.ShipmentRoute.route_polyline:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.EncodedPolyline
-	65,  // 63: google.maps.routeoptimization.v1.ShipmentRoute.breaks:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Break
-	34,  // 64: google.maps.routeoptimization.v1.ShipmentRoute.metrics:type_name -> google.maps.routeoptimization.v1.AggregatedMetrics
-	35,  // 65: google.maps.routeoptimization.v1.ShipmentRoute.vehicle_fullness:type_name -> google.maps.routeoptimization.v1.VehicleFullness
-	66,  // 66: google.maps.routeoptimization.v1.ShipmentRoute.route_costs:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.RouteCostsEntry
-	69,  // 67: google.maps.routeoptimization.v1.SkippedShipment.reasons:type_name -> google.maps.routeoptimization.v1.SkippedShipment.Reason
-	74,  // 68: google.maps.routeoptimization.v1.AggregatedMetrics.travel_duration:type_name -> google.protobuf.Duration
-	74,  // 69: google.maps.routeoptimization.v1.AggregatedMetrics.wait_duration:type_name -> google.protobuf.Duration
-	74,  // 70: google.maps.routeoptimization.v1.AggregatedMetrics.delay_duration:type_name -> google.protobuf.Duration
-	74,  // 71: google.maps.routeoptimization.v1.AggregatedMetrics.break_duration:type_name -> google.protobuf.Duration
-	74,  // 72: google.maps.routeoptimization.v1.AggregatedMetrics.visit_duration:type_name -> google.protobuf.Duration
-	74,  // 73: google.maps.routeoptimization.v1.AggregatedMetrics.total_duration:type_name -> google.protobuf.Duration
-	70,  // 74: google.maps.routeoptimization.v1.AggregatedMetrics.max_loads:type_name -> google.maps.routeoptimization.v1.AggregatedMetrics.MaxLoadsEntry
-	32,  // 75: google.maps.routeoptimization.v1.InjectedSolutionConstraint.routes:type_name -> google.maps.routeoptimization.v1.ShipmentRoute
-	33,  // 76: google.maps.routeoptimization.v1.InjectedSolutionConstraint.skipped_shipments:type_name -> google.maps.routeoptimization.v1.SkippedShipment
-	71,  // 77: google.maps.routeoptimization.v1.InjectedSolutionConstraint.constraint_relaxations:type_name -> google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation
-	73,  // 78: google.maps.routeoptimization.v1.OptimizeToursValidationError.fields:type_name -> google.maps.routeoptimization.v1.OptimizeToursValidationError.FieldReference
-	40,  // 79: google.maps.routeoptimization.v1.InputConfig.gcs_source:type_name -> google.maps.routeoptimization.v1.GcsSource
+	56,  // 42: google.maps.routeoptimization.v1.Vehicle.load_limits:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimitsEntry
+	55,  // 43: google.maps.routeoptimization.v1.Vehicle.route_duration_limit:type_name -> google.maps.routeoptimization.v1.Vehicle.DurationLimit
+	55,  // 44: google.maps.routeoptimization.v1.Vehicle.travel_duration_limit:type_name -> google.maps.routeoptimization.v1.Vehicle.DurationLimit
+	28,  // 45: google.maps.routeoptimization.v1.Vehicle.route_distance_limit:type_name -> google.maps.routeoptimization.v1.DistanceLimit
+	57,  // 46: google.maps.routeoptimization.v1.Vehicle.extra_visit_duration_for_visit_type:type_name -> google.maps.routeoptimization.v1.Vehicle.ExtraVisitDurationForVisitTypeEntry
+	32,  // 47: google.maps.routeoptimization.v1.Vehicle.break_rule:type_name -> google.maps.routeoptimization.v1.BreakRule
+	76,  // 48: google.maps.routeoptimization.v1.TimeWindow.start_time:type_name -> google.protobuf.Timestamp
+	76,  // 49: google.maps.routeoptimization.v1.TimeWindow.end_time:type_name -> google.protobuf.Timestamp
+	76,  // 50: google.maps.routeoptimization.v1.TimeWindow.soft_start_time:type_name -> google.protobuf.Timestamp
+	76,  // 51: google.maps.routeoptimization.v1.TimeWindow.soft_end_time:type_name -> google.protobuf.Timestamp
+	28,  // 52: google.maps.routeoptimization.v1.TransitionAttributes.distance_limit:type_name -> google.maps.routeoptimization.v1.DistanceLimit
+	75,  // 53: google.maps.routeoptimization.v1.TransitionAttributes.delay:type_name -> google.protobuf.Duration
+	31,  // 54: google.maps.routeoptimization.v1.Waypoint.location:type_name -> google.maps.routeoptimization.v1.Location
+	77,  // 55: google.maps.routeoptimization.v1.Location.lat_lng:type_name -> google.type.LatLng
+	60,  // 56: google.maps.routeoptimization.v1.BreakRule.break_requests:type_name -> google.maps.routeoptimization.v1.BreakRule.BreakRequest
+	61,  // 57: google.maps.routeoptimization.v1.BreakRule.frequency_constraints:type_name -> google.maps.routeoptimization.v1.BreakRule.FrequencyConstraint
+	76,  // 58: google.maps.routeoptimization.v1.ShipmentRoute.vehicle_start_time:type_name -> google.protobuf.Timestamp
+	76,  // 59: google.maps.routeoptimization.v1.ShipmentRoute.vehicle_end_time:type_name -> google.protobuf.Timestamp
+	62,  // 60: google.maps.routeoptimization.v1.ShipmentRoute.visits:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Visit
+	63,  // 61: google.maps.routeoptimization.v1.ShipmentRoute.transitions:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Transition
+	65,  // 62: google.maps.routeoptimization.v1.ShipmentRoute.route_polyline:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.EncodedPolyline
+	66,  // 63: google.maps.routeoptimization.v1.ShipmentRoute.breaks:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Break
+	35,  // 64: google.maps.routeoptimization.v1.ShipmentRoute.metrics:type_name -> google.maps.routeoptimization.v1.AggregatedMetrics
+	36,  // 65: google.maps.routeoptimization.v1.ShipmentRoute.vehicle_fullness:type_name -> google.maps.routeoptimization.v1.VehicleFullness
+	67,  // 66: google.maps.routeoptimization.v1.ShipmentRoute.route_costs:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.RouteCostsEntry
+	70,  // 67: google.maps.routeoptimization.v1.SkippedShipment.reasons:type_name -> google.maps.routeoptimization.v1.SkippedShipment.Reason
+	75,  // 68: google.maps.routeoptimization.v1.AggregatedMetrics.travel_duration:type_name -> google.protobuf.Duration
+	75,  // 69: google.maps.routeoptimization.v1.AggregatedMetrics.wait_duration:type_name -> google.protobuf.Duration
+	75,  // 70: google.maps.routeoptimization.v1.AggregatedMetrics.delay_duration:type_name -> google.protobuf.Duration
+	75,  // 71: google.maps.routeoptimization.v1.AggregatedMetrics.break_duration:type_name -> google.protobuf.Duration
+	75,  // 72: google.maps.routeoptimization.v1.AggregatedMetrics.visit_duration:type_name -> google.protobuf.Duration
+	75,  // 73: google.maps.routeoptimization.v1.AggregatedMetrics.total_duration:type_name -> google.protobuf.Duration
+	71,  // 74: google.maps.routeoptimization.v1.AggregatedMetrics.max_loads:type_name -> google.maps.routeoptimization.v1.AggregatedMetrics.MaxLoadsEntry
+	33,  // 75: google.maps.routeoptimization.v1.InjectedSolutionConstraint.routes:type_name -> google.maps.routeoptimization.v1.ShipmentRoute
+	34,  // 76: google.maps.routeoptimization.v1.InjectedSolutionConstraint.skipped_shipments:type_name -> google.maps.routeoptimization.v1.SkippedShipment
+	72,  // 77: google.maps.routeoptimization.v1.InjectedSolutionConstraint.constraint_relaxations:type_name -> google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation
+	74,  // 78: google.maps.routeoptimization.v1.OptimizeToursValidationError.fields:type_name -> google.maps.routeoptimization.v1.OptimizeToursValidationError.FieldReference
+	41,  // 79: google.maps.routeoptimization.v1.InputConfig.gcs_source:type_name -> google.maps.routeoptimization.v1.GcsSource
 	0,   // 80: google.maps.routeoptimization.v1.InputConfig.data_format:type_name -> google.maps.routeoptimization.v1.DataFormat
-	41,  // 81: google.maps.routeoptimization.v1.OutputConfig.gcs_destination:type_name -> google.maps.routeoptimization.v1.GcsDestination
+	42,  // 81: google.maps.routeoptimization.v1.OutputConfig.gcs_destination:type_name -> google.maps.routeoptimization.v1.GcsDestination
 	0,   // 82: google.maps.routeoptimization.v1.OutputConfig.data_format:type_name -> google.maps.routeoptimization.v1.DataFormat
-	38,  // 83: google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfig.input_config:type_name -> google.maps.routeoptimization.v1.InputConfig
-	39,  // 84: google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfig.output_config:type_name -> google.maps.routeoptimization.v1.OutputConfig
-	34,  // 85: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.aggregated_route_metrics:type_name -> google.maps.routeoptimization.v1.AggregatedMetrics
-	75,  // 86: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.earliest_vehicle_start_time:type_name -> google.protobuf.Timestamp
-	75,  // 87: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.latest_vehicle_end_time:type_name -> google.protobuf.Timestamp
-	44,  // 88: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.costs:type_name -> google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.CostsEntry
+	39,  // 83: google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfig.input_config:type_name -> google.maps.routeoptimization.v1.InputConfig
+	40,  // 84: google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfig.output_config:type_name -> google.maps.routeoptimization.v1.OutputConfig
+	35,  // 85: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.aggregated_route_metrics:type_name -> google.maps.routeoptimization.v1.AggregatedMetrics
+	76,  // 86: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.earliest_vehicle_start_time:type_name -> google.protobuf.Timestamp
+	76,  // 87: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.latest_vehicle_end_time:type_name -> google.protobuf.Timestamp
+	45,  // 88: google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.costs:type_name -> google.maps.routeoptimization.v1.OptimizeToursResponse.Metrics.CostsEntry
 	3,   // 89: google.maps.routeoptimization.v1.ShipmentModel.Objective.type:type_name -> google.maps.routeoptimization.v1.ShipmentModel.Objective.Type
-	48,  // 90: google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix.rows:type_name -> google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix.Row
-	74,  // 91: google.maps.routeoptimization.v1.ShipmentModel.PrecedenceRule.offset_duration:type_name -> google.protobuf.Duration
-	74,  // 92: google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix.Row.durations:type_name -> google.protobuf.Duration
-	76,  // 93: google.maps.routeoptimization.v1.Shipment.VisitRequest.arrival_location:type_name -> google.type.LatLng
-	29,  // 94: google.maps.routeoptimization.v1.Shipment.VisitRequest.arrival_waypoint:type_name -> google.maps.routeoptimization.v1.Waypoint
-	76,  // 95: google.maps.routeoptimization.v1.Shipment.VisitRequest.departure_location:type_name -> google.type.LatLng
-	29,  // 96: google.maps.routeoptimization.v1.Shipment.VisitRequest.departure_waypoint:type_name -> google.maps.routeoptimization.v1.Waypoint
-	26,  // 97: google.maps.routeoptimization.v1.Shipment.VisitRequest.time_windows:type_name -> google.maps.routeoptimization.v1.TimeWindow
-	74,  // 98: google.maps.routeoptimization.v1.Shipment.VisitRequest.duration:type_name -> google.protobuf.Duration
-	52,  // 99: google.maps.routeoptimization.v1.Shipment.VisitRequest.load_demands:type_name -> google.maps.routeoptimization.v1.Shipment.VisitRequest.LoadDemandsEntry
-	50,  // 100: google.maps.routeoptimization.v1.Shipment.LoadDemandsEntry.value:type_name -> google.maps.routeoptimization.v1.Shipment.Load
-	50,  // 101: google.maps.routeoptimization.v1.Shipment.VisitRequest.LoadDemandsEntry.value:type_name -> google.maps.routeoptimization.v1.Shipment.Load
-	57,  // 102: google.maps.routeoptimization.v1.Vehicle.LoadLimit.start_load_interval:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit.Interval
-	57,  // 103: google.maps.routeoptimization.v1.Vehicle.LoadLimit.end_load_interval:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit.Interval
-	58,  // 104: google.maps.routeoptimization.v1.Vehicle.LoadLimit.cost_per_kilometer:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit.LoadCost
-	58,  // 105: google.maps.routeoptimization.v1.Vehicle.LoadLimit.cost_per_traveled_hour:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit.LoadCost
-	74,  // 106: google.maps.routeoptimization.v1.Vehicle.DurationLimit.max_duration:type_name -> google.protobuf.Duration
-	74,  // 107: google.maps.routeoptimization.v1.Vehicle.DurationLimit.soft_max_duration:type_name -> google.protobuf.Duration
-	74,  // 108: google.maps.routeoptimization.v1.Vehicle.DurationLimit.quadratic_soft_max_duration:type_name -> google.protobuf.Duration
-	53,  // 109: google.maps.routeoptimization.v1.Vehicle.LoadLimitsEntry.value:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit
-	74,  // 110: google.maps.routeoptimization.v1.Vehicle.ExtraVisitDurationForVisitTypeEntry.value:type_name -> google.protobuf.Duration
-	75,  // 111: google.maps.routeoptimization.v1.BreakRule.BreakRequest.earliest_start_time:type_name -> google.protobuf.Timestamp
-	75,  // 112: google.maps.routeoptimization.v1.BreakRule.BreakRequest.latest_start_time:type_name -> google.protobuf.Timestamp
-	74,  // 113: google.maps.routeoptimization.v1.BreakRule.BreakRequest.min_duration:type_name -> google.protobuf.Duration
-	74,  // 114: google.maps.routeoptimization.v1.BreakRule.FrequencyConstraint.min_break_duration:type_name -> google.protobuf.Duration
-	74,  // 115: google.maps.routeoptimization.v1.BreakRule.FrequencyConstraint.max_inter_break_duration:type_name -> google.protobuf.Duration
-	75,  // 116: google.maps.routeoptimization.v1.ShipmentRoute.Visit.start_time:type_name -> google.protobuf.Timestamp
-	67,  // 117: google.maps.routeoptimization.v1.ShipmentRoute.Visit.load_demands:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Visit.LoadDemandsEntry
-	74,  // 118: google.maps.routeoptimization.v1.ShipmentRoute.Visit.detour:type_name -> google.protobuf.Duration
-	74,  // 119: google.maps.routeoptimization.v1.ShipmentRoute.Transition.travel_duration:type_name -> google.protobuf.Duration
-	74,  // 120: google.maps.routeoptimization.v1.ShipmentRoute.Transition.delay_duration:type_name -> google.protobuf.Duration
-	74,  // 121: google.maps.routeoptimization.v1.ShipmentRoute.Transition.break_duration:type_name -> google.protobuf.Duration
-	74,  // 122: google.maps.routeoptimization.v1.ShipmentRoute.Transition.wait_duration:type_name -> google.protobuf.Duration
-	74,  // 123: google.maps.routeoptimization.v1.ShipmentRoute.Transition.total_duration:type_name -> google.protobuf.Duration
-	75,  // 124: google.maps.routeoptimization.v1.ShipmentRoute.Transition.start_time:type_name -> google.protobuf.Timestamp
-	64,  // 125: google.maps.routeoptimization.v1.ShipmentRoute.Transition.route_polyline:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.EncodedPolyline
-	68,  // 126: google.maps.routeoptimization.v1.ShipmentRoute.Transition.vehicle_loads:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Transition.VehicleLoadsEntry
-	75,  // 127: google.maps.routeoptimization.v1.ShipmentRoute.Break.start_time:type_name -> google.protobuf.Timestamp
-	74,  // 128: google.maps.routeoptimization.v1.ShipmentRoute.Break.duration:type_name -> google.protobuf.Duration
-	50,  // 129: google.maps.routeoptimization.v1.ShipmentRoute.Visit.LoadDemandsEntry.value:type_name -> google.maps.routeoptimization.v1.Shipment.Load
-	63,  // 130: google.maps.routeoptimization.v1.ShipmentRoute.Transition.VehicleLoadsEntry.value:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.VehicleLoad
-	8,   // 131: google.maps.routeoptimization.v1.SkippedShipment.Reason.code:type_name -> google.maps.routeoptimization.v1.SkippedShipment.Reason.Code
-	63,  // 132: google.maps.routeoptimization.v1.AggregatedMetrics.MaxLoadsEntry.value:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.VehicleLoad
-	72,  // 133: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.relaxations:type_name -> google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation
-	9,   // 134: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation.level:type_name -> google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation.Level
-	75,  // 135: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation.threshold_time:type_name -> google.protobuf.Timestamp
-	73,  // 136: google.maps.routeoptimization.v1.OptimizeToursValidationError.FieldReference.sub_field:type_name -> google.maps.routeoptimization.v1.OptimizeToursValidationError.FieldReference
-	18,  // 137: google.maps.routeoptimization.v1.RouteOptimization.OptimizeTours:input_type -> google.maps.routeoptimization.v1.OptimizeToursRequest
-	14,  // 138: google.maps.routeoptimization.v1.RouteOptimization.BatchOptimizeTours:input_type -> google.maps.routeoptimization.v1.BatchOptimizeToursRequest
-	18,  // 139: google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning:input_type -> google.maps.routeoptimization.v1.OptimizeToursRequest
-	11,  // 140: google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursUri:input_type -> google.maps.routeoptimization.v1.OptimizeToursUriRequest
-	19,  // 141: google.maps.routeoptimization.v1.RouteOptimization.OptimizeTours:output_type -> google.maps.routeoptimization.v1.OptimizeToursResponse
-	77,  // 142: google.maps.routeoptimization.v1.RouteOptimization.BatchOptimizeTours:output_type -> google.longrunning.Operation
-	77,  // 143: google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning:output_type -> google.longrunning.Operation
-	77,  // 144: google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursUri:output_type -> google.longrunning.Operation
-	141, // [141:145] is the sub-list for method output_type
-	137, // [137:141] is the sub-list for method input_type
-	137, // [137:137] is the sub-list for extension type_name
-	137, // [137:137] is the sub-list for extension extendee
-	0,   // [0:137] is the sub-list for field type_name
+	49,  // 90: google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix.rows:type_name -> google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix.Row
+	75,  // 91: google.maps.routeoptimization.v1.ShipmentModel.PrecedenceRule.offset_duration:type_name -> google.protobuf.Duration
+	75,  // 92: google.maps.routeoptimization.v1.ShipmentModel.DurationDistanceMatrix.Row.durations:type_name -> google.protobuf.Duration
+	77,  // 93: google.maps.routeoptimization.v1.Shipment.VisitRequest.arrival_location:type_name -> google.type.LatLng
+	30,  // 94: google.maps.routeoptimization.v1.Shipment.VisitRequest.arrival_waypoint:type_name -> google.maps.routeoptimization.v1.Waypoint
+	77,  // 95: google.maps.routeoptimization.v1.Shipment.VisitRequest.departure_location:type_name -> google.type.LatLng
+	30,  // 96: google.maps.routeoptimization.v1.Shipment.VisitRequest.departure_waypoint:type_name -> google.maps.routeoptimization.v1.Waypoint
+	27,  // 97: google.maps.routeoptimization.v1.Shipment.VisitRequest.time_windows:type_name -> google.maps.routeoptimization.v1.TimeWindow
+	75,  // 98: google.maps.routeoptimization.v1.Shipment.VisitRequest.duration:type_name -> google.protobuf.Duration
+	53,  // 99: google.maps.routeoptimization.v1.Shipment.VisitRequest.load_demands:type_name -> google.maps.routeoptimization.v1.Shipment.VisitRequest.LoadDemandsEntry
+	51,  // 100: google.maps.routeoptimization.v1.Shipment.LoadDemandsEntry.value:type_name -> google.maps.routeoptimization.v1.Shipment.Load
+	51,  // 101: google.maps.routeoptimization.v1.Shipment.VisitRequest.LoadDemandsEntry.value:type_name -> google.maps.routeoptimization.v1.Shipment.Load
+	58,  // 102: google.maps.routeoptimization.v1.Vehicle.LoadLimit.start_load_interval:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit.Interval
+	58,  // 103: google.maps.routeoptimization.v1.Vehicle.LoadLimit.end_load_interval:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit.Interval
+	59,  // 104: google.maps.routeoptimization.v1.Vehicle.LoadLimit.cost_per_kilometer:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit.LoadCost
+	59,  // 105: google.maps.routeoptimization.v1.Vehicle.LoadLimit.cost_per_traveled_hour:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit.LoadCost
+	75,  // 106: google.maps.routeoptimization.v1.Vehicle.DurationLimit.max_duration:type_name -> google.protobuf.Duration
+	75,  // 107: google.maps.routeoptimization.v1.Vehicle.DurationLimit.soft_max_duration:type_name -> google.protobuf.Duration
+	75,  // 108: google.maps.routeoptimization.v1.Vehicle.DurationLimit.quadratic_soft_max_duration:type_name -> google.protobuf.Duration
+	54,  // 109: google.maps.routeoptimization.v1.Vehicle.LoadLimitsEntry.value:type_name -> google.maps.routeoptimization.v1.Vehicle.LoadLimit
+	75,  // 110: google.maps.routeoptimization.v1.Vehicle.ExtraVisitDurationForVisitTypeEntry.value:type_name -> google.protobuf.Duration
+	76,  // 111: google.maps.routeoptimization.v1.BreakRule.BreakRequest.earliest_start_time:type_name -> google.protobuf.Timestamp
+	76,  // 112: google.maps.routeoptimization.v1.BreakRule.BreakRequest.latest_start_time:type_name -> google.protobuf.Timestamp
+	75,  // 113: google.maps.routeoptimization.v1.BreakRule.BreakRequest.min_duration:type_name -> google.protobuf.Duration
+	75,  // 114: google.maps.routeoptimization.v1.BreakRule.FrequencyConstraint.min_break_duration:type_name -> google.protobuf.Duration
+	75,  // 115: google.maps.routeoptimization.v1.BreakRule.FrequencyConstraint.max_inter_break_duration:type_name -> google.protobuf.Duration
+	76,  // 116: google.maps.routeoptimization.v1.ShipmentRoute.Visit.start_time:type_name -> google.protobuf.Timestamp
+	68,  // 117: google.maps.routeoptimization.v1.ShipmentRoute.Visit.load_demands:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Visit.LoadDemandsEntry
+	75,  // 118: google.maps.routeoptimization.v1.ShipmentRoute.Visit.detour:type_name -> google.protobuf.Duration
+	8,   // 119: google.maps.routeoptimization.v1.ShipmentRoute.Visit.visit_type:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Visit.VisitType
+	75,  // 120: google.maps.routeoptimization.v1.ShipmentRoute.Transition.travel_duration:type_name -> google.protobuf.Duration
+	75,  // 121: google.maps.routeoptimization.v1.ShipmentRoute.Transition.delay_duration:type_name -> google.protobuf.Duration
+	75,  // 122: google.maps.routeoptimization.v1.ShipmentRoute.Transition.break_duration:type_name -> google.protobuf.Duration
+	75,  // 123: google.maps.routeoptimization.v1.ShipmentRoute.Transition.wait_duration:type_name -> google.protobuf.Duration
+	75,  // 124: google.maps.routeoptimization.v1.ShipmentRoute.Transition.total_duration:type_name -> google.protobuf.Duration
+	76,  // 125: google.maps.routeoptimization.v1.ShipmentRoute.Transition.start_time:type_name -> google.protobuf.Timestamp
+	65,  // 126: google.maps.routeoptimization.v1.ShipmentRoute.Transition.route_polyline:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.EncodedPolyline
+	69,  // 127: google.maps.routeoptimization.v1.ShipmentRoute.Transition.vehicle_loads:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.Transition.VehicleLoadsEntry
+	76,  // 128: google.maps.routeoptimization.v1.ShipmentRoute.Break.start_time:type_name -> google.protobuf.Timestamp
+	75,  // 129: google.maps.routeoptimization.v1.ShipmentRoute.Break.duration:type_name -> google.protobuf.Duration
+	51,  // 130: google.maps.routeoptimization.v1.ShipmentRoute.Visit.LoadDemandsEntry.value:type_name -> google.maps.routeoptimization.v1.Shipment.Load
+	64,  // 131: google.maps.routeoptimization.v1.ShipmentRoute.Transition.VehicleLoadsEntry.value:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.VehicleLoad
+	9,   // 132: google.maps.routeoptimization.v1.SkippedShipment.Reason.code:type_name -> google.maps.routeoptimization.v1.SkippedShipment.Reason.Code
+	64,  // 133: google.maps.routeoptimization.v1.AggregatedMetrics.MaxLoadsEntry.value:type_name -> google.maps.routeoptimization.v1.ShipmentRoute.VehicleLoad
+	73,  // 134: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.relaxations:type_name -> google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation
+	10,  // 135: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation.level:type_name -> google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation.Level
+	76,  // 136: google.maps.routeoptimization.v1.InjectedSolutionConstraint.ConstraintRelaxation.Relaxation.threshold_time:type_name -> google.protobuf.Timestamp
+	74,  // 137: google.maps.routeoptimization.v1.OptimizeToursValidationError.FieldReference.sub_field:type_name -> google.maps.routeoptimization.v1.OptimizeToursValidationError.FieldReference
+	19,  // 138: google.maps.routeoptimization.v1.RouteOptimization.OptimizeTours:input_type -> google.maps.routeoptimization.v1.OptimizeToursRequest
+	15,  // 139: google.maps.routeoptimization.v1.RouteOptimization.BatchOptimizeTours:input_type -> google.maps.routeoptimization.v1.BatchOptimizeToursRequest
+	19,  // 140: google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning:input_type -> google.maps.routeoptimization.v1.OptimizeToursRequest
+	12,  // 141: google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursUri:input_type -> google.maps.routeoptimization.v1.OptimizeToursUriRequest
+	20,  // 142: google.maps.routeoptimization.v1.RouteOptimization.OptimizeTours:output_type -> google.maps.routeoptimization.v1.OptimizeToursResponse
+	78,  // 143: google.maps.routeoptimization.v1.RouteOptimization.BatchOptimizeTours:output_type -> google.longrunning.Operation
+	78,  // 144: google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning:output_type -> google.longrunning.Operation
+	78,  // 145: google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursUri:output_type -> google.longrunning.Operation
+	142, // [142:146] is the sub-list for method output_type
+	138, // [138:142] is the sub-list for method input_type
+	138, // [138:138] is the sub-list for extension type_name
+	138, // [138:138] is the sub-list for extension extendee
+	0,   // [0:138] is the sub-list for field type_name
 }
 
 func init() { file_google_maps_routeoptimization_v1_route_optimization_service_proto_init() }
@@ -7498,7 +7594,7 @@ func file_google_maps_routeoptimization_v1_route_optimization_service_proto_init
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_maps_routeoptimization_v1_route_optimization_service_proto_rawDesc), len(file_google_maps_routeoptimization_v1_route_optimization_service_proto_rawDesc)),
-			NumEnums:      10,
+			NumEnums:      11,
 			NumMessages:   64,
 			NumExtensions: 0,
 			NumServices:   1,

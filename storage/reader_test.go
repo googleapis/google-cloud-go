@@ -26,9 +26,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"runtime"
 	"strconv"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
+	"testing/synctest"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
@@ -857,7 +862,141 @@ func TestMRDRunCallbackNilGuard(t *testing.T) {
 	m := &multiRangeDownloaderManager{}
 	// Calling runCallback with a nil callback should safely return without panicking.
 	m.runCallback(0, 100, nil, nil)
-	m.callbackWg.Wait()
+	m.callbacks.wait()
+}
+
+// TestCallbackTrackerConcurrentAddWait stresses add() from zero concurrently
+// with wait(), the pattern sync.WaitGroup forbids. Run with -race.
+func TestCallbackTrackerConcurrentAddWait(t *testing.T) {
+	const (
+		adders       = 8
+		addsPerAdder = 500
+		waiters      = 4
+	)
+	var tr callbackTracker
+
+	var finished atomic.Int64
+	var addersWg sync.WaitGroup
+	for i := 0; i < adders; i++ {
+		addersWg.Add(1)
+		go func() {
+			defer addersWg.Done()
+			for j := 0; j < addsPerAdder; j++ {
+				tr.add()
+				go func() {
+					defer tr.done()
+					finished.Add(1)
+				}()
+			}
+		}()
+	}
+
+	stop := make(chan struct{})
+	var waitersWg sync.WaitGroup
+	for i := 0; i < waiters; i++ {
+		waitersWg.Add(1)
+		go func() {
+			defer waitersWg.Done()
+			for {
+				select {
+				case <-stop:
+					return
+				default:
+					tr.wait()
+					// Yield so idle waiters do not starve the adders.
+					runtime.Gosched()
+				}
+			}
+		}()
+	}
+
+	addersWg.Wait()
+	close(stop)
+	waitersWg.Wait()
+
+	// A final wait must observe all callbacks complete.
+	tr.wait()
+
+	if got, want := finished.Load(), int64(adders*addsPerAdder); got != want {
+		t.Errorf("finished callbacks = %d, want %d", got, want)
+	}
+	tr.mu.Lock()
+	n := tr.n
+	tr.mu.Unlock()
+	if n != 0 {
+		t.Errorf("tracker count = %d after all callbacks finished, want 0", n)
+	}
+}
+
+// TestCallbackTrackerWaitBlocksUntilDone checks that wait() blocks all waiters
+// while a callback is in flight and releases them on done().
+func TestCallbackTrackerWaitBlocksUntilDone(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		const waiters = 3
+		var tr callbackTracker
+		// Two cycles, so the second one checks that the tracker can be reused
+		// after its count has returned to zero.
+		for cycle := 0; cycle < 2; cycle++ {
+			tr.add()
+
+			returned := make(chan struct{}, waiters)
+			for i := 0; i < waiters; i++ {
+				go func() {
+					tr.wait()
+					returned <- struct{}{}
+				}()
+			}
+
+			// All waiters must be durably blocked while a callback is in flight.
+			synctest.Wait()
+			if n := len(returned); n != 0 {
+				t.Fatalf("cycle %d: %d waiters returned while a callback was still in flight", cycle, n)
+			}
+
+			tr.done()
+			synctest.Wait()
+			if got := len(returned); got != waiters {
+				t.Fatalf("cycle %d: only %d of %d waiters returned after done", cycle, got, waiters)
+			}
+
+			// Wait on an idle tracker must not block.
+			tr.wait()
+		}
+	})
+}
+
+// TestCallbackTrackerDoneWithoutAddPanics checks that an unbalanced done()
+// panics instead of driving the counter negative.
+func TestCallbackTrackerDoneWithoutAddPanics(t *testing.T) {
+	var tr callbackTracker
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatal("done() without a matching add() did not panic")
+		}
+	}()
+	tr.done()
+}
+
+func TestReaderUnfinalizedAttrs(t *testing.T) {
+	r := &Reader{
+		remain: 42,
+		Attrs:  ReaderObjectAttrs{Unfinalized: true},
+	}
+	if got := r.Remain(); got != -1 {
+		t.Errorf("Remain() with Unfinalized=true: got %d, want -1", got)
+	}
+	r.recordRead(10, nil)
+	r.Attrs.Unfinalized = false
+	if got := r.Remain(); got != 42 {
+		t.Errorf("Remain() with Unfinalized=false: got %d, want 42", got)
+	}
+
+	if attrs := readerAttrsFromObject(&ObjectAttrs{Size: 10}); !attrs.Unfinalized {
+		t.Errorf("readerAttrsFromObject with zero Finalized: got Unfinalized=false, want true")
+	}
+	if attrs := readerAttrsFromObject(&ObjectAttrs{Size: 10, Finalized: time.Now()}); attrs.Unfinalized {
+		t.Errorf("readerAttrsFromObject with non-zero Finalized: got Unfinalized=true, want false")
+	}
 }
 
 type roundTripFunc func(*http.Request) (*http.Response, error)

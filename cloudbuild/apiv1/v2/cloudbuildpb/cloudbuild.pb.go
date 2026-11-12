@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -811,6 +811,9 @@ const (
 	BuildOptions_NOT_VERIFIED BuildOptions_VerifyOption = 0
 	// Build must be verified.
 	BuildOptions_VERIFIED BuildOptions_VerifyOption = 1
+	// Build verification is best effort. If provenance generation fails, the
+	// build will still succeed.
+	BuildOptions_BEST_EFFORT BuildOptions_VerifyOption = 3
 )
 
 // Enum value maps for BuildOptions_VerifyOption.
@@ -818,10 +821,12 @@ var (
 	BuildOptions_VerifyOption_name = map[int32]string{
 		0: "NOT_VERIFIED",
 		1: "VERIFIED",
+		3: "BEST_EFFORT",
 	}
 	BuildOptions_VerifyOption_value = map[string]int32{
 		"NOT_VERIFIED": 0,
 		"VERIFIED":     1,
+		"BEST_EFFORT":  3,
 	}
 )
 
@@ -1111,7 +1116,10 @@ const (
 	// build. The builder service account must have access to create and write
 	// to Cloud Storage buckets in the build project.
 	BuildOptions_REGIONAL_USER_OWNED_BUCKET BuildOptions_DefaultLogsBucketBehavior = 1
-	// Bucket is located in a Google-owned project and is not regionalized.
+	// Deprecated: Use `REGIONAL_USER_OWNED_BUCKET` instead. Bucket is located
+	// in a Google-owned project and is not regionalized.
+	//
+	// Deprecated: Marked as deprecated in google/devtools/cloudbuild/v1/cloudbuild.proto.
 	BuildOptions_LEGACY_BUCKET BuildOptions_DefaultLogsBucketBehavior = 2
 )
 
@@ -7195,7 +7203,10 @@ type PrivatePoolV1Config struct {
 	WorkerConfig *PrivatePoolV1Config_WorkerConfig `protobuf:"bytes,1,opt,name=worker_config,json=workerConfig,proto3" json:"worker_config,omitempty"`
 	// Network configuration for the pool.
 	NetworkConfig *PrivatePoolV1Config_NetworkConfig `protobuf:"bytes,2,opt,name=network_config,json=networkConfig,proto3" json:"network_config,omitempty"`
-	// Immutable. Private Service Connect(PSC) Network configuration for the pool.
+	// Immutable. Deprecated: Private Service Connect is no longer supported.
+	// Private Service Connect(PSC) Network configuration for the pool.
+	//
+	// Deprecated: Marked as deprecated in google/devtools/cloudbuild/v1/cloudbuild.proto.
 	PrivateServiceConnect *PrivatePoolV1Config_PrivateServiceConnect `protobuf:"bytes,5,opt,name=private_service_connect,json=privateServiceConnect,proto3" json:"private_service_connect,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
@@ -7245,6 +7256,7 @@ func (x *PrivatePoolV1Config) GetNetworkConfig() *PrivatePoolV1Config_NetworkCon
 	return nil
 }
 
+// Deprecated: Marked as deprecated in google/devtools/cloudbuild/v1/cloudbuild.proto.
 func (x *PrivatePoolV1Config) GetPrivateServiceConnect() *PrivatePoolV1Config_PrivateServiceConnect {
 	if x != nil {
 		return x.PrivateServiceConnect
@@ -8821,7 +8833,10 @@ func (x *PrivatePoolV1Config_NetworkConfig) GetPeeredNetworkIpRange() string {
 	return ""
 }
 
+// Deprecated: Private Service Connect is no longer supported.
 // Defines the Private Service Connect network configuration for the pool.
+//
+// Deprecated: Marked as deprecated in google/devtools/cloudbuild/v1/cloudbuild.proto.
 type PrivatePoolV1Config_PrivateServiceConnect struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Immutable. The network attachment that the worker network
@@ -9484,7 +9499,7 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"trigger_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\ttriggerId\x12K\n" +
 	"\atrigger\x18\x03 \x01(\v2+.google.devtools.cloudbuild.v1.BuildTriggerB\x04\xe2A\x01\x02R\atrigger\x12;\n" +
 	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xa1\x10\n" +
+	"updateMask\"\xb7\x10\n" +
 	"\fBuildOptions\x12b\n" +
 	"\x16source_provenance_hash\x18\x01 \x03(\x0e2,.google.devtools.cloudbuild.v1.Hash.HashTypeR\x14sourceProvenanceHash\x12p\n" +
 	"\x17requested_verify_option\x18\x02 \x01(\x0e28.google.devtools.cloudbuild.v1.BuildOptions.VerifyOptionR\x15requestedVerifyOption\x12Z\n" +
@@ -9512,10 +9527,11 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB)\xfaA&\n" +
 	"$cloudbuild.googleapis.com/WorkerPoolR\x04name\x12+\n" +
 	"\x0eworker_release\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\rworkerRelease\x12<\n" +
-	"\x17resolved_worker_release\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x15resolvedWorkerRelease\".\n" +
+	"\x17resolved_worker_release\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x15resolvedWorkerRelease\"?\n" +
 	"\fVerifyOption\x12\x10\n" +
 	"\fNOT_VERIFIED\x10\x00\x12\f\n" +
-	"\bVERIFIED\x10\x01\"\x92\x01\n" +
+	"\bVERIFIED\x10\x01\x12\x0f\n" +
+	"\vBEST_EFFORT\x10\x03\"\x92\x01\n" +
 	"\vMachineType\x12\x0f\n" +
 	"\vUNSPECIFIED\x10\x00\x12\x14\n" +
 	"\fN1_HIGHCPU_8\x10\x01\x1a\x02\b\x01\x12\x15\n" +
@@ -9540,11 +9556,11 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\bGCS_ONLY\x10\x02\x12\x18\n" +
 	"\x10STACKDRIVER_ONLY\x10\x03\x1a\x02\b\x01\x12\x16\n" +
 	"\x12CLOUD_LOGGING_ONLY\x10\x05\x12\b\n" +
-	"\x04NONE\x10\x04\"|\n" +
+	"\x04NONE\x10\x04\"\x80\x01\n" +
 	"\x19DefaultLogsBucketBehavior\x12,\n" +
 	"(DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED\x10\x00\x12\x1e\n" +
-	"\x1aREGIONAL_USER_OWNED_BUCKET\x10\x01\x12\x11\n" +
-	"\rLEGACY_BUCKET\x10\x02\"\xad\x01\n" +
+	"\x1aREGIONAL_USER_OWNED_BUCKET\x10\x01\x12\x15\n" +
+	"\rLEGACY_BUCKET\x10\x02\x1a\x02\b\x01\"\xad\x01\n" +
 	"\x1cReceiveTriggerWebhookRequest\x12\x12\n" +
 	"\x04name\x18\x05 \x01(\tR\x04name\x12(\n" +
 	"\x04body\x18\x01 \x01(\v2\x14.google.api.HttpBodyR\x04body\x12\x1d\n" +
@@ -9604,11 +9620,11 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\bUPDATING\x10\x05:\x89\x01\xeaA\x85\x01\n" +
 	"$cloudbuild.googleapis.com/WorkerPool\x12Aprojects/{project}/locations/{location}/workerPools/{worker_pool}*\vworkerPools2\n" +
 	"workerPoolR\x01\x01B\b\n" +
-	"\x06config\"\xc3\t\n" +
+	"\x06config\"\xc9\t\n" +
 	"\x13PrivatePoolV1Config\x12d\n" +
 	"\rworker_config\x18\x01 \x01(\v2?.google.devtools.cloudbuild.v1.PrivatePoolV1Config.WorkerConfigR\fworkerConfig\x12g\n" +
-	"\x0enetwork_config\x18\x02 \x01(\v2@.google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfigR\rnetworkConfig\x12\x86\x01\n" +
-	"\x17private_service_connect\x18\x05 \x01(\v2H.google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnectB\x04\xe2A\x01\x05R\x15privateServiceConnect\x1a\xf4\x01\n" +
+	"\x0enetwork_config\x18\x02 \x01(\v2@.google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfigR\rnetworkConfig\x12\x88\x01\n" +
+	"\x17private_service_connect\x18\x05 \x01(\v2H.google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnectB\x06\xe2A\x01\x05\x18\x01R\x15privateServiceConnect\x1a\xf4\x01\n" +
 	"\fWorkerConfig\x12'\n" +
 	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\x12 \n" +
 	"\fdisk_size_gb\x18\x02 \x01(\x03R\n" +
@@ -9624,12 +9640,12 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\fEgressOption\x12\x1d\n" +
 	"\x19EGRESS_OPTION_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10NO_PUBLIC_EGRESS\x10\x01\x12\x11\n" +
-	"\rPUBLIC_EGRESS\x10\x02\x1a\xf0\x01\n" +
+	"\rPUBLIC_EGRESS\x10\x02\x1a\xf4\x01\n" +
 	"\x15PrivateServiceConnect\x12a\n" +
 	"\x12network_attachment\x18\x01 \x01(\tB2\xe2A\x02\x05\x02\xfaA*\n" +
 	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachment\x12B\n" +
 	"\x1apublic_ip_address_disabled\x18\x02 \x01(\bB\x05\xe2A\x02\x02\x05R\x17publicIpAddressDisabled\x120\n" +
-	"\x11route_all_traffic\x18\x03 \x01(\bB\x04\xe2A\x01\x05R\x0frouteAllTraffic\"\x81\x02\n" +
+	"\x11route_all_traffic\x18\x03 \x01(\bB\x04\xe2A\x01\x05R\x0frouteAllTraffic:\x02\x18\x01\"\x81\x02\n" +
 	"\x17CreateWorkerPoolRequest\x12B\n" +
 	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12P\n" +

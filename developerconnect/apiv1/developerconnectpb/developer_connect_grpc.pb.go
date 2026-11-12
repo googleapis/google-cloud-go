@@ -35,32 +35,42 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	DeveloperConnect_ListConnections_FullMethodName              = "/google.cloud.developerconnect.v1.DeveloperConnect/ListConnections"
-	DeveloperConnect_GetConnection_FullMethodName                = "/google.cloud.developerconnect.v1.DeveloperConnect/GetConnection"
-	DeveloperConnect_CreateConnection_FullMethodName             = "/google.cloud.developerconnect.v1.DeveloperConnect/CreateConnection"
-	DeveloperConnect_UpdateConnection_FullMethodName             = "/google.cloud.developerconnect.v1.DeveloperConnect/UpdateConnection"
-	DeveloperConnect_DeleteConnection_FullMethodName             = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteConnection"
-	DeveloperConnect_CreateGitRepositoryLink_FullMethodName      = "/google.cloud.developerconnect.v1.DeveloperConnect/CreateGitRepositoryLink"
-	DeveloperConnect_DeleteGitRepositoryLink_FullMethodName      = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteGitRepositoryLink"
-	DeveloperConnect_ListGitRepositoryLinks_FullMethodName       = "/google.cloud.developerconnect.v1.DeveloperConnect/ListGitRepositoryLinks"
-	DeveloperConnect_GetGitRepositoryLink_FullMethodName         = "/google.cloud.developerconnect.v1.DeveloperConnect/GetGitRepositoryLink"
-	DeveloperConnect_FetchReadWriteToken_FullMethodName          = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchReadWriteToken"
-	DeveloperConnect_FetchReadToken_FullMethodName               = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchReadToken"
-	DeveloperConnect_FetchLinkableGitRepositories_FullMethodName = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchLinkableGitRepositories"
-	DeveloperConnect_FetchGitHubInstallations_FullMethodName     = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchGitHubInstallations"
-	DeveloperConnect_FetchGitRefs_FullMethodName                 = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRefs"
-	DeveloperConnect_ListAccountConnectors_FullMethodName        = "/google.cloud.developerconnect.v1.DeveloperConnect/ListAccountConnectors"
-	DeveloperConnect_GetAccountConnector_FullMethodName          = "/google.cloud.developerconnect.v1.DeveloperConnect/GetAccountConnector"
-	DeveloperConnect_CreateAccountConnector_FullMethodName       = "/google.cloud.developerconnect.v1.DeveloperConnect/CreateAccountConnector"
-	DeveloperConnect_UpdateAccountConnector_FullMethodName       = "/google.cloud.developerconnect.v1.DeveloperConnect/UpdateAccountConnector"
-	DeveloperConnect_DeleteAccountConnector_FullMethodName       = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteAccountConnector"
-	DeveloperConnect_FetchAccessToken_FullMethodName             = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchAccessToken"
-	DeveloperConnect_ListUsers_FullMethodName                    = "/google.cloud.developerconnect.v1.DeveloperConnect/ListUsers"
-	DeveloperConnect_DeleteUser_FullMethodName                   = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteUser"
-	DeveloperConnect_FetchSelf_FullMethodName                    = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchSelf"
-	DeveloperConnect_DeleteSelf_FullMethodName                   = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteSelf"
-	DeveloperConnect_StartOAuth_FullMethodName                   = "/google.cloud.developerconnect.v1.DeveloperConnect/StartOAuth"
-	DeveloperConnect_FinishOAuth_FullMethodName                  = "/google.cloud.developerconnect.v1.DeveloperConnect/FinishOAuth"
+	DeveloperConnect_ListConnections_FullMethodName                              = "/google.cloud.developerconnect.v1.DeveloperConnect/ListConnections"
+	DeveloperConnect_GetConnection_FullMethodName                                = "/google.cloud.developerconnect.v1.DeveloperConnect/GetConnection"
+	DeveloperConnect_CreateConnection_FullMethodName                             = "/google.cloud.developerconnect.v1.DeveloperConnect/CreateConnection"
+	DeveloperConnect_UpdateConnection_FullMethodName                             = "/google.cloud.developerconnect.v1.DeveloperConnect/UpdateConnection"
+	DeveloperConnect_DeleteConnection_FullMethodName                             = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteConnection"
+	DeveloperConnect_CreateGitRepositoryLink_FullMethodName                      = "/google.cloud.developerconnect.v1.DeveloperConnect/CreateGitRepositoryLink"
+	DeveloperConnect_DeleteGitRepositoryLink_FullMethodName                      = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteGitRepositoryLink"
+	DeveloperConnect_ListGitRepositoryLinks_FullMethodName                       = "/google.cloud.developerconnect.v1.DeveloperConnect/ListGitRepositoryLinks"
+	DeveloperConnect_GetGitRepositoryLink_FullMethodName                         = "/google.cloud.developerconnect.v1.DeveloperConnect/GetGitRepositoryLink"
+	DeveloperConnect_FetchReadWriteToken_FullMethodName                          = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchReadWriteToken"
+	DeveloperConnect_FetchReadToken_FullMethodName                               = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchReadToken"
+	DeveloperConnect_OpenGitRepositoryLinkPullRequest_FullMethodName             = "/google.cloud.developerconnect.v1.DeveloperConnect/OpenGitRepositoryLinkPullRequest"
+	DeveloperConnect_FetchLinkableGitRepositories_FullMethodName                 = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchLinkableGitRepositories"
+	DeveloperConnect_FetchGitHubInstallations_FullMethodName                     = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchGitHubInstallations"
+	DeveloperConnect_FetchGitRefs_FullMethodName                                 = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRefs"
+	DeveloperConnect_DiffGitRepositoryLinkCommit_FullMethodName                  = "/google.cloud.developerconnect.v1.DeveloperConnect/DiffGitRepositoryLinkCommit"
+	DeveloperConnect_FetchGitRepositoryLinkCommit_FullMethodName                 = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkCommit"
+	DeveloperConnect_FetchGitRepositoryLinkCommitList_FullMethodName             = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkCommitList"
+	DeveloperConnect_FetchGitRepositoryLinkFileBlame_FullMethodName              = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkFileBlame"
+	DeveloperConnect_FetchGitRepositoryLinkPullRequest_FullMethodName            = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkPullRequest"
+	DeveloperConnect_AddGitRepositoryLinkPullRequestComment_FullMethodName       = "/google.cloud.developerconnect.v1.DeveloperConnect/AddGitRepositoryLinkPullRequestComment"
+	DeveloperConnect_AddGitRepositoryLinkPullRequestReviewComment_FullMethodName = "/google.cloud.developerconnect.v1.DeveloperConnect/AddGitRepositoryLinkPullRequestReviewComment"
+	DeveloperConnect_ModifyGitRepositoryLinkPullRequest_FullMethodName           = "/google.cloud.developerconnect.v1.DeveloperConnect/ModifyGitRepositoryLinkPullRequest"
+	DeveloperConnect_FetchGitRepositoryLinkPullRequestList_FullMethodName        = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkPullRequestList"
+	DeveloperConnect_ListAccountConnectors_FullMethodName                        = "/google.cloud.developerconnect.v1.DeveloperConnect/ListAccountConnectors"
+	DeveloperConnect_GetAccountConnector_FullMethodName                          = "/google.cloud.developerconnect.v1.DeveloperConnect/GetAccountConnector"
+	DeveloperConnect_CreateAccountConnector_FullMethodName                       = "/google.cloud.developerconnect.v1.DeveloperConnect/CreateAccountConnector"
+	DeveloperConnect_UpdateAccountConnector_FullMethodName                       = "/google.cloud.developerconnect.v1.DeveloperConnect/UpdateAccountConnector"
+	DeveloperConnect_DeleteAccountConnector_FullMethodName                       = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteAccountConnector"
+	DeveloperConnect_FetchAccessToken_FullMethodName                             = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchAccessToken"
+	DeveloperConnect_ListUsers_FullMethodName                                    = "/google.cloud.developerconnect.v1.DeveloperConnect/ListUsers"
+	DeveloperConnect_DeleteUser_FullMethodName                                   = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteUser"
+	DeveloperConnect_FetchSelf_FullMethodName                                    = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchSelf"
+	DeveloperConnect_DeleteSelf_FullMethodName                                   = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteSelf"
+	DeveloperConnect_StartOAuth_FullMethodName                                   = "/google.cloud.developerconnect.v1.DeveloperConnect/StartOAuth"
+	DeveloperConnect_FinishOAuth_FullMethodName                                  = "/google.cloud.developerconnect.v1.DeveloperConnect/FinishOAuth"
 )
 
 // DeveloperConnectClient is the client API for DeveloperConnect service.
@@ -94,6 +104,9 @@ type DeveloperConnectClient interface {
 	FetchReadWriteToken(ctx context.Context, in *FetchReadWriteTokenRequest, opts ...grpc.CallOption) (*FetchReadWriteTokenResponse, error)
 	// Fetches read token of a given gitRepositoryLink.
 	FetchReadToken(ctx context.Context, in *FetchReadTokenRequest, opts ...grpc.CallOption) (*FetchReadTokenResponse, error)
+	// Opens a Pull Request in the remote SCM repository associated with a
+	// GitRepositoryLink.
+	OpenGitRepositoryLinkPullRequest(ctx context.Context, in *OpenGitRepositoryLinkPullRequestRequest, opts ...grpc.CallOption) (*PullRequest, error)
 	// FetchLinkableGitRepositories returns a list of git repositories from an SCM
 	// that are available to be added to a Connection.
 	FetchLinkableGitRepositories(ctx context.Context, in *FetchLinkableGitRepositoriesRequest, opts ...grpc.CallOption) (*FetchLinkableGitRepositoriesResponse, error)
@@ -104,6 +117,25 @@ type DeveloperConnectClient interface {
 	FetchGitHubInstallations(ctx context.Context, in *FetchGitHubInstallationsRequest, opts ...grpc.CallOption) (*FetchGitHubInstallationsResponse, error)
 	// Fetch the list of branches or tags for a given repository.
 	FetchGitRefs(ctx context.Context, in *FetchGitRefsRequest, opts ...grpc.CallOption) (*FetchGitRefsResponse, error)
+	// Diff commits for a GitRepositoryLink.
+	DiffGitRepositoryLinkCommit(ctx context.Context, in *DiffGitRepositoryLinkCommitRequest, opts ...grpc.CallOption) (*DiffGitRepositoryLinkCommitResponse, error)
+	// Fetch Commit details from a Git repository link.
+	FetchGitRepositoryLinkCommit(ctx context.Context, in *FetchGitRepositoryLinkCommitRequest, opts ...grpc.CallOption) (*FetchGitRepositoryLinkCommitResponse, error)
+	// Fetch a list of Commits from a Git repository link.
+	FetchGitRepositoryLinkCommitList(ctx context.Context, in *FetchGitRepositoryLinkCommitListRequest, opts ...grpc.CallOption) (*FetchGitRepositoryLinkCommitListResponse, error)
+	// Fetches blame information for a file or line range in a file.
+	FetchGitRepositoryLinkFileBlame(ctx context.Context, in *FetchGitRepositoryLinkFileBlameRequest, opts ...grpc.CallOption) (*FetchGitRepositoryLinkFileBlameResponse, error)
+	// Fetch Pull Request details from a Git repository link.
+	FetchGitRepositoryLinkPullRequest(ctx context.Context, in *FetchGitRepositoryLinkPullRequestRequest, opts ...grpc.CallOption) (*PullRequest, error)
+	// Add a comment to a Pull Request.
+	AddGitRepositoryLinkPullRequestComment(ctx context.Context, in *AddGitRepositoryLinkPullRequestCommentRequest, opts ...grpc.CallOption) (*PullRequestComment, error)
+	// Add a review comment (inline on diff) to a Pull Request.
+	AddGitRepositoryLinkPullRequestReviewComment(ctx context.Context, in *AddGitRepositoryLinkPullRequestReviewCommentRequest, opts ...grpc.CallOption) (*PullRequestReviewComment, error)
+	// Modifies a Pull Request in the remote SCM repository associated with a
+	// GitRepositoryLink.
+	ModifyGitRepositoryLinkPullRequest(ctx context.Context, in *ModifyGitRepositoryLinkPullRequestRequest, opts ...grpc.CallOption) (*PullRequest, error)
+	// Fetches a list of Pull Requests from the remote repository.
+	FetchGitRepositoryLinkPullRequestList(ctx context.Context, in *FetchGitRepositoryLinkPullRequestListRequest, opts ...grpc.CallOption) (*FetchGitRepositoryLinkPullRequestListResponse, error)
 	// Lists AccountConnectors in a given project and location.
 	ListAccountConnectors(ctx context.Context, in *ListAccountConnectorsRequest, opts ...grpc.CallOption) (*ListAccountConnectorsResponse, error)
 	// Gets details of a single AccountConnector.
@@ -237,6 +269,15 @@ func (c *developerConnectClient) FetchReadToken(ctx context.Context, in *FetchRe
 	return out, nil
 }
 
+func (c *developerConnectClient) OpenGitRepositoryLinkPullRequest(ctx context.Context, in *OpenGitRepositoryLinkPullRequestRequest, opts ...grpc.CallOption) (*PullRequest, error) {
+	out := new(PullRequest)
+	err := c.cc.Invoke(ctx, DeveloperConnect_OpenGitRepositoryLinkPullRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *developerConnectClient) FetchLinkableGitRepositories(ctx context.Context, in *FetchLinkableGitRepositoriesRequest, opts ...grpc.CallOption) (*FetchLinkableGitRepositoriesResponse, error) {
 	out := new(FetchLinkableGitRepositoriesResponse)
 	err := c.cc.Invoke(ctx, DeveloperConnect_FetchLinkableGitRepositories_FullMethodName, in, out, opts...)
@@ -258,6 +299,87 @@ func (c *developerConnectClient) FetchGitHubInstallations(ctx context.Context, i
 func (c *developerConnectClient) FetchGitRefs(ctx context.Context, in *FetchGitRefsRequest, opts ...grpc.CallOption) (*FetchGitRefsResponse, error) {
 	out := new(FetchGitRefsResponse)
 	err := c.cc.Invoke(ctx, DeveloperConnect_FetchGitRefs_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) DiffGitRepositoryLinkCommit(ctx context.Context, in *DiffGitRepositoryLinkCommitRequest, opts ...grpc.CallOption) (*DiffGitRepositoryLinkCommitResponse, error) {
+	out := new(DiffGitRepositoryLinkCommitResponse)
+	err := c.cc.Invoke(ctx, DeveloperConnect_DiffGitRepositoryLinkCommit_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) FetchGitRepositoryLinkCommit(ctx context.Context, in *FetchGitRepositoryLinkCommitRequest, opts ...grpc.CallOption) (*FetchGitRepositoryLinkCommitResponse, error) {
+	out := new(FetchGitRepositoryLinkCommitResponse)
+	err := c.cc.Invoke(ctx, DeveloperConnect_FetchGitRepositoryLinkCommit_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) FetchGitRepositoryLinkCommitList(ctx context.Context, in *FetchGitRepositoryLinkCommitListRequest, opts ...grpc.CallOption) (*FetchGitRepositoryLinkCommitListResponse, error) {
+	out := new(FetchGitRepositoryLinkCommitListResponse)
+	err := c.cc.Invoke(ctx, DeveloperConnect_FetchGitRepositoryLinkCommitList_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) FetchGitRepositoryLinkFileBlame(ctx context.Context, in *FetchGitRepositoryLinkFileBlameRequest, opts ...grpc.CallOption) (*FetchGitRepositoryLinkFileBlameResponse, error) {
+	out := new(FetchGitRepositoryLinkFileBlameResponse)
+	err := c.cc.Invoke(ctx, DeveloperConnect_FetchGitRepositoryLinkFileBlame_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) FetchGitRepositoryLinkPullRequest(ctx context.Context, in *FetchGitRepositoryLinkPullRequestRequest, opts ...grpc.CallOption) (*PullRequest, error) {
+	out := new(PullRequest)
+	err := c.cc.Invoke(ctx, DeveloperConnect_FetchGitRepositoryLinkPullRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) AddGitRepositoryLinkPullRequestComment(ctx context.Context, in *AddGitRepositoryLinkPullRequestCommentRequest, opts ...grpc.CallOption) (*PullRequestComment, error) {
+	out := new(PullRequestComment)
+	err := c.cc.Invoke(ctx, DeveloperConnect_AddGitRepositoryLinkPullRequestComment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) AddGitRepositoryLinkPullRequestReviewComment(ctx context.Context, in *AddGitRepositoryLinkPullRequestReviewCommentRequest, opts ...grpc.CallOption) (*PullRequestReviewComment, error) {
+	out := new(PullRequestReviewComment)
+	err := c.cc.Invoke(ctx, DeveloperConnect_AddGitRepositoryLinkPullRequestReviewComment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) ModifyGitRepositoryLinkPullRequest(ctx context.Context, in *ModifyGitRepositoryLinkPullRequestRequest, opts ...grpc.CallOption) (*PullRequest, error) {
+	out := new(PullRequest)
+	err := c.cc.Invoke(ctx, DeveloperConnect_ModifyGitRepositoryLinkPullRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) FetchGitRepositoryLinkPullRequestList(ctx context.Context, in *FetchGitRepositoryLinkPullRequestListRequest, opts ...grpc.CallOption) (*FetchGitRepositoryLinkPullRequestListResponse, error) {
+	out := new(FetchGitRepositoryLinkPullRequestListResponse)
+	err := c.cc.Invoke(ctx, DeveloperConnect_FetchGitRepositoryLinkPullRequestList_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -403,6 +525,9 @@ type DeveloperConnectServer interface {
 	FetchReadWriteToken(context.Context, *FetchReadWriteTokenRequest) (*FetchReadWriteTokenResponse, error)
 	// Fetches read token of a given gitRepositoryLink.
 	FetchReadToken(context.Context, *FetchReadTokenRequest) (*FetchReadTokenResponse, error)
+	// Opens a Pull Request in the remote SCM repository associated with a
+	// GitRepositoryLink.
+	OpenGitRepositoryLinkPullRequest(context.Context, *OpenGitRepositoryLinkPullRequestRequest) (*PullRequest, error)
 	// FetchLinkableGitRepositories returns a list of git repositories from an SCM
 	// that are available to be added to a Connection.
 	FetchLinkableGitRepositories(context.Context, *FetchLinkableGitRepositoriesRequest) (*FetchLinkableGitRepositoriesResponse, error)
@@ -413,6 +538,25 @@ type DeveloperConnectServer interface {
 	FetchGitHubInstallations(context.Context, *FetchGitHubInstallationsRequest) (*FetchGitHubInstallationsResponse, error)
 	// Fetch the list of branches or tags for a given repository.
 	FetchGitRefs(context.Context, *FetchGitRefsRequest) (*FetchGitRefsResponse, error)
+	// Diff commits for a GitRepositoryLink.
+	DiffGitRepositoryLinkCommit(context.Context, *DiffGitRepositoryLinkCommitRequest) (*DiffGitRepositoryLinkCommitResponse, error)
+	// Fetch Commit details from a Git repository link.
+	FetchGitRepositoryLinkCommit(context.Context, *FetchGitRepositoryLinkCommitRequest) (*FetchGitRepositoryLinkCommitResponse, error)
+	// Fetch a list of Commits from a Git repository link.
+	FetchGitRepositoryLinkCommitList(context.Context, *FetchGitRepositoryLinkCommitListRequest) (*FetchGitRepositoryLinkCommitListResponse, error)
+	// Fetches blame information for a file or line range in a file.
+	FetchGitRepositoryLinkFileBlame(context.Context, *FetchGitRepositoryLinkFileBlameRequest) (*FetchGitRepositoryLinkFileBlameResponse, error)
+	// Fetch Pull Request details from a Git repository link.
+	FetchGitRepositoryLinkPullRequest(context.Context, *FetchGitRepositoryLinkPullRequestRequest) (*PullRequest, error)
+	// Add a comment to a Pull Request.
+	AddGitRepositoryLinkPullRequestComment(context.Context, *AddGitRepositoryLinkPullRequestCommentRequest) (*PullRequestComment, error)
+	// Add a review comment (inline on diff) to a Pull Request.
+	AddGitRepositoryLinkPullRequestReviewComment(context.Context, *AddGitRepositoryLinkPullRequestReviewCommentRequest) (*PullRequestReviewComment, error)
+	// Modifies a Pull Request in the remote SCM repository associated with a
+	// GitRepositoryLink.
+	ModifyGitRepositoryLinkPullRequest(context.Context, *ModifyGitRepositoryLinkPullRequestRequest) (*PullRequest, error)
+	// Fetches a list of Pull Requests from the remote repository.
+	FetchGitRepositoryLinkPullRequestList(context.Context, *FetchGitRepositoryLinkPullRequestListRequest) (*FetchGitRepositoryLinkPullRequestListResponse, error)
 	// Lists AccountConnectors in a given project and location.
 	ListAccountConnectors(context.Context, *ListAccountConnectorsRequest) (*ListAccountConnectorsResponse, error)
 	// Gets details of a single AccountConnector.
@@ -476,6 +620,9 @@ func (UnimplementedDeveloperConnectServer) FetchReadWriteToken(context.Context, 
 func (UnimplementedDeveloperConnectServer) FetchReadToken(context.Context, *FetchReadTokenRequest) (*FetchReadTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchReadToken not implemented")
 }
+func (UnimplementedDeveloperConnectServer) OpenGitRepositoryLinkPullRequest(context.Context, *OpenGitRepositoryLinkPullRequestRequest) (*PullRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OpenGitRepositoryLinkPullRequest not implemented")
+}
 func (UnimplementedDeveloperConnectServer) FetchLinkableGitRepositories(context.Context, *FetchLinkableGitRepositoriesRequest) (*FetchLinkableGitRepositoriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchLinkableGitRepositories not implemented")
 }
@@ -484,6 +631,33 @@ func (UnimplementedDeveloperConnectServer) FetchGitHubInstallations(context.Cont
 }
 func (UnimplementedDeveloperConnectServer) FetchGitRefs(context.Context, *FetchGitRefsRequest) (*FetchGitRefsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchGitRefs not implemented")
+}
+func (UnimplementedDeveloperConnectServer) DiffGitRepositoryLinkCommit(context.Context, *DiffGitRepositoryLinkCommitRequest) (*DiffGitRepositoryLinkCommitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DiffGitRepositoryLinkCommit not implemented")
+}
+func (UnimplementedDeveloperConnectServer) FetchGitRepositoryLinkCommit(context.Context, *FetchGitRepositoryLinkCommitRequest) (*FetchGitRepositoryLinkCommitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchGitRepositoryLinkCommit not implemented")
+}
+func (UnimplementedDeveloperConnectServer) FetchGitRepositoryLinkCommitList(context.Context, *FetchGitRepositoryLinkCommitListRequest) (*FetchGitRepositoryLinkCommitListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchGitRepositoryLinkCommitList not implemented")
+}
+func (UnimplementedDeveloperConnectServer) FetchGitRepositoryLinkFileBlame(context.Context, *FetchGitRepositoryLinkFileBlameRequest) (*FetchGitRepositoryLinkFileBlameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchGitRepositoryLinkFileBlame not implemented")
+}
+func (UnimplementedDeveloperConnectServer) FetchGitRepositoryLinkPullRequest(context.Context, *FetchGitRepositoryLinkPullRequestRequest) (*PullRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchGitRepositoryLinkPullRequest not implemented")
+}
+func (UnimplementedDeveloperConnectServer) AddGitRepositoryLinkPullRequestComment(context.Context, *AddGitRepositoryLinkPullRequestCommentRequest) (*PullRequestComment, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddGitRepositoryLinkPullRequestComment not implemented")
+}
+func (UnimplementedDeveloperConnectServer) AddGitRepositoryLinkPullRequestReviewComment(context.Context, *AddGitRepositoryLinkPullRequestReviewCommentRequest) (*PullRequestReviewComment, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddGitRepositoryLinkPullRequestReviewComment not implemented")
+}
+func (UnimplementedDeveloperConnectServer) ModifyGitRepositoryLinkPullRequest(context.Context, *ModifyGitRepositoryLinkPullRequestRequest) (*PullRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ModifyGitRepositoryLinkPullRequest not implemented")
+}
+func (UnimplementedDeveloperConnectServer) FetchGitRepositoryLinkPullRequestList(context.Context, *FetchGitRepositoryLinkPullRequestListRequest) (*FetchGitRepositoryLinkPullRequestListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchGitRepositoryLinkPullRequestList not implemented")
 }
 func (UnimplementedDeveloperConnectServer) ListAccountConnectors(context.Context, *ListAccountConnectorsRequest) (*ListAccountConnectorsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAccountConnectors not implemented")
@@ -731,6 +905,24 @@ func _DeveloperConnect_FetchReadToken_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DeveloperConnect_OpenGitRepositoryLinkPullRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OpenGitRepositoryLinkPullRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).OpenGitRepositoryLinkPullRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_OpenGitRepositoryLinkPullRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).OpenGitRepositoryLinkPullRequest(ctx, req.(*OpenGitRepositoryLinkPullRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DeveloperConnect_FetchLinkableGitRepositories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FetchLinkableGitRepositoriesRequest)
 	if err := dec(in); err != nil {
@@ -781,6 +973,168 @@ func _DeveloperConnect_FetchGitRefs_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DeveloperConnectServer).FetchGitRefs(ctx, req.(*FetchGitRefsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_DiffGitRepositoryLinkCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DiffGitRepositoryLinkCommitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).DiffGitRepositoryLinkCommit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_DiffGitRepositoryLinkCommit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).DiffGitRepositoryLinkCommit(ctx, req.(*DiffGitRepositoryLinkCommitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_FetchGitRepositoryLinkCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchGitRepositoryLinkCommitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkCommit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_FetchGitRepositoryLinkCommit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkCommit(ctx, req.(*FetchGitRepositoryLinkCommitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_FetchGitRepositoryLinkCommitList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchGitRepositoryLinkCommitListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkCommitList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_FetchGitRepositoryLinkCommitList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkCommitList(ctx, req.(*FetchGitRepositoryLinkCommitListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_FetchGitRepositoryLinkFileBlame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchGitRepositoryLinkFileBlameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkFileBlame(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_FetchGitRepositoryLinkFileBlame_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkFileBlame(ctx, req.(*FetchGitRepositoryLinkFileBlameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_FetchGitRepositoryLinkPullRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchGitRepositoryLinkPullRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkPullRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_FetchGitRepositoryLinkPullRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkPullRequest(ctx, req.(*FetchGitRepositoryLinkPullRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_AddGitRepositoryLinkPullRequestComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddGitRepositoryLinkPullRequestCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).AddGitRepositoryLinkPullRequestComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_AddGitRepositoryLinkPullRequestComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).AddGitRepositoryLinkPullRequestComment(ctx, req.(*AddGitRepositoryLinkPullRequestCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_AddGitRepositoryLinkPullRequestReviewComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddGitRepositoryLinkPullRequestReviewCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).AddGitRepositoryLinkPullRequestReviewComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_AddGitRepositoryLinkPullRequestReviewComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).AddGitRepositoryLinkPullRequestReviewComment(ctx, req.(*AddGitRepositoryLinkPullRequestReviewCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_ModifyGitRepositoryLinkPullRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ModifyGitRepositoryLinkPullRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).ModifyGitRepositoryLinkPullRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_ModifyGitRepositoryLinkPullRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).ModifyGitRepositoryLinkPullRequest(ctx, req.(*ModifyGitRepositoryLinkPullRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_FetchGitRepositoryLinkPullRequestList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchGitRepositoryLinkPullRequestListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkPullRequestList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_FetchGitRepositoryLinkPullRequestList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).FetchGitRepositoryLinkPullRequestList(ctx, req.(*FetchGitRepositoryLinkPullRequestListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1053,6 +1407,10 @@ var DeveloperConnect_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _DeveloperConnect_FetchReadToken_Handler,
 		},
 		{
+			MethodName: "OpenGitRepositoryLinkPullRequest",
+			Handler:    _DeveloperConnect_OpenGitRepositoryLinkPullRequest_Handler,
+		},
+		{
 			MethodName: "FetchLinkableGitRepositories",
 			Handler:    _DeveloperConnect_FetchLinkableGitRepositories_Handler,
 		},
@@ -1063,6 +1421,42 @@ var DeveloperConnect_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FetchGitRefs",
 			Handler:    _DeveloperConnect_FetchGitRefs_Handler,
+		},
+		{
+			MethodName: "DiffGitRepositoryLinkCommit",
+			Handler:    _DeveloperConnect_DiffGitRepositoryLinkCommit_Handler,
+		},
+		{
+			MethodName: "FetchGitRepositoryLinkCommit",
+			Handler:    _DeveloperConnect_FetchGitRepositoryLinkCommit_Handler,
+		},
+		{
+			MethodName: "FetchGitRepositoryLinkCommitList",
+			Handler:    _DeveloperConnect_FetchGitRepositoryLinkCommitList_Handler,
+		},
+		{
+			MethodName: "FetchGitRepositoryLinkFileBlame",
+			Handler:    _DeveloperConnect_FetchGitRepositoryLinkFileBlame_Handler,
+		},
+		{
+			MethodName: "FetchGitRepositoryLinkPullRequest",
+			Handler:    _DeveloperConnect_FetchGitRepositoryLinkPullRequest_Handler,
+		},
+		{
+			MethodName: "AddGitRepositoryLinkPullRequestComment",
+			Handler:    _DeveloperConnect_AddGitRepositoryLinkPullRequestComment_Handler,
+		},
+		{
+			MethodName: "AddGitRepositoryLinkPullRequestReviewComment",
+			Handler:    _DeveloperConnect_AddGitRepositoryLinkPullRequestReviewComment_Handler,
+		},
+		{
+			MethodName: "ModifyGitRepositoryLinkPullRequest",
+			Handler:    _DeveloperConnect_ModifyGitRepositoryLinkPullRequest_Handler,
+		},
+		{
+			MethodName: "FetchGitRepositoryLinkPullRequestList",
+			Handler:    _DeveloperConnect_FetchGitRepositoryLinkPullRequestList_Handler,
 		},
 		{
 			MethodName: "ListAccountConnectors",

@@ -616,6 +616,147 @@ nextTest:
 	}
 }
 
+type testSliceReceiver struct {
+	prs []*sppb.PartialResultSet
+}
+
+func (r *testSliceReceiver) Recv() (*sppb.PartialResultSet, error) {
+	if len(r.prs) == 0 {
+		return nil, io.EOF
+	}
+	p := r.prs[0]
+	r.prs = r.prs[1:]
+	return p, nil
+}
+
+func (r *testSliceReceiver) Context() context.Context {
+	return context.Background()
+}
+
+func TestPartialResultSetDecoder_MissingRowType(t *testing.T) {
+	t.Run("metadata without RowType and empty values", func(t *testing.T) {
+		p := &partialResultSetDecoder{}
+		prs := &sppb.PartialResultSet{
+			Metadata: &sppb.ResultSetMetadata{
+				Transaction: &sppb.Transaction{
+					Id:            transactionID{1, 2, 3},
+					ReadTimestamp: timestampProto(trxTs),
+				},
+			},
+		}
+		rows, md, err := p.add(prs)
+		if err != nil {
+			t.Fatalf("p.add() unexpected error: %v", err)
+		}
+		if len(rows) != 0 {
+			t.Fatalf("p.add() returned %d rows, want 0", len(rows))
+		}
+		if md != prs.Metadata {
+			t.Fatalf("p.add() metadata = %v, want %v", md, prs.Metadata)
+		}
+		if !testEqual(p.ts, trxTs) {
+			t.Fatalf("p.ts = %v, want %v", p.ts, trxTs)
+		}
+		if !p.done() {
+			t.Fatalf("p.done() = false, want true")
+		}
+	})
+
+	for _, tc := range []struct {
+		name string
+		prs  *sppb.PartialResultSet
+	}{
+		{
+			name: "metadata with nil RowType and non-empty values",
+			prs: &sppb.PartialResultSet{
+				Metadata: &sppb.ResultSetMetadata{},
+				Values: []*proto3.Value{
+					{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
+				},
+			},
+		},
+		{
+			name: "nil metadata and non-empty values",
+			prs: &sppb.PartialResultSet{
+				Values: []*proto3.Value{
+					{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
+				},
+			},
+		},
+		{
+			name: "metadata with empty RowType.Fields and non-empty values",
+			prs: &sppb.PartialResultSet{
+				Metadata: &sppb.ResultSetMetadata{
+					RowType: &sppb.StructType{},
+				},
+				Values: []*proto3.Value{
+					{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
+				},
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			p := &partialResultSetDecoder{}
+			rows, md, err := p.add(tc.prs)
+			if g, w := ErrCode(err), codes.Internal; g != w {
+				t.Fatalf("p.add() error code = %v, want %v (err = %v)", g, w, err)
+			}
+			if len(rows) != 0 {
+				t.Fatalf("p.add() returned %d rows, want 0", len(rows))
+			}
+			if md != tc.prs.Metadata {
+				t.Fatalf("p.add() metadata = %v, want %v", md, tc.prs.Metadata)
+			}
+			if !p.done() {
+				t.Fatalf("p.done() = false, want true")
+			}
+		})
+	}
+
+	t.Run("RowIterator sticky error and metadata preservation on missing RowType", func(t *testing.T) {
+		wantMeta := &sppb.ResultSetMetadata{
+			Transaction: &sppb.Transaction{
+				Id:            transactionID{1, 2, 3},
+				ReadTimestamp: timestampProto(trxTs),
+			},
+		}
+		recv := &testSliceReceiver{
+			prs: []*sppb.PartialResultSet{
+				{Metadata: wantMeta},
+				{Values: []*proto3.Value{{Kind: &proto3.Value_StringValue{StringValue: "foo"}}}},
+			},
+		}
+		var gotTs time.Time
+		iter := stream(
+			context.Background(),
+			nil,
+			&builtinMetricsTracerFactory{},
+			func(context.Context, []byte, ...gax.CallOption) (streamingReceiver, error) {
+				return recv, nil
+			},
+			func(ts time.Time) { gotTs = ts },
+			func(error) {},
+			&grpcSpannerClient{nthRequest: new(atomic.Uint32)},
+		)
+		defer iter.Stop()
+
+		_, err1 := iter.Next()
+		if g, w := ErrCode(err1), codes.Internal; g != w {
+			t.Fatalf("first Next() error code = %v, want %v (err = %v)", g, w, err1)
+		}
+		if iter.Metadata != wantMeta {
+			t.Fatalf("iter.Metadata = %v, want %v", iter.Metadata, wantMeta)
+		}
+		if !testEqual(gotTs, trxTs) {
+			t.Fatalf("gotTs = %v, want %v", gotTs, trxTs)
+		}
+		_, err2 := iter.Next()
+		if err2 != err1 {
+			t.Fatalf("second Next() error = %v, want sticky %v", err2, err1)
+		}
+	})
+}
+
 const (
 	// max number of PartialResultSets that will be buffered in tests.
 	maxBuffers = 16

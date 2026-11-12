@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -127,8 +127,10 @@ type IdentityMappingEntry struct {
 	// Required. Identity outside the customer identity provider.
 	// The length limit of external identity will be of 100 characters.
 	ExternalIdentity string `protobuf:"bytes,1,opt,name=external_identity,json=externalIdentity,proto3" json:"external_identity,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional. The name of the external identity.
+	ExternalIdentityName string `protobuf:"bytes,4,opt,name=external_identity_name,json=externalIdentityName,proto3" json:"external_identity_name,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *IdentityMappingEntry) Reset() {
@@ -193,6 +195,13 @@ func (x *IdentityMappingEntry) GetExternalIdentity() string {
 	return ""
 }
 
+func (x *IdentityMappingEntry) GetExternalIdentityName() string {
+	if x != nil {
+		return x.ExternalIdentityName
+	}
+	return ""
+}
+
 type isIdentityMappingEntry_IdentityProviderId interface {
 	isIdentityMappingEntry_IdentityProviderId()
 }
@@ -230,11 +239,12 @@ const file_google_cloud_discoveryengine_v1_identity_mapping_store_proto_rawDesc 
 	"kmsKeyName\x12R\n" +
 	"\vcmek_config\x18\x04 \x01(\v2+.google.cloud.discoveryengine.v1.CmekConfigB\x04\xe2A\x01\x03R\n" +
 	"cmekConfig:\x91\x01\xeaA\x8d\x01\n" +
-	"3discoveryengine.googleapis.com/IdentityMappingStore\x12Vprojects/{project}/locations/{location}/identityMappingStores/{identity_mapping_store}\"\x99\x01\n" +
+	"3discoveryengine.googleapis.com/IdentityMappingStore\x12Vprojects/{project}/locations/{location}/identityMappingStores/{identity_mapping_store}\"\xd5\x01\n" +
 	"\x14IdentityMappingEntry\x12\x19\n" +
 	"\auser_id\x18\x02 \x01(\tH\x00R\x06userId\x12\x1b\n" +
 	"\bgroup_id\x18\x03 \x01(\tH\x00R\agroupId\x121\n" +
-	"\x11external_identity\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x10externalIdentityB\x16\n" +
+	"\x11external_identity\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x10externalIdentity\x12:\n" +
+	"\x16external_identity_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x14externalIdentityNameB\x16\n" +
 	"\x14identity_provider_idB\x8c\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x19IdentityMappingStoreProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 

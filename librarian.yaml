@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.50.0
+version: v0.52.0
 repo: googleapis/google-cloud-go
 sources:
   discovery:
     commit: 1c6496fb0cf9fa04a35e24e8af871c58298ae37e
     sha256: c3cd1ca564a28485970bdf348cac9bcde65d45792a5c2df1c179654d3ad8b877
   googleapis:
-    commit: d4dd5e80f3e941043abe09572495dde9601b9a4e
-    sha256: 476d1cc1bdbd3d23781a73a02dbd6ca4687108536a308ddad84786e794150b3a
+    commit: 5adfa535e19786ded0e87ab1c4cf2bece46741bc
+    sha256: 0f5d946f0d20da47c4e05de6feb76497bbabaa16d9e0f2e346171ec5229ad496
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-      version: v0.65.1
+      version: v0.66.1
     - name: github.com/planetscale/vtprotobuf/cmd/protoc-gen-go-vtproto
       version: v0.6.1-0.20240319094008-0393e58bdf10
     - name: golang.org/x/tools/cmd/goimports
@@ -64,7 +64,7 @@ libraries:
       - path: google/cloud/agentidentity/v1beta
     copyright_year: "2026"
   - name: agentplatform
-    version: 0.22.1
+    version: 0.23.0
     skip_generate: true
     skip_release: true
   - name: agentregistry
@@ -193,11 +193,11 @@ libraries:
       - path: google/cloud/assuredworkloads/v1
       - path: google/cloud/assuredworkloads/v1beta1
   - name: auditmanager
-    version: 1.6.1
+    version: 1.7.0
     apis:
       - path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.24.2
+    version: 0.24.4
     keep:
       - README.md
       - internal/version.go
@@ -221,7 +221,7 @@ libraries:
           proto_only: true
     copyright_year: "2026"
   - name: backupdr
-    version: 1.19.1
+    version: 1.20.0
     apis:
       - path: google/cloud/backupdr/v1
       - path: google/cloud/backupdr/v1beta
@@ -251,7 +251,7 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.86.1
+    version: 1.86.2
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -423,7 +423,7 @@ libraries:
     apis:
       - path: google/cloud/certificatemanager/v1
   - name: ces
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/cloud/ces/v1
       - path: google/cloud/ces/v1beta
@@ -440,7 +440,7 @@ libraries:
     apis:
       - path: google/cloud/chronicle/v1
   - name: cloudbuild
-    version: 1.36.1
+    version: 1.37.0
     apis:
       - path: google/devtools/cloudbuild/v2
         go:
@@ -510,7 +510,7 @@ libraries:
       - path: google/cloud/commerceproducer/v1beta
     copyright_year: "2026"
   - name: compute
-    version: 1.74.1
+    version: 1.75.0
     preview:
       version: 1.75.0-preview.1
       apis:
@@ -590,7 +590,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: dataform
-    version: 1.8.1
+    version: 1.9.0
     apis:
       - path: google/cloud/dataform/v1
       - path: google/cloud/dataform/v1beta1
@@ -603,13 +603,13 @@ libraries:
     apis:
       - path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 1.8.1
+    version: 1.9.0
     apis:
       - path: google/ads/datamanager/v1
         go:
           import_path: datamanager/apiv1
   - name: dataplex
-    version: 1.38.1
+    version: 1.39.0
     apis:
       - path: google/cloud/dataplex/v1
   - name: dataproc
@@ -656,7 +656,7 @@ libraries:
       - path: google/cloud/designcenter/v1
     copyright_year: "2026"
   - name: developerconnect
-    version: 1.3.1
+    version: 1.4.0
     apis:
       - path: google/cloud/developerconnect/v1
   - name: developerknowledge
@@ -678,7 +678,7 @@ libraries:
       - path: google/cloud/dialogflow/cx/v3beta1
       - path: google/cloud/dialogflow/v2beta1
   - name: discoveryengine
-    version: 1.36.1
+    version: 1.38.0
     apis:
       - path: google/cloud/discoveryengine/v1
       - path: google/cloud/discoveryengine/v1beta
@@ -775,7 +775,7 @@ libraries:
       - path: google/cloud/functions/v1
       - path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.8.0
+    version: 1.9.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
@@ -810,7 +810,7 @@ libraries:
     apis:
       - path: google/cloud/gsuiteaddons/v1
   - name: hypercomputecluster
-    version: 1.3.1
+    version: 1.4.0
     apis:
       - path: google/cloud/hypercomputecluster/v1
       - path: google/cloud/hypercomputecluster/v1beta
@@ -862,7 +862,7 @@ libraries:
     apis:
       - path: google/cloud/iot/v1
   - name: kms
-    version: 1.36.1
+    version: 1.37.0
     apis:
       - path: google/cloud/kms/v1
         go:
@@ -904,7 +904,7 @@ libraries:
     go:
       nested_module: logadmin
   - name: longrunning
-    version: 1.4.1
+    version: 1.5.0
     apis:
       - path: google/longrunning
         go:
@@ -931,7 +931,7 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.44.1
+    version: 1.45.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -963,7 +963,7 @@ libraries:
       - path: google/cloud/memcache/v1
       - path: google/cloud/memcache/v1beta2
   - name: memorystore
-    version: 1.7.0
+    version: 1.9.0
     apis:
       - path: google/cloud/memorystore/v1
       - path: google/cloud/memorystore/v1beta
@@ -978,7 +978,7 @@ libraries:
     apis:
       - path: google/cloud/migrationcenter/v1
   - name: modelarmor
-    version: 1.5.0
+    version: 1.6.0
     apis:
       - path: google/cloud/modelarmor/v1
       - path: google/cloud/modelarmor/v1beta
@@ -1012,7 +1012,7 @@ libraries:
       - path: google/cloud/networkconnectivity/v1beta
       - path: google/cloud/networkconnectivity/v1alpha1
   - name: networkmanagement
-    version: 1.32.1
+    version: 1.34.0
     apis:
       - path: google/cloud/networkmanagement/v1
   - name: networksecurity
@@ -1124,7 +1124,7 @@ libraries:
       - README.md
       - internal/version.go
   - name: pubsub
-    version: 1.51.1
+    version: 1.52.0
     keep:
       - README.md
       - internal/version.go
@@ -1132,7 +1132,7 @@ libraries:
     go:
       nested_module: v2
   - name: pubsub/v2
-    version: 2.8.0
+    version: 2.9.0
     apis:
       - path: google/pubsub/v1
         go:
@@ -1218,14 +1218,15 @@ libraries:
     output: .
     skip_release: true
   - name: run
-    version: 1.24.1
+    version: 1.25.0
     apis:
       - path: google/cloud/run/v2
     keep:
       - apiv2/locations_client.go
   - name: saasplatform
-    version: 0.12.1
+    version: 0.13.0
     apis:
+      - path: google/cloud/saasplatform/saasservicemgmt/v1
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
   - name: scheduler
     version: 1.18.1
@@ -1233,7 +1234,7 @@ libraries:
       - path: google/cloud/scheduler/v1
       - path: google/cloud/scheduler/v1beta1
   - name: secretmanager
-    version: 1.23.1
+    version: 1.24.0
     apis:
       - path: google/cloud/secretmanager/v1
         go:
@@ -1320,19 +1321,6 @@ libraries:
       - path: google/shopping/merchant/inventories/v1
       - path: google/shopping/merchant/loyaltycustomers/v1
       - path: google/shopping/merchant/promotions/v1
-      - path: google/shopping/merchant/ordertracking/v1beta
-      - path: google/shopping/merchant/reviews/v1beta
-      - path: google/shopping/merchant/quota/v1beta
-      - path: google/shopping/merchant/promotions/v1beta
-      - path: google/shopping/merchant/inventories/v1beta
-      - path: google/shopping/merchant/reports/v1beta
-      - path: google/shopping/merchant/products/v1beta
-      - path: google/shopping/merchant/accounts/v1beta
-      - path: google/shopping/merchant/lfp/v1beta
-      - path: google/shopping/merchant/datasources/v1beta
-      - path: google/shopping/merchant/conversions/v1beta
-      - path: google/shopping/merchant/notifications/v1beta
-      - path: google/shopping/merchant/issueresolution/v1beta
       - path: google/shopping/merchant/productstudio/v1alpha
       - path: google/shopping/type
         go:
@@ -1383,7 +1371,7 @@ libraries:
       - path: google/cloud/speech/v1
       - path: google/cloud/speech/v1p1beta1
   - name: sql
-    version: 0.5.0
+    version: 0.7.0
     apis:
       - path: google/cloud/sql/v1
       - path: google/cloud/sql/v1beta4
@@ -1465,7 +1453,7 @@ libraries:
         go:
           proto_package: google.cloud.translation.v3
   - name: vectorsearch
-    version: 1.6.1
+    version: 1.7.0
     apis:
       - path: google/cloud/vectorsearch/v1
       - path: google/cloud/vectorsearch/v1beta

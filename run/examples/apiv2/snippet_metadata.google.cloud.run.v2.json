@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/run/apiv2",
-    "version": "1.24.1"
+    "version": "1.25.0"
   },
   "snippets": [
     {
@@ -685,7 +685,7 @@
         "resultType": "DeleteInstanceOperation",
         "shortName": "DeleteInstance"
       },
-      "description": "DeleteInstance deletes a Instance",
+      "description": "DeleteInstance deletes an Instance",
       "file": "InstancesClient/DeleteInstance/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -750,6 +750,52 @@
           "fullName": "google.cloud.run.v2.InstancesClient",
           "shortName": "InstancesClient"
         },
+        "fullName": "google.cloud.run.v2.InstancesClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.run.v2.Instances.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.run.v2.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the IAM Access Control policy currently in effect for the given\nInstance. This result does not include any inherited policies.",
+      "file": "InstancesClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "run_v2_generated_Instances_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "run GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.run.v2.InstancesClient",
+          "shortName": "InstancesClient"
+        },
         "fullName": "google.cloud.run.v2.InstancesClient.GetInstance",
         "method": {
           "fullName": "google.cloud.run.v2.Instances.GetInstance",
@@ -776,7 +822,7 @@
         "resultType": "*runpb.Instance",
         "shortName": "GetInstance"
       },
-      "description": "GetInstance gets a Instance",
+      "description": "GetInstance gets an Instance",
       "file": "InstancesClient/GetInstance/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -934,6 +980,52 @@
           "fullName": "google.cloud.run.v2.InstancesClient",
           "shortName": "InstancesClient"
         },
+        "fullName": "google.cloud.run.v2.InstancesClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.run.v2.Instances.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.run.v2.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the IAM Access control policy for the specified Instance. Overwrites\nany existing policy.",
+      "file": "InstancesClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "run_v2_generated_Instances_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "run SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.run.v2.InstancesClient",
+          "shortName": "InstancesClient"
+        },
         "fullName": "google.cloud.run.v2.InstancesClient.StartInstance",
         "method": {
           "fullName": "google.cloud.run.v2.Instances.StartInstance",
@@ -1019,6 +1111,98 @@
         }
       ],
       "title": "run StopInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.run.v2.InstancesClient",
+          "shortName": "InstancesClient"
+        },
+        "fullName": "google.cloud.run.v2.InstancesClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.cloud.run.v2.Instances.TestIamPermissions",
+          "service": {
+            "fullName": "google.cloud.run.v2.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified Instance.\n\nThere are no permissions required for making this API call.",
+      "file": "InstancesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "run_v2_generated_Instances_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "run TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.run.v2.InstancesClient",
+          "shortName": "InstancesClient"
+        },
+        "fullName": "google.cloud.run.v2.InstancesClient.UpdateInstance",
+        "method": {
+          "fullName": "google.cloud.run.v2.Instances.UpdateInstance",
+          "service": {
+            "fullName": "google.cloud.run.v2.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "UpdateInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "runpb.UpdateInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateInstanceOperation",
+        "shortName": "UpdateInstance"
+      },
+      "description": "UpdateInstance updates an Instance.",
+      "file": "InstancesClient/UpdateInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "run_v2_generated_Instances_UpdateInstance_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "run UpdateInstance Sample"
     },
     {
       "clientMethod": {
@@ -2526,6 +2710,235 @@
       "language": "GO",
       "origin": "API_DEFINITION",
       "regionTag": "run_v2_generated_Services_WaitOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "run WaitOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.run.v2.SourceUploadClient",
+          "shortName": "SourceUploadClient"
+        },
+        "fullName": "google.cloud.run.v2.SourceUploadClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "SourceUploadClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "run_v2_generated_SourceUpload_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "run DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.run.v2.SourceUploadClient",
+          "shortName": "SourceUploadClient"
+        },
+        "fullName": "google.cloud.run.v2.SourceUploadClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SourceUploadClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "run_v2_generated_SourceUpload_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "run GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.run.v2.SourceUploadClient",
+          "shortName": "SourceUploadClient"
+        },
+        "fullName": "google.cloud.run.v2.SourceUploadClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SourceUploadClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "run_v2_generated_SourceUpload_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "run ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.run.v2.SourceUploadClient",
+          "shortName": "SourceUploadClient"
+        },
+        "fullName": "google.cloud.run.v2.SourceUploadClient.UploadSource",
+        "method": {
+          "fullName": "google.cloud.run.v2.SourceUpload.UploadSource",
+          "service": {
+            "fullName": "google.cloud.run.v2.SourceUpload",
+            "shortName": "SourceUpload"
+          },
+          "shortName": "UploadSource"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "runpb.UploadSourceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*runpb.UploadSourceResponse",
+        "shortName": "UploadSource"
+      },
+      "description": "UploadSource uploads a source archive to a Google Cloud Storage bucket through Cloud\nRun. The uploaded source object should be used for Cloud Run resource\ndeployments. User is responsible for managing the lifecycle of the uploaded\nobject.\nIf uploading through the Cloud Run API to Cloud Storage is not desired, you\ncan use the IAM Deny Policy to deny the `run.locations.uploadSource`\npermission for all principals.",
+      "file": "SourceUploadClient/UploadSource/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "run_v2_generated_SourceUpload_UploadSource_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "run UploadSource Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.run.v2.SourceUploadClient",
+          "shortName": "SourceUploadClient"
+        },
+        "fullName": "google.cloud.run.v2.SourceUploadClient.WaitOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "WaitOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.WaitOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "WaitOperation"
+      },
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "SourceUploadClient/WaitOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "run_v2_generated_SourceUpload_WaitOperation_sync",
       "segments": [
         {
           "end": 55,

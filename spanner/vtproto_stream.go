@@ -656,6 +656,9 @@ func (s *vtStream) next(r *RowIterator) (*Row, error) {
 // are added.
 func (s *vtStream) nextRow(d *partialResultSetDecoder) (*Row, error) {
 	p := s.pending
+	if len(p.values) > 0 && len(d.row.fields) == 0 {
+		return nil, errMissingRowType()
+	}
 	for s.pendingIndex < len(p.values) {
 		v := p.values[s.pendingIndex]
 		last := s.pendingIndex == len(p.values)-1
