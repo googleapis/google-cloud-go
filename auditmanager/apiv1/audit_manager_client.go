@@ -92,7 +92,18 @@ func defaultCallOptions() *CallOptions {
 		UpdateAuditSchedule: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetAuditSchedule: []gax.CallOption{},
+		GetAuditSchedule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListAuditSchedules: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -191,7 +202,17 @@ func defaultRESTCallOptions() *CallOptions {
 		UpdateAuditSchedule: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetAuditSchedule: []gax.CallOption{},
+		GetAuditSchedule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListAuditSchedules: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {

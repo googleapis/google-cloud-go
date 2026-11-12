@@ -26,6 +26,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/compute/metadata"
+	grpccreds "google.golang.org/grpc/credentials"
 )
 
 func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
@@ -277,6 +278,134 @@ func TestConfigureDirectPath_Interconnect(t *testing.T) {
 			}
 			if len(grpcOpts) < 1 {
 				t.Errorf("configureDirectPath(%q) len(grpcOpts) = %d, want >= 1 (credentials bundle)", tc.endpoint, len(grpcOpts))
+			}
+		})
+	}
+}
+
+// spyTP records whether Token was called. It returns tok, or an error if tok is
+// nil.
+type spyTP struct {
+	tok    *auth.Token
+	called bool
+}
+
+func (tp *spyTP) Token(context.Context) (*auth.Token, error) {
+	tp.called = true
+	if tp.tok == nil {
+		return nil, errors.New("no token configured")
+	}
+	return tp.tok, nil
+}
+
+// tlsCredsType is the dynamic type of plain TLS transport credentials. The
+// Google Default transport credentials also report "tls" from Info() while
+// selecting ALTS per cluster during the handshake, so tests compare types.
+var tlsCredsType = reflect.TypeOf(grpccreds.NewTLS(nil))
+
+// TestDirectPathCredentialsBundle verifies the credentials bundle selected for
+// a DirectPath channel. Over Interconnect the bundle uses plain TLS transport
+// credentials and the given per-RPC credentials, without probing the token
+// source for ALTS hard-bound tokens. Otherwise the Google Default bundle is
+// used, adding ALTS hard-bound per-RPC credentials when the token comes from
+// the GCE metadata server's default service account.
+func TestDirectPathCredentialsBundle(t *testing.T) {
+	perRPCCreds := &grpcCredentialsProvider{endpoint: "storage.googleapis.com:443"}
+	computeToken := token(map[string]interface{}{
+		"auth.google.tokenSource":    "compute-metadata",
+		"auth.google.serviceAccount": "default",
+	})
+	for _, tc := range []struct {
+		name         string
+		interconnect bool
+		tok          *auth.Token
+		// wantTokenCalled is whether the token source is probed to decide on
+		// ALTS hard-bound tokens.
+		wantTokenCalled bool
+		// wantALTSPerRPCCreds is whether gRPC wraps perRPCCreds together with
+		// the ALTS hard-bound per-RPC credentials.
+		wantALTSPerRPCCreds bool
+	}{
+		{
+			name:            "interconnect uses TLS without probing the GCE token source",
+			interconnect:    true,
+			tok:             computeToken,
+			wantTokenCalled: false,
+		},
+		{
+			name:            "directpath without a GCE token omits ALTS hard-bound credentials",
+			interconnect:    false,
+			wantTokenCalled: true,
+		},
+		{
+			name:                "directpath with a GCE token adds ALTS hard-bound credentials",
+			interconnect:        false,
+			tok:                 computeToken,
+			wantTokenCalled:     true,
+			wantALTSPerRPCCreds: true,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			tp := &spyTP{tok: tc.tok}
+			creds := auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: tp})
+			opts := &Options{
+				// Resolves the ALTS hard-bound credentials from a local file,
+				// so the test does not reach the metadata server.
+				DetectOpts: &credentials.DetectOptions{
+					CredentialsFile: "../internal/testdata/sa.json",
+				},
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: tc.interconnect,
+					AllowHardBoundTokens:                []string{"ALTS"},
+				},
+			}
+			bundle, err := directPathCredentialsBundle(tc.interconnect, opts, "storage.googleapis.com:443", creds, perRPCCreds)
+			if err != nil {
+				t.Fatalf("directPathCredentialsBundle(interconnect=%v) unexpected error: %v", tc.interconnect, err)
+			}
+			if tp.called != tc.wantTokenCalled {
+				t.Errorf("directPathCredentialsBundle(interconnect=%v) called Token() = %v, want %v", tc.interconnect, tp.called, tc.wantTokenCalled)
+			}
+			if _, ok := bundle.(*interconnectCredentials); ok != tc.interconnect {
+				t.Errorf("directPathCredentialsBundle(interconnect=%v) = %T, want *interconnectCredentials=%v", tc.interconnect, bundle, tc.interconnect)
+			}
+			if got := reflect.TypeOf(bundle.TransportCredentials()); (got == tlsCredsType) != tc.interconnect {
+				t.Errorf("directPathCredentialsBundle(interconnect=%v).TransportCredentials() type = %v, want plain TLS (%v)=%v", tc.interconnect, got, tlsCredsType, tc.interconnect)
+			}
+			gotPerRPC := bundle.PerRPCCredentials()
+			if gotALTS := gotPerRPC != grpccreds.PerRPCCredentials(perRPCCreds); gotALTS != tc.wantALTSPerRPCCreds {
+				t.Errorf("directPathCredentialsBundle(interconnect=%v).PerRPCCredentials() = %T, want wrapped with ALTS hard-bound credentials=%v", tc.interconnect, gotPerRPC, tc.wantALTSPerRPCCreds)
+			}
+		})
+	}
+}
+
+// TestInterconnectCredentials_NewWithMode verifies that every bundle mode keeps
+// TLS transport credentials and the same per-RPC credentials. gRPC's RLS
+// control channel requests fallback mode and relies on the per-RPC credentials
+// attached to the bundle.
+func TestInterconnectCredentials_NewWithMode(t *testing.T) {
+	perRPCCreds := &grpcCredentialsProvider{endpoint: "storage.googleapis.com:443"}
+	bundle := newInterconnectCredentials(perRPCCreds)
+	for _, mode := range []string{"fallback", "balancer", "backend-from-balancer", "unknown"} {
+		t.Run(mode, func(t *testing.T) {
+			got, err := bundle.NewWithMode(mode)
+			if err != nil {
+				t.Fatalf("NewWithMode(%q) unexpected error: %v", mode, err)
+			}
+			if got == grpccreds.Bundle(bundle) {
+				t.Fatalf("NewWithMode(%q) returned the receiver, want a distinct copy", mode)
+			}
+			if gotType := reflect.TypeOf(got.TransportCredentials()); gotType != tlsCredsType {
+				t.Errorf("NewWithMode(%q).TransportCredentials() type = %v, want %v", mode, gotType, tlsCredsType)
+			}
+			if got.TransportCredentials() == bundle.TransportCredentials() {
+				t.Errorf("NewWithMode(%q) shares TransportCredentials with the receiver, want a clone", mode)
+			}
+			if got.PerRPCCredentials() != grpccreds.PerRPCCredentials(perRPCCreds) {
+				t.Errorf("NewWithMode(%q).PerRPCCredentials() = %v, want %v", mode, got.PerRPCCredentials(), perRPCCreds)
 			}
 		})
 	}

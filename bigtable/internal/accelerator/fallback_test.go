@@ -22,6 +22,7 @@ import (
 	"cloud.google.com/go/bigtable"
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/accelerator/adapters"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -76,7 +77,7 @@ func newClassicFallbackWithMock(mocks map[string]bigtable.TableAPI) *classicFall
 		tables[k] = v
 	}
 	return &classicFallback{
-		c:           nil,
+		instance:    testInstance,
 		scopePrefix: scopePrefixFor(testProject, testInstance),
 		mu:          sync.Mutex{},
 		tables:      tables,
@@ -86,7 +87,7 @@ func newClassicFallbackWithMock(mocks map[string]bigtable.TableAPI) *classicFall
 // --- parseTableID ------------------------------------------------------------
 
 func TestParseTableID_HappyPath(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	got, err := cf.parseTableID("projects/p/instances/i/tables/T")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -97,23 +98,23 @@ func TestParseTableID_HappyPath(t *testing.T) {
 }
 
 func TestParseTableID_WrongProject(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseTableID("projects/OTHER/instances/i/tables/T")
-	if status.Code(err) != codes.Internal {
-		t.Errorf("got %v, want codes.Internal", err)
+	if status.Code(err) != codes.InvalidArgument {
+		t.Errorf("got %v, want codes.InvalidArgument", err)
 	}
 }
 
 func TestParseTableID_WrongInstance(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseTableID("projects/p/instances/OTHER/tables/T")
-	if status.Code(err) != codes.Internal {
-		t.Errorf("got %v, want codes.Internal", err)
+	if status.Code(err) != codes.InvalidArgument {
+		t.Errorf("got %v, want codes.InvalidArgument", err)
 	}
 }
 
 func TestParseTableID_EmptyLeaf(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseTableID("projects/p/instances/i/tables/")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)
@@ -121,7 +122,7 @@ func TestParseTableID_EmptyLeaf(t *testing.T) {
 }
 
 func TestParseTableID_LeafWithSlash(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseTableID("projects/p/instances/i/tables/T/extra")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)
@@ -131,7 +132,7 @@ func TestParseTableID_LeafWithSlash(t *testing.T) {
 // --- parseAVIDs --------------------------------------------------------------
 
 func TestParseAVIDs_HappyPath(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	tableID, viewID, err := cf.parseAVIDs("projects/p/instances/i/tables/T/authorizedViews/V")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -145,15 +146,15 @@ func TestParseAVIDs_HappyPath(t *testing.T) {
 }
 
 func TestParseAVIDs_WrongProject(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, _, err := cf.parseAVIDs("projects/OTHER/instances/i/tables/T/authorizedViews/V")
-	if status.Code(err) != codes.Internal {
-		t.Errorf("got %v, want codes.Internal", err)
+	if status.Code(err) != codes.InvalidArgument {
+		t.Errorf("got %v, want codes.InvalidArgument", err)
 	}
 }
 
 func TestParseAVIDs_MissingSegment(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, _, err := cf.parseAVIDs("projects/p/instances/i/tables/T")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)
@@ -161,7 +162,7 @@ func TestParseAVIDs_MissingSegment(t *testing.T) {
 }
 
 func TestParseAVIDs_EmptyViewID(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, _, err := cf.parseAVIDs("projects/p/instances/i/tables/T/authorizedViews/")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)
@@ -171,7 +172,7 @@ func TestParseAVIDs_EmptyViewID(t *testing.T) {
 // --- parseMVID ---------------------------------------------------------------
 
 func TestParseMVID_HappyPath(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	got, err := cf.parseMVID("projects/p/instances/i/materializedViews/MV")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -182,15 +183,15 @@ func TestParseMVID_HappyPath(t *testing.T) {
 }
 
 func TestParseMVID_WrongProject(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseMVID("projects/OTHER/instances/i/materializedViews/MV")
-	if status.Code(err) != codes.Internal {
-		t.Errorf("got %v, want codes.Internal", err)
+	if status.Code(err) != codes.InvalidArgument {
+		t.Errorf("got %v, want codes.InvalidArgument", err)
 	}
 }
 
 func TestParseMVID_EmptyLeaf(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseMVID("projects/p/instances/i/materializedViews/")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)
@@ -326,7 +327,7 @@ func TestClassicFallbackReadRow_DefaultCase_ReturnsUnimplemented(t *testing.T) {
 // --- classicFallback.Close nil guard ----------------------------------------
 
 func TestClassicFallbackClose_NilClient(t *testing.T) {
-	cf := &classicFallback{c: nil}
+	cf := &classicFallback{}
 	if err := cf.Close(); err != nil {
 		t.Errorf("Close with nil client: %v", err)
 	}
@@ -354,5 +355,163 @@ func TestClassicFallbackMutateRow_CallsApply(t *testing.T) {
 	}
 	if gotKey != "thekey" {
 		t.Errorf("Apply called with key %q, want %q", gotKey, "thekey")
+	}
+}
+
+type mockClassicClient struct {
+	table         bigtable.TableAPI
+	openTableHits int
+	lastTable     string
+	openAVHits    int
+	lastAVTable   string
+	lastAVView    string
+	openMVHits    int
+	lastMV        string
+	closeCalled   int
+}
+
+func (m *mockClassicClient) OpenTable(table string) bigtable.TableAPI {
+	m.openTableHits++
+	m.lastTable = table
+	return m.table
+}
+
+func (m *mockClassicClient) OpenAuthorizedView(table, authorizedView string) bigtable.TableAPI {
+	m.openAVHits++
+	m.lastAVTable = table
+	m.lastAVView = authorizedView
+	return m.table
+}
+
+func (m *mockClassicClient) OpenMaterializedView(materializedView string) bigtable.TableAPI {
+	m.openMVHits++
+	m.lastMV = materializedView
+	return m.table
+}
+
+func (m *mockClassicClient) Close() error {
+	m.closeCalled++
+	return nil
+}
+
+func TestClassicFallback_ProjectScoped_MultiInstanceAndAppProfile(t *testing.T) {
+	orig := newClassicClient
+	var (
+		mu      sync.Mutex
+		clients = make(map[clientKey]*mockClassicClient)
+	)
+	newClassicClient = func(
+		_ context.Context,
+		project, instance string,
+		cfg bigtable.ClientConfig,
+		_ ...option.ClientOption,
+	) (classicClient, error) {
+		mu.Lock()
+		defer mu.Unlock()
+		if project != "p" {
+			t.Errorf("newClassicClient project = %q; want p", project)
+		}
+		mc := &mockClassicClient{table: &mockTableAPI{}}
+		clients[clientKey{instance: instance, appProfile: cfg.AppProfile}] = mc
+		return mc, nil
+	}
+	t.Cleanup(func() { newClassicClient = orig })
+
+	cf, err := newClassicFallback(context.Background(), "p", "", "")
+	if err != nil {
+		t.Fatalf("newClassicFallback: %v", err)
+	}
+
+	// Route Table on inst-a, default app profile.
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind: adapters.ResourceTable,
+		Name: "projects/p/instances/inst-a/tables/t1",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow(inst-a, default): %v", err)
+	}
+
+	// Route Table on inst-a, prof-1 (distinct cache key and client).
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceTable,
+		Name:       "projects/p/instances/inst-a/tables/t1",
+		AppProfile: "prof-1",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow(inst-a, prof-1): %v", err)
+	}
+
+	// Route AuthorizedView on inst-b, prof-2.
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceAuthorizedView,
+		Name:       "projects/p/instances/inst-b/tables/t2/authorizedViews/av1",
+		AppProfile: "prof-2",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow(inst-b, prof-2 AV): %v", err)
+	}
+
+	// Route MaterializedView on inst-b, prof-2 (reuses inst-b/prof-2 client).
+	if _, err := cf.ReadRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceMaterializedView,
+		Name:       "projects/p/instances/inst-b/materializedViews/mv1",
+		AppProfile: "prof-2",
+	}, &v2pb.ReadRowsRequest{Rows: &v2pb.RowSet{RowKeys: [][]byte{[]byte("k")}}}); err != nil {
+		t.Fatalf("ReadRow(inst-b, prof-2 MV): %v", err)
+	}
+
+	if len(clients) != 3 {
+		t.Fatalf("expected 3 classic clients; got %d", len(clients))
+	}
+	if mc := clients[clientKey{instance: "inst-b", appProfile: "prof-2"}]; mc == nil || mc.openAVHits != 1 || mc.openMVHits != 1 {
+		t.Errorf("inst-b/prof-2 client stats: %+v", mc)
+	}
+
+	// Close cf and verify all clients are closed and subsequent calls return Unavailable.
+	if err := cf.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	for k, mc := range clients {
+		if mc.closeCalled != 1 {
+			t.Errorf("expected client %+v to be closed on cf.Close; got %d", k, mc.closeCalled)
+		}
+	}
+	err = cf.MutateRow(context.Background(), adapters.Resource{
+		Kind: adapters.ResourceTable,
+		Name: "projects/p/instances/inst-a/tables/t1",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")})
+	if status.Code(err) != codes.Unavailable {
+		t.Errorf("MutateRow after Close = %v, want Unavailable", err)
+	}
+}
+
+func TestClassicFallback_PinnedAppProfileEnforcement(t *testing.T) {
+	cf := newClassicFallbackWithMock(map[string]bigtable.TableAPI{
+		testTableName + "\x00ap": &mockTableAPI{},
+	})
+	cf.appProfile = "ap"
+
+	// Empty AppProfile uses pinned "ap".
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind: adapters.ResourceTable,
+		Name: testTableName,
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow with empty app profile: %v", err)
+	}
+
+	// Matching AppProfile "ap" succeeds.
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceTable,
+		Name:       testTableName,
+		AppProfile: "ap",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow with matching app profile: %v", err)
+	}
+
+	// Mismatched AppProfile returns InvalidArgument.
+	err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceTable,
+		Name:       testTableName,
+		AppProfile: "wrong-ap",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")})
+	if status.Code(err) != codes.InvalidArgument {
+		t.Errorf("MutateRow with mismatched app profile: got %v, want InvalidArgument", err)
 	}
 }

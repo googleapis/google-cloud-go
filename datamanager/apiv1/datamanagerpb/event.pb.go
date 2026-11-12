@@ -165,7 +165,7 @@ type Event struct {
 	// Optional. A unique identifier for a user, as defined by the advertiser.
 	UserId string `protobuf:"bytes,18,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	// Optional. A bucket of any [event
-	// parameters](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference/events)
+	// parameters](https://developers.google.com/data-manager/api/reference/analytics/recommended-events)
 	// to be included within the event that were not already specified using other
 	// structured fields.
 	AdditionalEventParameters []*EventParameter `protobuf:"bytes,19,rep,name=additional_event_parameters,json=additionalEventParameters,proto3" json:"additional_event_parameters,omitempty"`
@@ -179,6 +179,9 @@ type Event struct {
 	// Optional. A unique identifier for the user instance of an app client for
 	// this GA4 app stream.
 	AppInstanceId string `protobuf:"bytes,22,opt,name=app_instance_id,json=appInstanceId,proto3" json:"app_instance_id,omitempty"`
+	// Optional. Information gathered about the call (if any) which led to this
+	// event.
+	CallInfo      *CallInfo `protobuf:"bytes,24,opt,name=call_info,json=callInfo,proto3" json:"call_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -374,6 +377,13 @@ func (x *Event) GetAppInstanceId() string {
 	return ""
 }
 
+func (x *Event) GetCallInfo() *CallInfo {
+	if x != nil {
+		return x.CallInfo
+	}
+	return nil
+}
+
 // Identifiers and other information used to match the conversion event with
 // other online activity (such as ad clicks).
 type AdIdentifiers struct {
@@ -407,7 +417,9 @@ type AdIdentifiers struct {
 	Ppid string `protobuf:"bytes,11,opt,name=ppid,proto3" json:"ppid,omitempty"`
 	// Optional. A unique identifier for an unauthenticated user (user who is not
 	// signed-in), as defined by the publisher.
-	VisitorPpid   string `protobuf:"bytes,12,opt,name=visitor_ppid,json=visitorPpid,proto3" json:"visitor_ppid,omitempty"`
+	VisitorPpid string `protobuf:"bytes,12,opt,name=visitor_ppid,json=visitorPpid,proto3" json:"visitor_ppid,omitempty"`
+	// Optional. Google generated ID issued when user submits a lead form.
+	LeadId        string `protobuf:"bytes,13,opt,name=lead_id,json=leadId,proto3" json:"lead_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -522,6 +534,13 @@ func (x *AdIdentifiers) GetPpid() string {
 func (x *AdIdentifiers) GetVisitorPpid() string {
 	if x != nil {
 		return x.VisitorPpid
+	}
+	return ""
+}
+
+func (x *AdIdentifiers) GetLeadId() string {
+	if x != nil {
+		return x.LeadId
 	}
 	return ""
 }
@@ -746,7 +765,7 @@ var File_google_ads_datamanager_v1_event_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_event_proto_rawDesc = "" +
 	"\n" +
-	"%google/ads/datamanager/v1/event.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/cart_data.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/device_info.proto\x1a1google/ads/datamanager/v1/encrypted_user_id.proto\x1a2google/ads/datamanager/v1/experimental_field.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a/google/ads/datamanager/v1/user_properties.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf7\f\n" +
+	"%google/ads/datamanager/v1/event.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/call_info.proto\x1a)google/ads/datamanager/v1/cart_data.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/device_info.proto\x1a1google/ads/datamanager/v1/encrypted_user_id.proto\x1a2google/ads/datamanager/v1/experimental_field.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a/google/ads/datamanager/v1/user_properties.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\r\n" +
 	"\x05Event\x12;\n" +
 	"\x16destination_references\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x15destinationReferences\x12+\n" +
 	"\x0etransaction_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rtransactionId\x12I\n" +
@@ -772,9 +791,10 @@ const file_google_ads_datamanager_v1_event_proto_rawDesc = "" +
 	"\x1badditional_event_parameters\x18\x13 \x03(\v2).google.ads.datamanager.v1.EventParameterB\x04\xe2A\x01\x01R\x19additionalEventParameters\x12\\\n" +
 	"\x15third_party_user_data\x18\x14 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x04\xe2A\x01\x01R\x12thirdPartyUserData\x12U\n" +
 	"\x0eevent_location\x18\x15 \x01(\v2(.google.ads.datamanager.v1.EventLocationB\x04\xe2A\x01\x01R\reventLocation\x12,\n" +
-	"\x0fapp_instance_id\x18\x16 \x01(\tB\x04\xe2A\x01\x01R\rappInstanceIdB\x13\n" +
+	"\x0fapp_instance_id\x18\x16 \x01(\tB\x04\xe2A\x01\x01R\rappInstanceId\x12F\n" +
+	"\tcall_info\x18\x18 \x01(\v2#.google.ads.datamanager.v1.CallInfoB\x04\xe2A\x01\x01R\bcallInfoB\x13\n" +
 	"\x11_conversion_valueB\x13\n" +
-	"\x11_conversion_count\"\xbd\x04\n" +
+	"\x11_conversion_count\"\xdc\x04\n" +
 	"\rAdIdentifiers\x123\n" +
 	"\x12session_attributes\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x11sessionAttributes\x12\x1a\n" +
 	"\x05gclid\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05gclid\x12\x1c\n" +
@@ -788,7 +808,8 @@ const file_google_ads_datamanager_v1_event_proto_rawDesc = "" +
 	"\x12encrypted_user_ids\x18\n" +
 	" \x03(\v2*.google.ads.datamanager.v1.EncryptedUserIdB\x04\xe2A\x01\x01R\x10encryptedUserIds\x12\x18\n" +
 	"\x04ppid\x18\v \x01(\tB\x04\xe2A\x01\x01R\x04ppid\x12'\n" +
-	"\fvisitor_ppid\x18\f \x01(\tB\x04\xe2A\x01\x01R\vvisitorPpid\"\x8b\x01\n" +
+	"\fvisitor_ppid\x18\f \x01(\tB\x04\xe2A\x01\x01R\vvisitorPpid\x12\x1d\n" +
+	"\alead_id\x18\r \x01(\tB\x04\xe2A\x01\x01R\x06leadId\"\x8b\x01\n" +
 	"\x0eCustomVariable\x12 \n" +
 	"\bvariable\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bvariable\x12\x1a\n" +
 	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05value\x12;\n" +
@@ -843,7 +864,8 @@ var file_google_ads_datamanager_v1_event_proto_goTypes = []any{
 	(*CartData)(nil),              // 10: google.ads.datamanager.v1.CartData
 	(*ExperimentalField)(nil),     // 11: google.ads.datamanager.v1.ExperimentalField
 	(*UserProperties)(nil),        // 12: google.ads.datamanager.v1.UserProperties
-	(*EncryptedUserId)(nil),       // 13: google.ads.datamanager.v1.EncryptedUserId
+	(*CallInfo)(nil),              // 13: google.ads.datamanager.v1.CallInfo
+	(*EncryptedUserId)(nil),       // 14: google.ads.datamanager.v1.EncryptedUserId
 }
 var file_google_ads_datamanager_v1_event_proto_depIdxs = []int32{
 	6,  // 0: google.ads.datamanager.v1.Event.event_timestamp:type_name -> google.protobuf.Timestamp
@@ -860,13 +882,14 @@ var file_google_ads_datamanager_v1_event_proto_depIdxs = []int32{
 	4,  // 11: google.ads.datamanager.v1.Event.additional_event_parameters:type_name -> google.ads.datamanager.v1.EventParameter
 	7,  // 12: google.ads.datamanager.v1.Event.third_party_user_data:type_name -> google.ads.datamanager.v1.UserData
 	5,  // 13: google.ads.datamanager.v1.Event.event_location:type_name -> google.ads.datamanager.v1.EventLocation
-	9,  // 14: google.ads.datamanager.v1.AdIdentifiers.landing_page_device_info:type_name -> google.ads.datamanager.v1.DeviceInfo
-	13, // 15: google.ads.datamanager.v1.AdIdentifiers.encrypted_user_ids:type_name -> google.ads.datamanager.v1.EncryptedUserId
-	16, // [16:16] is the sub-list for method output_type
-	16, // [16:16] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	13, // 14: google.ads.datamanager.v1.Event.call_info:type_name -> google.ads.datamanager.v1.CallInfo
+	9,  // 15: google.ads.datamanager.v1.AdIdentifiers.landing_page_device_info:type_name -> google.ads.datamanager.v1.DeviceInfo
+	14, // 16: google.ads.datamanager.v1.AdIdentifiers.encrypted_user_ids:type_name -> google.ads.datamanager.v1.EncryptedUserId
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_google_ads_datamanager_v1_event_proto_init() }
@@ -874,6 +897,7 @@ func file_google_ads_datamanager_v1_event_proto_init() {
 	if File_google_ads_datamanager_v1_event_proto != nil {
 		return
 	}
+	file_google_ads_datamanager_v1_call_info_proto_init()
 	file_google_ads_datamanager_v1_cart_data_proto_init()
 	file_google_ads_datamanager_v1_consent_proto_init()
 	file_google_ads_datamanager_v1_device_info_proto_init()

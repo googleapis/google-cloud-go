@@ -622,6 +622,11 @@ type Endpoint struct {
 	// name format:
 	// projects/{project}/locations/{location}/privateConnections/{privateConnection}.
 	DmsPrivateConnection string `protobuf:"bytes,22,opt,name=dms_private_connection,json=dmsPrivateConnection,proto3" json:"dms_private_connection,omitempty"`
+	// A [Datastream Private
+	// Connection](https://docs.cloud.google.com/datastream/docs/reference/rest/v1/projects.locations.privateConnections)
+	// name format:
+	// projects/{project}/locations/{location}/privateConnections/{privateConnection}.
+	DatastreamPrivateConnection string `protobuf:"bytes,23,opt,name=datastream_private_connection,json=datastreamPrivateConnection,proto3" json:"datastream_private_connection,omitempty"`
 	// A [Cloud Function](https://cloud.google.com/functions). Applicable only to
 	// source endpoint.
 	CloudFunction *Endpoint_CloudFunctionEndpoint `protobuf:"bytes,10,opt,name=cloud_function,json=cloudFunction,proto3" json:"cloud_function,omitempty"`
@@ -778,6 +783,13 @@ func (x *Endpoint) GetGkePod() string {
 func (x *Endpoint) GetDmsPrivateConnection() string {
 	if x != nil {
 		return x.DmsPrivateConnection
+	}
+	return ""
+}
+
+func (x *Endpoint) GetDatastreamPrivateConnection() string {
+	if x != nil {
+		return x.DatastreamPrivateConnection
 	}
 	return ""
 }
@@ -1479,7 +1491,7 @@ const file_google_cloud_networkmanagement_v1_connectivity_test_proto_rawDesc = "
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:t\xeaAq\n" +
-	"1networkmanagement.googleapis.com/ConnectivityTest\x12<projects/{project}/locations/global/connectivityTests/{test}\"\x90\r\n" +
+	"1networkmanagement.googleapis.com/ConnectivityTest\x12<projects/{project}/locations/global/connectivityTests/{test}\"\xd4\r\n" +
 	"\bEndpoint\x12\x1d\n" +
 	"\n" +
 	"ip_address\x18\x01 \x01(\tR\tipAddress\x12\x12\n" +
@@ -1495,7 +1507,8 @@ const file_google_cloud_networkmanagement_v1_connectivity_test_proto_rawDesc = "
 	"\x0eredis_instance\x18\x11 \x01(\tR\rredisInstance\x12#\n" +
 	"\rredis_cluster\x18\x12 \x01(\tR\fredisCluster\x12\x17\n" +
 	"\agke_pod\x18\x15 \x01(\tR\x06gkePod\x124\n" +
-	"\x16dms_private_connection\x18\x16 \x01(\tR\x14dmsPrivateConnection\x12h\n" +
+	"\x16dms_private_connection\x18\x16 \x01(\tR\x14dmsPrivateConnection\x12B\n" +
+	"\x1ddatastream_private_connection\x18\x17 \x01(\tR\x1bdatastreamPrivateConnection\x12h\n" +
 	"\x0ecloud_function\x18\n" +
 	" \x01(\v2A.google.cloud.networkmanagement.v1.Endpoint.CloudFunctionEndpointR\rcloudFunction\x12r\n" +
 	"\x12app_engine_version\x18\v \x01(\v2D.google.cloud.networkmanagement.v1.Endpoint.AppEngineVersionEndpointR\x10appEngineVersion\x12r\n" +

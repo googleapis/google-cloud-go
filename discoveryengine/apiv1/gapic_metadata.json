@@ -5,14 +5,19 @@
   "protoPackage": "google.cloud.discoveryengine.v1",
   "libraryPackage": "cloud.google.com/go/discoveryengine/apiv1",
   "services": {
-    "AssistantService": {
+    "AclConfigService": {
       "clients": {
         "grpc": {
-          "libraryClient": "AssistantClient",
+          "libraryClient": "AclConfigClient",
           "rpcs": {
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "GetAclConfig": {
+              "methods": [
+                "GetAclConfig"
               ]
             },
             "GetOperation": {
@@ -25,9 +30,93 @@
                 "ListOperations"
               ]
             },
+            "UpdateAclConfig": {
+              "methods": [
+                "UpdateAclConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AclConfigClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetAclConfig": {
+              "methods": [
+                "GetAclConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateAclConfig": {
+              "methods": [
+                "UpdateAclConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AssistantService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AssistantClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAssistant": {
+              "methods": [
+                "CreateAssistant"
+              ]
+            },
+            "DeleteAssistant": {
+              "methods": [
+                "DeleteAssistant"
+              ]
+            },
+            "GetAssistant": {
+              "methods": [
+                "GetAssistant"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAssistants": {
+              "methods": [
+                "ListAssistants"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "StreamAssist": {
               "methods": [
                 "StreamAssist"
+              ]
+            },
+            "UpdateAssistant": {
+              "methods": [
+                "UpdateAssistant"
               ]
             }
           }
@@ -40,9 +129,29 @@
                 "CancelOperation"
               ]
             },
+            "CreateAssistant": {
+              "methods": [
+                "CreateAssistant"
+              ]
+            },
+            "DeleteAssistant": {
+              "methods": [
+                "DeleteAssistant"
+              ]
+            },
+            "GetAssistant": {
+              "methods": [
+                "GetAssistant"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListAssistants": {
+              "methods": [
+                "ListAssistants"
               ]
             },
             "ListOperations": {
@@ -53,6 +162,11 @@
             "StreamAssist": {
               "methods": [
                 "StreamAssist"
+              ]
+            },
+            "UpdateAssistant": {
+              "methods": [
+                "UpdateAssistant"
               ]
             }
           }
@@ -143,11 +257,90 @@
         }
       }
     },
+    "CollectionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CollectionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteCollection": {
+              "methods": [
+                "DeleteCollection"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CollectionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteCollection": {
+              "methods": [
+                "DeleteCollection"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CompletionService": {
       "clients": {
         "grpc": {
           "libraryClient": "CompletionClient",
           "rpcs": {
+            "AdvancedCompleteQuery": {
+              "methods": [
+                "AdvancedCompleteQuery"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -193,6 +386,11 @@
         "rest": {
           "libraryClient": "CompletionClient",
           "rpcs": {
+            "AdvancedCompleteQuery": {
+              "methods": [
+                "AdvancedCompleteQuery"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -515,6 +713,80 @@
         }
       }
     },
+    "DataConnectorService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataConnectorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetDataConnector": {
+              "methods": [
+                "GetDataConnector"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetUpDataConnector": {
+              "methods": [
+                "SetUpDataConnector"
+              ]
+            },
+            "UpdateDataConnector": {
+              "methods": [
+                "UpdateDataConnector"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataConnectorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetDataConnector": {
+              "methods": [
+                "GetDataConnector"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetUpDataConnector": {
+              "methods": [
+                "SetUpDataConnector"
+              ]
+            },
+            "UpdateDataConnector": {
+              "methods": [
+                "UpdateDataConnector"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DataStoreService": {
       "clients": {
         "grpc": {
@@ -540,6 +812,11 @@
                 "GetDataStore"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -553,6 +830,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "UpdateDataStore": {
@@ -585,6 +867,11 @@
                 "GetDataStore"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -598,6 +885,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "UpdateDataStore": {
@@ -758,6 +1050,11 @@
                 "GetEngine"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -771,6 +1068,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "UpdateEngine": {
@@ -803,6 +1105,11 @@
                 "GetEngine"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -816,6 +1123,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "UpdateEngine": {
@@ -1009,6 +1321,110 @@
             "PurgeIdentityMappings": {
               "methods": [
                 "PurgeIdentityMappings"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LicenseConfigService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LicenseConfigClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateLicenseConfig": {
+              "methods": [
+                "CreateLicenseConfig"
+              ]
+            },
+            "DistributeLicenseConfig": {
+              "methods": [
+                "DistributeLicenseConfig"
+              ]
+            },
+            "GetLicenseConfig": {
+              "methods": [
+                "GetLicenseConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLicenseConfigs": {
+              "methods": [
+                "ListLicenseConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RetractLicenseConfig": {
+              "methods": [
+                "RetractLicenseConfig"
+              ]
+            },
+            "UpdateLicenseConfig": {
+              "methods": [
+                "UpdateLicenseConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LicenseConfigClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateLicenseConfig": {
+              "methods": [
+                "CreateLicenseConfig"
+              ]
+            },
+            "DistributeLicenseConfig": {
+              "methods": [
+                "DistributeLicenseConfig"
+              ]
+            },
+            "GetLicenseConfig": {
+              "methods": [
+                "GetLicenseConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLicenseConfigs": {
+              "methods": [
+                "ListLicenseConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RetractLicenseConfig": {
+              "methods": [
+                "RetractLicenseConfig"
+              ]
+            },
+            "UpdateLicenseConfig": {
+              "methods": [
+                "UpdateLicenseConfig"
               ]
             }
           }
@@ -1409,14 +1825,34 @@
                 "CancelOperation"
               ]
             },
+            "CreateServingConfig": {
+              "methods": [
+                "CreateServingConfig"
+              ]
+            },
+            "DeleteServingConfig": {
+              "methods": [
+                "DeleteServingConfig"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
               ]
             },
+            "GetServingConfig": {
+              "methods": [
+                "GetServingConfig"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListServingConfigs": {
+              "methods": [
+                "ListServingConfigs"
               ]
             },
             "UpdateServingConfig": {
@@ -1434,14 +1870,34 @@
                 "CancelOperation"
               ]
             },
+            "CreateServingConfig": {
+              "methods": [
+                "CreateServingConfig"
+              ]
+            },
+            "DeleteServingConfig": {
+              "methods": [
+                "DeleteServingConfig"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
               ]
             },
+            "GetServingConfig": {
+              "methods": [
+                "GetServingConfig"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListServingConfigs": {
+              "methods": [
+                "ListServingConfigs"
               ]
             },
             "UpdateServingConfig": {
@@ -1845,6 +2301,11 @@
                 "GetOperation"
               ]
             },
+            "ListLicenseConfigsUsageStats": {
+              "methods": [
+                "ListLicenseConfigsUsageStats"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
@@ -1875,6 +2336,11 @@
                 "GetOperation"
               ]
             },
+            "ListLicenseConfigsUsageStats": {
+              "methods": [
+                "ListLicenseConfigsUsageStats"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
@@ -1883,6 +2349,134 @@
             "ListUserLicenses": {
               "methods": [
                 "ListUserLicenses"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "UserStoreService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "UserStoreClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetUserStore": {
+              "methods": [
+                "GetUserStore"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateUserStore": {
+              "methods": [
+                "UpdateUserStore"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "UserStoreClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetUserStore": {
+              "methods": [
+                "GetUserStore"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateUserStore": {
+              "methods": [
+                "UpdateUserStore"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "WidgetConfigService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "WidgetConfigClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetWidgetConfig": {
+              "methods": [
+                "GetWidgetConfig"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateWidgetConfig": {
+              "methods": [
+                "UpdateWidgetConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "WidgetConfigClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetWidgetConfig": {
+              "methods": [
+                "GetWidgetConfig"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateWidgetConfig": {
+              "methods": [
+                "UpdateWidgetConfig"
               ]
             }
           }

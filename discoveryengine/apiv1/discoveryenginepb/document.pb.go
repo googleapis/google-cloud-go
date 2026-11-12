@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -82,11 +82,14 @@ type Document struct {
 	DerivedStructData *structpb.Struct `protobuf:"bytes,6,opt,name=derived_struct_data,json=derivedStructData,proto3" json:"derived_struct_data,omitempty"`
 	// Access control information for the document.
 	AclInfo *Document_AclInfo `protobuf:"bytes,11,opt,name=acl_info,json=aclInfo,proto3" json:"acl_info,omitempty"`
-	// Output only. The last time the document was indexed. If this field is set,
-	// the document could be returned in search results.
+	// Output only. The time when the document was last indexed.
 	//
-	// This field is OUTPUT_ONLY. If this field is not populated, it means the
-	// document has never been indexed.
+	// If this field is populated, it means the document has been indexed.
+	// While documents typically become searchable within seconds of indexing,
+	// it can sometimes take up to a few hours.
+	//
+	// If this field is not populated, it means the document has never been
+	// indexed.
 	IndexTime *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=index_time,json=indexTime,proto3" json:"index_time,omitempty"`
 	// Output only. The index status of the document.
 	//
@@ -418,6 +421,8 @@ type Document_IndexStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The time when the document was indexed.
 	// If this field is populated, it means the document has been indexed.
+	// While documents typically become searchable within seconds of indexing,
+	// it can sometimes take up to a few hours.
 	IndexTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=index_time,json=indexTime,proto3" json:"index_time,omitempty"`
 	// A sample of errors encountered while indexing the document.
 	// If this field is populated, the document is not indexed due to errors.
