@@ -301,3 +301,47 @@ func TestRecordPickDecision_ZeroWinnerNotCounted(t *testing.T) {
 		t.Errorf("pickHistory len = %d, want 1 (no-candidate events must still be logged)", got)
 	}
 }
+
+func TestRecordPickDecision_AfePickCountsBounded(t *testing.T) {
+	p := newTestPool(t, 1, 10)
+
+	// Populate maxAfePickCounts AFEs with high historical counts (10 each).
+	for round := 0; round < 10; round++ {
+		for id := 1; id <= maxAfePickCounts; id++ {
+			p.recordPickDecision(PickDecision{Winner: AfeID(id), Reason: "test"}, "least-inflight")
+		}
+	}
+
+	// Refresh AFE 1 so AFEs 2..51 become the 50 least-recently-picked entries.
+	p.recordPickDecision(PickDecision{Winner: AfeID(1), Reason: "test"}, "least-inflight")
+
+	// Rotate in 50 new AFEs with count=1 each. Eviction must drop the oldest
+	// stale AFEs (2..51) rather than newly arrived AFEs with smaller counts.
+	for id := maxAfePickCounts + 1; id <= maxAfePickCounts+50; id++ {
+		p.recordPickDecision(PickDecision{Winner: AfeID(id), Reason: "test"}, "least-inflight")
+	}
+
+	snap := p.snapshotAfePickCounts()
+	if len(snap) != maxAfePickCounts {
+		t.Fatalf("len(afePickCounts) = %d, want capped at maxAfePickCounts (%d)", len(snap), maxAfePickCounts)
+	}
+
+	// Active AFE 1 must remain with its full cumulative count.
+	if snap[1] != 11 {
+		t.Errorf("counts[1] = %d, want 11 (recently-picked AFE must not be evicted)", snap[1])
+	}
+
+	// Stale AFEs 2..51 must be evicted despite having higher historical counts.
+	for id := AfeID(2); id <= 51; id++ {
+		if c, ok := snap[id]; ok {
+			t.Errorf("stale AFE %d still present with count %d, want evicted", id, c)
+		}
+	}
+
+	// Newly picked AFEs must all survive rather than being churned out at count=1.
+	for id := AfeID(maxAfePickCounts + 1); id <= maxAfePickCounts+50; id++ {
+		if snap[id] != 1 {
+			t.Errorf("new AFE %d count = %d, want 1", id, snap[id])
+		}
+	}
+}
