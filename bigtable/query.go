@@ -379,6 +379,8 @@ func (bs *BoundStatement) execute(execCtx context.Context, f func(ResultRow) boo
 	planRefreshRetries := 0
 	var prevError error
 
+	mt := metrics.FromContext(execCtx)
+
 	// Metadata could change on planned query refresh.
 	// E.g.
 	// 1. 'SELECT *' request with ps started at t1
@@ -545,7 +547,9 @@ func (bs *BoundStatement) execute(execCtx context.Context, f func(ResultRow) boo
 						prevError = err
 						return err
 					}
+					appBlockingLatencyStart := time.Now()
 					continueReading := f(*rr)
+					mt.IncrementAppBlockingLatency(metrics.ConvertToMs(time.Since(appBlockingLatencyStart)))
 					if !continueReading {
 						// Cancel and drain stream.
 						cancel()
@@ -581,7 +585,9 @@ func handleExecuteStreamEnd(
 	err error,
 	prevError *error,
 ) error {
-	*trailerMD = stream.Trailer()
+	if stream != nil {
+		*trailerMD = stream.Trailer()
+	}
 	if err != nil && err != io.EOF {
 		*prevError = err
 		return err
