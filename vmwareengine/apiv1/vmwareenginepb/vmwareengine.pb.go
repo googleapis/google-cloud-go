@@ -7259,9 +7259,9 @@ var File_google_cloud_vmwareengine_v1_vmwareengine_proto protoreflect.FileDescri
 
 const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/vmwareengine/v1/vmwareengine.proto\x12\x1cgoogle.cloud.vmwareengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/vmwareengine/v1/vmwareengine_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x01\n" +
-	"\x18ListPrivateCloudsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"/google/cloud/vmwareengine/v1/vmwareengine.proto\x12\x1cgoogle.cloud.vmwareengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/vmwareengine/v1/vmwareengine_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcd\x01\n" +
+	"\x18ListPrivateCloudsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7271,40 +7271,40 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\x19ListPrivateCloudsResponse\x12Q\n" +
 	"\x0eprivate_clouds\x18\x01 \x03(\v2*.google.cloud.vmwareengine.v1.PrivateCloudR\rprivateClouds\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
-	"\x16GetPrivateCloudRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\x04name\"\xb1\x02\n" +
-	"\x19CreatePrivateCloudRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12-\n" +
-	"\x10private_cloud_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eprivateCloudId\x12T\n" +
-	"\rprivate_cloud\x18\x03 \x01(\v2*.google.cloud.vmwareengine.v1.PrivateCloudB\x03\xe0A\x02R\fprivateCloud\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
+	"\x16GetPrivateCloudRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\x04name\"\xb6\x02\n" +
+	"\x19CreatePrivateCloudRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12.\n" +
+	"\x10private_cloud_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eprivateCloudId\x12U\n" +
+	"\rprivate_cloud\x18\x03 \x01(\v2*.google.cloud.vmwareengine.v1.PrivateCloudB\x04\xe2A\x01\x02R\fprivateCloud\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xd7\x01\n" +
-	"\x19UpdatePrivateCloudRequest\x12T\n" +
-	"\rprivate_cloud\x18\x01 \x01(\v2*.google.cloud.vmwareengine.v1.PrivateCloudB\x03\xe0A\x02R\fprivateCloud\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xda\x01\n" +
+	"\x19UpdatePrivateCloudRequest\x12U\n" +
+	"\rprivate_cloud\x18\x01 \x01(\v2*.google.cloud.vmwareengine.v1.PrivateCloudB\x04\xe2A\x01\x02R\fprivateCloud\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xdb\x01\n" +
-	"\x19DeletePrivateCloudRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdf\x01\n" +
+	"\x19DeletePrivateCloudRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\x12)\n" +
-	"\vdelay_hours\x18\x04 \x01(\x05B\x03\xe0A\x01H\x00R\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12*\n" +
+	"\vdelay_hours\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x00R\n" +
 	"delayHours\x88\x01\x01B\x0e\n" +
-	"\f_delay_hours\"\x87\x01\n" +
-	"\x1bUndeletePrivateCloudRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\x04name\x12\"\n" +
+	"\f_delay_hours\"\x89\x01\n" +
+	"\x1bUndeletePrivateCloudRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xce\x01\n" +
-	"\x13ListClustersRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xcf\x01\n" +
+	"\x13ListClustersRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7314,45 +7314,45 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\x14ListClustersResponse\x12A\n" +
 	"\bclusters\x18\x01 \x03(\v2%.google.cloud.vmwareengine.v1.ClusterR\bclusters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
-	"\x11GetClusterRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#vmwareengine.googleapis.com/ClusterR\x04name\"\x98\x02\n" +
-	"\x14CreateClusterRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"U\n" +
+	"\x11GetClusterRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#vmwareengine.googleapis.com/ClusterR\x04name\"\x9d\x02\n" +
+	"\x14CreateClusterRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tclusterId\x12D\n" +
-	"\acluster\x18\x03 \x01(\v2%.google.cloud.vmwareengine.v1.ClusterB\x03\xe0A\x02R\acluster\x12\"\n" +
+	"cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12E\n" +
+	"\acluster\x18\x03 \x01(\v2%.google.cloud.vmwareengine.v1.ClusterB\x04\xe2A\x01\x02R\acluster\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xec\x01\n" +
-	"\x14UpdateClusterRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12D\n" +
-	"\acluster\x18\x02 \x01(\v2%.google.cloud.vmwareengine.v1.ClusterB\x03\xe0A\x02R\acluster\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xf0\x01\n" +
+	"\x14UpdateClusterRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12E\n" +
+	"\acluster\x18\x02 \x01(\v2%.google.cloud.vmwareengine.v1.ClusterB\x04\xe2A\x01\x02R\acluster\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"{\n" +
-	"\x14DeleteClusterRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#vmwareengine.googleapis.com/ClusterR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"}\n" +
+	"\x14DeleteClusterRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#vmwareengine.googleapis.com/ClusterR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x93\x01\n" +
-	"\x10ListNodesRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x94\x01\n" +
+	"\x10ListNodesRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#vmwareengine.googleapis.com/ClusterR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"u\n" +
 	"\x11ListNodesResponse\x128\n" +
 	"\x05nodes\x18\x01 \x03(\v2\".google.cloud.vmwareengine.v1.NodeR\x05nodes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"N\n" +
-	"\x0eGetNodeRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" vmwareengine.googleapis.com/NodeR\x04name\"\xd7\x01\n" +
-	"\x1cListExternalAddressesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"O\n" +
+	"\x0eGetNodeRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" vmwareengine.googleapis.com/NodeR\x04name\"\xd8\x01\n" +
+	"\x1cListExternalAddressesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7362,39 +7362,39 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\x1dListExternalAddressesResponse\x12\\\n" +
 	"\x12external_addresses\x18\x01 \x03(\v2-.google.cloud.vmwareengine.v1.ExternalAddressR\x11externalAddresses\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xc2\x01\n" +
-	"*FetchNetworkPolicyExternalAddressesRequest\x12X\n" +
-	"\x0enetwork_policy\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xc3\x01\n" +
+	"*FetchNetworkPolicyExternalAddressesRequest\x12Y\n" +
+	"\x0enetwork_policy\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")vmwareengine.googleapis.com/NetworkPolicyR\rnetworkPolicy\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb3\x01\n" +
 	"+FetchNetworkPolicyExternalAddressesResponse\x12\\\n" +
 	"\x12external_addresses\x18\x01 \x03(\v2-.google.cloud.vmwareengine.v1.ExternalAddressR\x11externalAddresses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
-	"\x19GetExternalAddressRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+vmwareengine.googleapis.com/ExternalAddressR\x04name\"\xa0\x02\n" +
-	"\x1cCreateExternalAddressRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12]\n" +
-	"\x10external_address\x18\x02 \x01(\v2-.google.cloud.vmwareengine.v1.ExternalAddressB\x03\xe0A\x02R\x0fexternalAddress\x123\n" +
-	"\x13external_address_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x11externalAddressId\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"e\n" +
+	"\x19GetExternalAddressRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+vmwareengine.googleapis.com/ExternalAddressR\x04name\"\xa4\x02\n" +
+	"\x1cCreateExternalAddressRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12^\n" +
+	"\x10external_address\x18\x02 \x01(\v2-.google.cloud.vmwareengine.v1.ExternalAddressB\x04\xe2A\x01\x02R\x0fexternalAddress\x124\n" +
+	"\x13external_address_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x11externalAddressId\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xe3\x01\n" +
-	"\x1cUpdateExternalAddressRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12]\n" +
-	"\x10external_address\x18\x02 \x01(\v2-.google.cloud.vmwareengine.v1.ExternalAddressB\x03\xe0A\x02R\x0fexternalAddress\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xe6\x01\n" +
+	"\x1cUpdateExternalAddressRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12^\n" +
+	"\x10external_address\x18\x02 \x01(\v2-.google.cloud.vmwareengine.v1.ExternalAddressB\x04\xe2A\x01\x02R\x0fexternalAddress\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8b\x01\n" +
-	"\x1cDeleteExternalAddressRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+vmwareengine.googleapis.com/ExternalAddressR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8d\x01\n" +
+	"\x1cDeleteExternalAddressRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+vmwareengine.googleapis.com/ExternalAddressR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x9a\x01\n" +
-	"\x12ListSubnetsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x9b\x01\n" +
+	"\x12ListSubnetsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7402,16 +7402,16 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\x13ListSubnetsResponse\x12>\n" +
 	"\asubnets\x18\x01 \x03(\v2$.google.cloud.vmwareengine.v1.SubnetR\asubnets\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
-	"\x10GetSubnetRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"vmwareengine.googleapis.com/SubnetR\x04name\"\x9a\x01\n" +
-	"\x13UpdateSubnetRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12A\n" +
-	"\x06subnet\x18\x02 \x01(\v2$.google.cloud.vmwareengine.v1.SubnetB\x03\xe0A\x02R\x06subnet\"\xda\x01\n" +
-	"\x1eListExternalAccessRulesRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
+	"\x10GetSubnetRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"vmwareengine.googleapis.com/SubnetR\x04name\"\x9c\x01\n" +
+	"\x13UpdateSubnetRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12B\n" +
+	"\x06subnet\x18\x02 \x01(\v2$.google.cloud.vmwareengine.v1.SubnetB\x04\xe2A\x01\x02R\x06subnet\"\xdb\x01\n" +
+	"\x1eListExternalAccessRulesRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")vmwareengine.googleapis.com/NetworkPolicyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7421,30 +7421,30 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\x1fListExternalAccessRulesResponse\x12d\n" +
 	"\x15external_access_rules\x18\x01 \x03(\v20.google.cloud.vmwareengine.v1.ExternalAccessRuleR\x13externalAccessRules\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"j\n" +
-	"\x1cGetExternalAccessRuleRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".vmwareengine.googleapis.com/ExternalAccessRuleR\x04name\"\xb0\x02\n" +
-	"\x1fCreateExternalAccessRuleRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")vmwareengine.googleapis.com/NetworkPolicyR\x06parent\x12g\n" +
-	"\x14external_access_rule\x18\x02 \x01(\v20.google.cloud.vmwareengine.v1.ExternalAccessRuleB\x03\xe0A\x02R\x12externalAccessRule\x12:\n" +
-	"\x17external_access_rule_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x14externalAccessRuleId\x12\x1d\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"k\n" +
+	"\x1cGetExternalAccessRuleRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".vmwareengine.googleapis.com/ExternalAccessRuleR\x04name\"\xb3\x02\n" +
+	"\x1fCreateExternalAccessRuleRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")vmwareengine.googleapis.com/NetworkPolicyR\x06parent\x12h\n" +
+	"\x14external_access_rule\x18\x02 \x01(\v20.google.cloud.vmwareengine.v1.ExternalAccessRuleB\x04\xe2A\x01\x02R\x12externalAccessRule\x12;\n" +
+	"\x17external_access_rule_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x14externalAccessRuleId\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xf0\x01\n" +
-	"\x1fUpdateExternalAccessRuleRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12g\n" +
-	"\x14external_access_rule\x18\x02 \x01(\v20.google.cloud.vmwareengine.v1.ExternalAccessRuleB\x03\xe0A\x02R\x12externalAccessRule\x12\"\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xf3\x01\n" +
+	"\x1fUpdateExternalAccessRuleRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12h\n" +
+	"\x14external_access_rule\x18\x02 \x01(\v20.google.cloud.vmwareengine.v1.ExternalAccessRuleB\x04\xe2A\x01\x02R\x12externalAccessRule\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x91\x01\n" +
-	"\x1fDeleteExternalAccessRuleRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".vmwareengine.googleapis.com/ExternalAccessRuleR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x93\x01\n" +
+	"\x1fDeleteExternalAccessRuleRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".vmwareengine.googleapis.com/ExternalAccessRuleR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd4\x01\n" +
-	"\x19ListLoggingServersRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd5\x01\n" +
+	"\x19ListLoggingServersRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7454,40 +7454,40 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\x1aListLoggingServersResponse\x12T\n" +
 	"\x0flogging_servers\x18\x01 \x03(\v2+.google.cloud.vmwareengine.v1.LoggingServerR\x0eloggingServers\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"`\n" +
-	"\x17GetLoggingServerRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")vmwareengine.googleapis.com/LoggingServerR\x04name\"\x94\x02\n" +
-	"\x1aCreateLoggingServerRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12W\n" +
-	"\x0elogging_server\x18\x02 \x01(\v2+.google.cloud.vmwareengine.v1.LoggingServerB\x03\xe0A\x02R\rloggingServer\x12/\n" +
-	"\x11logging_server_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0floggingServerId\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"a\n" +
+	"\x17GetLoggingServerRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")vmwareengine.googleapis.com/LoggingServerR\x04name\"\x98\x02\n" +
+	"\x1aCreateLoggingServerRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12X\n" +
+	"\x0elogging_server\x18\x02 \x01(\v2+.google.cloud.vmwareengine.v1.LoggingServerB\x04\xe2A\x01\x02R\rloggingServer\x120\n" +
+	"\x11logging_server_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0floggingServerId\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xdb\x01\n" +
-	"\x1aUpdateLoggingServerRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12W\n" +
-	"\x0elogging_server\x18\x02 \x01(\v2+.google.cloud.vmwareengine.v1.LoggingServerB\x03\xe0A\x02R\rloggingServer\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xde\x01\n" +
+	"\x1aUpdateLoggingServerRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12X\n" +
+	"\x0elogging_server\x18\x02 \x01(\v2+.google.cloud.vmwareengine.v1.LoggingServerB\x04\xe2A\x01\x02R\rloggingServer\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x87\x01\n" +
-	"\x1aDeleteLoggingServerRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")vmwareengine.googleapis.com/LoggingServerR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x89\x01\n" +
+	"\x1aDeleteLoggingServerRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")vmwareengine.googleapis.com/LoggingServerR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xad\x01\n" +
-	"\x14ListNodeTypesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xae\x01\n" +
+	"\x14ListNodeTypesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7497,91 +7497,91 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\n" +
 	"node_types\x18\x01 \x03(\v2&.google.cloud.vmwareengine.v1.NodeTypeR\tnodeTypes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"V\n" +
-	"\x12GetNodeTypeRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$vmwareengine.googleapis.com/NodeTypeR\x04name\"r\n" +
-	"\x19ShowNsxCredentialsRequest\x12U\n" +
-	"\rprivate_cloud\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\fprivateCloud\"\x97\x01\n" +
-	"\x1dShowVcenterCredentialsRequest\x12U\n" +
-	"\rprivate_cloud\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\fprivateCloud\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x01R\busername\"\x97\x01\n" +
-	"\x1aResetNsxCredentialsRequest\x12U\n" +
-	"\rprivate_cloud\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\fprivateCloud\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
+	"\x12GetNodeTypeRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$vmwareengine.googleapis.com/NodeTypeR\x04name\"s\n" +
+	"\x19ShowNsxCredentialsRequest\x12V\n" +
+	"\rprivate_cloud\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\fprivateCloud\"\x99\x01\n" +
+	"\x1dShowVcenterCredentialsRequest\x12V\n" +
+	"\rprivate_cloud\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\fprivateCloud\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\busername\"\x99\x01\n" +
+	"\x1aResetNsxCredentialsRequest\x12V\n" +
+	"\rprivate_cloud\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\fprivateCloud\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbc\x01\n" +
-	"\x1eResetVcenterCredentialsRequest\x12U\n" +
-	"\rprivate_cloud\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\fprivateCloud\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xbf\x01\n" +
+	"\x1eResetVcenterCredentialsRequest\x12V\n" +
+	"\rprivate_cloud\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\fprivateCloud\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x01R\busername\"\xc9\x01\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\busername\"\xc9\x01\n" +
 	"\x1dListHcxActivationKeysResponse\x12^\n" +
 	"\x13hcx_activation_keys\x18\x01 \x03(\v2..google.cloud.vmwareengine.v1.HcxActivationKeyR\x11hcxActivationKeys\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa4\x01\n" +
-	"\x1cListHcxActivationKeysRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa5\x01\n" +
+	"\x1cListHcxActivationKeysRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"f\n" +
-	"\x1aGetHcxActivationKeyRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",vmwareengine.googleapis.com/HcxActivationKeyR\x04name\"\xa3\x02\n" +
-	"\x1dCreateHcxActivationKeyRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12a\n" +
-	"\x12hcx_activation_key\x18\x02 \x01(\v2..google.cloud.vmwareengine.v1.HcxActivationKeyB\x03\xe0A\x02R\x10hcxActivationKey\x126\n" +
-	"\x15hcx_activation_key_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x12hcxActivationKeyId\x12\x1d\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\"g\n" +
+	"\x1aGetHcxActivationKeyRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",vmwareengine.googleapis.com/HcxActivationKeyR\x04name\"\xa6\x02\n" +
+	"\x1dCreateHcxActivationKeyRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12b\n" +
+	"\x12hcx_activation_key\x18\x02 \x01(\v2..google.cloud.vmwareengine.v1.HcxActivationKeyB\x04\xe2A\x01\x02R\x10hcxActivationKey\x127\n" +
+	"\x15hcx_activation_key_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x12hcxActivationKeyId\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"`\n" +
-	"\x17GetDnsForwardingRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")vmwareengine.googleapis.com/DnsForwardingR\x04name\"\xdb\x01\n" +
-	"\x1aUpdateDnsForwardingRequest\x12W\n" +
-	"\x0edns_forwarding\x18\x01 \x01(\v2+.google.cloud.vmwareengine.v1.DnsForwardingB\x03\xe0A\x02R\rdnsForwarding\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"a\n" +
+	"\x17GetDnsForwardingRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")vmwareengine.googleapis.com/DnsForwardingR\x04name\"\xde\x01\n" +
+	"\x1aUpdateDnsForwardingRequest\x12X\n" +
+	"\x0edns_forwarding\x18\x01 \x01(\v2+.google.cloud.vmwareengine.v1.DnsForwardingB\x04\xe2A\x01\x02R\rdnsForwarding\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x93\x02\n" +
-	"\x1bCreateNetworkPeeringRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x121\n" +
-	"\x12network_peering_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10networkPeeringId\x12Z\n" +
-	"\x0fnetwork_peering\x18\x03 \x01(\v2,.google.cloud.vmwareengine.v1.NetworkPeeringB\x03\xe0A\x02R\x0enetworkPeering\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x97\x02\n" +
+	"\x1bCreateNetworkPeeringRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x122\n" +
+	"\x12network_peering_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10networkPeeringId\x12[\n" +
+	"\x0fnetwork_peering\x18\x03 \x01(\v2,.google.cloud.vmwareengine.v1.NetworkPeeringB\x04\xe2A\x01\x02R\x0enetworkPeering\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x89\x01\n" +
-	"\x1bDeleteNetworkPeeringRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*vmwareengine.googleapis.com/NetworkPeeringR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8b\x01\n" +
+	"\x1bDeleteNetworkPeeringRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*vmwareengine.googleapis.com/NetworkPeeringR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"b\n" +
-	"\x18GetNetworkPeeringRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*vmwareengine.googleapis.com/NetworkPeeringR\x04name\"\xd7\x01\n" +
-	"\x1aListNetworkPeeringsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*vmwareengine.googleapis.com/NetworkPeeringR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"c\n" +
+	"\x18GetNetworkPeeringRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*vmwareengine.googleapis.com/NetworkPeeringR\x04name\"\xd8\x01\n" +
+	"\x1aListNetworkPeeringsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*vmwareengine.googleapis.com/NetworkPeeringR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xdf\x01\n" +
-	"\x1bUpdateNetworkPeeringRequest\x12Z\n" +
-	"\x0fnetwork_peering\x18\x01 \x01(\v2,.google.cloud.vmwareengine.v1.NetworkPeeringB\x03\xe0A\x02R\x0enetworkPeering\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xe2\x01\n" +
+	"\x1bUpdateNetworkPeeringRequest\x12[\n" +
+	"\x0fnetwork_peering\x18\x01 \x01(\v2,.google.cloud.vmwareengine.v1.NetworkPeeringB\x04\xe2A\x01\x02R\x0enetworkPeering\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc0\x01\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc0\x01\n" +
 	"\x1bListNetworkPeeringsResponse\x12W\n" +
 	"\x10network_peerings\x18\x01 \x03(\v2,.google.cloud.vmwareengine.v1.NetworkPeeringR\x0fnetworkPeerings\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xba\x01\n" +
-	"\x18ListPeeringRoutesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xbb\x01\n" +
+	"\x18ListPeeringRoutesRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*vmwareengine.googleapis.com/NetworkPeeringR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7589,9 +7589,9 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\x06filter\x18\x06 \x01(\tR\x06filter\"\x96\x01\n" +
 	"\x19ListPeeringRoutesResponse\x12Q\n" +
 	"\x0epeering_routes\x18\x01 \x03(\v2*.google.cloud.vmwareengine.v1.PeeringRouteR\rpeeringRoutes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd6\x01\n" +
-	"\x1aListNetworkPoliciesRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)vmwareengine.googleapis.com/NetworkPolicyR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd7\x01\n" +
+	"\x1aListNetworkPoliciesRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)vmwareengine.googleapis.com/NetworkPolicyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -7600,29 +7600,29 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\x1bListNetworkPoliciesResponse\x12V\n" +
 	"\x10network_policies\x18\x01 \x03(\v2+.google.cloud.vmwareengine.v1.NetworkPolicyR\x0fnetworkPolicies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"`\n" +
-	"\x17GetNetworkPolicyRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")vmwareengine.googleapis.com/NetworkPolicyR\x04name\"\xdb\x01\n" +
-	"\x1aUpdateNetworkPolicyRequest\x12W\n" +
-	"\x0enetwork_policy\x18\x01 \x01(\v2+.google.cloud.vmwareengine.v1.NetworkPolicyB\x03\xe0A\x02R\rnetworkPolicy\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"a\n" +
+	"\x17GetNetworkPolicyRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")vmwareengine.googleapis.com/NetworkPolicyR\x04name\"\xde\x01\n" +
+	"\x1aUpdateNetworkPolicyRequest\x12X\n" +
+	"\x0enetwork_policy\x18\x01 \x01(\v2+.google.cloud.vmwareengine.v1.NetworkPolicyB\x04\xe2A\x01\x02R\rnetworkPolicy\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x95\x02\n" +
-	"\x1aCreateNetworkPolicyRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)vmwareengine.googleapis.com/NetworkPolicyR\x06parent\x12/\n" +
-	"\x11network_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fnetworkPolicyId\x12W\n" +
-	"\x0enetwork_policy\x18\x03 \x01(\v2+.google.cloud.vmwareengine.v1.NetworkPolicyB\x03\xe0A\x02R\rnetworkPolicy\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x99\x02\n" +
+	"\x1aCreateNetworkPolicyRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)vmwareengine.googleapis.com/NetworkPolicyR\x06parent\x120\n" +
+	"\x11network_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fnetworkPolicyId\x12X\n" +
+	"\x0enetwork_policy\x18\x03 \x01(\v2+.google.cloud.vmwareengine.v1.NetworkPolicyB\x04\xe2A\x01\x02R\rnetworkPolicy\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x87\x01\n" +
-	"\x1aDeleteNetworkPolicyRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")vmwareengine.googleapis.com/NetworkPolicyR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x89\x01\n" +
+	"\x1aDeleteNetworkPolicyRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")vmwareengine.googleapis.com/NetworkPolicyR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xdf\x01\n" +
-	"$ListManagementDnsZoneBindingsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xe0\x01\n" +
+	"$ListManagementDnsZoneBindingsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7632,56 +7632,56 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"%ListManagementDnsZoneBindingsResponse\x12w\n" +
 	"\x1cmanagement_dns_zone_bindings\x18\x01 \x03(\v26.google.cloud.vmwareengine.v1.ManagementDnsZoneBindingR\x19managementDnsZoneBindings\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"v\n" +
-	"\"GetManagementDnsZoneBindingRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4vmwareengine.googleapis.com/ManagementDnsZoneBindingR\x04name\"\xda\x02\n" +
-	"%CreateManagementDnsZoneBindingRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12z\n" +
-	"\x1bmanagement_dns_zone_binding\x18\x02 \x01(\v26.google.cloud.vmwareengine.v1.ManagementDnsZoneBindingB\x03\xe0A\x02R\x18managementDnsZoneBinding\x12G\n" +
-	"\x1emanagement_dns_zone_binding_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x1amanagementDnsZoneBindingId\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"w\n" +
+	"\"GetManagementDnsZoneBindingRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4vmwareengine.googleapis.com/ManagementDnsZoneBindingR\x04name\"\xde\x02\n" +
+	"%CreateManagementDnsZoneBindingRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmwareengine.googleapis.com/PrivateCloudR\x06parent\x12{\n" +
+	"\x1bmanagement_dns_zone_binding\x18\x02 \x01(\v26.google.cloud.vmwareengine.v1.ManagementDnsZoneBindingB\x04\xe2A\x01\x02R\x18managementDnsZoneBinding\x12H\n" +
+	"\x1emanagement_dns_zone_binding_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x1amanagementDnsZoneBindingId\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x89\x02\n" +
-	"%UpdateManagementDnsZoneBindingRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12z\n" +
-	"\x1bmanagement_dns_zone_binding\x18\x02 \x01(\v26.google.cloud.vmwareengine.v1.ManagementDnsZoneBindingB\x03\xe0A\x02R\x18managementDnsZoneBinding\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8c\x02\n" +
+	"%UpdateManagementDnsZoneBindingRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12{\n" +
+	"\x1bmanagement_dns_zone_binding\x18\x02 \x01(\v26.google.cloud.vmwareengine.v1.ManagementDnsZoneBindingB\x04\xe2A\x01\x02R\x18managementDnsZoneBinding\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x9d\x01\n" +
-	"%DeleteManagementDnsZoneBindingRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4vmwareengine.googleapis.com/ManagementDnsZoneBindingR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x9f\x01\n" +
+	"%DeleteManagementDnsZoneBindingRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4vmwareengine.googleapis.com/ManagementDnsZoneBindingR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x9d\x01\n" +
-	"%RepairManagementDnsZoneBindingRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4vmwareengine.googleapis.com/ManagementDnsZoneBindingR\x04name\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x9f\x01\n" +
+	"%RepairManagementDnsZoneBindingRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4vmwareengine.googleapis.com/ManagementDnsZoneBindingR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc1\x02\n" +
-	" CreateVmwareEngineNetworkRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/vmwareengine.googleapis.com/VmwareEngineNetworkR\x06parent\x12<\n" +
-	"\x18vmware_engine_network_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15vmwareEngineNetworkId\x12j\n" +
-	"\x15vmware_engine_network\x18\x03 \x01(\v21.google.cloud.vmwareengine.v1.VmwareEngineNetworkB\x03\xe0A\x02R\x13vmwareEngineNetwork\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc5\x02\n" +
+	" CreateVmwareEngineNetworkRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/vmwareengine.googleapis.com/VmwareEngineNetworkR\x06parent\x12=\n" +
+	"\x18vmware_engine_network_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15vmwareEngineNetworkId\x12k\n" +
+	"\x15vmware_engine_network\x18\x03 \x01(\v21.google.cloud.vmwareengine.v1.VmwareEngineNetworkB\x04\xe2A\x01\x02R\x13vmwareEngineNetwork\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xf4\x01\n" +
-	" UpdateVmwareEngineNetworkRequest\x12j\n" +
-	"\x15vmware_engine_network\x18\x01 \x01(\v21.google.cloud.vmwareengine.v1.VmwareEngineNetworkB\x03\xe0A\x02R\x13vmwareEngineNetwork\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xf7\x01\n" +
+	" UpdateVmwareEngineNetworkRequest\x12k\n" +
+	"\x15vmware_engine_network\x18\x01 \x01(\v21.google.cloud.vmwareengine.v1.VmwareEngineNetworkB\x04\xe2A\x01\x02R\x13vmwareEngineNetwork\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xac\x01\n" +
-	" DeleteVmwareEngineNetworkRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xaf\x01\n" +
+	" DeleteVmwareEngineNetworkRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"l\n" +
-	"\x1dGetVmwareEngineNetworkRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x04name\"\xd3\x01\n" +
-	"\x1fListVmwareEngineNetworksRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"m\n" +
+	"\x1dGetVmwareEngineNetworkRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x04name\"\xd4\x01\n" +
+	"\x1fListVmwareEngineNetworksRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -7691,18 +7691,18 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	" ListVmwareEngineNetworksResponse\x12g\n" +
 	"\x16vmware_engine_networks\x18\x01 \x03(\v21.google.cloud.vmwareengine.v1.VmwareEngineNetworkR\x14vmwareEngineNetworks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xb1\x02\n" +
-	"\x1eCreatePrivateConnectionRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-vmwareengine.googleapis.com/PrivateConnectionR\x06parent\x127\n" +
-	"\x15private_connection_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x13privateConnectionId\x12c\n" +
-	"\x12private_connection\x18\x03 \x01(\v2/.google.cloud.vmwareengine.v1.PrivateConnectionB\x03\xe0A\x02R\x11privateConnection\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xb5\x02\n" +
+	"\x1eCreatePrivateConnectionRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-vmwareengine.googleapis.com/PrivateConnectionR\x06parent\x128\n" +
+	"\x15private_connection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13privateConnectionId\x12d\n" +
+	"\x12private_connection\x18\x03 \x01(\v2/.google.cloud.vmwareengine.v1.PrivateConnectionB\x04\xe2A\x01\x02R\x11privateConnection\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"h\n" +
-	"\x1bGetPrivateConnectionRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-vmwareengine.googleapis.com/PrivateConnectionR\x04name\"\xdd\x01\n" +
-	"\x1dListPrivateConnectionsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-vmwareengine.googleapis.com/PrivateConnectionR\x06parent\x12\x1b\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"i\n" +
+	"\x1bGetPrivateConnectionRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-vmwareengine.googleapis.com/PrivateConnectionR\x04name\"\xde\x01\n" +
+	"\x1dListPrivateConnectionsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-vmwareengine.googleapis.com/PrivateConnectionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -7711,41 +7711,41 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_proto_rawDesc = "" +
 	"\x1eListPrivateConnectionsResponse\x12`\n" +
 	"\x13private_connections\x18\x01 \x03(\v2/.google.cloud.vmwareengine.v1.PrivateConnectionR\x12privateConnections\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xeb\x01\n" +
-	"\x1eUpdatePrivateConnectionRequest\x12c\n" +
-	"\x12private_connection\x18\x01 \x01(\v2/.google.cloud.vmwareengine.v1.PrivateConnectionB\x03\xe0A\x02R\x11privateConnection\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xee\x01\n" +
+	"\x1eUpdatePrivateConnectionRequest\x12d\n" +
+	"\x12private_connection\x18\x01 \x01(\v2/.google.cloud.vmwareengine.v1.PrivateConnectionB\x04\xe2A\x01\x02R\x11privateConnection\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8f\x01\n" +
-	"\x1eDeletePrivateConnectionRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-vmwareengine.googleapis.com/PrivateConnectionR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x91\x01\n" +
+	"\x1eDeletePrivateConnectionRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-vmwareengine.googleapis.com/PrivateConnectionR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xb6\x01\n" +
-	")ListPrivateConnectionPeeringRoutesRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xb7\x01\n" +
+	")ListPrivateConnectionPeeringRoutesRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-vmwareengine.googleapis.com/PrivateConnectionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa7\x01\n" +
 	"*ListPrivateConnectionPeeringRoutesResponse\x12Q\n" +
 	"\x0epeering_routes\x18\x01 \x03(\v2*.google.cloud.vmwareengine.v1.PeeringRouteR\rpeeringRoutes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xda\x01\n" +
-	"\x1dGrantDnsBindPermissionRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-vmwareengine.googleapis.com/DnsBindPermissionR\x04name\x12J\n" +
-	"\tprincipal\x18\x02 \x01(\v2'.google.cloud.vmwareengine.v1.PrincipalB\x03\xe0A\x02R\tprincipal\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xdd\x01\n" +
+	"\x1dGrantDnsBindPermissionRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-vmwareengine.googleapis.com/DnsBindPermissionR\x04name\x12K\n" +
+	"\tprincipal\x18\x02 \x01(\v2'.google.cloud.vmwareengine.v1.PrincipalB\x04\xe2A\x01\x02R\tprincipal\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xdb\x01\n" +
-	"\x1eRevokeDnsBindPermissionRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-vmwareengine.googleapis.com/DnsBindPermissionR\x04name\x12J\n" +
-	"\tprincipal\x18\x02 \x01(\v2'.google.cloud.vmwareengine.v1.PrincipalB\x03\xe0A\x02R\tprincipal\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xde\x01\n" +
+	"\x1eRevokeDnsBindPermissionRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-vmwareengine.googleapis.com/DnsBindPermissionR\x04name\x12K\n" +
+	"\tprincipal\x18\x02 \x01(\v2'.google.cloud.vmwareengine.v1.PrincipalB\x04\xe2A\x01\x02R\tprincipal\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"h\n" +
-	"\x1bGetDnsBindPermissionRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"i\n" +
+	"\x1bGetDnsBindPermissionRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-vmwareengine.googleapis.com/DnsBindPermissionR\x04name2\u070e\x01\n" +
 	"\fVmwareEngine\x12\xc8\x01\n" +
 	"\x11ListPrivateClouds\x126.google.cloud.vmwareengine.v1.ListPrivateCloudsRequest\x1a7.google.cloud.vmwareengine.v1.ListPrivateCloudsResponse\"B\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1/{parent=projects/*/locations/*}/privateClouds\x12\xb5\x01\n" +

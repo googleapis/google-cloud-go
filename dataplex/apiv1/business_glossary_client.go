@@ -1505,6 +1505,11 @@ func (c *businessGlossaryRESTClient) CreateGlossary(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/glossaries", req.GetParent())
 
 	params := url.Values{}
@@ -1575,6 +1580,11 @@ func (c *businessGlossaryRESTClient) UpdateGlossary(ctx context.Context, req *da
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGlossary().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetGlossary().GetName())
@@ -1649,6 +1659,11 @@ func (c *businessGlossaryRESTClient) DeleteGlossary(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1711,6 +1726,11 @@ func (c *businessGlossaryRESTClient) DeleteGlossary(ctx context.Context, req *da
 func (c *businessGlossaryRESTClient) GetGlossary(ctx context.Context, req *dataplexpb.GetGlossaryRequest, opts ...gax.CallOption) (*dataplexpb.Glossary, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1778,6 +1798,11 @@ func (c *businessGlossaryRESTClient) ListGlossaries(ctx context.Context, req *da
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/glossaries", req.GetParent())
@@ -1858,6 +1883,11 @@ func (c *businessGlossaryRESTClient) CreateGlossaryCategory(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/categories", req.GetParent())
 
 	params := url.Values{}
@@ -1918,6 +1948,11 @@ func (c *businessGlossaryRESTClient) UpdateGlossaryCategory(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCategory().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCategory().GetName())
@@ -1983,6 +2018,11 @@ func (c *businessGlossaryRESTClient) DeleteGlossaryCategory(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2020,6 +2060,11 @@ func (c *businessGlossaryRESTClient) DeleteGlossaryCategory(ctx context.Context,
 func (c *businessGlossaryRESTClient) GetGlossaryCategory(ctx context.Context, req *dataplexpb.GetGlossaryCategoryRequest, opts ...gax.CallOption) (*dataplexpb.GlossaryCategory, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2087,6 +2132,11 @@ func (c *businessGlossaryRESTClient) ListGlossaryCategories(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/categories", req.GetParent())
@@ -2167,6 +2217,11 @@ func (c *businessGlossaryRESTClient) CreateGlossaryTerm(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/terms", req.GetParent())
 
 	params := url.Values{}
@@ -2227,6 +2282,11 @@ func (c *businessGlossaryRESTClient) UpdateGlossaryTerm(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTerm().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTerm().GetName())
@@ -2290,6 +2350,11 @@ func (c *businessGlossaryRESTClient) DeleteGlossaryTerm(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2327,6 +2392,11 @@ func (c *businessGlossaryRESTClient) DeleteGlossaryTerm(ctx context.Context, req
 func (c *businessGlossaryRESTClient) GetGlossaryTerm(ctx context.Context, req *dataplexpb.GetGlossaryTermRequest, opts ...gax.CallOption) (*dataplexpb.GlossaryTerm, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2394,6 +2464,11 @@ func (c *businessGlossaryRESTClient) ListGlossaryTerms(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/terms", req.GetParent())
@@ -2465,6 +2540,11 @@ func (c *businessGlossaryRESTClient) ListGlossaryTerms(ctx context.Context, req 
 func (c *businessGlossaryRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2549,6 +2629,11 @@ func (c *businessGlossaryRESTClient) ListLocations(ctx context.Context, req *loc
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2618,6 +2703,11 @@ func (c *businessGlossaryRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2683,6 +2773,11 @@ func (c *businessGlossaryRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -2751,6 +2846,11 @@ func (c *businessGlossaryRESTClient) TestIamPermissions(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2811,6 +2911,11 @@ func (c *businessGlossaryRESTClient) CancelOperation(ctx context.Context, req *l
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2850,6 +2955,11 @@ func (c *businessGlossaryRESTClient) DeleteOperation(ctx context.Context, req *l
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2887,6 +2997,11 @@ func (c *businessGlossaryRESTClient) DeleteOperation(ctx context.Context, req *l
 func (c *businessGlossaryRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2954,6 +3069,11 @@ func (c *businessGlossaryRESTClient) ListOperations(ctx context.Context, req *lo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

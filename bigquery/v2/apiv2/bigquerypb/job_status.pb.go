@@ -109,11 +109,11 @@ var File_google_cloud_bigquery_v2_job_status_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_job_status_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/bigquery/v2/job_status.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/bigquery/v2/error.proto\"\xb7\x01\n" +
-	"\tJobStatus\x12L\n" +
-	"\ferror_result\x18\x01 \x01(\v2$.google.cloud.bigquery.v2.ErrorProtoB\x03\xe0A\x03R\verrorResult\x12A\n" +
-	"\x06errors\x18\x02 \x03(\v2$.google.cloud.bigquery.v2.ErrorProtoB\x03\xe0A\x03R\x06errors\x12\x19\n" +
-	"\x05state\x18\x03 \x01(\tB\x03\xe0A\x03R\x05stateBk\n" +
+	")google/cloud/bigquery/v2/job_status.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/bigquery/v2/error.proto\"\xba\x01\n" +
+	"\tJobStatus\x12M\n" +
+	"\ferror_result\x18\x01 \x01(\v2$.google.cloud.bigquery.v2.ErrorProtoB\x04\xe2A\x01\x03R\verrorResult\x12B\n" +
+	"\x06errors\x18\x02 \x03(\v2$.google.cloud.bigquery.v2.ErrorProtoB\x04\xe2A\x01\x03R\x06errors\x12\x1a\n" +
+	"\x05state\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x05stateBk\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x0eJobStatusProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

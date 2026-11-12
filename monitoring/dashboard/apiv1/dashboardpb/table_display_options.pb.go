@@ -91,9 +91,9 @@ var File_google_monitoring_dashboard_v1_table_display_options_proto protoreflect
 
 const file_google_monitoring_dashboard_v1_table_display_options_proto_rawDesc = "" +
 	"\n" +
-	":google/monitoring/dashboard/v1/table_display_options.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\"A\n" +
-	"\x13TableDisplayOptions\x12*\n" +
-	"\rshown_columns\x18\x01 \x03(\tB\x05\xe0A\x01\x18\x01R\fshownColumnsB\x81\x02\n" +
+	":google/monitoring/dashboard/v1/table_display_options.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\"B\n" +
+	"\x13TableDisplayOptions\x12+\n" +
+	"\rshown_columns\x18\x01 \x03(\tB\x06\xe2A\x01\x01\x18\x01R\fshownColumnsB\x81\x02\n" +
 	"\"com.google.monitoring.dashboard.v1B\x18TableDisplayOptionsProtoP\x01ZFcloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb;dashboardpb\xaa\x02$Google.Cloud.Monitoring.Dashboard.V1\xca\x02$Google\\Cloud\\Monitoring\\Dashboard\\V1\xea\x02(Google::Cloud::Monitoring::Dashboard::V1b\x06proto3"
 
 var (

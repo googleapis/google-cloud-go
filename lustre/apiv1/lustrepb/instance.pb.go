@@ -1718,40 +1718,40 @@ var File_google_cloud_lustre_v1_instance_proto protoreflect.FileDescriptor
 
 const file_google_cloud_lustre_v1_instance_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/lustre/v1/instance.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xbe\x0e\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
+	"%google/cloud/lustre/v1/instance.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xcd\x0e\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12%\n" +
 	"\n" +
 	"filesystem\x18\n" +
-	" \x01(\tB\x06\xe0A\x05\xe0A\x02R\n" +
-	"filesystem\x12&\n" +
-	"\fcapacity_gib\x18\x02 \x01(\x03B\x03\xe0A\x02R\vcapacityGib\x12C\n" +
-	"\anetwork\x18\x03 \x01(\tB)\xe0A\x05\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12A\n" +
-	"\x05state\x18\x04 \x01(\x0e2&.google.cloud.lustre.v1.Instance.StateB\x03\xe0A\x03R\x05state\x12$\n" +
-	"\vmount_point\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
-	"mountPoint\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\b \x01(\tB\x03\xe0A\x01R\vdescription\x12I\n" +
-	"\x06labels\x18\t \x03(\v2,.google.cloud.lustre.v1.Instance.LabelsEntryB\x03\xe0A\x01R\x06labels\x12B\n" +
-	"\x1bper_unit_storage_throughput\x18\v \x01(\x03B\x03\xe0A\x01R\x18perUnitStorageThroughput\x125\n" +
-	"\x13gke_support_enabled\x18\f \x01(\bB\x05\xe0A\x01\x18\x01R\x11gkeSupportEnabled\x12E\n" +
-	"\akms_key\x18\r \x01(\tB,\xe0A\x01\xe0A\x05\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12&\n" +
-	"\fstate_reason\x18\x0e \x01(\tB\x03\xe0A\x03R\vstateReason\x12X\n" +
-	"\x10placement_policy\x18\x11 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%compute.googleapis.com/ResourcePolicyR\x0fplacementPolicy\x12a\n" +
-	"\x14access_rules_options\x18\x12 \x01(\v2*.google.cloud.lustre.v1.AccessRulesOptionsB\x03\xe0A\x01R\x12accessRulesOptions\x12\x1d\n" +
-	"\x03uid\x18\x13 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12]\n" +
-	"\x12maintenance_policy\x18\x14 \x01(\v2).google.cloud.lustre.v1.MaintenancePolicyB\x03\xe0A\x01R\x11maintenancePolicy\x12t\n" +
-	"\x1dupcoming_maintenance_schedule\x18\x15 \x01(\v2+.google.cloud.lustre.v1.MaintenanceScheduleB\x03\xe0A\x03R\x1bupcomingMaintenanceSchedule\x12d\n" +
-	"\x14dynamic_tier_options\x18\x18 \x01(\v2*.google.cloud.lustre.v1.DynamicTierOptionsB\x06\xe0A\x05\xe0A\x01R\x12dynamicTierOptions\x125\n" +
-	"\x11available_version\x18! \x01(\tB\x03\xe0A\x03H\x00R\x10availableVersion\x88\x01\x01\x12/\n" +
-	"\x0etarget_version\x18\" \x01(\tB\x03\xe0A\x01H\x01R\rtargetVersion\x88\x01\x01\x125\n" +
-	"\x11effective_version\x18# \x01(\tB\x03\xe0A\x03H\x02R\x10effectiveVersion\x88\x01\x01\x1a9\n" +
+	" \x01(\tB\x05\xe2A\x02\x05\x02R\n" +
+	"filesystem\x12'\n" +
+	"\fcapacity_gib\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\vcapacityGib\x12B\n" +
+	"\anetwork\x18\x03 \x01(\tB(\xe2A\x02\x05\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12B\n" +
+	"\x05state\x18\x04 \x01(\x0e2&.google.cloud.lustre.v1.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12%\n" +
+	"\vmount_point\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"mountPoint\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12J\n" +
+	"\x06labels\x18\t \x03(\v2,.google.cloud.lustre.v1.Instance.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12C\n" +
+	"\x1bper_unit_storage_throughput\x18\v \x01(\x03B\x04\xe2A\x01\x01R\x18perUnitStorageThroughput\x126\n" +
+	"\x13gke_support_enabled\x18\f \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x11gkeSupportEnabled\x12D\n" +
+	"\akms_key\x18\r \x01(\tB+\xe2A\x02\x01\x05\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12'\n" +
+	"\fstate_reason\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\vstateReason\x12Y\n" +
+	"\x10placement_policy\x18\x11 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%compute.googleapis.com/ResourcePolicyR\x0fplacementPolicy\x12b\n" +
+	"\x14access_rules_options\x18\x12 \x01(\v2*.google.cloud.lustre.v1.AccessRulesOptionsB\x04\xe2A\x01\x01R\x12accessRulesOptions\x12\x1e\n" +
+	"\x03uid\x18\x13 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12^\n" +
+	"\x12maintenance_policy\x18\x14 \x01(\v2).google.cloud.lustre.v1.MaintenancePolicyB\x04\xe2A\x01\x01R\x11maintenancePolicy\x12u\n" +
+	"\x1dupcoming_maintenance_schedule\x18\x15 \x01(\v2+.google.cloud.lustre.v1.MaintenanceScheduleB\x04\xe2A\x01\x03R\x1bupcomingMaintenanceSchedule\x12c\n" +
+	"\x14dynamic_tier_options\x18\x18 \x01(\v2*.google.cloud.lustre.v1.DynamicTierOptionsB\x05\xe2A\x02\x05\x01R\x12dynamicTierOptions\x126\n" +
+	"\x11available_version\x18! \x01(\tB\x04\xe2A\x01\x03H\x00R\x10availableVersion\x88\x01\x01\x120\n" +
+	"\x0etarget_version\x18\" \x01(\tB\x04\xe2A\x01\x01H\x01R\rtargetVersion\x88\x01\x01\x126\n" +
+	"\x11effective_version\x18# \x01(\tB\x04\xe2A\x01\x03H\x02R\x10effectiveVersion\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x92\x01\n" +
@@ -1769,100 +1769,100 @@ const file_google_cloud_lustre_v1_instance_proto_rawDesc = "" +
 	"\x1elustre.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}*\tinstances2\binstanceB\x14\n" +
 	"\x12_available_versionB\x11\n" +
 	"\x0f_target_versionB\x14\n" +
-	"\x12_effective_version\"\xa0\x01\n" +
-	"\x12DynamicTierOptions\x12K\n" +
-	"\x04mode\x18\x01 \x01(\x0e2/.google.cloud.lustre.v1.DynamicTierOptions.ModeB\x06\xe0A\x05\xe0A\x02R\x04mode\"=\n" +
+	"\x12_effective_version\"\x9f\x01\n" +
+	"\x12DynamicTierOptions\x12J\n" +
+	"\x04mode\x18\x01 \x01(\x0e2/.google.cloud.lustre.v1.DynamicTierOptions.ModeB\x05\xe2A\x02\x05\x02R\x04mode\"=\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\x11\n" +
-	"\rDEFAULT_CACHE\x10\x02\"\xc6\x04\n" +
-	"\x12AccessRulesOptions\x12]\n" +
-	"\faccess_rules\x18\x01 \x03(\v25.google.cloud.lustre.v1.AccessRulesOptions.AccessRuleB\x03\xe0A\x01R\vaccessRules\x12j\n" +
-	"\x13default_squash_mode\x18\x02 \x01(\x0e25.google.cloud.lustre.v1.AccessRulesOptions.SquashModeB\x03\xe0A\x02R\x11defaultSquashMode\x121\n" +
-	"\x12default_squash_uid\x18\x03 \x01(\x05B\x03\xe0A\x01R\x10defaultSquashUid\x121\n" +
-	"\x12default_squash_gid\x18\x04 \x01(\x05B\x03\xe0A\x01R\x10defaultSquashGid\x1a\xb3\x01\n" +
+	"\rDEFAULT_CACHE\x10\x02\"\xcd\x04\n" +
+	"\x12AccessRulesOptions\x12^\n" +
+	"\faccess_rules\x18\x01 \x03(\v25.google.cloud.lustre.v1.AccessRulesOptions.AccessRuleB\x04\xe2A\x01\x01R\vaccessRules\x12k\n" +
+	"\x13default_squash_mode\x18\x02 \x01(\x0e25.google.cloud.lustre.v1.AccessRulesOptions.SquashModeB\x04\xe2A\x01\x02R\x11defaultSquashMode\x122\n" +
+	"\x12default_squash_uid\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x10defaultSquashUid\x122\n" +
+	"\x12default_squash_gid\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x10defaultSquashGid\x1a\xb6\x01\n" +
 	"\n" +
-	"AccessRule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12/\n" +
-	"\x11ip_address_ranges\x18\x02 \x03(\tB\x03\xe0A\x02R\x0fipAddressRanges\x12[\n" +
-	"\vsquash_mode\x18\x06 \x01(\x0e25.google.cloud.lustre.v1.AccessRulesOptions.SquashModeB\x03\xe0A\x02R\n" +
+	"AccessRule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x120\n" +
+	"\x11ip_address_ranges\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x0fipAddressRanges\x12\\\n" +
+	"\vsquash_mode\x18\x06 \x01(\x0e25.google.cloud.lustre.v1.AccessRulesOptions.SquashModeB\x04\xe2A\x01\x02R\n" +
 	"squashMode\"I\n" +
 	"\n" +
 	"SquashMode\x12\x1b\n" +
 	"\x17SQUASH_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNO_SQUASH\x10\x01\x12\x0f\n" +
-	"\vROOT_SQUASH\x10\x02\"\xd9\x01\n" +
-	"\x14ListInstancesRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1elustre.googleapis.com/InstanceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vROOT_SQUASH\x10\x02\"\xde\x01\n" +
+	"\x14ListInstancesRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1elustre.googleapis.com/InstanceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa7\x01\n" +
 	"\x15ListInstancesResponse\x12>\n" +
 	"\tinstances\x18\x01 \x03(\v2 .google.cloud.lustre.v1.InstanceR\tinstances\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"P\n" +
-	"\x12GetInstanceRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1elustre.googleapis.com/InstanceR\x04name\"\xec\x01\n" +
-	"\x15CreateInstanceRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1elustre.googleapis.com/InstanceR\x06parent\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12A\n" +
-	"\binstance\x18\x03 \x01(\v2 .google.cloud.lustre.v1.InstanceB\x03\xe0A\x02R\binstance\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"Q\n" +
+	"\x12GetInstanceRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1elustre.googleapis.com/InstanceR\x04name\"\xf0\x01\n" +
+	"\x15CreateInstanceRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1elustre.googleapis.com/InstanceR\x06parent\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12B\n" +
+	"\binstance\x18\x03 \x01(\v2 .google.cloud.lustre.v1.InstanceB\x04\xe2A\x01\x02R\binstance\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc8\x01\n" +
-	"\x15UpdateInstanceRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12A\n" +
-	"\binstance\x18\x02 \x01(\v2 .google.cloud.lustre.v1.InstanceB\x03\xe0A\x02R\binstance\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcb\x01\n" +
+	"\x15UpdateInstanceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12B\n" +
+	"\binstance\x18\x02 \x01(\v2 .google.cloud.lustre.v1.InstanceB\x04\xe2A\x01\x02R\binstance\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9a\x01\n" +
-	"\x15DeleteInstanceRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1elustre.googleapis.com/InstanceR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9d\x01\n" +
+	"\x15DeleteInstanceRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1elustre.googleapis.com/InstanceR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xf7\x04\n" +
-	"\x11MaintenancePolicy\x12\x84\x01\n" +
-	"\x1aweekly_maintenance_windows\x18\x03 \x03(\v2A.google.cloud.lustre.v1.MaintenancePolicy.WeeklyMaintenanceWindowB\x03\xe0A\x02R\x18weeklyMaintenanceWindows\x12\x8b\x01\n" +
-	"\x1cmaintenance_exclusion_window\x18\x04 \x03(\v2D.google.cloud.lustre.v1.MaintenancePolicy.MaintenanceExclusionWindowB\x03\xe0A\x01R\x1amaintenanceExclusionWindow\x1a\x92\x01\n" +
-	"\x17WeeklyMaintenanceWindow\x12;\n" +
-	"\vday_of_week\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x02R\tdayOfWeek\x12:\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xfe\x04\n" +
+	"\x11MaintenancePolicy\x12\x85\x01\n" +
+	"\x1aweekly_maintenance_windows\x18\x03 \x03(\v2A.google.cloud.lustre.v1.MaintenancePolicy.WeeklyMaintenanceWindowB\x04\xe2A\x01\x02R\x18weeklyMaintenanceWindows\x12\x8c\x01\n" +
+	"\x1cmaintenance_exclusion_window\x18\x04 \x03(\v2D.google.cloud.lustre.v1.MaintenancePolicy.MaintenanceExclusionWindowB\x04\xe2A\x01\x01R\x1amaintenanceExclusionWindow\x1a\x94\x01\n" +
+	"\x17WeeklyMaintenanceWindow\x12<\n" +
+	"\vday_of_week\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x02R\tdayOfWeek\x12;\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\tstartTime\x1a\xb7\x01\n" +
-	"\x1aMaintenanceExclusionWindow\x125\n" +
+	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x02R\tstartTime\x1a\xba\x01\n" +
+	"\x1aMaintenanceExclusionWindow\x126\n" +
 	"\n" +
-	"start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\tstartDate\x121\n" +
-	"\bend_date\x18\x02 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\aendDate\x12/\n" +
-	"\x04time\x18\x03 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\x04time\"\x91\x01\n" +
-	"\x13MaintenanceSchedule\x12>\n" +
+	"start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\tstartDate\x122\n" +
+	"\bend_date\x18\x02 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\aendDate\x120\n" +
+	"\x04time\x18\x03 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x02R\x04time\"\x93\x01\n" +
+	"\x13MaintenanceSchedule\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\"\x9e\x04\n" +
-	"\x1cRescheduleMaintenanceRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1elustre.googleapis.com/InstanceR\x04name\x12d\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\"\xa3\x04\n" +
+	"\x1cRescheduleMaintenanceRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1elustre.googleapis.com/InstanceR\x04name\x12e\n" +
 	"\n" +
-	"reschedule\x18\x02 \x01(\v2?.google.cloud.lustre.v1.RescheduleMaintenanceRequest.RescheduleB\x03\xe0A\x02R\n" +
-	"reschedule\x12*\n" +
+	"reschedule\x18\x02 \x01(\v2?.google.cloud.lustre.v1.RescheduleMaintenanceRequest.RescheduleB\x04\xe2A\x01\x02R\n" +
+	"reschedule\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x1a\xc5\x01\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x1a\xc7\x01\n" +
 	"\n" +
-	"Reschedule\x12q\n" +
-	"\x0freschedule_type\x18\x01 \x01(\x0e2C.google.cloud.lustre.v1.RescheduleMaintenanceRequest.RescheduleTypeB\x03\xe0A\x02R\x0erescheduleType\x12D\n" +
-	"\rschedule_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\fscheduleTime\"h\n" +
+	"Reschedule\x12r\n" +
+	"\x0freschedule_type\x18\x01 \x01(\x0e2C.google.cloud.lustre.v1.RescheduleMaintenanceRequest.RescheduleTypeB\x04\xe2A\x01\x02R\x0erescheduleType\x12E\n" +
+	"\rschedule_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\fscheduleTime\"h\n" +
 	"\x0eRescheduleType\x12\x1f\n" +
 	"\x1bRESCHEDULE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tIMMEDIATE\x10\x01\x12\x19\n" +

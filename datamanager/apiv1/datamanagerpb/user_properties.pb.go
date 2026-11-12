@@ -161,7 +161,7 @@ type UserProperties struct {
 	// Optional. The advertiser-assessed value of the customer.
 	CustomerValueBucket CustomerValueBucket `protobuf:"varint,2,opt,name=customer_value_bucket,json=customerValueBucket,proto3,enum=google.ads.datamanager.v1.CustomerValueBucket" json:"customer_value_bucket,omitempty"`
 	// Optional. A bucket of any additional [user
-	// properties](https://developers.google.com/analytics/devguides/collection/protocol/ga4/user-properties)
+	// properties](https://support.google.com/analytics/answer/9355671)
 	// for the user associated with this event.
 	AdditionalUserProperties []*UserProperty `protobuf:"bytes,3,rep,name=additional_user_properties,json=additionalUserProperties,proto3" json:"additional_user_properties,omitempty"`
 	unknownFields            protoimpl.UnknownFields
@@ -220,7 +220,7 @@ func (x *UserProperties) GetAdditionalUserProperties() []*UserProperty {
 }
 
 // A bucket of any additional [user
-// properties](https://developers.google.com/analytics/devguides/collection/protocol/ga4/user-properties)
+// properties](https://support.google.com/analytics/answer/9355671)
 // for the user associated with this event.
 type UserProperty struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -281,14 +281,14 @@ var File_google_ads_datamanager_v1_user_properties_proto protoreflect.FileDescri
 
 const file_google_ads_datamanager_v1_user_properties_proto_rawDesc = "" +
 	"\n" +
-	"/google/ads/datamanager/v1/user_properties.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xb8\x02\n" +
-	"\x0eUserProperties\x12Q\n" +
-	"\rcustomer_type\x18\x01 \x01(\x0e2'.google.ads.datamanager.v1.CustomerTypeB\x03\xe0A\x01R\fcustomerType\x12g\n" +
-	"\x15customer_value_bucket\x18\x02 \x01(\x0e2..google.ads.datamanager.v1.CustomerValueBucketB\x03\xe0A\x01R\x13customerValueBucket\x12j\n" +
-	"\x1aadditional_user_properties\x18\x03 \x03(\v2'.google.ads.datamanager.v1.UserPropertyB\x03\xe0A\x01R\x18additionalUserProperties\"S\n" +
-	"\fUserProperty\x12(\n" +
-	"\rproperty_name\x18\x01 \x01(\tB\x03\xe0A\x02R\fpropertyName\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value*T\n" +
+	"/google/ads/datamanager/v1/user_properties.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xbb\x02\n" +
+	"\x0eUserProperties\x12R\n" +
+	"\rcustomer_type\x18\x01 \x01(\x0e2'.google.ads.datamanager.v1.CustomerTypeB\x04\xe2A\x01\x01R\fcustomerType\x12h\n" +
+	"\x15customer_value_bucket\x18\x02 \x01(\x0e2..google.ads.datamanager.v1.CustomerValueBucketB\x04\xe2A\x01\x01R\x13customerValueBucket\x12k\n" +
+	"\x1aadditional_user_properties\x18\x03 \x03(\v2'.google.ads.datamanager.v1.UserPropertyB\x04\xe2A\x01\x01R\x18additionalUserProperties\"U\n" +
+	"\fUserProperty\x12)\n" +
+	"\rproperty_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fpropertyName\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value*T\n" +
 	"\fCustomerType\x12\x1d\n" +
 	"\x19CUSTOMER_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03NEW\x10\x01\x12\r\n" +

@@ -939,57 +939,57 @@ var File_google_cloud_chronicle_v1_reference_list_proto protoreflect.FileDescrip
 
 const file_google_cloud_chronicle_v1_reference_list_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/chronicle/v1/reference_list.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"q\n" +
-	"\tScopeInfo\x12d\n" +
-	"\x14reference_list_scope\x18\x02 \x01(\v2-.google.cloud.chronicle.v1.ReferenceListScopeB\x03\xe0A\x02R\x12referenceListScope\":\n" +
-	"\x12ReferenceListScope\x12$\n" +
-	"\vscope_names\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
-	"scopeNames\"\x9f\x01\n" +
-	"\x17GetReferenceListRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	".google/cloud/chronicle/v1/reference_list.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"r\n" +
+	"\tScopeInfo\x12e\n" +
+	"\x14reference_list_scope\x18\x02 \x01(\v2-.google.cloud.chronicle.v1.ReferenceListScopeB\x04\xe2A\x01\x02R\x12referenceListScope\";\n" +
+	"\x12ReferenceListScope\x12%\n" +
+	"\vscope_names\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"scopeNames\"\xa0\x01\n" +
+	"\x17GetReferenceListRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&chronicle.googleapis.com/ReferenceListR\x04name\x12@\n" +
-	"\x04view\x18\x02 \x01(\x0e2,.google.cloud.chronicle.v1.ReferenceListViewR\x04view\"\xe1\x01\n" +
-	"\x19ListReferenceListsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&chronicle.googleapis.com/ReferenceListR\x06parent\x12\x1b\n" +
+	"\x04view\x18\x02 \x01(\x0e2,.google.cloud.chronicle.v1.ReferenceListViewR\x04view\"\xe2\x01\n" +
+	"\x19ListReferenceListsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&chronicle.googleapis.com/ReferenceListR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12@\n" +
 	"\x04view\x18\x04 \x01(\x0e2,.google.cloud.chronicle.v1.ReferenceListViewR\x04view\"\x97\x01\n" +
 	"\x1aListReferenceListsResponse\x12Q\n" +
 	"\x0freference_lists\x18\x01 \x03(\v2(.google.cloud.chronicle.v1.ReferenceListR\x0ereferenceLists\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xeb\x01\n" +
-	"\x1aCreateReferenceListRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&chronicle.googleapis.com/ReferenceListR\x06parent\x12T\n" +
-	"\x0ereference_list\x18\x02 \x01(\v2(.google.cloud.chronicle.v1.ReferenceListB\x03\xe0A\x02R\rreferenceList\x12/\n" +
-	"\x11reference_list_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0freferenceListId\"\xaf\x01\n" +
-	"\x1aUpdateReferenceListRequest\x12T\n" +
-	"\x0ereference_list\x18\x01 \x01(\v2(.google.cloud.chronicle.v1.ReferenceListB\x03\xe0A\x02R\rreferenceList\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xee\x01\n" +
+	"\x1aCreateReferenceListRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&chronicle.googleapis.com/ReferenceListR\x06parent\x12U\n" +
+	"\x0ereference_list\x18\x02 \x01(\v2(.google.cloud.chronicle.v1.ReferenceListB\x04\xe2A\x01\x02R\rreferenceList\x120\n" +
+	"\x11reference_list_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0freferenceListId\"\xb0\x01\n" +
+	"\x1aUpdateReferenceListRequest\x12U\n" +
+	"\x0ereference_list\x18\x01 \x01(\v2(.google.cloud.chronicle.v1.ReferenceListB\x04\xe2A\x01\x02R\rreferenceList\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x8b\x02\n" +
-	"\x1aVerifyReferenceListRequest\x12E\n" +
-	"\binstance\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!chronicle.googleapis.com/InstanceR\binstance\x12X\n" +
-	"\vsyntax_type\x18\x02 \x01(\x0e22.google.cloud.chronicle.v1.ReferenceListSyntaxTypeB\x03\xe0A\x02R\n" +
-	"syntaxType\x12L\n" +
-	"\aentries\x18\x03 \x03(\v2-.google.cloud.chronicle.v1.ReferenceListEntryB\x03\xe0A\x02R\aentries\"~\n" +
+	"updateMask\"\x8e\x02\n" +
+	"\x1aVerifyReferenceListRequest\x12F\n" +
+	"\binstance\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!chronicle.googleapis.com/InstanceR\binstance\x12Y\n" +
+	"\vsyntax_type\x18\x02 \x01(\x0e22.google.cloud.chronicle.v1.ReferenceListSyntaxTypeB\x04\xe2A\x01\x02R\n" +
+	"syntaxType\x12M\n" +
+	"\aentries\x18\x03 \x03(\v2-.google.cloud.chronicle.v1.ReferenceListEntryB\x04\xe2A\x01\x02R\aentries\"~\n" +
 	"\x1bVerifyReferenceListResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12E\n" +
-	"\x06errors\x18\x02 \x03(\v2-.google.cloud.chronicle.v1.ReferenceListErrorR\x06errors\"\x9c\x05\n" +
-	"\rReferenceList\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12Q\n" +
-	"\x14revision_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12revisionCreateTime\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x02R\vdescription\x12L\n" +
-	"\aentries\x18\x05 \x03(\v2-.google.cloud.chronicle.v1.ReferenceListEntryB\x03\xe0A\x02R\aentries\x12\x19\n" +
-	"\x05rules\x18\x06 \x03(\tB\x03\xe0A\x03R\x05rules\x12X\n" +
-	"\vsyntax_type\x18\b \x01(\x0e22.google.cloud.chronicle.v1.ReferenceListSyntaxTypeB\x03\xe0A\x02R\n" +
-	"syntaxType\x12;\n" +
-	"\x17rule_associations_count\x18\t \x01(\x05B\x03\xe0A\x03R\x15ruleAssociationsCount\x12C\n" +
+	"\x06errors\x18\x02 \x03(\v2-.google.cloud.chronicle.v1.ReferenceListErrorR\x06errors\"\xa4\x05\n" +
+	"\rReferenceList\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12R\n" +
+	"\x14revision_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12revisionCreateTime\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12M\n" +
+	"\aentries\x18\x05 \x03(\v2-.google.cloud.chronicle.v1.ReferenceListEntryB\x04\xe2A\x01\x02R\aentries\x12\x1a\n" +
+	"\x05rules\x18\x06 \x03(\tB\x04\xe2A\x01\x03R\x05rules\x12Y\n" +
+	"\vsyntax_type\x18\b \x01(\x0e22.google.cloud.chronicle.v1.ReferenceListSyntaxTypeB\x04\xe2A\x01\x02R\n" +
+	"syntaxType\x12<\n" +
+	"\x17rule_associations_count\x18\t \x01(\x05B\x04\xe2A\x01\x03R\x15ruleAssociationsCount\x12C\n" +
 	"\n" +
 	"scope_info\x18\v \x01(\v2$.google.cloud.chronicle.v1.ScopeInfoR\tscopeInfo:\x8a\x01\xeaA\x86\x01\n" +
-	"&chronicle.googleapis.com/ReferenceList\x12\\projects/{project}/locations/{location}/instances/{instance}/referenceLists/{reference_list}\"/\n" +
-	"\x12ReferenceListEntry\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\tB\x03\xe0A\x02R\x05value\"Z\n" +
+	"&chronicle.googleapis.com/ReferenceList\x12\\projects/{project}/locations/{location}/instances/{instance}/referenceLists/{reference_list}\"0\n" +
+	"\x12ReferenceListEntry\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05value\"Z\n" +
 	"\x12ReferenceListError\x12\x1f\n" +
 	"\vline_number\x18\x01 \x01(\x05R\n" +
 	"lineNumber\x12#\n" +

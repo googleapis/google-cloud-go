@@ -176,16 +176,16 @@ var File_google_cloud_ces_v1beta_widget_service_proto protoreflect.FileDescripto
 
 const file_google_cloud_ces_v1beta_widget_service_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/ces/v1beta/widget_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfe\x01\n" +
-	"\x18GenerateChatTokenRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/SessionR\x04name\x12E\n" +
+	",google/cloud/ces/v1beta/widget_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\x02\n" +
+	"\x18GenerateChatTokenRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/SessionR\x04name\x12F\n" +
 	"\n" +
-	"deployment\x18\x02 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"deployment\x18\x02 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/DeploymentR\n" +
-	"deployment\x12,\n" +
-	"\x0frecaptcha_token\x18\x03 \x01(\tB\x03\xe0A\x01R\x0erecaptchaToken\x125\n" +
-	"\x14live_handoff_enabled\x18\x04 \x01(\bB\x03\xe0A\x01R\x12liveHandoffEnabled\"w\n" +
+	"deployment\x12-\n" +
+	"\x0frecaptcha_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0erecaptchaToken\x126\n" +
+	"\x14live_handoff_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x12liveHandoffEnabled\"w\n" +
 	"\x19GenerateChatTokenResponse\x12\x1d\n" +
 	"\n" +
 	"chat_token\x18\x01 \x01(\tR\tchatToken\x12;\n" +

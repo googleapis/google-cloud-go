@@ -1102,12 +1102,12 @@ var File_google_cloud_discoveryengine_v1alpha_user_event_proto protoreflect.File
 
 const file_google_cloud_discoveryengine_v1alpha_user_event_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/discoveryengine/v1alpha/user_event.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe7\n" +
+	"5google/cloud/discoveryengine/v1alpha/user_event.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe9\n" +
 	"\n" +
-	"\tUserEvent\x12\"\n" +
+	"\tUserEvent\x12#\n" +
 	"\n" +
-	"event_type\x18\x01 \x01(\tB\x03\xe0A\x02R\teventType\x12)\n" +
-	"\x0euser_pseudo_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fuserPseudoId\x12B\n" +
+	"event_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\teventType\x12*\n" +
+	"\x0euser_pseudo_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fuserPseudoId\x12B\n" +
 	"\x06engine\x18\x13 \x01(\tB*\xfaA'\n" +
 	"%discoveryengine.googleapis.com/EngineR\x06engine\x12L\n" +
 	"\n" +
@@ -1153,10 +1153,10 @@ const file_google_cloud_discoveryengine_v1alpha_user_event_proto_rawDesc = "" +
 	"\a_offset\"n\n" +
 	"\x0eCompletionInfo\x12/\n" +
 	"\x13selected_suggestion\x18\x01 \x01(\tR\x12selectedSuggestion\x12+\n" +
-	"\x11selected_position\x18\x02 \x01(\x05R\x10selectedPosition\"\x83\x02\n" +
-	"\x0fTransactionInfo\x12\x1e\n" +
-	"\x05value\x18\x01 \x01(\x02B\x03\xe0A\x02H\x00R\x05value\x88\x01\x01\x12\x1f\n" +
-	"\bcurrency\x18\x02 \x01(\tB\x03\xe0A\x02R\bcurrency\x12%\n" +
+	"\x11selected_position\x18\x02 \x01(\x05R\x10selectedPosition\"\x85\x02\n" +
+	"\x0fTransactionInfo\x12\x1f\n" +
+	"\x05value\x18\x01 \x01(\x02B\x04\xe2A\x01\x02H\x00R\x05value\x88\x01\x01\x12 \n" +
+	"\bcurrency\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bcurrency\x12%\n" +
 	"\x0etransaction_id\x18\x03 \x01(\tR\rtransactionId\x12\x15\n" +
 	"\x03tax\x18\x04 \x01(\x02H\x01R\x03tax\x88\x01\x01\x12\x17\n" +
 	"\x04cost\x18\x05 \x01(\x02H\x02R\x04cost\x88\x01\x01\x12*\n" +
@@ -1164,19 +1164,19 @@ const file_google_cloud_discoveryengine_v1alpha_user_event_proto_rawDesc = "" +
 	"\x06_valueB\x06\n" +
 	"\x04_taxB\a\n" +
 	"\x05_costB\x11\n" +
-	"\x0f_discount_value\"\xff\x01\n" +
+	"\x0f_discount_value\"\x80\x02\n" +
 	"\fDocumentInfo\x12\x10\n" +
 	"\x02id\x18\x01 \x01(\tH\x00R\x02id\x12B\n" +
 	"\x04name\x18\x02 \x01(\tB,\xfaA)\n" +
 	"'discoveryengine.googleapis.com/DocumentH\x00R\x04name\x12\x12\n" +
 	"\x03uri\x18\x06 \x01(\tH\x00R\x03uri\x12\x1f\n" +
 	"\bquantity\x18\x03 \x01(\x05H\x01R\bquantity\x88\x01\x01\x12#\n" +
-	"\rpromotion_ids\x18\x04 \x03(\tR\fpromotionIds\x12\x1b\n" +
-	"\x06joined\x18\x05 \x01(\bB\x03\xe0A\x03R\x06joinedB\x15\n" +
+	"\rpromotion_ids\x18\x04 \x03(\tR\fpromotionIds\x12\x1c\n" +
+	"\x06joined\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x06joinedB\x15\n" +
 	"\x13document_descriptorB\v\n" +
-	"\t_quantity\"\xc6\x01\n" +
-	"\tPanelInfo\x12\x1e\n" +
-	"\bpanel_id\x18\x02 \x01(\tB\x03\xe0A\x02R\apanelId\x12!\n" +
+	"\t_quantity\"\xc7\x01\n" +
+	"\tPanelInfo\x12\x1f\n" +
+	"\bpanel_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\apanelId\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12*\n" +
 	"\x0epanel_position\x18\x04 \x01(\x05H\x00R\rpanelPosition\x88\x01\x01\x12&\n" +
 	"\ftotal_panels\x18\x05 \x01(\x05H\x01R\vtotalPanels\x88\x01\x01B\x11\n" +

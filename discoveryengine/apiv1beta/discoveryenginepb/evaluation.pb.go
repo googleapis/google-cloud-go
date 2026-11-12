@@ -584,23 +584,23 @@ var File_google_cloud_discoveryengine_v1beta_evaluation_proto protoreflect.FileD
 
 const file_google_cloud_discoveryengine_v1beta_evaluation_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/discoveryengine/v1beta/evaluation.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe7\b\n" +
+	"4google/cloud/discoveryengine/v1beta/evaluation.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xf2\b\n" +
 	"\n" +
-	"Evaluation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12l\n" +
-	"\x0fevaluation_spec\x18\x02 \x01(\v2>.google.cloud.discoveryengine.v1beta.Evaluation.EvaluationSpecB\x03\xe0A\x02R\x0eevaluationSpec\x12a\n" +
-	"\x0fquality_metrics\x18\x03 \x01(\v23.google.cloud.discoveryengine.v1beta.QualityMetricsB\x03\xe0A\x03R\x0equalityMetrics\x12P\n" +
-	"\x05state\x18\x04 \x01(\x0e25.google.cloud.discoveryengine.v1beta.Evaluation.StateB\x03\xe0A\x03R\x05state\x12-\n" +
-	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12<\n" +
-	"\rerror_samples\x18\b \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\ferrorSamples\x1a\xea\x02\n" +
-	"\x0eEvaluationSpec\x12`\n" +
-	"\x0esearch_request\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1beta.SearchRequestB\x03\xe0A\x02H\x00R\rsearchRequest\x12v\n" +
-	"\x0equery_set_spec\x18\x01 \x01(\v2K.google.cloud.discoveryengine.v1beta.Evaluation.EvaluationSpec.QuerySetSpecB\x03\xe0A\x01R\fquerySetSpec\x1ao\n" +
-	"\fQuerySetSpec\x12_\n" +
-	"\x10sample_query_set\x18\x01 \x01(\tB5\xe0A\x01\xfaA/\n" +
+	"Evaluation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12m\n" +
+	"\x0fevaluation_spec\x18\x02 \x01(\v2>.google.cloud.discoveryengine.v1beta.Evaluation.EvaluationSpecB\x04\xe2A\x01\x02R\x0eevaluationSpec\x12b\n" +
+	"\x0fquality_metrics\x18\x03 \x01(\v23.google.cloud.discoveryengine.v1beta.QualityMetricsB\x04\xe2A\x01\x03R\x0equalityMetrics\x12Q\n" +
+	"\x05state\x18\x04 \x01(\x0e25.google.cloud.discoveryengine.v1beta.Evaluation.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12=\n" +
+	"\rerror_samples\x18\b \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\ferrorSamples\x1a\xed\x02\n" +
+	"\x0eEvaluationSpec\x12a\n" +
+	"\x0esearch_request\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1beta.SearchRequestB\x04\xe2A\x01\x02H\x00R\rsearchRequest\x12w\n" +
+	"\x0equery_set_spec\x18\x01 \x01(\v2K.google.cloud.discoveryengine.v1beta.Evaluation.EvaluationSpec.QuerySetSpecB\x04\xe2A\x01\x01R\fquerySetSpec\x1ap\n" +
+	"\fQuerySetSpec\x12`\n" +
+	"\x10sample_query_set\x18\x01 \x01(\tB6\xe2A\x01\x01\xfaA/\n" +
 	"-discoveryengine.googleapis.com/SampleQuerySetR\x0esampleQuerySetB\r\n" +
 	"\vsearch_spec\"S\n" +
 	"\x05State\x12\x15\n" +

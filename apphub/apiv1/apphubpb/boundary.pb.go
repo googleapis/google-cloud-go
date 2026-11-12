@@ -209,15 +209,15 @@ var File_google_cloud_apphub_v1_boundary_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apphub_v1_boundary_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/apphub/v1/boundary.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\x03\n" +
-	"\bBoundary\x12 \n" +
-	"\bcrm_node\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\acrmNode\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12>\n" +
-	"\x04type\x18\x05 \x01(\x0e2%.google.cloud.apphub.v1.Boundary.TypeB\x03\xe0A\x03R\x04type\"N\n" +
+	"%google/cloud/apphub/v1/boundary.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd4\x03\n" +
+	"\bBoundary\x12!\n" +
+	"\bcrm_node\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\acrmNode\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12?\n" +
+	"\x04type\x18\x05 \x01(\x0e2%.google.cloud.apphub.v1.Boundary.TypeB\x04\xe2A\x01\x03R\x04type\"N\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tAUTOMATIC\x10\x01\x12\n" +

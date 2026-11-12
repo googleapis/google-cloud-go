@@ -257,30 +257,30 @@ var File_google_shopping_merchant_lfp_v1_lfpsale_proto protoreflect.FileDescript
 
 const file_google_shopping_merchant_lfp_v1_lfpsale_proto_rawDesc = "" +
 	"\n" +
-	"-google/shopping/merchant/lfp/v1/lfpsale.proto\x12\x1fgoogle.shopping.merchant.lfp.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\"\xdf\x04\n" +
-	"\aLfpSale\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12*\n" +
-	"\x0etarget_account\x18\x02 \x01(\x03B\x03\xe0A\x02R\rtargetAccount\x12\"\n" +
+	"-google/shopping/merchant/lfp/v1/lfpsale.proto\x12\x1fgoogle.shopping.merchant.lfp.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\"\xe9\x04\n" +
+	"\aLfpSale\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12+\n" +
+	"\x0etarget_account\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\rtargetAccount\x12#\n" +
 	"\n" +
-	"store_code\x18\x03 \x01(\tB\x03\xe0A\x02R\tstoreCode\x12\x1e\n" +
-	"\boffer_id\x18\x04 \x01(\tB\x03\xe0A\x02R\aofferId\x12$\n" +
-	"\vregion_code\x18\x05 \x01(\tB\x03\xe0A\x02R\n" +
-	"regionCode\x12.\n" +
-	"\x10content_language\x18\x06 \x01(\tB\x03\xe0A\x02R\x0fcontentLanguage\x12\x17\n" +
-	"\x04gtin\x18\a \x01(\tB\x03\xe0A\x02R\x04gtin\x126\n" +
-	"\x05price\x18\b \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x02R\x05price\x12\x1f\n" +
-	"\bquantity\x18\t \x01(\x03B\x03\xe0A\x02R\bquantity\x12<\n" +
+	"store_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tstoreCode\x12\x1f\n" +
+	"\boffer_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\aofferId\x12%\n" +
+	"\vregion_code\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"regionCode\x12/\n" +
+	"\x10content_language\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x0fcontentLanguage\x12\x18\n" +
+	"\x04gtin\x18\a \x01(\tB\x04\xe2A\x01\x02R\x04gtin\x127\n" +
+	"\x05price\x18\b \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x02R\x05price\x12 \n" +
+	"\bquantity\x18\t \x01(\x03B\x04\xe2A\x01\x02R\bquantity\x12=\n" +
 	"\tsale_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\bsaleTime\x12\"\n" +
-	"\x03uid\x18\v \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01H\x00R\x03uid\x88\x01\x01\x12'\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\bsaleTime\x12#\n" +
+	"\x03uid\x18\v \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01H\x00R\x03uid\x88\x01\x01\x12(\n" +
 	"\n" +
-	"feed_label\x18\f \x01(\tB\x03\xe0A\x01H\x01R\tfeedLabel\x88\x01\x01:^\xeaA[\n" +
+	"feed_label\x18\f \x01(\tB\x04\xe2A\x01\x01H\x01R\tfeedLabel\x88\x01\x01:^\xeaA[\n" +
 	"\"merchantapi.googleapis.com/LfpSale\x12\"accounts/{account}/lfpSales/{sale}*\blfpSales2\alfpSaleB\x06\n" +
 	"\x04_uidB\r\n" +
-	"\v_feed_label\"}\n" +
-	"\x14InsertLfpSaleRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12H\n" +
-	"\blfp_sale\x18\x02 \x01(\v2(.google.shopping.merchant.lfp.v1.LfpSaleB\x03\xe0A\x02R\alfpSale2\x8b\x02\n" +
+	"\v_feed_label\"\x7f\n" +
+	"\x14InsertLfpSaleRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12I\n" +
+	"\blfp_sale\x18\x02 \x01(\v2(.google.shopping.merchant.lfp.v1.LfpSaleB\x04\xe2A\x01\x02R\alfpSale2\x8b\x02\n" +
 	"\x0eLfpSaleService\x12\xaf\x01\n" +
 	"\rInsertLfpSale\x125.google.shopping.merchant.lfp.v1.InsertLfpSaleRequest\x1a(.google.shopping.merchant.lfp.v1.LfpSale\"=\x82\xd3\xe4\x93\x027:\blfp_sale\"+/lfp/v1/{parent=accounts/*}/lfpSales:insert\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\xdc\x01\n" +
 	"#com.google.shopping.merchant.lfp.v1B\fLfpSaleProtoP\x01Z;cloud.google.com/go/shopping/merchant/lfp/apiv1/lfppb;lfppb\xaa\x02\x1fGoogle.Shopping.Merchant.Lfp.V1\xca\x02\x1fGoogle\\Shopping\\Merchant\\Lfp\\V1\xea\x02#Google::Shopping::Merchant::Lfp::V1b\x06proto3"

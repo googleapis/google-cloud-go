@@ -621,6 +621,11 @@ func (c *productReviewsRESTClient) GetProductReview(ctx context.Context, req *re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/reviews/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -686,6 +691,11 @@ func (c *productReviewsRESTClient) ListProductReviews(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/reviews/v1beta/%v/productReviews", req.GetParent())
@@ -760,6 +770,11 @@ func (c *productReviewsRESTClient) InsertProductReview(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/reviews/v1beta/%v/productReviews:insert", req.GetParent())
 
 	params := url.Values{}
@@ -813,6 +828,11 @@ func (c *productReviewsRESTClient) InsertProductReview(ctx context.Context, req 
 func (c *productReviewsRESTClient) DeleteProductReview(ctx context.Context, req *reviewspb.DeleteProductReviewRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/reviews/v1beta/%v", req.GetName())

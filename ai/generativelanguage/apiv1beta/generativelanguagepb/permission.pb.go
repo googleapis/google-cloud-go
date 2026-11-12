@@ -250,13 +250,13 @@ var File_google_ai_generativelanguage_v1beta_permission_proto protoreflect.FileD
 
 const file_google_ai_generativelanguage_v1beta_permission_proto_rawDesc = "" +
 	"\n" +
-	"4google/ai/generativelanguage/v1beta/permission.proto\x12#google.ai.generativelanguage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x85\x05\n" +
+	"4google/ai/generativelanguage/v1beta/permission.proto\x12#google.ai.generativelanguage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x83\x05\n" +
 	"\n" +
-	"Permission\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12k\n" +
-	"\fgrantee_type\x18\x02 \x01(\x0e2;.google.ai.generativelanguage.v1beta.Permission.GranteeTypeB\x06\xe0A\x01\xe0A\x05H\x00R\vgranteeType\x88\x01\x01\x120\n" +
-	"\remail_address\x18\x03 \x01(\tB\x06\xe0A\x01\xe0A\x05H\x01R\femailAddress\x88\x01\x01\x12R\n" +
-	"\x04role\x18\x04 \x01(\x0e24.google.ai.generativelanguage.v1beta.Permission.RoleB\x03\xe0A\x02H\x02R\x04role\x88\x01\x01\"N\n" +
+	"Permission\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12j\n" +
+	"\fgrantee_type\x18\x02 \x01(\x0e2;.google.ai.generativelanguage.v1beta.Permission.GranteeTypeB\x05\xe2A\x02\x01\x05H\x00R\vgranteeType\x88\x01\x01\x12/\n" +
+	"\remail_address\x18\x03 \x01(\tB\x05\xe2A\x02\x01\x05H\x01R\femailAddress\x88\x01\x01\x12S\n" +
+	"\x04role\x18\x04 \x01(\x0e24.google.ai.generativelanguage.v1beta.Permission.RoleB\x04\xe2A\x01\x02H\x02R\x04role\x88\x01\x01\"N\n" +
 	"\vGranteeType\x12\x1c\n" +
 	"\x18GRANTEE_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04USER\x10\x01\x12\t\n" +

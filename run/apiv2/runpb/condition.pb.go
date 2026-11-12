@@ -380,6 +380,8 @@ const (
 	Condition_DELETED Condition_ExecutionReason = 5
 	// A delayed execution is waiting for a start time.
 	Condition_DELAYED_START_PENDING Condition_ExecutionReason = 6
+	// A delayed execution exceeded the maximum runtime duration.
+	Condition_DELAYED_EXECUTION_EXCEEDING_DURATION_LIMIT Condition_ExecutionReason = 7
 )
 
 // Enum value maps for Condition_ExecutionReason.
@@ -392,6 +394,7 @@ var (
 		4: "CANCELLING",
 		5: "DELETED",
 		6: "DELAYED_START_PENDING",
+		7: "DELAYED_EXECUTION_EXCEEDING_DURATION_LIMIT",
 	}
 	Condition_ExecutionReason_value = map[string]int32{
 		"EXECUTION_REASON_UNDEFINED":       0,
@@ -401,6 +404,7 @@ var (
 		"CANCELLING":                       4,
 		"DELETED":                          5,
 		"DELAYED_START_PENDING":            6,
+		"DELAYED_EXECUTION_EXCEEDING_DURATION_LIMIT": 7,
 	}
 )
 
@@ -431,6 +435,67 @@ func (Condition_ExecutionReason) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_run_v2_condition_proto_rawDescGZIP(), []int{0, 4}
 }
 
+// Reasons specific to Instance resource.
+type Condition_InstanceReason int32
+
+const (
+	// Default value.
+	Condition_INSTANCE_REASON_UNSPECIFIED Condition_InstanceReason = 0
+	// Instance deleted.
+	Condition_INSTANCE_DELETED Condition_InstanceReason = 1
+	// Instance stopped.
+	Condition_INSTANCE_STOPPED Condition_InstanceReason = 2
+	// Instance stopping.
+	Condition_INSTANCE_STOPPING Condition_InstanceReason = 3
+	// Instance exited with a non-zero exit code.
+	Condition_INSTANCE_NON_ZERO_EXIT_CODE Condition_InstanceReason = 4
+)
+
+// Enum value maps for Condition_InstanceReason.
+var (
+	Condition_InstanceReason_name = map[int32]string{
+		0: "INSTANCE_REASON_UNSPECIFIED",
+		1: "INSTANCE_DELETED",
+		2: "INSTANCE_STOPPED",
+		3: "INSTANCE_STOPPING",
+		4: "INSTANCE_NON_ZERO_EXIT_CODE",
+	}
+	Condition_InstanceReason_value = map[string]int32{
+		"INSTANCE_REASON_UNSPECIFIED": 0,
+		"INSTANCE_DELETED":            1,
+		"INSTANCE_STOPPED":            2,
+		"INSTANCE_STOPPING":           3,
+		"INSTANCE_NON_ZERO_EXIT_CODE": 4,
+	}
+)
+
+func (x Condition_InstanceReason) Enum() *Condition_InstanceReason {
+	p := new(Condition_InstanceReason)
+	*p = x
+	return p
+}
+
+func (x Condition_InstanceReason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Condition_InstanceReason) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_run_v2_condition_proto_enumTypes[5].Descriptor()
+}
+
+func (Condition_InstanceReason) Type() protoreflect.EnumType {
+	return &file_google_cloud_run_v2_condition_proto_enumTypes[5]
+}
+
+func (x Condition_InstanceReason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Condition_InstanceReason.Descriptor instead.
+func (Condition_InstanceReason) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_condition_proto_rawDescGZIP(), []int{0, 5}
+}
+
 // Defines a status condition for a resource.
 type Condition struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -457,6 +522,7 @@ type Condition struct {
 	//	*Condition_Reason
 	//	*Condition_RevisionReason_
 	//	*Condition_ExecutionReason_
+	//	*Condition_InstanceReason_
 	Reasons       isCondition_Reasons `protobuf_oneof:"reasons"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -561,6 +627,15 @@ func (x *Condition) GetExecutionReason() Condition_ExecutionReason {
 	return Condition_EXECUTION_REASON_UNDEFINED
 }
 
+func (x *Condition) GetInstanceReason() Condition_InstanceReason {
+	if x != nil {
+		if x, ok := x.Reasons.(*Condition_InstanceReason_); ok {
+			return x.InstanceReason
+		}
+	}
+	return Condition_INSTANCE_REASON_UNSPECIFIED
+}
+
 type isCondition_Reasons interface {
 	isCondition_Reasons()
 }
@@ -580,26 +655,34 @@ type Condition_ExecutionReason_ struct {
 	ExecutionReason Condition_ExecutionReason `protobuf:"varint,11,opt,name=execution_reason,json=executionReason,proto3,enum=google.cloud.run.v2.Condition_ExecutionReason,oneof"`
 }
 
+type Condition_InstanceReason_ struct {
+	// Output only. A reason for the instance condition.
+	InstanceReason Condition_InstanceReason `protobuf:"varint,12,opt,name=instance_reason,json=instanceReason,proto3,enum=google.cloud.run.v2.Condition_InstanceReason,oneof"`
+}
+
 func (*Condition_Reason) isCondition_Reasons() {}
 
 func (*Condition_RevisionReason_) isCondition_Reasons() {}
 
 func (*Condition_ExecutionReason_) isCondition_Reasons() {}
 
+func (*Condition_InstanceReason_) isCondition_Reasons() {}
+
 var File_google_cloud_run_v2_condition_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_condition_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/run/v2/condition.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\r\n" +
+	"#google/cloud/run/v2/condition.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xea\x0f\n" +
 	"\tCondition\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12:\n" +
 	"\x05state\x18\x02 \x01(\x0e2$.google.cloud.run.v2.Condition.StateR\x05state\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessage\x12L\n" +
 	"\x14last_transition_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x12lastTransitionTime\x12C\n" +
-	"\bseverity\x18\x05 \x01(\x0e2'.google.cloud.run.v2.Condition.SeverityR\bseverity\x12J\n" +
-	"\x06reason\x18\x06 \x01(\x0e2+.google.cloud.run.v2.Condition.CommonReasonB\x03\xe0A\x03H\x00R\x06reason\x12]\n" +
-	"\x0frevision_reason\x18\t \x01(\x0e2-.google.cloud.run.v2.Condition.RevisionReasonB\x03\xe0A\x03H\x00R\x0erevisionReason\x12`\n" +
-	"\x10execution_reason\x18\v \x01(\x0e2..google.cloud.run.v2.Condition.ExecutionReasonB\x03\xe0A\x03H\x00R\x0fexecutionReason\"\x7f\n" +
+	"\bseverity\x18\x05 \x01(\x0e2'.google.cloud.run.v2.Condition.SeverityR\bseverity\x12K\n" +
+	"\x06reason\x18\x06 \x01(\x0e2+.google.cloud.run.v2.Condition.CommonReasonB\x04\xe2A\x01\x03H\x00R\x06reason\x12^\n" +
+	"\x0frevision_reason\x18\t \x01(\x0e2-.google.cloud.run.v2.Condition.RevisionReasonB\x04\xe2A\x01\x03H\x00R\x0erevisionReason\x12a\n" +
+	"\x10execution_reason\x18\v \x01(\x0e2..google.cloud.run.v2.Condition.ExecutionReasonB\x04\xe2A\x01\x03H\x00R\x0fexecutionReason\x12^\n" +
+	"\x0finstance_reason\x18\f \x01(\x0e2-.google.cloud.run.v2.Condition.InstanceReasonB\x04\xe2A\x01\x03H\x00R\x0einstanceReason\"\x7f\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11CONDITION_PENDING\x10\x01\x12\x19\n" +
@@ -644,7 +727,7 @@ const file_google_cloud_run_v2_condition_proto_rawDesc = "" +
 	"\rNO_DEPLOYMENT\x10\n" +
 	"\x12\x18\n" +
 	"\x14HEALTH_CHECK_SKIPPED\x10\v\x12\x19\n" +
-	"\x15MIN_INSTANCES_WARMING\x10\f\"\xb6\x01\n" +
+	"\x15MIN_INSTANCES_WARMING\x10\f\"\xe6\x01\n" +
 	"\x0fExecutionReason\x12\x1e\n" +
 	"\x1aEXECUTION_REASON_UNDEFINED\x10\x00\x12$\n" +
 	" JOB_STATUS_SERVICE_POLLING_ERROR\x10\x01\x12\x16\n" +
@@ -653,7 +736,14 @@ const file_google_cloud_run_v2_condition_proto_rawDesc = "" +
 	"\n" +
 	"CANCELLING\x10\x04\x12\v\n" +
 	"\aDELETED\x10\x05\x12\x19\n" +
-	"\x15DELAYED_START_PENDING\x10\x06B\t\n" +
+	"\x15DELAYED_START_PENDING\x10\x06\x12.\n" +
+	"*DELAYED_EXECUTION_EXCEEDING_DURATION_LIMIT\x10\a\"\x95\x01\n" +
+	"\x0eInstanceReason\x12\x1f\n" +
+	"\x1bINSTANCE_REASON_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10INSTANCE_DELETED\x10\x01\x12\x14\n" +
+	"\x10INSTANCE_STOPPED\x10\x02\x12\x15\n" +
+	"\x11INSTANCE_STOPPING\x10\x03\x12\x1f\n" +
+	"\x1bINSTANCE_NON_ZERO_EXIT_CODE\x10\x04B\t\n" +
 	"\areasonsBV\n" +
 	"\x17com.google.cloud.run.v2B\x0eConditionProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
 
@@ -669,7 +759,7 @@ func file_google_cloud_run_v2_condition_proto_rawDescGZIP() []byte {
 	return file_google_cloud_run_v2_condition_proto_rawDescData
 }
 
-var file_google_cloud_run_v2_condition_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_google_cloud_run_v2_condition_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_google_cloud_run_v2_condition_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_google_cloud_run_v2_condition_proto_goTypes = []any{
 	(Condition_State)(0),           // 0: google.cloud.run.v2.Condition.State
@@ -677,21 +767,23 @@ var file_google_cloud_run_v2_condition_proto_goTypes = []any{
 	(Condition_CommonReason)(0),    // 2: google.cloud.run.v2.Condition.CommonReason
 	(Condition_RevisionReason)(0),  // 3: google.cloud.run.v2.Condition.RevisionReason
 	(Condition_ExecutionReason)(0), // 4: google.cloud.run.v2.Condition.ExecutionReason
-	(*Condition)(nil),              // 5: google.cloud.run.v2.Condition
-	(*timestamppb.Timestamp)(nil),  // 6: google.protobuf.Timestamp
+	(Condition_InstanceReason)(0),  // 5: google.cloud.run.v2.Condition.InstanceReason
+	(*Condition)(nil),              // 6: google.cloud.run.v2.Condition
+	(*timestamppb.Timestamp)(nil),  // 7: google.protobuf.Timestamp
 }
 var file_google_cloud_run_v2_condition_proto_depIdxs = []int32{
 	0, // 0: google.cloud.run.v2.Condition.state:type_name -> google.cloud.run.v2.Condition.State
-	6, // 1: google.cloud.run.v2.Condition.last_transition_time:type_name -> google.protobuf.Timestamp
+	7, // 1: google.cloud.run.v2.Condition.last_transition_time:type_name -> google.protobuf.Timestamp
 	1, // 2: google.cloud.run.v2.Condition.severity:type_name -> google.cloud.run.v2.Condition.Severity
 	2, // 3: google.cloud.run.v2.Condition.reason:type_name -> google.cloud.run.v2.Condition.CommonReason
 	3, // 4: google.cloud.run.v2.Condition.revision_reason:type_name -> google.cloud.run.v2.Condition.RevisionReason
 	4, // 5: google.cloud.run.v2.Condition.execution_reason:type_name -> google.cloud.run.v2.Condition.ExecutionReason
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	5, // 6: google.cloud.run.v2.Condition.instance_reason:type_name -> google.cloud.run.v2.Condition.InstanceReason
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_condition_proto_init() }
@@ -703,13 +795,14 @@ func file_google_cloud_run_v2_condition_proto_init() {
 		(*Condition_Reason)(nil),
 		(*Condition_RevisionReason_)(nil),
 		(*Condition_ExecutionReason_)(nil),
+		(*Condition_InstanceReason_)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_run_v2_condition_proto_rawDesc), len(file_google_cloud_run_v2_condition_proto_rawDesc)),
-			NumEnums:      5,
+			NumEnums:      6,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,

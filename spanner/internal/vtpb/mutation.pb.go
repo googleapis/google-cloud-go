@@ -522,7 +522,7 @@ var File_google_spanner_v1_vtinternal_mutation_proto protoreflect.FileDescriptor
 
 const file_google_spanner_v1_vtinternal_mutation_proto_rawDesc = "" +
 	"\n" +
-	"+google/spanner/v1/vtinternal/mutation.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a'google/spanner/v1/vtinternal/keys.proto\"\xb9\b\n" +
+	"+google/spanner/v1/vtinternal/mutation.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a'google/spanner/v1/vtinternal/keys.proto\"\xc0\b\n" +
 	"\bMutation\x12F\n" +
 	"\x06insert\x18\x01 \x01(\v2,.google.spanner.v1.vtinternal.Mutation.WriteH\x00R\x06insert\x12F\n" +
 	"\x06update\x18\x02 \x01(\v2,.google.spanner.v1.vtinternal.Mutation.WriteH\x00R\x06update\x12X\n" +
@@ -530,22 +530,22 @@ const file_google_spanner_v1_vtinternal_mutation_proto_rawDesc = "" +
 	"\areplace\x18\x04 \x01(\v2,.google.spanner.v1.vtinternal.Mutation.WriteH\x00R\areplace\x12G\n" +
 	"\x06delete\x18\x05 \x01(\v2-.google.spanner.v1.vtinternal.Mutation.DeleteH\x00R\x06delete\x12A\n" +
 	"\x04send\x18\x06 \x01(\v2+.google.spanner.v1.vtinternal.Mutation.SendH\x00R\x04send\x12>\n" +
-	"\x03ack\x18\a \x01(\v2*.google.spanner.v1.vtinternal.Mutation.AckH\x00R\x03ack\x1ap\n" +
-	"\x05Write\x12\x19\n" +
-	"\x05table\x18\x01 \x01(\tB\x03\xe0A\x02R\x05table\x12\x18\n" +
+	"\x03ack\x18\a \x01(\v2*.google.spanner.v1.vtinternal.Mutation.AckH\x00R\x03ack\x1aq\n" +
+	"\x05Write\x12\x1a\n" +
+	"\x05table\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05table\x12\x18\n" +
 	"\acolumns\x18\x02 \x03(\tR\acolumns\x122\n" +
-	"\x06values\x18\x03 \x03(\v2\x1a.google.protobuf.ListValueR\x06values\x1ag\n" +
-	"\x06Delete\x12\x19\n" +
-	"\x05table\x18\x01 \x01(\tB\x03\xe0A\x02R\x05table\x12B\n" +
-	"\akey_set\x18\x02 \x01(\v2$.google.spanner.v1.vtinternal.KeySetB\x03\xe0A\x02R\x06keySet\x1a\xc5\x01\n" +
-	"\x04Send\x12\x19\n" +
-	"\x05queue\x18\x01 \x01(\tB\x03\xe0A\x02R\x05queue\x121\n" +
-	"\x03key\x18\x02 \x01(\v2\x1a.google.protobuf.ListValueB\x03\xe0A\x02R\x03key\x12=\n" +
+	"\x06values\x18\x03 \x03(\v2\x1a.google.protobuf.ListValueR\x06values\x1ai\n" +
+	"\x06Delete\x12\x1a\n" +
+	"\x05table\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05table\x12C\n" +
+	"\akey_set\x18\x02 \x01(\v2$.google.spanner.v1.vtinternal.KeySetB\x04\xe2A\x01\x02R\x06keySet\x1a\xc7\x01\n" +
+	"\x04Send\x12\x1a\n" +
+	"\x05queue\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05queue\x122\n" +
+	"\x03key\x18\x02 \x01(\v2\x1a.google.protobuf.ListValueB\x04\xe2A\x01\x02R\x03key\x12=\n" +
 	"\fdeliver_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\vdeliverTime\x120\n" +
-	"\apayload\x18\x04 \x01(\v2\x16.google.protobuf.ValueR\apayload\x1a}\n" +
-	"\x03Ack\x12\x19\n" +
-	"\x05queue\x18\x01 \x01(\tB\x03\xe0A\x02R\x05queue\x121\n" +
-	"\x03key\x18\x02 \x01(\v2\x1a.google.protobuf.ListValueB\x03\xe0A\x02R\x03key\x12(\n" +
+	"\apayload\x18\x04 \x01(\v2\x16.google.protobuf.ValueR\apayload\x1a\x7f\n" +
+	"\x03Ack\x12\x1a\n" +
+	"\x05queue\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05queue\x122\n" +
+	"\x03key\x18\x02 \x01(\v2\x1a.google.protobuf.ListValueB\x04\xe2A\x01\x02R\x03key\x12(\n" +
 	"\x10ignore_not_found\x18\x03 \x01(\bR\x0eignoreNotFoundB\v\n" +
 	"\toperationB\xa9\x01\n" +
 	"\x15com.google.spanner.v1B\rMutationProtoP\x01Z.cloud.google.com/go/spanner/internal/vtpb;vtpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"

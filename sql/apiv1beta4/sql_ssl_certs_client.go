@@ -41,10 +41,13 @@ var newSqlSslCertsClientHook clientHook
 
 // SqlSslCertsCallOptions contains the retry settings for each method of SqlSslCertsClient.
 type SqlSslCertsCallOptions struct {
-	Delete []gax.CallOption
-	Get    []gax.CallOption
-	Insert []gax.CallOption
-	List   []gax.CallOption
+	Delete                           []gax.CallOption
+	Get                              []gax.CallOption
+	Insert                           []gax.CallOption
+	List                             []gax.CallOption
+	UpdateCustomerManagedCertificate []gax.CallOption
+	DeleteCustomerManagedCertificate []gax.CallOption
+	ListCustomerManagedCertificates  []gax.CallOption
 }
 
 func defaultSqlSslCertsGRPCClientOptions() []option.ClientOption {
@@ -76,6 +79,15 @@ func defaultSqlSslCertsCallOptions() *SqlSslCertsCallOptions {
 		List: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpdateCustomerManagedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteCustomerManagedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListCustomerManagedCertificates: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -93,6 +105,15 @@ func defaultSqlSslCertsRESTCallOptions() *SqlSslCertsCallOptions {
 		List: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpdateCustomerManagedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteCustomerManagedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListCustomerManagedCertificates: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -105,10 +126,15 @@ type internalSqlSslCertsClient interface {
 	Get(context.Context, *sqlpb.SqlSslCertsGetRequest, ...gax.CallOption) (*sqlpb.SslCert, error)
 	Insert(context.Context, *sqlpb.SqlSslCertsInsertRequest, ...gax.CallOption) (*sqlpb.SslCertsInsertResponse, error)
 	List(context.Context, *sqlpb.SqlSslCertsListRequest, ...gax.CallOption) (*sqlpb.SslCertsListResponse, error)
+	UpdateCustomerManagedCertificate(context.Context, *sqlpb.UpdateCustomerManagedCertificateRequest, ...gax.CallOption) (*sqlpb.Operation, error)
+	DeleteCustomerManagedCertificate(context.Context, *sqlpb.DeleteCustomerManagedCertificateRequest, ...gax.CallOption) (*sqlpb.Operation, error)
+	ListCustomerManagedCertificates(context.Context, *sqlpb.ListCustomerManagedCertificatesRequest, ...gax.CallOption) (*sqlpb.ListCustomerManagedCertificatesResponse, error)
 }
 
 // SqlSslCertsClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to manage SSL certs for Cloud SQL instances.
 type SqlSslCertsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlSslCertsClient
@@ -165,6 +191,24 @@ func (c *SqlSslCertsClient) List(ctx context.Context, req *sqlpb.SqlSslCertsList
 	return c.internalClient.List(ctx, req, opts...)
 }
 
+// UpdateCustomerManagedCertificate upload and update customer managed certificate bundle for an existing
+// Cloud SQL instance.
+func (c *SqlSslCertsClient) UpdateCustomerManagedCertificate(ctx context.Context, req *sqlpb.UpdateCustomerManagedCertificateRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+	return c.internalClient.UpdateCustomerManagedCertificate(ctx, req, opts...)
+}
+
+// DeleteCustomerManagedCertificate delete customer managed certificate bundle for an existing Cloud SQL
+// instance.
+func (c *SqlSslCertsClient) DeleteCustomerManagedCertificate(ctx context.Context, req *sqlpb.DeleteCustomerManagedCertificateRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+	return c.internalClient.DeleteCustomerManagedCertificate(ctx, req, opts...)
+}
+
+// ListCustomerManagedCertificates list all customer managed certificate bundles for an existing Cloud SQL
+// instance.
+func (c *SqlSslCertsClient) ListCustomerManagedCertificates(ctx context.Context, req *sqlpb.ListCustomerManagedCertificatesRequest, opts ...gax.CallOption) (*sqlpb.ListCustomerManagedCertificatesResponse, error) {
+	return c.internalClient.ListCustomerManagedCertificates(ctx, req, opts...)
+}
+
 // sqlSslCertsGRPCClient is a client for interacting with Cloud SQL Admin API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -186,6 +230,8 @@ type sqlSslCertsGRPCClient struct {
 
 // NewSqlSslCertsClient creates a new sql ssl certs service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service to manage SSL certs for Cloud SQL instances.
 func NewSqlSslCertsClient(ctx context.Context, opts ...option.ClientOption) (*SqlSslCertsClient, error) {
 	clientOpts := defaultSqlSslCertsGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -235,6 +281,9 @@ func NewSqlSslCertsClient(ctx context.Context, opts ...option.ClientOption) (*Sq
 		client.CallOptions.Get = append(client.CallOptions.Get, gax.WithClientMetrics(metrics))
 		client.CallOptions.Insert = append(client.CallOptions.Insert, gax.WithClientMetrics(metrics))
 		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCustomerManagedCertificate = append(client.CallOptions.UpdateCustomerManagedCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCustomerManagedCertificate = append(client.CallOptions.DeleteCustomerManagedCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCustomerManagedCertificates = append(client.CallOptions.ListCustomerManagedCertificates, gax.WithClientMetrics(metrics))
 	}
 	if gax.IsFeatureEnabled("TRACING") {
 		tracing := gax.NewClientTracing(
@@ -251,6 +300,9 @@ func NewSqlSslCertsClient(ctx context.Context, opts ...option.ClientOption) (*Sq
 		client.CallOptions.Get = append(client.CallOptions.Get, gax.WithClientTracing(tracing))
 		client.CallOptions.Insert = append(client.CallOptions.Insert, gax.WithClientTracing(tracing))
 		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCustomerManagedCertificate = append(client.CallOptions.UpdateCustomerManagedCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCustomerManagedCertificate = append(client.CallOptions.DeleteCustomerManagedCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCustomerManagedCertificates = append(client.CallOptions.ListCustomerManagedCertificates, gax.WithClientTracing(tracing))
 	}
 	if gax.IsFeatureEnabled("LOGGING") {
 		logging := gax.NewClientLogging(
@@ -268,6 +320,9 @@ func NewSqlSslCertsClient(ctx context.Context, opts ...option.ClientOption) (*Sq
 		client.CallOptions.Get = append(client.CallOptions.Get, gax.WithClientLogging(logging))
 		client.CallOptions.Insert = append(client.CallOptions.Insert, gax.WithClientLogging(logging))
 		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCustomerManagedCertificate = append(client.CallOptions.UpdateCustomerManagedCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCustomerManagedCertificate = append(client.CallOptions.DeleteCustomerManagedCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.ListCustomerManagedCertificates = append(client.CallOptions.ListCustomerManagedCertificates, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -318,6 +373,8 @@ type sqlSslCertsRESTClient struct {
 }
 
 // NewSqlSslCertsRESTClient creates a new sql ssl certs service rest client.
+//
+// Service to manage SSL certs for Cloud SQL instances.
 func NewSqlSslCertsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlSslCertsClient, error) {
 	clientOpts := append(defaultSqlSslCertsRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -360,6 +417,9 @@ func NewSqlSslCertsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCustomerManagedCertificate = append(callOpts.UpdateCustomerManagedCertificate, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCustomerManagedCertificate = append(callOpts.DeleteCustomerManagedCertificate, gax.WithClientMetrics(metrics))
+		callOpts.ListCustomerManagedCertificates = append(callOpts.ListCustomerManagedCertificates, gax.WithClientMetrics(metrics))
 	}
 	if gax.IsFeatureEnabled("TRACING") {
 		tracing := gax.NewClientTracing(
@@ -376,6 +436,9 @@ func NewSqlSslCertsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
 		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.UpdateCustomerManagedCertificate = append(callOpts.UpdateCustomerManagedCertificate, gax.WithClientTracing(tracing))
+		callOpts.DeleteCustomerManagedCertificate = append(callOpts.DeleteCustomerManagedCertificate, gax.WithClientTracing(tracing))
+		callOpts.ListCustomerManagedCertificates = append(callOpts.ListCustomerManagedCertificates, gax.WithClientTracing(tracing))
 	}
 	if gax.IsFeatureEnabled("LOGGING") {
 		logging := gax.NewClientLogging(
@@ -393,6 +456,9 @@ func NewSqlSslCertsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
 		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.UpdateCustomerManagedCertificate = append(callOpts.UpdateCustomerManagedCertificate, gax.WithClientLogging(logging))
+		callOpts.DeleteCustomerManagedCertificate = append(callOpts.DeleteCustomerManagedCertificate, gax.WithClientLogging(logging))
+		callOpts.ListCustomerManagedCertificates = append(callOpts.ListCustomerManagedCertificates, gax.WithClientLogging(logging))
 	}
 
 	return &SqlSslCertsClient{internalClient: c, CallOptions: callOpts}, nil
@@ -519,11 +585,81 @@ func (c *sqlSslCertsGRPCClient) List(ctx context.Context, req *sqlpb.SqlSslCerts
 	return resp, nil
 }
 
+func (c *sqlSslCertsGRPCClient) UpdateCustomerManagedCertificate(ctx context.Context, req *sqlpb.UpdateCustomerManagedCertificateRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()), "certificate_bundle", url.QueryEscape(req.GetCertificateBundle()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlSslCertsService/UpdateCustomerManagedCertificate")
+	}
+	opts = append((*c.CallOptions).UpdateCustomerManagedCertificate[0:len((*c.CallOptions).UpdateCustomerManagedCertificate):len((*c.CallOptions).UpdateCustomerManagedCertificate)], opts...)
+	var resp *sqlpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.sqlSslCertsClient.UpdateCustomerManagedCertificate, req, settings.GRPC, c.logger, "UpdateCustomerManagedCertificate")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *sqlSslCertsGRPCClient) DeleteCustomerManagedCertificate(ctx context.Context, req *sqlpb.DeleteCustomerManagedCertificateRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()), "certificate_bundle", url.QueryEscape(req.GetCertificateBundle()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlSslCertsService/DeleteCustomerManagedCertificate")
+	}
+	opts = append((*c.CallOptions).DeleteCustomerManagedCertificate[0:len((*c.CallOptions).DeleteCustomerManagedCertificate):len((*c.CallOptions).DeleteCustomerManagedCertificate)], opts...)
+	var resp *sqlpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.sqlSslCertsClient.DeleteCustomerManagedCertificate, req, settings.GRPC, c.logger, "DeleteCustomerManagedCertificate")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *sqlSslCertsGRPCClient) ListCustomerManagedCertificates(ctx context.Context, req *sqlpb.ListCustomerManagedCertificatesRequest, opts ...gax.CallOption) (*sqlpb.ListCustomerManagedCertificatesResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlSslCertsService/ListCustomerManagedCertificates")
+	}
+	opts = append((*c.CallOptions).ListCustomerManagedCertificates[0:len((*c.CallOptions).ListCustomerManagedCertificates):len((*c.CallOptions).ListCustomerManagedCertificates)], opts...)
+	var resp *sqlpb.ListCustomerManagedCertificatesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.sqlSslCertsClient.ListCustomerManagedCertificates, req, settings.GRPC, c.logger, "ListCustomerManagedCertificates")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // Delete deletes the SSL certificate. For First Generation instances, the
 // certificate remains valid until the instance is restarted.
 func (c *sqlSslCertsRESTClient) Delete(ctx context.Context, req *sqlpb.SqlSslCertsDeleteRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetSha1Fingerprint(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/sslCerts/%v", req.GetProject(), req.GetInstance(), req.GetSha1Fingerprint())
@@ -580,6 +716,13 @@ func (c *sqlSslCertsRESTClient) Delete(ctx context.Context, req *sqlpb.SqlSslCer
 func (c *sqlSslCertsRESTClient) Get(ctx context.Context, req *sqlpb.SqlSslCertsGetRequest, opts ...gax.CallOption) (*sqlpb.SslCert, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetSha1Fingerprint(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/sslCerts/%v", req.GetProject(), req.GetInstance(), req.GetSha1Fingerprint())
@@ -645,6 +788,12 @@ func (c *sqlSslCertsRESTClient) Insert(ctx context.Context, req *sqlpb.SqlSslCer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/sslCerts", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -699,6 +848,12 @@ func (c *sqlSslCertsRESTClient) List(ctx context.Context, req *sqlpb.SqlSslCerts
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/sslCerts", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -731,6 +886,197 @@ func (c *sqlSslCertsRESTClient) List(ctx context.Context, req *sqlpb.SqlSslCerts
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "List")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateCustomerManagedCertificate upload and update customer managed certificate bundle for an existing
+// Cloud SQL instance.
+func (c *sqlSslCertsRESTClient) UpdateCustomerManagedCertificate(ctx context.Context, req *sqlpb.UpdateCustomerManagedCertificateRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetCertificateBundle(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/customerManagedCertificates/%v", req.GetProject(), req.GetInstance(), req.GetCertificateBundle())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()), "certificate_bundle", url.QueryEscape(req.GetCertificateBundle()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlSslCertsService/UpdateCustomerManagedCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/sql/v1beta4/projects/{project}/instances/{instance}/customerManagedCertificates/{certificate_bundle}")
+	}
+	opts = append((*c.CallOptions).UpdateCustomerManagedCertificate[0:len((*c.CallOptions).UpdateCustomerManagedCertificate):len((*c.CallOptions).UpdateCustomerManagedCertificate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &sqlpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomerManagedCertificate")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteCustomerManagedCertificate delete customer managed certificate bundle for an existing Cloud SQL
+// instance.
+func (c *sqlSslCertsRESTClient) DeleteCustomerManagedCertificate(ctx context.Context, req *sqlpb.DeleteCustomerManagedCertificateRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetCertificateBundle(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/customerManagedCertificates/%v", req.GetProject(), req.GetInstance(), req.GetCertificateBundle())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()), "certificate_bundle", url.QueryEscape(req.GetCertificateBundle()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlSslCertsService/DeleteCustomerManagedCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/sql/v1beta4/projects/{project}/instances/{instance}/customerManagedCertificates/{certificate_bundle}")
+	}
+	opts = append((*c.CallOptions).DeleteCustomerManagedCertificate[0:len((*c.CallOptions).DeleteCustomerManagedCertificate):len((*c.CallOptions).DeleteCustomerManagedCertificate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &sqlpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomerManagedCertificate")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListCustomerManagedCertificates list all customer managed certificate bundles for an existing Cloud SQL
+// instance.
+func (c *sqlSslCertsRESTClient) ListCustomerManagedCertificates(ctx context.Context, req *sqlpb.ListCustomerManagedCertificatesRequest, opts ...gax.CallOption) (*sqlpb.ListCustomerManagedCertificatesResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/customerManagedCertificates", req.GetProject(), req.GetInstance())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlSslCertsService/ListCustomerManagedCertificates")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/sql/v1beta4/projects/{project}/instances/{instance}/customerManagedCertificates")
+	}
+	opts = append((*c.CallOptions).ListCustomerManagedCertificates[0:len((*c.CallOptions).ListCustomerManagedCertificates):len((*c.CallOptions).ListCustomerManagedCertificates)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &sqlpb.ListCustomerManagedCertificatesResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomerManagedCertificates")
 		if err != nil {
 			return err
 		}

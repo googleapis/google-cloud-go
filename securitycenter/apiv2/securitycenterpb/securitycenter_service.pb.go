@@ -3798,88 +3798,89 @@ var File_google_cloud_securitycenter_v2_securitycenter_service_proto protoreflec
 
 const file_google_cloud_securitycenter_v2_securitycenter_service_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/securitycenter/v2/securitycenter_service.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a0google/cloud/securitycenter/v2/attack_path.proto\x1a4google/cloud/securitycenter/v2/bigquery_export.proto\x1a4google/cloud/securitycenter/v2/external_system.proto\x1a,google/cloud/securitycenter/v2/finding.proto\x1a0google/cloud/securitycenter/v2/mute_config.proto\x1a8google/cloud/securitycenter/v2/notification_config.proto\x1a-google/cloud/securitycenter/v2/resource.proto\x1a:google/cloud/securitycenter/v2/resource_value_config.proto\x1a3google/cloud/securitycenter/v2/security_marks.proto\x1a/google/cloud/securitycenter/v2/simulation.proto\x1a+google/cloud/securitycenter/v2/source.proto\x1a4google/cloud/securitycenter/v2/valued_resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xde\x01\n" +
-	"&BatchCreateResourceValueConfigsRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121securitycenter.googleapis.com/ResourceValueConfigR\x06parent\x12a\n" +
-	"\brequests\x18\x02 \x03(\v2@.google.cloud.securitycenter.v2.CreateResourceValueConfigRequestB\x03\xe0A\x02R\brequests\"\x94\x01\n" +
+	";google/cloud/securitycenter/v2/securitycenter_service.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a0google/cloud/securitycenter/v2/attack_path.proto\x1a4google/cloud/securitycenter/v2/bigquery_export.proto\x1a4google/cloud/securitycenter/v2/external_system.proto\x1a,google/cloud/securitycenter/v2/finding.proto\x1a0google/cloud/securitycenter/v2/mute_config.proto\x1a8google/cloud/securitycenter/v2/notification_config.proto\x1a-google/cloud/securitycenter/v2/resource.proto\x1a:google/cloud/securitycenter/v2/resource_value_config.proto\x1a3google/cloud/securitycenter/v2/security_marks.proto\x1a/google/cloud/securitycenter/v2/simulation.proto\x1a+google/cloud/securitycenter/v2/source.proto\x1a4google/cloud/securitycenter/v2/valued_resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x01\n" +
+	"&BatchCreateResourceValueConfigsRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121securitycenter.googleapis.com/ResourceValueConfigR\x06parent\x12b\n" +
+	"\brequests\x18\x02 \x03(\v2@.google.cloud.securitycenter.v2.CreateResourceValueConfigRequestB\x04\xe2A\x01\x02R\brequests\"\x94\x01\n" +
 	"'BatchCreateResourceValueConfigsResponse\x12i\n" +
-	"\x16resource_value_configs\x18\x01 \x03(\v23.google.cloud.securitycenter.v2.ResourceValueConfigR\x14resourceValueConfigs\"\xfe\x01\n" +
-	"\x17BulkMuteFindingsRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
+	"\x16resource_value_configs\x18\x01 \x03(\v23.google.cloud.securitycenter.v2.ResourceValueConfigR\x14resourceValueConfigs\"\x80\x02\n" +
+	"\x17BulkMuteFindingsRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
 	"\x01*R\x06parent\x12\x16\n" +
-	"\x06filter\x18\x02 \x01(\tR\x06filter\x12e\n" +
+	"\x06filter\x18\x02 \x01(\tR\x06filter\x12f\n" +
 	"\n" +
-	"mute_state\x18\x03 \x01(\x0e2A.google.cloud.securitycenter.v2.BulkMuteFindingsRequest.MuteStateB\x03\xe0A\x01R\tmuteState\"A\n" +
+	"mute_state\x18\x03 \x01(\x0e2A.google.cloud.securitycenter.v2.BulkMuteFindingsRequest.MuteStateB\x04\xe2A\x01\x01R\tmuteState\"A\n" +
 	"\tMuteState\x12\x1a\n" +
 	"\x16MUTE_STATE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05MUTED\x10\x01\x12\r\n" +
 	"\tUNDEFINED\x10\x02\"\x1a\n" +
-	"\x18BulkMuteFindingsResponse\"\xfe\x01\n" +
-	"\x1bCreateBigQueryExportRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,securitycenter.googleapis.com/BigQueryExportR\x06parent\x12]\n" +
-	"\x10big_query_export\x18\x02 \x01(\v2..google.cloud.securitycenter.v2.BigQueryExportB\x03\xe0A\x02R\x0ebigQueryExport\x122\n" +
-	"\x13big_query_export_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x10bigQueryExportId\"\xc8\x01\n" +
-	"\x14CreateFindingRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$securitycenter.googleapis.com/SourceR\x06parent\x12\"\n" +
+	"\x18BulkMuteFindingsResponse\"\x81\x02\n" +
+	"\x1bCreateBigQueryExportRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,securitycenter.googleapis.com/BigQueryExportR\x06parent\x12^\n" +
+	"\x10big_query_export\x18\x02 \x01(\v2..google.cloud.securitycenter.v2.BigQueryExportB\x04\xe2A\x01\x02R\x0ebigQueryExport\x123\n" +
+	"\x13big_query_export_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x10bigQueryExportId\"\xcb\x01\n" +
+	"\x14CreateFindingRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$securitycenter.googleapis.com/SourceR\x06parent\x12#\n" +
 	"\n" +
-	"finding_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tfindingId\x12F\n" +
-	"\afinding\x18\x03 \x01(\v2'.google.cloud.securitycenter.v2.FindingB\x03\xe0A\x02R\afinding\"\xe0\x01\n" +
-	"\x17CreateMuteConfigRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(securitycenter.googleapis.com/MuteConfigR\x06parent\x12P\n" +
-	"\vmute_config\x18\x02 \x01(\v2*.google.cloud.securitycenter.v2.MuteConfigB\x03\xe0A\x02R\n" +
-	"muteConfig\x12)\n" +
-	"\x0emute_config_id\x18\x03 \x01(\tB\x03\xe0A\x02R\fmuteConfigId\"\xff\x01\n" +
-	"\x1fCreateNotificationConfigRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120securitycenter.googleapis.com/NotificationConfigR\x06parent\x12 \n" +
-	"\tconfig_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bconfigId\x12h\n" +
-	"\x13notification_config\x18\x03 \x01(\v22.google.cloud.securitycenter.v2.NotificationConfigB\x03\xe0A\x02R\x12notificationConfig\"\xe3\x01\n" +
-	" CreateResourceValueConfigRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121securitycenter.googleapis.com/ResourceValueConfigR\x06parent\x12l\n" +
-	"\x15resource_value_config\x18\x02 \x01(\v23.google.cloud.securitycenter.v2.ResourceValueConfigB\x03\xe0A\x02R\x13resourceValueConfig\"\xac\x01\n" +
-	"\x13CreateSourceRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0cloudresourcemanager.googleapis.com/OrganizationR\x06parent\x12C\n" +
-	"\x06source\x18\x02 \x01(\v2&.google.cloud.securitycenter.v2.SourceB\x03\xe0A\x02R\x06source\"g\n" +
-	"\x1bDeleteBigQueryExportRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",securitycenter.googleapis.com/BigQueryExportR\x04name\"_\n" +
-	"\x17DeleteMuteConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(securitycenter.googleapis.com/MuteConfigR\x04name\"o\n" +
-	"\x1fDeleteNotificationConfigRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0securitycenter.googleapis.com/NotificationConfigR\x04name\"q\n" +
-	" DeleteResourceValueConfigRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1securitycenter.googleapis.com/ResourceValueConfigR\x04name\"4\n" +
-	"\x13BigQueryDestination\x12\x1d\n" +
-	"\adataset\x18\x01 \x01(\tB\x03\xe0A\x02R\adataset\"\xe4\x01\n" +
-	"\x16ExportFindingsMetadata\x12K\n" +
-	"\x11export_start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x0fexportStartTime\x12n\n" +
-	"\x15big_query_destination\x18\x02 \x01(\v23.google.cloud.securitycenter.v2.BigQueryDestinationB\x03\xe0A\x02H\x00R\x13bigQueryDestinationB\r\n" +
+	"finding_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tfindingId\x12G\n" +
+	"\afinding\x18\x03 \x01(\v2'.google.cloud.securitycenter.v2.FindingB\x04\xe2A\x01\x02R\afinding\"\xe3\x01\n" +
+	"\x17CreateMuteConfigRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(securitycenter.googleapis.com/MuteConfigR\x06parent\x12Q\n" +
+	"\vmute_config\x18\x02 \x01(\v2*.google.cloud.securitycenter.v2.MuteConfigB\x04\xe2A\x01\x02R\n" +
+	"muteConfig\x12*\n" +
+	"\x0emute_config_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fmuteConfigId\"\x82\x02\n" +
+	"\x1fCreateNotificationConfigRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120securitycenter.googleapis.com/NotificationConfigR\x06parent\x12!\n" +
+	"\tconfig_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bconfigId\x12i\n" +
+	"\x13notification_config\x18\x03 \x01(\v22.google.cloud.securitycenter.v2.NotificationConfigB\x04\xe2A\x01\x02R\x12notificationConfig\"\xe5\x01\n" +
+	" CreateResourceValueConfigRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121securitycenter.googleapis.com/ResourceValueConfigR\x06parent\x12m\n" +
+	"\x15resource_value_config\x18\x02 \x01(\v23.google.cloud.securitycenter.v2.ResourceValueConfigB\x04\xe2A\x01\x02R\x13resourceValueConfig\"\xae\x01\n" +
+	"\x13CreateSourceRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0cloudresourcemanager.googleapis.com/OrganizationR\x06parent\x12D\n" +
+	"\x06source\x18\x02 \x01(\v2&.google.cloud.securitycenter.v2.SourceB\x04\xe2A\x01\x02R\x06source\"h\n" +
+	"\x1bDeleteBigQueryExportRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",securitycenter.googleapis.com/BigQueryExportR\x04name\"`\n" +
+	"\x17DeleteMuteConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(securitycenter.googleapis.com/MuteConfigR\x04name\"p\n" +
+	"\x1fDeleteNotificationConfigRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0securitycenter.googleapis.com/NotificationConfigR\x04name\"r\n" +
+	" DeleteResourceValueConfigRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1securitycenter.googleapis.com/ResourceValueConfigR\x04name\"5\n" +
+	"\x13BigQueryDestination\x12\x1e\n" +
+	"\adataset\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\adataset\"\xe6\x01\n" +
+	"\x16ExportFindingsMetadata\x12L\n" +
+	"\x11export_start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x0fexportStartTime\x12o\n" +
+	"\x15big_query_destination\x18\x02 \x01(\v23.google.cloud.securitycenter.v2.BigQueryDestinationB\x04\xe2A\x01\x02H\x00R\x13bigQueryDestinationB\r\n" +
 	"\vdestination\"\x18\n" +
-	"\x16ExportFindingsResponse\"d\n" +
-	"\x18GetBigQueryExportRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",securitycenter.googleapis.com/BigQueryExportR\x04name\"\\\n" +
-	"\x14GetMuteConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(securitycenter.googleapis.com/MuteConfigR\x04name\"l\n" +
-	"\x1cGetNotificationConfigRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0securitycenter.googleapis.com/NotificationConfigR\x04name\"n\n" +
-	"\x1dGetResourceValueConfigRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1securitycenter.googleapis.com/ResourceValueConfigR\x04name\"T\n" +
-	"\x10GetSourceRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$securitycenter.googleapis.com/SourceR\x04name\"\xd0\x01\n" +
-	"\x14GroupFindingsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x16ExportFindingsResponse\"e\n" +
+	"\x18GetBigQueryExportRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",securitycenter.googleapis.com/BigQueryExportR\x04name\"]\n" +
+	"\x14GetMuteConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(securitycenter.googleapis.com/MuteConfigR\x04name\"m\n" +
+	"\x1cGetNotificationConfigRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0securitycenter.googleapis.com/NotificationConfigR\x04name\"o\n" +
+	"\x1dGetResourceValueConfigRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1securitycenter.googleapis.com/ResourceValueConfigR\x04name\"U\n" +
+	"\x10GetSourceRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$securitycenter.googleapis.com/SourceR\x04name\"\xd2\x01\n" +
+	"\x14GroupFindingsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$securitycenter.googleapis.com/SourceR\x06parent\x12\x16\n" +
-	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1e\n" +
-	"\bgroup_by\x18\x03 \x01(\tB\x03\xe0A\x02R\agroupBy\x12\x1d\n" +
+	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1f\n" +
+	"\bgroup_by\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\agroupBy\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\a \x01(\tR\tpageToken\x12\x1b\n" +
 	"\tpage_size\x18\b \x01(\x05R\bpageSize\"\xb5\x01\n" +
@@ -3895,32 +3896,32 @@ const file_google_cloud_securitycenter_v2_securitycenter_service_proto_rawDesc =
 	"\x05count\x18\x02 \x01(\x03R\x05count\x1aU\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01\"\xb6\x01\n" +
-	"\x16ListAttackPathsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(securitycenter.googleapis.com/AttackPathR\x06parent\x12\x16\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01\"\xb7\x01\n" +
+	"\x16ListAttackPathsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(securitycenter.googleapis.com/AttackPathR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\x90\x01\n" +
 	"\x17ListAttackPathsResponse\x12M\n" +
 	"\fattack_paths\x18\x01 \x03(\v2*.google.cloud.securitycenter.v2.AttackPathR\vattackPaths\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\\\n" +
-	"\x14GetSimulationRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(securitycenter.googleapis.com/SimulationR\x04name\"d\n" +
-	"\x18GetValuedResourceRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",securitycenter.googleapis.com/ValuedResourceR\x04name\"\xa6\x01\n" +
-	"\x1aListBigQueryExportsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,securitycenter.googleapis.com/BigQueryExportR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
+	"\x14GetSimulationRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(securitycenter.googleapis.com/SimulationR\x04name\"e\n" +
+	"\x18GetValuedResourceRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",securitycenter.googleapis.com/ValuedResourceR\x04name\"\xa7\x01\n" +
+	"\x1aListBigQueryExportsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,securitycenter.googleapis.com/BigQueryExportR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa1\x01\n" +
 	"\x1bListBigQueryExportsResponse\x12Z\n" +
 	"\x11big_query_exports\x18\x01 \x03(\v2..google.cloud.securitycenter.v2.BigQueryExportR\x0fbigQueryExports\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x85\x02\n" +
-	"\x13ListFindingsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x86\x02\n" +
+	"\x13ListFindingsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$securitycenter.googleapis.com/SourceR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x03 \x01(\tR\aorderBy\x129\n" +
@@ -3928,15 +3929,15 @@ const file_google_cloud_securitycenter_v2_securitycenter_service_proto_rawDesc =
 	"field_mask\x18\a \x01(\v2\x1a.google.protobuf.FieldMaskR\tfieldMask\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\b \x01(\tR\tpageToken\x12\x1b\n" +
-	"\tpage_size\x18\t \x01(\x05R\bpageSize\"\xa7\b\n" +
+	"\tpage_size\x18\t \x01(\x05R\bpageSize\"\xa8\b\n" +
 	"\x14ListFindingsResponse\x12{\n" +
 	"\x15list_findings_results\x18\x01 \x03(\v2G.google.cloud.securitycenter.v2.ListFindingsResponse.ListFindingsResultR\x13listFindingsResults\x12&\n" +
 	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x04 \x01(\x05R\ttotalSize\x1a\xca\x06\n" +
+	"total_size\x18\x04 \x01(\x05R\ttotalSize\x1a\xcb\x06\n" +
 	"\x12ListFindingsResult\x12A\n" +
-	"\afinding\x18\x01 \x01(\v2'.google.cloud.securitycenter.v2.FindingR\afinding\x12q\n" +
-	"\bresource\x18\x03 \x01(\v2P.google.cloud.securitycenter.v2.ListFindingsResponse.ListFindingsResult.ResourceB\x03\xe0A\x03R\bresource\x1a\xfd\x04\n" +
+	"\afinding\x18\x01 \x01(\v2'.google.cloud.securitycenter.v2.FindingR\afinding\x12r\n" +
+	"\bresource\x18\x03 \x01(\v2P.google.cloud.securitycenter.v2.ListFindingsResponse.ListFindingsResult.ResourceB\x04\xe2A\x01\x03R\bresource\x1a\xfd\x04\n" +
 	"\bResource\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x12\n" +
@@ -3950,90 +3951,90 @@ const file_google_cloud_securitycenter_v2_securitycenter_service_proto_rawDesc =
 	"\rresource_path\x18\n" +
 	" \x01(\v2,.google.cloud.securitycenter.v2.ResourcePathR\fresourcePath\x120\n" +
 	"\x14resource_path_string\x18\v \x01(\tR\x12resourcePathStringB\x19\n" +
-	"\x17cloud_provider_metadata\"\x9e\x01\n" +
-	"\x16ListMuteConfigsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(securitycenter.googleapis.com/MuteConfigR\x06parent\x12\x1b\n" +
+	"\x17cloud_provider_metadata\"\x9f\x01\n" +
+	"\x16ListMuteConfigsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(securitycenter.googleapis.com/MuteConfigR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x90\x01\n" +
 	"\x17ListMuteConfigsResponse\x12M\n" +
 	"\fmute_configs\x18\x01 \x03(\v2*.google.cloud.securitycenter.v2.MuteConfigR\vmuteConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xae\x01\n" +
-	"\x1eListNotificationConfigsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120securitycenter.googleapis.com/NotificationConfigR\x06parent\x12\x1d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xaf\x01\n" +
+	"\x1eListNotificationConfigsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120securitycenter.googleapis.com/NotificationConfigR\x06parent\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\"\xb0\x01\n" +
 	"\x1fListNotificationConfigsResponse\x12e\n" +
 	"\x14notification_configs\x18\x01 \x03(\v22.google.cloud.securitycenter.v2.NotificationConfigR\x13notificationConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb0\x01\n" +
-	"\x1fListResourceValueConfigsRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121securitycenter.googleapis.com/ResourceValueConfigR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb1\x01\n" +
+	"\x1fListResourceValueConfigsRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121securitycenter.googleapis.com/ResourceValueConfigR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb5\x01\n" +
 	" ListResourceValueConfigsResponse\x12i\n" +
 	"\x16resource_value_configs\x18\x01 \x03(\v23.google.cloud.securitycenter.v2.ResourceValueConfigR\x14resourceValueConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x96\x01\n" +
-	"\x12ListSourcesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$securitycenter.googleapis.com/SourceR\x06parent\x12\x1d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x97\x01\n" +
+	"\x12ListSourcesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$securitycenter.googleapis.com/SourceR\x06parent\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x1b\n" +
 	"\tpage_size\x18\a \x01(\x05R\bpageSize\"\x7f\n" +
 	"\x13ListSourcesResponse\x12@\n" +
 	"\asources\x18\x01 \x03(\v2&.google.cloud.securitycenter.v2.SourceR\asources\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xde\x01\n" +
-	"\x1aListValuedResourcesRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,securitycenter.googleapis.com/ValuedResourceR\x06parent\x12\x16\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe0\x01\n" +
+	"\x1aListValuedResourcesRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,securitycenter.googleapis.com/ValuedResourceR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbf\x01\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xbf\x01\n" +
 	"\x1bListValuedResourcesResponse\x12Y\n" +
 	"\x10valued_resources\x18\x01 \x03(\v2..google.cloud.securitycenter.v2.ValuedResourceR\x0fvaluedResources\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xa5\x01\n" +
-	"\x16SetFindingStateRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%securitycenter.googleapis.com/FindingR\x04name\x12H\n" +
-	"\x05state\x18\x02 \x01(\x0e2-.google.cloud.securitycenter.v2.Finding.StateB\x03\xe0A\x02R\x05state\"\x9a\x01\n" +
-	"\x0eSetMuteRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%securitycenter.googleapis.com/FindingR\x04name\x12E\n" +
-	"\x04mute\x18\x02 \x01(\x0e2,.google.cloud.securitycenter.v2.Finding.MuteB\x03\xe0A\x02R\x04mute\"\xb9\x01\n" +
-	"\x1bUpdateBigQueryExportRequest\x12]\n" +
-	"\x10big_query_export\x18\x01 \x01(\v2..google.cloud.securitycenter.v2.BigQueryExportB\x03\xe0A\x02R\x0ebigQueryExport\x12;\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xa7\x01\n" +
+	"\x16SetFindingStateRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%securitycenter.googleapis.com/FindingR\x04name\x12I\n" +
+	"\x05state\x18\x02 \x01(\x0e2-.google.cloud.securitycenter.v2.Finding.StateB\x04\xe2A\x01\x02R\x05state\"\x9c\x01\n" +
+	"\x0eSetMuteRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%securitycenter.googleapis.com/FindingR\x04name\x12F\n" +
+	"\x04mute\x18\x02 \x01(\x0e2,.google.cloud.securitycenter.v2.Finding.MuteB\x04\xe2A\x01\x02R\x04mute\"\xba\x01\n" +
+	"\x1bUpdateBigQueryExportRequest\x12^\n" +
+	"\x10big_query_export\x18\x01 \x01(\v2..google.cloud.securitycenter.v2.BigQueryExportB\x04\xe2A\x01\x02R\x0ebigQueryExport\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xb8\x01\n" +
-	"\x1bUpdateExternalSystemRequest\x12\\\n" +
-	"\x0fexternal_system\x18\x01 \x01(\v2..google.cloud.securitycenter.v2.ExternalSystemB\x03\xe0A\x02R\x0eexternalSystem\x12;\n" +
+	"updateMask\"\xb9\x01\n" +
+	"\x1bUpdateExternalSystemRequest\x12]\n" +
+	"\x0fexternal_system\x18\x01 \x01(\v2..google.cloud.securitycenter.v2.ExternalSystemB\x04\xe2A\x01\x02R\x0eexternalSystem\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x9b\x01\n" +
-	"\x14UpdateFindingRequest\x12F\n" +
-	"\afinding\x18\x01 \x01(\v2'.google.cloud.securitycenter.v2.FindingB\x03\xe0A\x02R\afinding\x12;\n" +
+	"updateMask\"\x9c\x01\n" +
+	"\x14UpdateFindingRequest\x12G\n" +
+	"\afinding\x18\x01 \x01(\v2'.google.cloud.securitycenter.v2.FindingB\x04\xe2A\x01\x02R\afinding\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xa8\x01\n" +
-	"\x17UpdateMuteConfigRequest\x12P\n" +
-	"\vmute_config\x18\x01 \x01(\v2*.google.cloud.securitycenter.v2.MuteConfigB\x03\xe0A\x02R\n" +
+	"updateMask\"\xa9\x01\n" +
+	"\x17UpdateMuteConfigRequest\x12Q\n" +
+	"\vmute_config\x18\x01 \x01(\v2*.google.cloud.securitycenter.v2.MuteConfigB\x04\xe2A\x01\x02R\n" +
 	"muteConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xc8\x01\n" +
-	"\x1fUpdateNotificationConfigRequest\x12h\n" +
-	"\x13notification_config\x18\x01 \x01(\v22.google.cloud.securitycenter.v2.NotificationConfigB\x03\xe0A\x02R\x12notificationConfig\x12;\n" +
+	"updateMask\"\xc9\x01\n" +
+	"\x1fUpdateNotificationConfigRequest\x12i\n" +
+	"\x13notification_config\x18\x01 \x01(\v22.google.cloud.securitycenter.v2.NotificationConfigB\x04\xe2A\x01\x02R\x12notificationConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xcd\x01\n" +
-	" UpdateResourceValueConfigRequest\x12l\n" +
-	"\x15resource_value_config\x18\x01 \x01(\v23.google.cloud.securitycenter.v2.ResourceValueConfigB\x03\xe0A\x02R\x13resourceValueConfig\x12;\n" +
+	"updateMask\"\xce\x01\n" +
+	" UpdateResourceValueConfigRequest\x12m\n" +
+	"\x15resource_value_config\x18\x01 \x01(\v23.google.cloud.securitycenter.v2.ResourceValueConfigB\x04\xe2A\x01\x02R\x13resourceValueConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xb4\x01\n" +
-	"\x1aUpdateSecurityMarksRequest\x12Y\n" +
-	"\x0esecurity_marks\x18\x01 \x01(\v2-.google.cloud.securitycenter.v2.SecurityMarksB\x03\xe0A\x02R\rsecurityMarks\x12;\n" +
+	"updateMask\"\xb5\x01\n" +
+	"\x1aUpdateSecurityMarksRequest\x12Z\n" +
+	"\x0esecurity_marks\x18\x01 \x01(\v2-.google.cloud.securitycenter.v2.SecurityMarksB\x04\xe2A\x01\x02R\rsecurityMarks\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x97\x01\n" +
-	"\x13UpdateSourceRequest\x12C\n" +
-	"\x06source\x18\x01 \x01(\v2&.google.cloud.securitycenter.v2.SourceB\x03\xe0A\x02R\x06source\x12;\n" +
+	"updateMask\"\x98\x01\n" +
+	"\x13UpdateSourceRequest\x12D\n" +
+	"\x06source\x18\x01 \x01(\v2&.google.cloud.securitycenter.v2.SourceB\x04\xe2A\x01\x02R\x06source\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask2\xe2\x81\x01\n" +
 	"\x0eSecurityCenter\x12\xe0\x02\n" +

@@ -357,18 +357,18 @@ var File_google_ads_datamanager_v1_destination_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_destination_proto_rawDesc = "" +
 	"\n" +
-	"+google/ads/datamanager/v1/destination.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xf4\x02\n" +
-	"\vDestination\x12!\n" +
-	"\treference\x18\x01 \x01(\tB\x03\xe0A\x01R\treference\x12S\n" +
-	"\rlogin_account\x18\x02 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x01R\floginAccount\x12U\n" +
-	"\x0elinked_account\x18\x03 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x01R\rlinkedAccount\x12[\n" +
-	"\x11operating_account\x18\x04 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x02R\x10operatingAccount\x129\n" +
-	"\x16product_destination_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x14productDestinationId\"\xd0\x03\n" +
+	"+google/ads/datamanager/v1/destination.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xf9\x02\n" +
+	"\vDestination\x12\"\n" +
+	"\treference\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\treference\x12T\n" +
+	"\rlogin_account\x18\x02 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x04\xe2A\x01\x01R\floginAccount\x12V\n" +
+	"\x0elinked_account\x18\x03 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x04\xe2A\x01\x01R\rlinkedAccount\x12\\\n" +
+	"\x11operating_account\x18\x04 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x04\xe2A\x01\x02R\x10operatingAccount\x12:\n" +
+	"\x16product_destination_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x14productDestinationId\"\xd2\x03\n" +
 	"\x0eProductAccount\x12@\n" +
-	"\aproduct\x18\x01 \x01(\x0e2\".google.ads.datamanager.v1.ProductB\x02\x18\x01R\aproduct\x12\"\n" +
+	"\aproduct\x18\x01 \x01(\x0e2\".google.ads.datamanager.v1.ProductB\x02\x18\x01R\aproduct\x12#\n" +
 	"\n" +
-	"account_id\x18\x02 \x01(\tB\x03\xe0A\x02R\taccountId\x12]\n" +
-	"\faccount_type\x18\x03 \x01(\x0e25.google.ads.datamanager.v1.ProductAccount.AccountTypeB\x03\xe0A\x02R\vaccountType\"\xf8\x01\n" +
+	"account_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\taccountId\x12^\n" +
+	"\faccount_type\x18\x03 \x01(\x0e25.google.ads.datamanager.v1.ProductAccount.AccountTypeB\x04\xe2A\x01\x02R\vaccountType\"\xf8\x01\n" +
 	"\vAccountType\x12\x1c\n" +
 	"\x18ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

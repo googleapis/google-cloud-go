@@ -324,6 +324,13 @@ func (c *regionTargetTcpProxiesRESTClient) Delete(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetTcpProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetTcpProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetTcpProxy())
 
 	params := url.Values{}
@@ -388,6 +395,13 @@ func (c *regionTargetTcpProxiesRESTClient) Get(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetTcpProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetTcpProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetTcpProxy())
 
 	// Build HTTP headers from client and context metadata.
@@ -443,6 +457,12 @@ func (c *regionTargetTcpProxiesRESTClient) Insert(ctx context.Context, req *comp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetTcpProxies", req.GetProject(), req.GetRegion())
@@ -523,6 +543,12 @@ func (c *regionTargetTcpProxiesRESTClient) List(ctx context.Context, req *comput
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetTcpProxies", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -601,6 +627,13 @@ func (c *regionTargetTcpProxiesRESTClient) TestIamPermissions(ctx context.Contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/targetTcpProxies/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

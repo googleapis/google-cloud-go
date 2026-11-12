@@ -445,6 +445,11 @@ func (c *marketingDataInsightsRESTClient) RetrieveInsights(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/insights:retrieve", req.GetParent())
 
 	params := url.Values{}

@@ -111,6 +111,8 @@ type internalSqlBackupRunsClient interface {
 
 // SqlBackupRunsClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing database backups.
 type SqlBackupRunsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlBackupRunsClient
@@ -185,6 +187,8 @@ type sqlBackupRunsGRPCClient struct {
 
 // NewSqlBackupRunsClient creates a new sql backup runs service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service for managing database backups.
 func NewSqlBackupRunsClient(ctx context.Context, opts ...option.ClientOption) (*SqlBackupRunsClient, error) {
 	clientOpts := defaultSqlBackupRunsGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -317,6 +321,8 @@ type sqlBackupRunsRESTClient struct {
 }
 
 // NewSqlBackupRunsRESTClient creates a new sql backup runs service rest client.
+//
+// Service for managing database backups.
 func NewSqlBackupRunsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlBackupRunsClient, error) {
 	clientOpts := append(defaultSqlBackupRunsRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -552,6 +558,13 @@ func (c *sqlBackupRunsRESTClient) Delete(ctx context.Context, req *sqlpb.SqlBack
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/backupRuns/%v", req.GetProject(), req.GetInstance(), req.GetId())
 
 	params := url.Values{}
@@ -604,6 +617,13 @@ func (c *sqlBackupRunsRESTClient) Delete(ctx context.Context, req *sqlpb.SqlBack
 func (c *sqlBackupRunsRESTClient) Get(ctx context.Context, req *sqlpb.SqlBackupRunsGetRequest, opts ...gax.CallOption) (*sqlpb.BackupRun, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/backupRuns/%v", req.GetProject(), req.GetInstance(), req.GetId())
@@ -665,6 +685,12 @@ func (c *sqlBackupRunsRESTClient) Insert(ctx context.Context, req *sqlpb.SqlBack
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/backupRuns", req.GetProject(), req.GetInstance())
@@ -734,6 +760,12 @@ func (c *sqlBackupRunsRESTClient) List(ctx context.Context, req *sqlpb.SqlBackup
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetInstance(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/backupRuns", req.GetProject(), req.GetInstance())

@@ -731,6 +731,11 @@ func (c *identityAwareProxyOAuthRESTClient) ListBrands(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/brands", req.GetParent())
 
 	params := url.Values{}
@@ -799,6 +804,11 @@ func (c *identityAwareProxyOAuthRESTClient) CreateBrand(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/brands", req.GetParent())
 
 	params := url.Values{}
@@ -851,6 +861,11 @@ func (c *identityAwareProxyOAuthRESTClient) CreateBrand(ctx context.Context, req
 func (c *identityAwareProxyOAuthRESTClient) GetBrand(ctx context.Context, req *iappb.GetBrandRequest, opts ...gax.CallOption) (*iappb.Brand, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -914,6 +929,11 @@ func (c *identityAwareProxyOAuthRESTClient) CreateIdentityAwareProxyClient(ctx c
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/identityAwareProxyClients", req.GetParent())
@@ -983,6 +1003,11 @@ func (c *identityAwareProxyOAuthRESTClient) ListIdentityAwareProxyClients(ctx co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/identityAwareProxyClients", req.GetParent())
 
 		params := url.Values{}
@@ -1049,6 +1074,11 @@ func (c *identityAwareProxyOAuthRESTClient) GetIdentityAwareProxyClient(ctx cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1110,6 +1140,11 @@ func (c *identityAwareProxyOAuthRESTClient) ResetIdentityAwareProxyClientSecret(
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resetSecret", req.GetName())
 
 	params := url.Values{}
@@ -1164,6 +1199,11 @@ func (c *identityAwareProxyOAuthRESTClient) ResetIdentityAwareProxyClientSecret(
 func (c *identityAwareProxyOAuthRESTClient) DeleteIdentityAwareProxyClient(ctx context.Context, req *iappb.DeleteIdentityAwareProxyClientRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

@@ -372,29 +372,29 @@ var File_google_cloud_apihub_v1_linting_service_proto protoreflect.FileDescripto
 
 const file_google_cloud_apihub_v1_linting_service_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/apihub/v1/linting_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/apihub/v1/common_fields.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"T\n" +
-	"\x14GetStyleGuideRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" apihub.googleapis.com/StyleGuideR\x04name\"\xa5\x01\n" +
-	"\x17UpdateStyleGuideRequest\x12H\n" +
-	"\vstyle_guide\x18\x01 \x01(\v2\".google.cloud.apihub.v1.StyleGuideB\x03\xe0A\x02R\n" +
-	"styleGuide\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\\\n" +
-	"\x1cGetStyleGuideContentsRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" apihub.googleapis.com/StyleGuideR\x04name\"I\n" +
-	"\x0fLintSpecRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aapihub.googleapis.com/SpecR\x04name\"W\n" +
-	"\x12StyleGuideContents\x12\x1f\n" +
-	"\bcontents\x18\x01 \x01(\fB\x03\xe0A\x02R\bcontents\x12 \n" +
-	"\tmime_type\x18\x02 \x01(\tB\x03\xe0A\x02R\bmimeType\"\xb9\x02\n" +
+	",google/cloud/apihub/v1/linting_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/apihub/v1/common_fields.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"U\n" +
+	"\x14GetStyleGuideRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" apihub.googleapis.com/StyleGuideR\x04name\"\xa7\x01\n" +
+	"\x17UpdateStyleGuideRequest\x12I\n" +
+	"\vstyle_guide\x18\x01 \x01(\v2\".google.cloud.apihub.v1.StyleGuideB\x04\xe2A\x01\x02R\n" +
+	"styleGuide\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"]\n" +
+	"\x1cGetStyleGuideContentsRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" apihub.googleapis.com/StyleGuideR\x04name\"J\n" +
+	"\x0fLintSpecRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aapihub.googleapis.com/SpecR\x04name\"Y\n" +
+	"\x12StyleGuideContents\x12 \n" +
+	"\bcontents\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\bcontents\x12!\n" +
+	"\tmime_type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\"\xba\x02\n" +
 	"\n" +
-	"StyleGuide\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12;\n" +
-	"\x06linter\x18\x02 \x01(\x0e2\x1e.google.cloud.apihub.v1.LinterB\x03\xe0A\x02R\x06linter\x12N\n" +
-	"\bcontents\x18\x03 \x01(\v2*.google.cloud.apihub.v1.StyleGuideContentsB\x06\xe0A\x02\xe0A\x04R\bcontents:\x84\x01\xeaA\x80\x01\n" +
+	"StyleGuide\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12<\n" +
+	"\x06linter\x18\x02 \x01(\x0e2\x1e.google.cloud.apihub.v1.LinterB\x04\xe2A\x01\x02R\x06linter\x12M\n" +
+	"\bcontents\x18\x03 \x01(\v2*.google.cloud.apihub.v1.StyleGuideContentsB\x05\xe2A\x02\x02\x04R\bcontents:\x84\x01\xeaA\x80\x01\n" +
 	" apihub.googleapis.com/StyleGuide\x12Cprojects/{project}/locations/{location}/plugins/{plugin}/styleGuide*\vstyleGuides2\n" +
 	"styleGuide2\xca\x06\n" +
 	"\x0eLintingService\x12\xa8\x01\n" +

@@ -1429,15 +1429,15 @@ var File_google_cloud_discoveryengine_v1beta_completion_service_proto protorefle
 
 const file_google_cloud_discoveryengine_v1beta_completion_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1beta/completion_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a2google/cloud/discoveryengine/v1beta/document.proto\x1a7google/cloud/discoveryengine/v1beta/import_config.proto\x1a6google/cloud/discoveryengine/v1beta/purge_config.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\x02\n" +
-	"\x14CompleteQueryRequest\x12O\n" +
+	"<google/cloud/discoveryengine/v1beta/completion_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a2google/cloud/discoveryengine/v1beta/document.proto\x1a7google/cloud/discoveryengine/v1beta/import_config.proto\x1a6google/cloud/discoveryengine/v1beta/purge_config.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\x02\n" +
+	"\x14CompleteQueryRequest\x12P\n" +
 	"\n" +
-	"data_store\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12\x1f\n" +
+	"data_store\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x1f\n" +
 	"\vquery_model\x18\x03 \x01(\tR\n" +
-	"queryModel\x12)\n" +
-	"\x0euser_pseudo_id\x18\x04 \x01(\tB\x03\xe0A\x01R\fuserPseudoId\x128\n" +
+	"queryModel\x12*\n" +
+	"\x0euser_pseudo_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fuserPseudoId\x128\n" +
 	"\x18include_tail_suggestions\x18\x05 \x01(\bR\x16includeTailSuggestions\"\xad\x02\n" +
 	"\x15CompleteQueryResponse\x12w\n" +
 	"\x11query_suggestions\x18\x01 \x03(\v2J.google.cloud.discoveryengine.v1beta.CompleteQueryResponse.QuerySuggestionR\x10querySuggestions\x120\n" +
@@ -1446,31 +1446,31 @@ const file_google_cloud_discoveryengine_v1beta_completion_service_proto_rawDesc 
 	"\n" +
 	"suggestion\x18\x01 \x01(\tR\n" +
 	"suggestion\x126\n" +
-	"\x17completable_field_paths\x18\x02 \x03(\tR\x15completableFieldPaths\"\xd8\n" +
+	"\x17completable_field_paths\x18\x02 \x03(\tR\x15completableFieldPaths\"\xe2\n" +
 	"\n" +
-	"\x1cAdvancedCompleteQueryRequest\x12d\n" +
-	"\x11completion_config\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/discoveryengine.googleapis.com/CompletionConfigR\x10completionConfig\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12\x1f\n" +
+	"\x1cAdvancedCompleteQueryRequest\x12e\n" +
+	"\x11completion_config\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/discoveryengine.googleapis.com/CompletionConfigR\x10completionConfig\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x1f\n" +
 	"\vquery_model\x18\x03 \x01(\tR\n" +
-	"queryModel\x12)\n" +
-	"\x0euser_pseudo_id\x18\x04 \x01(\tB\x03\xe0A\x01R\fuserPseudoId\x12O\n" +
-	"\tuser_info\x18\t \x01(\v2-.google.cloud.discoveryengine.v1beta.UserInfoB\x03\xe0A\x01R\buserInfo\x128\n" +
-	"\x18include_tail_suggestions\x18\x05 \x01(\bR\x16includeTailSuggestions\x12o\n" +
+	"queryModel\x12*\n" +
+	"\x0euser_pseudo_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fuserPseudoId\x12P\n" +
+	"\tuser_info\x18\t \x01(\v2-.google.cloud.discoveryengine.v1beta.UserInfoB\x04\xe2A\x01\x01R\buserInfo\x128\n" +
+	"\x18include_tail_suggestions\x18\x05 \x01(\bR\x16includeTailSuggestions\x12p\n" +
 	"\n" +
-	"boost_spec\x18\x06 \x01(\v2K.google.cloud.discoveryengine.v1beta.AdvancedCompleteQueryRequest.BoostSpecB\x03\xe0A\x01R\tboostSpec\x12\x80\x01\n" +
-	"\x10suggestion_types\x18\a \x03(\x0e2P.google.cloud.discoveryengine.v1beta.AdvancedCompleteQueryRequest.SuggestionTypeB\x03\xe0A\x01R\x0fsuggestionTypes\x12\x8d\x01\n" +
+	"boost_spec\x18\x06 \x01(\v2K.google.cloud.discoveryengine.v1beta.AdvancedCompleteQueryRequest.BoostSpecB\x04\xe2A\x01\x01R\tboostSpec\x12\x81\x01\n" +
+	"\x10suggestion_types\x18\a \x03(\x0e2P.google.cloud.discoveryengine.v1beta.AdvancedCompleteQueryRequest.SuggestionTypeB\x04\xe2A\x01\x01R\x0fsuggestionTypes\x12\x8e\x01\n" +
 	"\x15suggestion_type_specs\x18\n" +
-	" \x03(\v2T.google.cloud.discoveryengine.v1beta.AdvancedCompleteQueryRequest.SuggestionTypeSpecB\x03\xe0A\x01R\x13suggestionTypeSpecs\x12*\n" +
-	"\x0eexperiment_ids\x18\x0e \x03(\tB\x03\xe0A\x01R\rexperimentIds\x1a\xea\x01\n" +
+	" \x03(\v2T.google.cloud.discoveryengine.v1beta.AdvancedCompleteQueryRequest.SuggestionTypeSpecB\x04\xe2A\x01\x01R\x13suggestionTypeSpecs\x12+\n" +
+	"\x0eexperiment_ids\x18\x0e \x03(\tB\x04\xe2A\x01\x01R\rexperimentIds\x1a\xea\x01\n" +
 	"\tBoostSpec\x12\x92\x01\n" +
 	"\x15condition_boost_specs\x18\x01 \x03(\v2^.google.cloud.discoveryengine.v1beta.AdvancedCompleteQueryRequest.BoostSpec.ConditionBoostSpecR\x13conditionBoostSpecs\x1aH\n" +
 	"\x12ConditionBoostSpec\x12\x1c\n" +
 	"\tcondition\x18\x01 \x01(\tR\tcondition\x12\x14\n" +
-	"\x05boost\x18\x02 \x01(\x02R\x05boost\x1a\xc2\x01\n" +
-	"\x12SuggestionTypeSpec\x12~\n" +
-	"\x0fsuggestion_type\x18\x01 \x01(\x0e2P.google.cloud.discoveryengine.v1beta.AdvancedCompleteQueryRequest.SuggestionTypeB\x03\xe0A\x01R\x0esuggestionType\x12,\n" +
-	"\x0fmax_suggestions\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0emaxSuggestions\"~\n" +
+	"\x05boost\x18\x02 \x01(\x02R\x05boost\x1a\xc4\x01\n" +
+	"\x12SuggestionTypeSpec\x12\x7f\n" +
+	"\x0fsuggestion_type\x18\x01 \x01(\x0e2P.google.cloud.discoveryengine.v1beta.AdvancedCompleteQueryRequest.SuggestionTypeB\x04\xe2A\x01\x01R\x0esuggestionType\x12-\n" +
+	"\x0fmax_suggestions\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0emaxSuggestions\"~\n" +
 	"\x0eSuggestionType\x12\x1f\n" +
 	"\x1bSUGGESTION_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05QUERY\x10\x01\x12\n" +
@@ -1532,15 +1532,15 @@ const file_google_cloud_discoveryengine_v1beta_completion_service_proto_rawDesc 
 	"suggestion\x18\x01 \x01(\tR\n" +
 	"suggestion\x12H\n" +
 	"\x12recent_search_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x10recentSearchTime\x12\x14\n" +
-	"\x05score\x18\x03 \x01(\x01R\x05score\"\xdd\x03\n" +
+	"\x05score\x18\x03 \x01(\x01R\x05score\"\xe1\x03\n" +
 	"\x17RemoveSuggestionRequest\x12<\n" +
 	"\x19search_history_suggestion\x18\x02 \x01(\tH\x00R\x17searchHistorySuggestion\x12R\n" +
-	"%remove_all_search_history_suggestions\x18\x06 \x01(\bH\x00R!removeAllSearchHistorySuggestions\x12d\n" +
-	"\x11completion_config\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/discoveryengine.googleapis.com/CompletionConfigR\x10completionConfig\x12)\n" +
-	"\x0euser_pseudo_id\x18\x03 \x01(\tB\x03\xe0A\x02R\fuserPseudoId\x12O\n" +
-	"\tuser_info\x18\x04 \x01(\v2-.google.cloud.discoveryengine.v1beta.UserInfoB\x03\xe0A\x01R\buserInfo\x12@\n" +
-	"\vremove_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\n" +
+	"%remove_all_search_history_suggestions\x18\x06 \x01(\bH\x00R!removeAllSearchHistorySuggestions\x12e\n" +
+	"\x11completion_config\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/discoveryengine.googleapis.com/CompletionConfigR\x10completionConfig\x12*\n" +
+	"\x0euser_pseudo_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fuserPseudoId\x12P\n" +
+	"\tuser_info\x18\x04 \x01(\v2-.google.cloud.discoveryengine.v1beta.UserInfoB\x04\xe2A\x01\x01R\buserInfo\x12A\n" +
+	"\vremove_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\n" +
 	"removeTimeB\f\n" +
 	"\n" +
 	"suggestion\"\x1a\n" +

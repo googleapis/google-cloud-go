@@ -459,32 +459,32 @@ var File_google_cloud_sql_v1_cloud_sql_databases_proto protoreflect.FileDescript
 
 const file_google_cloud_sql_v1_cloud_sql_databases_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/sql/v1/cloud_sql_databases.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\"\x8e\x01\n" +
+	"-google/cloud/sql/v1/cloud_sql_databases.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\"\x8f\x01\n" +
 	"\x19SqlDatabasesDeleteRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x03 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\x8b\x01\n" +
+	"\aproject\x18\x03 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x8c\x01\n" +
 	"\x16SqlDatabasesGetRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x03 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xa5\x01\n" +
+	"\aproject\x18\x03 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xa6\x01\n" +
 	"\x19SqlDatabasesInsertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x121\n" +
-	"\x04body\x18d \x01(\v2\x1d.google.cloud.sql.v1.DatabaseR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"p\n" +
+	"\x04body\x18d \x01(\v2\x1d.google.cloud.sql.v1.DatabaseR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"q\n" +
 	"\x17SqlDatabasesListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc1\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xc2\x01\n" +
 	"\x19SqlDatabasesUpdateRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x03 \x01(\tR\aproject\x121\n" +
-	"\x04body\x18d \x01(\v2\x1d.google.cloud.sql.v1.DatabaseR\x04body\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"`\n" +
+	"\x04body\x18d \x01(\v2\x1d.google.cloud.sql.v1.DatabaseR\x04body\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"`\n" +
 	"\x15DatabasesListResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x123\n" +
 	"\x05items\x18\x02 \x03(\v2\x1d.google.cloud.sql.v1.DatabaseR\x05items2\xed\b\n" +

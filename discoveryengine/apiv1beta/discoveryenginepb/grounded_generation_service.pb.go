@@ -2536,16 +2536,16 @@ const file_google_cloud_discoveryengine_v1beta_grounded_generation_service_proto
 	"\x05parts\x18\x02 \x03(\v2C.google.cloud.discoveryengine.v1beta.GroundedGenerationContent.PartR\x05parts\x1a$\n" +
 	"\x04Part\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04textB\x06\n" +
-	"\x04data\"\xb0\x1e\n" +
-	"\x1eGenerateGroundedContentRequest\x12K\n" +
-	"\blocation\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x04data\"\xb7\x1e\n" +
+	"\x1eGenerateGroundedContentRequest\x12L\n" +
+	"\blocation\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/LocationR\blocation\x12m\n" +
 	"\x12system_instruction\x18\x05 \x01(\v2>.google.cloud.discoveryengine.v1beta.GroundedGenerationContentR\x11systemInstruction\x12Z\n" +
 	"\bcontents\x18\x02 \x03(\v2>.google.cloud.discoveryengine.v1beta.GroundedGenerationContentR\bcontents\x12{\n" +
 	"\x0fgeneration_spec\x18\x03 \x01(\v2R.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.GenerationSpecR\x0egenerationSpec\x12x\n" +
 	"\x0egrounding_spec\x18\x04 \x01(\v2Q.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.GroundingSpecR\rgroundingSpec\x12t\n" +
 	"\vuser_labels\x18\x06 \x03(\v2S.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.UserLabelsEntryR\n" +
-	"userLabels\x1a\x8c\x06\n" +
+	"userLabels\x1a\x8d\x06\n" +
 	"\x0eGenerationSpec\x12\x19\n" +
 	"\bmodel_id\x18\x03 \x01(\tR\amodelId\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\x12%\n" +
@@ -2556,8 +2556,8 @@ const file_google_cloud_discoveryengine_v1beta_grounded_generation_service_proto
 	"\x04seed\x18\f \x01(\x05H\x04R\x04seed\x88\x01\x01\x12.\n" +
 	"\x10presence_penalty\x18\t \x01(\x02H\x05R\x0fpresencePenalty\x88\x01\x01\x12/\n" +
 	"\x11max_output_tokens\x18\n" +
-	" \x01(\x05H\x06R\x0fmaxOutputTokens\x88\x01\x01\x12\xba\x01\n" +
-	"\x1eprovisioned_throughput_setting\x18\r \x01(\x0e2o.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.GenerationSpec.ProvisionedThroughputSettingB\x03\xe0A\x01R\x1cprovisionedThroughputSetting\"\x87\x01\n" +
+	" \x01(\x05H\x06R\x0fmaxOutputTokens\x88\x01\x01\x12\xbb\x01\n" +
+	"\x1eprovisioned_throughput_setting\x18\r \x01(\x0e2o.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.GenerationSpec.ProvisionedThroughputSettingB\x04\xe2A\x01\x01R\x1cprovisionedThroughputSetting\"\x87\x01\n" +
 	"\x1cProvisionedThroughputSetting\x12.\n" +
 	"*PROVISIONED_THROUGHPUT_SETTING_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bPROVISIONED_THROUGHPUT_ONLY\x10\x01\x12\x16\n" +
@@ -2578,7 +2578,7 @@ const file_google_cloud_discoveryengine_v1beta_grounded_generation_service_proto
 	"\x13VERSION_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eV1_INDEPENDENT\x10\x01B\f\n" +
 	"\n" +
-	"_threshold\x1a\xbf\r\n" +
+	"_threshold\x1a\xc4\r\n" +
 	"\x0fGroundingSource\x12\x87\x01\n" +
 	"\rinline_source\x18\x01 \x01(\v2`.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.GroundingSource.InlineSourceH\x00R\finlineSource\x12\x87\x01\n" +
 	"\rsearch_source\x18\x02 \x01(\v2`.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.GroundingSource.SearchSourceH\x00R\fsearchSource\x12\x9a\x01\n" +
@@ -2598,14 +2598,14 @@ const file_google_cloud_discoveryengine_v1beta_grounded_generation_service_proto
 	"\x10max_result_count\x18\x02 \x01(\x05R\x0emaxResultCount\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x1f\n" +
 	"\vsafe_search\x18\x05 \x01(\bR\n" +
-	"safeSearch\x1a\xde\x02\n" +
-	"\x12GoogleSearchSource\x12\xa0\x01\n" +
-	"\x18dynamic_retrieval_config\x18\x02 \x01(\v2a.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.DynamicRetrievalConfigurationB\x03\xe0A\x01R\x16dynamicRetrievalConfig\x12,\n" +
-	"\x0fexclude_domains\x18\x05 \x03(\tB\x03\xe0A\x01R\x0eexcludeDomains\x12w\n" +
-	"\x13blocking_confidence\x18\x06 \x01(\x0e2A.google.cloud.discoveryengine.v1beta.Citation.PhishBlockThresholdB\x03\xe0A\x01R\x12blockingConfidence\x1a\xc5\x01\n" +
-	"\x1cEnterpriseWebRetrievalSource\x12,\n" +
-	"\x0fexclude_domains\x18\x01 \x03(\tB\x03\xe0A\x01R\x0eexcludeDomains\x12w\n" +
-	"\x13blocking_confidence\x18\x02 \x01(\x0e2A.google.cloud.discoveryengine.v1beta.Citation.PhishBlockThresholdB\x03\xe0A\x01R\x12blockingConfidenceB\b\n" +
+	"safeSearch\x1a\xe1\x02\n" +
+	"\x12GoogleSearchSource\x12\xa1\x01\n" +
+	"\x18dynamic_retrieval_config\x18\x02 \x01(\v2a.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.DynamicRetrievalConfigurationB\x04\xe2A\x01\x01R\x16dynamicRetrievalConfig\x12-\n" +
+	"\x0fexclude_domains\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x0eexcludeDomains\x12x\n" +
+	"\x13blocking_confidence\x18\x06 \x01(\x0e2A.google.cloud.discoveryengine.v1beta.Citation.PhishBlockThresholdB\x04\xe2A\x01\x01R\x12blockingConfidence\x1a\xc7\x01\n" +
+	"\x1cEnterpriseWebRetrievalSource\x12-\n" +
+	"\x0fexclude_domains\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0eexcludeDomains\x12x\n" +
+	"\x13blocking_confidence\x18\x02 \x01(\x0e2A.google.cloud.discoveryengine.v1beta.Citation.PhishBlockThresholdB\x04\xe2A\x01\x01R\x12blockingConfidenceB\b\n" +
 	"\x06source\x1a\x92\x01\n" +
 	"\rGroundingSpec\x12\x80\x01\n" +
 	"\x11grounding_sources\x18\x01 \x03(\v2S.google.cloud.discoveryengine.v1beta.GenerateGroundedContentRequest.GroundingSourceR\x10groundingSources\x1a=\n" +
@@ -2677,9 +2677,9 @@ const file_google_cloud_discoveryengine_v1beta_grounded_generation_service_proto
 	"\x12citation_threshold\x18\x01 \x01(\x01H\x00R\x11citationThreshold\x88\x01\x01\x12<\n" +
 	"\x18enable_claim_level_score\x18\x04 \x01(\bH\x01R\x15enableClaimLevelScore\x88\x01\x01B\x15\n" +
 	"\x13_citation_thresholdB\x1b\n" +
-	"\x19_enable_claim_level_score\"\xfb\x03\n" +
-	"\x15CheckGroundingRequest\x12a\n" +
-	"\x10grounding_config\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\x19_enable_claim_level_score\"\xfc\x03\n" +
+	"\x15CheckGroundingRequest\x12b\n" +
+	"\x10grounding_config\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".discoveryengine.googleapis.com/GroundingConfigR\x0fgroundingConfig\x12)\n" +
 	"\x10answer_candidate\x18\x02 \x01(\tR\x0fanswerCandidate\x12H\n" +
 	"\x05facts\x18\x03 \x03(\v22.google.cloud.discoveryengine.v1beta.GroundingFactR\x05facts\x12^\n" +
@@ -2712,17 +2712,17 @@ const file_google_cloud_discoveryengine_v1beta_grounded_generation_service_proto
 	"\b_end_posB\x1b\n" +
 	"\x19_grounding_check_requiredB\b\n" +
 	"\x06_scoreB\x10\n" +
-	"\x0e_support_score\"d\n" +
-	"\x10CitationMetadata\x12P\n" +
-	"\tcitations\x18\x01 \x03(\v2-.google.cloud.discoveryengine.v1beta.CitationB\x03\xe0A\x03R\tcitations\"\xce\x03\n" +
-	"\bCitation\x12$\n" +
-	"\vstart_index\x18\x01 \x01(\x05B\x03\xe0A\x03R\n" +
-	"startIndex\x12 \n" +
-	"\tend_index\x18\x02 \x01(\x05B\x03\xe0A\x03R\bendIndex\x12\x15\n" +
-	"\x03uri\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uri\x12\x19\n" +
-	"\x05title\x18\x04 \x01(\tB\x03\xe0A\x03R\x05title\x12\x1d\n" +
-	"\alicense\x18\x05 \x01(\tB\x03\xe0A\x03R\alicense\x12A\n" +
-	"\x10publication_date\x18\x06 \x01(\v2\x11.google.type.DateB\x03\xe0A\x03R\x0fpublicationDate\"\xe5\x01\n" +
+	"\x0e_support_score\"e\n" +
+	"\x10CitationMetadata\x12Q\n" +
+	"\tcitations\x18\x01 \x03(\v2-.google.cloud.discoveryengine.v1beta.CitationB\x04\xe2A\x01\x03R\tcitations\"\xd4\x03\n" +
+	"\bCitation\x12%\n" +
+	"\vstart_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"startIndex\x12!\n" +
+	"\tend_index\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\bendIndex\x12\x16\n" +
+	"\x03uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12\x1a\n" +
+	"\x05title\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12\x1e\n" +
+	"\alicense\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\alicense\x12B\n" +
+	"\x10publication_date\x18\x06 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x03R\x0fpublicationDate\"\xe5\x01\n" +
 	"\x13PhishBlockThreshold\x12%\n" +
 	"!PHISH_BLOCK_THRESHOLD_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13BLOCK_LOW_AND_ABOVE\x10\x1e\x12\x1a\n" +

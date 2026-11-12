@@ -1272,31 +1272,31 @@ var File_google_cloud_maintenance_api_v1beta_maintenance_service_proto protorefl
 
 const file_google_cloud_maintenance_api_v1beta_maintenance_service_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/maintenance/api/v1beta/maintenance_service.proto\x12#google.cloud.maintenance.api.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe2\x01\n" +
-	"\x1cSummarizeMaintenancesRequest\x12O\n" +
-	"\x06parent\x18\x96N \x01(\tB6\xe0A\x02\xfaA0\x12.maintenance.googleapis.com/ResourceMaintenanceR\x06parent\x12\x1c\n" +
+	"=google/cloud/maintenance/api/v1beta/maintenance_service.proto\x12#google.cloud.maintenance.api.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe3\x01\n" +
+	"\x1cSummarizeMaintenancesRequest\x12P\n" +
+	"\x06parent\x18\x96N \x01(\tB7\xe2A\x01\x02\xfaA0\x12.maintenance.googleapis.com/ResourceMaintenanceR\x06parent\x12\x1c\n" +
 	"\tpage_size\x18\x89R \x01(\x05R\bpageSize\x12\x1e\n" +
 	"\n" +
 	"page_token\x18\x8aR \x01(\tR\tpageToken\x12\x17\n" +
 	"\x06filter\x18\x8bR \x01(\tR\x06filter\x12\x1a\n" +
-	"\border_by\x18\x8cR \x01(\tR\aorderBy\"\xce\x01\n" +
+	"\border_by\x18\x8cR \x01(\tR\aorderBy\"\xcf\x01\n" +
 	"\x1dSummarizeMaintenancesResponse\x12\\\n" +
 	"\fmaintenances\x18\x8dR \x03(\v27.google.cloud.maintenance.api.v1beta.MaintenanceSummaryR\fmaintenances\x12'\n" +
-	"\x0fnext_page_token\x18\x8eR \x01(\tR\rnextPageToken\x12&\n" +
-	"\vunreachable\x18\x8fR \x03(\tB\x03\xe0A\x06R\vunreachable\"\x82\b\n" +
-	"\x12MaintenanceSummary\x12.\n" +
-	"\x10maintenance_name\x18\x01 \x01(\tB\x03\xe0A\x03R\x0fmaintenanceName\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12Y\n" +
-	"\bcategory\x18\r \x01(\x0e28.google.cloud.maintenance.api.v1beta.MaintenanceCategoryB\x03\xe0A\x03R\bcategory\x12h\n" +
-	" maintenance_scheduled_start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1dmaintenanceScheduledStartTime\x12d\n" +
-	"\x1emaintenance_scheduled_end_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1bmaintenanceScheduledEndTime\x12U\n" +
-	"\x16maintenance_start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14maintenanceStartTime\x12Q\n" +
-	"\x14maintenance_end_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12maintenanceEndTime\x120\n" +
+	"\x0fnext_page_token\x18\x8eR \x01(\tR\rnextPageToken\x12'\n" +
+	"\vunreachable\x18\x8fR \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\x8d\b\n" +
+	"\x12MaintenanceSummary\x12/\n" +
+	"\x10maintenance_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0fmaintenanceName\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12Z\n" +
+	"\bcategory\x18\r \x01(\x0e28.google.cloud.maintenance.api.v1beta.MaintenanceCategoryB\x04\xe2A\x01\x03R\bcategory\x12i\n" +
+	" maintenance_scheduled_start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1dmaintenanceScheduledStartTime\x12e\n" +
+	"\x1emaintenance_scheduled_end_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1bmaintenanceScheduledEndTime\x12V\n" +
+	"\x16maintenance_start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14maintenanceStartTime\x12R\n" +
+	"\x14maintenance_end_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12maintenanceEndTime\x121\n" +
 	"\x11user_controllable\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\x10userControllable\x12X\n" +
-	"\bcontrols\x18\x0e \x03(\v27.google.cloud.maintenance.api.v1beta.MaintenanceControlB\x03\xe0A\x03R\bcontrols\x12X\n" +
-	"\x05stats\x18\f \x03(\v2=.google.cloud.maintenance.api.v1beta.MaintenanceSummary.StatsB\x03\xe0A\x03R\x05stats\x1a\x85\x01\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\x10userControllable\x12Y\n" +
+	"\bcontrols\x18\x0e \x03(\v27.google.cloud.maintenance.api.v1beta.MaintenanceControlB\x04\xe2A\x01\x03R\bcontrols\x12Y\n" +
+	"\x05stats\x18\f \x03(\v2=.google.cloud.maintenance.api.v1beta.MaintenanceSummary.StatsB\x04\xe2A\x01\x03R\x05stats\x1a\x85\x01\n" +
 	"\x05Stats\x12\x19\n" +
 	"\bgroup_by\x18\x01 \x01(\tR\agroupBy\x12a\n" +
 	"\n" +
@@ -1304,37 +1304,37 @@ const file_google_cloud_maintenance_api_v1beta_maintenance_service_proto_rawDesc
 	"aggregates\x1a7\n" +
 	"\tAggregate\x12\x14\n" +
 	"\x05group\x18\x01 \x01(\tR\x05group\x12\x14\n" +
-	"\x05count\x18\x02 \x01(\x03R\x05count\"\xa2\x10\n" +
-	"\x13ResourceMaintenance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12b\n" +
-	"\bresource\x18\x02 \x01(\v2A.google.cloud.maintenance.api.v1beta.ResourceMaintenance.ResourceB\x03\xe0A\x03R\bresource\x12k\n" +
-	"\vmaintenance\x18\x03 \x01(\v2D.google.cloud.maintenance.api.v1beta.ResourceMaintenance.MaintenanceB\x03\xe0A\x03R\vmaintenance\x12Y\n" +
-	"\x05state\x18\x04 \x01(\x0e2>.google.cloud.maintenance.api.v1beta.ResourceMaintenance.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12U\n" +
-	"\x16maintenance_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14maintenanceStartTime\x12Q\n" +
-	"\x14maintenance_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12maintenanceEndTime\x12W\n" +
-	"\x17maintenance_cancel_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x15maintenanceCancelTime\x12h\n" +
+	"\x05count\x18\x02 \x01(\x03R\x05count\"\xb9\x10\n" +
+	"\x13ResourceMaintenance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12c\n" +
+	"\bresource\x18\x02 \x01(\v2A.google.cloud.maintenance.api.v1beta.ResourceMaintenance.ResourceB\x04\xe2A\x01\x03R\bresource\x12l\n" +
+	"\vmaintenance\x18\x03 \x01(\v2D.google.cloud.maintenance.api.v1beta.ResourceMaintenance.MaintenanceB\x04\xe2A\x01\x03R\vmaintenance\x12Z\n" +
+	"\x05state\x18\x04 \x01(\x0e2>.google.cloud.maintenance.api.v1beta.ResourceMaintenance.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12V\n" +
+	"\x16maintenance_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14maintenanceStartTime\x12R\n" +
+	"\x14maintenance_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12maintenanceEndTime\x12X\n" +
+	"\x17maintenance_cancel_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x15maintenanceCancelTime\x12i\n" +
 	" maintenance_scheduled_start_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1dmaintenanceScheduledStartTime\x12d\n" +
-	"\x1emaintenance_scheduled_end_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1bmaintenanceScheduledEndTime\x120\n" +
-	"\x11user_controllable\x18\f \x01(\bB\x03\xe0A\x03R\x10userControllable\x12X\n" +
-	"\bcontrols\x18\r \x03(\v27.google.cloud.maintenance.api.v1beta.MaintenanceControlB\x03\xe0A\x03R\bcontrols\x12b\n" +
-	"\x06labels\x18\xa1Q \x03(\v2D.google.cloud.maintenance.api.v1beta.ResourceMaintenance.LabelsEntryB\x03\xe0A\x01R\x06labels\x12q\n" +
-	"\vannotations\x18\xa2Q \x03(\v2I.google.cloud.maintenance.api.v1beta.ResourceMaintenance.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1e\n" +
-	"\x03uid\x18\xd9O \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
-	"\x04etag\x18\xdaO \x01(\tB\x03\xe0A\x03R\x04etag\x1an\n" +
-	"\bResource\x12(\n" +
-	"\rresource_name\x18\x01 \x01(\tB\x03\xe0A\x03R\fresourceName\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x03R\blocation\x12\x17\n" +
-	"\x04type\x18\x03 \x01(\tB\x03\xe0A\x03R\x04type\x1a\xd5\x01\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1dmaintenanceScheduledStartTime\x12e\n" +
+	"\x1emaintenance_scheduled_end_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1bmaintenanceScheduledEndTime\x121\n" +
+	"\x11user_controllable\x18\f \x01(\bB\x04\xe2A\x01\x03R\x10userControllable\x12Y\n" +
+	"\bcontrols\x18\r \x03(\v27.google.cloud.maintenance.api.v1beta.MaintenanceControlB\x04\xe2A\x01\x03R\bcontrols\x12c\n" +
+	"\x06labels\x18\xa1Q \x03(\v2D.google.cloud.maintenance.api.v1beta.ResourceMaintenance.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12r\n" +
+	"\vannotations\x18\xa2Q \x03(\v2I.google.cloud.maintenance.api.v1beta.ResourceMaintenance.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1f\n" +
+	"\x03uid\x18\xd9O \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x19\n" +
+	"\x04etag\x18\xdaO \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1aq\n" +
+	"\bResource\x12)\n" +
+	"\rresource_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fresourceName\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12\x18\n" +
+	"\x04type\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04type\x1a\xd8\x01\n" +
 	"\vMaintenance\x12)\n" +
-	"\x10maintenance_name\x18\x01 \x01(\tR\x0fmaintenanceName\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12Y\n" +
-	"\bcategory\x18\x04 \x01(\x0e28.google.cloud.maintenance.api.v1beta.MaintenanceCategoryB\x03\xe0A\x03R\bcategory\x1a9\n" +
+	"\x10maintenance_name\x18\x01 \x01(\tR\x0fmaintenanceName\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12Z\n" +
+	"\bcategory\x18\x04 \x01(\x0e28.google.cloud.maintenance.api.v1beta.MaintenanceCategoryB\x04\xe2A\x01\x03R\bcategory\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
@@ -1357,9 +1357,9 @@ const file_google_cloud_maintenance_api_v1beta_maintenance_service_proto_rawDesc
 	"\x05APPLY\x10\x01\x12\x11\n" +
 	"\rMANAGE_POLICY\x10\x02\x12\x0e\n" +
 	"\n" +
-	"RESCHEDULE\x10\x03\"\xe5\x01\n" +
-	"\x1fListResourceMaintenancesRequest\x12O\n" +
-	"\x06parent\x18\x96N \x01(\tB6\xe0A\x02\xfaA0\x12.maintenance.googleapis.com/ResourceMaintenanceR\x06parent\x12\x1c\n" +
+	"RESCHEDULE\x10\x03\"\xe6\x01\n" +
+	"\x1fListResourceMaintenancesRequest\x12P\n" +
+	"\x06parent\x18\x96N \x01(\tB7\xe2A\x01\x02\xfaA0\x12.maintenance.googleapis.com/ResourceMaintenanceR\x06parent\x12\x1c\n" +
 	"\tpage_size\x18\x89R \x01(\x05R\bpageSize\x12\x1e\n" +
 	"\n" +
 	"page_token\x18\x8aR \x01(\tR\tpageToken\x12\x17\n" +
@@ -1368,9 +1368,9 @@ const file_google_cloud_maintenance_api_v1beta_maintenance_service_proto_rawDesc
 	" ListResourceMaintenancesResponse\x12n\n" +
 	"\x15resource_maintenances\x18\x8dR \x03(\v28.google.cloud.maintenance.api.v1beta.ResourceMaintenanceR\x14resourceMaintenances\x12'\n" +
 	"\x0fnext_page_token\x18\x8eR \x01(\tR\rnextPageToken\x12!\n" +
-	"\vunreachable\x18\x8fR \x03(\tR\vunreachable\"l\n" +
-	"\x1dGetResourceMaintenanceRequest\x12K\n" +
-	"\x04name\x18\x91N \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\vunreachable\x18\x8fR \x03(\tR\vunreachable\"m\n" +
+	"\x1dGetResourceMaintenanceRequest\x12L\n" +
+	"\x04name\x18\x91N \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".maintenance.googleapis.com/ResourceMaintenanceR\x04name*c\n" +
 	"\x13MaintenanceCategory\x12$\n" +
 	" MAINTENANCE_CATEGORY_UNSPECIFIED\x10\x00\x12\x12\n" +

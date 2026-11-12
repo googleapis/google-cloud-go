@@ -170,15 +170,15 @@ var File_google_cloud_servicedirectory_v1_endpoint_proto protoreflect.FileDescri
 
 const file_google_cloud_servicedirectory_v1_endpoint_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/servicedirectory/v1/endpoint.proto\x12 google.cloud.servicedirectory.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xfa\x03\n" +
-	"\bEndpoint\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x1d\n" +
-	"\aaddress\x18\x02 \x01(\tB\x03\xe0A\x01R\aaddress\x12\x17\n" +
-	"\x04port\x18\x03 \x01(\x05B\x03\xe0A\x01R\x04port\x12b\n" +
-	"\vannotations\x18\x05 \x03(\v2;.google.cloud.servicedirectory.v1.Endpoint.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12I\n" +
-	"\anetwork\x18\b \x01(\tB/\xe0A\x05\xfaA)\n" +
-	"'servicedirectory.googleapis.com/NetworkR\anetwork\x12\x15\n" +
-	"\x03uid\x18\t \x01(\tB\x03\xe0A\x03R\x03uid\x1a>\n" +
+	"/google/cloud/servicedirectory/v1/endpoint.proto\x12 google.cloud.servicedirectory.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x80\x04\n" +
+	"\bEndpoint\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x1e\n" +
+	"\aaddress\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aaddress\x12\x18\n" +
+	"\x04port\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12c\n" +
+	"\vannotations\x18\x05 \x03(\v2;.google.cloud.servicedirectory.v1.Endpoint.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12J\n" +
+	"\anetwork\x18\b \x01(\tB0\xe2A\x01\x05\xfaA)\n" +
+	"'servicedirectory.googleapis.com/NetworkR\anetwork\x12\x16\n" +
+	"\x03uid\x18\t \x01(\tB\x04\xe2A\x01\x03R\x03uid\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x96\x01\xeaA\x92\x01\n" +

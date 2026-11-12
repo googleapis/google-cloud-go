@@ -112,11 +112,11 @@ var File_google_cloud_bigquery_v2_time_partitioning_proto protoreflect.FileDescr
 
 const file_google_cloud_bigquery_v2_time_partitioning_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/bigquery/v2/time_partitioning.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xab\x01\n" +
-	"\x10TimePartitioning\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\x12E\n" +
-	"\rexpiration_ms\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\fexpirationMs\x127\n" +
-	"\x05field\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\x05fieldBr\n" +
+	"0google/cloud/bigquery/v2/time_partitioning.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xae\x01\n" +
+	"\x10TimePartitioning\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12F\n" +
+	"\rexpiration_ms\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\fexpirationMs\x128\n" +
+	"\x05field\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\x05fieldBr\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x15TimePartitioningProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

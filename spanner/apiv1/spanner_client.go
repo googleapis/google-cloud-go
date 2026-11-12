@@ -1505,6 +1505,11 @@ func (c *restClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/sessions", req.GetDatabase())
 
 	params := url.Values{}
@@ -1568,6 +1573,11 @@ func (c *restClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/sessions:batchCreate", req.GetDatabase())
 
 	params := url.Values{}
@@ -1622,6 +1632,11 @@ func (c *restClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 func (c *restClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1689,6 +1704,11 @@ func (c *restClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetDatabase(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/sessions", req.GetDatabase())
@@ -1761,6 +1781,11 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1819,6 +1844,11 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:executeSql", req.GetSession())
@@ -1886,6 +1916,11 @@ func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:executeStreamingSql", req.GetSession())
@@ -2005,6 +2040,11 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:executeBatchDml", req.GetSession())
 
 	params := url.Values{}
@@ -2078,6 +2118,11 @@ func (c *restClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:read", req.GetSession())
 
 	params := url.Values{}
@@ -2140,6 +2185,11 @@ func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:streamingRead", req.GetSession())
@@ -2252,6 +2302,11 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:beginTransaction", req.GetSession())
 
 	params := url.Values{}
@@ -2325,6 +2380,11 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:commit", req.GetSession())
 
 	params := url.Values{}
@@ -2393,6 +2453,11 @@ func (c *restClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rollback", req.GetSession())
 
 	params := url.Values{}
@@ -2447,6 +2512,11 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:partitionQuery", req.GetSession())
@@ -2522,6 +2592,11 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:partitionRead", req.GetSession())
 
 	params := url.Values{}
@@ -2594,6 +2669,11 @@ func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:batchWrite", req.GetSession())
@@ -2708,6 +2788,11 @@ func (c *restClient) FetchCacheUpdate(ctx context.Context, req *spannerpb.FetchC
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cacheUpdate", req.GetDatabase())

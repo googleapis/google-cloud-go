@@ -9992,6 +9992,11 @@ func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -10141,6 +10146,11 @@ func (c *analyticsAdminRESTClient) DeleteAccount(ctx context.Context, req *admin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -10185,6 +10195,11 @@ func (c *analyticsAdminRESTClient) UpdateAccount(ctx context.Context, req *admin
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccount().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetAccount().GetName())
@@ -10381,6 +10396,11 @@ func (c *analyticsAdminRESTClient) ListAccountSummaries(ctx context.Context, req
 func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -10592,6 +10612,11 @@ func (c *analyticsAdminRESTClient) DeleteProperty(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -10651,6 +10676,11 @@ func (c *analyticsAdminRESTClient) UpdateProperty(ctx context.Context, req *admi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProperty().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetProperty().GetName())
@@ -10723,6 +10753,11 @@ func (c *analyticsAdminRESTClient) CreateFirebaseLink(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/firebaseLinks", req.GetParent())
 
 	params := url.Values{}
@@ -10777,6 +10812,11 @@ func (c *analyticsAdminRESTClient) DeleteFirebaseLink(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -10828,6 +10868,11 @@ func (c *analyticsAdminRESTClient) ListFirebaseLinks(ctx context.Context, req *a
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/firebaseLinks", req.GetParent())
@@ -10896,6 +10941,11 @@ func (c *analyticsAdminRESTClient) GetGlobalSiteTag(ctx context.Context, req *ad
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -10955,6 +11005,11 @@ func (c *analyticsAdminRESTClient) CreateGoogleAdsLink(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/googleAdsLinks", req.GetParent())
@@ -11018,6 +11073,11 @@ func (c *analyticsAdminRESTClient) UpdateGoogleAdsLink(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGoogleAdsLink().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetGoogleAdsLink().GetName())
 
 	params := url.Values{}
@@ -11079,6 +11139,11 @@ func (c *analyticsAdminRESTClient) DeleteGoogleAdsLink(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -11129,6 +11194,11 @@ func (c *analyticsAdminRESTClient) ListGoogleAdsLinks(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/googleAdsLinks", req.GetParent())
@@ -11197,6 +11267,11 @@ func (c *analyticsAdminRESTClient) GetDataSharingSettings(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -11249,6 +11324,11 @@ func (c *analyticsAdminRESTClient) GetDataSharingSettings(ctx context.Context, r
 func (c *analyticsAdminRESTClient) GetMeasurementProtocolSecret(ctx context.Context, req *adminpb.GetMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -11317,6 +11397,11 @@ func (c *analyticsAdminRESTClient) ListMeasurementProtocolSecrets(ctx context.Co
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/measurementProtocolSecrets", req.GetParent())
@@ -11391,6 +11476,11 @@ func (c *analyticsAdminRESTClient) CreateMeasurementProtocolSecret(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/measurementProtocolSecrets", req.GetParent())
 
 	params := url.Values{}
@@ -11445,6 +11535,11 @@ func (c *analyticsAdminRESTClient) DeleteMeasurementProtocolSecret(ctx context.C
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -11489,6 +11584,11 @@ func (c *analyticsAdminRESTClient) UpdateMeasurementProtocolSecret(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMeasurementProtocolSecret().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetMeasurementProtocolSecret().GetName())
@@ -11562,6 +11662,11 @@ func (c *analyticsAdminRESTClient) AcknowledgeUserDataCollection(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProperty(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:acknowledgeUserDataCollection", req.GetProperty())
 
 	params := url.Values{}
@@ -11614,6 +11719,11 @@ func (c *analyticsAdminRESTClient) AcknowledgeUserDataCollection(ctx context.Con
 func (c *analyticsAdminRESTClient) GetSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.GetSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -11677,6 +11787,11 @@ func (c *analyticsAdminRESTClient) CreateSKAdNetworkConversionValueSchema(ctx co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/sKAdNetworkConversionValueSchema", req.GetParent())
 
 	params := url.Values{}
@@ -11731,6 +11846,11 @@ func (c *analyticsAdminRESTClient) DeleteSKAdNetworkConversionValueSchema(ctx co
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -11775,6 +11895,11 @@ func (c *analyticsAdminRESTClient) UpdateSKAdNetworkConversionValueSchema(ctx co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSkadnetworkConversionValueSchema().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSkadnetworkConversionValueSchema().GetName())
@@ -11850,6 +11975,11 @@ func (c *analyticsAdminRESTClient) ListSKAdNetworkConversionValueSchemas(ctx con
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/sKAdNetworkConversionValueSchema", req.GetParent())
@@ -11940,6 +12070,11 @@ func (c *analyticsAdminRESTClient) SearchChangeHistoryEvents(ctx context.Context
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetAccount(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v:searchChangeHistoryEvents", req.GetAccount())
 
 		params := url.Values{}
@@ -11997,6 +12132,11 @@ func (c *analyticsAdminRESTClient) SearchChangeHistoryEvents(ctx context.Context
 func (c *analyticsAdminRESTClient) GetGoogleSignalsSettings(ctx context.Context, req *adminpb.GetGoogleSignalsSettingsRequest, opts ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -12058,6 +12198,11 @@ func (c *analyticsAdminRESTClient) UpdateGoogleSignalsSettings(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGoogleSignalsSettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetGoogleSignalsSettings().GetName())
@@ -12131,6 +12276,11 @@ func (c *analyticsAdminRESTClient) CreateConversionEvent(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/conversionEvents", req.GetParent())
 
 	params := url.Values{}
@@ -12193,6 +12343,11 @@ func (c *analyticsAdminRESTClient) UpdateConversionEvent(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConversionEvent().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetConversionEvent().GetName())
@@ -12259,6 +12414,11 @@ func (c *analyticsAdminRESTClient) GetConversionEvent(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -12316,6 +12476,11 @@ func (c *analyticsAdminRESTClient) DeleteConversionEvent(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -12371,6 +12536,11 @@ func (c *analyticsAdminRESTClient) ListConversionEvents(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/conversionEvents", req.GetParent())
@@ -12445,6 +12615,11 @@ func (c *analyticsAdminRESTClient) CreateKeyEvent(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/keyEvents", req.GetParent())
 
 	params := url.Values{}
@@ -12504,6 +12679,11 @@ func (c *analyticsAdminRESTClient) UpdateKeyEvent(ctx context.Context, req *admi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetKeyEvent().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetKeyEvent().GetName())
@@ -12567,6 +12747,11 @@ func (c *analyticsAdminRESTClient) GetKeyEvent(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -12621,6 +12806,11 @@ func (c *analyticsAdminRESTClient) DeleteKeyEvent(ctx context.Context, req *admi
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -12672,6 +12862,11 @@ func (c *analyticsAdminRESTClient) ListKeyEvents(ctx context.Context, req *admin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/keyEvents", req.GetParent())
@@ -12739,6 +12934,11 @@ func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLink(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -12804,6 +13004,11 @@ func (c *analyticsAdminRESTClient) ListDisplayVideo360AdvertiserLinks(ctx contex
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/displayVideo360AdvertiserLinks", req.GetParent())
@@ -12882,6 +13087,11 @@ func (c *analyticsAdminRESTClient) CreateDisplayVideo360AdvertiserLink(ctx conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/displayVideo360AdvertiserLinks", req.GetParent())
 
 	params := url.Values{}
@@ -12936,6 +13146,11 @@ func (c *analyticsAdminRESTClient) DeleteDisplayVideo360AdvertiserLink(ctx conte
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -12980,6 +13195,11 @@ func (c *analyticsAdminRESTClient) UpdateDisplayVideo360AdvertiserLink(ctx conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDisplayVideo_360AdvertiserLink().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDisplayVideo_360AdvertiserLink().GetName())
@@ -13041,6 +13261,11 @@ func (c *analyticsAdminRESTClient) UpdateDisplayVideo360AdvertiserLink(ctx conte
 func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.GetDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -13108,6 +13333,11 @@ func (c *analyticsAdminRESTClient) ListDisplayVideo360AdvertiserLinkProposals(ct
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/displayVideo360AdvertiserLinkProposals", req.GetParent())
@@ -13182,6 +13412,11 @@ func (c *analyticsAdminRESTClient) CreateDisplayVideo360AdvertiserLinkProposal(c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/displayVideo360AdvertiserLinkProposals", req.GetParent())
 
 	params := url.Values{}
@@ -13237,6 +13472,11 @@ func (c *analyticsAdminRESTClient) DeleteDisplayVideo360AdvertiserLinkProposal(c
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -13282,6 +13522,11 @@ func (c *analyticsAdminRESTClient) ApproveDisplayVideo360AdvertiserLinkProposal(
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:approve", req.GetName())
@@ -13350,6 +13595,11 @@ func (c *analyticsAdminRESTClient) CancelDisplayVideo360AdvertiserLinkProposal(c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -13411,6 +13661,11 @@ func (c *analyticsAdminRESTClient) CreateCustomDimension(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/customDimensions", req.GetParent())
 
 	params := url.Values{}
@@ -13470,6 +13725,11 @@ func (c *analyticsAdminRESTClient) UpdateCustomDimension(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomDimension().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetCustomDimension().GetName())
@@ -13546,6 +13806,11 @@ func (c *analyticsAdminRESTClient) ListCustomDimensions(ctx context.Context, req
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/customDimensions", req.GetParent())
 
 		params := url.Values{}
@@ -13617,6 +13882,11 @@ func (c *analyticsAdminRESTClient) ArchiveCustomDimension(ctx context.Context, r
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:archive", req.GetName())
 
 	params := url.Values{}
@@ -13654,6 +13924,11 @@ func (c *analyticsAdminRESTClient) ArchiveCustomDimension(ctx context.Context, r
 func (c *analyticsAdminRESTClient) GetCustomDimension(ctx context.Context, req *adminpb.GetCustomDimensionRequest, opts ...gax.CallOption) (*adminpb.CustomDimension, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -13717,6 +13992,11 @@ func (c *analyticsAdminRESTClient) CreateCustomMetric(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/customMetrics", req.GetParent())
 
 	params := url.Values{}
@@ -13776,6 +14056,11 @@ func (c *analyticsAdminRESTClient) UpdateCustomMetric(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomMetric().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetCustomMetric().GetName())
@@ -13852,6 +14137,11 @@ func (c *analyticsAdminRESTClient) ListCustomMetrics(ctx context.Context, req *a
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/customMetrics", req.GetParent())
 
 		params := url.Values{}
@@ -13923,6 +14213,11 @@ func (c *analyticsAdminRESTClient) ArchiveCustomMetric(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:archive", req.GetName())
 
 	params := url.Values{}
@@ -13960,6 +14255,11 @@ func (c *analyticsAdminRESTClient) ArchiveCustomMetric(ctx context.Context, req 
 func (c *analyticsAdminRESTClient) GetCustomMetric(ctx context.Context, req *adminpb.GetCustomMetricRequest, opts ...gax.CallOption) (*adminpb.CustomMetric, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -14014,6 +14314,11 @@ func (c *analyticsAdminRESTClient) GetCustomMetric(ctx context.Context, req *adm
 func (c *analyticsAdminRESTClient) GetDataRetentionSettings(ctx context.Context, req *adminpb.GetDataRetentionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRetentionSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -14075,6 +14380,11 @@ func (c *analyticsAdminRESTClient) UpdateDataRetentionSettings(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataRetentionSettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDataRetentionSettings().GetName())
@@ -14145,6 +14455,11 @@ func (c *analyticsAdminRESTClient) CreateDataStream(ctx context.Context, req *ad
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/dataStreams", req.GetParent())
 
 	params := url.Values{}
@@ -14199,6 +14514,11 @@ func (c *analyticsAdminRESTClient) DeleteDataStream(ctx context.Context, req *ad
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -14243,6 +14563,11 @@ func (c *analyticsAdminRESTClient) UpdateDataStream(ctx context.Context, req *ad
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataStream().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDataStream().GetName())
@@ -14319,6 +14644,11 @@ func (c *analyticsAdminRESTClient) ListDataStreams(ctx context.Context, req *adm
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/dataStreams", req.GetParent())
 
 		params := url.Values{}
@@ -14384,6 +14714,11 @@ func (c *analyticsAdminRESTClient) GetDataStream(ctx context.Context, req *admin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -14438,6 +14773,11 @@ func (c *analyticsAdminRESTClient) GetDataStream(ctx context.Context, req *admin
 func (c *analyticsAdminRESTClient) GetAudience(ctx context.Context, req *adminpb.GetAudienceRequest, opts ...gax.CallOption) (*adminpb.Audience, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -14507,6 +14847,11 @@ func (c *analyticsAdminRESTClient) ListAudiences(ctx context.Context, req *admin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/audiences", req.GetParent())
@@ -14581,6 +14926,11 @@ func (c *analyticsAdminRESTClient) CreateAudience(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/audiences", req.GetParent())
 
 	params := url.Values{}
@@ -14640,6 +14990,11 @@ func (c *analyticsAdminRESTClient) UpdateAudience(ctx context.Context, req *admi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAudience().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetAudience().GetName())
@@ -14709,6 +15064,11 @@ func (c *analyticsAdminRESTClient) ArchiveAudience(ctx context.Context, req *adm
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:archive", req.GetName())
 
 	params := url.Values{}
@@ -14746,6 +15106,11 @@ func (c *analyticsAdminRESTClient) ArchiveAudience(ctx context.Context, req *adm
 func (c *analyticsAdminRESTClient) GetSearchAds360Link(ctx context.Context, req *adminpb.GetSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -14813,6 +15178,11 @@ func (c *analyticsAdminRESTClient) ListSearchAds360Links(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/searchAds360Links", req.GetParent())
@@ -14887,6 +15257,11 @@ func (c *analyticsAdminRESTClient) CreateSearchAds360Link(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/searchAds360Links", req.GetParent())
 
 	params := url.Values{}
@@ -14941,6 +15316,11 @@ func (c *analyticsAdminRESTClient) DeleteSearchAds360Link(ctx context.Context, r
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -14985,6 +15365,11 @@ func (c *analyticsAdminRESTClient) UpdateSearchAds360Link(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSearchAds_360Link().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSearchAds_360Link().GetName())
@@ -15048,6 +15433,11 @@ func (c *analyticsAdminRESTClient) GetAttributionSettings(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -15107,6 +15497,11 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAttributionSettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetAttributionSettings().GetName())
@@ -15195,6 +15590,11 @@ func (c *analyticsAdminRESTClient) RunAccessReport(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEntity(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:runAccessReport", req.GetEntity())
 
 	params := url.Values{}
@@ -15256,6 +15656,11 @@ func (c *analyticsAdminRESTClient) CreateAccessBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings", req.GetParent())
 
 	params := url.Values{}
@@ -15308,6 +15713,11 @@ func (c *analyticsAdminRESTClient) CreateAccessBinding(ctx context.Context, req 
 func (c *analyticsAdminRESTClient) GetAccessBinding(ctx context.Context, req *adminpb.GetAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -15371,6 +15781,11 @@ func (c *analyticsAdminRESTClient) UpdateAccessBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccessBinding().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetAccessBinding().GetName())
 
 	params := url.Values{}
@@ -15425,6 +15840,11 @@ func (c *analyticsAdminRESTClient) DeleteAccessBinding(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -15475,6 +15895,11 @@ func (c *analyticsAdminRESTClient) ListAccessBindings(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings", req.GetParent())
@@ -15552,6 +15977,11 @@ func (c *analyticsAdminRESTClient) BatchCreateAccessBindings(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -15604,6 +16034,11 @@ func (c *analyticsAdminRESTClient) BatchCreateAccessBindings(ctx context.Context
 func (c *analyticsAdminRESTClient) BatchGetAccessBindings(ctx context.Context, req *adminpb.BatchGetAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchGetAccessBindingsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings:batchGet", req.GetParent())
@@ -15672,6 +16107,11 @@ func (c *analyticsAdminRESTClient) BatchUpdateAccessBindings(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings:batchUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -15732,6 +16172,11 @@ func (c *analyticsAdminRESTClient) BatchDeleteAccessBindings(ctx context.Context
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -15769,6 +16214,11 @@ func (c *analyticsAdminRESTClient) BatchDeleteAccessBindings(ctx context.Context
 func (c *analyticsAdminRESTClient) GetExpandedDataSet(ctx context.Context, req *adminpb.GetExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -15836,6 +16286,11 @@ func (c *analyticsAdminRESTClient) ListExpandedDataSets(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/expandedDataSets", req.GetParent())
@@ -15910,6 +16365,11 @@ func (c *analyticsAdminRESTClient) CreateExpandedDataSet(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/expandedDataSets", req.GetParent())
 
 	params := url.Values{}
@@ -15969,6 +16429,11 @@ func (c *analyticsAdminRESTClient) UpdateExpandedDataSet(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetExpandedDataSet().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetExpandedDataSet().GetName())
@@ -16032,6 +16497,11 @@ func (c *analyticsAdminRESTClient) DeleteExpandedDataSet(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -16069,6 +16539,11 @@ func (c *analyticsAdminRESTClient) DeleteExpandedDataSet(ctx context.Context, re
 func (c *analyticsAdminRESTClient) GetChannelGroup(ctx context.Context, req *adminpb.GetChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -16136,6 +16611,11 @@ func (c *analyticsAdminRESTClient) ListChannelGroups(ctx context.Context, req *a
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/channelGroups", req.GetParent())
@@ -16210,6 +16690,11 @@ func (c *analyticsAdminRESTClient) CreateChannelGroup(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/channelGroups", req.GetParent())
 
 	params := url.Values{}
@@ -16269,6 +16754,11 @@ func (c *analyticsAdminRESTClient) UpdateChannelGroup(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChannelGroup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetChannelGroup().GetName())
@@ -16332,6 +16822,11 @@ func (c *analyticsAdminRESTClient) DeleteChannelGroup(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -16376,6 +16871,11 @@ func (c *analyticsAdminRESTClient) CreateBigQueryLink(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/bigQueryLinks", req.GetParent())
@@ -16430,6 +16930,11 @@ func (c *analyticsAdminRESTClient) CreateBigQueryLink(ctx context.Context, req *
 func (c *analyticsAdminRESTClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -16499,6 +17004,11 @@ func (c *analyticsAdminRESTClient) ListBigQueryLinks(ctx context.Context, req *a
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/bigQueryLinks", req.GetParent())
 
 		params := url.Values{}
@@ -16564,6 +17074,11 @@ func (c *analyticsAdminRESTClient) DeleteBigQueryLink(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -16608,6 +17123,11 @@ func (c *analyticsAdminRESTClient) UpdateBigQueryLink(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBigqueryLink().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetBigqueryLink().GetName())
@@ -16673,6 +17193,11 @@ func (c *analyticsAdminRESTClient) GetEnhancedMeasurementSettings(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -16736,6 +17261,11 @@ func (c *analyticsAdminRESTClient) UpdateEnhancedMeasurementSettings(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnhancedMeasurementSettings().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetEnhancedMeasurementSettings().GetName())
 
 	params := url.Values{}
@@ -16795,6 +17325,11 @@ func (c *analyticsAdminRESTClient) UpdateEnhancedMeasurementSettings(ctx context
 func (c *analyticsAdminRESTClient) GetAdSenseLink(ctx context.Context, req *adminpb.GetAdSenseLinkRequest, opts ...gax.CallOption) (*adminpb.AdSenseLink, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -16858,6 +17393,11 @@ func (c *analyticsAdminRESTClient) CreateAdSenseLink(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/adSenseLinks", req.GetParent())
 
 	params := url.Values{}
@@ -16912,6 +17452,11 @@ func (c *analyticsAdminRESTClient) DeleteAdSenseLink(ctx context.Context, req *a
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -16962,6 +17507,11 @@ func (c *analyticsAdminRESTClient) ListAdSenseLinks(ctx context.Context, req *ad
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/adSenseLinks", req.GetParent())
@@ -17029,6 +17579,11 @@ func (c *analyticsAdminRESTClient) GetEventCreateRule(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -17094,6 +17649,11 @@ func (c *analyticsAdminRESTClient) ListEventCreateRules(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/eventCreateRules", req.GetParent())
@@ -17168,6 +17728,11 @@ func (c *analyticsAdminRESTClient) CreateEventCreateRule(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/eventCreateRules", req.GetParent())
 
 	params := url.Values{}
@@ -17227,6 +17792,11 @@ func (c *analyticsAdminRESTClient) UpdateEventCreateRule(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEventCreateRule().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetEventCreateRule().GetName())
@@ -17290,6 +17860,11 @@ func (c *analyticsAdminRESTClient) DeleteEventCreateRule(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -17327,6 +17902,11 @@ func (c *analyticsAdminRESTClient) DeleteEventCreateRule(ctx context.Context, re
 func (c *analyticsAdminRESTClient) GetEventEditRule(ctx context.Context, req *adminpb.GetEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -17394,6 +17974,11 @@ func (c *analyticsAdminRESTClient) ListEventEditRules(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/eventEditRules", req.GetParent())
@@ -17468,6 +18053,11 @@ func (c *analyticsAdminRESTClient) CreateEventEditRule(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/eventEditRules", req.GetParent())
 
 	params := url.Values{}
@@ -17527,6 +18117,11 @@ func (c *analyticsAdminRESTClient) UpdateEventEditRule(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEventEditRule().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetEventEditRule().GetName())
@@ -17590,6 +18185,11 @@ func (c *analyticsAdminRESTClient) DeleteEventEditRule(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -17633,6 +18233,11 @@ func (c *analyticsAdminRESTClient) ReorderEventEditRules(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/eventEditRules:reorder", req.GetParent())
@@ -17679,6 +18284,11 @@ func (c *analyticsAdminRESTClient) UpdateDataRedactionSettings(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataRedactionSettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDataRedactionSettings().GetName())
@@ -17742,6 +18352,11 @@ func (c *analyticsAdminRESTClient) GetDataRedactionSettings(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -17794,6 +18409,11 @@ func (c *analyticsAdminRESTClient) GetDataRedactionSettings(ctx context.Context,
 func (c *analyticsAdminRESTClient) GetCalculatedMetric(ctx context.Context, req *adminpb.GetCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -17855,6 +18475,11 @@ func (c *analyticsAdminRESTClient) CreateCalculatedMetric(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/calculatedMetrics", req.GetParent())
@@ -17923,6 +18548,11 @@ func (c *analyticsAdminRESTClient) ListCalculatedMetrics(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/calculatedMetrics", req.GetParent())
@@ -17997,6 +18627,11 @@ func (c *analyticsAdminRESTClient) UpdateCalculatedMetric(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCalculatedMetric().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetCalculatedMetric().GetName())
 
 	params := url.Values{}
@@ -18056,6 +18691,11 @@ func (c *analyticsAdminRESTClient) UpdateCalculatedMetric(ctx context.Context, r
 func (c *analyticsAdminRESTClient) DeleteCalculatedMetric(ctx context.Context, req *adminpb.DeleteCalculatedMetricRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -18156,6 +18796,11 @@ func (c *analyticsAdminRESTClient) GetRollupPropertySourceLink(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -18223,6 +18868,11 @@ func (c *analyticsAdminRESTClient) ListRollupPropertySourceLinks(ctx context.Con
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/rollupPropertySourceLinks", req.GetParent())
@@ -18299,6 +18949,11 @@ func (c *analyticsAdminRESTClient) CreateRollupPropertySourceLink(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/rollupPropertySourceLinks", req.GetParent())
 
 	params := url.Values{}
@@ -18353,6 +19008,11 @@ func (c *analyticsAdminRESTClient) CreateRollupPropertySourceLink(ctx context.Co
 func (c *analyticsAdminRESTClient) DeleteRollupPropertySourceLink(ctx context.Context, req *adminpb.DeleteRollupPropertySourceLinkRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -18459,6 +19119,11 @@ func (c *analyticsAdminRESTClient) CreateSubpropertyEventFilter(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/subpropertyEventFilters", req.GetParent())
 
 	params := url.Values{}
@@ -18511,6 +19176,11 @@ func (c *analyticsAdminRESTClient) CreateSubpropertyEventFilter(ctx context.Cont
 func (c *analyticsAdminRESTClient) GetSubpropertyEventFilter(ctx context.Context, req *adminpb.GetSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -18578,6 +19248,11 @@ func (c *analyticsAdminRESTClient) ListSubpropertyEventFilters(ctx context.Conte
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/subpropertyEventFilters", req.GetParent())
@@ -18652,6 +19327,11 @@ func (c *analyticsAdminRESTClient) UpdateSubpropertyEventFilter(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubpropertyEventFilter().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSubpropertyEventFilter().GetName())
 
 	params := url.Values{}
@@ -18713,6 +19393,11 @@ func (c *analyticsAdminRESTClient) DeleteSubpropertyEventFilter(ctx context.Cont
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -18757,6 +19442,11 @@ func (c *analyticsAdminRESTClient) CreateReportingDataAnnotation(ctx context.Con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/reportingDataAnnotations", req.GetParent())
@@ -18811,6 +19501,11 @@ func (c *analyticsAdminRESTClient) CreateReportingDataAnnotation(ctx context.Con
 func (c *analyticsAdminRESTClient) GetReportingDataAnnotation(ctx context.Context, req *adminpb.GetReportingDataAnnotationRequest, opts ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -18878,6 +19573,11 @@ func (c *analyticsAdminRESTClient) ListReportingDataAnnotations(ctx context.Cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/reportingDataAnnotations", req.GetParent())
@@ -18955,6 +19655,11 @@ func (c *analyticsAdminRESTClient) UpdateReportingDataAnnotation(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetReportingDataAnnotation().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetReportingDataAnnotation().GetName())
 
 	params := url.Values{}
@@ -19016,6 +19721,11 @@ func (c *analyticsAdminRESTClient) DeleteReportingDataAnnotation(ctx context.Con
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -19059,6 +19769,11 @@ func (c *analyticsAdminRESTClient) SubmitUserDeletion(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:submitUserDeletion", req.GetName())
@@ -19126,6 +19841,11 @@ func (c *analyticsAdminRESTClient) ListSubpropertySyncConfigs(ctx context.Contex
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/subpropertySyncConfigs", req.GetParent())
@@ -19200,6 +19920,11 @@ func (c *analyticsAdminRESTClient) UpdateSubpropertySyncConfig(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubpropertySyncConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSubpropertySyncConfig().GetName())
 
 	params := url.Values{}
@@ -19261,6 +19986,11 @@ func (c *analyticsAdminRESTClient) GetSubpropertySyncConfig(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -19313,6 +20043,11 @@ func (c *analyticsAdminRESTClient) GetSubpropertySyncConfig(ctx context.Context,
 func (c *analyticsAdminRESTClient) GetReportingIdentitySettings(ctx context.Context, req *adminpb.GetReportingIdentitySettingsRequest, opts ...gax.CallOption) (*adminpb.ReportingIdentitySettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -19376,6 +20111,11 @@ func (c *analyticsAdminRESTClient) UpdateReportingIdentitySettings(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetReportingIdentitySettings().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetReportingIdentitySettings().GetName())
 
 	params := url.Values{}
@@ -19435,6 +20175,11 @@ func (c *analyticsAdminRESTClient) UpdateReportingIdentitySettings(ctx context.C
 func (c *analyticsAdminRESTClient) GetUserProvidedDataSettings(ctx context.Context, req *adminpb.GetUserProvidedDataSettingsRequest, opts ...gax.CallOption) (*adminpb.UserProvidedDataSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())

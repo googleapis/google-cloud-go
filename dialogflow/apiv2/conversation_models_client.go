@@ -1361,6 +1361,11 @@ func (c *conversationModelsRESTClient) CreateConversationModel(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/conversationModels", req.GetParent())
 
 	params := url.Values{}
@@ -1420,6 +1425,11 @@ func (c *conversationModelsRESTClient) CreateConversationModel(ctx context.Conte
 func (c *conversationModelsRESTClient) GetConversationModel(ctx context.Context, req *dialogflowpb.GetConversationModelRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationModel, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1487,6 +1497,11 @@ func (c *conversationModelsRESTClient) ListConversationModels(ctx context.Contex
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/conversationModels", req.GetParent())
@@ -1562,6 +1577,11 @@ func (c *conversationModelsRESTClient) ListConversationModels(ctx context.Contex
 func (c *conversationModelsRESTClient) DeleteConversationModel(ctx context.Context, req *dialogflowpb.DeleteConversationModelRequest, opts ...gax.CallOption) (*DeleteConversationModelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1642,6 +1662,11 @@ func (c *conversationModelsRESTClient) DeployConversationModel(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:deploy", req.GetName())
@@ -1725,6 +1750,11 @@ func (c *conversationModelsRESTClient) UndeployConversationModel(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:undeploy", req.GetName())
 
 	params := url.Values{}
@@ -1784,6 +1814,11 @@ func (c *conversationModelsRESTClient) UndeployConversationModel(ctx context.Con
 func (c *conversationModelsRESTClient) GetConversationModelEvaluation(ctx context.Context, req *dialogflowpb.GetConversationModelEvaluationRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationModelEvaluation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1851,6 +1886,11 @@ func (c *conversationModelsRESTClient) ListConversationModelEvaluations(ctx cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/evaluations", req.GetParent())
@@ -1924,6 +1964,11 @@ func (c *conversationModelsRESTClient) CreateConversationModelEvaluation(ctx con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/evaluations", req.GetParent())
 
 	params := url.Values{}
@@ -1983,6 +2028,11 @@ func (c *conversationModelsRESTClient) CreateConversationModelEvaluation(ctx con
 func (c *conversationModelsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2067,6 +2117,11 @@ func (c *conversationModelsRESTClient) ListLocations(ctx context.Context, req *l
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2135,6 +2190,11 @@ func (c *conversationModelsRESTClient) CancelOperation(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2172,6 +2232,11 @@ func (c *conversationModelsRESTClient) CancelOperation(ctx context.Context, req 
 func (c *conversationModelsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2239,6 +2304,11 @@ func (c *conversationModelsRESTClient) ListOperations(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())

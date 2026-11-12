@@ -626,63 +626,63 @@ var File_google_shopping_merchant_ordertracking_v1beta_order_tracking_signals_pr
 
 const file_google_shopping_merchant_ordertracking_v1beta_order_tracking_signals_proto_rawDesc = "" +
 	"\n" +
-	"Jgoogle/shopping/merchant/ordertracking/v1beta/order_tracking_signals.proto\x12-google.shopping.merchant.ordertracking.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/datetime.proto\"\xa1\x02\n" +
-	" CreateOrderTrackingSignalRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12<\n" +
-	"\x18order_tracking_signal_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x15orderTrackingSignalId\x12{\n" +
-	"\x15order_tracking_signal\x18\x03 \x01(\v2B.google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalB\x03\xe0A\x02R\x13orderTrackingSignal\"\xb3\x10\n" +
-	"\x13OrderTrackingSignal\x12<\n" +
-	"\x18order_tracking_signal_id\x18\v \x01(\x03B\x03\xe0A\x03R\x15orderTrackingSignalId\x12$\n" +
-	"\vmerchant_id\x18\f \x01(\x03B\x03\xe0A\x01R\n" +
-	"merchantId\x12H\n" +
-	"\x12order_created_time\x18\x01 \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x02R\x10orderCreatedTime\x12\x1e\n" +
-	"\border_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aorderId\x12y\n" +
-	"\rshipping_info\x18\x03 \x03(\v2O.google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignal.ShippingInfoB\x03\xe0A\x02R\fshippingInfo\x12v\n" +
+	"Jgoogle/shopping/merchant/ordertracking/v1beta/order_tracking_signals.proto\x12-google.shopping.merchant.ordertracking.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/datetime.proto\"\xa4\x02\n" +
+	" CreateOrderTrackingSignalRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12=\n" +
+	"\x18order_tracking_signal_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x15orderTrackingSignalId\x12|\n" +
+	"\x15order_tracking_signal\x18\x03 \x01(\v2B.google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalB\x04\xe2A\x01\x02R\x13orderTrackingSignal\"\xd2\x10\n" +
+	"\x13OrderTrackingSignal\x12=\n" +
+	"\x18order_tracking_signal_id\x18\v \x01(\x03B\x04\xe2A\x01\x03R\x15orderTrackingSignalId\x12%\n" +
+	"\vmerchant_id\x18\f \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"merchantId\x12I\n" +
+	"\x12order_created_time\x18\x01 \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x02R\x10orderCreatedTime\x12\x1f\n" +
+	"\border_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aorderId\x12z\n" +
+	"\rshipping_info\x18\x03 \x03(\v2O.google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignal.ShippingInfoB\x04\xe2A\x01\x02R\fshippingInfo\x12w\n" +
 	"\n" +
-	"line_items\x18\x04 \x03(\v2R.google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignal.LineItemDetailsB\x03\xe0A\x02R\tlineItems\x12\x9c\x01\n" +
-	"\x1ashipment_line_item_mapping\x18\x05 \x03(\v2Z.google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignal.ShipmentLineItemMappingB\x03\xe0A\x01R\x17shipmentLineItemMapping\x12Y\n" +
-	"\x15customer_shipping_fee\x18\x06 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01H\x00R\x13customerShippingFee\x88\x01\x01\x125\n" +
-	"\x14delivery_postal_code\x18\t \x01(\tB\x03\xe0A\x01R\x12deliveryPostalCode\x125\n" +
+	"line_items\x18\x04 \x03(\v2R.google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignal.LineItemDetailsB\x04\xe2A\x01\x02R\tlineItems\x12\x9d\x01\n" +
+	"\x1ashipment_line_item_mapping\x18\x05 \x03(\v2Z.google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignal.ShipmentLineItemMappingB\x04\xe2A\x01\x01R\x17shipmentLineItemMapping\x12Z\n" +
+	"\x15customer_shipping_fee\x18\x06 \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01H\x00R\x13customerShippingFee\x88\x01\x01\x126\n" +
+	"\x14delivery_postal_code\x18\t \x01(\tB\x04\xe2A\x01\x01R\x12deliveryPostalCode\x126\n" +
 	"\x14delivery_region_code\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x12deliveryRegionCode\x1a\xb3\x06\n" +
-	"\fShippingInfo\x12$\n" +
-	"\vshipment_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"shipmentId\x12$\n" +
-	"\vtracking_id\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"trackingId\x12\x1d\n" +
-	"\acarrier\x18\x03 \x01(\tB\x03\xe0A\x01R\acarrier\x12,\n" +
-	"\x0fcarrier_service\x18\x04 \x01(\tB\x03\xe0A\x01R\x0ecarrierService\x12=\n" +
-	"\fshipped_time\x18\x05 \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01R\vshippedTime\x12_\n" +
-	"\x1eearliest_delivery_promise_time\x18\x06 \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01R\x1bearliestDeliveryPromiseTime\x12[\n" +
-	"\x1clatest_delivery_promise_time\x18\a \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01R\x19latestDeliveryPromiseTime\x12L\n" +
-	"\x14actual_delivery_time\x18\b \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01R\x12actualDeliveryTime\x12\x8b\x01\n" +
-	"\x0fshipping_status\x18\t \x01(\x0e2].google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignal.ShippingInfo.ShippingStateB\x03\xe0A\x02R\x0eshippingStatus\x121\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x12deliveryRegionCode\x1a\xbe\x06\n" +
+	"\fShippingInfo\x12%\n" +
+	"\vshipment_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"shipmentId\x12%\n" +
+	"\vtracking_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"trackingId\x12\x1e\n" +
+	"\acarrier\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\acarrier\x12-\n" +
+	"\x0fcarrier_service\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0ecarrierService\x12>\n" +
+	"\fshipped_time\x18\x05 \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x01R\vshippedTime\x12`\n" +
+	"\x1eearliest_delivery_promise_time\x18\x06 \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x01R\x1bearliestDeliveryPromiseTime\x12\\\n" +
+	"\x1clatest_delivery_promise_time\x18\a \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x01R\x19latestDeliveryPromiseTime\x12M\n" +
+	"\x14actual_delivery_time\x18\b \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x01R\x12actualDeliveryTime\x12\x8c\x01\n" +
+	"\x0fshipping_status\x18\t \x01(\x0e2].google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignal.ShippingInfo.ShippingStateB\x04\xe2A\x01\x02R\x0eshippingStatus\x122\n" +
 	"\x12origin_postal_code\x18\n" +
-	" \x01(\tB\x03\xe0A\x02R\x10originPostalCode\x121\n" +
-	"\x12origin_region_code\x18\v \x01(\tB\x03\xe0A\x02R\x10originRegionCode\"K\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x10originPostalCode\x122\n" +
+	"\x12origin_region_code\x18\v \x01(\tB\x04\xe2A\x01\x02R\x10originRegionCode\"K\n" +
 	"\rShippingState\x12\x1e\n" +
 	"\x1aSHIPPING_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSHIPPED\x10\x01\x12\r\n" +
-	"\tDELIVERED\x10\x02\x1a\x98\x02\n" +
-	"\x0fLineItemDetails\x12%\n" +
-	"\fline_item_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"lineItemId\x12\"\n" +
+	"\tDELIVERED\x10\x02\x1a\x9f\x02\n" +
+	"\x0fLineItemDetails\x12&\n" +
+	"\fline_item_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"lineItemId\x12#\n" +
 	"\n" +
-	"product_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tproductId\x12\x17\n" +
-	"\x04gtin\x18\x03 \x01(\tB\x03\xe0A\x01R\x04gtin\x12\x15\n" +
-	"\x03mpn\x18\x04 \x01(\tB\x03\xe0A\x01R\x03mpn\x12-\n" +
-	"\rproduct_title\x18\x05 \x01(\tB\x03\xe0A\x01H\x00R\fproductTitle\x88\x01\x01\x12\x1e\n" +
-	"\x05brand\x18\x06 \x01(\tB\x03\xe0A\x01H\x01R\x05brand\x88\x01\x01\x12\x1f\n" +
-	"\bquantity\x18\a \x01(\x03B\x03\xe0A\x02R\bquantityB\x10\n" +
+	"product_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tproductId\x12\x18\n" +
+	"\x04gtin\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04gtin\x12\x16\n" +
+	"\x03mpn\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x03mpn\x12.\n" +
+	"\rproduct_title\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x00R\fproductTitle\x88\x01\x01\x12\x1f\n" +
+	"\x05brand\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x01R\x05brand\x88\x01\x01\x12 \n" +
+	"\bquantity\x18\a \x01(\x03B\x04\xe2A\x01\x02R\bquantityB\x10\n" +
 	"\x0e_product_titleB\b\n" +
-	"\x06_brand\x1a\x87\x01\n" +
-	"\x17ShipmentLineItemMapping\x12$\n" +
-	"\vshipment_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"shipmentId\x12%\n" +
-	"\fline_item_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"lineItemId\x12\x1f\n" +
-	"\bquantity\x18\x03 \x01(\x03B\x03\xe0A\x02R\bquantityB\x18\n" +
+	"\x06_brand\x1a\x8a\x01\n" +
+	"\x17ShipmentLineItemMapping\x12%\n" +
+	"\vshipment_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"shipmentId\x12&\n" +
+	"\fline_item_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"lineItemId\x12 \n" +
+	"\bquantity\x18\x03 \x01(\x03B\x04\xe2A\x01\x02R\bquantityB\x18\n" +
 	"\x16_customer_shipping_fee2\x9a\x03\n" +
 	"\x1bOrderTrackingSignalsService\x12\xb1\x02\n" +
 	"\x19CreateOrderTrackingSignal\x12O.google.shopping.merchant.ordertracking.v1beta.CreateOrderTrackingSignalRequest\x1aB.google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignal\"\x7f\xdaA\x1fparent,order_tracking_signal_id\x82\xd3\xe4\x93\x02W:\x15order_tracking_signal\">/ordertracking/v1beta/{parent=accounts/*}/ordertrackingsignals\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\xfe\x02\xeaA8\n" +

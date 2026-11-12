@@ -813,6 +813,11 @@ func (c *catalogRESTClient) CreateCatalogItem(ctx context.Context, req *recommen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/catalogItems", req.GetParent())
 
 	params := url.Values{}
@@ -865,6 +870,11 @@ func (c *catalogRESTClient) CreateCatalogItem(ctx context.Context, req *recommen
 func (c *catalogRESTClient) GetCatalogItem(ctx context.Context, req *recommendationenginepb.GetCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -932,6 +942,11 @@ func (c *catalogRESTClient) ListCatalogItems(ctx context.Context, req *recommend
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/catalogItems", req.GetParent())
@@ -1010,6 +1025,11 @@ func (c *catalogRESTClient) UpdateCatalogItem(ctx context.Context, req *recommen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1071,6 +1091,11 @@ func (c *catalogRESTClient) DeleteCatalogItem(ctx context.Context, req *recommen
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1119,6 +1144,11 @@ func (c *catalogRESTClient) ImportCatalogItems(ctx context.Context, req *recomme
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/catalogItems:import", req.GetParent())

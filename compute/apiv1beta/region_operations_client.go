@@ -300,6 +300,13 @@ func (c *regionOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetOperation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/operations/%v", req.GetProject(), req.GetRegion(), req.GetOperation())
 
 	// Build HTTP headers from client and context metadata.
@@ -347,6 +354,13 @@ func (c *regionOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 func (c *regionOperationsRESTClient) Get(ctx context.Context, req *computepb.GetRegionOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetOperation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/operations/%v", req.GetProject(), req.GetRegion(), req.GetOperation())
@@ -410,6 +424,12 @@ func (c *regionOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/operations", req.GetProject(), req.GetRegion())
@@ -490,6 +510,13 @@ func (c *regionOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 func (c *regionOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitRegionOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetOperation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/operations/%v/wait", req.GetProject(), req.GetRegion(), req.GetOperation())

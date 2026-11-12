@@ -607,37 +607,37 @@ var File_google_cloud_retail_v2alpha_project_service_proto protoreflect.FileDesc
 
 const file_google_cloud_retail_v2alpha_project_service_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/retail/v2alpha/project_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2alpha/common.proto\x1a)google/cloud/retail/v2alpha/project.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\"T\n" +
-	"\x11GetProjectRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#retail.googleapis.com/RetailProjectR\x04name\"[\n" +
-	"\x12AcceptTermsRequest\x12E\n" +
-	"\aproject\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#retail.googleapis.com/RetailProjectR\aproject\"\xb2\x01\n" +
-	"\x15EnrollSolutionRequest\x12M\n" +
-	"\aproject\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\aproject\x12J\n" +
-	"\bsolution\x18\x02 \x01(\x0e2).google.cloud.retail.v2alpha.SolutionTypeB\x03\xe0A\x02R\bsolution\"p\n" +
+	"1google/cloud/retail/v2alpha/project_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2alpha/common.proto\x1a)google/cloud/retail/v2alpha/project.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\"U\n" +
+	"\x11GetProjectRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#retail.googleapis.com/RetailProjectR\x04name\"\\\n" +
+	"\x12AcceptTermsRequest\x12F\n" +
+	"\aproject\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#retail.googleapis.com/RetailProjectR\aproject\"\xb4\x01\n" +
+	"\x15EnrollSolutionRequest\x12N\n" +
+	"\aproject\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\aproject\x12K\n" +
+	"\bsolution\x18\x02 \x01(\x0e2).google.cloud.retail.v2alpha.SolutionTypeB\x04\xe2A\x01\x02R\bsolution\"p\n" +
 	"\x16EnrollSolutionResponse\x12V\n" +
 	"\x11enrolled_solution\x18\x01 \x01(\x0e2).google.cloud.retail.v2alpha.SolutionTypeR\x10enrolledSolution\"\x18\n" +
-	"\x16EnrollSolutionMetadata\"k\n" +
-	"\x1cListEnrolledSolutionsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x16EnrollSolutionMetadata\"l\n" +
+	"\x1cListEnrolledSolutionsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\"y\n" +
 	"\x1dListEnrolledSolutionsResponse\x12X\n" +
-	"\x12enrolled_solutions\x18\x01 \x03(\x0e2).google.cloud.retail.v2alpha.SolutionTypeR\x11enrolledSolutions\"Z\n" +
-	"\x17GetLoggingConfigRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#retail.googleapis.com/LoggingConfigR\x04name\"\xb1\x01\n" +
-	"\x1aUpdateLoggingConfigRequest\x12V\n" +
-	"\x0elogging_config\x18\x01 \x01(\v2*.google.cloud.retail.v2alpha.LoggingConfigB\x03\xe0A\x02R\rloggingConfig\x12;\n" +
+	"\x12enrolled_solutions\x18\x01 \x03(\x0e2).google.cloud.retail.v2alpha.SolutionTypeR\x11enrolledSolutions\"[\n" +
+	"\x17GetLoggingConfigRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#retail.googleapis.com/LoggingConfigR\x04name\"\xb2\x01\n" +
+	"\x1aUpdateLoggingConfigRequest\x12W\n" +
+	"\x0elogging_config\x18\x01 \x01(\v2*.google.cloud.retail.v2alpha.LoggingConfigB\x04\xe2A\x01\x02R\rloggingConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"V\n" +
-	"\x15GetAlertConfigRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!retail.googleapis.com/AlertConfigR\x04name\"\xa9\x01\n" +
-	"\x18UpdateAlertConfigRequest\x12P\n" +
-	"\falert_config\x18\x01 \x01(\v2(.google.cloud.retail.v2alpha.AlertConfigB\x03\xe0A\x02R\valertConfig\x12;\n" +
+	"updateMask\"W\n" +
+	"\x15GetAlertConfigRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!retail.googleapis.com/AlertConfigR\x04name\"\xaa\x01\n" +
+	"\x18UpdateAlertConfigRequest\x12Q\n" +
+	"\falert_config\x18\x01 \x01(\v2(.google.cloud.retail.v2alpha.AlertConfigB\x04\xe2A\x01\x02R\valertConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask2\xab\r\n" +
 	"\x0eProjectService\x12\x9b\x01\n" +

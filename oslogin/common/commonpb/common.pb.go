@@ -306,7 +306,7 @@ var File_google_cloud_oslogin_common_common_proto protoreflect.FileDescriptor
 
 const file_google_cloud_oslogin_common_common_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/oslogin/common/common.proto\x12\x1bgoogle.cloud.oslogin.common\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc6\x03\n" +
+	"(google/cloud/oslogin/common/common.proto\x12\x1bgoogle.cloud.oslogin.common\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc8\x03\n" +
 	"\fPosixAccount\x12\x18\n" +
 	"\aprimary\x18\x01 \x01(\bR\aprimary\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x10\n" +
@@ -315,18 +315,18 @@ const file_google_cloud_oslogin_common_common_proto_rawDesc = "" +
 	"\x0ehome_directory\x18\x05 \x01(\tR\rhomeDirectory\x12\x14\n" +
 	"\x05shell\x18\x06 \x01(\tR\x05shell\x12\x14\n" +
 	"\x05gecos\x18\a \x01(\tR\x05gecos\x12\x1b\n" +
-	"\tsystem_id\x18\b \x01(\tR\bsystemId\x12\"\n" +
+	"\tsystem_id\x18\b \x01(\tR\bsystemId\x12#\n" +
 	"\n" +
-	"account_id\x18\t \x01(\tB\x03\xe0A\x03R\taccountId\x12d\n" +
+	"account_id\x18\t \x01(\tB\x04\xe2A\x01\x03R\taccountId\x12d\n" +
 	"\x15operating_system_type\x18\n" +
-	" \x01(\x0e20.google.cloud.oslogin.common.OperatingSystemTypeR\x13operatingSystemType\x12\x17\n" +
-	"\x04name\x18\v \x01(\tB\x03\xe0A\x03R\x04name:I\xeaAF\n" +
-	"#oslogin.googleapis.com/PosixAccount\x12\x1fusers/{user}/projects/{project}\"\xe6\x01\n" +
+	" \x01(\x0e20.google.cloud.oslogin.common.OperatingSystemTypeR\x13operatingSystemType\x12\x18\n" +
+	"\x04name\x18\v \x01(\tB\x04\xe2A\x01\x03R\x04name:I\xeaAF\n" +
+	"#oslogin.googleapis.com/PosixAccount\x12\x1fusers/{user}/projects/{project}\"\xe8\x01\n" +
 	"\fSshPublicKey\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x120\n" +
-	"\x14expiration_time_usec\x18\x02 \x01(\x03R\x12expirationTimeUsec\x12%\n" +
-	"\vfingerprint\x18\x03 \x01(\tB\x03\xe0A\x03R\vfingerprint\x12\x17\n" +
-	"\x04name\x18\x04 \x01(\tB\x03\xe0A\x03R\x04name:R\xeaAO\n" +
+	"\x14expiration_time_usec\x18\x02 \x01(\x03R\x12expirationTimeUsec\x12&\n" +
+	"\vfingerprint\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vfingerprint\x12\x18\n" +
+	"\x04name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04name:R\xeaAO\n" +
 	"#oslogin.googleapis.com/SshPublicKey\x12(users/{user}/sshPublicKeys/{fingerprint}*T\n" +
 	"\x13OperatingSystemType\x12%\n" +
 	"!OPERATING_SYSTEM_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +

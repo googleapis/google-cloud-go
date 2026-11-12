@@ -401,6 +401,11 @@ func (c *healthChecksRESTClient) AggregatedList(ctx context.Context, req *comput
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/healthChecks", req.GetProject())
 
 		params := url.Values{}
@@ -484,6 +489,12 @@ func (c *healthChecksRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetHealthCheck(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v", req.GetProject(), req.GetHealthCheck())
 
 	params := url.Values{}
@@ -547,6 +558,12 @@ func (c *healthChecksRESTClient) Get(ctx context.Context, req *computepb.GetHeal
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetHealthCheck(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v", req.GetProject(), req.GetHealthCheck())
 
 	// Build HTTP headers from client and context metadata.
@@ -602,6 +619,11 @@ func (c *healthChecksRESTClient) Insert(ctx context.Context, req *computepb.Inse
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks", req.GetProject())
@@ -679,6 +701,11 @@ func (c *healthChecksRESTClient) List(ctx context.Context, req *computepb.ListHe
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks", req.GetProject())
@@ -761,6 +788,12 @@ func (c *healthChecksRESTClient) Patch(ctx context.Context, req *computepb.Patch
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetHealthCheck(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v", req.GetProject(), req.GetHealthCheck())
 
 	params := url.Values{}
@@ -831,6 +864,12 @@ func (c *healthChecksRESTClient) TestIamPermissions(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -886,6 +925,12 @@ func (c *healthChecksRESTClient) Update(ctx context.Context, req *computepb.Upda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetHealthCheck(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v", req.GetProject(), req.GetHealthCheck())

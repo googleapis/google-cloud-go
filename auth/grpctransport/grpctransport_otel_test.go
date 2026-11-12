@@ -152,11 +152,10 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyRPCMethod.String("echo.Echoer/Echo"),
 					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
-					attribute.String("error.type", "CLIENT_TIMEOUT"),
 					attribute.String("rpc.response.status_code", "DEADLINE_EXCEEDED"),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{keyServerPort, attribute.Key("status.message"), attribute.Key("exception.type")},
+			wantAttrKeys: []attribute.Key{keyServerPort, attribute.Key("error.type"), attribute.Key("status.message"), attribute.Key("exception.type")},
 		},
 		{
 			name:      "telemetry enabled client cancelled",

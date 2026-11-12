@@ -505,28 +505,28 @@ var File_google_shopping_merchant_inventories_v1_localinventory_proto protorefle
 
 const file_google_shopping_merchant_inventories_v1_localinventory_proto_rawDesc = "" +
 	"\n" +
-	"<google/shopping/merchant/inventories/v1/localinventory.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a@google/shopping/merchant/inventories/v1/inventories_common.proto\"\xa0\x03\n" +
-	"\x0eLocalInventory\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x123\n" +
-	"\x13base64_encoded_name\x18\x0f \x01(\tB\x03\xe0A\x03R\x11base64EncodedName\x12\x1d\n" +
-	"\aaccount\x18\x02 \x01(\x03B\x03\xe0A\x03R\aaccount\x12%\n" +
+	"<google/shopping/merchant/inventories/v1/localinventory.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a@google/shopping/merchant/inventories/v1/inventories_common.proto\"\xa3\x03\n" +
+	"\x0eLocalInventory\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x124\n" +
+	"\x13base64_encoded_name\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x11base64EncodedName\x12\x1e\n" +
+	"\aaccount\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\aaccount\x12$\n" +
 	"\n" +
-	"store_code\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tstoreCode\x12\x84\x01\n" +
-	"\x1alocal_inventory_attributes\x18\x0e \x01(\v2A.google.shopping.merchant.inventories.v1.LocalInventoryAttributesB\x03\xe0A\x01R\x18localInventoryAttributes:s\xeaAp\n" +
-	")merchantapi.googleapis.com/LocalInventory\x12Caccounts/{account}/products/{product}/localInventories/{store_code}\"\xa4\x01\n" +
-	"\x1bListLocalInventoriesRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)merchantapi.googleapis.com/LocalInventoryR\x06parent\x12\x1b\n" +
+	"store_code\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\tstoreCode\x12\x85\x01\n" +
+	"\x1alocal_inventory_attributes\x18\x0e \x01(\v2A.google.shopping.merchant.inventories.v1.LocalInventoryAttributesB\x04\xe2A\x01\x01R\x18localInventoryAttributes:s\xeaAp\n" +
+	")merchantapi.googleapis.com/LocalInventory\x12Caccounts/{account}/products/{product}/localInventories/{store_code}\"\xa5\x01\n" +
+	"\x1bListLocalInventoriesRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)merchantapi.googleapis.com/LocalInventoryR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xac\x01\n" +
 	"\x1cListLocalInventoriesResponse\x12d\n" +
 	"\x11local_inventories\x18\x01 \x03(\v27.google.shopping.merchant.inventories.v1.LocalInventoryR\x10localInventories\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcf\x01\n" +
-	"\x1bInsertLocalInventoryRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)merchantapi.googleapis.com/LocalInventoryR\x06parent\x12e\n" +
-	"\x0flocal_inventory\x18\x02 \x01(\v27.google.shopping.merchant.inventories.v1.LocalInventoryB\x03\xe0A\x02R\x0elocalInventory\"d\n" +
-	"\x1bDeleteLocalInventoryRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd1\x01\n" +
+	"\x1bInsertLocalInventoryRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)merchantapi.googleapis.com/LocalInventoryR\x06parent\x12f\n" +
+	"\x0flocal_inventory\x18\x02 \x01(\v27.google.shopping.merchant.inventories.v1.LocalInventoryB\x04\xe2A\x01\x02R\x0elocalInventory\"e\n" +
+	"\x1bDeleteLocalInventoryRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")merchantapi.googleapis.com/LocalInventoryR\x04name2\x98\x06\n" +
 	"\x15LocalInventoryService\x12\xf5\x01\n" +
 	"\x14ListLocalInventories\x12D.google.shopping.merchant.inventories.v1.ListLocalInventoriesRequest\x1aE.google.shopping.merchant.inventories.v1.ListLocalInventoriesResponse\"P\xdaA\x06parent\x82\xd3\xe4\x93\x02A\x12?/inventories/v1/{parent=accounts/*/products/*}/localInventories\x12\xf6\x01\n" +

@@ -189,19 +189,19 @@ var File_google_cloud_servicedirectory_v1beta1_endpoint_proto protoreflect.FileD
 
 const file_google_cloud_servicedirectory_v1beta1_endpoint_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/servicedirectory/v1beta1/endpoint.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf7\x04\n" +
-	"\bEndpoint\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x1d\n" +
-	"\aaddress\x18\x02 \x01(\tB\x03\xe0A\x01R\aaddress\x12\x17\n" +
-	"\x04port\x18\x03 \x01(\x05B\x03\xe0A\x01R\x04port\x12^\n" +
-	"\bmetadata\x18\x04 \x03(\v2=.google.cloud.servicedirectory.v1beta1.Endpoint.MetadataEntryB\x03\xe0A\x01R\bmetadata\x12I\n" +
-	"\anetwork\x18\x05 \x01(\tB/\xe0A\x05\xfaA)\n" +
-	"'servicedirectory.googleapis.com/NetworkR\anetwork\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x15\n" +
-	"\x03uid\x18\b \x01(\tB\x03\xe0A\x03R\x03uid\x1a;\n" +
+	"4google/cloud/servicedirectory/v1beta1/endpoint.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x04\n" +
+	"\bEndpoint\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x1e\n" +
+	"\aaddress\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aaddress\x12\x18\n" +
+	"\x04port\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12_\n" +
+	"\bmetadata\x18\x04 \x03(\v2=.google.cloud.servicedirectory.v1beta1.Endpoint.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x12J\n" +
+	"\anetwork\x18\x05 \x01(\tB0\xe2A\x01\x05\xfaA)\n" +
+	"'servicedirectory.googleapis.com/NetworkR\anetwork\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x16\n" +
+	"\x03uid\x18\b \x01(\tB\x04\xe2A\x01\x03R\x03uid\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x96\x01\xeaA\x92\x01\n" +

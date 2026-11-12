@@ -875,18 +875,18 @@ var File_google_shopping_merchant_datasources_v1beta_datasourcetypes_proto proto
 
 const file_google_shopping_merchant_datasources_v1beta_datasourcetypes_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/shopping/merchant/datasources/v1beta/datasourcetypes.proto\x12+google.shopping.merchant.datasources.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a google/shopping/type/types.proto\"\xa3\b\n" +
-	"\x18PrimaryProductDataSource\x12o\n" +
-	"\achannel\x18\x03 \x01(\x0e2M.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource.ChannelB\x06\xe0A\x01\xe0A\x05R\achannel\x12*\n" +
+	"Agoogle/shopping/merchant/datasources/v1beta/datasourcetypes.proto\x12+google.shopping.merchant.datasources.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a google/shopping/type/types.proto\"\xa4\b\n" +
+	"\x18PrimaryProductDataSource\x12n\n" +
+	"\achannel\x18\x03 \x01(\x0e2M.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource.ChannelB\x05\xe2A\x02\x01\x05R\achannel\x12)\n" +
 	"\n" +
-	"feed_label\x18\x04 \x01(\tB\x06\xe0A\x01\xe0A\x05H\x00R\tfeedLabel\x88\x01\x01\x126\n" +
-	"\x10content_language\x18\x05 \x01(\tB\x06\xe0A\x01\xe0A\x05H\x01R\x0fcontentLanguage\x88\x01\x01\x12!\n" +
-	"\tcountries\x18\x06 \x03(\tB\x03\xe0A\x01R\tcountries\x12y\n" +
-	"\fdefault_rule\x18\a \x01(\v2Q.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource.DefaultRuleB\x03\xe0A\x01R\vdefaultRule\x12z\n" +
+	"feed_label\x18\x04 \x01(\tB\x05\xe2A\x02\x01\x05H\x00R\tfeedLabel\x88\x01\x01\x125\n" +
+	"\x10content_language\x18\x05 \x01(\tB\x05\xe2A\x02\x01\x05H\x01R\x0fcontentLanguage\x88\x01\x01\x12\"\n" +
+	"\tcountries\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\tcountries\x12z\n" +
+	"\fdefault_rule\x18\a \x01(\v2Q.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource.DefaultRuleB\x04\xe2A\x01\x01R\vdefaultRule\x12{\n" +
 	"\fdestinations\x18\n" +
-	" \x03(\v2Q.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource.DestinationB\x03\xe0A\x01R\fdestinations\x1a\x89\x01\n" +
-	"\vDefaultRule\x12z\n" +
-	"\x16take_from_data_sources\x18\x01 \x03(\v2@.google.shopping.merchant.datasources.v1beta.DataSourceReferenceB\x03\xe0A\x02R\x13takeFromDataSources\x1a\x8c\x02\n" +
+	" \x03(\v2Q.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource.DestinationB\x04\xe2A\x01\x01R\fdestinations\x1a\x8a\x01\n" +
+	"\vDefaultRule\x12{\n" +
+	"\x16take_from_data_sources\x18\x01 \x03(\v2@.google.shopping.merchant.datasources.v1beta.DataSourceReferenceB\x04\xe2A\x01\x02R\x13takeFromDataSources\x1a\x8c\x02\n" +
 	"\vDestination\x12S\n" +
 	"\vdestination\x18\x01 \x01(\x0e21.google.shopping.type.Destination.DestinationEnumR\vdestination\x12m\n" +
 	"\x05state\x18\x02 \x01(\x0e2W.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource.Destination.StateR\x05state\"9\n" +
@@ -900,31 +900,31 @@ const file_google_shopping_merchant_datasources_v1beta_datasourcetypes_proto_raw
 	"\x0eLOCAL_PRODUCTS\x10\x02\x12\f\n" +
 	"\bPRODUCTS\x10\x03B\r\n" +
 	"\v_feed_labelB\x13\n" +
-	"\x11_content_language\"\xb8\x02\n" +
-	"\x1dSupplementalProductDataSource\x12*\n" +
+	"\x11_content_language\"\xb7\x02\n" +
+	"\x1dSupplementalProductDataSource\x12)\n" +
 	"\n" +
-	"feed_label\x18\x04 \x01(\tB\x06\xe0A\x01\xe0A\x05H\x00R\tfeedLabel\x88\x01\x01\x126\n" +
-	"\x10content_language\x18\x05 \x01(\tB\x06\xe0A\x01\xe0A\x05H\x01R\x0fcontentLanguage\x88\x01\x01\x12\x8e\x01\n" +
-	" referencing_primary_data_sources\x18\a \x03(\v2@.google.shopping.merchant.datasources.v1beta.DataSourceReferenceB\x03\xe0A\x03R\x1dreferencingPrimaryDataSourcesB\r\n" +
+	"feed_label\x18\x04 \x01(\tB\x05\xe2A\x02\x01\x05H\x00R\tfeedLabel\x88\x01\x01\x125\n" +
+	"\x10content_language\x18\x05 \x01(\tB\x05\xe2A\x02\x01\x05H\x01R\x0fcontentLanguage\x88\x01\x01\x12\x8f\x01\n" +
+	" referencing_primary_data_sources\x18\a \x03(\v2@.google.shopping.merchant.datasources.v1beta.DataSourceReferenceB\x04\xe2A\x01\x03R\x1dreferencingPrimaryDataSourcesB\r\n" +
 	"\v_feed_labelB\x13\n" +
-	"\x11_content_language\"t\n" +
-	"\x18LocalInventoryDataSource\x12%\n" +
+	"\x11_content_language\"r\n" +
+	"\x18LocalInventoryDataSource\x12$\n" +
 	"\n" +
-	"feed_label\x18\x04 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tfeedLabel\x121\n" +
-	"\x10content_language\x18\x05 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x0fcontentLanguage\"w\n" +
-	"\x1bRegionalInventoryDataSource\x12%\n" +
+	"feed_label\x18\x04 \x01(\tB\x05\xe2A\x02\x02\x05R\tfeedLabel\x120\n" +
+	"\x10content_language\x18\x05 \x01(\tB\x05\xe2A\x02\x02\x05R\x0fcontentLanguage\"u\n" +
+	"\x1bRegionalInventoryDataSource\x12$\n" +
 	"\n" +
-	"feed_label\x18\x04 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tfeedLabel\x121\n" +
-	"\x10content_language\x18\x05 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x0fcontentLanguage\"w\n" +
-	"\x13PromotionDataSource\x12-\n" +
-	"\x0etarget_country\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\rtargetCountry\x121\n" +
-	"\x10content_language\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x0fcontentLanguage\"\x19\n" +
+	"feed_label\x18\x04 \x01(\tB\x05\xe2A\x02\x02\x05R\tfeedLabel\x120\n" +
+	"\x10content_language\x18\x05 \x01(\tB\x05\xe2A\x02\x02\x05R\x0fcontentLanguage\"u\n" +
+	"\x13PromotionDataSource\x12,\n" +
+	"\x0etarget_country\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\rtargetCountry\x120\n" +
+	"\x10content_language\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\x0fcontentLanguage\"\x19\n" +
 	"\x17ProductReviewDataSource\"\x1a\n" +
-	"\x18MerchantReviewDataSource\"\xc7\x01\n" +
+	"\x18MerchantReviewDataSource\"\xc9\x01\n" +
 	"\x13DataSourceReference\x12\x14\n" +
-	"\x04self\x18\x01 \x01(\bH\x00R\x04self\x12>\n" +
-	"\x18primary_data_source_name\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x15primaryDataSourceName\x12H\n" +
-	"\x1dsupplemental_data_source_name\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x1asupplementalDataSourceNameB\x10\n" +
+	"\x04self\x18\x01 \x01(\bH\x00R\x04self\x12?\n" +
+	"\x18primary_data_source_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x15primaryDataSourceName\x12I\n" +
+	"\x1dsupplemental_data_source_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x1asupplementalDataSourceNameB\x10\n" +
 	"\x0edata_source_idB\xb0\x02\n" +
 	"/com.google.shopping.merchant.datasources.v1betaB\x14DatasourcetypesProtoP\x01ZWcloud.google.com/go/shopping/merchant/datasources/apiv1beta/datasourcespb;datasourcespb\xaa\x02+Google.Shopping.Merchant.DataSources.V1Beta\xca\x02+Google\\Shopping\\Merchant\\DataSources\\V1beta\xea\x02/Google::Shopping::Merchant::DataSources::V1betab\x06proto3"
 

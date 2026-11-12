@@ -229,13 +229,13 @@ var File_google_spanner_v1_commit_response_proto protoreflect.FileDescriptor
 
 const file_google_spanner_v1_commit_response_proto_rawDesc = "" +
 	"\n" +
-	"'google/spanner/v1/commit_response.proto\x12\x11google.spanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/spanner/v1/location.proto\x1a#google/spanner/v1/transaction.proto\"\xb0\x05\n" +
+	"'google/spanner/v1/commit_response.proto\x12\x11google.spanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/spanner/v1/location.proto\x1a#google/spanner/v1/transaction.proto\"\xb1\x05\n" +
 	"\x0eCommitResponse\x12E\n" +
 	"\x10commit_timestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x0fcommitTimestamp\x12P\n" +
 	"\fcommit_stats\x18\x02 \x01(\v2-.google.spanner.v1.CommitResponse.CommitStatsR\vcommitStats\x12^\n" +
 	"\x0fprecommit_token\x18\x04 \x01(\v23.google.spanner.v1.MultiplexedSessionPrecommitTokenH\x00R\x0eprecommitToken\x12I\n" +
-	"\x12snapshot_timestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x11snapshotTimestamp\x12F\n" +
-	"\fcache_update\x18\x06 \x01(\v2\x1e.google.spanner.v1.CacheUpdateB\x03\xe0A\x01R\vcacheUpdate\x12]\n" +
+	"\x12snapshot_timestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x11snapshotTimestamp\x12G\n" +
+	"\fcache_update\x18\x06 \x01(\v2\x1e.google.spanner.v1.CacheUpdateB\x04\xe2A\x01\x01R\vcacheUpdate\x12]\n" +
 	"\x0fisolation_level\x18\a \x01(\x0e24.google.spanner.v1.TransactionOptions.IsolationLevelR\x0eisolationLevel\x12b\n" +
 	"\x0eread_lock_mode\x18\b \x01(\x0e2<.google.spanner.v1.TransactionOptions.ReadWrite.ReadLockModeR\freadLockMode\x1a4\n" +
 	"\vCommitStats\x12%\n" +

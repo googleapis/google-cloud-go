@@ -493,6 +493,11 @@ func (c *restClient) CreateSession(ctx context.Context, req *adapterpb.CreateSes
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/sessions:adapter", req.GetParent())
 
 	params := url.Values{}
@@ -553,6 +558,11 @@ func (c *restClient) AdaptMessage(ctx context.Context, req *adapterpb.AdaptMessa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:adaptMessage", req.GetName())

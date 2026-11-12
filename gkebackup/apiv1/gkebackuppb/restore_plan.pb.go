@@ -285,27 +285,27 @@ var File_google_cloud_gkebackup_v1_restore_plan_proto protoreflect.FileDescripto
 
 const file_google_cloud_gkebackup_v1_restore_plan_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/gkebackup/v1/restore_plan.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/gkebackup/v1/restore.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\b\n" +
-	"\vRestorePlan\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12O\n" +
-	"\vbackup_plan\x18\x06 \x01(\tB.\xe0A\x05\xe0A\x02\xfaA%\n" +
+	",google/cloud/gkebackup/v1/restore_plan.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/gkebackup/v1/restore.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x99\b\n" +
+	"\vRestorePlan\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12N\n" +
+	"\vbackup_plan\x18\x06 \x01(\tB-\xe2A\x02\x05\x02\xfaA%\n" +
 	"#gkebackup.googleapis.com/BackupPlanR\n" +
-	"backupPlan\x12E\n" +
-	"\acluster\x18\a \x01(\tB+\xe0A\x05\xe0A\x02\xfaA\"\n" +
-	" container.googleapis.com/ClusterR\acluster\x12T\n" +
-	"\x0erestore_config\x18\b \x01(\v2(.google.cloud.gkebackup.v1.RestoreConfigB\x03\xe0A\x02R\rrestoreConfig\x12O\n" +
-	"\x06labels\x18\t \x03(\v22.google.cloud.gkebackup.v1.RestorePlan.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x17\n" +
+	"backupPlan\x12D\n" +
+	"\acluster\x18\a \x01(\tB*\xe2A\x02\x05\x02\xfaA\"\n" +
+	" container.googleapis.com/ClusterR\acluster\x12U\n" +
+	"\x0erestore_config\x18\b \x01(\v2(.google.cloud.gkebackup.v1.RestoreConfigB\x04\xe2A\x01\x02R\rrestoreConfig\x12P\n" +
+	"\x06labels\x18\t \x03(\v22.google.cloud.gkebackup.v1.RestorePlan.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x18\n" +
 	"\x04etag\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x04etag\x12G\n" +
-	"\x05state\x18\v \x01(\x0e2,.google.cloud.gkebackup.v1.RestorePlan.StateB\x03\xe0A\x03R\x05state\x12&\n" +
-	"\fstate_reason\x18\f \x01(\tB\x03\xe0A\x03R\vstateReason\x12X\n" +
-	"\x0frestore_channel\x18\r \x01(\tB/\xe0A\x03\xfaA)\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12H\n" +
+	"\x05state\x18\v \x01(\x0e2,.google.cloud.gkebackup.v1.RestorePlan.StateB\x04\xe2A\x01\x03R\x05state\x12'\n" +
+	"\fstate_reason\x18\f \x01(\tB\x04\xe2A\x01\x03R\vstateReason\x12Y\n" +
+	"\x0frestore_channel\x18\r \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
 	"'gkebackup.googleapis.com/RestoreChannelR\x0erestoreChannel\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

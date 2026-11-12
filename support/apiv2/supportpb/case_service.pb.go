@@ -761,15 +761,15 @@ var File_google_cloud_support_v2_case_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_support_v2_case_service_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/support/v2/case_service.proto\x12\x17google.cloud.support.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\"google/cloud/support/v2/case.proto\x1a(google/cloud/support/v2/escalation.proto\x1a google/protobuf/field_mask.proto\"N\n" +
-	"\x0eGetCaseRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" cloudsupport.googleapis.com/CaseR\x04name\"\x8d\x01\n" +
-	"\x11CreateCaseRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 cloudsupport.googleapis.com/CaseR\x06parent\x126\n" +
-	"\x04case\x18\x02 \x01(\v2\x1d.google.cloud.support.v2.CaseB\x03\xe0A\x02R\x04case\"\xa8\x01\n" +
-	"\x10ListCasesRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 cloudsupport.googleapis.com/CaseR\x06parent\x12\x16\n" +
+	"*google/cloud/support/v2/case_service.proto\x12\x17google.cloud.support.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\"google/cloud/support/v2/case.proto\x1a(google/cloud/support/v2/escalation.proto\x1a google/protobuf/field_mask.proto\"O\n" +
+	"\x0eGetCaseRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" cloudsupport.googleapis.com/CaseR\x04name\"\x8f\x01\n" +
+	"\x11CreateCaseRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 cloudsupport.googleapis.com/CaseR\x06parent\x127\n" +
+	"\x04case\x18\x02 \x01(\v2\x1d.google.cloud.support.v2.CaseB\x04\xe2A\x01\x02R\x04case\"\xa9\x01\n" +
+	"\x10ListCasesRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 cloudsupport.googleapis.com/CaseR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -785,19 +785,19 @@ const file_google_cloud_support_v2_case_service_proto_rawDesc = "" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"r\n" +
 	"\x13SearchCasesResponse\x123\n" +
 	"\x05cases\x18\x01 \x03(\v2\x1d.google.cloud.support.v2.CaseR\x05cases\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x01\n" +
-	"\x13EscalateCaseRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x99\x01\n" +
+	"\x13EscalateCaseRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" cloudsupport.googleapis.com/CaseR\x04name\x12C\n" +
 	"\n" +
 	"escalation\x18\x02 \x01(\v2#.google.cloud.support.v2.EscalationR\n" +
-	"escalation\"\x88\x01\n" +
-	"\x11UpdateCaseRequest\x126\n" +
-	"\x04case\x18\x01 \x01(\v2\x1d.google.cloud.support.v2.CaseB\x03\xe0A\x02R\x04case\x12;\n" +
+	"escalation\"\x89\x01\n" +
+	"\x11UpdateCaseRequest\x127\n" +
+	"\x04case\x18\x01 \x01(\v2\x1d.google.cloud.support.v2.CaseB\x04\xe2A\x01\x02R\x04case\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"P\n" +
-	"\x10CloseCaseRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"updateMask\"Q\n" +
+	"\x10CloseCaseRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" cloudsupport.googleapis.com/CaseR\x04name\"t\n" +
 	" SearchCaseClassificationsRequest\x12\x14\n" +
 	"\x05query\x18\x01 \x01(\tR\x05query\x12\x1b\n" +

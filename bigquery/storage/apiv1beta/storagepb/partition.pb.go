@@ -521,51 +521,51 @@ var File_google_cloud_bigquery_storage_v1beta_partition_proto protoreflect.FileD
 
 const file_google_cloud_bigquery_storage_v1beta_partition_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/bigquery/storage/v1beta/partition.proto\x12$google.cloud.bigquery.storage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"?\n" +
-	"\vFieldSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x02R\x04type\"\xe2\x01\n" +
-	"\x11StorageDescriptor\x12&\n" +
-	"\flocation_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\vlocationUri\x12&\n" +
-	"\finput_format\x18\x02 \x01(\tB\x03\xe0A\x01R\vinputFormat\x12(\n" +
-	"\routput_format\x18\x03 \x01(\tB\x03\xe0A\x01R\foutputFormat\x12S\n" +
+	"4google/cloud/bigquery/storage/v1beta/partition.proto\x12$google.cloud.bigquery.storage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"A\n" +
+	"\vFieldSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04type\"\xe6\x01\n" +
+	"\x11StorageDescriptor\x12'\n" +
+	"\flocation_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vlocationUri\x12'\n" +
+	"\finput_format\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vinputFormat\x12)\n" +
+	"\routput_format\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\foutputFormat\x12T\n" +
 	"\n" +
-	"serde_info\x18\x04 \x01(\v2/.google.cloud.bigquery.storage.v1beta.SerDeInfoB\x03\xe0A\x01R\tserdeInfo\"\x83\x02\n" +
-	"\tSerDeInfo\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x128\n" +
-	"\x15serialization_library\x18\x02 \x01(\tB\x03\xe0A\x02R\x14serializationLibrary\x12d\n" +
+	"serde_info\x18\x04 \x01(\v2/.google.cloud.bigquery.storage.v1beta.SerDeInfoB\x04\xe2A\x01\x01R\tserdeInfo\"\x86\x02\n" +
+	"\tSerDeInfo\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x129\n" +
+	"\x15serialization_library\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x14serializationLibrary\x12e\n" +
 	"\n" +
-	"parameters\x18\x03 \x03(\v2?.google.cloud.bigquery.storage.v1beta.SerDeInfo.ParametersEntryB\x03\xe0A\x01R\n" +
+	"parameters\x18\x03 \x03(\v2?.google.cloud.bigquery.storage.v1beta.SerDeInfo.ParametersEntryB\x04\xe2A\x01\x01R\n" +
 	"parameters\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xde\x03\n" +
-	"\x12MetastorePartition\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12k\n" +
-	"\x12storage_descriptor\x18\x03 \x01(\v27.google.cloud.bigquery.storage.v1beta.StorageDescriptorB\x03\xe0A\x01R\x11storageDescriptor\x12m\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe3\x03\n" +
+	"\x12MetastorePartition\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12l\n" +
+	"\x12storage_descriptor\x18\x03 \x01(\v27.google.cloud.bigquery.storage.v1beta.StorageDescriptorB\x04\xe2A\x01\x01R\x11storageDescriptor\x12n\n" +
 	"\n" +
-	"parameters\x18\x04 \x03(\v2H.google.cloud.bigquery.storage.v1beta.MetastorePartition.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12N\n" +
-	"\x06fields\x18\x05 \x03(\v21.google.cloud.bigquery.storage.v1beta.FieldSchemaB\x03\xe0A\x01R\x06fields\x1a=\n" +
+	"parameters\x18\x04 \x03(\v2H.google.cloud.bigquery.storage.v1beta.MetastorePartition.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12O\n" +
+	"\x06fields\x18\x05 \x03(\v21.google.cloud.bigquery.storage.v1beta.FieldSchemaB\x04\xe2A\x01\x01R\x06fields\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"w\n" +
-	"\x16MetastorePartitionList\x12]\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"x\n" +
+	"\x16MetastorePartitionList\x12^\n" +
 	"\n" +
-	"partitions\x18\x01 \x03(\v28.google.cloud.bigquery.storage.v1beta.MetastorePartitionB\x03\xe0A\x02R\n" +
-	"partitions\"\xc0\x01\n" +
+	"partitions\x18\x01 \x03(\v28.google.cloud.bigquery.storage.v1beta.MetastorePartitionB\x04\xe2A\x01\x02R\n" +
+	"partitions\"\xbf\x01\n" +
 	"\n" +
-	"ReadStream\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name:\x95\x01\xeaA\x91\x01\n" +
+	"ReadStream\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name:\x95\x01\xeaA\x91\x01\n" +
 	")bigquerystorage.googleapis.com/ReadStream\x12Kprojects/{project}/locations/{location}/sessions/{session}/streams/{stream}*\vreadStreams2\n" +
-	"readStream\"]\n" +
+	"readStream\"^\n" +
 	"\n" +
-	"StreamList\x12O\n" +
-	"\astreams\x18\x01 \x03(\v20.google.cloud.bigquery.storage.v1beta.ReadStreamB\x03\xe0A\x03R\astreams\"7\n" +
-	"\x18MetastorePartitionValues\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06valuesB\xd7\x01\n" +
+	"StreamList\x12P\n" +
+	"\astreams\x18\x01 \x03(\v20.google.cloud.bigquery.storage.v1beta.ReadStreamB\x04\xe2A\x01\x03R\astreams\"8\n" +
+	"\x18MetastorePartitionValues\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06valuesB\xd7\x01\n" +
 	"(com.google.cloud.bigquery.storage.v1betaB\x17MetastorePartitionProtoP\x01ZBcloud.google.com/go/bigquery/storage/apiv1beta/storagepb;storagepb\xaa\x02$Google.Cloud.BigQuery.Storage.V1Beta\xca\x02$Google\\Cloud\\BigQuery\\Storage\\V1betab\x06proto3"
 
 var (

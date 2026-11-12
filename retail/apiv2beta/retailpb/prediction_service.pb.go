@@ -405,11 +405,11 @@ var File_google_cloud_retail_v2beta_prediction_service_proto protoreflect.FileDe
 
 const file_google_cloud_retail_v2beta_prediction_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/retail/v2beta/prediction_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/retail/v2beta/user_event.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa9\x04\n" +
-	"\x0ePredictRequest\x12!\n" +
-	"\tplacement\x18\x01 \x01(\tB\x03\xe0A\x02R\tplacement\x12I\n" +
+	"3google/cloud/retail/v2beta/prediction_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/retail/v2beta/user_event.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xab\x04\n" +
+	"\x0ePredictRequest\x12\"\n" +
+	"\tplacement\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tplacement\x12J\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\v2%.google.cloud.retail.v2beta.UserEventB\x03\xe0A\x02R\tuserEvent\x12\x1b\n" +
+	"user_event\x18\x02 \x01(\v2%.google.cloud.retail.v2beta.UserEventB\x04\xe2A\x01\x02R\tuserEvent\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12!\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tB\x02\x18\x01R\tpageToken\x12\x16\n" +

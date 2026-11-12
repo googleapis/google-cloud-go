@@ -848,6 +848,11 @@ func (c *cloudProductRegistryReadRESTClient) GetProductSuite(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -978,6 +983,11 @@ func (c *cloudProductRegistryReadRESTClient) ListProductSuites(ctx context.Conte
 func (c *cloudProductRegistryReadRESTClient) GetLogicalProduct(ctx context.Context, req *productregistrypb.GetLogicalProductRequest, opts ...gax.CallOption) (*productregistrypb.LogicalProduct, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1115,6 +1125,11 @@ func (c *cloudProductRegistryReadRESTClient) GetLogicalProductVariant(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1182,6 +1197,11 @@ func (c *cloudProductRegistryReadRESTClient) ListLogicalProductVariants(ctx cont
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/variants", req.GetParent())
 
 		params := url.Values{}
@@ -1245,6 +1265,11 @@ func (c *cloudProductRegistryReadRESTClient) ListLogicalProductVariants(ctx cont
 func (c *cloudProductRegistryReadRESTClient) LookupEntity(ctx context.Context, req *productregistrypb.LookupEntityRequest, opts ...gax.CallOption) (*productregistrypb.LookupEntityResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLookupUri(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:lookupEntity", req.GetLookupUri())

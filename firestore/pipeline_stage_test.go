@@ -426,3 +426,188 @@ func TestUnnestStage(t *testing.T) {
 		t.Errorf("toProto() returned diff (-got +want): %s", diff)
 	}
 }
+
+func TestInsertStage(t *testing.T) {
+	testcases := []struct {
+		desc    string
+		options map[string]any
+		want    *pb.Pipeline_Stage
+		wantErr bool
+	}{
+		{
+			desc:    "no options",
+			options: nil,
+			want: &pb.Pipeline_Stage{
+				Name: "insert",
+				Args: []*pb.Value{},
+			},
+		},
+		{
+			desc:    "string collection without leading slash",
+			options: map[string]any{"collection": "books"},
+			want: &pb.Pipeline_Stage{
+				Name: "insert",
+				Args: []*pb.Value{},
+				Options: map[string]*pb.Value{
+					"collection": {ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/books"}},
+				},
+			},
+		},
+		{
+			desc:    "string collection with leading slash and constant document_id",
+			options: map[string]any{"collection": "/books", "document_id": ConstantOf("doc-1")},
+			want: &pb.Pipeline_Stage{
+				Name: "insert",
+				Args: []*pb.Value{},
+				Options: map[string]*pb.Value{
+					"collection":  {ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/books"}},
+					"document_id": {ValueType: &pb.Value_StringValue{StringValue: "doc-1"}},
+				},
+			},
+		},
+		{
+			desc:    "nested collection path and FieldOf document_id",
+			options: map[string]any{"collection": "users/123/books", "document_id": FieldOf("custom_id")},
+			want: &pb.Pipeline_Stage{
+				Name: "insert",
+				Args: []*pb.Value{},
+				Options: map[string]*pb.Value{
+					"collection":  {ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/users/123/books"}},
+					"document_id": {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "custom_id"}},
+				},
+			},
+		},
+		{
+			desc:    "empty collection string fails",
+			options: map[string]any{"collection": ""},
+			wantErr: true,
+		},
+		{
+			desc:    "invalid collection type fails",
+			options: map[string]any{"collection": 123},
+			wantErr: true,
+		},
+		{
+			desc:    "nil document_id fails",
+			options: map[string]any{"document_id": (*field)(nil)},
+			wantErr: true,
+		},
+		{
+			desc:    "invalid document_id type fails",
+			options: map[string]any{"document_id": 123},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.desc, func(t *testing.T) {
+			stage, err := newInsertStage(tc.options)
+			if err != nil {
+				t.Fatalf("newInsertStage() failed: %v", err)
+			}
+			got, err := stage.toProto()
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("toProto() error = %v, wantErr %v", err, tc.wantErr)
+			}
+			if tc.wantErr {
+				return
+			}
+			if diff := testutil.Diff(got, tc.want); diff != "" {
+				t.Errorf("toProto() returned diff (-got +want): %s", diff)
+			}
+		})
+	}
+}
+
+func TestUpsertStage(t *testing.T) {
+	testcases := []struct {
+		desc    string
+		options map[string]any
+		want    *pb.Pipeline_Stage
+		wantErr bool
+	}{
+		{
+			desc:    "no options",
+			options: nil,
+			want: &pb.Pipeline_Stage{
+				Name: "upsert",
+				Args: []*pb.Value{
+					{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{}}},
+				},
+			},
+		},
+		{
+			desc: "additional_fields only",
+			options: map[string]any{
+				"additional_fields": []Selectable{
+					ConstantOf("Active").As("status"),
+					Add(FieldOf("age"), 1).As("age"),
+				},
+			},
+			want: &pb.Pipeline_Stage{
+				Name: "upsert",
+				Args: []*pb.Value{
+					{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: map[string]*pb.Value{
+						"status": {ValueType: &pb.Value_StringValue{StringValue: "Active"}},
+						"age": {ValueType: &pb.Value_FunctionValue{FunctionValue: &pb.Function{
+							Name: "add",
+							Args: []*pb.Value{
+								{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "age"}},
+								{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+							},
+						}}},
+					}}}},
+				},
+			},
+		},
+		{
+			desc: "collection, document_id, and additional_fields",
+			options: map[string]any{
+				"collection":        "users/123/books",
+				"document_id":       FieldOf("custom_id"),
+				"additional_fields": []Selectable{ConstantOf("Featured").As("tier")},
+			},
+			want: &pb.Pipeline_Stage{
+				Name: "upsert",
+				Args: []*pb.Value{
+					{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: map[string]*pb.Value{
+						"tier": {ValueType: &pb.Value_StringValue{StringValue: "Featured"}},
+					}}}},
+				},
+				Options: map[string]*pb.Value{
+					"collection":  {ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/users/123/books"}},
+					"document_id": {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "custom_id"}},
+				},
+			},
+		},
+		{
+			desc:    "empty collection string fails",
+			options: map[string]any{"collection": ""},
+			wantErr: true,
+		},
+		{
+			desc:    "invalid document_id type fails",
+			options: map[string]any{"document_id": 123},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.desc, func(t *testing.T) {
+			stage, err := newUpsertStage(tc.options)
+			if err != nil {
+				t.Fatalf("newUpsertStage() failed: %v", err)
+			}
+			got, err := stage.toProto()
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("toProto() error = %v, wantErr %v", err, tc.wantErr)
+			}
+			if tc.wantErr {
+				return
+			}
+			if diff := testutil.Diff(got, tc.want); diff != "" {
+				t.Errorf("toProto() returned diff (-got +want): %s", diff)
+			}
+		})
+	}
+}

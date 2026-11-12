@@ -97,10 +97,10 @@ var File_google_cloud_bigquery_v2_system_variable_proto protoreflect.FileDescrip
 
 const file_google_cloud_bigquery_v2_system_variable_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/bigquery/v2/system_variable.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x81\x02\n" +
-	"\x0fSystemVariables\x12O\n" +
-	"\x05types\x18\x01 \x03(\v24.google.cloud.bigquery.v2.SystemVariables.TypesEntryB\x03\xe0A\x03R\x05types\x124\n" +
-	"\x06values\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x06values\x1ag\n" +
+	".google/cloud/bigquery/v2/system_variable.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x83\x02\n" +
+	"\x0fSystemVariables\x12P\n" +
+	"\x05types\x18\x01 \x03(\v24.google.cloud.bigquery.v2.SystemVariables.TypesEntryB\x04\xe2A\x01\x03R\x05types\x125\n" +
+	"\x06values\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x06values\x1ag\n" +
 	"\n" +
 	"TypesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12C\n" +

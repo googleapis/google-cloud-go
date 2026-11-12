@@ -1188,6 +1188,11 @@ func (c *restClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/deliveryVehicles", req.GetParent())
 
 	params := url.Values{}
@@ -1284,6 +1289,11 @@ func (c *restClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.GetDeliveryVehicleRequest, opts ...gax.CallOption) (*deliverypb.DeliveryVehicle, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1386,6 +1396,11 @@ func (c *restClient) DeleteDeliveryVehicle(ctx context.Context, req *deliverypb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1479,6 +1494,11 @@ func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDeliveryVehicle().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeliveryVehicle().GetName())
@@ -1591,6 +1611,11 @@ func (c *restClient) BatchCreateTasks(ctx context.Context, req *deliverypb.Batch
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/tasks:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1659,6 +1684,11 @@ func (c *restClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/tasks", req.GetParent())
@@ -1757,6 +1787,11 @@ func (c *restClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 func (c *restClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest, opts ...gax.CallOption) (*deliverypb.Task, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1859,6 +1894,11 @@ func (c *restClient) DeleteTask(ctx context.Context, req *deliverypb.DeleteTaskR
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1946,6 +1986,11 @@ func (c *restClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTask().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTask().GetName())
@@ -2065,6 +2110,11 @@ func (c *restClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/tasks", req.GetParent())
 
 		params := url.Values{}
@@ -2165,6 +2215,11 @@ func (c *restClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 func (c *restClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.GetTaskTrackingInfoRequest, opts ...gax.CallOption) (*deliverypb.TaskTrackingInfo, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2275,6 +2330,11 @@ func (c *restClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deliveryVehicles", req.GetParent())

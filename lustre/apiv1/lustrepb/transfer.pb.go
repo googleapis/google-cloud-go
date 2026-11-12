@@ -1173,85 +1173,85 @@ var File_google_cloud_lustre_v1_transfer_proto protoreflect.FileDescriptor
 
 const file_google_cloud_lustre_v1_transfer_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/lustre/v1/transfer.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\xed\x02\n" +
+	"%google/cloud/lustre/v1/transfer.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\xf0\x02\n" +
 	"\x11ImportDataRequest\x12<\n" +
 	"\bgcs_path\x18\x02 \x01(\v2\x1f.google.cloud.lustre.v1.GcsPathH\x00R\agcsPath\x12E\n" +
 	"\vlustre_path\x18\x03 \x01(\v2\".google.cloud.lustre.v1.LustrePathH\x01R\n" +
-	"lustrePath\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1elustre.googleapis.com/InstanceR\x04name\x12*\n" +
+	"lustrePath\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1elustre.googleapis.com/InstanceR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12R\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12S\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccountB\b\n" +
 	"\x06sourceB\r\n" +
-	"\vdestination\"\xed\x02\n" +
+	"\vdestination\"\xf0\x02\n" +
 	"\x11ExportDataRequest\x12E\n" +
 	"\vlustre_path\x18\x02 \x01(\v2\".google.cloud.lustre.v1.LustrePathH\x00R\n" +
 	"lustrePath\x12<\n" +
-	"\bgcs_path\x18\x03 \x01(\v2\x1f.google.cloud.lustre.v1.GcsPathH\x01R\agcsPath\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1elustre.googleapis.com/InstanceR\x04name\x12*\n" +
+	"\bgcs_path\x18\x03 \x01(\v2\x1f.google.cloud.lustre.v1.GcsPathH\x01R\agcsPath\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1elustre.googleapis.com/InstanceR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12R\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12S\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccountB\b\n" +
 	"\x06sourceB\r\n" +
 	"\vdestination\"\x14\n" +
 	"\x12ExportDataResponse\"\x14\n" +
-	"\x12ImportDataResponse\"\xb8\x03\n" +
+	"\x12ImportDataResponse\"\xbf\x03\n" +
 	"\x12ExportDataMetadata\x12`\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v21.google.cloud.lustre.v1.TransferOperationMetadataR\x11operationMetadata\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x04 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x05 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x06 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\a \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\b \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\x9f\x03\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v21.google.cloud.lustre.v1.TransferOperationMetadataR\x11operationMetadata\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\a \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xa5\x03\n" +
 	"\x12ImportDataMetadata\x12`\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v21.google.cloud.lustre.v1.TransferOperationMetadataR\x11operationMetadata\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x04 \x01(\tB\x03\xe0A\x03R\x06target\x12*\n" +
-	"\x0estatus_message\x18\x06 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\a \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\b \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\" \n" +
-	"\aGcsPath\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\"%\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v21.google.cloud.lustre.v1.TransferOperationMetadataR\x11operationMetadata\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12+\n" +
+	"\x0estatus_message\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\a \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"!\n" +
+	"\aGcsPath\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\"&\n" +
 	"\n" +
-	"LustrePath\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x01R\x04path\"\x9c\x03\n" +
+	"LustrePath\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04path\"\x9e\x03\n" +
 	"\x10TransferCounters\x12.\n" +
 	"\x13found_objects_count\x18\x01 \x01(\x03R\x11foundObjectsCount\x12*\n" +
 	"\x11bytes_found_count\x18\x02 \x01(\x03R\x0fbytesFoundCount\x122\n" +
 	"\x15objects_skipped_count\x18\x03 \x01(\x03R\x13objectsSkippedCount\x12.\n" +
 	"\x13bytes_skipped_count\x18\x04 \x01(\x03R\x11bytesSkippedCount\x120\n" +
 	"\x14objects_copied_count\x18\x05 \x01(\x03R\x12objectsCopiedCount\x12,\n" +
-	"\x12bytes_copied_count\x18\x06 \x01(\x03R\x10bytesCopiedCount\x125\n" +
-	"\x14objects_failed_count\x18\a \x01(\x03B\x03\xe0A\x03R\x12objectsFailedCount\x121\n" +
-	"\x12bytes_failed_count\x18\b \x01(\x03B\x03\xe0A\x03R\x10bytesFailedCount\"K\n" +
-	"\rErrorLogEntry\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12#\n" +
-	"\rerror_details\x18\x02 \x03(\tR\ferrorDetails\"\xbd\x01\n" +
-	"\fErrorSummary\x124\n" +
+	"\x12bytes_copied_count\x18\x06 \x01(\x03R\x10bytesCopiedCount\x126\n" +
+	"\x14objects_failed_count\x18\a \x01(\x03B\x04\xe2A\x01\x03R\x12objectsFailedCount\x122\n" +
+	"\x12bytes_failed_count\x18\b \x01(\x03B\x04\xe2A\x01\x03R\x10bytesFailedCount\"L\n" +
+	"\rErrorLogEntry\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12#\n" +
+	"\rerror_details\x18\x02 \x03(\tR\ferrorDetails\"\xbf\x01\n" +
+	"\fErrorSummary\x125\n" +
 	"\n" +
-	"error_code\x18\x01 \x01(\x0e2\x10.google.rpc.CodeB\x03\xe0A\x02R\terrorCode\x12$\n" +
-	"\verror_count\x18\x02 \x01(\x03B\x03\xe0A\x02R\n" +
+	"error_code\x18\x01 \x01(\x0e2\x10.google.rpc.CodeB\x04\xe2A\x01\x02R\terrorCode\x12%\n" +
+	"\verror_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\n" +
 	"errorCount\x12Q\n" +
-	"\x11error_log_entries\x18\x03 \x03(\v2%.google.cloud.lustre.v1.ErrorLogEntryR\x0ferrorLogEntries\"\x89\x05\n" +
-	"\x19TransferOperationMetadata\x12W\n" +
-	"\x12source_lustre_path\x18\x03 \x01(\v2\".google.cloud.lustre.v1.LustrePathB\x03\xe0A\x03H\x00R\x10sourceLustrePath\x12N\n" +
-	"\x0fsource_gcs_path\x18\x04 \x01(\v2\x1f.google.cloud.lustre.v1.GcsPathB\x03\xe0A\x03H\x00R\rsourceGcsPath\x12X\n" +
-	"\x14destination_gcs_path\x18\x05 \x01(\v2\x1f.google.cloud.lustre.v1.GcsPathB\x03\xe0A\x03H\x01R\x12destinationGcsPath\x12a\n" +
-	"\x17destination_lustre_path\x18\x06 \x01(\v2\".google.cloud.lustre.v1.LustrePathB\x03\xe0A\x03H\x01R\x15destinationLustrePath\x12I\n" +
-	"\bcounters\x18\x01 \x01(\v2(.google.cloud.lustre.v1.TransferCountersB\x03\xe0A\x03R\bcounters\x12N\n" +
-	"\rtransfer_type\x18\x02 \x01(\x0e2$.google.cloud.lustre.v1.TransferTypeB\x03\xe0A\x03R\ftransferType\x12R\n" +
-	"\x0ferror_summaries\x18\a \x03(\v2$.google.cloud.lustre.v1.ErrorSummaryB\x03\xe0A\x03R\x0eerrorSummariesB\b\n" +
+	"\x11error_log_entries\x18\x03 \x03(\v2%.google.cloud.lustre.v1.ErrorLogEntryR\x0ferrorLogEntries\"\x90\x05\n" +
+	"\x19TransferOperationMetadata\x12X\n" +
+	"\x12source_lustre_path\x18\x03 \x01(\v2\".google.cloud.lustre.v1.LustrePathB\x04\xe2A\x01\x03H\x00R\x10sourceLustrePath\x12O\n" +
+	"\x0fsource_gcs_path\x18\x04 \x01(\v2\x1f.google.cloud.lustre.v1.GcsPathB\x04\xe2A\x01\x03H\x00R\rsourceGcsPath\x12Y\n" +
+	"\x14destination_gcs_path\x18\x05 \x01(\v2\x1f.google.cloud.lustre.v1.GcsPathB\x04\xe2A\x01\x03H\x01R\x12destinationGcsPath\x12b\n" +
+	"\x17destination_lustre_path\x18\x06 \x01(\v2\".google.cloud.lustre.v1.LustrePathB\x04\xe2A\x01\x03H\x01R\x15destinationLustrePath\x12J\n" +
+	"\bcounters\x18\x01 \x01(\v2(.google.cloud.lustre.v1.TransferCountersB\x04\xe2A\x01\x03R\bcounters\x12O\n" +
+	"\rtransfer_type\x18\x02 \x01(\x0e2$.google.cloud.lustre.v1.TransferTypeB\x04\xe2A\x01\x03R\ftransferType\x12S\n" +
+	"\x0ferror_summaries\x18\a \x03(\v2$.google.cloud.lustre.v1.ErrorSummaryB\x04\xe2A\x01\x03R\x0eerrorSummariesB\b\n" +
 	"\x06sourceB\r\n" +
 	"\vdestination*E\n" +
 	"\fTransferType\x12\x1d\n" +

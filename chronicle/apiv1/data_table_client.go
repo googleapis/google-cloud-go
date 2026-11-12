@@ -1294,6 +1294,11 @@ func (c *dataTableRESTClient) CreateDataTable(ctx context.Context, req *chronicl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTables", req.GetParent())
 
 	params := url.Values{}
@@ -1360,6 +1365,11 @@ func (c *dataTableRESTClient) ListDataTables(ctx context.Context, req *chronicle
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataTables", req.GetParent())
@@ -1430,6 +1440,11 @@ func (c *dataTableRESTClient) GetDataTable(ctx context.Context, req *chroniclepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1489,6 +1504,11 @@ func (c *dataTableRESTClient) UpdateDataTable(ctx context.Context, req *chronicl
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataTable().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataTable().GetName())
@@ -1552,6 +1572,11 @@ func (c *dataTableRESTClient) DeleteDataTable(ctx context.Context, req *chronicl
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1599,6 +1624,11 @@ func (c *dataTableRESTClient) CreateDataTableRow(ctx context.Context, req *chron
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows", req.GetParent())
@@ -1660,6 +1690,11 @@ func (c *dataTableRESTClient) UpdateDataTableRow(ctx context.Context, req *chron
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataTableRow().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataTableRow().GetName())
@@ -1736,6 +1771,11 @@ func (c *dataTableRESTClient) ListDataTableRows(ctx context.Context, req *chroni
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows", req.GetParent())
 
 		params := url.Values{}
@@ -1807,6 +1847,11 @@ func (c *dataTableRESTClient) GetDataTableRow(ctx context.Context, req *chronicl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1861,6 +1906,11 @@ func (c *dataTableRESTClient) DeleteDataTableRow(ctx context.Context, req *chron
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1904,6 +1954,11 @@ func (c *dataTableRESTClient) BulkCreateDataTableRows(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows:bulkCreate", req.GetParent())
@@ -1966,6 +2021,11 @@ func (c *dataTableRESTClient) BulkGetDataTableRows(ctx context.Context, req *chr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows:bulkGet", req.GetParent())
 
 	params := url.Values{}
@@ -2024,6 +2084,11 @@ func (c *dataTableRESTClient) BulkReplaceDataTableRows(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows:bulkReplace", req.GetParent())
@@ -2086,6 +2151,11 @@ func (c *dataTableRESTClient) BulkUpdateDataTableRows(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows:bulkUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -2138,6 +2208,11 @@ func (c *dataTableRESTClient) BulkUpdateDataTableRows(ctx context.Context, req *
 func (c *dataTableRESTClient) GetDataTableOperationErrors(ctx context.Context, req *chroniclepb.GetDataTableOperationErrorsRequest, opts ...gax.CallOption) (*chroniclepb.DataTableOperationErrors, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2200,6 +2275,11 @@ func (c *dataTableRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2239,6 +2319,11 @@ func (c *dataTableRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2276,6 +2361,11 @@ func (c *dataTableRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 func (c *dataTableRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2343,6 +2433,11 @@ func (c *dataTableRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

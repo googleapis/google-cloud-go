@@ -603,6 +603,11 @@ func (c *developerRegistrationRESTClient) RegisterGcp(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:registerGcp", req.GetName())
 
 	params := url.Values{}
@@ -655,6 +660,11 @@ func (c *developerRegistrationRESTClient) RegisterGcp(ctx context.Context, req *
 func (c *developerRegistrationRESTClient) GetDeveloperRegistration(ctx context.Context, req *accountspb.GetDeveloperRegistrationRequest, opts ...gax.CallOption) (*accountspb.DeveloperRegistration, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
@@ -717,6 +727,11 @@ func (c *developerRegistrationRESTClient) UnregisterGcp(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:unregisterGcp", req.GetName())

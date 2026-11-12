@@ -592,16 +592,16 @@ var File_google_cloud_retail_v2alpha_project_proto protoreflect.FileDescriptor
 const file_google_cloud_retail_v2alpha_project_proto_rawDesc = "" +
 	"\n" +
 	")google/cloud/retail/v2alpha/project.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2alpha/common.proto\"\xfa\x06\n" +
-	"\rLoggingConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04name\x12{\n" +
+	"\rLoggingConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04name\x12{\n" +
 	"\x1bdefault_log_generation_rule\x18\x02 \x01(\v2<.google.cloud.retail.v2alpha.LoggingConfig.LogGenerationRuleR\x18defaultLogGenerationRule\x12\x84\x01\n" +
 	"\x1cservice_log_generation_rules\x18\x04 \x03(\v2C.google.cloud.retail.v2alpha.LoggingConfig.ServiceLogGenerationRuleR\x19serviceLogGenerationRules\x1a\xc0\x01\n" +
 	"\x11LogGenerationRule\x12\\\n" +
 	"\rlogging_level\x18\x01 \x01(\x0e27.google.cloud.retail.v2alpha.LoggingConfig.LoggingLevelR\floggingLevel\x124\n" +
 	"\x14info_log_sample_rate\x18\x02 \x01(\x02H\x00R\x11infoLogSampleRate\x88\x01\x01B\x17\n" +
-	"\x15_info_log_sample_rate\x1a\xb0\x01\n" +
-	"\x18ServiceLogGenerationRule\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\x12l\n" +
+	"\x15_info_log_sample_rate\x1a\xb1\x01\n" +
+	"\x18ServiceLogGenerationRule\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\x12l\n" +
 	"\x13log_generation_rule\x18\x03 \x01(\v2<.google.cloud.retail.v2alpha.LoggingConfig.LogGenerationRuleR\x11logGenerationRule\"\x86\x01\n" +
 	"\fLoggingLevel\x12\x1d\n" +
 	"\x19LOGGING_LEVEL_UNSPECIFIED\x10\x00\x12\x14\n" +
@@ -609,13 +609,13 @@ const file_google_cloud_retail_v2alpha_project_proto_rawDesc = "" +
 	"\x14LOG_ERRORS_AND_ABOVE\x10\x02\x12\x1a\n" +
 	"\x16LOG_WARNINGS_AND_ABOVE\x10\x03\x12\v\n" +
 	"\aLOG_ALL\x10\x04:J\xeaAG\n" +
-	"#retail.googleapis.com/LoggingConfig\x12 projects/{project}/loggingConfig\"\xcd\x01\n" +
-	"\aProject\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12]\n" +
-	"\x12enrolled_solutions\x18\x02 \x03(\x0e2).google.cloud.retail.v2alpha.SolutionTypeB\x03\xe0A\x03R\x11enrolledSolutions:J\xeaAG\n" +
-	"#retail.googleapis.com/RetailProject\x12 projects/{project}/retailProject\"\xc4\x04\n" +
-	"\vAlertConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04name\x12[\n" +
+	"#retail.googleapis.com/LoggingConfig\x12 projects/{project}/loggingConfig\"\xcf\x01\n" +
+	"\aProject\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12^\n" +
+	"\x12enrolled_solutions\x18\x02 \x03(\x0e2).google.cloud.retail.v2alpha.SolutionTypeB\x04\xe2A\x01\x03R\x11enrolledSolutions:J\xeaAG\n" +
+	"#retail.googleapis.com/RetailProject\x12 projects/{project}/retailProject\"\xc3\x04\n" +
+	"\vAlertConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04name\x12[\n" +
 	"\x0ealert_policies\x18\x02 \x03(\v24.google.cloud.retail.v2alpha.AlertConfig.AlertPolicyR\ralertPolicies\x1a\xf3\x02\n" +
 	"\vAlertPolicy\x12\x1f\n" +
 	"\valert_group\x18\x01 \x01(\tR\n" +

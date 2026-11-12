@@ -206,14 +206,14 @@ var File_google_cloud_discoveryengine_v1alpha_session_service_proto protoreflect
 
 const file_google_cloud_discoveryengine_v1alpha_session_service_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/discoveryengine/v1alpha/session_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aHgoogle/cloud/discoveryengine/v1alpha/conversational_search_service.proto\x1a2google/cloud/discoveryengine/v1alpha/session.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xbd\x01\n" +
-	"\x10ListFilesRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&discoveryengine.googleapis.com/SessionR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	":google/cloud/discoveryengine/v1alpha/session_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aHgoogle/cloud/discoveryengine/v1alpha/conversational_search_service.proto\x1a2google/cloud/discoveryengine/v1alpha/session.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xc1\x01\n" +
+	"\x10ListFilesRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&discoveryengine.googleapis.com/SessionR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x85\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x85\x01\n" +
 	"\x11ListFilesResponse\x12H\n" +
 	"\x05files\x18\x01 \x03(\v22.google.cloud.discoveryengine.v1alpha.FileMetadataR\x05files\x12&\n" +
 	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken2\xb5\x11\n" +

@@ -474,29 +474,29 @@ var File_google_cloud_datacatalog_lineage_configmanagement_v1_configmanagement_p
 
 const file_google_cloud_datacatalog_lineage_configmanagement_v1_configmanagement_proto_rawDesc = "" +
 	"\n" +
-	"Kgoogle/cloud/datacatalog/lineage/configmanagement/v1/configmanagement.proto\x124google.cloud.datacatalog.lineage.configmanagement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"Q\n" +
-	"\x10GetConfigRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!datalineage.googleapis.com/ConfigR\x04name\"p\n" +
-	"\x13UpdateConfigRequest\x12Y\n" +
-	"\x06config\x18\x01 \x01(\v2<.google.cloud.datacatalog.lineage.configmanagement.v1.ConfigB\x03\xe0A\x02R\x06config\"\x8f\t\n" +
-	"\x06Config\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12i\n" +
-	"\tingestion\x18\x02 \x01(\v2F.google.cloud.datacatalog.lineage.configmanagement.v1.Config.IngestionB\x03\xe0A\x01R\tingestion\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x1a\x94\x06\n" +
-	"\tIngestion\x12o\n" +
-	"\x05rules\x18\x01 \x03(\v2T.google.cloud.datacatalog.lineage.configmanagement.v1.Config.Ingestion.IngestionRuleB\x03\xe0A\x01R\x05rules\x1a\x95\x05\n" +
-	"\rIngestionRule\x12\xa0\x01\n" +
-	"\x14integration_selector\x18\x01 \x01(\v2h.google.cloud.datacatalog.lineage.configmanagement.v1.Config.Ingestion.IngestionRule.IntegrationSelectorB\x03\xe0A\x02R\x13integrationSelector\x12\x9a\x01\n" +
-	"\x12lineage_enablement\x18\x03 \x01(\v2f.google.cloud.datacatalog.lineage.configmanagement.v1.Config.Ingestion.IngestionRule.LineageEnablementB\x03\xe0A\x02R\x11lineageEnablement\x1a\xfe\x01\n" +
-	"\x13IntegrationSelector\x12\x9b\x01\n" +
-	"\vintegration\x18\x01 \x01(\x0e2t.google.cloud.datacatalog.lineage.configmanagement.v1.Config.Ingestion.IngestionRule.IntegrationSelector.IntegrationB\x03\xe0A\x02R\vintegration\"I\n" +
+	"Kgoogle/cloud/datacatalog/lineage/configmanagement/v1/configmanagement.proto\x124google.cloud.datacatalog.lineage.configmanagement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"R\n" +
+	"\x10GetConfigRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!datalineage.googleapis.com/ConfigR\x04name\"q\n" +
+	"\x13UpdateConfigRequest\x12Z\n" +
+	"\x06config\x18\x01 \x01(\v2<.google.cloud.datacatalog.lineage.configmanagement.v1.ConfigB\x04\xe2A\x01\x02R\x06config\"\x97\t\n" +
+	"\x06Config\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12j\n" +
+	"\tingestion\x18\x02 \x01(\v2F.google.cloud.datacatalog.lineage.configmanagement.v1.Config.IngestionB\x04\xe2A\x01\x01R\tingestion\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1a\x99\x06\n" +
+	"\tIngestion\x12p\n" +
+	"\x05rules\x18\x01 \x03(\v2T.google.cloud.datacatalog.lineage.configmanagement.v1.Config.Ingestion.IngestionRuleB\x04\xe2A\x01\x01R\x05rules\x1a\x99\x05\n" +
+	"\rIngestionRule\x12\xa1\x01\n" +
+	"\x14integration_selector\x18\x01 \x01(\v2h.google.cloud.datacatalog.lineage.configmanagement.v1.Config.Ingestion.IngestionRule.IntegrationSelectorB\x04\xe2A\x01\x02R\x13integrationSelector\x12\x9b\x01\n" +
+	"\x12lineage_enablement\x18\x03 \x01(\v2f.google.cloud.datacatalog.lineage.configmanagement.v1.Config.Ingestion.IngestionRule.LineageEnablementB\x04\xe2A\x01\x02R\x11lineageEnablement\x1a\xff\x01\n" +
+	"\x13IntegrationSelector\x12\x9c\x01\n" +
+	"\vintegration\x18\x01 \x01(\x0e2t.google.cloud.datacatalog.lineage.configmanagement.v1.Config.Ingestion.IngestionRule.IntegrationSelector.IntegrationB\x04\xe2A\x01\x02R\vintegration\"I\n" +
 	"\vIntegration\x12\x1b\n" +
 	"\x17INTEGRATION_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATAPROC\x10\x02\x12\x0f\n" +
-	"\vLOOKER_CORE\x10\x03\x1aC\n" +
-	"\x11LineageEnablement\x12\"\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\aenabled\x88\x01\x01B\n" +
+	"\vLOOKER_CORE\x10\x03\x1aD\n" +
+	"\x11LineageEnablement\x12#\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\aenabled\x88\x01\x01B\n" +
 	"\n" +
 	"\b_enabled:\xd0\x01\xeaA\xcc\x01\n" +
 	"!datalineage.googleapis.com/Config\x12.projects/{project}/locations/{location}/config\x12,folders/{folder}/locations/{location}/config\x128organizations/{organization}/locations/{location}/config*\aconfigs2\x06config2\xf4\x05\n" +

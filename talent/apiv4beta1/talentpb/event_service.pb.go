@@ -101,10 +101,10 @@ var File_google_cloud_talent_v4beta1_event_service_proto protoreflect.FileDescri
 
 const file_google_cloud_talent_v4beta1_event_service_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/talent/v4beta1/event_service.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/talent/v4beta1/event.proto\"\xa9\x01\n" +
-	"\x18CreateClientEventRequest\x12;\n" +
-	"\x06parent\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\x12\x1bjobs.googleapis.com/CompanyR\x06parent\x12P\n" +
-	"\fclient_event\x18\x02 \x01(\v2(.google.cloud.talent.v4beta1.ClientEventB\x03\xe0A\x02R\vclientEvent2\xfa\x02\n" +
+	"/google/cloud/talent/v4beta1/event_service.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/talent/v4beta1/event.proto\"\xab\x01\n" +
+	"\x18CreateClientEventRequest\x12<\n" +
+	"\x06parent\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\x12\x1bjobs.googleapis.com/CompanyR\x06parent\x12Q\n" +
+	"\fclient_event\x18\x02 \x01(\v2(.google.cloud.talent.v4beta1.ClientEventB\x04\xe2A\x01\x02R\vclientEvent2\xfa\x02\n" +
 	"\fEventService\x12\xfb\x01\n" +
 	"\x11CreateClientEvent\x125.google.cloud.talent.v4beta1.CreateClientEventRequest\x1a(.google.cloud.talent.v4beta1.ClientEvent\"\x84\x01\xdaA\x13parent,client_event\x82\xd3\xe4\x93\x02h:\x01*Z.:\x01*\")/v4beta1/{parent=projects/*}/clientEvents\"3/v4beta1/{parent=projects/*/tenants/*}/clientEvents\x1al\xcaA\x13jobs.googleapis.com\xd2AShttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/jobsBu\n" +
 	"\x1fcom.google.cloud.talent.v4beta1B\x11EventServiceProtoP\x01Z7cloud.google.com/go/talent/apiv4beta1/talentpb;talentpb\xa2\x02\x03CTSb\x06proto3"

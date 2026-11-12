@@ -676,6 +676,11 @@ func (c *firewallRESTClient) ListIngressRules(ctx context.Context, req *appengin
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/firewall/ingressRules", req.GetParent())
 
 		params := url.Values{}
@@ -754,6 +759,11 @@ func (c *firewallRESTClient) BatchUpdateIngressRules(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:batchUpdate", req.GetName())
 
 	params := url.Values{}
@@ -815,6 +825,11 @@ func (c *firewallRESTClient) CreateIngressRule(ctx context.Context, req *appengi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/firewall/ingressRules", req.GetParent())
 
 	params := url.Values{}
@@ -867,6 +882,11 @@ func (c *firewallRESTClient) CreateIngressRule(ctx context.Context, req *appengi
 func (c *firewallRESTClient) GetIngressRule(ctx context.Context, req *appenginepb.GetIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -930,6 +950,11 @@ func (c *firewallRESTClient) UpdateIngressRule(ctx context.Context, req *appengi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -989,6 +1014,11 @@ func (c *firewallRESTClient) UpdateIngressRule(ctx context.Context, req *appengi
 func (c *firewallRESTClient) DeleteIngressRule(ctx context.Context, req *appenginepb.DeleteIngressRuleRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

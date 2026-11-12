@@ -905,6 +905,11 @@ func (c *restClient) DeleteSubscription(ctx context.Context, req *subscriptionsp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -975,6 +980,11 @@ func (c *restClient) DeleteSubscription(ctx context.Context, req *subscriptionsp
 func (c *restClient) GetSubscription(ctx context.Context, req *subscriptionspb.GetSubscriptionRequest, opts ...gax.CallOption) (*subscriptionspb.Subscription, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1121,6 +1131,11 @@ func (c *restClient) UpdateSubscription(ctx context.Context, req *subscriptionsp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSubscription().GetName())
 
 	params := url.Values{}
@@ -1204,6 +1219,11 @@ func (c *restClient) ReactivateSubscription(ctx context.Context, req *subscripti
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:reactivate", req.GetName())
 
 	params := url.Values{}
@@ -1263,6 +1283,11 @@ func (c *restClient) ReactivateSubscription(ctx context.Context, req *subscripti
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

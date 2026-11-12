@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"slices"
 	"sort"
 	"time"
 
@@ -444,12 +445,7 @@ func (b byLess) Swap(i, j int)      { b.s[i], b.s[j] = b.s[j], b.s[i] }
 func (b byLess) Less(i, j int) bool { return b.less(b.s[i], b.s[j]) }
 
 func hasWatchTargetID(ids []int32) bool {
-	for _, id := range ids {
-		if id == watchTargetID {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(ids, watchTargetID)
 }
 
 func (s *watchStream) logf(format string, args ...interface{}) {

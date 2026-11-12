@@ -456,26 +456,26 @@ var File_google_shopping_merchant_loyaltycustomers_v1_loyalty_customer_proto pro
 
 const file_google_shopping_merchant_loyaltycustomers_v1_loyalty_customer_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/shopping/merchant/loyaltycustomers/v1/loyalty_customer.proto\x12,google.shopping.merchant.loyaltycustomers.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd7\x01\n" +
-	"\vAddressInfo\x12\"\n" +
+	"Cgoogle/shopping/merchant/loyaltycustomers/v1/loyalty_customer.proto\x12,google.shopping.merchant.loyaltycustomers.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xdd\x01\n" +
+	"\vAddressInfo\x12#\n" +
 	"\n" +
-	"given_name\x18\x01 \x01(\tB\x03\xe0A\x01R\tgivenName\x12$\n" +
-	"\vfamily_name\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"familyName\x12\x17\n" +
-	"\x04city\x18\x03 \x01(\tB\x03\xe0A\x01R\x04city\x12\x19\n" +
-	"\x05state\x18\x04 \x01(\tB\x03\xe0A\x01R\x05state\x12$\n" +
-	"\vregion_code\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x12$\n" +
-	"\vpostal_code\x18\x06 \x01(\tB\x03\xe0A\x01R\n" +
-	"postalCode\"\xbc\x01\n" +
-	"\x0eUserIdentifier\x12(\n" +
-	"\remail_address\x18\x01 \x01(\tB\x03\xe0A\x01R\femailAddress\x12X\n" +
-	"\aaddress\x18\x02 \x01(\v29.google.shopping.merchant.loyaltycustomers.v1.AddressInfoB\x03\xe0A\x01R\aaddress\x12&\n" +
-	"\fphone_number\x18\x03 \x01(\tB\x03\xe0A\x01R\vphoneNumber\"\xa5\x03\n" +
-	"\x0fLoyaltyCustomer\x12j\n" +
-	"\x0fuser_identifier\x18\x01 \x01(\v2<.google.shopping.merchant.loyaltycustomers.v1.UserIdentifierB\x03\xe0A\x02R\x0euserIdentifier\x12q\n" +
-	"\floyalty_tier\x18\x02 \x01(\x0e2I.google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomer.LoyaltyTierB\x03\xe0A\x02R\vloyaltyTier\x12(\n" +
-	"\rpoint_balance\x18\x03 \x01(\x03B\x03\xe0A\x01R\fpointBalance\"\x88\x01\n" +
+	"given_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tgivenName\x12%\n" +
+	"\vfamily_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"familyName\x12\x18\n" +
+	"\x04city\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04city\x12\x1a\n" +
+	"\x05state\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x05state\x12%\n" +
+	"\vregion_code\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x12%\n" +
+	"\vpostal_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"postalCode\"\xbf\x01\n" +
+	"\x0eUserIdentifier\x12)\n" +
+	"\remail_address\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\femailAddress\x12Y\n" +
+	"\aaddress\x18\x02 \x01(\v29.google.shopping.merchant.loyaltycustomers.v1.AddressInfoB\x04\xe2A\x01\x01R\aaddress\x12'\n" +
+	"\fphone_number\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vphoneNumber\"\xa8\x03\n" +
+	"\x0fLoyaltyCustomer\x12k\n" +
+	"\x0fuser_identifier\x18\x01 \x01(\v2<.google.shopping.merchant.loyaltycustomers.v1.UserIdentifierB\x04\xe2A\x01\x02R\x0euserIdentifier\x12r\n" +
+	"\floyalty_tier\x18\x02 \x01(\x0e2I.google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomer.LoyaltyTierB\x04\xe2A\x01\x02R\vloyaltyTier\x12)\n" +
+	"\rpoint_balance\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\fpointBalance\"\x88\x01\n" +
 	"\vLoyaltyTier\x12\x1c\n" +
 	"\x18LOYALTY_TIER_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05TIER1\x10\x01\x12\t\n" +
@@ -486,11 +486,11 @@ const file_google_shopping_merchant_loyaltycustomers_v1_loyalty_customer_proto_r
 	"\x05TIER6\x10\x06\x12\t\n" +
 	"\x05TIER7\x10\a\x12\x0e\n" +
 	"\n" +
-	"NON_MEMBER\x10\b\"\xd6\x01\n" +
-	"!ManageLoyaltyCustomerMatchRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12m\n" +
-	"\x10loyalty_customer\x18\x02 \x01(\v2=.google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerB\x03\xe0A\x02R\x0floyaltyCustomer\"\x8e\x01\n" +
+	"NON_MEMBER\x10\b\"\xd8\x01\n" +
+	"!ManageLoyaltyCustomerMatchRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12n\n" +
+	"\x10loyalty_customer\x18\x02 \x01(\v2=.google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerB\x04\xe2A\x01\x02R\x0floyaltyCustomer\"\x8e\x01\n" +
 	"\"ManageLoyaltyCustomerMatchResponse\x12h\n" +
 	"\x10loyalty_customer\x18\x01 \x01(\v2=.google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerR\x0floyaltyCustomer2\xf5\x02\n" +
 	"\x1bLoyaltyCustomerMatchService\x12\x8c\x02\n" +

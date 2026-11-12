@@ -688,6 +688,11 @@ func (c *omnichannelSettingsRESTClient) GetOmnichannelSetting(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -753,6 +758,11 @@ func (c *omnichannelSettingsRESTClient) ListOmnichannelSettings(ctx context.Cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/omnichannelSettings", req.GetParent())
@@ -827,6 +837,11 @@ func (c *omnichannelSettingsRESTClient) CreateOmnichannelSetting(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/omnichannelSettings", req.GetParent())
 
 	params := url.Values{}
@@ -886,6 +901,11 @@ func (c *omnichannelSettingsRESTClient) UpdateOmnichannelSetting(ctx context.Con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOmnichannelSetting().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetOmnichannelSetting().GetName())
@@ -953,6 +973,11 @@ func (c *omnichannelSettingsRESTClient) RequestInventoryVerification(ctx context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:requestInventoryVerification", req.GetName())

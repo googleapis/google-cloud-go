@@ -2927,27 +2927,27 @@ var File_google_cloud_vectorsearch_v1beta_data_object_search_service_proto proto
 
 const file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/vectorsearch/v1beta/data_object_search_service.proto\x12 google.cloud.vectorsearch.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/vectorsearch/v1beta/common.proto\x1a2google/cloud/vectorsearch/v1beta/data_object.proto\x1a7google/cloud/vectorsearch/v1beta/embedding_config.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\"\x8c\x01\n" +
-	"\fOutputFields\x12$\n" +
-	"\vdata_fields\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
-	"dataFields\x12(\n" +
-	"\rvector_fields\x18\x02 \x03(\tB\x03\xe0A\x01R\fvectorFields\x12,\n" +
-	"\x0fmetadata_fields\x18\x03 \x03(\tB\x03\xe0A\x01R\x0emetadataFields\"\xf4\x05\n" +
+	"Agoogle/cloud/vectorsearch/v1beta/data_object_search_service.proto\x12 google.cloud.vectorsearch.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/vectorsearch/v1beta/common.proto\x1a2google/cloud/vectorsearch/v1beta/data_object.proto\x1a7google/cloud/vectorsearch/v1beta/embedding_config.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\"\x8f\x01\n" +
+	"\fOutputFields\x12%\n" +
+	"\vdata_fields\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"dataFields\x12)\n" +
+	"\rvector_fields\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\fvectorFields\x12-\n" +
+	"\x0fmetadata_fields\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x0emetadataFields\"\xfd\x05\n" +
 	"\n" +
-	"SearchHint\x12\\\n" +
-	"\tuse_index\x18\x01 \x01(\v26.google.cloud.vectorsearch.v1beta.SearchHint.IndexHintB\x05\xe0A\x01\x18\x01H\x00R\buseIndex\x12 \n" +
-	"\ause_knn\x18\x02 \x01(\bB\x05\xe0A\x01\x18\x01H\x00R\x06useKnn\x12V\n" +
-	"\bknn_hint\x18\x03 \x01(\v24.google.cloud.vectorsearch.v1beta.SearchHint.KnnHintB\x03\xe0A\x01H\x00R\aknnHint\x12\\\n" +
+	"SearchHint\x12]\n" +
+	"\tuse_index\x18\x01 \x01(\v26.google.cloud.vectorsearch.v1beta.SearchHint.IndexHintB\x06\xe2A\x01\x01\x18\x01H\x00R\buseIndex\x12!\n" +
+	"\ause_knn\x18\x02 \x01(\bB\x06\xe2A\x01\x01\x18\x01H\x00R\x06useKnn\x12W\n" +
+	"\bknn_hint\x18\x03 \x01(\v24.google.cloud.vectorsearch.v1beta.SearchHint.KnnHintB\x04\xe2A\x01\x01H\x00R\aknnHint\x12]\n" +
 	"\n" +
-	"index_hint\x18\x04 \x01(\v26.google.cloud.vectorsearch.v1beta.SearchHint.IndexHintB\x03\xe0A\x01H\x00R\tindexHint\x1a\x96\x03\n" +
-	"\tIndexHint\x12|\n" +
-	"\x12dense_scann_params\x18\x02 \x01(\v2G.google.cloud.vectorsearch.v1beta.SearchHint.IndexHint.DenseScannParamsB\x03\xe0A\x01H\x00R\x10denseScannParams\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!vectorsearch.googleapis.com/IndexR\x04name\x1a\xc1\x01\n" +
-	"\x10DenseScannParams\x12/\n" +
-	"\x11search_leaves_pct\x18\x01 \x01(\x05B\x03\xe0A\x01R\x0fsearchLeavesPct\x12;\n" +
-	"\x17initial_candidate_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x15initialCandidateCount\x12-\n" +
-	"\rtarget_recall\x18\x03 \x01(\x01B\x03\xe0A\x01H\x00R\ftargetRecall\x88\x01\x01B\x10\n" +
+	"index_hint\x18\x04 \x01(\v26.google.cloud.vectorsearch.v1beta.SearchHint.IndexHintB\x04\xe2A\x01\x01H\x00R\tindexHint\x1a\x9b\x03\n" +
+	"\tIndexHint\x12}\n" +
+	"\x12dense_scann_params\x18\x02 \x01(\v2G.google.cloud.vectorsearch.v1beta.SearchHint.IndexHint.DenseScannParamsB\x04\xe2A\x01\x01H\x00R\x10denseScannParams\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!vectorsearch.googleapis.com/IndexR\x04name\x1a\xc4\x01\n" +
+	"\x10DenseScannParams\x120\n" +
+	"\x11search_leaves_pct\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x0fsearchLeavesPct\x12<\n" +
+	"\x17initial_candidate_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x15initialCandidateCount\x12.\n" +
+	"\rtarget_recall\x18\x03 \x01(\x01B\x04\xe2A\x01\x01H\x00R\ftargetRecall\x88\x01\x01B\x10\n" +
 	"\x0e_target_recallB\b\n" +
 	"\x06params\x1a\t\n" +
 	"\aKnnHintB\f\n" +
@@ -2958,169 +2958,169 @@ const file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_raw
 	"\x0fsemantic_search\x18\x02 \x01(\v20.google.cloud.vectorsearch.v1beta.SemanticSearchH\x00R\x0esemanticSearch\x12O\n" +
 	"\vtext_search\x18\x03 \x01(\v2,.google.cloud.vectorsearch.v1beta.TextSearchH\x00R\n" +
 	"textSearchB\r\n" +
-	"\vsearch_type\"\xd2\x04\n" +
+	"\vsearch_type\"\xd8\x04\n" +
 	"\fVectorSearch\x12G\n" +
 	"\x06vector\x18\x01 \x01(\v2-.google.cloud.vectorsearch.v1beta.DenseVectorH\x00R\x06vector\x12U\n" +
-	"\rsparse_vector\x18\x02 \x01(\v2..google.cloud.vectorsearch.v1beta.SparseVectorH\x00R\fsparseVector\x12&\n" +
-	"\fsearch_field\x18\b \x01(\tB\x03\xe0A\x02R\vsearchField\x124\n" +
-	"\x06filter\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filter\x12\x1d\n" +
-	"\x05top_k\x18\x05 \x01(\x05B\x03\xe0A\x01H\x01R\x04topK\x88\x01\x01\x12X\n" +
-	"\routput_fields\x18\a \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12R\n" +
-	"\vsearch_hint\x18\t \x01(\v2,.google.cloud.vectorsearch.v1beta.SearchHintB\x03\xe0A\x01R\n" +
-	"searchHint\x12^\n" +
-	"\x0fdistance_metric\x18\v \x01(\x0e20.google.cloud.vectorsearch.v1beta.DistanceMetricB\x03\xe0A\x01R\x0edistanceMetricB\r\n" +
+	"\rsparse_vector\x18\x02 \x01(\v2..google.cloud.vectorsearch.v1beta.SparseVectorH\x00R\fsparseVector\x12'\n" +
+	"\fsearch_field\x18\b \x01(\tB\x04\xe2A\x01\x02R\vsearchField\x125\n" +
+	"\x06filter\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filter\x12\x1e\n" +
+	"\x05top_k\x18\x05 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x04topK\x88\x01\x01\x12Y\n" +
+	"\routput_fields\x18\a \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x12S\n" +
+	"\vsearch_hint\x18\t \x01(\v2,.google.cloud.vectorsearch.v1beta.SearchHintB\x04\xe2A\x01\x01R\n" +
+	"searchHint\x12_\n" +
+	"\x0fdistance_metric\x18\v \x01(\x0e20.google.cloud.vectorsearch.v1beta.DistanceMetricB\x04\xe2A\x01\x01R\x0edistanceMetricB\r\n" +
 	"\vvector_typeB\b\n" +
-	"\x06_top_k\"\xc2\x03\n" +
-	"\x0eSemanticSearch\x12$\n" +
-	"\vsearch_text\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"searchText\x12&\n" +
-	"\fsearch_field\x18\x02 \x01(\tB\x03\xe0A\x02R\vsearchField\x12U\n" +
-	"\ttask_type\x18\x05 \x01(\x0e23.google.cloud.vectorsearch.v1beta.EmbeddingTaskTypeB\x03\xe0A\x01R\btaskType\x12X\n" +
-	"\routput_fields\x18\x03 \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x03\xe0A\x01R\foutputFields\x124\n" +
-	"\x06filter\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filter\x12\x1d\n" +
-	"\x05top_k\x18\x04 \x01(\x05B\x03\xe0A\x01H\x00R\x04topK\x88\x01\x01\x12R\n" +
-	"\vsearch_hint\x18\a \x01(\v2,.google.cloud.vectorsearch.v1beta.SearchHintB\x03\xe0A\x01R\n" +
+	"\x06_top_k\"\xc9\x03\n" +
+	"\x0eSemanticSearch\x12%\n" +
+	"\vsearch_text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"searchText\x12'\n" +
+	"\fsearch_field\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vsearchField\x12V\n" +
+	"\ttask_type\x18\x05 \x01(\x0e23.google.cloud.vectorsearch.v1beta.EmbeddingTaskTypeB\x04\xe2A\x01\x01R\btaskType\x12Y\n" +
+	"\routput_fields\x18\x03 \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x125\n" +
+	"\x06filter\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filter\x12\x1e\n" +
+	"\x05top_k\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x04topK\x88\x01\x01\x12S\n" +
+	"\vsearch_hint\x18\a \x01(\v2,.google.cloud.vectorsearch.v1beta.SearchHintB\x04\xe2A\x01\x01R\n" +
 	"searchHintB\b\n" +
-	"\x06_top_k\"\xfd\x02\n" +
+	"\x06_top_k\"\x83\x03\n" +
 	"\n" +
-	"TextSearch\x12$\n" +
-	"\vsearch_text\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"searchText\x12-\n" +
-	"\x10data_field_names\x18\x02 \x03(\tB\x03\xe0A\x01R\x0edataFieldNames\x12X\n" +
-	"\routput_fields\x18\x03 \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12\x1d\n" +
-	"\x05top_k\x18\x04 \x01(\x05B\x03\xe0A\x01H\x00R\x04topK\x88\x01\x01\x124\n" +
-	"\x06filter\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filter\x12a\n" +
-	"\x10structured_query\x18\x06 \x01(\v21.google.cloud.vectorsearch.v1beta.StructuredQueryB\x03\xe0A\x01R\x0fstructuredQueryB\b\n" +
-	"\x06_top_k\"\x9f\x02\n" +
-	"\x0fStructuredQuery\x12F\n" +
-	"\x04text\x18\x01 \x01(\v2+.google.cloud.vectorsearch.v1beta.TextQueryB\x03\xe0A\x01H\x00R\x04text\x12I\n" +
-	"\x05unary\x18\x02 \x01(\v2,.google.cloud.vectorsearch.v1beta.UnaryQueryB\x03\xe0A\x01H\x00R\x05unary\x12P\n" +
-	"\acombine\x18\x03 \x01(\v2/.google.cloud.vectorsearch.v1beta.CombinedQueryB\x03\xe0A\x01H\x00R\acombine\x12\x19\n" +
-	"\x05boost\x18\x04 \x01(\x02B\x03\xe0A\x01R\x05boostB\f\n" +
+	"TextSearch\x12%\n" +
+	"\vsearch_text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"searchText\x12.\n" +
+	"\x10data_field_names\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0edataFieldNames\x12Y\n" +
+	"\routput_fields\x18\x03 \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x12\x1e\n" +
+	"\x05top_k\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x04topK\x88\x01\x01\x125\n" +
+	"\x06filter\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filter\x12b\n" +
+	"\x10structured_query\x18\x06 \x01(\v21.google.cloud.vectorsearch.v1beta.StructuredQueryB\x04\xe2A\x01\x01R\x0fstructuredQueryB\b\n" +
+	"\x06_top_k\"\xa3\x02\n" +
+	"\x0fStructuredQuery\x12G\n" +
+	"\x04text\x18\x01 \x01(\v2+.google.cloud.vectorsearch.v1beta.TextQueryB\x04\xe2A\x01\x01H\x00R\x04text\x12J\n" +
+	"\x05unary\x18\x02 \x01(\v2,.google.cloud.vectorsearch.v1beta.UnaryQueryB\x04\xe2A\x01\x01H\x00R\x05unary\x12Q\n" +
+	"\acombine\x18\x03 \x01(\v2/.google.cloud.vectorsearch.v1beta.CombinedQueryB\x04\xe2A\x01\x01H\x00R\acombine\x12\x1a\n" +
+	"\x05boost\x18\x04 \x01(\x02B\x04\xe2A\x01\x01R\x05boostB\f\n" +
 	"\n" +
-	"query_type\"\xc0\x02\n" +
-	"\tTextQuery\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x12\x1b\n" +
-	"\x06fields\x18\x02 \x03(\tB\x03\xe0A\x02R\x06fields\x12Y\n" +
+	"query_type\"\xc4\x02\n" +
+	"\tTextQuery\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\x12\x1c\n" +
+	"\x06fields\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x06fields\x12Z\n" +
 	"\n" +
-	"match_type\x18\x03 \x01(\x0e25.google.cloud.vectorsearch.v1beta.TextQuery.MatchTypeB\x03\xe0A\x01R\tmatchType\x12d\n" +
-	"\x11query_enhancement\x18\x04 \x01(\v22.google.cloud.vectorsearch.v1beta.QueryEnhancementB\x03\xe0A\x01R\x10queryEnhancement\"<\n" +
+	"match_type\x18\x03 \x01(\x0e25.google.cloud.vectorsearch.v1beta.TextQuery.MatchTypeB\x04\xe2A\x01\x01R\tmatchType\x12e\n" +
+	"\x11query_enhancement\x18\x04 \x01(\v22.google.cloud.vectorsearch.v1beta.QueryEnhancementB\x04\xe2A\x01\x01R\x10queryEnhancement\"<\n" +
 	"\tMatchType\x12\x1a\n" +
 	"\x16MATCH_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TEXT\x10\x01\x12\t\n" +
-	"\x05EXACT\x10\x02\"[\n" +
-	"\x10QueryEnhancement\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\"\xdc\x01\n" +
+	"\x05EXACT\x10\x02\"]\n" +
+	"\x10QueryEnhancement\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"\xde\x01\n" +
 	"\n" +
-	"UnaryQuery\x12J\n" +
-	"\x02op\x18\x01 \x01(\x0e25.google.cloud.vectorsearch.v1beta.UnaryQuery.OperatorB\x03\xe0A\x02R\x02op\x12S\n" +
-	"\tsub_query\x18\x02 \x01(\v21.google.cloud.vectorsearch.v1beta.StructuredQueryB\x03\xe0A\x02R\bsubQuery\"-\n" +
+	"UnaryQuery\x12K\n" +
+	"\x02op\x18\x01 \x01(\x0e25.google.cloud.vectorsearch.v1beta.UnaryQuery.OperatorB\x04\xe2A\x01\x02R\x02op\x12T\n" +
+	"\tsub_query\x18\x02 \x01(\v21.google.cloud.vectorsearch.v1beta.StructuredQueryB\x04\xe2A\x01\x02R\bsubQuery\"-\n" +
 	"\bOperator\x12\x18\n" +
 	"\x14OPERATOR_UNSPECIFIED\x10\x00\x12\a\n" +
-	"\x03NOT\x10\x01\"\xee\x01\n" +
-	"\rCombinedQuery\x12M\n" +
-	"\x02op\x18\x01 \x01(\x0e28.google.cloud.vectorsearch.v1beta.CombinedQuery.OperatorB\x03\xe0A\x02R\x02op\x12W\n" +
-	"\vsub_queries\x18\x02 \x03(\v21.google.cloud.vectorsearch.v1beta.StructuredQueryB\x03\xe0A\x02R\n" +
+	"\x03NOT\x10\x01\"\xf0\x01\n" +
+	"\rCombinedQuery\x12N\n" +
+	"\x02op\x18\x01 \x01(\x0e28.google.cloud.vectorsearch.v1beta.CombinedQuery.OperatorB\x04\xe2A\x01\x02R\x02op\x12X\n" +
+	"\vsub_queries\x18\x02 \x03(\v21.google.cloud.vectorsearch.v1beta.StructuredQueryB\x04\xe2A\x01\x02R\n" +
 	"subQueries\"5\n" +
 	"\bOperator\x12\x18\n" +
 	"\x14OPERATOR_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03AND\x10\x01\x12\x06\n" +
-	"\x02OR\x10\x02\"\xc1\x03\n" +
+	"\x02OR\x10\x02\"\xc5\x03\n" +
 	"\x18SearchDataObjectsRequest\x12U\n" +
 	"\rvector_search\x18\x02 \x01(\v2..google.cloud.vectorsearch.v1beta.VectorSearchH\x00R\fvectorSearch\x12[\n" +
-	"\x0fsemantic_search\x18\x04 \x01(\v20.google.cloud.vectorsearch.v1beta.SemanticSearchH\x00R\x0esemanticSearch\x12T\n" +
-	"\vtext_search\x18\a \x01(\v2,.google.cloud.vectorsearch.v1beta.TextSearchB\x03\xe0A\x01H\x00R\n" +
-	"textSearch\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x05 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fsemantic_search\x18\x04 \x01(\v20.google.cloud.vectorsearch.v1beta.SemanticSearchH\x00R\x0esemanticSearch\x12U\n" +
+	"\vtext_search\x18\a \x01(\v2,.google.cloud.vectorsearch.v1beta.TextSearchB\x04\xe2A\x01\x01H\x00R\n" +
+	"textSearch\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x06 \x01(\tB\x03\xe0A\x01R\tpageTokenB\r\n" +
-	"\vsearch_type\"\xcf\a\n" +
-	"\fSearchResult\x12R\n" +
-	"\vdata_object\x18\x01 \x01(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x03\xe0A\x03R\n" +
-	"dataObject\x12$\n" +
-	"\bdistance\x18\x02 \x01(\x01B\x03\xe0A\x03H\x00R\bdistance\x88\x01\x01\x12~\n" +
-	"\x16search_result_metadata\x18\x03 \x01(\v2C.google.cloud.vectorsearch.v1beta.SearchResult.SearchResultMetadataB\x03\xe0A\x03R\x14searchResultMetadata\x1a\xb7\x05\n" +
-	"\x14SearchResultMetadata\x12\x82\x01\n" +
-	"\x10search_distances\x18\x01 \x03(\v2R.google.cloud.vectorsearch.v1beta.SearchResult.SearchResultMetadata.SearchDistanceB\x03\xe0A\x03R\x0fsearchDistances\x12\x84\x01\n" +
-	"\x11rrf_ranker_result\x18\x02 \x01(\v2S.google.cloud.vectorsearch.v1beta.SearchResult.SearchResultMetadata.RrfRankerResultB\x03\xe0A\x03R\x0frrfRankerResult\x12\x8d\x01\n" +
-	"\x14vertex_ranker_result\x18\x03 \x01(\v2V.google.cloud.vectorsearch.v1beta.SearchResult.SearchResultMetadata.VertexRankerResultB\x03\xe0A\x03R\x12vertexRankerResult\x1ar\n" +
-	"\x0eSearchDistance\x12&\n" +
-	"\fsearch_index\x18\x01 \x01(\x05B\x03\xe0A\x03R\vsearchIndex\x12\x17\n" +
-	"\x04rank\x18\x02 \x01(\x05B\x03\xe0A\x03R\x04rank\x12\x1f\n" +
-	"\bdistance\x18\x03 \x01(\x01B\x03\xe0A\x03R\bdistance\x1aE\n" +
-	"\x0fRrfRankerResult\x12\x17\n" +
-	"\x04rank\x18\x01 \x01(\x05B\x03\xe0A\x03R\x04rank\x12\x19\n" +
-	"\x05score\x18\x02 \x01(\x01B\x03\xe0A\x03R\x05score\x1aH\n" +
-	"\x12VertexRankerResult\x12\x17\n" +
-	"\x04rank\x18\x01 \x01(\x05B\x03\xe0A\x03R\x04rank\x12\x19\n" +
-	"\x05score\x18\x02 \x01(\x01B\x03\xe0A\x03R\x05scoreB\v\n" +
-	"\t_distance\"\xae\x02\n" +
+	"page_token\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tpageTokenB\r\n" +
+	"\vsearch_type\"\xdc\a\n" +
+	"\fSearchResult\x12S\n" +
+	"\vdata_object\x18\x01 \x01(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x04\xe2A\x01\x03R\n" +
+	"dataObject\x12%\n" +
+	"\bdistance\x18\x02 \x01(\x01B\x04\xe2A\x01\x03H\x00R\bdistance\x88\x01\x01\x12\x7f\n" +
+	"\x16search_result_metadata\x18\x03 \x01(\v2C.google.cloud.vectorsearch.v1beta.SearchResult.SearchResultMetadataB\x04\xe2A\x01\x03R\x14searchResultMetadata\x1a\xc1\x05\n" +
+	"\x14SearchResultMetadata\x12\x83\x01\n" +
+	"\x10search_distances\x18\x01 \x03(\v2R.google.cloud.vectorsearch.v1beta.SearchResult.SearchResultMetadata.SearchDistanceB\x04\xe2A\x01\x03R\x0fsearchDistances\x12\x85\x01\n" +
+	"\x11rrf_ranker_result\x18\x02 \x01(\v2S.google.cloud.vectorsearch.v1beta.SearchResult.SearchResultMetadata.RrfRankerResultB\x04\xe2A\x01\x03R\x0frrfRankerResult\x12\x8e\x01\n" +
+	"\x14vertex_ranker_result\x18\x03 \x01(\v2V.google.cloud.vectorsearch.v1beta.SearchResult.SearchResultMetadata.VertexRankerResultB\x04\xe2A\x01\x03R\x12vertexRankerResult\x1au\n" +
+	"\x0eSearchDistance\x12'\n" +
+	"\fsearch_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\vsearchIndex\x12\x18\n" +
+	"\x04rank\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x04rank\x12 \n" +
+	"\bdistance\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\bdistance\x1aG\n" +
+	"\x0fRrfRankerResult\x12\x18\n" +
+	"\x04rank\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x04rank\x12\x1a\n" +
+	"\x05score\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\x05score\x1aJ\n" +
+	"\x12VertexRankerResult\x12\x18\n" +
+	"\x04rank\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x04rank\x12\x1a\n" +
+	"\x05score\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\x05scoreB\v\n" +
+	"\t_distance\"\xb1\x02\n" +
 	"\x16SearchResponseMetadata\x12c\n" +
 	"\n" +
-	"used_index\x18\x01 \x01(\v2B.google.cloud.vectorsearch.v1beta.SearchResponseMetadata.IndexInfoH\x00R\tusedIndex\x12 \n" +
-	"\bused_knn\x18\x02 \x01(\bB\x03\xe0A\x03H\x00R\ausedKnn\x123\n" +
-	"\bwarnings\x18\x03 \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\bwarnings\x1aJ\n" +
-	"\tIndexInfo\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x03\xfaA#\n" +
+	"used_index\x18\x01 \x01(\v2B.google.cloud.vectorsearch.v1beta.SearchResponseMetadata.IndexInfoH\x00R\tusedIndex\x12!\n" +
+	"\bused_knn\x18\x02 \x01(\bB\x04\xe2A\x01\x03H\x00R\ausedKnn\x124\n" +
+	"\bwarnings\x18\x03 \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\bwarnings\x1aK\n" +
+	"\tIndexInfo\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!vectorsearch.googleapis.com/IndexR\x04nameB\f\n" +
 	"\n" +
-	"index_type\"\x90\x02\n" +
-	"\x19SearchDataObjectsResponse\x12M\n" +
-	"\aresults\x18\x01 \x03(\v2..google.cloud.vectorsearch.v1beta.SearchResultB\x03\xe0A\x03R\aresults\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12w\n" +
-	"\x18search_response_metadata\x18\x03 \x01(\v28.google.cloud.vectorsearch.v1beta.SearchResponseMetadataB\x03\xe0A\x03R\x16searchResponseMetadata\"\xf3\x01\n" +
-	"\x1bAggregateDataObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x124\n" +
-	"\x06filter\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filter\x12V\n" +
-	"\taggregate\x18\x03 \x01(\x0e23.google.cloud.vectorsearch.v1beta.AggregationMethodB\x03\xe0A\x02R\taggregate\"i\n" +
-	"\x1cAggregateDataObjectsResponse\x12I\n" +
-	"\x11aggregate_results\x18\x01 \x03(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x10aggregateResults\"\xb7\x02\n" +
-	"\x17QueryDataObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x124\n" +
-	"\x06filter\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filter\x12X\n" +
-	"\routput_fields\x18\a \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12 \n" +
-	"\tpage_size\x18\x05 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"index_type\"\x93\x02\n" +
+	"\x19SearchDataObjectsResponse\x12N\n" +
+	"\aresults\x18\x01 \x03(\v2..google.cloud.vectorsearch.v1beta.SearchResultB\x04\xe2A\x01\x03R\aresults\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12x\n" +
+	"\x18search_response_metadata\x18\x03 \x01(\v28.google.cloud.vectorsearch.v1beta.SearchResponseMetadataB\x04\xe2A\x01\x03R\x16searchResponseMetadata\"\xf6\x01\n" +
+	"\x1bAggregateDataObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x125\n" +
+	"\x06filter\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filter\x12W\n" +
+	"\taggregate\x18\x03 \x01(\x0e23.google.cloud.vectorsearch.v1beta.AggregationMethodB\x04\xe2A\x01\x02R\taggregate\"j\n" +
+	"\x1cAggregateDataObjectsResponse\x12J\n" +
+	"\x11aggregate_results\x18\x01 \x03(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x10aggregateResults\"\xbc\x02\n" +
+	"\x17QueryDataObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x125\n" +
+	"\x06filter\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filter\x12Y\n" +
+	"\routput_fields\x18\a \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x12!\n" +
+	"\tpage_size\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x06 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9d\x01\n" +
-	"\x18QueryDataObjectsResponse\x12T\n" +
-	"\fdata_objects\x18\x04 \x03(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x03\xe0A\x03R\vdataObjects\x12+\n" +
-	"\x0fnext_page_token\x18\x03 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xe3\x05\n" +
-	"\x1dBatchSearchDataObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12I\n" +
-	"\bsearches\x18\x02 \x03(\v2(.google.cloud.vectorsearch.v1beta.SearchB\x03\xe0A\x02R\bsearches\x12t\n" +
-	"\acombine\x18\x03 \x01(\v2U.google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptionsB\x03\xe0A\x01R\acombine\x12\x8a\x01\n" +
-	"\x10metadata_options\x18\x04 \x01(\v2Z.google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.BatchSearchMetadataOptionsB\x03\xe0A\x01R\x0fmetadataOptions\x1a\xd2\x01\n" +
-	"\x15CombineResultsOptions\x12E\n" +
-	"\x06ranker\x18\x01 \x01(\v2(.google.cloud.vectorsearch.v1beta.RankerB\x03\xe0A\x02R\x06ranker\x12X\n" +
-	"\routput_fields\x18\x02 \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12\x18\n" +
-	"\x05top_k\x18\x03 \x01(\x05B\x03\xe0A\x01R\x04topK\x1aW\n" +
-	"\x1aBatchSearchMetadataOptions\x129\n" +
-	"\x16search_signals_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x14searchSignalsEnabled\"\xc6\x01\n" +
+	"page_token\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9f\x01\n" +
+	"\x18QueryDataObjectsResponse\x12U\n" +
+	"\fdata_objects\x18\x04 \x03(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x04\xe2A\x01\x03R\vdataObjects\x12,\n" +
+	"\x0fnext_page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xeb\x05\n" +
+	"\x1dBatchSearchDataObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12J\n" +
+	"\bsearches\x18\x02 \x03(\v2(.google.cloud.vectorsearch.v1beta.SearchB\x04\xe2A\x01\x02R\bsearches\x12u\n" +
+	"\acombine\x18\x03 \x01(\v2U.google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptionsB\x04\xe2A\x01\x01R\acombine\x12\x8b\x01\n" +
+	"\x10metadata_options\x18\x04 \x01(\v2Z.google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.BatchSearchMetadataOptionsB\x04\xe2A\x01\x01R\x0fmetadataOptions\x1a\xd5\x01\n" +
+	"\x15CombineResultsOptions\x12F\n" +
+	"\x06ranker\x18\x01 \x01(\v2(.google.cloud.vectorsearch.v1beta.RankerB\x04\xe2A\x01\x02R\x06ranker\x12Y\n" +
+	"\routput_fields\x18\x02 \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x12\x19\n" +
+	"\x05top_k\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x04topK\x1aX\n" +
+	"\x1aBatchSearchMetadataOptions\x12:\n" +
+	"\x16search_signals_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x14searchSignalsEnabled\"\xc7\x01\n" +
 	"\x06Ranker\x12J\n" +
-	"\x03rrf\x18\x01 \x01(\v26.google.cloud.vectorsearch.v1beta.ReciprocalRankFusionH\x00R\x03rrf\x12Z\n" +
-	"\rvertex_ranker\x18\x02 \x01(\v2..google.cloud.vectorsearch.v1beta.VertexRankerB\x03\xe0A\x01H\x01R\fvertexRankerB\b\n" +
+	"\x03rrf\x18\x01 \x01(\v26.google.cloud.vectorsearch.v1beta.ReciprocalRankFusionH\x00R\x03rrf\x12[\n" +
+	"\rvertex_ranker\x18\x02 \x01(\v2..google.cloud.vectorsearch.v1beta.VertexRankerB\x04\xe2A\x01\x01H\x01R\fvertexRankerB\b\n" +
 	"\x06rankerB\n" +
 	"\n" +
-	"\breranker\"5\n" +
-	"\x14ReciprocalRankFusion\x12\x1d\n" +
-	"\aweights\x18\x01 \x03(\x01B\x03\xe0A\x02R\aweights\"\xc7\x02\n" +
+	"\breranker\"6\n" +
+	"\x14ReciprocalRankFusion\x12\x1e\n" +
+	"\aweights\x18\x01 \x03(\x01B\x04\xe2A\x01\x02R\aweights\"\xcc\x02\n" +
 	"\fVertexRanker\x12i\n" +
-	"\x10text_record_spec\x18\x06 \x01(\v2=.google.cloud.vectorsearch.v1beta.VertexRanker.TextRecordSpecH\x00R\x0etextRecordSpec\x12\x19\n" +
-	"\x05model\x18\x04 \x01(\tB\x03\xe0A\x02R\x05model\x12\x18\n" +
-	"\x05top_n\x18\x05 \x01(\x05B\x03\xe0A\x02R\x04topN\x1a\x87\x01\n" +
-	"\x0eTextRecordSpec\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12*\n" +
-	"\x0etitle_template\x18\x02 \x01(\tB\x03\xe0A\x01R\rtitleTemplate\x12.\n" +
-	"\x10content_template\x18\x03 \x01(\tB\x03\xe0A\x01R\x0fcontentTemplateB\r\n" +
-	"\vrecord_spec\"|\n" +
-	"\x1eBatchSearchDataObjectsResponse\x12Z\n" +
-	"\aresults\x18\x01 \x03(\v2;.google.cloud.vectorsearch.v1beta.SearchDataObjectsResponseB\x03\xe0A\x03R\aresults*B\n" +
+	"\x10text_record_spec\x18\x06 \x01(\v2=.google.cloud.vectorsearch.v1beta.VertexRanker.TextRecordSpecH\x00R\x0etextRecordSpec\x12\x1a\n" +
+	"\x05model\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x05model\x12\x19\n" +
+	"\x05top_n\x18\x05 \x01(\x05B\x04\xe2A\x01\x02R\x04topN\x1a\x8a\x01\n" +
+	"\x0eTextRecordSpec\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12+\n" +
+	"\x0etitle_template\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rtitleTemplate\x12/\n" +
+	"\x10content_template\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0fcontentTemplateB\r\n" +
+	"\vrecord_spec\"}\n" +
+	"\x1eBatchSearchDataObjectsResponse\x12[\n" +
+	"\aresults\x18\x01 \x03(\v2;.google.cloud.vectorsearch.v1beta.SearchDataObjectsResponseB\x04\xe2A\x01\x03R\aresults*B\n" +
 	"\x11AggregationMethod\x12\"\n" +
 	"\x1eAGGREGATION_METHOD_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05COUNT\x10\x012\x96\b\n" +

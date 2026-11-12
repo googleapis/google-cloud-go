@@ -190,25 +190,25 @@ var File_google_cloud_eventarc_v1_enrollment_proto protoreflect.FileDescriptor
 
 const file_google_cloud_eventarc_v1_enrollment_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/eventarc/v1/enrollment.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\x06\n" +
+	")google/cloud/eventarc/v1/enrollment.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd0\x06\n" +
 	"\n" +
-	"Enrollment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x03R\x04etag\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12M\n" +
-	"\x06labels\x18\x06 \x03(\v20.google.cloud.eventarc.v1.Enrollment.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\\\n" +
-	"\vannotations\x18\a \x03(\v25.google.cloud.eventarc.v1.Enrollment.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x01R\vdisplayName\x12 \n" +
-	"\tcel_match\x18\t \x01(\tB\x03\xe0A\x02R\bcelMatch\x12N\n" +
+	"Enrollment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12N\n" +
+	"\x06labels\x18\x06 \x03(\v20.google.cloud.eventarc.v1.Enrollment.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12]\n" +
+	"\vannotations\x18\a \x03(\v25.google.cloud.eventarc.v1.Enrollment.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12!\n" +
+	"\tcel_match\x18\t \x01(\tB\x04\xe2A\x01\x02R\bcelMatch\x12M\n" +
 	"\vmessage_bus\x18\n" +
-	" \x01(\tB-\xe0A\x02\xe0A\x05\xfaA$\n" +
+	" \x01(\tB,\xe2A\x02\x02\x05\xfaA$\n" +
 	"\"eventarc.googleapis.com/MessageBusR\n" +
-	"messageBus\x12%\n" +
-	"\vdestination\x18\v \x01(\tB\x03\xe0A\x02R\vdestination\x1a9\n" +
+	"messageBus\x12&\n" +
+	"\vdestination\x18\v \x01(\tB\x04\xe2A\x01\x02R\vdestination\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +

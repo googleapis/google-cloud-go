@@ -1417,7 +1417,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				}
 
 				for i, msg := range msgs {
-					msg := msg
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
@@ -1471,7 +1470,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					}
 					iter.orderingMu.RUnlock()
 					msgLen := len(msg.Data)
-					if err := sched.Add(key, msg, func(msg interface{}) {
+					if err := sched.Add(key, msg, func(msg any) {
 						m := msg.(*Message)
 						defer wg.Done()
 						var ps trace.Span

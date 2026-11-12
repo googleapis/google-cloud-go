@@ -237,13 +237,13 @@ var File_google_cloud_alloydb_v1beta_gemini_proto protoreflect.FileDescriptor
 
 const file_google_cloud_alloydb_v1beta_gemini_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/alloydb/v1beta/gemini.proto\x12\x1bgoogle.cloud.alloydb.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"8\n" +
-	"\x13GeminiClusterConfig\x12!\n" +
-	"\bentitled\x18\x01 \x01(\bB\x05\xe0A\x03\x18\x01R\bentitled\"9\n" +
-	"\x14GeminiInstanceConfig\x12!\n" +
-	"\bentitled\x18\x01 \x01(\bB\x05\xe0A\x03\x18\x01R\bentitled\"r\n" +
-	"\x11GCAInstanceConfig\x12]\n" +
-	"\x0fgca_entitlement\x18\x01 \x01(\x0e2/.google.cloud.alloydb.v1beta.GCAEntitlementTypeB\x03\xe0A\x03R\x0egcaEntitlement*L\n" +
+	"(google/cloud/alloydb/v1beta/gemini.proto\x12\x1bgoogle.cloud.alloydb.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"9\n" +
+	"\x13GeminiClusterConfig\x12\"\n" +
+	"\bentitled\x18\x01 \x01(\bB\x06\xe2A\x01\x03\x18\x01R\bentitled\":\n" +
+	"\x14GeminiInstanceConfig\x12\"\n" +
+	"\bentitled\x18\x01 \x01(\bB\x06\xe2A\x01\x03\x18\x01R\bentitled\"s\n" +
+	"\x11GCAInstanceConfig\x12^\n" +
+	"\x0fgca_entitlement\x18\x01 \x01(\x0e2/.google.cloud.alloydb.v1beta.GCAEntitlementTypeB\x04\xe2A\x01\x03R\x0egcaEntitlement*L\n" +
 	"\x12GCAEntitlementType\x12$\n" +
 	" GCA_ENTITLEMENT_TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fGCA_STANDARD\x10\x01B\xc8\x01\n" +

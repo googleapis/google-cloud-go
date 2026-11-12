@@ -1360,19 +1360,19 @@ var File_google_cloud_dataqna_v1alpha_question_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataqna_v1alpha_question_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/dataqna/v1alpha/question.proto\x12\x1cgoogle.cloud.dataqna.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/dataqna/v1alpha/annotated_string.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x98\x05\n" +
-	"\bQuestion\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x04name\x12\x1e\n" +
-	"\x06scopes\x18\x02 \x03(\tB\x06\xe0A\x02\xe0A\x05R\x06scopes\x12\x1c\n" +
-	"\x05query\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x05query\x126\n" +
+	"+google/cloud/dataqna/v1alpha/question.proto\x12\x1cgoogle.cloud.dataqna.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/dataqna/v1alpha/annotated_string.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x95\x05\n" +
+	"\bQuestion\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\x05R\x04name\x12\x1d\n" +
+	"\x06scopes\x18\x02 \x03(\tB\x05\xe2A\x02\x02\x05R\x06scopes\x12\x1b\n" +
+	"\x05query\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\x05query\x126\n" +
 	"\x17data_source_annotations\x18\x04 \x03(\tR\x15dataSourceAnnotations\x12U\n" +
 	"\x0finterpret_error\x18\x05 \x01(\v2,.google.cloud.dataqna.v1alpha.InterpretErrorR\x0einterpretError\x12V\n" +
 	"\x0finterpretations\x18\x06 \x03(\v2,.google.cloud.dataqna.v1alpha.InterpretationR\x0finterpretations\x12;\n" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\x12\"\n" +
+	"createTime\x12#\n" +
 	"\n" +
-	"user_email\x18\b \x01(\tB\x03\xe0A\x03R\tuserEmail\x12Q\n" +
-	"\vdebug_flags\x18\t \x01(\v2(.google.cloud.dataqna.v1alpha.DebugFlagsB\x06\xe0A\x05\xe0A\x04R\n" +
+	"user_email\x18\b \x01(\tB\x04\xe2A\x01\x03R\tuserEmail\x12P\n" +
+	"\vdebug_flags\x18\t \x01(\v2(.google.cloud.dataqna.v1alpha.DebugFlagsB\x05\xe2A\x02\x05\x04R\n" +
 	"debugFlags\x123\n" +
 	"\n" +
 	"debug_info\x18\n" +

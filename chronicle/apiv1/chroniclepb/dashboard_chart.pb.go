@@ -3842,25 +3842,25 @@ var File_google_cloud_chronicle_v1_dashboard_chart_proto protoreflect.FileDescri
 
 const file_google_cloud_chronicle_v1_dashboard_chart_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/chronicle/v1/dashboard_chart.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/chronicle/v1/dashboard_query.proto\"\xa7J\n" +
-	"\x0eDashboardChart\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x03\xfaA)\n" +
-	"'chronicle.googleapis.com/DashboardChartR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12[\n" +
-	"\x10native_dashboard\x18\x04 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(chronicle.googleapis.com/NativeDashboardR\x0fnativeDashboard\x12E\n" +
-	"\ttile_type\x18\a \x01(\x0e2#.google.cloud.chronicle.v1.TileTypeB\x03\xe0A\x01R\btileType\x12i\n" +
-	"\x10chart_datasource\x18\x05 \x01(\v29.google.cloud.chronicle.v1.DashboardChart.ChartDatasourceB\x03\xe0A\x01R\x0fchartDatasource\x12b\n" +
-	"\rvisualization\x18\x06 \x01(\v27.google.cloud.chronicle.v1.DashboardChart.VisualizationB\x03\xe0A\x02R\rvisualization\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\x12j\n" +
-	"\x11drill_down_config\x18\t \x01(\v29.google.cloud.chronicle.v1.DashboardChart.DrillDownConfigB\x03\xe0A\x01R\x0fdrillDownConfig\x12\x1b\n" +
+	"/google/cloud/chronicle/v1/dashboard_chart.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/chronicle/v1/dashboard_query.proto\"\x82K\n" +
+	"\x0eDashboardChart\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
+	"'chronicle.googleapis.com/DashboardChartR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\\\n" +
+	"\x10native_dashboard\x18\x04 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(chronicle.googleapis.com/NativeDashboardR\x0fnativeDashboard\x12F\n" +
+	"\ttile_type\x18\a \x01(\x0e2#.google.cloud.chronicle.v1.TileTypeB\x04\xe2A\x01\x01R\btileType\x12j\n" +
+	"\x10chart_datasource\x18\x05 \x01(\v29.google.cloud.chronicle.v1.DashboardChart.ChartDatasourceB\x04\xe2A\x01\x01R\x0fchartDatasource\x12c\n" +
+	"\rvisualization\x18\x06 \x01(\v27.google.cloud.chronicle.v1.DashboardChart.VisualizationB\x04\xe2A\x01\x02R\rvisualization\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12k\n" +
+	"\x11drill_down_config\x18\t \x01(\v29.google.cloud.chronicle.v1.DashboardChart.DrillDownConfigB\x04\xe2A\x01\x01R\x0fdrillDownConfig\x12\x1c\n" +
 	"\x06tokens\x18\n" +
-	" \x03(\tB\x03\xe0A\x01R\x06tokens\x1a\xb2\x01\n" +
+	" \x03(\tB\x04\xe2A\x01\x01R\x06tokens\x1a\xb2\x01\n" +
 	"\x0fChartDatasource\x12U\n" +
 	"\x0fdashboard_query\x18\x01 \x01(\tB,\xfaA)\n" +
 	"'chronicle.googleapis.com/DashboardQueryR\x0edashboardQuery\x12H\n" +
-	"\fdata_sources\x18\x03 \x03(\x0e2%.google.cloud.chronicle.v1.DataSourceR\vdataSources\x1a\xb14\n" +
+	"\fdata_sources\x18\x03 \x03(\x0e2%.google.cloud.chronicle.v1.DataSourceR\vdataSources\x1a\xf54\n" +
 	"\rVisualization\x12S\n" +
 	"\x06x_axes\x18\a \x03(\v2<.google.cloud.chronicle.v1.DashboardChart.Visualization.AxisR\x05xAxes\x12S\n" +
 	"\x06y_axes\x18\b \x03(\v2<.google.cloud.chronicle.v1.DashboardChart.Visualization.AxisR\x05yAxes\x12V\n" +
@@ -3869,15 +3869,15 @@ const file_google_cloud_chronicle_v1_dashboard_chart_proto_rawDesc = "" +
 	"\alegends\x18\t \x03(\v2>.google.cloud.chronicle.v1.DashboardChart.Visualization.LegendR\alegends\x12b\n" +
 	"\vcolumn_defs\x18\n" +
 	" \x03(\v2A.google.cloud.chronicle.v1.DashboardChart.Visualization.ColumnDefR\n" +
-	"columnDefs\x12k\n" +
-	"\ftable_config\x18\x12 \x01(\v2C.google.cloud.chronicle.v1.DashboardChart.Visualization.TableConfigB\x03\xe0A\x01R\vtableConfig\x129\n" +
-	"\x06button\x18\v \x01(\v2!.google.cloud.chronicle.v1.ButtonR\x06button\x12D\n" +
-	"\bmarkdown\x18\x11 \x01(\v2#.google.cloud.chronicle.v1.MarkdownB\x03\xe0A\x01R\bmarkdown\x12(\n" +
-	"\rseries_column\x18\f \x03(\tB\x03\xe0A\x01R\fseriesColumn\x12(\n" +
-	"\rgrouping_type\x18\r \x01(\tB\x03\xe0A\x01R\fgroupingType\x12{\n" +
-	"\x12google_maps_config\x18\x0e \x01(\v2H.google.cloud.chronicle.v1.DashboardChart.Visualization.GoogleMapsConfigB\x03\xe0A\x01R\x10googleMapsConfig\x12A\n" +
-	"\x1athreshold_coloring_enabled\x18\x0f \x01(\bB\x03\xe0A\x01R\x18thresholdColoringEnabled\x12g\n" +
-	"\vvisual_maps\x18\x10 \x03(\v2A.google.cloud.chronicle.v1.DashboardChart.Visualization.VisualMapB\x03\xe0A\x01R\n" +
+	"columnDefs\x12l\n" +
+	"\ftable_config\x18\x12 \x01(\v2C.google.cloud.chronicle.v1.DashboardChart.Visualization.TableConfigB\x04\xe2A\x01\x01R\vtableConfig\x129\n" +
+	"\x06button\x18\v \x01(\v2!.google.cloud.chronicle.v1.ButtonR\x06button\x12E\n" +
+	"\bmarkdown\x18\x11 \x01(\v2#.google.cloud.chronicle.v1.MarkdownB\x04\xe2A\x01\x01R\bmarkdown\x12)\n" +
+	"\rseries_column\x18\f \x03(\tB\x04\xe2A\x01\x01R\fseriesColumn\x12)\n" +
+	"\rgrouping_type\x18\r \x01(\tB\x04\xe2A\x01\x01R\fgroupingType\x12|\n" +
+	"\x12google_maps_config\x18\x0e \x01(\v2H.google.cloud.chronicle.v1.DashboardChart.Visualization.GoogleMapsConfigB\x04\xe2A\x01\x01R\x10googleMapsConfig\x12B\n" +
+	"\x1athreshold_coloring_enabled\x18\x0f \x01(\bB\x04\xe2A\x01\x01R\x18thresholdColoringEnabled\x12h\n" +
+	"\vvisual_maps\x18\x10 \x03(\v2A.google.cloud.chronicle.v1.DashboardChart.Visualization.VisualMapB\x04\xe2A\x01\x01R\n" +
 	"visualMaps\x1a\xa9\x01\n" +
 	"\x04Axis\x12@\n" +
 	"\taxis_type\x18\x04 \x01(\x0e2#.google.cloud.chronicle.v1.AxisTypeR\baxisType\x12!\n" +
@@ -3885,7 +3885,7 @@ const file_google_cloud_chronicle_v1_dashboard_chart_proto_rawDesc = "" +
 	"\x03min\x18\x06 \x01(\x05H\x00R\x03min\x88\x01\x01\x12\x15\n" +
 	"\x03max\x18\a \x01(\x05H\x01R\x03max\x88\x01\x01B\x06\n" +
 	"\x04_minB\x06\n" +
-	"\x04_max\x1a\xb9\x16\n" +
+	"\x04_max\x1a\xda\x16\n" +
 	"\x06Series\x12F\n" +
 	"\vseries_type\x18\b \x01(\x0e2%.google.cloud.chronicle.v1.SeriesTypeR\n" +
 	"seriesType\x12\x1f\n" +
@@ -3899,63 +3899,63 @@ const file_google_cloud_chronicle_v1_dashboard_chart_proto_rawDesc = "" +
 	"\x06encode\x18\n" +
 	" \x01(\v2E.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.EncodeR\x06encode\x12\x14\n" +
 	"\x05label\x18\v \x01(\tR\x05label\x12\x14\n" +
-	"\x05field\x18\f \x01(\tR\x05field\x12l\n" +
+	"\x05field\x18\f \x01(\tR\x05field\x12m\n" +
 	"\n" +
-	"data_label\x18\r \x01(\v2H.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.DataLabelB\x03\xe0A\x01R\tdataLabel\x12\x1b\n" +
-	"\x06radius\x18\x0e \x03(\tB\x03\xe0A\x01R\x06radius\x12l\n" +
+	"data_label\x18\r \x01(\v2H.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.DataLabelB\x04\xe2A\x01\x01R\tdataLabel\x12\x1c\n" +
+	"\x06radius\x18\x0e \x03(\tB\x04\xe2A\x01\x01R\x06radius\x12m\n" +
 	"\n" +
-	"item_style\x18\x0f \x01(\v2H.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.ItemStyleB\x03\xe0A\x01R\titemStyle\x123\n" +
-	"\x13series_unique_value\x18\x10 \x01(\tB\x03\xe0A\x01R\x11seriesUniqueValue\x12l\n" +
+	"item_style\x18\x0f \x01(\v2H.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.ItemStyleB\x04\xe2A\x01\x01R\titemStyle\x124\n" +
+	"\x13series_unique_value\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\x11seriesUniqueValue\x12m\n" +
 	"\n" +
-	"area_style\x18\x11 \x01(\v2H.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.AreaStyleB\x03\xe0A\x01R\tareaStyle\x12o\n" +
-	"\vitem_colors\x18\x12 \x01(\v2I.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.ItemColorsB\x03\xe0A\x01R\n" +
-	"itemColors\x12r\n" +
-	"\fgauge_config\x18\x13 \x01(\v2J.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.GaugeConfigB\x03\xe0A\x01R\vgaugeConfig\x12\x85\x01\n" +
-	"\x13metric_trend_config\x18\x14 \x01(\v2P.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.MetricTrendConfigB\x03\xe0A\x01R\x11metricTrendConfig\x1aW\n" +
+	"area_style\x18\x11 \x01(\v2H.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.AreaStyleB\x04\xe2A\x01\x01R\tareaStyle\x12p\n" +
+	"\vitem_colors\x18\x12 \x01(\v2I.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.ItemColorsB\x04\xe2A\x01\x01R\n" +
+	"itemColors\x12s\n" +
+	"\fgauge_config\x18\x13 \x01(\v2J.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.GaugeConfigB\x04\xe2A\x01\x01R\vgaugeConfig\x12\x86\x01\n" +
+	"\x13metric_trend_config\x18\x14 \x01(\v2P.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.MetricTrendConfigB\x04\xe2A\x01\x01R\x11metricTrendConfig\x1aW\n" +
 	"\x06Encode\x12\f\n" +
 	"\x01x\x18\x01 \x01(\tR\x01x\x12\f\n" +
 	"\x01y\x18\x02 \x01(\tR\x01y\x12\x14\n" +
 	"\x05value\x18\x03 \x01(\tR\x05value\x12\x1b\n" +
-	"\titem_name\x18\x04 \x01(\tR\bitemName\x1a$\n" +
-	"\tDataLabel\x12\x17\n" +
-	"\x04show\x18\x01 \x01(\bB\x03\xe0A\x01R\x04show\x1av\n" +
-	"\tItemStyle\x12&\n" +
-	"\fborder_width\x18\x01 \x01(\x05B\x03\xe0A\x01R\vborderWidth\x12&\n" +
-	"\fborder_color\x18\x02 \x01(\tB\x03\xe0A\x01R\vborderColor\x12\x19\n" +
-	"\x05color\x18\x03 \x01(\tB\x03\xe0A\x01R\x05color\x1a\x8a\x02\n" +
-	"\tAreaStyle\x12\x19\n" +
-	"\x05color\x18\x01 \x01(\tB\x03\xe0A\x01R\x05color\x12\x1b\n" +
-	"\x06origin\x18\x02 \x01(\tB\x03\xe0A\x01R\x06origin\x12$\n" +
-	"\vshadow_blur\x18\x03 \x01(\x05B\x03\xe0A\x01R\n" +
-	"shadowBlur\x12&\n" +
-	"\fshadow_color\x18\x04 \x01(\tB\x03\xe0A\x01R\vshadowColor\x12+\n" +
-	"\x0fshadow_offset_x\x18\x05 \x01(\x05B\x03\xe0A\x01R\rshadowOffsetX\x12+\n" +
-	"\x0fshadow_offset_y\x18\x06 \x01(\x05B\x03\xe0A\x01R\rshadowOffsetY\x12\x1d\n" +
-	"\aopacity\x18\a \x01(\x05B\x03\xe0A\x01R\aopacity\x1aJ\n" +
-	"\x12UserSelectedValues\x12\x19\n" +
-	"\x05color\x18\x01 \x01(\tB\x03\xe0A\x01R\x05color\x12\x19\n" +
-	"\x05label\x18\x02 \x01(\tB\x03\xe0A\x01R\x05label\x1a\x96\x01\n" +
-	"\x0fChartSliceColor\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x01R\x03key\x12l\n" +
-	"\x05value\x18\x02 \x01(\v2Q.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.UserSelectedValuesB\x03\xe0A\x01R\x05value\x1ay\n" +
+	"\titem_name\x18\x04 \x01(\tR\bitemName\x1a%\n" +
+	"\tDataLabel\x12\x18\n" +
+	"\x04show\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x04show\x1ay\n" +
+	"\tItemStyle\x12'\n" +
+	"\fborder_width\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\vborderWidth\x12'\n" +
+	"\fborder_color\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vborderColor\x12\x1a\n" +
+	"\x05color\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05color\x1a\x91\x02\n" +
+	"\tAreaStyle\x12\x1a\n" +
+	"\x05color\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05color\x12\x1c\n" +
+	"\x06origin\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06origin\x12%\n" +
+	"\vshadow_blur\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"shadowBlur\x12'\n" +
+	"\fshadow_color\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vshadowColor\x12,\n" +
+	"\x0fshadow_offset_x\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\rshadowOffsetX\x12,\n" +
+	"\x0fshadow_offset_y\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\rshadowOffsetY\x12\x1e\n" +
+	"\aopacity\x18\a \x01(\x05B\x04\xe2A\x01\x01R\aopacity\x1aL\n" +
+	"\x12UserSelectedValues\x12\x1a\n" +
+	"\x05color\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05color\x12\x1a\n" +
+	"\x05label\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05label\x1a\x98\x01\n" +
+	"\x0fChartSliceColor\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x03key\x12m\n" +
+	"\x05value\x18\x02 \x01(\v2Q.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.UserSelectedValuesB\x04\xe2A\x01\x01R\x05value\x1az\n" +
 	"\n" +
-	"ItemColors\x12k\n" +
-	"\x06colors\x18\x01 \x03(\v2N.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.ChartSliceColorB\x03\xe0A\x01R\x06colors\x1aB\n" +
+	"ItemColors\x12l\n" +
+	"\x06colors\x18\x01 \x03(\v2N.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.ChartSliceColorB\x04\xe2A\x01\x01R\x06colors\x1aD\n" +
 	"\n" +
-	"GaugeValue\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\x05B\x03\xe0A\x01R\x05value\x12\x19\n" +
-	"\x05color\x18\x02 \x01(\tB\x03\xe0A\x01R\x05color\x1a\xe8\x02\n" +
-	"\vGaugeConfig\x12m\n" +
+	"GaugeValue\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x05value\x12\x1a\n" +
+	"\x05color\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05color\x1a\xeb\x02\n" +
+	"\vGaugeConfig\x12n\n" +
 	"\n" +
-	"base_value\x18\x01 \x01(\v2I.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.GaugeValueB\x03\xe0A\x01R\tbaseValue\x12o\n" +
-	"\vlimit_value\x18\x02 \x01(\v2I.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.GaugeValueB\x03\xe0A\x01R\n" +
-	"limitValue\x12y\n" +
-	"\x10threshold_values\x18\x03 \x03(\v2I.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.GaugeValueB\x03\xe0A\x01R\x0fthresholdValues\x1a\xda\x02\n" +
-	"\x11MetricTrendConfig\x12Q\n" +
-	"\rmetric_format\x18\x01 \x01(\x0e2'.google.cloud.chronicle.v1.MetricFormatB\x03\xe0A\x01R\fmetricFormat\x12/\n" +
-	"\x11show_metric_trend\x18\x05 \x01(\bB\x03\xe0A\x01R\x0fshowMetricTrend\x12d\n" +
-	"\x14metric_display_trend\x18\x03 \x01(\x0e2-.google.cloud.chronicle.v1.MetricDisplayTrendB\x03\xe0A\x01R\x12metricDisplayTrend\x12[\n" +
-	"\x11metric_trend_type\x18\x04 \x01(\x0e2*.google.cloud.chronicle.v1.MetricTrendTypeB\x03\xe0A\x01R\x0fmetricTrendType\x1aq\n" +
+	"base_value\x18\x01 \x01(\v2I.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.GaugeValueB\x04\xe2A\x01\x01R\tbaseValue\x12p\n" +
+	"\vlimit_value\x18\x02 \x01(\v2I.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.GaugeValueB\x04\xe2A\x01\x01R\n" +
+	"limitValue\x12z\n" +
+	"\x10threshold_values\x18\x03 \x03(\v2I.google.cloud.chronicle.v1.DashboardChart.Visualization.Series.GaugeValueB\x04\xe2A\x01\x01R\x0fthresholdValues\x1a\xde\x02\n" +
+	"\x11MetricTrendConfig\x12R\n" +
+	"\rmetric_format\x18\x01 \x01(\x0e2'.google.cloud.chronicle.v1.MetricFormatB\x04\xe2A\x01\x01R\fmetricFormat\x120\n" +
+	"\x11show_metric_trend\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x0fshowMetricTrend\x12e\n" +
+	"\x14metric_display_trend\x18\x03 \x01(\x0e2-.google.cloud.chronicle.v1.MetricDisplayTrendB\x04\xe2A\x01\x01R\x12metricDisplayTrend\x12\\\n" +
+	"\x11metric_trend_type\x18\x04 \x01(\x0e2*.google.cloud.chronicle.v1.MetricTrendTypeB\x04\xe2A\x01\x01R\x0fmetricTrendType\x1aq\n" +
 	"\aTooltip\x12\x12\n" +
 	"\x04show\x18\x01 \x01(\bR\x04show\x12R\n" +
 	"\x0ftooltip_trigger\x18\x03 \x01(\x0e2).google.cloud.chronicle.v1.ToolTipTriggerR\x0etooltipTrigger\x1a\xda\x02\n" +
@@ -3973,100 +3973,100 @@ const file_google_cloud_chronicle_v1_dashboard_chart_proto_rawDesc = "" +
 	"\apadding\x18\v \x03(\x05R\apadding\x1a9\n" +
 	"\tColumnDef\x12\x14\n" +
 	"\x05field\x18\x01 \x01(\tR\x05field\x12\x16\n" +
-	"\x06header\x18\x02 \x01(\tR\x06header\x1a\x8f\x01\n" +
-	"\x18ColumnRenderTypeSettings\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x01R\x05field\x12X\n" +
-	"\x12column_render_type\x18\x02 \x01(\x0e2%.google.cloud.chronicle.v1.RenderTypeB\x03\xe0A\x01R\x10columnRenderType\x1a\x98\x01\n" +
-	"\x15ColumnTooltipSettings\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x02R\x05field\x123\n" +
-	"\x13header_tooltip_text\x18\x02 \x01(\tB\x03\xe0A\x01R\x11headerTooltipText\x12/\n" +
-	"\x11cell_tooltip_text\x18\x03 \x01(\tB\x03\xe0A\x01R\x0fcellTooltipText\x1a\xe0\x02\n" +
-	"\vTableConfig\x12-\n" +
-	"\x10enable_text_wrap\x18\x01 \x01(\bB\x03\xe0A\x01R\x0eenableTextWrap\x12\x94\x01\n" +
-	"\x1bcolumn_render_type_settings\x18\x02 \x03(\v2P.google.cloud.chronicle.v1.DashboardChart.Visualization.ColumnRenderTypeSettingsB\x03\xe0A\x01R\x18columnRenderTypeSettings\x12\x8a\x01\n" +
-	"\x17column_tooltip_settings\x18\x03 \x03(\v2M.google.cloud.chronicle.v1.DashboardChart.Visualization.ColumnTooltipSettingsB\x03\xe0A\x01R\x15columnTooltipSettings\x1a\xb1\a\n" +
-	"\x10GoogleMapsConfig\x12\x7f\n" +
-	"\rdata_settings\x18\x01 \x01(\v2U.google.cloud.chronicle.v1.DashboardChart.Visualization.GoogleMapsConfig.DataSettingsB\x03\xe0A\x01R\fdataSettings\x12E\n" +
-	"\tplot_mode\x18\x02 \x01(\x0e2#.google.cloud.chronicle.v1.PlotModeB\x03\xe0A\x01R\bplotMode\x12|\n" +
-	"\fmap_position\x18\x03 \x01(\v2T.google.cloud.chronicle.v1.DashboardChart.Visualization.GoogleMapsConfig.MapPositionB\x03\xe0A\x01R\vmapPosition\x12\x82\x01\n" +
-	"\x0epoint_settings\x18\x04 \x01(\v2V.google.cloud.chronicle.v1.DashboardChart.Visualization.GoogleMapsConfig.PointSettingsB\x03\xe0A\x01R\rpointSettings\x1a\x94\x01\n" +
-	"\fDataSettings\x12,\n" +
-	"\x0flatitude_column\x18\x01 \x01(\tB\x03\xe0A\x01R\x0elatitudeColumn\x12.\n" +
-	"\x10longitude_column\x18\x02 \x01(\tB\x03\xe0A\x01R\x0flongitudeColumn\x12&\n" +
-	"\fcount_column\x18\x03 \x01(\tB\x03\xe0A\x01R\vcountColumn\x1a\xb6\x01\n" +
-	"\vMapPosition\x12\x1e\n" +
-	"\bfit_data\x18\x01 \x01(\bB\x03\xe0A\x01R\afitData\x12*\n" +
-	"\x0elatitude_value\x18\x05 \x01(\x01B\x03\xe0A\x01R\rlatitudeValue\x12,\n" +
-	"\x0flongitude_value\x18\x06 \x01(\x01B\x03\xe0A\x01R\x0elongitudeValue\x12-\n" +
-	"\x10zoom_scale_value\x18\a \x01(\x01B\x03\xe0A\x01R\x0ezoomScaleValue\x1a\x81\x01\n" +
-	"\rPointSettings\x12U\n" +
-	"\x0fpoint_size_type\x18\x01 \x01(\x0e2(.google.cloud.chronicle.v1.PointSizeTypeB\x03\xe0A\x01R\rpointSizeType\x12\x19\n" +
-	"\x05color\x18\x02 \x01(\tB\x03\xe0A\x01R\x05color\x1a\xe2\x02\n" +
-	"\tVisualMap\x12U\n" +
-	"\x0fvisual_map_type\x18\x01 \x01(\x0e2(.google.cloud.chronicle.v1.VisualMapTypeB\x03\xe0A\x01R\rvisualMapType\x12m\n" +
-	"\x06pieces\x18\x02 \x03(\v2P.google.cloud.chronicle.v1.DashboardChart.Visualization.VisualMap.VisualMapPieceB\x03\xe0A\x01R\x06pieces\x1a\x8e\x01\n" +
-	"\x0eVisualMapPiece\x12\x1a\n" +
-	"\x03min\x18\x01 \x01(\x03B\x03\xe0A\x01H\x00R\x03min\x88\x01\x01\x12\x1a\n" +
-	"\x03max\x18\x02 \x01(\x03B\x03\xe0A\x01H\x01R\x03max\x88\x01\x01\x12\x19\n" +
-	"\x05color\x18\x03 \x01(\tB\x03\xe0A\x01R\x05color\x12\x19\n" +
-	"\x05label\x18\x04 \x01(\tB\x03\xe0A\x01R\x05labelB\x06\n" +
+	"\x06header\x18\x02 \x01(\tR\x06header\x1a\x91\x01\n" +
+	"\x18ColumnRenderTypeSettings\x12\x1a\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05field\x12Y\n" +
+	"\x12column_render_type\x18\x02 \x01(\x0e2%.google.cloud.chronicle.v1.RenderTypeB\x04\xe2A\x01\x01R\x10columnRenderType\x1a\x9b\x01\n" +
+	"\x15ColumnTooltipSettings\x12\x1a\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05field\x124\n" +
+	"\x13header_tooltip_text\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x11headerTooltipText\x120\n" +
+	"\x11cell_tooltip_text\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0fcellTooltipText\x1a\xe3\x02\n" +
+	"\vTableConfig\x12.\n" +
+	"\x10enable_text_wrap\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0eenableTextWrap\x12\x95\x01\n" +
+	"\x1bcolumn_render_type_settings\x18\x02 \x03(\v2P.google.cloud.chronicle.v1.DashboardChart.Visualization.ColumnRenderTypeSettingsB\x04\xe2A\x01\x01R\x18columnRenderTypeSettings\x12\x8b\x01\n" +
+	"\x17column_tooltip_settings\x18\x03 \x03(\v2M.google.cloud.chronicle.v1.DashboardChart.Visualization.ColumnTooltipSettingsB\x04\xe2A\x01\x01R\x15columnTooltipSettings\x1a\xbf\a\n" +
+	"\x10GoogleMapsConfig\x12\x80\x01\n" +
+	"\rdata_settings\x18\x01 \x01(\v2U.google.cloud.chronicle.v1.DashboardChart.Visualization.GoogleMapsConfig.DataSettingsB\x04\xe2A\x01\x01R\fdataSettings\x12F\n" +
+	"\tplot_mode\x18\x02 \x01(\x0e2#.google.cloud.chronicle.v1.PlotModeB\x04\xe2A\x01\x01R\bplotMode\x12}\n" +
+	"\fmap_position\x18\x03 \x01(\v2T.google.cloud.chronicle.v1.DashboardChart.Visualization.GoogleMapsConfig.MapPositionB\x04\xe2A\x01\x01R\vmapPosition\x12\x83\x01\n" +
+	"\x0epoint_settings\x18\x04 \x01(\v2V.google.cloud.chronicle.v1.DashboardChart.Visualization.GoogleMapsConfig.PointSettingsB\x04\xe2A\x01\x01R\rpointSettings\x1a\x97\x01\n" +
+	"\fDataSettings\x12-\n" +
+	"\x0flatitude_column\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0elatitudeColumn\x12/\n" +
+	"\x10longitude_column\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0flongitudeColumn\x12'\n" +
+	"\fcount_column\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vcountColumn\x1a\xba\x01\n" +
+	"\vMapPosition\x12\x1f\n" +
+	"\bfit_data\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\afitData\x12+\n" +
+	"\x0elatitude_value\x18\x05 \x01(\x01B\x04\xe2A\x01\x01R\rlatitudeValue\x12-\n" +
+	"\x0flongitude_value\x18\x06 \x01(\x01B\x04\xe2A\x01\x01R\x0elongitudeValue\x12.\n" +
+	"\x10zoom_scale_value\x18\a \x01(\x01B\x04\xe2A\x01\x01R\x0ezoomScaleValue\x1a\x83\x01\n" +
+	"\rPointSettings\x12V\n" +
+	"\x0fpoint_size_type\x18\x01 \x01(\x0e2(.google.cloud.chronicle.v1.PointSizeTypeB\x04\xe2A\x01\x01R\rpointSizeType\x12\x1a\n" +
+	"\x05color\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05color\x1a\xe8\x02\n" +
+	"\tVisualMap\x12V\n" +
+	"\x0fvisual_map_type\x18\x01 \x01(\x0e2(.google.cloud.chronicle.v1.VisualMapTypeB\x04\xe2A\x01\x01R\rvisualMapType\x12n\n" +
+	"\x06pieces\x18\x02 \x03(\v2P.google.cloud.chronicle.v1.DashboardChart.Visualization.VisualMap.VisualMapPieceB\x04\xe2A\x01\x01R\x06pieces\x1a\x92\x01\n" +
+	"\x0eVisualMapPiece\x12\x1b\n" +
+	"\x03min\x18\x01 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x03min\x88\x01\x01\x12\x1b\n" +
+	"\x03max\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x01R\x03max\x88\x01\x01\x12\x1a\n" +
+	"\x05color\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05color\x12\x1a\n" +
+	"\x05label\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x05labelB\x06\n" +
 	"\x04_minB\x06\n" +
-	"\x04_max\x1a\xdb\r\n" +
-	"\x0fDrillDownConfig\x12r\n" +
-	"\x10left_drill_downs\x18\x01 \x03(\v2C.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDownB\x03\xe0A\x02R\x0eleftDrillDowns\x12t\n" +
-	"\x11right_drill_downs\x18\x02 \x03(\v2C.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDownB\x03\xe0A\x02R\x0frightDrillDowns\x1a\xdd\v\n" +
+	"\x04_max\x1a\xe8\r\n" +
+	"\x0fDrillDownConfig\x12s\n" +
+	"\x10left_drill_downs\x18\x01 \x03(\v2C.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDownB\x04\xe2A\x01\x02R\x0eleftDrillDowns\x12u\n" +
+	"\x11right_drill_downs\x18\x02 \x03(\v2C.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDownB\x04\xe2A\x01\x02R\x0frightDrillDowns\x1a\xe8\v\n" +
 	"\tDrillDown\x12\x89\x01\n" +
 	"\x10default_settings\x18\x03 \x01(\v2\\.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDown.DefaultDrillDownSettingsH\x00R\x0fdefaultSettings\x12\x86\x01\n" +
-	"\x0fcustom_settings\x18\x04 \x01(\v2[.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDown.CustomDrillDownSettingsH\x00R\x0ecustomSettings\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x1a9\n" +
-	"\x18DefaultDrillDownSettings\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x02R\aenabled\x1a\xb6\b\n" +
+	"\x0fcustom_settings\x18\x04 \x01(\v2[.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDown.CustomDrillDownSettingsH\x00R\x0ecustomSettings\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x1a:\n" +
+	"\x18DefaultDrillDownSettings\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\aenabled\x1a\xbe\b\n" +
 	"\x17CustomDrillDownSettings\x12\x82\x01\n" +
 	"\x05query\x18\x03 \x01(\v2j.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDown.CustomDrillDownSettings.DrillDownQueryH\x00R\x05query\x12\x85\x01\n" +
 	"\x06filter\x18\x04 \x01(\v2k.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDown.CustomDrillDownSettings.DrillDownFilterH\x00R\x06filter\x12\x98\x01\n" +
-	"\rexternal_link\x18\x05 \x01(\v2q.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDown.CustomDrillDownSettings.DrillDownExternalLinkH\x00R\fexternalLink\x12\x1c\n" +
-	"\anew_tab\x18\x01 \x01(\bB\x03\xe0A\x02R\x06newTab\x12/\n" +
-	"\x11left_click_column\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fleftClickColumn\x1a+\n" +
-	"\x0eDrillDownQuery\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x1a\x93\x03\n" +
-	"\x0fDrillDownFilter\x12\xb7\x01\n" +
-	"\x11dashboard_filters\x18\x01 \x03(\v2\x84\x01.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDown.CustomDrillDownSettings.DrillDownFilter.DrillDownDashboardFilterB\x03\xe0A\x02R\x10dashboardFilters\x1a\xc5\x01\n" +
-	"\x18DrillDownDashboardFilter\x123\n" +
-	"\x13dashboard_filter_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x11dashboardFilterId\x12t\n" +
-	"\x1afilter_operator_and_values\x18\x02 \x03(\v22.google.cloud.chronicle.v1.FilterOperatorAndValuesB\x03\xe0A\x02R\x17filterOperatorAndValues\x1aW\n" +
-	"\x15DrillDownExternalLink\x12\x17\n" +
-	"\x04link\x18\x01 \x01(\tB\x03\xe0A\x02R\x04link\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescriptionB\b\n" +
+	"\rexternal_link\x18\x05 \x01(\v2q.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDown.CustomDrillDownSettings.DrillDownExternalLinkH\x00R\fexternalLink\x12\x1d\n" +
+	"\anew_tab\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\x06newTab\x120\n" +
+	"\x11left_click_column\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fleftClickColumn\x1a,\n" +
+	"\x0eDrillDownQuery\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05query\x1a\x96\x03\n" +
+	"\x0fDrillDownFilter\x12\xb8\x01\n" +
+	"\x11dashboard_filters\x18\x01 \x03(\v2\x84\x01.google.cloud.chronicle.v1.DashboardChart.DrillDownConfig.DrillDown.CustomDrillDownSettings.DrillDownFilter.DrillDownDashboardFilterB\x04\xe2A\x01\x02R\x10dashboardFilters\x1a\xc7\x01\n" +
+	"\x18DrillDownDashboardFilter\x124\n" +
+	"\x13dashboard_filter_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11dashboardFilterId\x12u\n" +
+	"\x1afilter_operator_and_values\x18\x02 \x03(\v22.google.cloud.chronicle.v1.FilterOperatorAndValuesB\x04\xe2A\x01\x02R\x17filterOperatorAndValues\x1aY\n" +
+	"\x15DrillDownExternalLink\x12\x18\n" +
+	"\x04link\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04link\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescriptionB\b\n" +
 	"\x06actionB\n" +
 	"\n" +
 	"\bsettings:\xa4\x01\xeaA\xa0\x01\n" +
-	"'chronicle.googleapis.com/DashboardChart\x12Tprojects/{project}/locations/{location}/instances/{instance}/dashboardCharts/{chart}*\x0fdashboardCharts2\x0edashboardChart\"\xd7\x02\n" +
-	"\x06Button\x12\x19\n" +
-	"\x05label\x18\x01 \x01(\tB\x03\xe0A\x02R\x05label\x12!\n" +
-	"\thyperlink\x18\x02 \x01(\tB\x03\xe0A\x02R\thyperlink\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1c\n" +
-	"\anew_tab\x18\x04 \x01(\bB\x03\xe0A\x01R\x06newTab\x12Q\n" +
+	"'chronicle.googleapis.com/DashboardChart\x12Tprojects/{project}/locations/{location}/instances/{instance}/dashboardCharts/{chart}*\x0fdashboardCharts2\x0edashboardChart\"\xde\x02\n" +
+	"\x06Button\x12\x1a\n" +
+	"\x05label\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05label\x12\"\n" +
+	"\thyperlink\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\thyperlink\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1d\n" +
+	"\anew_tab\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x06newTab\x12R\n" +
 	"\n" +
-	"properties\x18\x05 \x01(\v2,.google.cloud.chronicle.v1.Button.PropertiesB\x03\xe0A\x01R\n" +
-	"properties\x1aw\n" +
+	"properties\x18\x05 \x01(\v2,.google.cloud.chronicle.v1.Button.PropertiesB\x04\xe2A\x01\x01R\n" +
+	"properties\x1ay\n" +
 	"\n" +
-	"Properties\x12\x19\n" +
-	"\x05color\x18\x01 \x01(\tB\x03\xe0A\x01R\x05color\x12N\n" +
-	"\fbutton_style\x18\x02 \x01(\x0e2&.google.cloud.chronicle.v1.ButtonStyleB\x03\xe0A\x01R\vbuttonStyle\"\xcc\x01\n" +
-	"\bMarkdown\x12\x1d\n" +
-	"\acontent\x18\x01 \x01(\tB\x03\xe0A\x02R\acontent\x12[\n" +
+	"Properties\x12\x1a\n" +
+	"\x05color\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05color\x12O\n" +
+	"\fbutton_style\x18\x02 \x01(\x0e2&.google.cloud.chronicle.v1.ButtonStyleB\x04\xe2A\x01\x01R\vbuttonStyle\"\xcf\x01\n" +
+	"\bMarkdown\x12\x1e\n" +
+	"\acontent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\acontent\x12\\\n" +
 	"\n" +
-	"properties\x18\x02 \x01(\v26.google.cloud.chronicle.v1.Markdown.MarkdownPropertiesB\x03\xe0A\x01R\n" +
-	"properties\x1aD\n" +
-	"\x12MarkdownProperties\x12.\n" +
-	"\x10background_color\x18\x03 \x01(\tB\x03\xe0A\x01R\x0fbackgroundColor\"_\n" +
-	"\x18GetDashboardChartRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'chronicle.googleapis.com/DashboardChartR\x04name\"\xb0\x01\n" +
-	"\x1eBatchGetDashboardChartsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'chronicle.googleapis.com/DashboardChartR\x06parent\x12E\n" +
-	"\x05names\x18\x02 \x03(\tB/\xe0A\x02\xfaA)\n" +
+	"properties\x18\x02 \x01(\v26.google.cloud.chronicle.v1.Markdown.MarkdownPropertiesB\x04\xe2A\x01\x01R\n" +
+	"properties\x1aE\n" +
+	"\x12MarkdownProperties\x12/\n" +
+	"\x10background_color\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0fbackgroundColor\"`\n" +
+	"\x18GetDashboardChartRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'chronicle.googleapis.com/DashboardChartR\x04name\"\xb2\x01\n" +
+	"\x1eBatchGetDashboardChartsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'chronicle.googleapis.com/DashboardChartR\x06parent\x12F\n" +
+	"\x05names\x18\x02 \x03(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'chronicle.googleapis.com/DashboardChartR\x05names\"w\n" +
 	"\x1fBatchGetDashboardChartsResponse\x12T\n" +
 	"\x10dashboard_charts\x18\x01 \x03(\v2).google.cloud.chronicle.v1.DashboardChartR\x0fdashboardCharts*p\n" +

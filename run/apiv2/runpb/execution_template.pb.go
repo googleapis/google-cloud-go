@@ -79,7 +79,14 @@ type ExecutionTemplate struct {
 	TaskCount int32 `protobuf:"varint,4,opt,name=task_count,json=taskCount,proto3" json:"task_count,omitempty"`
 	// Required. Describes the task(s) that will be created when executing an
 	// execution.
-	Template      *TaskTemplate `protobuf:"bytes,5,opt,name=template,proto3" json:"template,omitempty"`
+	Template *TaskTemplate `protobuf:"bytes,5,opt,name=template,proto3" json:"template,omitempty"`
+	// Optional. If true, the system will start the execution within the next 12
+	// hours depending on available capacity.
+	DelayExecution *bool `protobuf:"varint,8,opt,name=delay_execution,json=delayExecution,proto3,oneof" json:"delay_execution,omitempty"`
+	// Optional. Arbitrary identifier for the API client.
+	Client string `protobuf:"bytes,9,opt,name=client,proto3" json:"client,omitempty"`
+	// Optional. Arbitrary version identifier for the API client.
+	ClientVersion string `protobuf:"bytes,10,opt,name=client_version,json=clientVersion,proto3" json:"client_version,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -149,24 +156,50 @@ func (x *ExecutionTemplate) GetTemplate() *TaskTemplate {
 	return nil
 }
 
+func (x *ExecutionTemplate) GetDelayExecution() bool {
+	if x != nil && x.DelayExecution != nil {
+		return *x.DelayExecution
+	}
+	return false
+}
+
+func (x *ExecutionTemplate) GetClient() string {
+	if x != nil {
+		return x.Client
+	}
+	return ""
+}
+
+func (x *ExecutionTemplate) GetClientVersion() string {
+	if x != nil {
+		return x.ClientVersion
+	}
+	return ""
+}
+
 var File_google_cloud_run_v2_execution_template_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_execution_template_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/run/v2/execution_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a'google/cloud/run/v2/task_template.proto\"\xbf\x03\n" +
+	",google/cloud/run/v2/execution_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a'google/cloud/run/v2/task_template.proto\"\xd4\x04\n" +
 	"\x11ExecutionTemplate\x12J\n" +
 	"\x06labels\x18\x01 \x03(\v22.google.cloud.run.v2.ExecutionTemplate.LabelsEntryR\x06labels\x12Y\n" +
-	"\vannotations\x18\x02 \x03(\v27.google.cloud.run.v2.ExecutionTemplate.AnnotationsEntryR\vannotations\x12%\n" +
-	"\vparallelism\x18\x03 \x01(\x05B\x03\xe0A\x01R\vparallelism\x12\x1d\n" +
+	"\vannotations\x18\x02 \x03(\v27.google.cloud.run.v2.ExecutionTemplate.AnnotationsEntryR\vannotations\x12&\n" +
+	"\vparallelism\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\vparallelism\x12\x1d\n" +
 	"\n" +
-	"task_count\x18\x04 \x01(\x05R\ttaskCount\x12B\n" +
-	"\btemplate\x18\x05 \x01(\v2!.google.cloud.run.v2.TaskTemplateB\x03\xe0A\x02R\btemplate\x1a9\n" +
+	"task_count\x18\x04 \x01(\x05R\ttaskCount\x12C\n" +
+	"\btemplate\x18\x05 \x01(\v2!.google.cloud.run.v2.TaskTemplateB\x04\xe2A\x01\x02R\btemplate\x122\n" +
+	"\x0fdelay_execution\x18\b \x01(\bB\x04\xe2A\x01\x01H\x00R\x0edelayExecution\x88\x01\x01\x12\x1c\n" +
+	"\x06client\x18\t \x01(\tB\x04\xe2A\x01\x01R\x06client\x12+\n" +
+	"\x0eclient_version\x18\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\rclientVersion\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B^\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x12\n" +
+	"\x10_delay_executionB^\n" +
 	"\x17com.google.cloud.run.v2B\x16ExecutionTemplateProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
 
 var (
@@ -205,6 +238,7 @@ func file_google_cloud_run_v2_execution_template_proto_init() {
 		return
 	}
 	file_google_cloud_run_v2_task_template_proto_init()
+	file_google_cloud_run_v2_execution_template_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

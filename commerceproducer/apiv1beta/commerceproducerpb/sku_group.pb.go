@@ -114,12 +114,12 @@ var File_google_cloud_commerceproducer_v1beta_sku_group_proto protoreflect.FileD
 
 const file_google_cloud_commerceproducer_v1beta_sku_group_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/commerceproducer/v1beta/sku_group.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9e\x02\n" +
-	"\bSkuGroup\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12?\n" +
-	"\x04skus\x18\x02 \x03(\tB+\xe0A\x03\xfaA%\n" +
-	"#commerceproducer.googleapis.com/SkuR\x04skus\x121\n" +
-	"\x12cloud_billing_skus\x18\x03 \x03(\tB\x03\xe0A\x03R\x10cloudBillingSkus:\x81\x01\xeaA~\n" +
+	"4google/cloud/commerceproducer/v1beta/sku_group.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9f\x02\n" +
+	"\bSkuGroup\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12@\n" +
+	"\x04skus\x18\x02 \x03(\tB,\xe2A\x01\x03\xfaA%\n" +
+	"#commerceproducer.googleapis.com/SkuR\x04skus\x122\n" +
+	"\x12cloud_billing_skus\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\x10cloudBillingSkus:\x81\x01\xeaA~\n" +
 	"(commerceproducer.googleapis.com/SkuGroup\x12=projects/{project}/locations/{location}/skuGroups/{sku_group}*\tskuGroups2\bskuGroupB\x89\x02\n" +
 	"(com.google.cloud.commerceproducer.v1betaB\rSkuGroupProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xca\x02$Google\\Cloud\\CommerceProducer\\V1beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
 

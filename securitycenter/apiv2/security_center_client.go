@@ -2396,6 +2396,11 @@ func (c *restClient) BatchCreateResourceValueConfigs(ctx context.Context, req *s
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/resourceValueConfigs:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -2457,6 +2462,11 @@ func (c *restClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/findings:bulkMute", req.GetParent())
@@ -2527,6 +2537,11 @@ func (c *restClient) CreateBigQueryExport(ctx context.Context, req *securitycent
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/bigQueryExports", req.GetParent())
 
 	params := url.Values{}
@@ -2590,6 +2605,11 @@ func (c *restClient) CreateFinding(ctx context.Context, req *securitycenterpb.Cr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/findings", req.GetParent())
 
 	params := url.Values{}
@@ -2650,6 +2670,11 @@ func (c *restClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/muteConfigs", req.GetParent())
@@ -2729,6 +2754,11 @@ func (c *restClient) CreateNotificationConfig(ctx context.Context, req *security
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/notificationConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -2791,6 +2821,11 @@ func (c *restClient) CreateSource(ctx context.Context, req *securitycenterpb.Cre
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/sources", req.GetParent())
 
 	params := url.Values{}
@@ -2845,6 +2880,11 @@ func (c *restClient) DeleteBigQueryExport(ctx context.Context, req *securitycent
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -2883,6 +2923,11 @@ func (c *restClient) DeleteBigQueryExport(ctx context.Context, req *securitycent
 func (c *restClient) DeleteMuteConfig(ctx context.Context, req *securitycenterpb.DeleteMuteConfigRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2939,6 +2984,11 @@ func (c *restClient) DeleteNotificationConfig(ctx context.Context, req *security
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -2978,6 +3028,11 @@ func (c *restClient) DeleteResourceValueConfig(ctx context.Context, req *securit
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3015,6 +3070,11 @@ func (c *restClient) DeleteResourceValueConfig(ctx context.Context, req *securit
 func (c *restClient) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -3072,6 +3132,11 @@ func (c *restClient) GetSimulation(ctx context.Context, req *securitycenterpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3124,6 +3189,11 @@ func (c *restClient) GetSimulation(ctx context.Context, req *securitycenterpb.Ge
 func (c *restClient) GetValuedResource(ctx context.Context, req *securitycenterpb.GetValuedResourceRequest, opts ...gax.CallOption) (*securitycenterpb.ValuedResource, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -3186,6 +3256,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3239,6 +3314,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 func (c *restClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.GetMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -3310,6 +3390,11 @@ func (c *restClient) GetNotificationConfig(ctx context.Context, req *securitycen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3364,6 +3449,11 @@ func (c *restClient) GetResourceValueConfig(ctx context.Context, req *securityce
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3416,6 +3506,11 @@ func (c *restClient) GetResourceValueConfig(ctx context.Context, req *securityce
 func (c *restClient) GetSource(ctx context.Context, req *securitycenterpb.GetSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -3508,6 +3603,11 @@ func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/findings:group", req.GetParent())
 
 		params := url.Values{}
@@ -3579,6 +3679,11 @@ func (c *restClient) ListAttackPaths(ctx context.Context, req *securitycenterpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/attackPaths", req.GetParent())
@@ -3666,6 +3771,11 @@ func (c *restClient) ListBigQueryExports(ctx context.Context, req *securitycente
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/bigQueryExports", req.GetParent())
 
 		params := url.Values{}
@@ -3750,6 +3860,11 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/findings", req.GetParent())
@@ -3844,6 +3959,11 @@ func (c *restClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/muteConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -3920,6 +4040,11 @@ func (c *restClient) ListNotificationConfigs(ctx context.Context, req *securityc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/notificationConfigs", req.GetParent())
@@ -4000,6 +4125,11 @@ func (c *restClient) ListResourceValueConfigs(ctx context.Context, req *security
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/resourceValueConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -4076,6 +4206,11 @@ func (c *restClient) ListSources(ctx context.Context, req *securitycenterpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/sources", req.GetParent())
@@ -4156,6 +4291,11 @@ func (c *restClient) ListValuedResources(ctx context.Context, req *securitycente
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/valuedResources", req.GetParent())
 
 		params := url.Values{}
@@ -4234,6 +4374,11 @@ func (c *restClient) SetFindingState(ctx context.Context, req *securitycenterpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:setState", req.GetName())
 
 	params := url.Values{}
@@ -4292,6 +4437,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:setIamPolicy", req.GetResource())
@@ -4355,6 +4505,11 @@ func (c *restClient) SetMute(ctx context.Context, req *securitycenterpb.SetMuteR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:setMute", req.GetName())
 
 	params := url.Values{}
@@ -4413,6 +4568,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:testIamPermissions", req.GetResource())
@@ -4474,6 +4634,11 @@ func (c *restClient) UpdateBigQueryExport(ctx context.Context, req *securitycent
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBigQueryExport().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetBigQueryExport().GetName())
@@ -4543,6 +4708,11 @@ func (c *restClient) UpdateExternalSystem(ctx context.Context, req *securitycent
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetExternalSystem().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetExternalSystem().GetName())
@@ -4615,6 +4785,11 @@ func (c *restClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFinding().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetFinding().GetName())
 
 	params := url.Values{}
@@ -4682,6 +4857,11 @@ func (c *restClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMuteConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetMuteConfig().GetName())
@@ -4768,6 +4948,11 @@ func (c *restClient) UpdateNotificationConfig(ctx context.Context, req *security
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetNotificationConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetNotificationConfig().GetName())
 
 	params := url.Values{}
@@ -4834,6 +5019,11 @@ func (c *restClient) UpdateResourceValueConfig(ctx context.Context, req *securit
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResourceValueConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetResourceValueConfig().GetName())
@@ -4906,6 +5096,11 @@ func (c *restClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityMarks().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetSecurityMarks().GetName())
 
 	params := url.Values{}
@@ -4974,6 +5169,11 @@ func (c *restClient) UpdateSource(ctx context.Context, req *securitycenterpb.Upd
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSource().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetSource().GetName())
 
 	params := url.Values{}
@@ -5035,6 +5235,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -5074,6 +5279,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5111,6 +5321,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -5178,6 +5393,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

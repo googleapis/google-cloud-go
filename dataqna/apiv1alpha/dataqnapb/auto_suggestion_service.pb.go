@@ -425,9 +425,9 @@ var File_google_cloud_dataqna_v1alpha_auto_suggestion_service_proto protoreflect
 
 const file_google_cloud_dataqna_v1alpha_auto_suggestion_service_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/dataqna/v1alpha/auto_suggestion_service.proto\x12\x1cgoogle.cloud.dataqna.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/dataqna/v1alpha/annotated_string.proto\x1a\x17google/api/client.proto\"\xe1\x01\n" +
-	"\x15SuggestQueriesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	":google/cloud/dataqna/v1alpha/auto_suggestion_service.proto\x12\x1cgoogle.cloud.dataqna.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/dataqna/v1alpha/annotated_string.proto\x1a\x17google/api/client.proto\"\xe2\x01\n" +
+	"\x15SuggestQueriesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x16\n" +
 	"\x06scopes\x18\x02 \x03(\tR\x06scopes\x12\x14\n" +
 	"\x05query\x18\x03 \x01(\tR\x05query\x12W\n" +

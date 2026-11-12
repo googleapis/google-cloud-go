@@ -3095,224 +3095,224 @@ var File_google_cloud_networkservices_v1_dep_proto protoreflect.FileDescriptor
 
 const file_google_cloud_networkservices_v1_dep_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/networkservices/v1/dep.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networkservices/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfa\a\n" +
-	"\x0eExtensionChain\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12l\n" +
-	"\x0fmatch_condition\x18\x02 \x01(\v2>.google.cloud.networkservices.v1.ExtensionChain.MatchConditionB\x03\xe0A\x02R\x0ematchCondition\x12^\n" +
+	")google/cloud/networkservices/v1/dep.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networkservices/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8a\b\n" +
+	"\x0eExtensionChain\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12m\n" +
+	"\x0fmatch_condition\x18\x02 \x01(\v2>.google.cloud.networkservices.v1.ExtensionChain.MatchConditionB\x04\xe2A\x01\x02R\x0ematchCondition\x12_\n" +
 	"\n" +
-	"extensions\x18\x03 \x03(\v29.google.cloud.networkservices.v1.ExtensionChain.ExtensionB\x03\xe0A\x02R\n" +
-	"extensions\x1a<\n" +
-	"\x0eMatchCondition\x12*\n" +
-	"\x0ecel_expression\x18\x01 \x01(\tB\x03\xe0A\x02R\rcelExpression\x1a\xc2\x05\n" +
-	"\tExtension\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12!\n" +
-	"\tauthority\x18\x02 \x01(\tB\x03\xe0A\x01R\tauthority\x12\x1d\n" +
-	"\aservice\x18\x03 \x01(\tB\x03\xe0A\x02R\aservice\x12Z\n" +
-	"\x10supported_events\x18\x04 \x03(\x0e2*.google.cloud.networkservices.v1.EventTypeB\x03\xe0A\x01R\x0fsupportedEvents\x128\n" +
-	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12 \n" +
-	"\tfail_open\x18\x06 \x01(\bB\x03\xe0A\x01R\bfailOpen\x12,\n" +
-	"\x0fforward_headers\x18\a \x03(\tB\x03\xe0A\x01R\x0eforwardHeaders\x122\n" +
-	"\x12forward_attributes\x18\b \x03(\tB\x03\xe0A\x01R\x11forwardAttributes\x128\n" +
-	"\bmetadata\x18\t \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\x12g\n" +
-	"\x16request_body_send_mode\x18\x0e \x01(\x0e2-.google.cloud.networkservices.v1.BodySendModeB\x03\xe0A\x01R\x13requestBodySendMode\x12i\n" +
-	"\x17response_body_send_mode\x18\x0f \x01(\x0e2-.google.cloud.networkservices.v1.BodySendModeB\x03\xe0A\x01R\x14responseBodySendMode\x122\n" +
-	"\x12observability_mode\x18\x10 \x01(\bB\x03\xe0A\x01R\x11observabilityMode\"\xe5\x06\n" +
-	"\x12LbTrafficExtension\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12\\\n" +
-	"\x06labels\x18\x04 \x03(\v2?.google.cloud.networkservices.v1.LbTrafficExtension.LabelsEntryB\x03\xe0A\x01R\x06labels\x12.\n" +
-	"\x10forwarding_rules\x18\x05 \x03(\tB\x03\xe0A\x01R\x0fforwardingRules\x12_\n" +
-	"\x10extension_chains\x18\a \x03(\v2/.google.cloud.networkservices.v1.ExtensionChainB\x03\xe0A\x02R\x0fextensionChains\x12m\n" +
-	"\x15load_balancing_scheme\x18\b \x01(\x0e24.google.cloud.networkservices.v1.LoadBalancingSchemeB\x03\xe0A\x02R\x13loadBalancingScheme\x128\n" +
+	"extensions\x18\x03 \x03(\v29.google.cloud.networkservices.v1.ExtensionChain.ExtensionB\x04\xe2A\x01\x02R\n" +
+	"extensions\x1a=\n" +
+	"\x0eMatchCondition\x12+\n" +
+	"\x0ecel_expression\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rcelExpression\x1a\xce\x05\n" +
+	"\tExtension\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12\"\n" +
+	"\tauthority\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tauthority\x12\x1e\n" +
+	"\aservice\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\aservice\x12[\n" +
+	"\x10supported_events\x18\x04 \x03(\x0e2*.google.cloud.networkservices.v1.EventTypeB\x04\xe2A\x01\x01R\x0fsupportedEvents\x129\n" +
+	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\atimeout\x12!\n" +
+	"\tfail_open\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\bfailOpen\x12-\n" +
+	"\x0fforward_headers\x18\a \x03(\tB\x04\xe2A\x01\x01R\x0eforwardHeaders\x123\n" +
+	"\x12forward_attributes\x18\b \x03(\tB\x04\xe2A\x01\x01R\x11forwardAttributes\x129\n" +
+	"\bmetadata\x18\t \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\x12h\n" +
+	"\x16request_body_send_mode\x18\x0e \x01(\x0e2-.google.cloud.networkservices.v1.BodySendModeB\x04\xe2A\x01\x01R\x13requestBodySendMode\x12j\n" +
+	"\x17response_body_send_mode\x18\x0f \x01(\x0e2-.google.cloud.networkservices.v1.BodySendModeB\x04\xe2A\x01\x01R\x14responseBodySendMode\x123\n" +
+	"\x12observability_mode\x18\x10 \x01(\bB\x04\xe2A\x01\x01R\x11observabilityMode\"\xec\x06\n" +
+	"\x12LbTrafficExtension\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12]\n" +
+	"\x06labels\x18\x04 \x03(\v2?.google.cloud.networkservices.v1.LbTrafficExtension.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12/\n" +
+	"\x10forwarding_rules\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x0fforwardingRules\x12`\n" +
+	"\x10extension_chains\x18\a \x03(\v2/.google.cloud.networkservices.v1.ExtensionChainB\x04\xe2A\x01\x02R\x0fextensionChains\x12n\n" +
+	"\x15load_balancing_scheme\x18\b \x01(\x0e24.google.cloud.networkservices.v1.LoadBalancingSchemeB\x04\xe2A\x01\x02R\x13loadBalancingScheme\x129\n" +
 	"\bmetadata\x18\n" +
-	" \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\x1a9\n" +
+	" \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xb4\x01\xeaA\xb0\x01\n" +
-	"1networkservices.googleapis.com/LbTrafficExtension\x12Rprojects/{project}/locations/{location}/lbTrafficExtensions/{lb_traffic_extension}*\x13lbTrafficExtensions2\x12lbTrafficExtension\"\xf6\x01\n" +
-	"\x1eListLbTrafficExtensionsRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121networkservices.googleapis.com/LbTrafficExtensionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"1networkservices.googleapis.com/LbTrafficExtension\x12Rprojects/{project}/locations/{location}/lbTrafficExtensions/{lb_traffic_extension}*\x13lbTrafficExtensions2\x12lbTrafficExtension\"\xfb\x01\n" +
+	"\x1eListLbTrafficExtensionsRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121networkservices.googleapis.com/LbTrafficExtensionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd4\x01\n" +
 	"\x1fListLbTrafficExtensionsResponse\x12g\n" +
 	"\x15lb_traffic_extensions\x18\x01 \x03(\v23.google.cloud.networkservices.v1.LbTrafficExtensionR\x13lbTrafficExtensions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"m\n" +
-	"\x1cGetLbTrafficExtensionRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1networkservices.googleapis.com/LbTrafficExtensionR\x04name\"\xc8\x02\n" +
-	"\x1fCreateLbTrafficExtensionRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121networkservices.googleapis.com/LbTrafficExtensionR\x06parent\x12:\n" +
-	"\x17lb_traffic_extension_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x14lbTrafficExtensionId\x12j\n" +
-	"\x14lb_traffic_extension\x18\x03 \x01(\v23.google.cloud.networkservices.v1.LbTrafficExtensionB\x03\xe0A\x02R\x12lbTrafficExtension\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"n\n" +
+	"\x1cGetLbTrafficExtensionRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1networkservices.googleapis.com/LbTrafficExtensionR\x04name\"\xcc\x02\n" +
+	"\x1fCreateLbTrafficExtensionRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121networkservices.googleapis.com/LbTrafficExtensionR\x06parent\x12;\n" +
+	"\x17lb_traffic_extension_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x14lbTrafficExtensionId\x12k\n" +
+	"\x14lb_traffic_extension\x18\x03 \x01(\v23.google.cloud.networkservices.v1.LbTrafficExtensionB\x04\xe2A\x01\x02R\x12lbTrafficExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfb\x01\n" +
-	"\x1fUpdateLbTrafficExtensionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12j\n" +
-	"\x14lb_traffic_extension\x18\x02 \x01(\v23.google.cloud.networkservices.v1.LbTrafficExtensionB\x03\xe0A\x02R\x12lbTrafficExtension\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfe\x01\n" +
+	"\x1fUpdateLbTrafficExtensionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12k\n" +
+	"\x14lb_traffic_extension\x18\x02 \x01(\v23.google.cloud.networkservices.v1.LbTrafficExtensionB\x04\xe2A\x01\x02R\x12lbTrafficExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9c\x01\n" +
-	"\x1fDeleteLbTrafficExtensionRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1networkservices.googleapis.com/LbTrafficExtensionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9e\x01\n" +
+	"\x1fDeleteLbTrafficExtensionRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1networkservices.googleapis.com/LbTrafficExtensionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd7\x06\n" +
-	"\x10LbRouteExtension\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12Z\n" +
-	"\x06labels\x18\x04 \x03(\v2=.google.cloud.networkservices.v1.LbRouteExtension.LabelsEntryB\x03\xe0A\x01R\x06labels\x12.\n" +
-	"\x10forwarding_rules\x18\x05 \x03(\tB\x03\xe0A\x02R\x0fforwardingRules\x12_\n" +
-	"\x10extension_chains\x18\a \x03(\v2/.google.cloud.networkservices.v1.ExtensionChainB\x03\xe0A\x02R\x0fextensionChains\x12m\n" +
-	"\x15load_balancing_scheme\x18\b \x01(\x0e24.google.cloud.networkservices.v1.LoadBalancingSchemeB\x03\xe0A\x02R\x13loadBalancingScheme\x128\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xde\x06\n" +
+	"\x10LbRouteExtension\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12[\n" +
+	"\x06labels\x18\x04 \x03(\v2=.google.cloud.networkservices.v1.LbRouteExtension.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12/\n" +
+	"\x10forwarding_rules\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\x0fforwardingRules\x12`\n" +
+	"\x10extension_chains\x18\a \x03(\v2/.google.cloud.networkservices.v1.ExtensionChainB\x04\xe2A\x01\x02R\x0fextensionChains\x12n\n" +
+	"\x15load_balancing_scheme\x18\b \x01(\x0e24.google.cloud.networkservices.v1.LoadBalancingSchemeB\x04\xe2A\x01\x02R\x13loadBalancingScheme\x129\n" +
 	"\bmetadata\x18\n" +
-	" \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\x1a9\n" +
+	" \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xaa\x01\xeaA\xa6\x01\n" +
-	"/networkservices.googleapis.com/LbRouteExtension\x12Nprojects/{project}/locations/{location}/lbRouteExtensions/{lb_route_extension}*\x11lbRouteExtensions2\x10lbRouteExtension\"\xf2\x01\n" +
-	"\x1cListLbRouteExtensionsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/networkservices.googleapis.com/LbRouteExtensionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"/networkservices.googleapis.com/LbRouteExtension\x12Nprojects/{project}/locations/{location}/lbRouteExtensions/{lb_route_extension}*\x11lbRouteExtensions2\x10lbRouteExtension\"\xf7\x01\n" +
+	"\x1cListLbRouteExtensionsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/networkservices.googleapis.com/LbRouteExtensionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xcc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xcc\x01\n" +
 	"\x1dListLbRouteExtensionsResponse\x12a\n" +
 	"\x13lb_route_extensions\x18\x01 \x03(\v21.google.cloud.networkservices.v1.LbRouteExtensionR\x11lbRouteExtensions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"i\n" +
-	"\x1aGetLbRouteExtensionRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networkservices.googleapis.com/LbRouteExtensionR\x04name\"\xba\x02\n" +
-	"\x1dCreateLbRouteExtensionRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/networkservices.googleapis.com/LbRouteExtensionR\x06parent\x126\n" +
-	"\x15lb_route_extension_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12lbRouteExtensionId\x12d\n" +
-	"\x12lb_route_extension\x18\x03 \x01(\v21.google.cloud.networkservices.v1.LbRouteExtensionB\x03\xe0A\x02R\x10lbRouteExtension\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"j\n" +
+	"\x1aGetLbRouteExtensionRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networkservices.googleapis.com/LbRouteExtensionR\x04name\"\xbe\x02\n" +
+	"\x1dCreateLbRouteExtensionRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/networkservices.googleapis.com/LbRouteExtensionR\x06parent\x127\n" +
+	"\x15lb_route_extension_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12lbRouteExtensionId\x12e\n" +
+	"\x12lb_route_extension\x18\x03 \x01(\v21.google.cloud.networkservices.v1.LbRouteExtensionB\x04\xe2A\x01\x02R\x10lbRouteExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf3\x01\n" +
-	"\x1dUpdateLbRouteExtensionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12d\n" +
-	"\x12lb_route_extension\x18\x02 \x01(\v21.google.cloud.networkservices.v1.LbRouteExtensionB\x03\xe0A\x02R\x10lbRouteExtension\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf6\x01\n" +
+	"\x1dUpdateLbRouteExtensionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12e\n" +
+	"\x12lb_route_extension\x18\x02 \x01(\v21.google.cloud.networkservices.v1.LbRouteExtensionB\x04\xe2A\x01\x02R\x10lbRouteExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x98\x01\n" +
-	"\x1dDeleteLbRouteExtensionRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networkservices.googleapis.com/LbRouteExtensionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9a\x01\n" +
+	"\x1dDeleteLbRouteExtensionRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networkservices.googleapis.com/LbRouteExtensionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x96\x06\n" +
-	"\x0fLbEdgeExtension\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12Y\n" +
-	"\x06labels\x18\x04 \x03(\v2<.google.cloud.networkservices.v1.LbEdgeExtension.LabelsEntryB\x03\xe0A\x01R\x06labels\x12.\n" +
-	"\x10forwarding_rules\x18\x05 \x03(\tB\x03\xe0A\x02R\x0fforwardingRules\x12_\n" +
-	"\x10extension_chains\x18\x06 \x03(\v2/.google.cloud.networkservices.v1.ExtensionChainB\x03\xe0A\x02R\x0fextensionChains\x12m\n" +
-	"\x15load_balancing_scheme\x18\a \x01(\x0e24.google.cloud.networkservices.v1.LoadBalancingSchemeB\x03\xe0A\x02R\x13loadBalancingScheme\x1a9\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9c\x06\n" +
+	"\x0fLbEdgeExtension\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Z\n" +
+	"\x06labels\x18\x04 \x03(\v2<.google.cloud.networkservices.v1.LbEdgeExtension.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12/\n" +
+	"\x10forwarding_rules\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\x0fforwardingRules\x12`\n" +
+	"\x10extension_chains\x18\x06 \x03(\v2/.google.cloud.networkservices.v1.ExtensionChainB\x04\xe2A\x01\x02R\x0fextensionChains\x12n\n" +
+	"\x15load_balancing_scheme\x18\a \x01(\x0e24.google.cloud.networkservices.v1.LoadBalancingSchemeB\x04\xe2A\x01\x02R\x13loadBalancingScheme\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xa5\x01\xeaA\xa1\x01\n" +
-	".networkservices.googleapis.com/LbEdgeExtension\x12Lprojects/{project}/locations/{location}/lbEdgeExtensions/{lb_edge_extension}*\x10lbEdgeExtensions2\x0flbEdgeExtension\"\xf0\x01\n" +
-	"\x1bListLbEdgeExtensionsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.networkservices.googleapis.com/LbEdgeExtensionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	".networkservices.googleapis.com/LbEdgeExtension\x12Lprojects/{project}/locations/{location}/lbEdgeExtensions/{lb_edge_extension}*\x10lbEdgeExtensions2\x0flbEdgeExtension\"\xf5\x01\n" +
+	"\x1bListLbEdgeExtensionsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.networkservices.googleapis.com/LbEdgeExtensionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc8\x01\n" +
 	"\x1cListLbEdgeExtensionsResponse\x12^\n" +
 	"\x12lb_edge_extensions\x18\x01 \x03(\v20.google.cloud.networkservices.v1.LbEdgeExtensionR\x10lbEdgeExtensions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"g\n" +
-	"\x19GetLbEdgeExtensionRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".networkservices.googleapis.com/LbEdgeExtensionR\x04name\"\xb3\x02\n" +
-	"\x1cCreateLbEdgeExtensionRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.networkservices.googleapis.com/LbEdgeExtensionR\x06parent\x124\n" +
-	"\x14lb_edge_extension_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11lbEdgeExtensionId\x12a\n" +
-	"\x11lb_edge_extension\x18\x03 \x01(\v20.google.cloud.networkservices.v1.LbEdgeExtensionB\x03\xe0A\x02R\x0flbEdgeExtension\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"h\n" +
+	"\x19GetLbEdgeExtensionRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".networkservices.googleapis.com/LbEdgeExtensionR\x04name\"\xb7\x02\n" +
+	"\x1cCreateLbEdgeExtensionRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.networkservices.googleapis.com/LbEdgeExtensionR\x06parent\x125\n" +
+	"\x14lb_edge_extension_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11lbEdgeExtensionId\x12b\n" +
+	"\x11lb_edge_extension\x18\x03 \x01(\v20.google.cloud.networkservices.v1.LbEdgeExtensionB\x04\xe2A\x01\x02R\x0flbEdgeExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xef\x01\n" +
-	"\x1cUpdateLbEdgeExtensionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12a\n" +
-	"\x11lb_edge_extension\x18\x02 \x01(\v20.google.cloud.networkservices.v1.LbEdgeExtensionB\x03\xe0A\x02R\x0flbEdgeExtension\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf2\x01\n" +
+	"\x1cUpdateLbEdgeExtensionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12b\n" +
+	"\x11lb_edge_extension\x18\x02 \x01(\v20.google.cloud.networkservices.v1.LbEdgeExtensionB\x04\xe2A\x01\x02R\x0flbEdgeExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x96\x01\n" +
-	"\x1cDeleteLbEdgeExtensionRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".networkservices.googleapis.com/LbEdgeExtensionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x98\x01\n" +
+	"\x1cDeleteLbEdgeExtensionRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".networkservices.googleapis.com/LbEdgeExtensionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8a\b\n" +
-	"\x0eAuthzExtension\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12X\n" +
-	"\x06labels\x18\x05 \x03(\v2;.google.cloud.networkservices.v1.AuthzExtension.LabelsEntryB\x03\xe0A\x01R\x06labels\x12m\n" +
-	"\x15load_balancing_scheme\x18\x06 \x01(\x0e24.google.cloud.networkservices.v1.LoadBalancingSchemeB\x03\xe0A\x01R\x13loadBalancingScheme\x12!\n" +
-	"\tauthority\x18\a \x01(\tB\x03\xe0A\x01R\tauthority\x12\x1d\n" +
-	"\aservice\x18\b \x01(\tB\x03\xe0A\x02R\aservice\x128\n" +
-	"\atimeout\x18\t \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\atimeout\x12 \n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x96\b\n" +
+	"\x0eAuthzExtension\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Y\n" +
+	"\x06labels\x18\x05 \x03(\v2;.google.cloud.networkservices.v1.AuthzExtension.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12n\n" +
+	"\x15load_balancing_scheme\x18\x06 \x01(\x0e24.google.cloud.networkservices.v1.LoadBalancingSchemeB\x04\xe2A\x01\x01R\x13loadBalancingScheme\x12\"\n" +
+	"\tauthority\x18\a \x01(\tB\x04\xe2A\x01\x01R\tauthority\x12\x1e\n" +
+	"\aservice\x18\b \x01(\tB\x04\xe2A\x01\x02R\aservice\x129\n" +
+	"\atimeout\x18\t \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\atimeout\x12!\n" +
 	"\tfail_open\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\bfailOpen\x128\n" +
-	"\bmetadata\x18\v \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\x12,\n" +
-	"\x0fforward_headers\x18\f \x03(\tB\x03\xe0A\x01R\x0eforwardHeaders\x122\n" +
-	"\x12forward_attributes\x18\r \x03(\tB\x03\xe0A\x01R\x11forwardAttributes\x12Q\n" +
-	"\vwire_format\x18\x0e \x01(\x0e2+.google.cloud.networkservices.v1.WireFormatB\x03\xe0A\x01R\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\bfailOpen\x129\n" +
+	"\bmetadata\x18\v \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\x12-\n" +
+	"\x0fforward_headers\x18\f \x03(\tB\x04\xe2A\x01\x01R\x0eforwardHeaders\x123\n" +
+	"\x12forward_attributes\x18\r \x03(\tB\x04\xe2A\x01\x01R\x11forwardAttributes\x12R\n" +
+	"\vwire_format\x18\x0e \x01(\x0e2+.google.cloud.networkservices.v1.WireFormatB\x04\xe2A\x01\x01R\n" +
 	"wireFormat\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9f\x01\xeaA\x9b\x01\n" +
-	"-networkservices.googleapis.com/AuthzExtension\x12Iprojects/{project}/locations/{location}/authzExtensions/{authz_extension}*\x0fauthzExtensions2\x0eauthzExtension\"\xee\x01\n" +
-	"\x1aListAuthzExtensionsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-networkservices.googleapis.com/AuthzExtensionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"-networkservices.googleapis.com/AuthzExtension\x12Iprojects/{project}/locations/{location}/authzExtensions/{authz_extension}*\x0fauthzExtensions2\x0eauthzExtension\"\xf3\x01\n" +
+	"\x1aListAuthzExtensionsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-networkservices.googleapis.com/AuthzExtensionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc3\x01\n" +
 	"\x1bListAuthzExtensionsResponse\x12Z\n" +
 	"\x10authz_extensions\x18\x01 \x03(\v2/.google.cloud.networkservices.v1.AuthzExtensionR\x0fauthzExtensions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"e\n" +
-	"\x18GetAuthzExtensionRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-networkservices.googleapis.com/AuthzExtensionR\x04name\"\xaa\x02\n" +
-	"\x1bCreateAuthzExtensionRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-networkservices.googleapis.com/AuthzExtensionR\x06parent\x121\n" +
-	"\x12authz_extension_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10authzExtensionId\x12]\n" +
-	"\x0fauthz_extension\x18\x03 \x01(\v2/.google.cloud.networkservices.v1.AuthzExtensionB\x03\xe0A\x02R\x0eauthzExtension\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
+	"\x18GetAuthzExtensionRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-networkservices.googleapis.com/AuthzExtensionR\x04name\"\xae\x02\n" +
+	"\x1bCreateAuthzExtensionRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-networkservices.googleapis.com/AuthzExtensionR\x06parent\x122\n" +
+	"\x12authz_extension_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10authzExtensionId\x12^\n" +
+	"\x0fauthz_extension\x18\x03 \x01(\v2/.google.cloud.networkservices.v1.AuthzExtensionB\x04\xe2A\x01\x02R\x0eauthzExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xea\x01\n" +
-	"\x1bUpdateAuthzExtensionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12]\n" +
-	"\x0fauthz_extension\x18\x02 \x01(\v2/.google.cloud.networkservices.v1.AuthzExtensionB\x03\xe0A\x02R\x0eauthzExtension\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xed\x01\n" +
+	"\x1bUpdateAuthzExtensionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12^\n" +
+	"\x0fauthz_extension\x18\x02 \x01(\v2/.google.cloud.networkservices.v1.AuthzExtensionB\x04\xe2A\x01\x02R\x0eauthzExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x94\x01\n" +
-	"\x1bDeleteAuthzExtensionRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-networkservices.googleapis.com/AuthzExtensionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x96\x01\n" +
+	"\x1bDeleteAuthzExtensionRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-networkservices.googleapis.com/AuthzExtensionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId*\xa4\x01\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId*\xa4\x01\n" +
 	"\tEventType\x12\x1a\n" +
 	"\x16EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fREQUEST_HEADERS\x10\x01\x12\x10\n" +

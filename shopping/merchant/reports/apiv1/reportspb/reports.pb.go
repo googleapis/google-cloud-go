@@ -3779,13 +3779,13 @@ var File_google_shopping_merchant_reports_v1_reports_proto protoreflect.FileDesc
 
 const file_google_shopping_merchant_reports_v1_reports_proto_rawDesc = "" +
 	"\n" +
-	"1google/shopping/merchant/reports/v1/reports.proto\x12#google.shopping.merchant.reports.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\x1a\x16google/type/date.proto\"\x8d\x01\n" +
-	"\rSearchRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"1google/shopping/merchant/reports/v1/reports.proto\x12#google.shopping.merchant.reports.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\x1a\x16google/type/date.proto\"\x91\x01\n" +
+	"\rSearchRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x82\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x82\x01\n" +
 	"\x0eSearchResponse\x12H\n" +
 	"\aresults\x18\x01 \x03(\v2..google.shopping.merchant.reports.v1.ReportRowR\aresults\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcc\n" +

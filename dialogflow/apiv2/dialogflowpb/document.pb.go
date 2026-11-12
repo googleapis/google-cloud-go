@@ -1447,20 +1447,20 @@ var File_google_cloud_dialogflow_v2_document_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_document_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/dialogflow/v2/document.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/dialogflow/v2/gcs.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xbc\t\n" +
-	"\bDocument\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
-	"\tmime_type\x18\x03 \x01(\tB\x03\xe0A\x02R\bmimeType\x12`\n" +
-	"\x0fknowledge_types\x18\x04 \x03(\x0e22.google.cloud.dialogflow.v2.Document.KnowledgeTypeB\x03\xe0A\x02R\x0eknowledgeTypes\x12!\n" +
+	")google/cloud/dialogflow/v2/document.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/dialogflow/v2/gcs.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xc4\t\n" +
+	"\bDocument\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12!\n" +
+	"\tmime_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12a\n" +
+	"\x0fknowledge_types\x18\x04 \x03(\x0e22.google.cloud.dialogflow.v2.Document.KnowledgeTypeB\x04\xe2A\x01\x02R\x0eknowledgeTypes\x12!\n" +
 	"\vcontent_uri\x18\x05 \x01(\tH\x00R\n" +
 	"contentUri\x12!\n" +
 	"\vraw_content\x18\t \x01(\fH\x00R\n" +
-	"rawContent\x121\n" +
-	"\x12enable_auto_reload\x18\v \x01(\bB\x03\xe0A\x01R\x10enableAutoReload\x12h\n" +
-	"\x14latest_reload_status\x18\f \x01(\v21.google.cloud.dialogflow.v2.Document.ReloadStatusB\x03\xe0A\x03R\x12latestReloadStatus\x12S\n" +
-	"\bmetadata\x18\a \x03(\v22.google.cloud.dialogflow.v2.Document.MetadataEntryB\x03\xe0A\x01R\bmetadata\x12E\n" +
-	"\x05state\x18\r \x01(\x0e2*.google.cloud.dialogflow.v2.Document.StateB\x03\xe0A\x03R\x05state\x1aj\n" +
+	"rawContent\x122\n" +
+	"\x12enable_auto_reload\x18\v \x01(\bB\x04\xe2A\x01\x01R\x10enableAutoReload\x12i\n" +
+	"\x14latest_reload_status\x18\f \x01(\v21.google.cloud.dialogflow.v2.Document.ReloadStatusB\x04\xe2A\x01\x03R\x12latestReloadStatus\x12T\n" +
+	"\bmetadata\x18\a \x03(\v22.google.cloud.dialogflow.v2.Document.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x12F\n" +
+	"\x05state\x18\r \x01(\x0e2*.google.cloud.dialogflow.v2.Document.StateB\x04\xe2A\x01\x03R\x05state\x1aj\n" +
 	"\fReloadStatus\x12.\n" +
 	"\x04time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x04time\x12*\n" +
 	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\x1a;\n" +
@@ -1482,64 +1482,64 @@ const file_google_cloud_dialogflow_v2_document_proto_rawDesc = "" +
 	"\tRELOADING\x10\x04\x12\f\n" +
 	"\bDELETING\x10\x05:\xcf\x01\xeaA\xcb\x01\n" +
 	"\"dialogflow.googleapis.com/Document\x12Gprojects/{project}/knowledgeBases/{knowledge_base}/documents/{document}\x12\\projects/{project}/locations/{location}/knowledgeBases/{knowledge_base}/documents/{document}B\b\n" +
-	"\x06source\"T\n" +
-	"\x12GetDocumentRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/DocumentR\x04name\"\xae\x01\n" +
-	"\x14ListDocumentsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/DocumentR\x06parent\x12\x1b\n" +
+	"\x06source\"U\n" +
+	"\x12GetDocumentRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/DocumentR\x04name\"\xaf\x01\n" +
+	"\x14ListDocumentsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/DocumentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x83\x01\n" +
 	"\x15ListDocumentsResponse\x12B\n" +
 	"\tdocuments\x18\x01 \x03(\v2$.google.cloud.dialogflow.v2.DocumentR\tdocuments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa2\x01\n" +
-	"\x15CreateDocumentRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/DocumentR\x06parent\x12E\n" +
-	"\bdocument\x18\x02 \x01(\v2$.google.cloud.dialogflow.v2.DocumentB\x03\xe0A\x02R\bdocument\"\xd7\x02\n" +
-	"\x16ImportDocumentsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/DocumentR\x06parent\x12L\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa4\x01\n" +
+	"\x15CreateDocumentRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/DocumentR\x06parent\x12F\n" +
+	"\bdocument\x18\x02 \x01(\v2$.google.cloud.dialogflow.v2.DocumentB\x04\xe2A\x01\x02R\bdocument\"\xda\x02\n" +
+	"\x16ImportDocumentsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/DocumentR\x06parent\x12M\n" +
 	"\n" +
-	"gcs_source\x18\x02 \x01(\v2&.google.cloud.dialogflow.v2.GcsSourcesB\x03\xe0A\x01H\x00R\tgcsSource\x12d\n" +
-	"\x11document_template\x18\x03 \x01(\v22.google.cloud.dialogflow.v2.ImportDocumentTemplateB\x03\xe0A\x02R\x10documentTemplate\x12;\n" +
+	"gcs_source\x18\x02 \x01(\v2&.google.cloud.dialogflow.v2.GcsSourcesB\x04\xe2A\x01\x01H\x00R\tgcsSource\x12e\n" +
+	"\x11document_template\x18\x03 \x01(\v22.google.cloud.dialogflow.v2.ImportDocumentTemplateB\x04\xe2A\x01\x02R\x10documentTemplate\x12;\n" +
 	"\x1aimport_gcs_custom_metadata\x18\x04 \x01(\bR\x17importGcsCustomMetadataB\b\n" +
-	"\x06source\"\xb7\x02\n" +
-	"\x16ImportDocumentTemplate\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12`\n" +
-	"\x0fknowledge_types\x18\x02 \x03(\x0e22.google.cloud.dialogflow.v2.Document.KnowledgeTypeB\x03\xe0A\x02R\x0eknowledgeTypes\x12\\\n" +
+	"\x06source\"\xb9\x02\n" +
+	"\x16ImportDocumentTemplate\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12a\n" +
+	"\x0fknowledge_types\x18\x02 \x03(\x0e22.google.cloud.dialogflow.v2.Document.KnowledgeTypeB\x04\xe2A\x01\x02R\x0eknowledgeTypes\x12\\\n" +
 	"\bmetadata\x18\x03 \x03(\v2@.google.cloud.dialogflow.v2.ImportDocumentTemplate.MetadataEntryR\bmetadata\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"I\n" +
 	"\x17ImportDocumentsResponse\x12.\n" +
-	"\bwarnings\x18\x01 \x03(\v2\x12.google.rpc.StatusR\bwarnings\"W\n" +
-	"\x15DeleteDocumentRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/DocumentR\x04name\"\xa0\x01\n" +
-	"\x15UpdateDocumentRequest\x12E\n" +
-	"\bdocument\x18\x01 \x01(\v2$.google.cloud.dialogflow.v2.DocumentB\x03\xe0A\x02R\bdocument\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x95\x02\n" +
-	"\x15ReloadDocumentRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/DocumentR\x04name\x12&\n" +
-	"\vcontent_uri\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\n" +
-	"contentUri\x12@\n" +
-	"\x1aimport_gcs_custom_metadata\x18\x04 \x01(\bB\x03\xe0A\x01R\x17importGcsCustomMetadata\x12H\n" +
-	"\x1esmart_messaging_partial_update\x18\x05 \x01(\bB\x03\xe0A\x01R\x1bsmartMessagingPartialUpdateB\b\n" +
-	"\x06source\"\xb2\x02\n" +
-	"\x15ExportDocumentRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\bwarnings\x18\x01 \x03(\v2\x12.google.rpc.StatusR\bwarnings\"X\n" +
+	"\x15DeleteDocumentRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/DocumentR\x04name\"\xa2\x01\n" +
+	"\x15UpdateDocumentRequest\x12F\n" +
+	"\bdocument\x18\x01 \x01(\v2$.google.cloud.dialogflow.v2.DocumentB\x04\xe2A\x01\x02R\bdocument\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x99\x02\n" +
+	"\x15ReloadDocumentRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/DocumentR\x04name\x12'\n" +
+	"\vcontent_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
+	"contentUri\x12A\n" +
+	"\x1aimport_gcs_custom_metadata\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x17importGcsCustomMetadata\x12I\n" +
+	"\x1esmart_messaging_partial_update\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x1bsmartMessagingPartialUpdateB\b\n" +
+	"\x06source\"\xb3\x02\n" +
+	"\x15ExportDocumentRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"dialogflow.googleapis.com/DocumentR\x04name\x12U\n" +
 	"\x0fgcs_destination\x18\x02 \x01(\v2*.google.cloud.dialogflow.v2.GcsDestinationH\x00R\x0egcsDestination\x12.\n" +
 	"\x13export_full_content\x18\x03 \x01(\bR\x11exportFullContent\x12C\n" +
 	"\x1esmart_messaging_partial_update\x18\x05 \x01(\bR\x1bsmartMessagingPartialUpdateB\r\n" +
 	"\vdestination\"\x7f\n" +
 	"\x17ExportOperationMetadata\x12d\n" +
-	"\x18exported_gcs_destination\x18\x01 \x01(\v2*.google.cloud.dialogflow.v2.GcsDestinationR\x16exportedGcsDestination\"\xa2\x03\n" +
-	"\x1aKnowledgeOperationMetadata\x12W\n" +
-	"\x05state\x18\x01 \x01(\x0e2<.google.cloud.dialogflow.v2.KnowledgeOperationMetadata.StateB\x03\xe0A\x03R\x05state\x12%\n" +
+	"\x18exported_gcs_destination\x18\x01 \x01(\v2*.google.cloud.dialogflow.v2.GcsDestinationR\x16exportedGcsDestination\"\xa3\x03\n" +
+	"\x1aKnowledgeOperationMetadata\x12X\n" +
+	"\x05state\x18\x01 \x01(\x0e2<.google.cloud.dialogflow.v2.KnowledgeOperationMetadata.StateB\x04\xe2A\x01\x03R\x05state\x12%\n" +
 	"\x0eknowledge_base\x18\x03 \x01(\tR\rknowledgeBase\x12q\n" +
 	"\x19export_operation_metadata\x18\x04 \x01(\v23.google.cloud.dialogflow.v2.ExportOperationMetadataH\x00R\x17exportOperationMetadata\x127\n" +
 	"\tdone_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\bdoneTime\"B\n" +

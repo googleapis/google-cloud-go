@@ -148,16 +148,16 @@ var File_google_cloud_netapp_v1_cloud_netapp_service_proto protoreflect.FileDesc
 
 const file_google_cloud_netapp_v1_cloud_netapp_service_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/netapp/v1/cloud_netapp_service.proto\x12\x16google.cloud.netapp.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/netapp/v1/active_directory.proto\x1a#google/cloud/netapp/v1/backup.proto\x1a*google/cloud/netapp/v1/backup_policy.proto\x1a)google/cloud/netapp/v1/backup_vault.proto\x1a'google/cloud/netapp/v1/host_group.proto\x1a google/cloud/netapp/v1/kms.proto\x1a\"google/cloud/netapp/v1/ontap.proto\x1a'google/cloud/netapp/v1/quota_rule.proto\x1a(google/cloud/netapp/v1/replication.proto\x1a%google/cloud/netapp/v1/snapshot.proto\x1a)google/cloud/netapp/v1/storage_pool.proto\x1a#google/cloud/netapp/v1/volume.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"1google/cloud/netapp/v1/cloud_netapp_service.proto\x12\x16google.cloud.netapp.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/netapp/v1/active_directory.proto\x1a#google/cloud/netapp/v1/backup.proto\x1a*google/cloud/netapp/v1/backup_policy.proto\x1a)google/cloud/netapp/v1/backup_vault.proto\x1a'google/cloud/netapp/v1/host_group.proto\x1a google/cloud/netapp/v1/kms.proto\x1a\"google/cloud/netapp/v1/ontap.proto\x1a'google/cloud/netapp/v1/quota_rule.proto\x1a(google/cloud/netapp/v1/replication.proto\x1a%google/cloud/netapp/v1/snapshot.proto\x1a)google/cloud/netapp/v1/storage_pool.proto\x1a#google/cloud/netapp/v1/volume.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\xa9~\n" +
 	"\x06NetApp\x12\xb8\x01\n" +
 	"\x10ListStoragePools\x12/.google.cloud.netapp.v1.ListStoragePoolsRequest\x1a0.google.cloud.netapp.v1.ListStoragePoolsResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1/{parent=projects/*/locations/*}/storagePools\x12\xf6\x01\n" +

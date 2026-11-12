@@ -27646,44 +27646,44 @@ var File_google_container_v1_cluster_service_proto protoreflect.FileDescriptor
 
 const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
-	")google/container/v1/cluster_service.proto\x12\x13google.container.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x15google/rpc/code.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/date.proto\x1a\x1bgoogle/type/timeofday.proto\"\xff\x1c\n" +
+	")google/container/v1/cluster_service.proto\x12\x13google.container.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x15google/rpc/code.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/date.proto\x1a\x1bgoogle/type/timeofday.proto\"\x90\x1d\n" +
 	"\x0fLinuxNodeConfig\x12K\n" +
 	"\asysctls\x18\x01 \x03(\v21.google.container.v1.LinuxNodeConfig.SysctlsEntryR\asysctls\x12P\n" +
 	"\vcgroup_mode\x18\x02 \x01(\x0e2/.google.container.v1.LinuxNodeConfig.CgroupModeR\n" +
-	"cgroupMode\x12\\\n" +
-	"\thugepages\x18\x03 \x01(\v24.google.container.v1.LinuxNodeConfig.HugepagesConfigB\x03\xe0A\x01H\x00R\thugepages\x88\x01\x01\x12\x86\x01\n" +
-	"\x1ctransparent_hugepage_enabled\x18\x04 \x01(\x0e2?.google.container.v1.LinuxNodeConfig.TransparentHugepageEnabledB\x03\xe0A\x01R\x1atransparentHugepageEnabled\x12\x83\x01\n" +
-	"\x1btransparent_hugepage_defrag\x18\x05 \x01(\x0e2>.google.container.v1.LinuxNodeConfig.TransparentHugepageDefragB\x03\xe0A\x01R\x19transparentHugepageDefrag\x12b\n" +
-	"\x10custom_node_init\x18\v \x01(\v23.google.container.v1.LinuxNodeConfig.CustomNodeInitB\x03\xe0A\x01R\x0ecustomNodeInit\x12Z\n" +
-	"\vswap_config\x18\f \x01(\v2/.google.container.v1.LinuxNodeConfig.SwapConfigB\x03\xe0A\x01H\x01R\n" +
-	"swapConfig\x88\x01\x01\x12~\n" +
-	"\x1anode_kernel_module_loading\x18\r \x01(\v2<.google.container.v1.LinuxNodeConfig.NodeKernelModuleLoadingB\x03\xe0A\x01R\x17nodeKernelModuleLoading\x12s\n" +
-	"\x14accurate_time_config\x18\x0e \x01(\v27.google.container.v1.LinuxNodeConfig.AccurateTimeConfigB\x03\xe0A\x01H\x02R\x12accurateTimeConfig\x88\x01\x01\x12b\n" +
-	"\x10node_vfio_config\x18\x0f \x01(\v23.google.container.v1.LinuxNodeConfig.NodeVfioConfigB\x03\xe0A\x01R\x0enodeVfioConfig\x12U\n" +
-	"\x11disk_io_scheduler\x18\x10 \x01(\v2$.google.container.v1.DiskIoSchedulerB\x03\xe0A\x01R\x0fdiskIoScheduler\x1a\x9f\x01\n" +
-	"\x0fHugepagesConfig\x121\n" +
-	"\x0fhugepage_size2m\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\x0ehugepageSize2m\x88\x01\x01\x121\n" +
-	"\x0fhugepage_size1g\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x0ehugepageSize1g\x88\x01\x01B\x12\n" +
+	"cgroupMode\x12]\n" +
+	"\thugepages\x18\x03 \x01(\v24.google.container.v1.LinuxNodeConfig.HugepagesConfigB\x04\xe2A\x01\x01H\x00R\thugepages\x88\x01\x01\x12\x87\x01\n" +
+	"\x1ctransparent_hugepage_enabled\x18\x04 \x01(\x0e2?.google.container.v1.LinuxNodeConfig.TransparentHugepageEnabledB\x04\xe2A\x01\x01R\x1atransparentHugepageEnabled\x12\x84\x01\n" +
+	"\x1btransparent_hugepage_defrag\x18\x05 \x01(\x0e2>.google.container.v1.LinuxNodeConfig.TransparentHugepageDefragB\x04\xe2A\x01\x01R\x19transparentHugepageDefrag\x12c\n" +
+	"\x10custom_node_init\x18\v \x01(\v23.google.container.v1.LinuxNodeConfig.CustomNodeInitB\x04\xe2A\x01\x01R\x0ecustomNodeInit\x12[\n" +
+	"\vswap_config\x18\f \x01(\v2/.google.container.v1.LinuxNodeConfig.SwapConfigB\x04\xe2A\x01\x01H\x01R\n" +
+	"swapConfig\x88\x01\x01\x12\x7f\n" +
+	"\x1anode_kernel_module_loading\x18\r \x01(\v2<.google.container.v1.LinuxNodeConfig.NodeKernelModuleLoadingB\x04\xe2A\x01\x01R\x17nodeKernelModuleLoading\x12t\n" +
+	"\x14accurate_time_config\x18\x0e \x01(\v27.google.container.v1.LinuxNodeConfig.AccurateTimeConfigB\x04\xe2A\x01\x01H\x02R\x12accurateTimeConfig\x88\x01\x01\x12c\n" +
+	"\x10node_vfio_config\x18\x0f \x01(\v23.google.container.v1.LinuxNodeConfig.NodeVfioConfigB\x04\xe2A\x01\x01R\x0enodeVfioConfig\x12V\n" +
+	"\x11disk_io_scheduler\x18\x10 \x01(\v2$.google.container.v1.DiskIoSchedulerB\x04\xe2A\x01\x01R\x0fdiskIoScheduler\x1a\xa1\x01\n" +
+	"\x0fHugepagesConfig\x122\n" +
+	"\x0fhugepage_size2m\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x0ehugepageSize2m\x88\x01\x01\x122\n" +
+	"\x0fhugepage_size1g\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x0ehugepageSize1g\x88\x01\x01B\x12\n" +
 	"\x10_hugepage_size2mB\x12\n" +
-	"\x10_hugepage_size1g\x1a\xa0\x02\n" +
-	"\x0eCustomNodeInit\x12d\n" +
-	"\vinit_script\x18\x01 \x01(\v2>.google.container.v1.LinuxNodeConfig.CustomNodeInit.InitScriptB\x03\xe0A\x01R\n" +
-	"initScript\x1a\xa7\x01\n" +
+	"\x10_hugepage_size1g\x1a\xa2\x02\n" +
+	"\x0eCustomNodeInit\x12e\n" +
+	"\vinit_script\x18\x01 \x01(\v2>.google.container.v1.LinuxNodeConfig.CustomNodeInit.InitScriptB\x04\xe2A\x01\x01R\n" +
+	"initScript\x1a\xa8\x01\n" +
 	"\n" +
 	"InitScript\x12\x17\n" +
 	"\agcs_uri\x18\x01 \x01(\tR\x06gcsUri\x12%\n" +
-	"\x0egcs_generation\x18\x02 \x01(\x03R\rgcsGeneration\x12\x17\n" +
-	"\x04args\x18\x03 \x03(\tB\x03\xe0A\x01R\x04args\x12@\n" +
-	"\x1dgcp_secret_manager_secret_uri\x18\x04 \x01(\tR\x19gcpSecretManagerSecretUri\x1a\xdc\a\n" +
+	"\x0egcs_generation\x18\x02 \x01(\x03R\rgcsGeneration\x12\x18\n" +
+	"\x04args\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x04args\x12@\n" +
+	"\x1dgcp_secret_manager_secret_uri\x18\x04 \x01(\tR\x19gcpSecretManagerSecretUri\x1a\xdf\a\n" +
 	"\n" +
-	"SwapConfig\x12\"\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01H\x01R\aenabled\x88\x01\x01\x12w\n" +
-	"\x11encryption_config\x18\x02 \x01(\v2@.google.container.v1.LinuxNodeConfig.SwapConfig.EncryptionConfigB\x03\xe0A\x01H\x02R\x10encryptionConfig\x88\x01\x01\x12m\n" +
+	"SwapConfig\x12#\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x01R\aenabled\x88\x01\x01\x12x\n" +
+	"\x11encryption_config\x18\x02 \x01(\v2@.google.container.v1.LinuxNodeConfig.SwapConfig.EncryptionConfigB\x04\xe2A\x01\x01H\x02R\x10encryptionConfig\x88\x01\x01\x12m\n" +
 	"\x11boot_disk_profile\x18\x03 \x01(\v2?.google.container.v1.LinuxNodeConfig.SwapConfig.BootDiskProfileH\x00R\x0fbootDiskProfile\x12\x89\x01\n" +
 	"\x1bephemeral_local_ssd_profile\x18\x04 \x01(\v2H.google.container.v1.LinuxNodeConfig.SwapConfig.EphemeralLocalSsdProfileH\x00R\x18ephemeralLocalSsdProfile\x12\x89\x01\n" +
-	"\x1bdedicated_local_ssd_profile\x18\x05 \x01(\v2H.google.container.v1.LinuxNodeConfig.SwapConfig.DedicatedLocalSsdProfileH\x00R\x18dedicatedLocalSsdProfile\x1aE\n" +
-	"\x10EncryptionConfig\x12$\n" +
-	"\bdisabled\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\bdisabled\x88\x01\x01B\v\n" +
+	"\x1bdedicated_local_ssd_profile\x18\x05 \x01(\v2H.google.container.v1.LinuxNodeConfig.SwapConfig.DedicatedLocalSsdProfileH\x00R\x18dedicatedLocalSsdProfile\x1aF\n" +
+	"\x10EncryptionConfig\x12%\n" +
+	"\bdisabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\bdisabled\x88\x01\x01B\v\n" +
 	"\t_disabled\x1ar\n" +
 	"\x0fBootDiskProfile\x12$\n" +
 	"\rswap_size_gib\x18\x01 \x01(\x03H\x00R\vswapSizeGib\x12,\n" +
@@ -27708,9 +27708,9 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x1dDO_NOT_ENFORCE_SIGNED_MODULES\x10\x02\x1an\n" +
 	"\x12AccurateTimeConfig\x12;\n" +
 	"\x18enable_ptp_kvm_time_sync\x18\x01 \x01(\bH\x00R\x14enablePtpKvmTimeSync\x88\x01\x01B\x1b\n" +
-	"\x19_enable_ptp_kvm_time_sync\x1aV\n" +
-	"\x0eNodeVfioConfig\x120\n" +
-	"\x0fdma_entry_limit\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\rdmaEntryLimit\x88\x01\x01B\x12\n" +
+	"\x19_enable_ptp_kvm_time_sync\x1aW\n" +
+	"\x0eNodeVfioConfig\x121\n" +
+	"\x0fdma_entry_limit\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\rdmaEntryLimit\x88\x01\x01B\x12\n" +
 	"\x10_dma_entry_limit\x1a:\n" +
 	"\fSysctlsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -27742,34 +27742,34 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\tOSVersion\x12\x1a\n" +
 	"\x16OS_VERSION_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13OS_VERSION_LTSC2019\x10\x01\x12\x17\n" +
-	"\x13OS_VERSION_LTSC2022\x10\x02\"\xa5\x0f\n" +
+	"\x13OS_VERSION_LTSC2022\x10\x02\"\xb8\x0f\n" +
 	"\x11NodeKubeletConfig\x12,\n" +
-	"\x12cpu_manager_policy\x18\x01 \x01(\tR\x10cpuManagerPolicy\x12T\n" +
-	"\x10topology_manager\x18\b \x01(\v2$.google.container.v1.TopologyManagerB\x03\xe0A\x01R\x0ftopologyManager\x12N\n" +
-	"\x0ememory_manager\x18\t \x01(\v2\".google.container.v1.MemoryManagerB\x03\xe0A\x01R\rmemoryManager\x12>\n" +
+	"\x12cpu_manager_policy\x18\x01 \x01(\tR\x10cpuManagerPolicy\x12U\n" +
+	"\x10topology_manager\x18\b \x01(\v2$.google.container.v1.TopologyManagerB\x04\xe2A\x01\x01R\x0ftopologyManager\x12O\n" +
+	"\x0ememory_manager\x18\t \x01(\v2\".google.container.v1.MemoryManagerB\x04\xe2A\x01\x01R\rmemoryManager\x12>\n" +
 	"\rcpu_cfs_quota\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueR\vcpuCfsQuota\x12/\n" +
 	"\x14cpu_cfs_quota_period\x18\x03 \x01(\tR\x11cpuCfsQuotaPeriod\x12$\n" +
 	"\x0epod_pids_limit\x18\x04 \x01(\x03R\fpodPidsLimit\x12W\n" +
-	"&insecure_kubelet_readonly_port_enabled\x18\a \x01(\bH\x00R\"insecureKubeletReadonlyPortEnabled\x88\x01\x01\x12G\n" +
+	"&insecure_kubelet_readonly_port_enabled\x18\a \x01(\bH\x00R\"insecureKubeletReadonlyPortEnabled\x88\x01\x01\x12H\n" +
 	"\x1eimage_gc_low_threshold_percent\x18\n" +
-	" \x01(\x05B\x03\xe0A\x01R\x1aimageGcLowThresholdPercent\x12I\n" +
-	"\x1fimage_gc_high_threshold_percent\x18\v \x01(\x05B\x03\xe0A\x01R\x1bimageGcHighThresholdPercent\x124\n" +
-	"\x14image_minimum_gc_age\x18\f \x01(\tB\x03\xe0A\x01R\x11imageMinimumGcAge\x124\n" +
-	"\x14image_maximum_gc_age\x18\r \x01(\tB\x03\xe0A\x01R\x11imageMaximumGcAge\x128\n" +
-	"\x16container_log_max_size\x18\x0e \x01(\tB\x03\xe0A\x01R\x13containerLogMaxSize\x12:\n" +
-	"\x17container_log_max_files\x18\x0f \x01(\x05B\x03\xe0A\x01R\x14containerLogMaxFiles\x129\n" +
-	"\x16allowed_unsafe_sysctls\x18\x10 \x03(\tB\x03\xe0A\x01R\x14allowedUnsafeSysctls\x12N\n" +
-	"\reviction_soft\x18\x11 \x01(\v2$.google.container.v1.EvictionSignalsB\x03\xe0A\x01R\fevictionSoft\x12j\n" +
-	"\x1aeviction_soft_grace_period\x18\x12 \x01(\v2(.google.container.v1.EvictionGracePeriodB\x03\xe0A\x01R\x17evictionSoftGracePeriod\x12j\n" +
-	"\x18eviction_minimum_reclaim\x18\x13 \x01(\v2+.google.container.v1.EvictionMinimumReclaimB\x03\xe0A\x01R\x16evictionMinimumReclaim\x12T\n" +
-	"%eviction_max_pod_grace_period_seconds\x18\x14 \x01(\x05B\x03\xe0A\x01R evictionMaxPodGracePeriodSeconds\x12<\n" +
-	"\x18max_parallel_image_pulls\x18\x15 \x01(\x05B\x03\xe0A\x01R\x15maxParallelImagePulls\x12?\n" +
-	"\x17single_process_oom_kill\x18\x16 \x01(\bB\x03\xe0A\x01H\x01R\x14singleProcessOomKill\x88\x01\x01\x12q\n" +
-	"\x13crash_loop_back_off\x18\x18 \x01(\v2=.google.container.v1.NodeKubeletConfig.CrashLoopBackOffConfigB\x03\xe0A\x01R\x10crashLoopBackOff\x12K\n" +
-	"\x1dshutdown_grace_period_seconds\x18\x1a \x01(\x05B\x03\xe0A\x01H\x02R\x1ashutdownGracePeriodSeconds\x88\x01\x01\x12e\n" +
-	"+shutdown_grace_period_critical_pods_seconds\x18\x1b \x01(\x05B\x03\xe0A\x01H\x03R&shutdownGracePeriodCriticalPodsSeconds\x88\x01\x01\x1a^\n" +
-	"\x16CrashLoopBackOffConfig\x12D\n" +
-	"\x1cmax_container_restart_period\x18\x01 \x01(\tB\x03\xe0A\x01R\x19maxContainerRestartPeriodB)\n" +
+	" \x01(\x05B\x04\xe2A\x01\x01R\x1aimageGcLowThresholdPercent\x12J\n" +
+	"\x1fimage_gc_high_threshold_percent\x18\v \x01(\x05B\x04\xe2A\x01\x01R\x1bimageGcHighThresholdPercent\x125\n" +
+	"\x14image_minimum_gc_age\x18\f \x01(\tB\x04\xe2A\x01\x01R\x11imageMinimumGcAge\x125\n" +
+	"\x14image_maximum_gc_age\x18\r \x01(\tB\x04\xe2A\x01\x01R\x11imageMaximumGcAge\x129\n" +
+	"\x16container_log_max_size\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\x13containerLogMaxSize\x12;\n" +
+	"\x17container_log_max_files\x18\x0f \x01(\x05B\x04\xe2A\x01\x01R\x14containerLogMaxFiles\x12:\n" +
+	"\x16allowed_unsafe_sysctls\x18\x10 \x03(\tB\x04\xe2A\x01\x01R\x14allowedUnsafeSysctls\x12O\n" +
+	"\reviction_soft\x18\x11 \x01(\v2$.google.container.v1.EvictionSignalsB\x04\xe2A\x01\x01R\fevictionSoft\x12k\n" +
+	"\x1aeviction_soft_grace_period\x18\x12 \x01(\v2(.google.container.v1.EvictionGracePeriodB\x04\xe2A\x01\x01R\x17evictionSoftGracePeriod\x12k\n" +
+	"\x18eviction_minimum_reclaim\x18\x13 \x01(\v2+.google.container.v1.EvictionMinimumReclaimB\x04\xe2A\x01\x01R\x16evictionMinimumReclaim\x12U\n" +
+	"%eviction_max_pod_grace_period_seconds\x18\x14 \x01(\x05B\x04\xe2A\x01\x01R evictionMaxPodGracePeriodSeconds\x12=\n" +
+	"\x18max_parallel_image_pulls\x18\x15 \x01(\x05B\x04\xe2A\x01\x01R\x15maxParallelImagePulls\x12@\n" +
+	"\x17single_process_oom_kill\x18\x16 \x01(\bB\x04\xe2A\x01\x01H\x01R\x14singleProcessOomKill\x88\x01\x01\x12r\n" +
+	"\x13crash_loop_back_off\x18\x18 \x01(\v2=.google.container.v1.NodeKubeletConfig.CrashLoopBackOffConfigB\x04\xe2A\x01\x01R\x10crashLoopBackOff\x12L\n" +
+	"\x1dshutdown_grace_period_seconds\x18\x1a \x01(\x05B\x04\xe2A\x01\x01H\x02R\x1ashutdownGracePeriodSeconds\x88\x01\x01\x12f\n" +
+	"+shutdown_grace_period_critical_pods_seconds\x18\x1b \x01(\x05B\x04\xe2A\x01\x01H\x03R&shutdownGracePeriodCriticalPodsSeconds\x88\x01\x01\x1a_\n" +
+	"\x16CrashLoopBackOffConfig\x12E\n" +
+	"\x1cmax_container_restart_period\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x19maxContainerRestartPeriodB)\n" +
 	"'_insecure_kubelet_readonly_port_enabledB\x1a\n" +
 	"\x18_single_process_oom_killB \n" +
 	"\x1e_shutdown_grace_period_secondsB.\n" +
@@ -27778,28 +27778,28 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x06policy\x18\x01 \x01(\tR\x06policy\x12\x14\n" +
 	"\x05scope\x18\x02 \x01(\tR\x05scope\"'\n" +
 	"\rMemoryManager\x12\x16\n" +
-	"\x06policy\x18\x01 \x01(\tR\x06policy\"\xb5\x02\n" +
-	"\x0fEvictionSignals\x12.\n" +
-	"\x10memory_available\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fmemoryAvailable\x12.\n" +
-	"\x10nodefs_available\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fnodefsAvailable\x121\n" +
-	"\x12nodefs_inodes_free\x18\x03 \x01(\tB\x03\xe0A\x01R\x10nodefsInodesFree\x120\n" +
-	"\x11imagefs_available\x18\x04 \x01(\tB\x03\xe0A\x01R\x10imagefsAvailable\x123\n" +
-	"\x13imagefs_inodes_free\x18\x05 \x01(\tB\x03\xe0A\x01R\x11imagefsInodesFree\x12(\n" +
-	"\rpid_available\x18\x06 \x01(\tB\x03\xe0A\x01R\fpidAvailable\"\xb9\x02\n" +
-	"\x13EvictionGracePeriod\x12.\n" +
-	"\x10memory_available\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fmemoryAvailable\x12.\n" +
-	"\x10nodefs_available\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fnodefsAvailable\x121\n" +
-	"\x12nodefs_inodes_free\x18\x03 \x01(\tB\x03\xe0A\x01R\x10nodefsInodesFree\x120\n" +
-	"\x11imagefs_available\x18\x04 \x01(\tB\x03\xe0A\x01R\x10imagefsAvailable\x123\n" +
-	"\x13imagefs_inodes_free\x18\x05 \x01(\tB\x03\xe0A\x01R\x11imagefsInodesFree\x12(\n" +
-	"\rpid_available\x18\x06 \x01(\tB\x03\xe0A\x01R\fpidAvailable\"\xbc\x02\n" +
-	"\x16EvictionMinimumReclaim\x12.\n" +
-	"\x10memory_available\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fmemoryAvailable\x12.\n" +
-	"\x10nodefs_available\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fnodefsAvailable\x121\n" +
-	"\x12nodefs_inodes_free\x18\x03 \x01(\tB\x03\xe0A\x01R\x10nodefsInodesFree\x120\n" +
-	"\x11imagefs_available\x18\x04 \x01(\tB\x03\xe0A\x01R\x10imagefsAvailable\x123\n" +
-	"\x13imagefs_inodes_free\x18\x05 \x01(\tB\x03\xe0A\x01R\x11imagefsInodesFree\x12(\n" +
-	"\rpid_available\x18\x06 \x01(\tB\x03\xe0A\x01R\fpidAvailable\"\xc4\x1f\n" +
+	"\x06policy\x18\x01 \x01(\tR\x06policy\"\xbb\x02\n" +
+	"\x0fEvictionSignals\x12/\n" +
+	"\x10memory_available\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fmemoryAvailable\x12/\n" +
+	"\x10nodefs_available\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fnodefsAvailable\x122\n" +
+	"\x12nodefs_inodes_free\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10nodefsInodesFree\x121\n" +
+	"\x11imagefs_available\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10imagefsAvailable\x124\n" +
+	"\x13imagefs_inodes_free\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x11imagefsInodesFree\x12)\n" +
+	"\rpid_available\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\fpidAvailable\"\xbf\x02\n" +
+	"\x13EvictionGracePeriod\x12/\n" +
+	"\x10memory_available\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fmemoryAvailable\x12/\n" +
+	"\x10nodefs_available\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fnodefsAvailable\x122\n" +
+	"\x12nodefs_inodes_free\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10nodefsInodesFree\x121\n" +
+	"\x11imagefs_available\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10imagefsAvailable\x124\n" +
+	"\x13imagefs_inodes_free\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x11imagefsInodesFree\x12)\n" +
+	"\rpid_available\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\fpidAvailable\"\xc2\x02\n" +
+	"\x16EvictionMinimumReclaim\x12/\n" +
+	"\x10memory_available\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fmemoryAvailable\x12/\n" +
+	"\x10nodefs_available\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fnodefsAvailable\x122\n" +
+	"\x12nodefs_inodes_free\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10nodefsInodesFree\x121\n" +
+	"\x11imagefs_available\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10imagefsAvailable\x124\n" +
+	"\x13imagefs_inodes_free\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x11imagefsInodesFree\x12)\n" +
+	"\rpid_available\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\fpidAvailable\"\xc7\x1f\n" +
 	"\n" +
 	"NodeConfig\x12!\n" +
 	"\fmachine_type\x18\x01 \x01(\tR\vmachineType\x12 \n" +
@@ -27844,20 +27844,20 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\"ephemeral_storage_local_ssd_config\x18) \x01(\v23.google.container.v1.EphemeralStorageLocalSsdConfigR\x1eephemeralStorageLocalSsdConfig\x12S\n" +
 	"\x12sole_tenant_config\x18* \x01(\v2%.google.container.v1.SoleTenantConfigR\x10soleTenantConfig\x12R\n" +
 	"\x11containerd_config\x18+ \x01(\v2%.google.container.v1.ContainerdConfigR\x10containerdConfig\x12\\\n" +
-	"\x15resource_manager_tags\x18- \x01(\v2(.google.container.v1.ResourceManagerTagsR\x13resourceManagerTags\x12C\n" +
-	"\x1benable_confidential_storage\x18. \x01(\bB\x03\xe0A\x01R\x19enableConfidentialStorage\x12X\n" +
+	"\x15resource_manager_tags\x18- \x01(\v2(.google.container.v1.ResourceManagerTagsR\x13resourceManagerTags\x12D\n" +
+	"\x1benable_confidential_storage\x18. \x01(\bB\x04\xe2A\x01\x01R\x19enableConfidentialStorage\x12X\n" +
 	"\x14secondary_boot_disks\x180 \x03(\v2&.google.container.v1.SecondaryBootDiskR\x12secondaryBootDisks\x12#\n" +
 	"\rstorage_pools\x181 \x03(\tR\fstoragePools\x12\x87\x01\n" +
 	"#secondary_boot_disk_update_strategy\x182 \x01(\v24.google.container.v1.SecondaryBootDiskUpdateStrategyH\x01R\x1fsecondaryBootDiskUpdateStrategy\x88\x01\x01\x12U\n" +
 	"\x11gpu_direct_config\x183 \x01(\v2$.google.container.v1.GPUDirectConfigH\x02R\x0fgpuDirectConfig\x88\x01\x01\x12C\n" +
 	"\x10max_run_duration\x185 \x01(\v2\x19.google.protobuf.DurationR\x0emaxRunDuration\x12v\n" +
-	"\x19local_ssd_encryption_mode\x186 \x01(\x0e26.google.container.v1.NodeConfig.LocalSsdEncryptionModeH\x03R\x16localSsdEncryptionMode\x88\x01\x01\x12l\n" +
-	"\x15effective_cgroup_mode\x187 \x01(\x0e23.google.container.v1.NodeConfig.EffectiveCgroupModeB\x03\xe0A\x03R\x13effectiveCgroupMode\x12\"\n" +
+	"\x19local_ssd_encryption_mode\x186 \x01(\x0e26.google.container.v1.NodeConfig.LocalSsdEncryptionModeH\x03R\x16localSsdEncryptionMode\x88\x01\x01\x12m\n" +
+	"\x15effective_cgroup_mode\x187 \x01(\x0e23.google.container.v1.NodeConfig.EffectiveCgroupModeB\x04\xe2A\x01\x03R\x13effectiveCgroupMode\x12\"\n" +
 	"\n" +
 	"flex_start\x188 \x01(\bH\x04R\tflexStart\x88\x01\x01\x12:\n" +
 	"\tboot_disk\x189 \x01(\v2\x1d.google.container.v1.BootDiskR\bbootDisk\x12J\n" +
-	"\x13consolidation_delay\x18< \x01(\v2\x19.google.protobuf.DurationR\x12consolidationDelay\x12M\n" +
-	"\ftaint_config\x18> \x01(\v2 .google.container.v1.TaintConfigB\x03\xe0A\x01H\x05R\vtaintConfig\x88\x01\x01\x1a;\n" +
+	"\x13consolidation_delay\x18< \x01(\v2\x19.google.protobuf.DurationR\x12consolidationDelay\x12N\n" +
+	"\ftaint_config\x18> \x01(\v2 .google.container.v1.TaintConfigB\x04\xe2A\x01\x01H\x05R\vtaintConfig\x88\x01\x01\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -27880,9 +27880,9 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x12_gpu_direct_configB\x1c\n" +
 	"\x1a_local_ssd_encryption_modeB\r\n" +
 	"\v_flex_startB\x0f\n" +
-	"\r_taint_config\"\x91\x02\n" +
-	"\vTaintConfig\x12\x84\x01\n" +
-	"\x1barchitecture_taint_behavior\x18\x02 \x01(\x0e2:.google.container.v1.TaintConfig.ArchitectureTaintBehaviorB\x03\xe0A\x01H\x00R\x19architectureTaintBehavior\x88\x01\x01\"[\n" +
+	"\r_taint_config\"\x92\x02\n" +
+	"\vTaintConfig\x12\x85\x01\n" +
+	"\x1barchitecture_taint_behavior\x18\x02 \x01(\x0e2:.google.container.v1.TaintConfig.ArchitectureTaintBehaviorB\x04\xe2A\x01\x01H\x00R\x19architectureTaintBehavior\x88\x01\x01\"[\n" +
 	"\x19ArchitectureTaintBehavior\x12+\n" +
 	"'ARCHITECTURE_TAINT_BEHAVIOR_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\a\n" +
@@ -27899,24 +27899,24 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\bENHANCED\x10\x03B\x13\n" +
 	"\x11_threads_per_coreB\x1f\n" +
 	"\x1d_enable_nested_virtualizationB\x1e\n" +
-	"\x1c_performance_monitoring_unit\"\x86\n" +
+	"\x1c_performance_monitoring_unit\"\x8b\n" +
 	"\n" +
-	"\x11NodeNetworkConfig\x12-\n" +
-	"\x10create_pod_range\x18\x04 \x01(\bB\x03\xe0A\x04R\x0ecreatePodRange\x12\x1b\n" +
+	"\x11NodeNetworkConfig\x12.\n" +
+	"\x10create_pod_range\x18\x04 \x01(\bB\x04\xe2A\x01\x04R\x0ecreatePodRange\x12\x1b\n" +
 	"\tpod_range\x18\x05 \x01(\tR\bpodRange\x12-\n" +
 	"\x13pod_ipv4_cidr_block\x18\x06 \x01(\tR\x10podIpv4CidrBlock\x125\n" +
 	"\x14enable_private_nodes\x18\t \x01(\bH\x00R\x12enablePrivateNodes\x88\x01\x01\x12\x82\x01\n" +
 	"\x1anetwork_performance_config\x18\v \x01(\v2?.google.container.v1.NodeNetworkConfig.NetworkPerformanceConfigH\x01R\x18networkPerformanceConfig\x88\x01\x01\x12r\n" +
 	"\x1dpod_cidr_overprovision_config\x18\r \x01(\v2/.google.container.v1.PodCIDROverprovisionConfigR\x1apodCidrOverprovisionConfig\x12w\n" +
 	"\x1fadditional_node_network_configs\x18\x0e \x03(\v20.google.container.v1.AdditionalNodeNetworkConfigR\x1cadditionalNodeNetworkConfigs\x12t\n" +
-	"\x1eadditional_pod_network_configs\x18\x0f \x03(\v2/.google.container.v1.AdditionalPodNetworkConfigR\x1badditionalPodNetworkConfigs\x12@\n" +
-	"\x1apod_ipv4_range_utilization\x18\x10 \x01(\x01B\x03\xe0A\x03R\x17podIpv4RangeUtilization\x12I\n" +
+	"\x1eadditional_pod_network_configs\x18\x0f \x03(\v2/.google.container.v1.AdditionalPodNetworkConfigR\x1badditionalPodNetworkConfigs\x12A\n" +
+	"\x1apod_ipv4_range_utilization\x18\x10 \x01(\x01B\x04\xe2A\x01\x03R\x17podIpv4RangeUtilization\x12J\n" +
 	"\n" +
-	"subnetwork\x18\x13 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"subnetwork\x18\x13 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!compute.googleapis.com/SubnetworkR\n" +
-	"subnetwork\x12[\n" +
-	"\x13network_tier_config\x18\x14 \x01(\v2&.google.container.v1.NetworkTierConfigB\x03\xe0A\x03R\x11networkTierConfig\x12C\n" +
-	"\x1baccelerator_network_profile\x18\x15 \x01(\tB\x03\xe0A\x05R\x19acceleratorNetworkProfile\x1a\xef\x01\n" +
+	"subnetwork\x12\\\n" +
+	"\x13network_tier_config\x18\x14 \x01(\v2&.google.container.v1.NetworkTierConfigB\x04\xe2A\x01\x03R\x11networkTierConfig\x12D\n" +
+	"\x1baccelerator_network_profile\x18\x15 \x01(\tB\x04\xe2A\x01\x05R\x19acceleratorNetworkProfile\x1a\xef\x01\n" +
 	"\x18NetworkPerformanceConfig\x12\x88\x01\n" +
 	"\x1btotal_egress_bandwidth_tier\x18\x01 \x01(\x0e2D.google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig.TierH\x00R\x18totalEgressBandwidthTier\x88\x01\x01\"(\n" +
 	"\x04Tier\x12\x14\n" +
@@ -27962,10 +27962,10 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x0eNO_RESERVATION\x10\x01\x12\x13\n" +
 	"\x0fANY_RESERVATION\x10\x02\x12\x18\n" +
 	"\x14SPECIFIC_RESERVATION\x10\x03\x12\x1d\n" +
-	"\x19ANY_RESERVATION_THEN_FAIL\x10\x04\"\xfd\x02\n" +
+	"\x19ANY_RESERVATION_THEN_FAIL\x10\x04\"\xfe\x02\n" +
 	"\x10SoleTenantConfig\x12[\n" +
-	"\x0fnode_affinities\x18\x01 \x03(\v22.google.container.v1.SoleTenantConfig.NodeAffinityR\x0enodeAffinities\x12,\n" +
-	"\rmin_node_cpus\x18\x02 \x01(\x05B\x03\xe0A\x01H\x00R\vminNodeCpus\x88\x01\x01\x1a\xcb\x01\n" +
+	"\x0fnode_affinities\x18\x01 \x03(\v22.google.container.v1.SoleTenantConfig.NodeAffinityR\x0enodeAffinities\x12-\n" +
+	"\rmin_node_cpus\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x00R\vminNodeCpus\x88\x01\x01\x1a\xcb\x01\n" +
 	"\fNodeAffinity\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12W\n" +
 	"\boperator\x18\x02 \x01(\x0e2;.google.container.v1.SoleTenantConfig.NodeAffinity.OperatorR\boperator\x12\x16\n" +
@@ -27975,10 +27975,10 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x02IN\x10\x01\x12\n" +
 	"\n" +
 	"\x06NOT_IN\x10\x02B\x10\n" +
-	"\x0e_min_node_cpus\"\x95\x11\n" +
+	"\x0e_min_node_cpus\"\x97\x11\n" +
 	"\x10ContainerdConfig\x12\x86\x01\n" +
-	"\x1eprivate_registry_access_config\x18\x01 \x01(\v2A.google.container.v1.ContainerdConfig.PrivateRegistryAccessConfigR\x1bprivateRegistryAccessConfig\x12e\n" +
-	"\x10writable_cgroups\x18\x02 \x01(\v25.google.container.v1.ContainerdConfig.WritableCgroupsB\x03\xe0A\x01R\x0fwritableCgroups\x12_\n" +
+	"\x1eprivate_registry_access_config\x18\x01 \x01(\v2A.google.container.v1.ContainerdConfig.PrivateRegistryAccessConfigR\x1bprivateRegistryAccessConfig\x12f\n" +
+	"\x10writable_cgroups\x18\x02 \x01(\v25.google.container.v1.ContainerdConfig.WritableCgroupsB\x04\xe2A\x01\x01R\x0fwritableCgroups\x12_\n" +
 	"\x0eregistry_hosts\x18\x03 \x03(\v28.google.container.v1.ContainerdConfig.RegistryHostConfigR\rregistryHosts\x1a\xdc\x04\n" +
 	"\x1bPrivateRegistryAccessConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\xb1\x01\n" +
@@ -27989,9 +27989,9 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"!GCPSecretManagerCertificateConfig\x12\x1d\n" +
 	"\n" +
 	"secret_uri\x18\x01 \x01(\tR\tsecretUriB\x14\n" +
-	"\x12certificate_config\x1a0\n" +
-	"\x0fWritableCgroups\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x1a\x9e\t\n" +
+	"\x12certificate_config\x1a1\n" +
+	"\x0fWritableCgroups\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x1a\x9e\t\n" +
 	"\x12RegistryHostConfig\x12\x16\n" +
 	"\x06server\x18\x01 \x01(\tR\x06server\x12Y\n" +
 	"\x05hosts\x18\x02 \x03(\v2C.google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfigR\x05hosts\x1af\n" +
@@ -28043,18 +28043,18 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"!\n" +
 	"\vNetworkTags\x12\x12\n" +
-	"\x04tags\x18\x01 \x03(\tR\x04tags\"\xc9\x02\n" +
+	"\x04tags\x18\x01 \x03(\tR\x04tags\"\xcc\x02\n" +
 	"\n" +
 	"MasterAuth\x12\x1e\n" +
 	"\busername\x18\x01 \x01(\tB\x02\x18\x01R\busername\x12\x1e\n" +
 	"\bpassword\x18\x02 \x01(\tB\x02\x18\x01R\bpassword\x12h\n" +
-	"\x19client_certificate_config\x18\x03 \x01(\v2,.google.container.v1.ClientCertificateConfigR\x17clientCertificateConfig\x129\n" +
-	"\x16cluster_ca_certificate\x18d \x01(\tB\x03\xe0A\x03R\x14clusterCaCertificate\x122\n" +
-	"\x12client_certificate\x18e \x01(\tB\x03\xe0A\x03R\x11clientCertificate\x12\"\n" +
+	"\x19client_certificate_config\x18\x03 \x01(\v2,.google.container.v1.ClientCertificateConfigR\x17clientCertificateConfig\x12:\n" +
+	"\x16cluster_ca_certificate\x18d \x01(\tB\x04\xe2A\x01\x03R\x14clusterCaCertificate\x123\n" +
+	"\x12client_certificate\x18e \x01(\tB\x04\xe2A\x01\x03R\x11clientCertificate\x12#\n" +
 	"\n" +
-	"client_key\x18f \x01(\tB\x03\xe0A\x03R\tclientKey\"S\n" +
+	"client_key\x18f \x01(\tB\x04\xe2A\x01\x03R\tclientKey\"S\n" +
 	"\x17ClientCertificateConfig\x128\n" +
-	"\x18issue_client_certificate\x18\x01 \x01(\bR\x16issueClientCertificate\"\xd7\x10\n" +
+	"\x18issue_client_certificate\x18\x01 \x01(\bR\x16issueClientCertificate\"\xdd\x10\n" +
 	"\fAddonsConfig\x12V\n" +
 	"\x13http_load_balancing\x18\x01 \x01(\v2&.google.container.v1.HttpLoadBalancingR\x11httpLoadBalancing\x12k\n" +
 	"\x1ahorizontal_pod_autoscaling\x18\x02 \x01(\v2-.google.container.v1.HorizontalPodAutoscalingR\x18horizontalPodAutoscaling\x12_\n" +
@@ -28067,17 +28067,17 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"%gce_persistent_disk_csi_driver_config\x18\v \x01(\v25.google.container.v1.GcePersistentDiskCsiDriverConfigR gcePersistentDiskCsiDriverConfig\x12v\n" +
 	"\x1fgcp_filestore_csi_driver_config\x18\x0e \x01(\v20.google.container.v1.GcpFilestoreCsiDriverConfigR\x1bgcpFilestoreCsiDriverConfig\x12`\n" +
 	"\x17gke_backup_agent_config\x18\x10 \x01(\v2).google.container.v1.GkeBackupAgentConfigR\x14gkeBackupAgentConfig\x12g\n" +
-	"\x1agcs_fuse_csi_driver_config\x18\x11 \x01(\v2+.google.container.v1.GcsFuseCsiDriverConfigR\x16gcsFuseCsiDriverConfig\x12X\n" +
-	"\x12stateful_ha_config\x18\x12 \x01(\v2%.google.container.v1.StatefulHAConfigB\x03\xe0A\x01R\x10statefulHaConfig\x12x\n" +
-	"\x1fparallelstore_csi_driver_config\x18\x13 \x01(\v21.google.container.v1.ParallelstoreCsiDriverConfigR\x1cparallelstoreCsiDriverConfig\x12[\n" +
-	"\x13ray_operator_config\x18\x15 \x01(\v2&.google.container.v1.RayOperatorConfigB\x03\xe0A\x01R\x11rayOperatorConfig\x12x\n" +
+	"\x1agcs_fuse_csi_driver_config\x18\x11 \x01(\v2+.google.container.v1.GcsFuseCsiDriverConfigR\x16gcsFuseCsiDriverConfig\x12Y\n" +
+	"\x12stateful_ha_config\x18\x12 \x01(\v2%.google.container.v1.StatefulHAConfigB\x04\xe2A\x01\x01R\x10statefulHaConfig\x12x\n" +
+	"\x1fparallelstore_csi_driver_config\x18\x13 \x01(\v21.google.container.v1.ParallelstoreCsiDriverConfigR\x1cparallelstoreCsiDriverConfig\x12\\\n" +
+	"\x13ray_operator_config\x18\x15 \x01(\v2&.google.container.v1.RayOperatorConfigB\x04\xe2A\x01\x01R\x11rayOperatorConfig\x12x\n" +
 	"\x1fhigh_scale_checkpointing_config\x18\x16 \x01(\v21.google.container.v1.HighScaleCheckpointingConfigR\x1chighScaleCheckpointingConfig\x12c\n" +
-	"\x18lustre_csi_driver_config\x18\x17 \x01(\v2*.google.container.v1.LustreCsiDriverConfigR\x15lustreCsiDriverConfig\x12[\n" +
-	"\x13pod_snapshot_config\x18\x18 \x01(\v2&.google.container.v1.PodSnapshotConfigB\x03\xe0A\x01R\x11podSnapshotConfig\x12\\\n" +
-	"\x15slurm_operator_config\x18\x19 \x01(\v2(.google.container.v1.SlurmOperatorConfigR\x13slurmOperatorConfig\x12g\n" +
-	"\x17slice_controller_config\x18\x1a \x01(\v2*.google.container.v1.SliceControllerConfigB\x03\xe0A\x01R\x15sliceControllerConfig\x12^\n" +
-	"\x14agent_sandbox_config\x18\x1c \x01(\v2'.google.container.v1.AgentSandboxConfigB\x03\xe0A\x01R\x12agentSandboxConfig\x12a\n" +
-	"\x15node_readiness_config\x18\x1d \x01(\v2(.google.container.v1.NodeReadinessConfigB\x03\xe0A\x01R\x13nodeReadinessConfig\"/\n" +
+	"\x18lustre_csi_driver_config\x18\x17 \x01(\v2*.google.container.v1.LustreCsiDriverConfigR\x15lustreCsiDriverConfig\x12\\\n" +
+	"\x13pod_snapshot_config\x18\x18 \x01(\v2&.google.container.v1.PodSnapshotConfigB\x04\xe2A\x01\x01R\x11podSnapshotConfig\x12\\\n" +
+	"\x15slurm_operator_config\x18\x19 \x01(\v2(.google.container.v1.SlurmOperatorConfigR\x13slurmOperatorConfig\x12h\n" +
+	"\x17slice_controller_config\x18\x1a \x01(\v2*.google.container.v1.SliceControllerConfigB\x04\xe2A\x01\x01R\x15sliceControllerConfig\x12_\n" +
+	"\x14agent_sandbox_config\x18\x1c \x01(\v2'.google.container.v1.AgentSandboxConfigB\x04\xe2A\x01\x01R\x12agentSandboxConfig\x12b\n" +
+	"\x15node_readiness_config\x18\x1d \x01(\v2(.google.container.v1.NodeReadinessConfigB\x04\xe2A\x01\x01R\x13nodeReadinessConfig\"/\n" +
 	"\x11HttpLoadBalancing\x12\x1a\n" +
 	"\bdisabled\x18\x01 \x01(\bR\bdisabled\"6\n" +
 	"\x18HorizontalPodAutoscaling\x12\x1a\n" +
@@ -28089,14 +28089,14 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x0eDnsCacheConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\"B\n" +
 	"&PrivateClusterMasterGlobalAccessConfig\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\"\x8b\x04\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\"\x8e\x04\n" +
 	"\x14PrivateClusterConfig\x124\n" +
 	"\x14enable_private_nodes\x18\x01 \x01(\bB\x02\x18\x01R\x12enablePrivateNodes\x12:\n" +
 	"\x17enable_private_endpoint\x18\x02 \x01(\bB\x02\x18\x01R\x15enablePrivateEndpoint\x123\n" +
-	"\x16master_ipv4_cidr_block\x18\x03 \x01(\tR\x13masterIpv4CidrBlock\x120\n" +
-	"\x10private_endpoint\x18\x04 \x01(\tB\x05\xe0A\x03\x18\x01R\x0fprivateEndpoint\x12.\n" +
-	"\x0fpublic_endpoint\x18\x05 \x01(\tB\x05\xe0A\x03\x18\x01R\x0epublicEndpoint\x12&\n" +
-	"\fpeering_name\x18\a \x01(\tB\x03\xe0A\x03R\vpeeringName\x12~\n" +
+	"\x16master_ipv4_cidr_block\x18\x03 \x01(\tR\x13masterIpv4CidrBlock\x121\n" +
+	"\x10private_endpoint\x18\x04 \x01(\tB\x06\xe2A\x01\x03\x18\x01R\x0fprivateEndpoint\x12/\n" +
+	"\x0fpublic_endpoint\x18\x05 \x01(\tB\x06\xe2A\x01\x03\x18\x01R\x0epublicEndpoint\x12'\n" +
+	"\fpeering_name\x18\a \x01(\tB\x04\xe2A\x01\x03R\vpeeringName\x12~\n" +
 	"\x1bmaster_global_access_config\x18\b \x01(\v2;.google.container.v1.PrivateClusterMasterGlobalAccessConfigB\x02\x18\x01R\x18masterGlobalAccessConfig\x12B\n" +
 	"\x1bprivate_endpoint_subnetwork\x18\n" +
 	" \x01(\tB\x02\x18\x01R\x19privateEndpointSubnetwork\"\\\n" +
@@ -28127,17 +28127,17 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x19enable_legacy_lustre_port\x18\x03 \x01(\bB\x02\x18\x01R\x16enableLegacyLustrePort\x12*\n" +
 	"\x11disable_multi_nic\x18\x04 \x01(\bR\x0fdisableMultiNic\"/\n" +
 	"\x13SlurmOperatorConfig\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\"3\n" +
-	"\x12AgentSandboxConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"4\n" +
-	"\x13NodeReadinessConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"6\n" +
-	"\x15SliceControllerConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"\x96\x02\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\"4\n" +
+	"\x12AgentSandboxConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\"5\n" +
+	"\x13NodeReadinessConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\"7\n" +
+	"\x15SliceControllerConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\"\x98\x02\n" +
 	"\x11RayOperatorConfig\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\x12n\n" +
-	"\x1aray_cluster_logging_config\x18\x02 \x01(\v2,.google.container.v1.RayClusterLoggingConfigB\x03\xe0A\x01R\x17rayClusterLoggingConfig\x12w\n" +
-	"\x1dray_cluster_monitoring_config\x18\x03 \x01(\v2/.google.container.v1.RayClusterMonitoringConfigB\x03\xe0A\x01R\x1arayClusterMonitoringConfig\"0\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12o\n" +
+	"\x1aray_cluster_logging_config\x18\x02 \x01(\v2,.google.container.v1.RayClusterLoggingConfigB\x04\xe2A\x01\x01R\x17rayClusterLoggingConfig\x12x\n" +
+	"\x1dray_cluster_monitoring_config\x18\x03 \x01(\v2/.google.container.v1.RayClusterMonitoringConfigB\x04\xe2A\x01\x01R\x1arayClusterMonitoringConfig\"0\n" +
 	"\x14GkeBackupAgentConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\",\n" +
 	"\x10StatefulHAConfig\x12\x18\n" +
@@ -28172,7 +28172,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\bDISABLED\x10\x01\x12$\n" +
 	" PROJECT_SINGLETON_POLICY_ENFORCE\x10\x02\"6\n" +
 	"\x1aPodCIDROverprovisionConfig\x12\x18\n" +
-	"\adisable\x18\x01 \x01(\bR\adisable\"\xf5\v\n" +
+	"\adisable\x18\x01 \x01(\bR\adisable\"\xfb\v\n" +
 	"\x12IPAllocationPolicy\x12$\n" +
 	"\x0euse_ip_aliases\x18\x01 \x01(\bR\fuseIpAliases\x12+\n" +
 	"\x11create_subnetwork\x18\x02 \x01(\bR\x10createSubnetwork\x12'\n" +
@@ -28192,14 +28192,14 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
 	"stack_type\x18\x10 \x01(\x0e2\x1e.google.container.v1.StackTypeR\tstackType\x12M\n" +
 	"\x10ipv6_access_type\x18\x11 \x01(\x0e2#.google.container.v1.IPv6AccessTypeR\x0eipv6AccessType\x12r\n" +
-	"\x1dpod_cidr_overprovision_config\x18\x15 \x01(\v2/.google.container.v1.PodCIDROverprovisionConfigR\x1apodCidrOverprovisionConfig\x128\n" +
-	"\x16subnet_ipv6_cidr_block\x18\x16 \x01(\tB\x03\xe0A\x03R\x13subnetIpv6CidrBlock\x12<\n" +
-	"\x18services_ipv6_cidr_block\x18\x17 \x01(\tB\x03\xe0A\x03R\x15servicesIpv6CidrBlock\x12t\n" +
-	"\x1cadditional_pod_ranges_config\x18\x18 \x01(\v2..google.container.v1.AdditionalPodRangesConfigB\x03\xe0A\x03R\x19additionalPodRangesConfig\x12O\n" +
-	"\"default_pod_ipv4_range_utilization\x18\x19 \x01(\x01B\x03\xe0A\x03R\x1edefaultPodIpv4RangeUtilization\x12s\n" +
-	"\x1cadditional_ip_ranges_configs\x18\x1d \x03(\v2-.google.container.v1.AdditionalIPRangesConfigB\x03\xe0A\x03R\x19additionalIpRangesConfigs\x12R\n" +
-	"\x10auto_ipam_config\x18\x1e \x01(\v2#.google.container.v1.AutoIpamConfigB\x03\xe0A\x01R\x0eautoIpamConfig\x12V\n" +
-	"\x13network_tier_config\x18\x1f \x01(\v2&.google.container.v1.NetworkTierConfigR\x11networkTierConfig\"\xb13\n" +
+	"\x1dpod_cidr_overprovision_config\x18\x15 \x01(\v2/.google.container.v1.PodCIDROverprovisionConfigR\x1apodCidrOverprovisionConfig\x129\n" +
+	"\x16subnet_ipv6_cidr_block\x18\x16 \x01(\tB\x04\xe2A\x01\x03R\x13subnetIpv6CidrBlock\x12=\n" +
+	"\x18services_ipv6_cidr_block\x18\x17 \x01(\tB\x04\xe2A\x01\x03R\x15servicesIpv6CidrBlock\x12u\n" +
+	"\x1cadditional_pod_ranges_config\x18\x18 \x01(\v2..google.container.v1.AdditionalPodRangesConfigB\x04\xe2A\x01\x03R\x19additionalPodRangesConfig\x12P\n" +
+	"\"default_pod_ipv4_range_utilization\x18\x19 \x01(\x01B\x04\xe2A\x01\x03R\x1edefaultPodIpv4RangeUtilization\x12t\n" +
+	"\x1cadditional_ip_ranges_configs\x18\x1d \x03(\v2-.google.container.v1.AdditionalIPRangesConfigB\x04\xe2A\x01\x03R\x19additionalIpRangesConfigs\x12S\n" +
+	"\x10auto_ipam_config\x18\x1e \x01(\v2#.google.container.v1.AutoIpamConfigB\x04\xe2A\x01\x01R\x0eautoIpamConfig\x12V\n" +
+	"\x13network_tier_config\x18\x1f \x01(\v2&.google.container.v1.NetworkTierConfigR\x11networkTierConfig\"\xc93\n" +
 	"\aCluster\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x120\n" +
@@ -28246,59 +28246,59 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x16cost_management_config\x18- \x01(\v2).google.container.v1.CostManagementConfigR\x14costManagementConfig\x12X\n" +
 	"\x13notification_config\x181 \x01(\v2'.google.container.v1.NotificationConfigR\x12notificationConfig\x12U\n" +
 	"\x12confidential_nodes\x182 \x01(\v2&.google.container.v1.ConfidentialNodesR\x11confidentialNodes\x12b\n" +
-	"\x17identity_service_config\x186 \x01(\v2*.google.container.v1.IdentityServiceConfigR\x15identityServiceConfig\x12 \n" +
-	"\tself_link\x18d \x01(\tB\x03\xe0A\x03R\bselfLink\x12\x19\n" +
-	"\x04zone\x18e \x01(\tB\x05\xe0A\x03\x18\x01R\x04zone\x12\x1f\n" +
-	"\bendpoint\x18f \x01(\tB\x03\xe0A\x03R\bendpoint\x126\n" +
-	"\x17initial_cluster_version\x18g \x01(\tR\x15initialClusterVersion\x129\n" +
-	"\x16current_master_version\x18h \x01(\tB\x03\xe0A\x03R\x14currentMasterVersion\x12>\n" +
-	"\x18current_emulated_version\x18\xa7\x01 \x01(\tB\x03\xe0A\x03R\x16currentEmulatedVersion\x12b\n" +
-	"\x15rollback_safe_upgrade\x18\xaa\x01 \x01(\v2(.google.container.v1.RollbackSafeUpgradeB\x03\xe0A\x01R\x13rollbackSafeUpgrade\x127\n" +
-	"\x14current_node_version\x18i \x01(\tB\x05\xe0A\x03\x18\x01R\x12currentNodeVersion\x12$\n" +
-	"\vcreate_time\x18j \x01(\tB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\x06status\x18k \x01(\x0e2#.google.container.v1.Cluster.StatusB\x03\xe0A\x03R\x06status\x12,\n" +
-	"\x0estatus_message\x18l \x01(\tB\x05\xe0A\x03\x18\x01R\rstatusMessage\x122\n" +
-	"\x13node_ipv4_cidr_size\x18m \x01(\x05B\x03\xe0A\x03R\x10nodeIpv4CidrSize\x121\n" +
-	"\x12services_ipv4_cidr\x18n \x01(\tB\x03\xe0A\x03R\x10servicesIpv4Cidr\x125\n" +
-	"\x13instance_group_urls\x18o \x03(\tB\x05\xe0A\x03\x18\x01R\x11instanceGroupUrls\x123\n" +
-	"\x12current_node_count\x18p \x01(\x05B\x05\xe0A\x03\x18\x01R\x10currentNodeCount\x12$\n" +
-	"\vexpire_time\x18q \x01(\tB\x03\xe0A\x03R\n" +
-	"expireTime\x12\x1f\n" +
-	"\blocation\x18r \x01(\tB\x03\xe0A\x03R\blocation\x12!\n" +
+	"\x17identity_service_config\x186 \x01(\v2*.google.container.v1.IdentityServiceConfigR\x15identityServiceConfig\x12!\n" +
+	"\tself_link\x18d \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12\x1a\n" +
+	"\x04zone\x18e \x01(\tB\x06\xe2A\x01\x03\x18\x01R\x04zone\x12 \n" +
+	"\bendpoint\x18f \x01(\tB\x04\xe2A\x01\x03R\bendpoint\x126\n" +
+	"\x17initial_cluster_version\x18g \x01(\tR\x15initialClusterVersion\x12:\n" +
+	"\x16current_master_version\x18h \x01(\tB\x04\xe2A\x01\x03R\x14currentMasterVersion\x12?\n" +
+	"\x18current_emulated_version\x18\xa7\x01 \x01(\tB\x04\xe2A\x01\x03R\x16currentEmulatedVersion\x12c\n" +
+	"\x15rollback_safe_upgrade\x18\xaa\x01 \x01(\v2(.google.container.v1.RollbackSafeUpgradeB\x04\xe2A\x01\x01R\x13rollbackSafeUpgrade\x128\n" +
+	"\x14current_node_version\x18i \x01(\tB\x06\xe2A\x01\x03\x18\x01R\x12currentNodeVersion\x12%\n" +
+	"\vcreate_time\x18j \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\x06status\x18k \x01(\x0e2#.google.container.v1.Cluster.StatusB\x04\xe2A\x01\x03R\x06status\x12-\n" +
+	"\x0estatus_message\x18l \x01(\tB\x06\xe2A\x01\x03\x18\x01R\rstatusMessage\x123\n" +
+	"\x13node_ipv4_cidr_size\x18m \x01(\x05B\x04\xe2A\x01\x03R\x10nodeIpv4CidrSize\x122\n" +
+	"\x12services_ipv4_cidr\x18n \x01(\tB\x04\xe2A\x01\x03R\x10servicesIpv4Cidr\x126\n" +
+	"\x13instance_group_urls\x18o \x03(\tB\x06\xe2A\x01\x03\x18\x01R\x11instanceGroupUrls\x124\n" +
+	"\x12current_node_count\x18p \x01(\x05B\x06\xe2A\x01\x03\x18\x01R\x10currentNodeCount\x12%\n" +
+	"\vexpire_time\x18q \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12 \n" +
+	"\blocation\x18r \x01(\tB\x04\xe2A\x01\x03R\blocation\x12!\n" +
 	"\n" +
-	"enable_tpu\x18s \x01(\bB\x02\x18\x01R\tenableTpu\x124\n" +
-	"\x13tpu_ipv4_cidr_block\x18t \x01(\tB\x05\xe0A\x03\x18\x01R\x10tpuIpv4CidrBlock\x12D\n" +
+	"enable_tpu\x18s \x01(\bB\x02\x18\x01R\tenableTpu\x125\n" +
+	"\x13tpu_ipv4_cidr_block\x18t \x01(\tB\x06\xe2A\x01\x03\x18\x01R\x10tpuIpv4CidrBlock\x12D\n" +
 	"\n" +
 	"conditions\x18v \x03(\v2$.google.container.v1.StatusConditionR\n" +
 	"conditions\x12=\n" +
-	"\tautopilot\x18\x80\x01 \x01(\v2\x1e.google.container.v1.AutopilotR\tautopilot\x12\x14\n" +
-	"\x02id\x18\x81\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12Y\n" +
+	"\tautopilot\x18\x80\x01 \x01(\v2\x1e.google.container.v1.AutopilotR\tautopilot\x12\x15\n" +
+	"\x02id\x18\x81\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12Y\n" +
 	"\x12node_pool_defaults\x18\x83\x01 \x01(\v2%.google.container.v1.NodePoolDefaultsH\x00R\x10nodePoolDefaults\x88\x01\x01\x12J\n" +
 	"\x0elogging_config\x18\x84\x01 \x01(\v2\".google.container.v1.LoggingConfigR\rloggingConfig\x12S\n" +
 	"\x11monitoring_config\x18\x85\x01 \x01(\v2%.google.container.v1.MonitoringConfigR\x10monitoringConfig\x12[\n" +
 	"\x15node_pool_auto_config\x18\x88\x01 \x01(\v2'.google.container.v1.NodePoolAutoConfigR\x12nodePoolAutoConfig\x12M\n" +
 	"\x0fpod_autoscaling\x18\x8a\x01 \x01(\v2#.google.container.v1.PodAutoscalingR\x0epodAutoscaling\x12\x13\n" +
 	"\x04etag\x18\x8b\x01 \x01(\tR\x04etag\x121\n" +
-	"\x05fleet\x18\x8c\x01 \x01(\v2\x1a.google.container.v1.FleetR\x05fleet\x12h\n" +
-	"\x17security_posture_config\x18\x91\x01 \x01(\v2*.google.container.v1.SecurityPostureConfigB\x03\xe0A\x01R\x15securityPostureConfig\x12v\n" +
+	"\x05fleet\x18\x8c\x01 \x01(\v2\x1a.google.container.v1.FleetR\x05fleet\x12i\n" +
+	"\x17security_posture_config\x18\x91\x01 \x01(\v2*.google.container.v1.SecurityPostureConfigB\x04\xe2A\x01\x01R\x15securityPostureConfig\x12v\n" +
 	"\x1econtrol_plane_endpoints_config\x18\x92\x01 \x01(\v20.google.container.v1.ControlPlaneEndpointsConfigR\x1bcontrolPlaneEndpointsConfig\x12W\n" +
 	"\x14enable_k8s_beta_apis\x18\x8f\x01 \x01(\v2%.google.container.v1.K8sBetaAPIConfigR\x11enableK8sBetaApis\x12W\n" +
 	"\x11enterprise_config\x18\x95\x01 \x01(\v2%.google.container.v1.EnterpriseConfigB\x02\x18\x01R\x10enterpriseConfig\x12]\n" +
-	"\x15secret_manager_config\x18\x96\x01 \x01(\v2(.google.container.v1.SecretManagerConfigR\x13secretManagerConfig\x12p\n" +
-	"\x19compliance_posture_config\x18\x97\x01 \x01(\v2,.google.container.v1.CompliancePostureConfigB\x05\xe0A\x01\x18\x01R\x17compliancePostureConfig\x12.\n" +
-	"\rsatisfies_pzs\x18\x98\x01 \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
-	"\rsatisfies_pzi\x18\x99\x01 \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzi\x88\x01\x01\x12i\n" +
+	"\x15secret_manager_config\x18\x96\x01 \x01(\v2(.google.container.v1.SecretManagerConfigR\x13secretManagerConfig\x12q\n" +
+	"\x19compliance_posture_config\x18\x97\x01 \x01(\v2,.google.container.v1.CompliancePostureConfigB\x06\xe2A\x01\x01\x18\x01R\x17compliancePostureConfig\x12/\n" +
+	"\rsatisfies_pzs\x18\x98\x01 \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12/\n" +
+	"\rsatisfies_pzi\x18\x99\x01 \x01(\bB\x04\xe2A\x01\x03H\x02R\fsatisfiesPzi\x88\x01\x01\x12i\n" +
 	"\x18user_managed_keys_config\x18\x9a\x01 \x01(\v2*.google.container.v1.UserManagedKeysConfigH\x03R\x15userManagedKeysConfig\x88\x01\x01\x12\\\n" +
 	"\x13rbac_binding_config\x18\x9c\x01 \x01(\v2&.google.container.v1.RBACBindingConfigH\x04R\x11rbacBindingConfig\x88\x01\x01\x12a\n" +
 	"\x17gke_auto_upgrade_config\x18\xa3\x01 \x01(\v2).google.container.v1.GkeAutoUpgradeConfigR\x14gkeAutoUpgradeConfig\x12{\n" +
-	"\x1fanonymous_authentication_config\x18\xa4\x01 \x01(\v22.google.container.v1.AnonymousAuthenticationConfigR\x1danonymousAuthenticationConfig\x12h\n" +
-	"\x17schedule_upgrade_config\x18\xa5\x01 \x01(\v2*.google.container.v1.ScheduleUpgradeConfigB\x03\xe0A\x01R\x15scheduleUpgradeConfig\x12T\n" +
+	"\x1fanonymous_authentication_config\x18\xa4\x01 \x01(\v22.google.container.v1.AnonymousAuthenticationConfigR\x1danonymousAuthenticationConfig\x12i\n" +
+	"\x17schedule_upgrade_config\x18\xa5\x01 \x01(\v2*.google.container.v1.ScheduleUpgradeConfigB\x04\xe2A\x01\x01R\x15scheduleUpgradeConfig\x12T\n" +
 	"\x12secret_sync_config\x18\xa6\x01 \x01(\v2%.google.container.v1.SecretSyncConfigR\x10secretSyncConfig\x12r\n" +
 	"\x1cmanaged_opentelemetry_config\x18\xa8\x01 \x01(\v2/.google.container.v1.ManagedOpenTelemetryConfigR\x1amanagedOpentelemetryConfig\x12Z\n" +
 	"\x14control_plane_egress\x18\xa9\x01 \x01(\v2'.google.container.v1.ControlPlaneEgressR\x12controlPlaneEgress\x12\x9b\x01\n" +
-	"+managed_machine_learning_diagnostics_config\x18\xab\x01 \x01(\v2<.google.container.v1.ManagedMachineLearningDiagnosticsConfigR'managedMachineLearningDiagnosticsConfig\x12_\n" +
-	"\x14node_creation_config\x18\xae\x01 \x01(\v2'.google.container.v1.NodeCreationConfigB\x03\xe0A\x01R\x12nodeCreationConfig\x1aA\n" +
+	"+managed_machine_learning_diagnostics_config\x18\xab\x01 \x01(\v2<.google.container.v1.ManagedMachineLearningDiagnosticsConfigR'managedMachineLearningDiagnosticsConfig\x12`\n" +
+	"\x14node_creation_config\x18\xae\x01 \x01(\v2'.google.container.v1.NodeCreationConfigB\x04\xe2A\x01\x01R\x12nodeCreationConfig\x1aA\n" +
 	"\x13ResourceLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"w\n" +
@@ -28331,7 +28331,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	".enable_insecure_binding_system_unauthenticated\x18\x01 \x01(\bH\x00R*enableInsecureBindingSystemUnauthenticated\x88\x01\x01\x12c\n" +
 	",enable_insecure_binding_system_authenticated\x18\x02 \x01(\bH\x01R(enableInsecureBindingSystemAuthenticated\x88\x01\x01B1\n" +
 	"/_enable_insecure_binding_system_unauthenticatedB/\n" +
-	"-_enable_insecure_binding_system_authenticated\"\xf3\x06\n" +
+	"-_enable_insecure_binding_system_authenticated\"\xf4\x06\n" +
 	"\x15UserManagedKeysConfig\x12C\n" +
 	"\n" +
 	"cluster_ca\x18\n" +
@@ -28349,8 +28349,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x0eaggregation_ca\x18\x0f \x01(\tB$\xfaA!\n" +
 	"\x1fprivateca.googleapis.com/CaPoolR\raggregationCa\x12w\n" +
 	"!control_plane_disk_encryption_key\x18\x10 \x01(\tB-\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x1dcontrolPlaneDiskEncryptionKey\x12^\n" +
-	"*control_plane_disk_encryption_key_versions\x18\x12 \x03(\tB\x03\xe0A\x03R%controlPlaneDiskEncryptionKeyVersions\x12w\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x1dcontrolPlaneDiskEncryptionKey\x12_\n" +
+	"*control_plane_disk_encryption_key_versions\x18\x12 \x03(\tB\x04\xe2A\x01\x03R%controlPlaneDiskEncryptionKeyVersions\x12w\n" +
 	"!gkeops_etcd_backup_encryption_key\x18\x11 \x01(\tB-\xfaA*\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersionR\x1dgkeopsEtcdBackupEncryptionKey\"\xa4\x01\n" +
 	"\x1dAnonymousAuthenticationConfig\x12K\n" +
@@ -28387,12 +28387,12 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x13VULNERABILITY_BASIC\x10\x02\x1a\x02\b\x01\x12\x1c\n" +
 	"\x18VULNERABILITY_ENTERPRISE\x10\x03B\a\n" +
 	"\x05_modeB\x15\n" +
-	"\x13_vulnerability_mode\"\xe6\x02\n" +
+	"\x13_vulnerability_mode\"\xe7\x02\n" +
 	"\x12NodePoolAutoConfig\x12C\n" +
 	"\fnetwork_tags\x18\x01 \x01(\v2 .google.container.v1.NetworkTagsR\vnetworkTags\x12\\\n" +
 	"\x15resource_manager_tags\x18\x02 \x01(\v2(.google.container.v1.ResourceManagerTagsR\x13resourceManagerTags\x12V\n" +
-	"\x13node_kubelet_config\x18\x03 \x01(\v2&.google.container.v1.NodeKubeletConfigR\x11nodeKubeletConfig\x12U\n" +
-	"\x11linux_node_config\x18\x04 \x01(\v2$.google.container.v1.LinuxNodeConfigB\x03\xe0A\x03R\x0flinuxNodeConfig\"m\n" +
+	"\x13node_kubelet_config\x18\x03 \x01(\v2&.google.container.v1.NodeKubeletConfigR\x11nodeKubeletConfig\x12V\n" +
+	"\x11linux_node_config\x18\x04 \x01(\v2$.google.container.v1.LinuxNodeConfigB\x04\xe2A\x01\x03R\x0flinuxNodeConfig\"m\n" +
 	"\x10NodePoolDefaults\x12Y\n" +
 	"\x14node_config_defaults\x18\x01 \x01(\v2'.google.container.v1.NodeConfigDefaultsR\x12nodeConfigDefaults\"\xd5\x02\n" +
 	"\x12NodeConfigDefaults\x12@\n" +
@@ -28400,7 +28400,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"gcfsConfig\x12Q\n" +
 	"\x0elogging_config\x18\x03 \x01(\v2*.google.container.v1.NodePoolLoggingConfigR\rloggingConfig\x12R\n" +
 	"\x11containerd_config\x18\x04 \x01(\v2%.google.container.v1.ContainerdConfigR\x10containerdConfig\x12V\n" +
-	"\x13node_kubelet_config\x18\x06 \x01(\v2&.google.container.v1.NodeKubeletConfigR\x11nodeKubeletConfig\"\x9eF\n" +
+	"\x13node_kubelet_config\x18\x06 \x01(\v2&.google.container.v1.NodeKubeletConfigR\x11nodeKubeletConfig\"\xa1F\n" +
 	"\rClusterUpdate\x120\n" +
 	"\x14desired_node_version\x18\x04 \x01(\tR\x12desiredNodeVersion\x12<\n" +
 	"\x1adesired_monitoring_service\x18\x05 \x01(\tR\x18desiredMonitoringService\x12U\n" +
@@ -28479,13 +28479,13 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x1bdesired_network_tier_config\x18\x9b\x01 \x01(\v2&.google.container.v1.NetworkTierConfigR\x18desiredNetworkTierConfig\x12c\n" +
 	"\x1adesired_secret_sync_config\x18\x9e\x01 \x01(\v2%.google.container.v1.SecretSyncConfigR\x17desiredSecretSyncConfig\x12~\n" +
 	"#desired_privileged_admission_config\x18\x9f\x01 \x01(\v2..google.container.v1.PrivilegedAdmissionConfigR desiredPrivilegedAdmissionConfig\x12i\n" +
-	"\x1cdesired_control_plane_egress\x18\xa0\x01 \x01(\v2'.google.container.v1.ControlPlaneEgressR\x19desiredControlPlaneEgress\x12q\n" +
-	"\x1ddesired_rollback_safe_upgrade\x18\xa1\x01 \x01(\v2(.google.container.v1.RollbackSafeUpgradeB\x03\xe0A\x01R\x1adesiredRollbackSafeUpgrade\x12\x81\x01\n" +
+	"\x1cdesired_control_plane_egress\x18\xa0\x01 \x01(\v2'.google.container.v1.ControlPlaneEgressR\x19desiredControlPlaneEgress\x12r\n" +
+	"\x1ddesired_rollback_safe_upgrade\x18\xa1\x01 \x01(\v2(.google.container.v1.RollbackSafeUpgradeB\x04\xe2A\x01\x01R\x1adesiredRollbackSafeUpgrade\x12\x81\x01\n" +
 	"$desired_managed_opentelemetry_config\x18\xa3\x01 \x01(\v2/.google.container.v1.ManagedOpenTelemetryConfigR!desiredManagedOpentelemetryConfig\x12\x7f\n" +
 	"'desired_autopilot_cluster_policy_config\x18\xa4\x01 \x01(\v2(.google.container.v1.ClusterPolicyConfigR#desiredAutopilotClusterPolicyConfig\x12\xaa\x01\n" +
-	"3desired_managed_machine_learning_diagnostics_config\x18\xa6\x01 \x01(\v2<.google.container.v1.ManagedMachineLearningDiagnosticsConfigR.desiredManagedMachineLearningDiagnosticsConfig\x12n\n" +
-	"\x1cdesired_node_creation_config\x18\xab\x01 \x01(\v2'.google.container.v1.NodeCreationConfigB\x03\xe0A\x01R\x19desiredNodeCreationConfig\x12C\n" +
-	"\x18desired_emulated_version\x18\xb6\x01 \x01(\tB\x03\xe0A\x01H\n" +
+	"3desired_managed_machine_learning_diagnostics_config\x18\xa6\x01 \x01(\v2<.google.container.v1.ManagedMachineLearningDiagnosticsConfigR.desiredManagedMachineLearningDiagnosticsConfig\x12o\n" +
+	"\x1cdesired_node_creation_config\x18\xab\x01 \x01(\v2'.google.container.v1.NodeCreationConfigB\x04\xe2A\x01\x01R\x19desiredNodeCreationConfig\x12D\n" +
+	"\x18desired_emulated_version\x18\xb6\x01 \x01(\tB\x04\xe2A\x01\x01H\n" +
 	"R\x16desiredEmulatedVersion\x88\x01\x01B\"\n" +
 	" _desired_enable_private_endpointB'\n" +
 	"%_desired_default_enable_private_nodesB%\n" +
@@ -28497,10 +28497,10 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\"_desired_compliance_posture_configB\x1e\n" +
 	"\x1c_desired_rbac_binding_configB0\n" +
 	"._desired_disable_l4_lb_firewall_reconciliationB\x1b\n" +
-	"\x19_desired_emulated_version\"\x8e\x01\n" +
+	"\x19_desired_emulated_version\"\x8f\x01\n" +
 	"\x19AdditionalPodRangesConfig\x12&\n" +
-	"\x0fpod_range_names\x18\x01 \x03(\tR\rpodRangeNames\x12I\n" +
-	"\x0epod_range_info\x18\x02 \x03(\v2\x1e.google.container.v1.RangeInfoB\x03\xe0A\x03R\fpodRangeInfo\"\xf5\x01\n" +
+	"\x0fpod_range_names\x18\x01 \x03(\tR\rpodRangeNames\x12J\n" +
+	"\x0epod_range_info\x18\x02 \x03(\v2\x1e.google.container.v1.RangeInfoB\x04\xe2A\x01\x03R\fpodRangeInfo\"\xf5\x01\n" +
 	"\x18AdditionalIPRangesConfig\x12\x1e\n" +
 	"\n" +
 	"subnetwork\x18\x01 \x01(\tR\n" +
@@ -28517,30 +28517,30 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x0eAutoIpamConfig\x12\x1d\n" +
 	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01B\n" +
 	"\n" +
-	"\b_enabled\"V\n" +
-	"\tRangeInfo\x12\"\n" +
+	"\b_enabled\"X\n" +
+	"\tRangeInfo\x12#\n" +
 	"\n" +
-	"range_name\x18\x01 \x01(\tB\x03\xe0A\x03R\trangeName\x12%\n" +
-	"\vutilization\x18\x02 \x01(\x01B\x03\xe0A\x03R\vutilization\"s\n" +
+	"range_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\trangeName\x12&\n" +
+	"\vutilization\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\vutilization\"s\n" +
 	"\x17DesiredEnterpriseConfig\x12T\n" +
-	"\fdesired_tier\x18\x01 \x01(\x0e21.google.container.v1.EnterpriseConfig.ClusterTierR\vdesiredTier:\x02\x18\x01\"\x8a\n" +
+	"\fdesired_tier\x18\x01 \x01(\x0e21.google.container.v1.EnterpriseConfig.ClusterTierR\vdesiredTier:\x02\x18\x01\"\x96\n" +
 	"\n" +
-	"\tOperation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x19\n" +
-	"\x04zone\x18\x02 \x01(\tB\x05\xe0A\x03\x18\x01R\x04zone\x12O\n" +
-	"\x0eoperation_type\x18\x03 \x01(\x0e2#.google.container.v1.Operation.TypeB\x03\xe0A\x03R\roperationType\x12B\n" +
-	"\x06status\x18\x04 \x01(\x0e2%.google.container.v1.Operation.StatusB\x03\xe0A\x03R\x06status\x12\x1b\n" +
-	"\x06detail\x18\b \x01(\tB\x03\xe0A\x03R\x06detail\x12,\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x05\xe0A\x03\x18\x01R\rstatusMessage\x12 \n" +
-	"\tself_link\x18\x06 \x01(\tB\x03\xe0A\x03R\bselfLink\x12$\n" +
-	"\vtarget_link\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"targetLink\x12\x1f\n" +
-	"\blocation\x18\t \x01(\tB\x03\xe0A\x03R\blocation\x12\"\n" +
+	"\tOperation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1a\n" +
+	"\x04zone\x18\x02 \x01(\tB\x06\xe2A\x01\x03\x18\x01R\x04zone\x12P\n" +
+	"\x0eoperation_type\x18\x03 \x01(\x0e2#.google.container.v1.Operation.TypeB\x04\xe2A\x01\x03R\roperationType\x12C\n" +
+	"\x06status\x18\x04 \x01(\x0e2%.google.container.v1.Operation.StatusB\x04\xe2A\x01\x03R\x06status\x12\x1c\n" +
+	"\x06detail\x18\b \x01(\tB\x04\xe2A\x01\x03R\x06detail\x12-\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x06\xe2A\x01\x03\x18\x01R\rstatusMessage\x12!\n" +
+	"\tself_link\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12%\n" +
+	"\vtarget_link\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"targetLink\x12 \n" +
+	"\blocation\x18\t \x01(\tB\x04\xe2A\x01\x03R\blocation\x12#\n" +
 	"\n" +
 	"start_time\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\tstartTime\x12\x1e\n" +
-	"\bend_time\x18\v \x01(\tB\x03\xe0A\x03R\aendTime\x12G\n" +
-	"\bprogress\x18\f \x01(\v2&.google.container.v1.OperationProgressB\x03\xe0A\x03R\bprogress\x12W\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\tstartTime\x12\x1f\n" +
+	"\bend_time\x18\v \x01(\tB\x04\xe2A\x01\x03R\aendTime\x12H\n" +
+	"\bprogress\x18\f \x01(\v2&.google.container.v1.OperationProgressB\x04\xe2A\x01\x03R\bprogress\x12W\n" +
 	"\x12cluster_conditions\x18\r \x03(\v2$.google.container.v1.StatusConditionB\x02\x18\x01R\x11clusterConditions\x12Y\n" +
 	"\x13nodepool_conditions\x18\x0e \x03(\v2$.google.container.v1.StatusConditionB\x02\x18\x01R\x12nodepoolConditions\x12(\n" +
 	"\x05error\x18\x0f \x01(\v2\x12.google.rpc.StatusR\x05error\"R\n" +
@@ -28571,23 +28571,23 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x12SET_NETWORK_POLICY\x10\x0f\x1a\x02\b\x01\x12\x1e\n" +
 	"\x16SET_MAINTENANCE_POLICY\x10\x10\x1a\x02\b\x01\x12\x12\n" +
 	"\x0eRESIZE_CLUSTER\x10\x12\x12\x19\n" +
-	"\x15FLEET_FEATURE_UPGRADE\x10\x13\"\x85\x03\n" +
+	"\x15FLEET_FEATURE_UPGRADE\x10\x13\"\x86\x03\n" +
 	"\x11OperationProgress\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
 	"\x06status\x18\x02 \x01(\x0e2%.google.container.v1.Operation.StatusR\x06status\x12G\n" +
 	"\ametrics\x18\x03 \x03(\v2-.google.container.v1.OperationProgress.MetricR\ametrics\x12>\n" +
-	"\x06stages\x18\x04 \x03(\v2&.google.container.v1.OperationProgressR\x06stages\x1a\x93\x01\n" +
-	"\x06Metric\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1d\n" +
+	"\x06stages\x18\x04 \x03(\v2&.google.container.v1.OperationProgressR\x06stages\x1a\x94\x01\n" +
+	"\x06Metric\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1d\n" +
 	"\tint_value\x18\x02 \x01(\x03H\x00R\bintValue\x12#\n" +
 	"\fdouble_value\x18\x03 \x01(\x01H\x00R\vdoubleValue\x12#\n" +
 	"\fstring_value\x18\x04 \x01(\tH\x00R\vstringValueB\a\n" +
-	"\x05value\"\xa6\x01\n" +
+	"\x05value\"\xa7\x01\n" +
 	"\x14CreateClusterRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
-	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12;\n" +
-	"\acluster\x18\x03 \x01(\v2\x1c.google.container.v1.ClusterB\x03\xe0A\x02R\acluster\x12\x16\n" +
+	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12<\n" +
+	"\acluster\x18\x03 \x01(\v2\x1c.google.container.v1.ClusterB\x04\xe2A\x01\x02R\acluster\x12\x16\n" +
 	"\x06parent\x18\x05 \x01(\tR\x06parent\"\x85\x01\n" +
 	"\x11GetClusterRequest\x12!\n" +
 	"\n" +
@@ -28595,15 +28595,15 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
 	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12\x12\n" +
-	"\x04name\x18\x05 \x01(\tR\x04name\"\xc9\x01\n" +
+	"\x04name\x18\x05 \x01(\tR\x04name\"\xca\x01\n" +
 	"\x14UpdateClusterRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12?\n" +
-	"\x06update\x18\x04 \x01(\v2\".google.container.v1.ClusterUpdateB\x03\xe0A\x02R\x06update\x12\x12\n" +
-	"\x04name\x18\x05 \x01(\tR\x04name\"\xd9\x13\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12@\n" +
+	"\x06update\x18\x04 \x01(\v2\".google.container.v1.ClusterUpdateB\x04\xe2A\x01\x02R\x06update\x12\x12\n" +
+	"\x04name\x18\x05 \x01(\tR\x04name\"\xdf\x13\n" +
 	"\x15UpdateNodePoolRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
@@ -28611,10 +28611,10 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
 	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12$\n" +
 	"\fnode_pool_id\x18\x04 \x01(\tB\x02\x18\x01R\n" +
-	"nodePoolId\x12&\n" +
-	"\fnode_version\x18\x05 \x01(\tB\x03\xe0A\x02R\vnodeVersion\x12\"\n" +
+	"nodePoolId\x12'\n" +
+	"\fnode_version\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vnodeVersion\x12#\n" +
 	"\n" +
-	"image_type\x18\x06 \x01(\tB\x03\xe0A\x02R\timageType\x12\x12\n" +
+	"image_type\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\timageType\x12\x12\n" +
 	"\x04name\x18\b \x01(\tR\x04name\x12\x14\n" +
 	"\x05image\x18\n" +
 	" \x01(\tR\x05image\x12#\n" +
@@ -28638,10 +28638,10 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x0elogging_config\x18  \x01(\v2*.google.container.v1.NodePoolLoggingConfigR\rloggingConfig\x12L\n" +
 	"\x0fresource_labels\x18! \x01(\v2#.google.container.v1.ResourceLabelsR\x0eresourceLabels\x12V\n" +
 	"\x13windows_node_config\x18\" \x01(\v2&.google.container.v1.WindowsNodeConfigR\x11windowsNodeConfig\x12J\n" +
-	"\faccelerators\x18# \x03(\v2&.google.container.v1.AcceleratorConfigR\faccelerators\x12&\n" +
-	"\fmachine_type\x18$ \x01(\tB\x03\xe0A\x01R\vmachineType\x12 \n" +
-	"\tdisk_type\x18% \x01(\tB\x03\xe0A\x01R\bdiskType\x12%\n" +
-	"\fdisk_size_gb\x18& \x01(\x03B\x03\xe0A\x01R\n" +
+	"\faccelerators\x18# \x03(\v2&.google.container.v1.AcceleratorConfigR\faccelerators\x12'\n" +
+	"\fmachine_type\x18$ \x01(\tB\x04\xe2A\x01\x01R\vmachineType\x12!\n" +
+	"\tdisk_type\x18% \x01(\tB\x04\xe2A\x01\x01R\bdiskType\x12&\n" +
+	"\fdisk_size_gb\x18& \x01(\x03B\x04\xe2A\x01\x01R\n" +
 	"diskSizeGb\x12\\\n" +
 	"\x15resource_manager_tags\x18' \x01(\v2(.google.container.v1.ResourceManagerTagsR\x13resourceManagerTags\x12R\n" +
 	"\x11containerd_config\x18( \x01(\v2%.google.container.v1.ContainerdConfigR\x10containerdConfig\x12a\n" +
@@ -28653,9 +28653,9 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\tboot_disk\x18/ \x01(\v2\x1d.google.container.v1.BootDiskR\bbootDisk\x12Y\n" +
 	"\x11node_drain_config\x180 \x01(\v2-.google.container.v1.NodePool.NodeDrainConfigR\x0fnodeDrainConfig\x12J\n" +
 	"\x13consolidation_delay\x181 \x01(\v2\x19.google.protobuf.DurationR\x12consolidationDelay\x12C\n" +
-	"\ftaint_config\x183 \x01(\v2 .google.container.v1.TaintConfigR\vtaintConfig\x12k\n" +
-	"\x12maintenance_policy\x184 \x01(\v27.google.container.v1.NodePool.NodePoolMaintenancePolicyB\x03\xe0A\x01R\x11maintenancePolicyB\r\n" +
-	"\v_flex_start\"\x88\x02\n" +
+	"\ftaint_config\x183 \x01(\v2 .google.container.v1.TaintConfigR\vtaintConfig\x12l\n" +
+	"\x12maintenance_policy\x184 \x01(\v27.google.container.v1.NodePool.NodePoolMaintenancePolicyB\x04\xe2A\x01\x01R\x11maintenancePolicyB\r\n" +
+	"\v_flex_start\"\x89\x02\n" +
 	"\x1dSetNodePoolAutoscalingRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
@@ -28663,57 +28663,57 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
 	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12$\n" +
 	"\fnode_pool_id\x18\x04 \x01(\tB\x02\x18\x01R\n" +
-	"nodePoolId\x12O\n" +
-	"\vautoscaling\x18\x05 \x01(\v2(.google.container.v1.NodePoolAutoscalingB\x03\xe0A\x02R\vautoscaling\x12\x12\n" +
-	"\x04name\x18\x06 \x01(\tR\x04name\"\xba\x01\n" +
+	"nodePoolId\x12P\n" +
+	"\vautoscaling\x18\x05 \x01(\v2(.google.container.v1.NodePoolAutoscalingB\x04\xe2A\x01\x02R\vautoscaling\x12\x12\n" +
+	"\x04name\x18\x06 \x01(\tR\x04name\"\xbb\x01\n" +
 	"\x18SetLoggingServiceRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12,\n" +
-	"\x0flogging_service\x18\x04 \x01(\tB\x03\xe0A\x02R\x0eloggingService\x12\x12\n" +
-	"\x04name\x18\x05 \x01(\tR\x04name\"\xc3\x01\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12-\n" +
+	"\x0flogging_service\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0eloggingService\x12\x12\n" +
+	"\x04name\x18\x05 \x01(\tR\x04name\"\xc4\x01\n" +
 	"\x1bSetMonitoringServiceRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x122\n" +
-	"\x12monitoring_service\x18\x04 \x01(\tB\x03\xe0A\x02R\x11monitoringService\x12\x12\n" +
-	"\x04name\x18\x06 \x01(\tR\x04name\"\xd7\x01\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x123\n" +
+	"\x12monitoring_service\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x11monitoringService\x12\x12\n" +
+	"\x04name\x18\x06 \x01(\tR\x04name\"\xd8\x01\n" +
 	"\x16SetAddonsConfigRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12K\n" +
-	"\raddons_config\x18\x04 \x01(\v2!.google.container.v1.AddonsConfigB\x03\xe0A\x02R\faddonsConfig\x12\x12\n" +
-	"\x04name\x18\x06 \x01(\tR\x04name\"\xaa\x01\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12L\n" +
+	"\raddons_config\x18\x04 \x01(\v2!.google.container.v1.AddonsConfigB\x04\xe2A\x01\x02R\faddonsConfig\x12\x12\n" +
+	"\x04name\x18\x06 \x01(\tR\x04name\"\xab\x01\n" +
 	"\x13SetLocationsRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12!\n" +
-	"\tlocations\x18\x04 \x03(\tB\x03\xe0A\x02R\tlocations\x12\x12\n" +
-	"\x04name\x18\x06 \x01(\tR\x04name\"\xb3\x01\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12\"\n" +
+	"\tlocations\x18\x04 \x03(\tB\x04\xe2A\x01\x02R\tlocations\x12\x12\n" +
+	"\x04name\x18\x06 \x01(\tR\x04name\"\xb4\x01\n" +
 	"\x13UpdateMasterRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12*\n" +
-	"\x0emaster_version\x18\x04 \x01(\tB\x03\xe0A\x02R\rmasterVersion\x12\x12\n" +
-	"\x04name\x18\a \x01(\tR\x04name\"\xe7\x02\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12+\n" +
+	"\x0emaster_version\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\rmasterVersion\x12\x12\n" +
+	"\x04name\x18\a \x01(\tR\x04name\"\xe9\x02\n" +
 	"\x14SetMasterAuthRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12M\n" +
-	"\x06action\x18\x04 \x01(\x0e20.google.container.v1.SetMasterAuthRequest.ActionB\x03\xe0A\x02R\x06action\x12<\n" +
-	"\x06update\x18\x05 \x01(\v2\x1f.google.container.v1.MasterAuthB\x03\xe0A\x02R\x06update\x12\x12\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12N\n" +
+	"\x06action\x18\x04 \x01(\x0e20.google.container.v1.SetMasterAuthRequest.ActionB\x04\xe2A\x01\x02R\x06action\x12=\n" +
+	"\x06update\x18\x05 \x01(\v2\x1f.google.container.v1.MasterAuthB\x04\xe2A\x01\x02R\x06update\x12\x12\n" +
 	"\x04name\x18\a \x01(\tR\x04name\"P\n" +
 	"\x06Action\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\x10\n" +
@@ -28773,14 +28773,14 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\achannel\x18\x01 \x01(\x0e2+.google.container.v1.ReleaseChannel.ChannelR\achannel\x12'\n" +
 	"\x0fdefault_version\x18\x02 \x01(\tR\x0edefaultVersion\x12%\n" +
 	"\x0evalid_versions\x18\x04 \x03(\tR\rvalidVersions\x124\n" +
-	"\x16upgrade_target_version\x18\x05 \x01(\tR\x14upgradeTargetVersion\"\xce\x01\n" +
+	"\x16upgrade_target_version\x18\x05 \x01(\tR\x14upgradeTargetVersion\"\xcf\x01\n" +
 	"\x15CreateNodePoolRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12?\n" +
-	"\tnode_pool\x18\x04 \x01(\v2\x1d.google.container.v1.NodePoolB\x03\xe0A\x02R\bnodePool\x12\x16\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12@\n" +
+	"\tnode_pool\x18\x04 \x01(\v2\x1d.google.container.v1.NodePoolB\x04\xe2A\x01\x02R\bnodePool\x12\x16\n" +
 	"\x06parent\x18\x06 \x01(\tR\x06parent\"\xaf\x01\n" +
 	"\x15DeleteNodePoolRequest\x12!\n" +
 	"\n" +
@@ -28806,7 +28806,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12$\n" +
 	"\fnode_pool_id\x18\x04 \x01(\tB\x02\x18\x01R\n" +
 	"nodePoolId\x12\x12\n" +
-	"\x04name\x18\x06 \x01(\tR\x04name\"\xf0\x05\n" +
+	"\x04name\x18\x06 \x01(\tR\x04name\"\xf1\x05\n" +
 	"\x11BlueGreenSettings\x12v\n" +
 	"\x17standard_rollout_policy\x18\x01 \x01(\v2<.google.container.v1.BlueGreenSettings.StandardRolloutPolicyH\x00R\x15standardRolloutPolicy\x12|\n" +
 	"\x19autoscaled_rollout_policy\x18\x03 \x01(\v2>.google.container.v1.BlueGreenSettings.AutoscaledRolloutPolicyH\x00R\x17autoscaledRolloutPolicy\x12U\n" +
@@ -28816,41 +28816,41 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x10batch_node_count\x18\x02 \x01(\x05H\x00R\x0ebatchNodeCount\x12N\n" +
 	"\x13batch_soak_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x01R\x11batchSoakDuration\x88\x01\x01B\x13\n" +
 	"\x11update_batch_sizeB\x16\n" +
-	"\x14_batch_soak_duration\x1ap\n" +
-	"\x17AutoscaledRolloutPolicy\x12U\n" +
-	"\x17wait_for_drain_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x14waitForDrainDurationB\x10\n" +
+	"\x14_batch_soak_duration\x1aq\n" +
+	"\x17AutoscaledRolloutPolicy\x12V\n" +
+	"\x17wait_for_drain_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x14waitForDrainDurationB\x10\n" +
 	"\x0erollout_policyB\x1a\n" +
-	"\x18_node_pool_soak_duration\"\xb1\x1e\n" +
+	"\x18_node_pool_soak_duration\"\xc2\x1e\n" +
 	"\bNodePool\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x127\n" +
 	"\x06config\x18\x02 \x01(\v2\x1f.google.container.v1.NodeConfigR\x06config\x12,\n" +
 	"\x12initial_node_count\x18\x03 \x01(\x05R\x10initialNodeCount\x12\x1c\n" +
 	"\tlocations\x18\r \x03(\tR\tlocations\x12M\n" +
-	"\x0enetwork_config\x18\x0e \x01(\v2&.google.container.v1.NodeNetworkConfigR\rnetworkConfig\x12 \n" +
-	"\tself_link\x18d \x01(\tB\x03\xe0A\x03R\bselfLink\x12\x18\n" +
-	"\aversion\x18e \x01(\tR\aversion\x123\n" +
-	"\x13instance_group_urls\x18f \x03(\tB\x03\xe0A\x03R\x11instanceGroupUrls\x12A\n" +
-	"\x06status\x18g \x01(\x0e2$.google.container.v1.NodePool.StatusB\x03\xe0A\x03R\x06status\x12,\n" +
-	"\x0estatus_message\x18h \x01(\tB\x05\xe0A\x03\x18\x01R\rstatusMessage\x12J\n" +
+	"\x0enetwork_config\x18\x0e \x01(\v2&.google.container.v1.NodeNetworkConfigR\rnetworkConfig\x12!\n" +
+	"\tself_link\x18d \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12\x18\n" +
+	"\aversion\x18e \x01(\tR\aversion\x124\n" +
+	"\x13instance_group_urls\x18f \x03(\tB\x04\xe2A\x01\x03R\x11instanceGroupUrls\x12B\n" +
+	"\x06status\x18g \x01(\x0e2$.google.container.v1.NodePool.StatusB\x04\xe2A\x01\x03R\x06status\x12-\n" +
+	"\x0estatus_message\x18h \x01(\tB\x06\xe2A\x01\x03\x18\x01R\rstatusMessage\x12J\n" +
 	"\vautoscaling\x18\x04 \x01(\v2(.google.container.v1.NodePoolAutoscalingR\vautoscaling\x12C\n" +
 	"\n" +
 	"management\x18\x05 \x01(\v2#.google.container.v1.NodeManagementR\n" +
 	"management\x12V\n" +
-	"\x13max_pods_constraint\x18\x06 \x01(\v2&.google.container.v1.MaxPodsConstraintR\x11maxPodsConstraint\x12I\n" +
+	"\x13max_pods_constraint\x18\x06 \x01(\v2&.google.container.v1.MaxPodsConstraintR\x11maxPodsConstraint\x12J\n" +
 	"\n" +
-	"conditions\x18i \x03(\v2$.google.container.v1.StatusConditionB\x03\xe0A\x03R\n" +
-	"conditions\x120\n" +
-	"\x12pod_ipv4_cidr_size\x18\a \x01(\x05B\x03\xe0A\x03R\x0fpodIpv4CidrSize\x12X\n" +
+	"conditions\x18i \x03(\v2$.google.container.v1.StatusConditionB\x04\xe2A\x01\x03R\n" +
+	"conditions\x121\n" +
+	"\x12pod_ipv4_cidr_size\x18\a \x01(\x05B\x04\xe2A\x01\x03R\x0fpodIpv4CidrSize\x12X\n" +
 	"\x10upgrade_settings\x18k \x01(\v2-.google.container.v1.NodePool.UpgradeSettingsR\x0fupgradeSettings\x12X\n" +
-	"\x10placement_policy\x18l \x01(\v2-.google.container.v1.NodePool.PlacementPolicyR\x0fplacementPolicy\x12N\n" +
-	"\vupdate_info\x18m \x01(\v2(.google.container.v1.NodePool.UpdateInfoB\x03\xe0A\x03R\n" +
-	"updateInfo\x12\x17\n" +
-	"\x04etag\x18n \x01(\tB\x03\xe0A\x03R\x04etag\x12a\n" +
+	"\x10placement_policy\x18l \x01(\v2-.google.container.v1.NodePool.PlacementPolicyR\x0fplacementPolicy\x12O\n" +
+	"\vupdate_info\x18m \x01(\v2(.google.container.v1.NodePool.UpdateInfoB\x04\xe2A\x01\x03R\n" +
+	"updateInfo\x12\x18\n" +
+	"\x04etag\x18n \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12a\n" +
 	"\x13queued_provisioning\x18p \x01(\v20.google.container.v1.NodePool.QueuedProvisioningR\x12queuedProvisioning\x12e\n" +
 	"\x18best_effort_provisioning\x18q \x01(\v2+.google.container.v1.BestEffortProvisioningR\x16bestEffortProvisioning\x12Y\n" +
-	"\x11node_drain_config\x18t \x01(\v2-.google.container.v1.NodePool.NodeDrainConfigR\x0fnodeDrainConfig\x12k\n" +
-	"\x12maintenance_policy\x18v \x01(\v27.google.container.v1.NodePool.NodePoolMaintenancePolicyB\x03\xe0A\x01R\x11maintenancePolicy\x12^\n" +
-	"\x11kubelet_cert_info\x18w \x01(\v2-.google.container.v1.NodePool.KubeletCertInfoB\x03\xe0A\x03R\x0fkubeletCertInfo\x1a\xa7\x02\n" +
+	"\x11node_drain_config\x18t \x01(\v2-.google.container.v1.NodePool.NodeDrainConfigR\x0fnodeDrainConfig\x12l\n" +
+	"\x12maintenance_policy\x18v \x01(\v27.google.container.v1.NodePool.NodePoolMaintenancePolicyB\x04\xe2A\x01\x01R\x11maintenancePolicy\x12_\n" +
+	"\x11kubelet_cert_info\x18w \x01(\v2-.google.container.v1.NodePool.KubeletCertInfoB\x04\xe2A\x01\x03R\x0fkubeletCertInfo\x1a\xa7\x02\n" +
 	"\x0fUpgradeSettings\x12\x1b\n" +
 	"\tmax_surge\x18\x01 \x01(\x05R\bmaxSurge\x12'\n" +
 	"\x0fmax_unavailable\x18\x02 \x01(\x05R\x0emaxUnavailable\x12L\n" +
@@ -28875,10 +28875,10 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x12DRAINING_BLUE_POOL\x10\x04\x12\x15\n" +
 	"\x11NODE_POOL_SOAKING\x10\x05\x12\x16\n" +
 	"\x12DELETING_BLUE_POOL\x10\x06\x12\x14\n" +
-	"\x10ROLLBACK_STARTED\x10\a\x1a\xcd\x01\n" +
+	"\x10ROLLBACK_STARTED\x10\a\x1a\xce\x01\n" +
 	"\x0fPlacementPolicy\x12F\n" +
-	"\x04type\x18\x01 \x01(\x0e22.google.container.v1.NodePool.PlacementPolicy.TypeR\x04type\x12&\n" +
-	"\ftpu_topology\x18\x02 \x01(\tB\x03\xe0A\x01R\vtpuTopology\x12\x1f\n" +
+	"\x04type\x18\x01 \x01(\x0e22.google.container.v1.NodePool.PlacementPolicy.TypeR\x04type\x12'\n" +
+	"\ftpu_topology\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vtpuTopology\x12\x1f\n" +
 	"\vpolicy_name\x18\x03 \x01(\tR\n" +
 	"policyName\")\n" +
 	"\x04Type\x12\x14\n" +
@@ -28892,17 +28892,17 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"%respect_pdb_during_node_pool_deletion\x18\x03 \x01(\bH\x02R respectPdbDuringNodePoolDeletion\x88\x01\x01B\x17\n" +
 	"\x15_pdb_timeout_durationB\x1d\n" +
 	"\x1b_grace_termination_durationB(\n" +
-	"&_respect_pdb_during_node_pool_deletion\x1a\xb7\x01\n" +
-	"\x1aExclusionUntilEndOfSupport\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x12>\n" +
+	"&_respect_pdb_during_node_pool_deletion\x1a\xba\x01\n" +
+	"\x1aExclusionUntilEndOfSupport\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x1a\x9f\x01\n" +
-	"\x19NodePoolMaintenancePolicy\x12\x81\x01\n" +
-	"\x1eexclusion_until_end_of_support\x18\x01 \x01(\v28.google.container.v1.NodePool.ExclusionUntilEndOfSupportB\x03\xe0A\x01R\x1aexclusionUntilEndOfSupport\x1a\xe2\x01\n" +
-	"\x0fKubeletCertInfo\x12c\n" +
-	"\x1etpm_bootstrap_cert_expire_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1atpmBootstrapCertExpireTime\x12j\n" +
-	"\"non_tpm_bootstrap_cert_expire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1dnonTpmBootstrapCertExpireTime\"\x81\x01\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x1a\xa0\x01\n" +
+	"\x19NodePoolMaintenancePolicy\x12\x82\x01\n" +
+	"\x1eexclusion_until_end_of_support\x18\x01 \x01(\v28.google.container.v1.NodePool.ExclusionUntilEndOfSupportB\x04\xe2A\x01\x01R\x1aexclusionUntilEndOfSupport\x1a\xe4\x01\n" +
+	"\x0fKubeletCertInfo\x12d\n" +
+	"\x1etpm_bootstrap_cert_expire_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1atpmBootstrapCertExpireTime\x12k\n" +
+	"\"non_tpm_bootstrap_cert_expire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1dnonTpmBootstrapCertExpireTime\"\x81\x01\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fPROVISIONING\x10\x01\x12\v\n" +
@@ -28919,19 +28919,19 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	" \x01(\v2'.google.container.v1.AutoUpgradeOptionsR\x0eupgradeOptions\"b\n" +
 	"\x16BestEffortProvisioning\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12.\n" +
-	"\x13min_provision_nodes\x18\x02 \x01(\x05R\x11minProvisionNodes\"w\n" +
-	"\x12AutoUpgradeOptions\x12:\n" +
-	"\x17auto_upgrade_start_time\x18\x01 \x01(\tB\x03\xe0A\x03R\x14autoUpgradeStartTime\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\"\xd7\x01\n" +
+	"\x13min_provision_nodes\x18\x02 \x01(\x05R\x11minProvisionNodes\"y\n" +
+	"\x12AutoUpgradeOptions\x12;\n" +
+	"\x17auto_upgrade_start_time\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x14autoUpgradeStartTime\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\"\xd8\x01\n" +
 	"\x11MaintenancePolicy\x12>\n" +
 	"\x06window\x18\x01 \x01(\v2&.google.container.v1.MaintenanceWindowR\x06window\x12)\n" +
-	"\x10resource_version\x18\x03 \x01(\tR\x0fresourceVersion\x12W\n" +
-	"\x11disruption_budget\x18\x04 \x01(\v2%.google.container.v1.DisruptionBudgetB\x03\xe0A\x01R\x10disruptionBudget\"\xa8\x03\n" +
-	"\x10DisruptionBudget\x12i\n" +
-	"!minor_version_disruption_interval\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x1eminorVersionDisruptionInterval\x12i\n" +
-	"!patch_version_disruption_interval\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x1epatchVersionDisruptionInterval\x12k\n" +
-	"\"last_minor_version_disruption_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1elastMinorVersionDisruptionTime\x12Q\n" +
-	"\x14last_disruption_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12lastDisruptionTime\"\xb7\x04\n" +
+	"\x10resource_version\x18\x03 \x01(\tR\x0fresourceVersion\x12X\n" +
+	"\x11disruption_budget\x18\x04 \x01(\v2%.google.container.v1.DisruptionBudgetB\x04\xe2A\x01\x01R\x10disruptionBudget\"\xac\x03\n" +
+	"\x10DisruptionBudget\x12j\n" +
+	"!minor_version_disruption_interval\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x1eminorVersionDisruptionInterval\x12j\n" +
+	"!patch_version_disruption_interval\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x1epatchVersionDisruptionInterval\x12l\n" +
+	"\"last_minor_version_disruption_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1elastMinorVersionDisruptionTime\x12R\n" +
+	"\x14last_disruption_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12lastDisruptionTime\"\xb7\x04\n" +
 	"\x11MaintenanceWindow\x12g\n" +
 	"\x18daily_maintenance_window\x18\x02 \x01(\v2+.google.container.v1.DailyMaintenanceWindowH\x00R\x16dailyMaintenanceWindow\x12U\n" +
 	"\x10recurring_window\x18\x03 \x01(\v2(.google.container.v1.RecurringTimeWindowH\x00R\x0frecurringWindow\x12s\n" +
@@ -28962,20 +28962,20 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x06window\x18\x01 \x01(\v2\x1f.google.container.v1.TimeWindowR\x06window\x12\x1e\n" +
 	"\n" +
 	"recurrence\x18\x02 \x01(\tR\n" +
-	"recurrence\"\xa1\x02\n" +
-	"\x1aRecurringMaintenanceWindow\x12<\n" +
-	"\vdelay_until\x18\x01 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01H\x00R\n" +
-	"delayUntil\x88\x01\x01\x12G\n" +
-	"\x11window_start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\x0fwindowStartTime\x12G\n" +
-	"\x0fwindow_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0ewindowDuration\x12#\n" +
+	"recurrence\"\xa5\x02\n" +
+	"\x1aRecurringMaintenanceWindow\x12=\n" +
+	"\vdelay_until\x18\x01 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01H\x00R\n" +
+	"delayUntil\x88\x01\x01\x12H\n" +
+	"\x11window_start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x02R\x0fwindowStartTime\x12H\n" +
+	"\x0fwindow_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0ewindowDuration\x12$\n" +
 	"\n" +
-	"recurrence\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
+	"recurrence\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"recurrenceB\x0e\n" +
-	"\f_delay_until\"X\n" +
+	"\f_delay_until\"Y\n" +
 	"\x16DailyMaintenanceWindow\x12\x1d\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\tR\tstartTime\x12\x1f\n" +
-	"\bduration\x18\x03 \x01(\tB\x03\xe0A\x03R\bduration\"\x80\x02\n" +
+	"start_time\x18\x02 \x01(\tR\tstartTime\x12 \n" +
+	"\bduration\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bduration\"\x81\x02\n" +
 	"\x1cSetNodePoolManagementRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
@@ -28983,11 +28983,11 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
 	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12$\n" +
 	"\fnode_pool_id\x18\x04 \x01(\tB\x02\x18\x01R\n" +
-	"nodePoolId\x12H\n" +
+	"nodePoolId\x12I\n" +
 	"\n" +
-	"management\x18\x05 \x01(\v2#.google.container.v1.NodeManagementB\x03\xe0A\x02R\n" +
+	"management\x18\x05 \x01(\v2#.google.container.v1.NodeManagementB\x04\xe2A\x01\x02R\n" +
 	"management\x12\x12\n" +
-	"\x04name\x18\a \x01(\tR\x04name\"\xd4\x01\n" +
+	"\x04name\x18\a \x01(\tR\x04name\"\xd5\x01\n" +
 	"\x16SetNodePoolSizeRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
@@ -28995,9 +28995,9 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
 	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12$\n" +
 	"\fnode_pool_id\x18\x04 \x01(\tB\x02\x18\x01R\n" +
-	"nodePoolId\x12\"\n" +
+	"nodePoolId\x12#\n" +
 	"\n" +
-	"node_count\x18\x05 \x01(\x05B\x03\xe0A\x02R\tnodeCount\x12\x12\n" +
+	"node_count\x18\x05 \x01(\x05B\x04\xe2A\x01\x02R\tnodeCount\x12\x12\n" +
 	"\x04name\x18\a \x01(\tR\x04name\"4\n" +
 	"\x1eCompleteNodePoolUpgradeRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"\xd9\x01\n" +
@@ -29066,26 +29066,26 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x0eLocationPolicy\x12\x1f\n" +
 	"\x1bLOCATION_POLICY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bBALANCED\x10\x01\x12\a\n" +
-	"\x03ANY\x10\x02\"\xe2\x02\n" +
+	"\x03ANY\x10\x02\"\xe4\x02\n" +
 	"\x10SetLabelsRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12g\n" +
-	"\x0fresource_labels\x18\x04 \x03(\v29.google.container.v1.SetLabelsRequest.ResourceLabelsEntryB\x03\xe0A\x02R\x0eresourceLabels\x120\n" +
-	"\x11label_fingerprint\x18\x05 \x01(\tB\x03\xe0A\x02R\x10labelFingerprint\x12\x12\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12h\n" +
+	"\x0fresource_labels\x18\x04 \x03(\v29.google.container.v1.SetLabelsRequest.ResourceLabelsEntryB\x04\xe2A\x01\x02R\x0eresourceLabels\x121\n" +
+	"\x11label_fingerprint\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x10labelFingerprint\x12\x12\n" +
 	"\x04name\x18\a \x01(\tR\x04name\x1aA\n" +
 	"\x13ResourceLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa7\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa8\x01\n" +
 	"\x14SetLegacyAbacRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12\x1d\n" +
-	"\aenabled\x18\x04 \x01(\bB\x03\xe0A\x02R\aenabled\x12\x12\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12\x1e\n" +
+	"\aenabled\x18\x04 \x01(\bB\x04\xe2A\x01\x02R\aenabled\x12\x12\n" +
 	"\x04name\x18\x06 \x01(\tR\x04name\"\xb9\x01\n" +
 	"\x16StartIPRotationRequest\x12!\n" +
 	"\n" +
@@ -29132,22 +29132,22 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fGCE_METADATA\x10\x01\x12\x10\n" +
-	"\fGKE_METADATA\x10\x02\"\xdb\x01\n" +
+	"\fGKE_METADATA\x10\x02\"\xdc\x01\n" +
 	"\x17SetNetworkPolicyRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
 	"\x04zone\x18\x02 \x01(\tB\x02\x18\x01R\x04zone\x12!\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12N\n" +
-	"\x0enetwork_policy\x18\x04 \x01(\v2\".google.container.v1.NetworkPolicyB\x03\xe0A\x02R\rnetworkPolicy\x12\x12\n" +
-	"\x04name\x18\x06 \x01(\tR\x04name\"\xee\x01\n" +
-	"\x1bSetMaintenancePolicyRequest\x12\"\n" +
+	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12O\n" +
+	"\x0enetwork_policy\x18\x04 \x01(\v2\".google.container.v1.NetworkPolicyB\x04\xe2A\x01\x02R\rnetworkPolicy\x12\x12\n" +
+	"\x04name\x18\x06 \x01(\tR\x04name\"\xf2\x01\n" +
+	"\x1bSetMaintenancePolicyRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x02R\x04zone\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tclusterId\x12Z\n" +
-	"\x12maintenance_policy\x18\x04 \x01(\v2&.google.container.v1.MaintenancePolicyB\x03\xe0A\x02R\x11maintenancePolicy\x12\x12\n" +
+	"cluster_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12[\n" +
+	"\x12maintenance_policy\x18\x04 \x01(\v2&.google.container.v1.MaintenancePolicyB\x04\xe2A\x01\x02R\x11maintenancePolicy\x12\x12\n" +
 	"\x04name\x18\x05 \x01(\tR\x04name\"\x92\x03\n" +
 	"\x0fStatusCondition\x12A\n" +
 	"\x04code\x18\x01 \x01(\x0e2).google.container.v1.StatusCondition.CodeB\x02\x18\x01R\x04code\x12\x18\n" +
@@ -29163,11 +29163,11 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\vCA_EXPIRING\x10\t\x12,\n" +
 	"(NODE_SERVICE_ACCOUNT_MISSING_PERMISSIONS\x10\n" +
 	"\x12\x1b\n" +
-	"\x17CLOUD_KMS_KEY_DESTROYED\x10\v\"\x80\x0f\n" +
-	"\rNetworkConfig\x12\x1d\n" +
-	"\anetwork\x18\x01 \x01(\tB\x03\xe0A\x03R\anetwork\x12#\n" +
+	"\x17CLOUD_KMS_KEY_DESTROYED\x10\v\"\x83\x0f\n" +
+	"\rNetworkConfig\x12\x1e\n" +
+	"\anetwork\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\anetwork\x12$\n" +
 	"\n" +
-	"subnetwork\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
+	"subnetwork\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"subnetwork\x12?\n" +
 	"\x1cenable_intra_node_visibility\x18\x05 \x01(\bR\x19enableIntraNodeVisibility\x12V\n" +
 	"\x13default_snat_status\x18\a \x01(\v2&.google.container.v1.DefaultSnatStatusR\x11defaultSnatStatus\x126\n" +
@@ -29184,8 +29184,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x1aenable_fqdn_network_policy\x18\x13 \x01(\bH\x00R\x17enableFqdnNetworkPolicy\x88\x01\x01\x12t\n" +
 	"\x1cin_transit_encryption_config\x18\x14 \x01(\x0e2..google.container.v1.InTransitEncryptionConfigH\x01R\x19inTransitEncryptionConfig\x88\x01\x01\x12[\n" +
 	"(enable_cilium_clusterwide_network_policy\x18\x15 \x01(\bH\x02R$enableCiliumClusterwideNetworkPolicy\x88\x01\x01\x12D\n" +
-	"\x1cdefault_enable_private_nodes\x18\x16 \x01(\bH\x03R\x19defaultEnablePrivateNodes\x88\x01\x01\x12`\n" +
-	"\x13dataplane_v2_config\x18\x17 \x01(\v2&.google.container.v1.DataplaneV2ConfigB\x03\xe0A\x01H\x04R\x11dataplaneV2Config\x88\x01\x01\x12U\n" +
+	"\x1cdefault_enable_private_nodes\x18\x16 \x01(\bH\x03R\x19defaultEnablePrivateNodes\x88\x01\x01\x12a\n" +
+	"\x13dataplane_v2_config\x18\x17 \x01(\v2&.google.container.v1.DataplaneV2ConfigB\x04\xe2A\x01\x01H\x04R\x11dataplaneV2Config\x88\x01\x01\x12U\n" +
 	"%disable_l4_lb_firewall_reconciliation\x18\x18 \x01(\bH\x05R!disableL4LbFirewallReconciliation\x88\x01\x01\x1a\xf9\x01\n" +
 	"\x1fClusterNetworkPerformanceConfig\x12\x8b\x01\n" +
 	"\x1btotal_egress_bandwidth_tier\x18\x01 \x01(\x0e2G.google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig.TierH\x00R\x18totalEgressBandwidthTier\x88\x01\x01\"(\n" +
@@ -29264,13 +29264,13 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x19IntraNodeVisibilityConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\"/\n" +
 	"\x13ILBSubsettingConfig\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\"\xc1\x03\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\"\xc2\x03\n" +
 	"\tDNSConfig\x12H\n" +
 	"\vcluster_dns\x18\x01 \x01(\x0e2'.google.container.v1.DNSConfig.ProviderR\n" +
 	"clusterDns\x12S\n" +
 	"\x11cluster_dns_scope\x18\x02 \x01(\x0e2'.google.container.v1.DNSConfig.DNSScopeR\x0fclusterDnsScope\x12,\n" +
-	"\x12cluster_dns_domain\x18\x03 \x01(\tR\x10clusterDnsDomain\x12E\n" +
-	"\x1dadditive_vpc_scope_dns_domain\x18\x05 \x01(\tB\x03\xe0A\x01R\x19additiveVpcScopeDnsDomain\"W\n" +
+	"\x12cluster_dns_domain\x18\x03 \x01(\tR\x10clusterDnsDomain\x12F\n" +
+	"\x1dadditive_vpc_scope_dns_domain\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x19additiveVpcScopeDnsDomain\"W\n" +
 	"\bProvider\x12\x18\n" +
 	"\x14PROVIDER_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10PLATFORM_DEFAULT\x10\x01\x12\r\n" +
@@ -29287,13 +29287,13 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x15IdentityServiceConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\"_\n" +
 	"\x10MeshCertificates\x12K\n" +
-	"\x13enable_certificates\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueR\x12enableCertificates\"\x81\b\n" +
+	"\x13enable_certificates\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueR\x12enableCertificates\"\x84\b\n" +
 	"\x12DatabaseEncryption\x12\x19\n" +
 	"\bkey_name\x18\x01 \x01(\tR\akeyName\x12C\n" +
-	"\x05state\x18\x02 \x01(\x0e2-.google.container.v1.DatabaseEncryption.StateR\x05state\x12c\n" +
-	"\rcurrent_state\x18\x03 \x01(\x0e24.google.container.v1.DatabaseEncryption.CurrentStateB\x03\xe0A\x03H\x00R\fcurrentState\x88\x01\x01\x12,\n" +
-	"\x0fdecryption_keys\x18\x04 \x03(\tB\x03\xe0A\x03R\x0edecryptionKeys\x12o\n" +
-	"\x15last_operation_errors\x18\x05 \x03(\v26.google.container.v1.DatabaseEncryption.OperationErrorB\x03\xe0A\x03R\x13lastOperationErrors\x1a\x8a\x01\n" +
+	"\x05state\x18\x02 \x01(\x0e2-.google.container.v1.DatabaseEncryption.StateR\x05state\x12d\n" +
+	"\rcurrent_state\x18\x03 \x01(\x0e24.google.container.v1.DatabaseEncryption.CurrentStateB\x04\xe2A\x01\x03H\x00R\fcurrentState\x88\x01\x01\x12-\n" +
+	"\x0fdecryption_keys\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\x0edecryptionKeys\x12p\n" +
+	"\x15last_operation_errors\x18\x05 \x03(\v26.google.container.v1.DatabaseEncryption.OperationErrorB\x04\xe2A\x01\x03R\x13lastOperationErrors\x1a\x8a\x01\n" +
 	"\x0eOperationError\x12\x19\n" +
 	"\bkey_name\x18\x01 \x01(\tR\akeyName\x12#\n" +
 	"\rerror_message\x18\x02 \x01(\tR\ferrorMessage\x128\n" +
@@ -29395,16 +29395,16 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"&CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03SEV\x10\x01\x12\v\n" +
 	"\aSEV_SNP\x10\x02\x12\a\n" +
-	"\x03TDX\x10\x03\"\xb1\x03\n" +
+	"\x03TDX\x10\x03\"\xb3\x03\n" +
 	"\fUpgradeEvent\x12M\n" +
 	"\rresource_type\x18\x01 \x01(\x0e2(.google.container.v1.UpgradeResourceTypeR\fresourceType\x12\x1c\n" +
 	"\toperation\x18\x02 \x01(\tR\toperation\x12L\n" +
 	"\x14operation_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x12operationStartTime\x12'\n" +
 	"\x0fcurrent_version\x18\x04 \x01(\tR\x0ecurrentVersion\x12%\n" +
-	"\x0etarget_version\x18\x05 \x01(\tR\rtargetVersion\x12=\n" +
-	"\x18current_emulated_version\x18\a \x01(\tB\x03\xe0A\x03R\x16currentEmulatedVersion\x12;\n" +
-	"\x17target_emulated_version\x18\b \x01(\tB\x03\xe0A\x03R\x15targetEmulatedVersion\x12\x1a\n" +
-	"\bresource\x18\x06 \x01(\tR\bresource\"\xe4\t\n" +
+	"\x0etarget_version\x18\x05 \x01(\tR\rtargetVersion\x12>\n" +
+	"\x18current_emulated_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\x16currentEmulatedVersion\x12<\n" +
+	"\x17target_emulated_version\x18\b \x01(\tB\x04\xe2A\x01\x03R\x15targetEmulatedVersion\x12\x1a\n" +
+	"\bresource\x18\x06 \x01(\tR\bresource\"\xe7\t\n" +
 	"\x10UpgradeInfoEvent\x12M\n" +
 	"\rresource_type\x18\x01 \x01(\x0e2(.google.container.v1.UpgradeResourceTypeR\fresourceType\x12\x1c\n" +
 	"\toperation\x18\x02 \x01(\tR\toperation\x129\n" +
@@ -29412,11 +29412,11 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
 	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12'\n" +
 	"\x0fcurrent_version\x18\x05 \x01(\tR\x0ecurrentVersion\x12%\n" +
-	"\x0etarget_version\x18\x06 \x01(\tR\rtargetVersion\x12=\n" +
-	"\x18current_emulated_version\x18\x0f \x01(\tB\x03\xe0A\x03R\x16currentEmulatedVersion\x12;\n" +
-	"\x17target_emulated_version\x18\x10 \x01(\tB\x03\xe0A\x03R\x15targetEmulatedVersion\x12\x1a\n" +
-	"\bresource\x18\a \x01(\tR\bresource\x12F\n" +
-	"\x05state\x18\b \x01(\x0e2+.google.container.v1.UpgradeInfoEvent.StateB\x03\xe0A\x03R\x05state\x12Z\n" +
+	"\x0etarget_version\x18\x06 \x01(\tR\rtargetVersion\x12>\n" +
+	"\x18current_emulated_version\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x16currentEmulatedVersion\x12<\n" +
+	"\x17target_emulated_version\x18\x10 \x01(\tB\x04\xe2A\x01\x03R\x15targetEmulatedVersion\x12\x1a\n" +
+	"\bresource\x18\a \x01(\tR\bresource\x12G\n" +
+	"\x05state\x18\b \x01(\x0e2+.google.container.v1.UpgradeInfoEvent.StateB\x04\xe2A\x01\x03R\x05state\x12Z\n" +
 	"\x19standard_support_end_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x16standardSupportEndTime\x88\x01\x01\x12Z\n" +
 	"\x19extended_support_end_time\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampH\x01R\x16extendedSupportEndTime\x88\x01\x01\x12 \n" +
@@ -29557,9 +29557,9 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\aKUBELET\x10\x0e\x12\b\n" +
 	"\x04DCGM\x10\x0f\x12\n" +
 	"\n" +
-	"\x06JOBSET\x10\x10\"\xed\x01\n" +
-	"\x11DataplaneV2Config\x12k\n" +
-	"\x10scalability_mode\x18\x01 \x01(\x0e26.google.container.v1.DataplaneV2Config.ScalabilityModeB\x03\xe0A\x01H\x00R\x0fscalabilityMode\x88\x01\x01\"V\n" +
+	"\x06JOBSET\x10\x10\"\xee\x01\n" +
+	"\x11DataplaneV2Config\x12l\n" +
+	"\x10scalability_mode\x18\x01 \x01(\x0e26.google.container.v1.DataplaneV2Config.ScalabilityModeB\x04\xe2A\x01\x01H\x00R\x0fscalabilityMode\x88\x01\x01\"V\n" +
 	"\x0fScalabilityMode\x12 \n" +
 	"\x1cSCALABILITY_MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x03\x12\x13\n" +
@@ -29582,45 +29582,45 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x17HPA_PROFILE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\x0f\n" +
 	"\vPERFORMANCE\x10\x02B\x0e\n" +
-	"\f_hpa_profile\"\x8a\x02\n" +
+	"\f_hpa_profile\"\x8c\x02\n" +
 	"\x05Fleet\x12\x18\n" +
-	"\aproject\x18\x01 \x01(\tR\aproject\x12#\n" +
+	"\aproject\x18\x01 \x01(\tR\aproject\x12$\n" +
 	"\n" +
-	"membership\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"membership\x12*\n" +
-	"\x0epre_registered\x18\x03 \x01(\bB\x03\xe0A\x03R\rpreRegistered\x12R\n" +
+	"membership\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"membership\x12+\n" +
+	"\x0epre_registered\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\rpreRegistered\x12R\n" +
 	"\x0fmembership_type\x18\x04 \x01(\x0e2).google.container.v1.Fleet.MembershipTypeR\x0emembershipType\"B\n" +
 	"\x0eMembershipType\x12\x1f\n" +
 	"\x1bMEMBERSHIP_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
-	"\vLIGHTWEIGHT\x10\x01\"\xad\b\n" +
+	"\vLIGHTWEIGHT\x10\x01\"\xb0\b\n" +
 	"\x1bControlPlaneEndpointsConfig\x12r\n" +
 	"\x13dns_endpoint_config\x18\x01 \x01(\v2B.google.container.v1.ControlPlaneEndpointsConfig.DNSEndpointConfigR\x11dnsEndpointConfig\x12r\n" +
-	"\x13ip_endpoints_config\x18\x03 \x01(\v2B.google.container.v1.ControlPlaneEndpointsConfig.IPEndpointsConfigR\x11ipEndpointsConfig\x1a\xc1\x02\n" +
-	"\x11DNSEndpointConfig\x12\x1f\n" +
-	"\bendpoint\x18\x02 \x01(\tB\x03\xe0A\x03R\bendpoint\x129\n" +
+	"\x13ip_endpoints_config\x18\x03 \x01(\v2B.google.container.v1.ControlPlaneEndpointsConfig.IPEndpointsConfigR\x11ipEndpointsConfig\x1a\xc2\x02\n" +
+	"\x11DNSEndpointConfig\x12 \n" +
+	"\bendpoint\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\bendpoint\x129\n" +
 	"\x16allow_external_traffic\x18\x03 \x01(\bH\x00R\x14allowExternalTraffic\x88\x01\x01\x12=\n" +
 	"\x19enable_k8s_tokens_via_dns\x18\x05 \x01(\bH\x01R\x15enableK8sTokensViaDns\x88\x01\x01\x12;\n" +
 	"\x18enable_k8s_certs_via_dns\x18\x06 \x01(\bH\x02R\x14enableK8sCertsViaDns\x88\x01\x01B\x19\n" +
 	"\x17_allow_external_trafficB\x1c\n" +
 	"\x1a_enable_k8s_tokens_via_dnsB\x1b\n" +
-	"\x19_enable_k8s_certs_via_dns\x1a\xe1\x03\n" +
+	"\x19_enable_k8s_certs_via_dns\x1a\xe3\x03\n" +
 	"\x11IPEndpointsConfig\x12\x1d\n" +
 	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01\x129\n" +
 	"\x16enable_public_endpoint\x18\x02 \x01(\bH\x01R\x14enablePublicEndpoint\x88\x01\x01\x12(\n" +
 	"\rglobal_access\x18\x03 \x01(\bH\x02R\fglobalAccess\x88\x01\x01\x12q\n" +
-	"\x1aauthorized_networks_config\x18\x04 \x01(\v23.google.container.v1.MasterAuthorizedNetworksConfigR\x18authorizedNetworksConfig\x12,\n" +
-	"\x0fpublic_endpoint\x18\x05 \x01(\tB\x03\xe0A\x03R\x0epublicEndpoint\x12.\n" +
-	"\x10private_endpoint\x18\x06 \x01(\tB\x03\xe0A\x03R\x0fprivateEndpoint\x12>\n" +
+	"\x1aauthorized_networks_config\x18\x04 \x01(\v23.google.container.v1.MasterAuthorizedNetworksConfigR\x18authorizedNetworksConfig\x12-\n" +
+	"\x0fpublic_endpoint\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x0epublicEndpoint\x12/\n" +
+	"\x10private_endpoint\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x0fprivateEndpoint\x12>\n" +
 	"\x1bprivate_endpoint_subnetwork\x18\a \x01(\tR\x19privateEndpointSubnetworkB\n" +
 	"\n" +
 	"\b_enabledB\x19\n" +
 	"\x17_enable_public_endpointB\x10\n" +
 	"\x0e_global_access\"A\n" +
 	"\x17LocalNvmeSsdBlockConfig\x12&\n" +
-	"\x0flocal_ssd_count\x18\x01 \x01(\x05R\rlocalSsdCount\"\x9a\x01\n" +
-	"\x0fDiskIoScheduler\x12<\n" +
-	"\x18node_system_io_scheduler\x18\x01 \x01(\tB\x03\xe0A\x01R\x15nodeSystemIoScheduler\x12I\n" +
-	"\x1fnode_attached_disk_io_scheduler\x18\x02 \x01(\tB\x03\xe0A\x01R\x1bnodeAttachedDiskIoScheduler\"r\n" +
+	"\x0flocal_ssd_count\x18\x01 \x01(\x05R\rlocalSsdCount\"\x9c\x01\n" +
+	"\x0fDiskIoScheduler\x12=\n" +
+	"\x18node_system_io_scheduler\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x15nodeSystemIoScheduler\x12J\n" +
+	"\x1fnode_attached_disk_io_scheduler\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x1bnodeAttachedDiskIoScheduler\"r\n" +
 	"\x1eEphemeralStorageLocalSsdConfig\x12&\n" +
 	"\x0flocal_ssd_count\x18\x01 \x01(\x05R\rlocalSsdCount\x12(\n" +
 	"\x10data_cache_count\x18\x02 \x01(\x05R\x0edataCacheCount\"\x96\x01\n" +
@@ -29628,9 +29628,9 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x04tags\x18\x01 \x03(\v22.google.container.v1.ResourceManagerTags.TagsEntryR\x04tags\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x96\x02\n" +
-	"\x10EnterpriseConfig\x12Y\n" +
-	"\fcluster_tier\x18\x01 \x01(\x0e21.google.container.v1.EnterpriseConfig.ClusterTierB\x03\xe0A\x03R\vclusterTier\x12T\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x97\x02\n" +
+	"\x10EnterpriseConfig\x12Z\n" +
+	"\fcluster_tier\x18\x01 \x01(\x0e21.google.container.v1.EnterpriseConfig.ClusterTierB\x04\xe2A\x01\x03R\vclusterTier\x12T\n" +
 	"\fdesired_tier\x18\x02 \x01(\x0e21.google.container.v1.EnterpriseConfig.ClusterTierR\vdesiredTier\"M\n" +
 	"\vClusterTier\x12\x1c\n" +
 	"\x18CLUSTER_TIER_UNSPECIFIED\x10\x00\x12\f\n" +
@@ -29661,12 +29661,12 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15CONTAINER_IMAGE_CACHE\x10\x01\"!\n" +
-	"\x1fSecondaryBootDiskUpdateStrategy\"t\n" +
-	"\x13RollbackSafeUpgrade\x12]\n" +
-	"\x1bcontrol_plane_soak_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x18controlPlaneSoakDuration\"S\n" +
-	"\x1eFetchClusterUpgradeInfoRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x18\n" +
-	"\aversion\x18d \x01(\tR\aversion\"\xa2\t\n" +
+	"\x1fSecondaryBootDiskUpdateStrategy\"u\n" +
+	"\x13RollbackSafeUpgrade\x12^\n" +
+	"\x1bcontrol_plane_soak_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x18controlPlaneSoakDuration\"T\n" +
+	"\x1eFetchClusterUpgradeInfoRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
+	"\aversion\x18d \x01(\tR\aversion\"\xa3\t\n" +
 	"\x12ClusterUpgradeInfo\x125\n" +
 	"\x14minor_target_version\x18\a \x01(\tH\x00R\x12minorTargetVersion\x88\x01\x01\x125\n" +
 	"\x14patch_target_version\x18\b \x01(\tH\x01R\x12patchTargetVersion\x88\x01\x01\x12i\n" +
@@ -29674,8 +29674,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\rpaused_reason\x18\x03 \x03(\x0e2?.google.container.v1.ClusterUpgradeInfo.AutoUpgradePausedReasonR\fpausedReason\x12L\n" +
 	"\x0fupgrade_details\x18\x04 \x03(\v2#.google.container.v1.UpgradeDetailsR\x0eupgradeDetails\x12M\n" +
 	"!end_of_standard_support_timestamp\x18\x05 \x01(\tH\x02R\x1dendOfStandardSupportTimestamp\x88\x01\x01\x12M\n" +
-	"!end_of_extended_support_timestamp\x18\x06 \x01(\tH\x03R\x1dendOfExtendedSupportTimestamp\x88\x01\x01\x12t\n" +
-	"\x1crollback_safe_upgrade_status\x18\t \x01(\v2..google.container.v1.RollbackSafeUpgradeStatusB\x03\xe0A\x03R\x19rollbackSafeUpgradeStatus\"Z\n" +
+	"!end_of_extended_support_timestamp\x18\x06 \x01(\tH\x03R\x1dendOfExtendedSupportTimestamp\x88\x01\x01\x12u\n" +
+	"\x1crollback_safe_upgrade_status\x18\t \x01(\v2..google.container.v1.RollbackSafeUpgradeStatusB\x04\xe2A\x01\x03R\x19rollbackSafeUpgradeStatus\"Z\n" +
 	"\x11AutoUpgradeStatus\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\n" +
 	"\n" +
@@ -29693,25 +29693,25 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x15_minor_target_versionB\x17\n" +
 	"\x15_patch_target_versionB$\n" +
 	"\"_end_of_standard_support_timestampB$\n" +
-	"\"_end_of_extended_support_timestamp\"\xd7\x02\n" +
-	"\x19RollbackSafeUpgradeStatus\x12L\n" +
-	"\x04mode\x18\x01 \x01(\x0e23.google.container.v1.RollbackSafeUpgradeStatus.ModeB\x03\xe0A\x03R\x04mode\x12t\n" +
-	"'control_plane_upgrade_rollback_end_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\"controlPlaneUpgradeRollbackEndTime\x12.\n" +
-	"\x10previous_version\x18\x03 \x01(\tB\x03\xe0A\x03R\x0fpreviousVersion\"F\n" +
+	"\"_end_of_extended_support_timestamp\"\xda\x02\n" +
+	"\x19RollbackSafeUpgradeStatus\x12M\n" +
+	"\x04mode\x18\x01 \x01(\x0e23.google.container.v1.RollbackSafeUpgradeStatus.ModeB\x04\xe2A\x01\x03R\x04mode\x12u\n" +
+	"'control_plane_upgrade_rollback_end_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\"controlPlaneUpgradeRollbackEndTime\x12/\n" +
+	"\x10previous_version\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0fpreviousVersion\"F\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12(\n" +
-	"$KCP_MINOR_UPGRADE_ROLLBACK_SAFE_MODE\x10\x01\"\x98\x05\n" +
-	"\x0eUpgradeDetails\x12D\n" +
-	"\x05state\x18\x01 \x01(\x0e2).google.container.v1.UpgradeDetails.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"$KCP_MINOR_UPGRADE_ROLLBACK_SAFE_MODE\x10\x01\"\x9b\x05\n" +
+	"\x0eUpgradeDetails\x12E\n" +
+	"\x05state\x18\x01 \x01(\x0e2).google.container.v1.UpgradeDetails.StateB\x04\xe2A\x01\x03R\x05state\x12>\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\tstartTime\x88\x01\x01\x12:\n" +
 	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\aendTime\x88\x01\x01\x12'\n" +
 	"\x0finitial_version\x18\x04 \x01(\tR\x0einitialVersion\x12%\n" +
 	"\x0etarget_version\x18\x05 \x01(\tR\rtargetVersion\x12L\n" +
 	"\n" +
-	"start_type\x18\x06 \x01(\x0e2-.google.container.v1.UpgradeDetails.StartTypeR\tstartType\x12=\n" +
-	"\x18initial_emulated_version\x18\a \x01(\tB\x03\xe0A\x03R\x16initialEmulatedVersion\x12;\n" +
-	"\x17target_emulated_version\x18\b \x01(\tB\x03\xe0A\x03R\x15targetEmulatedVersion\"J\n" +
+	"start_type\x18\x06 \x01(\x0e2-.google.container.v1.UpgradeDetails.StartTypeR\tstartType\x12>\n" +
+	"\x18initial_emulated_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\x16initialEmulatedVersion\x12<\n" +
+	"\x17target_emulated_version\x18\b \x01(\tB\x04\xe2A\x01\x03R\x15targetEmulatedVersion\"J\n" +
 	"\x05State\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\n" +
 	"\n" +
@@ -29725,10 +29725,10 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
 	"\x06MANUAL\x10\x02B\r\n" +
 	"\v_start_timeB\v\n" +
-	"\t_end_time\"T\n" +
-	"\x1fFetchNodePoolUpgradeInfoRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x18\n" +
-	"\aversion\x18d \x01(\tR\aversion\"\xba\b\n" +
+	"\t_end_time\"U\n" +
+	"\x1fFetchNodePoolUpgradeInfoRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
+	"\aversion\x18d \x01(\tR\aversion\"\xbb\b\n" +
 	"\x13NodePoolUpgradeInfo\x125\n" +
 	"\x14minor_target_version\x18\x01 \x01(\tH\x00R\x12minorTargetVersion\x88\x01\x01\x125\n" +
 	"\x14patch_target_version\x18\x02 \x01(\tH\x01R\x12patchTargetVersion\x88\x01\x01\x12j\n" +
@@ -29736,8 +29736,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\rpaused_reason\x18\x04 \x03(\x0e2@.google.container.v1.NodePoolUpgradeInfo.AutoUpgradePausedReasonR\fpausedReason\x12L\n" +
 	"\x0fupgrade_details\x18\x05 \x03(\v2#.google.container.v1.UpgradeDetailsR\x0eupgradeDetails\x12M\n" +
 	"!end_of_standard_support_timestamp\x18\x06 \x01(\tH\x02R\x1dendOfStandardSupportTimestamp\x88\x01\x01\x12M\n" +
-	"!end_of_extended_support_timestamp\x18\a \x01(\tH\x03R\x1dendOfExtendedSupportTimestamp\x88\x01\x01\x12U\n" +
-	"\x11custom_image_info\x18\b \x01(\v2$.google.container.v1.CustomImageInfoB\x03\xe0A\x03R\x0fcustomImageInfo\"Z\n" +
+	"!end_of_extended_support_timestamp\x18\a \x01(\tH\x03R\x1dendOfExtendedSupportTimestamp\x88\x01\x01\x12V\n" +
+	"\x11custom_image_info\x18\b \x01(\v2$.google.container.v1.CustomImageInfoB\x04\xe2A\x01\x03R\x0fcustomImageInfo\"Z\n" +
 	"\x11AutoUpgradeStatus\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\n" +
 	"\n" +
@@ -29753,14 +29753,14 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x15_minor_target_versionB\x17\n" +
 	"\x15_patch_target_versionB$\n" +
 	"\"_end_of_standard_support_timestampB$\n" +
-	"\"_end_of_extended_support_timestamp\"?\n" +
-	"\x0fCustomImageInfo\x12,\n" +
-	"\x0fupgrade_message\x18\x01 \x01(\tB\x03\xe0A\x03R\x0eupgradeMessage\"\\\n" +
-	"\"CompleteControlPlaneUpgradeRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x01R\aversion\"6\n" +
-	"\x15ScheduleUpgradeConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"\xa4\x01\n" +
+	"\"_end_of_extended_support_timestamp\"@\n" +
+	"\x0fCustomImageInfo\x12-\n" +
+	"\x0fupgrade_message\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0eupgradeMessage\"^\n" +
+	"\"CompleteControlPlaneUpgradeRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aversion\"7\n" +
+	"\x15ScheduleUpgradeConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\"\xa4\x01\n" +
 	"\x14GkeAutoUpgradeConfig\x12R\n" +
 	"\n" +
 	"patch_mode\x18\x01 \x01(\x0e23.google.container.v1.GkeAutoUpgradeConfig.PatchModeR\tpatchMode\"8\n" +

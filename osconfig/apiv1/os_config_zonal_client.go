@@ -1333,6 +1333,11 @@ func (c *osConfigZonalRESTClient) CreateOSPolicyAssignment(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/osPolicyAssignments", req.GetParent())
 
 	params := url.Values{}
@@ -1410,6 +1415,11 @@ func (c *osConfigZonalRESTClient) UpdateOSPolicyAssignment(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOsPolicyAssignment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOsPolicyAssignment().GetName())
 
 	params := url.Values{}
@@ -1482,6 +1492,11 @@ func (c *osConfigZonalRESTClient) GetOSPolicyAssignment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1549,6 +1564,11 @@ func (c *osConfigZonalRESTClient) ListOSPolicyAssignments(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/osPolicyAssignments", req.GetParent())
@@ -1629,6 +1649,11 @@ func (c *osConfigZonalRESTClient) ListOSPolicyAssignmentRevisions(ctx context.Co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listRevisions", req.GetName())
 
 		params := url.Values{}
@@ -1705,6 +1730,11 @@ func (c *osConfigZonalRESTClient) DeleteOSPolicyAssignment(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1765,6 +1795,11 @@ func (c *osConfigZonalRESTClient) DeleteOSPolicyAssignment(ctx context.Context, 
 func (c *osConfigZonalRESTClient) GetOSPolicyAssignmentReport(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentReportRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignmentReport, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1833,6 +1868,11 @@ func (c *osConfigZonalRESTClient) ListOSPolicyAssignmentReports(ctx context.Cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/reports", req.GetParent())
@@ -1904,6 +1944,11 @@ func (c *osConfigZonalRESTClient) GetInventory(ctx context.Context, req *osconfi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1972,6 +2017,11 @@ func (c *osConfigZonalRESTClient) ListInventories(ctx context.Context, req *osco
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/inventories", req.GetParent())
@@ -2046,6 +2096,11 @@ func (c *osConfigZonalRESTClient) GetVulnerabilityReport(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2111,6 +2166,11 @@ func (c *osConfigZonalRESTClient) ListVulnerabilityReports(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/vulnerabilityReports", req.GetParent())

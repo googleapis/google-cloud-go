@@ -657,6 +657,11 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/routers", req.GetProject())
 
 		params := url.Values{}
@@ -740,6 +745,13 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -802,6 +814,13 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 func (c *routersRESTClient) DeleteNamedSet(ctx context.Context, req *computepb.DeleteNamedSetRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/deleteNamedSet", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -871,6 +890,13 @@ func (c *routersRESTClient) DeleteRoutePolicy(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/deleteRoutePolicy", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -938,6 +964,13 @@ func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	// Build HTTP headers from client and context metadata.
@@ -985,6 +1018,13 @@ func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterReq
 func (c *routersRESTClient) GetNamedSet(ctx context.Context, req *computepb.GetNamedSetRouterRequest, opts ...gax.CallOption) (*computepb.RoutersGetNamedSetResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getNamedSet", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -1041,6 +1081,13 @@ func (c *routersRESTClient) GetNamedSet(ctx context.Context, req *computepb.GetN
 func (c *routersRESTClient) GetNatIpInfo(ctx context.Context, req *computepb.GetNatIpInfoRouterRequest, opts ...gax.CallOption) (*computepb.NatIpInfoResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getNatIpInfo", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -1110,6 +1157,13 @@ func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetRouter(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getNatMappingInfo", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -1185,6 +1239,13 @@ func (c *routersRESTClient) GetRoutePolicy(ctx context.Context, req *computepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getRoutePolicy", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -1239,6 +1300,13 @@ func (c *routersRESTClient) GetRoutePolicy(ctx context.Context, req *computepb.G
 func (c *routersRESTClient) GetRouterStatus(ctx context.Context, req *computepb.GetRouterStatusRouterRequest, opts ...gax.CallOption) (*computepb.RouterStatusResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getRouterStatus", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -1296,6 +1364,12 @@ func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRou
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers", req.GetProject(), req.GetRegion())
@@ -1373,6 +1447,12 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers", req.GetProject(), req.GetRegion())
@@ -1456,6 +1536,13 @@ func (c *routersRESTClient) ListBgpRoutes(ctx context.Context, req *computepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetRouter(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/listBgpRoutes", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -1557,6 +1644,13 @@ func (c *routersRESTClient) ListNamedSets(ctx context.Context, req *computepb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetRouter(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/listNamedSets", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 		params := url.Values{}
@@ -1641,6 +1735,13 @@ func (c *routersRESTClient) ListRoutePolicies(ctx context.Context, req *computep
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetRouter(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/listRoutePolicies", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 		params := url.Values{}
@@ -1721,6 +1822,13 @@ func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRoute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -1792,6 +1900,13 @@ func (c *routersRESTClient) PatchNamedSet(ctx context.Context, req *computepb.Pa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/patchNamedSet", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -1861,6 +1976,13 @@ func (c *routersRESTClient) PatchRoutePolicy(ctx context.Context, req *computepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/patchRoutePolicy", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -1935,6 +2057,13 @@ func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/preview", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	// Build HTTP headers from client and context metadata.
@@ -1992,6 +2121,13 @@ func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRou
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -2065,6 +2201,13 @@ func (c *routersRESTClient) UpdateNamedSet(ctx context.Context, req *computepb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/updateNamedSet", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -2134,6 +2277,13 @@ func (c *routersRESTClient) UpdateRoutePolicy(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/updateRoutePolicy", req.GetProject(), req.GetRegion(), req.GetRouter())

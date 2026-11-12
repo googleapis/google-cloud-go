@@ -350,6 +350,12 @@ func (c *rolloutsRESTClient) Advance(ctx context.Context, req *computepb.Advance
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v/advance", req.GetProject(), req.GetRollout())
 
 	params := url.Values{}
@@ -414,6 +420,12 @@ func (c *rolloutsRESTClient) Advance(ctx context.Context, req *computepb.Advance
 func (c *rolloutsRESTClient) Cancel(ctx context.Context, req *computepb.CancelRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v", req.GetProject(), req.GetRollout())
@@ -482,6 +494,12 @@ func (c *rolloutsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v", req.GetProject(), req.GetRollout())
 
 	params := url.Values{}
@@ -545,6 +563,12 @@ func (c *rolloutsRESTClient) Get(ctx context.Context, req *computepb.GetRolloutR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v", req.GetProject(), req.GetRollout())
 
 	// Build HTTP headers from client and context metadata.
@@ -605,6 +629,11 @@ func (c *rolloutsRESTClient) List(ctx context.Context, req *computepb.ListRollou
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts", req.GetProject())
@@ -677,6 +706,12 @@ func (c *rolloutsRESTClient) Pause(ctx context.Context, req *computepb.PauseRoll
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v/pause", req.GetProject(), req.GetRollout())
 
 	params := url.Values{}
@@ -741,6 +776,12 @@ func (c *rolloutsRESTClient) Pause(ctx context.Context, req *computepb.PauseRoll
 func (c *rolloutsRESTClient) Resume(ctx context.Context, req *computepb.ResumeRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v/resume", req.GetProject(), req.GetRollout())

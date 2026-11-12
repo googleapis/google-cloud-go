@@ -510,27 +510,27 @@ var File_google_cloud_baremetalsolution_v2_volume_snapshot_proto protoreflect.Fi
 
 const file_google_cloud_baremetalsolution_v2_volume_snapshot_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/baremetalsolution/v2/volume_snapshot.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9f\x04\n" +
+	"7google/cloud/baremetalsolution/v2/volume_snapshot.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa3\x04\n" +
 	"\x0eVolumeSnapshot\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x13\n" +
-	"\x02id\x18\x06 \x01(\tB\x03\xe0A\x03R\x02id\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12V\n" +
-	"\x0estorage_volume\x18\x05 \x01(\tB/\xe0A\x03\xfaA)\n" +
-	"'baremetalsolution.googleapis.com/VolumeR\rstorageVolume\x12W\n" +
-	"\x04type\x18\a \x01(\x0e2>.google.cloud.baremetalsolution.v2.VolumeSnapshot.SnapshotTypeB\x03\xe0A\x03R\x04type\"H\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
+	"\x02id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12W\n" +
+	"\x0estorage_volume\x18\x05 \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
+	"'baremetalsolution.googleapis.com/VolumeR\rstorageVolume\x12X\n" +
+	"\x04type\x18\a \x01(\x0e2>.google.cloud.baremetalsolution.v2.VolumeSnapshot.SnapshotTypeB\x04\xe2A\x01\x03R\x04type\"H\n" +
 	"\fSnapshotType\x12\x1d\n" +
 	"\x19SNAPSHOT_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06AD_HOC\x10\x01\x12\r\n" +
 	"\tSCHEDULED\x10\x02:\x84\x01\xeaA\x80\x01\n" +
-	"/baremetalsolution.googleapis.com/VolumeSnapshot\x12Mprojects/{project}/locations/{location}/volumes/{volume}/snapshots/{snapshot}\"g\n" +
-	"\x18GetVolumeSnapshotRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/baremetalsolution.googleapis.com/VolumeSnapshotR\x04name\"\xa1\x01\n" +
-	"\x1aListVolumeSnapshotsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"/baremetalsolution.googleapis.com/VolumeSnapshot\x12Mprojects/{project}/locations/{location}/volumes/{volume}/snapshots/{snapshot}\"h\n" +
+	"\x18GetVolumeSnapshotRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/baremetalsolution.googleapis.com/VolumeSnapshotR\x04name\"\xa2\x01\n" +
+	"\x1aListVolumeSnapshotsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'baremetalsolution.googleapis.com/VolumeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -538,16 +538,16 @@ const file_google_cloud_baremetalsolution_v2_volume_snapshot_proto_rawDesc = "" 
 	"\x1bListVolumeSnapshotsResponse\x12\\\n" +
 	"\x10volume_snapshots\x18\x01 \x03(\v21.google.cloud.baremetalsolution.v2.VolumeSnapshotR\x0fvolumeSnapshots\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"j\n" +
-	"\x1bDeleteVolumeSnapshotRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/baremetalsolution.googleapis.com/VolumeSnapshotR\x04name\"\xc7\x01\n" +
-	"\x1bCreateVolumeSnapshotRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'baremetalsolution.googleapis.com/VolumeR\x06parent\x12_\n" +
-	"\x0fvolume_snapshot\x18\x02 \x01(\v21.google.cloud.baremetalsolution.v2.VolumeSnapshotB\x03\xe0A\x02R\x0evolumeSnapshot\"\x80\x01\n" +
-	"\x1cRestoreVolumeSnapshotRequest\x12`\n" +
-	"\x0fvolume_snapshot\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"k\n" +
+	"\x1bDeleteVolumeSnapshotRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/baremetalsolution.googleapis.com/VolumeSnapshotR\x04name\"\xc9\x01\n" +
+	"\x1bCreateVolumeSnapshotRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'baremetalsolution.googleapis.com/VolumeR\x06parent\x12`\n" +
+	"\x0fvolume_snapshot\x18\x02 \x01(\v21.google.cloud.baremetalsolution.v2.VolumeSnapshotB\x04\xe2A\x01\x02R\x0evolumeSnapshot\"\x81\x01\n" +
+	"\x1cRestoreVolumeSnapshotRequest\x12a\n" +
+	"\x0fvolume_snapshot\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/baremetalsolution.googleapis.com/VolumeSnapshotR\x0evolumeSnapshotB\x82\x02\n" +
 	"%com.google.cloud.baremetalsolution.v2B\x13VolumeSnapshotProtoP\x01ZScloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb;baremetalsolutionpb\xaa\x02!Google.Cloud.BareMetalSolution.V2\xca\x02!Google\\Cloud\\BareMetalSolution\\V2\xea\x02$Google::Cloud::BareMetalSolution::V2b\x06proto3"
 

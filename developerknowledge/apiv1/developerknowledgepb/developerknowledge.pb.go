@@ -125,7 +125,7 @@ type Document struct {
 	// Example: `documents/docs.cloud.google.com/storage/docs/creating-buckets`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Provides the URI of the content, such as
-	// `docs.cloud.google.com/storage/docs/creating-buckets`.
+	// `https://docs.cloud.google.com/storage/docs/creating-buckets`.
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Output only. Contains the full content of the document in Markdown format.
 	Content string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
@@ -1178,70 +1178,70 @@ var File_google_developers_knowledge_v1_developerknowledge_proto protoreflect.Fi
 
 const file_google_developers_knowledge_v1_developerknowledge_proto_rawDesc = "" +
 	"\n" +
-	"7google/developers/knowledge/v1/developerknowledge.proto\x12\x1egoogle.developers.knowledge.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x03\n" +
-	"\bDocument\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uri\x12\x1d\n" +
-	"\acontent\x18\x03 \x01(\tB\x03\xe0A\x03R\acontent\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x03R\vdescription\x12$\n" +
-	"\vdata_source\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
-	"dataSource\x12\x19\n" +
-	"\x05title\x18\x06 \x01(\tB\x03\xe0A\x03R\x05title\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12E\n" +
-	"\x04view\x18\b \x01(\x0e2,.google.developers.knowledge.v1.DocumentViewB\x03\xe0A\x03R\x04view\x125\n" +
-	"\x14content_length_bytes\x18\t \x01(\x05B\x03\xe0A\x03R\x12contentLengthBytes:Z\xeaAW\n" +
-	"*developerknowledge.googleapis.com/Document\x12\x14documents/{document}*\tdocuments2\bdocument\"\x9b\x01\n" +
-	"\x1bSearchDocumentChunksRequest\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"7google/developers/knowledge/v1/developerknowledge.proto\x12\x1egoogle.developers.knowledge.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe6\x03\n" +
+	"\bDocument\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12\x1e\n" +
+	"\acontent\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\acontent\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12%\n" +
+	"\vdata_source\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"dataSource\x12\x1a\n" +
+	"\x05title\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12F\n" +
+	"\x04view\x18\b \x01(\x0e2,.google.developers.knowledge.v1.DocumentViewB\x04\xe2A\x01\x03R\x04view\x126\n" +
+	"\x14content_length_bytes\x18\t \x01(\x05B\x04\xe2A\x01\x03R\x12contentLengthBytes:Z\xeaAW\n" +
+	"*developerknowledge.googleapis.com/Document\x12\x14documents/{document}*\tdocuments2\bdocument\"\x9f\x01\n" +
+	"\x1bSearchDocumentChunksRequest\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x8f\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x8f\x01\n" +
 	"\x1cSearchDocumentChunksResponse\x12G\n" +
 	"\aresults\x18\x01 \x03(\v2-.google.developers.knowledge.v1.DocumentChunkR\aresults\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa3\x01\n" +
-	"\x12GetDocumentRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*developerknowledge.googleapis.com/DocumentR\x04name\x12E\n" +
-	"\x04view\x18\x02 \x01(\x0e2,.google.developers.knowledge.v1.DocumentViewB\x03\xe0A\x01R\x04view\"\xab\x01\n" +
-	"\x18BatchGetDocumentsRequest\x12H\n" +
-	"\x05names\x18\x01 \x03(\tB2\xe0A\x02\xfaA,\n" +
-	"*developerknowledge.googleapis.com/DocumentR\x05names\x12E\n" +
-	"\x04view\x18\x02 \x01(\x0e2,.google.developers.knowledge.v1.DocumentViewB\x03\xe0A\x01R\x04view\"c\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa5\x01\n" +
+	"\x12GetDocumentRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*developerknowledge.googleapis.com/DocumentR\x04name\x12F\n" +
+	"\x04view\x18\x02 \x01(\x0e2,.google.developers.knowledge.v1.DocumentViewB\x04\xe2A\x01\x01R\x04view\"\xad\x01\n" +
+	"\x18BatchGetDocumentsRequest\x12I\n" +
+	"\x05names\x18\x01 \x03(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*developerknowledge.googleapis.com/DocumentR\x05names\x12F\n" +
+	"\x04view\x18\x02 \x01(\x0e2,.google.developers.knowledge.v1.DocumentViewB\x04\xe2A\x01\x01R\x04view\"c\n" +
 	"\x19BatchGetDocumentsResponse\x12F\n" +
-	"\tdocuments\x18\x01 \x03(\v2(.google.developers.knowledge.v1.DocumentR\tdocuments\"L\n" +
-	"\x12AnswerQueryRequest\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"U\n" +
+	"\tdocuments\x18\x01 \x03(\v2(.google.developers.knowledge.v1.DocumentR\tdocuments\"N\n" +
+	"\x12AnswerQueryRequest\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"U\n" +
 	"\x13AnswerQueryResponse\x12>\n" +
-	"\x06answer\x18\x01 \x01(\v2&.google.developers.knowledge.v1.AnswerR\x06answer\"\xd0\x05\n" +
+	"\x06answer\x18\x01 \x01(\v2&.google.developers.knowledge.v1.AnswerR\x06answer\"\xd8\x05\n" +
 	"\x06Answer\x12\x1f\n" +
 	"\vanswer_text\x18\x01 \x01(\tR\n" +
-	"answerText\x12X\n" +
-	"\tcitations\x18\x02 \x03(\v25.google.developers.knowledge.v1.Answer.AnswerCitationB\x03\xe0A\x03R\tcitations\x12[\n" +
+	"answerText\x12Y\n" +
+	"\tcitations\x18\x02 \x03(\v25.google.developers.knowledge.v1.Answer.AnswerCitationB\x04\xe2A\x01\x03R\tcitations\x12\\\n" +
 	"\n" +
-	"references\x18\x03 \x03(\v26.google.developers.knowledge.v1.Answer.AnswerReferenceB\x03\xe0A\x03R\n" +
-	"references\x1a\xae\x01\n" +
-	"\x0eAnswerCitation\x12$\n" +
-	"\vstart_index\x18\x01 \x01(\x05B\x03\xe0A\x03R\n" +
-	"startIndex\x12 \n" +
-	"\tend_index\x18\x02 \x01(\x05B\x03\xe0A\x03R\bendIndex\x12T\n" +
-	"\asources\x18\x03 \x03(\v25.google.developers.knowledge.v1.Answer.CitationSourceB\x03\xe0A\x03R\asources\x1a>\n" +
-	"\x0eCitationSource\x12,\n" +
-	"\x0freference_index\x18\x01 \x01(\x05B\x03\xe0A\x03R\x0ereferenceIndex\x1a\x8c\x01\n" +
-	"\x0fAnswerReference\x12n\n" +
-	"\x12document_reference\x18\x01 \x01(\v28.google.developers.knowledge.v1.Answer.DocumentReferenceB\x03\xe0A\x03H\x00R\x11documentReferenceB\t\n" +
-	"\acontent\x1an\n" +
-	"\x11DocumentReference\x12Y\n" +
-	"\x0edocument_chunk\x18\x01 \x01(\v2-.google.developers.knowledge.v1.DocumentChunkB\x03\xe0A\x03R\rdocumentChunk\"\xa1\x02\n" +
-	"\rDocumentChunk\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x03\xfaA,\n" +
-	"*developerknowledge.googleapis.com/DocumentR\x06parent\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x03R\x02id\x12\x1d\n" +
-	"\acontent\x18\x03 \x01(\tB\x03\xe0A\x03R\acontent\x12I\n" +
-	"\bdocument\x18\x04 \x01(\v2(.google.developers.knowledge.v1.DocumentB\x03\xe0A\x03R\bdocument\x121\n" +
-	"\x0frelevance_score\x18\x05 \x01(\x01B\x03\xe0A\x03H\x00R\x0erelevanceScore\x88\x01\x01B\x12\n" +
+	"references\x18\x03 \x03(\v26.google.developers.knowledge.v1.Answer.AnswerReferenceB\x04\xe2A\x01\x03R\n" +
+	"references\x1a\xb1\x01\n" +
+	"\x0eAnswerCitation\x12%\n" +
+	"\vstart_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"startIndex\x12!\n" +
+	"\tend_index\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\bendIndex\x12U\n" +
+	"\asources\x18\x03 \x03(\v25.google.developers.knowledge.v1.Answer.CitationSourceB\x04\xe2A\x01\x03R\asources\x1a?\n" +
+	"\x0eCitationSource\x12-\n" +
+	"\x0freference_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x0ereferenceIndex\x1a\x8d\x01\n" +
+	"\x0fAnswerReference\x12o\n" +
+	"\x12document_reference\x18\x01 \x01(\v28.google.developers.knowledge.v1.Answer.DocumentReferenceB\x04\xe2A\x01\x03H\x00R\x11documentReferenceB\t\n" +
+	"\acontent\x1ao\n" +
+	"\x11DocumentReference\x12Z\n" +
+	"\x0edocument_chunk\x18\x01 \x01(\v2-.google.developers.knowledge.v1.DocumentChunkB\x04\xe2A\x01\x03R\rdocumentChunk\"\xa6\x02\n" +
+	"\rDocumentChunk\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x03\xfaA,\n" +
+	"*developerknowledge.googleapis.com/DocumentR\x06parent\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12\x1e\n" +
+	"\acontent\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\acontent\x12J\n" +
+	"\bdocument\x18\x04 \x01(\v2(.google.developers.knowledge.v1.DocumentB\x04\xe2A\x01\x03R\bdocument\x122\n" +
+	"\x0frelevance_score\x18\x05 \x01(\x01B\x04\xe2A\x01\x03H\x00R\x0erelevanceScore\x88\x01\x01B\x12\n" +
 	"\x10_relevance_score*y\n" +
 	"\fDocumentView\x12\x1d\n" +
 	"\x19DOCUMENT_VIEW_UNSPECIFIED\x10\x00\x12\x17\n" +

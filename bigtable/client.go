@@ -181,11 +181,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// defaultBigtableConnPoolSize to compensate for dynamic channel pool
 	// scaling being disabled by default
 	// (see https://github.com/googleapis/google-cloud-go/issues/14582).
-	o = append(o,
-		option.WithGRPCConnectionPool(defaultBigtableConnPoolSize),
-		// Set the max size to correspond to server-side limits.
-		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
-	)
+	o = append(o, option.WithGRPCConnectionPool(defaultBigtableConnPoolSize))
+	// Set the max size to correspond to server-side limits.
+	o = append(o, btopt.MessageSizeOptions()...)
 
 	// DirectAccess opt-set is centralized in btopt so the classic
 	// client, the DirectAccess probe (direct_access_check.go), and the

@@ -359,6 +359,13 @@ func (c *regionUrlMapsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetUrlMap(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps/%v", req.GetProject(), req.GetRegion(), req.GetUrlMap())
 
 	params := url.Values{}
@@ -423,6 +430,13 @@ func (c *regionUrlMapsRESTClient) Get(ctx context.Context, req *computepb.GetReg
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetUrlMap(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps/%v", req.GetProject(), req.GetRegion(), req.GetUrlMap())
 
 	// Build HTTP headers from client and context metadata.
@@ -478,6 +492,12 @@ func (c *regionUrlMapsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps", req.GetProject(), req.GetRegion())
@@ -556,6 +576,12 @@ func (c *regionUrlMapsRESTClient) List(ctx context.Context, req *computepb.ListR
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps", req.GetProject(), req.GetRegion())
@@ -638,6 +664,13 @@ func (c *regionUrlMapsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetUrlMap(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps/%v", req.GetProject(), req.GetRegion(), req.GetUrlMap())
 
 	params := url.Values{}
@@ -708,6 +741,13 @@ func (c *regionUrlMapsRESTClient) Update(ctx context.Context, req *computepb.Upd
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetUrlMap(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps/%v", req.GetProject(), req.GetRegion(), req.GetUrlMap())
@@ -781,6 +821,13 @@ func (c *regionUrlMapsRESTClient) Validate(ctx context.Context, req *computepb.V
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetUrlMap(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps/%v/validate", req.GetProject(), req.GetRegion(), req.GetUrlMap())

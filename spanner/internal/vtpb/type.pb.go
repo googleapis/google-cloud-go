@@ -475,9 +475,9 @@ var File_google_spanner_v1_vtinternal_type_proto protoreflect.FileDescriptor
 
 const file_google_spanner_v1_vtinternal_type_proto_rawDesc = "" +
 	"\n" +
-	"'google/spanner/v1/vtinternal/type.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a\x1fgoogle/api/field_behavior.proto\"\xe5\x02\n" +
-	"\x04Type\x12?\n" +
-	"\x04code\x18\x01 \x01(\x0e2&.google.spanner.v1.vtinternal.TypeCodeB\x03\xe0A\x02R\x04code\x12P\n" +
+	"'google/spanner/v1/vtinternal/type.proto\x12\x1cgoogle.spanner.v1.vtinternal\x1a\x1fgoogle/api/field_behavior.proto\"\xe6\x02\n" +
+	"\x04Type\x12@\n" +
+	"\x04code\x18\x01 \x01(\x0e2&.google.spanner.v1.vtinternal.TypeCodeB\x04\xe2A\x01\x02R\x04code\x12P\n" +
 	"\x12array_element_type\x18\x02 \x01(\v2\".google.spanner.v1.vtinternal.TypeR\x10arrayElementType\x12I\n" +
 	"\vstruct_type\x18\x03 \x01(\v2(.google.spanner.v1.vtinternal.StructTypeR\n" +
 	"structType\x12Y\n" +

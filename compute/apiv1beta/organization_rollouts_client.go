@@ -347,6 +347,12 @@ func (c *organizationRolloutsRESTClient) Advance(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v/advance", req.GetOrganization(), req.GetRollout())
 
 	params := url.Values{}
@@ -410,6 +416,12 @@ func (c *organizationRolloutsRESTClient) Advance(ctx context.Context, req *compu
 func (c *organizationRolloutsRESTClient) Cancel(ctx context.Context, req *computepb.CancelOrganizationRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout())
@@ -477,6 +489,12 @@ func (c *organizationRolloutsRESTClient) Delete(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout())
 
 	params := url.Values{}
@@ -539,6 +557,12 @@ func (c *organizationRolloutsRESTClient) Get(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout())
 
 	// Build HTTP headers from client and context metadata.
@@ -599,6 +623,11 @@ func (c *organizationRolloutsRESTClient) List(ctx context.Context, req *computep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetOrganization(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts", req.GetOrganization())
@@ -674,6 +703,12 @@ func (c *organizationRolloutsRESTClient) Pause(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v/pause", req.GetOrganization(), req.GetRollout())
 
 	params := url.Values{}
@@ -737,6 +772,12 @@ func (c *organizationRolloutsRESTClient) Pause(ctx context.Context, req *compute
 func (c *organizationRolloutsRESTClient) Resume(ctx context.Context, req *computepb.ResumeOrganizationRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v/resume", req.GetOrganization(), req.GetRollout())

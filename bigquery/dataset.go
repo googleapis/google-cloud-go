@@ -626,7 +626,7 @@ func (d *Dataset) Tables(ctx context.Context) *TableIterator {
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.tables) },
-		func() interface{} { b := it.tables; it.tables = nil; return b })
+		func() any { b := it.tables; it.tables = nil; return b })
 	return it
 }
 
@@ -714,7 +714,7 @@ func (d *Dataset) Models(ctx context.Context) *ModelIterator {
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.models) },
-		func() interface{} { b := it.models; it.models = nil; return b })
+		func() any { b := it.models; it.models = nil; return b })
 	return it
 }
 
@@ -804,7 +804,7 @@ func (d *Dataset) Routines(ctx context.Context) *RoutineIterator {
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.routines) },
-		func() interface{} { b := it.routines; it.routines = nil; return b })
+		func() any { b := it.routines; it.routines = nil; return b })
 	return it
 }
 
@@ -894,7 +894,7 @@ func (c *Client) DatasetsInProject(ctx context.Context, projectID string) *Datas
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.items) },
-		func() interface{} { b := it.items; it.items = nil; return b })
+		func() any { b := it.items; it.items = nil; return b })
 	return it
 }
 

@@ -98,10 +98,10 @@ var File_google_ads_datamanager_v1_user_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"$google/ads/datamanager/v1/user.proto\x12\x19google.ads.datamanager.v1\x1a(google/ads/datamanager/v1/audience.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x9a\x01\n" +
-	"\x04User\x12E\n" +
-	"\tuser_data\x18\x01 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x02R\buserData\x12K\n" +
-	"\vmobile_data\x18\x02 \x01(\v2%.google.ads.datamanager.v1.MobileDataB\x03\xe0A\x02R\n" +
+	"$google/ads/datamanager/v1/user.proto\x12\x19google.ads.datamanager.v1\x1a(google/ads/datamanager/v1/audience.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x9c\x01\n" +
+	"\x04User\x12F\n" +
+	"\tuser_data\x18\x01 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x04\xe2A\x01\x02R\buserData\x12L\n" +
+	"\vmobile_data\x18\x02 \x01(\v2%.google.ads.datamanager.v1.MobileDataB\x04\xe2A\x01\x02R\n" +
 	"mobileDataB\xc6\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\tUserProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 

@@ -87,9 +87,9 @@ var File_google_cloud_oracledatabase_v1_location_metadata_proto protoreflect.Fil
 
 const file_google_cloud_oracledatabase_v1_location_metadata_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/oracledatabase/v1/location_metadata.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\"A\n" +
-	"\x10LocationMetadata\x12-\n" +
-	"\x10gcp_oracle_zones\x18\x02 \x03(\tB\x03\xe0A\x03R\x0egcpOracleZonesB\xef\x01\n" +
+	"6google/cloud/oracledatabase/v1/location_metadata.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\"B\n" +
+	"\x10LocationMetadata\x12.\n" +
+	"\x10gcp_oracle_zones\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x0egcpOracleZonesB\xef\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x15LocationMetadataProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

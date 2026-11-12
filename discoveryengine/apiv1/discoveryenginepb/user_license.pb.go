@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,6 +57,8 @@ const (
 	// Users already logged in but cannot get license assigned will be assigned
 	// NO_LICENSE state(License could be unassigned by admin).
 	UserLicense_NO_LICENSE_ATTEMPTED_LOGIN UserLicense_LicenseAssignmentState = 4
+	// User is blocked from assigning a license.
+	UserLicense_BLOCKED UserLicense_LicenseAssignmentState = 5
 )
 
 // Enum value maps for UserLicense_LicenseAssignmentState.
@@ -67,6 +69,7 @@ var (
 		2: "UNASSIGNED",
 		3: "NO_LICENSE",
 		4: "NO_LICENSE_ATTEMPTED_LOGIN",
+		5: "BLOCKED",
 	}
 	UserLicense_LicenseAssignmentState_value = map[string]int32{
 		"LICENSE_ASSIGNMENT_STATE_UNSPECIFIED": 0,
@@ -74,6 +77,7 @@ var (
 		"UNASSIGNED":                           2,
 		"NO_LICENSE":                           3,
 		"NO_LICENSE_ATTEMPTED_LOGIN":           4,
+		"BLOCKED":                              5,
 	}
 )
 
@@ -115,7 +119,7 @@ type UserLicense struct {
 	// We user user full name(First name + Last name) as user profile.
 	UserProfile string `protobuf:"bytes,3,opt,name=user_profile,json=userProfile,proto3" json:"user_profile,omitempty"`
 	// Output only. License assignment state of the user.
-	// If the user is assigned with a license config, the user loggin will be
+	// If the user is assigned with a license config, the user login will be
 	// assigned with the license;
 	// If the user's license assignment state is unassigned or unspecified, no
 	// license config will be associated to the user;
@@ -213,22 +217,77 @@ func (x *UserLicense) GetLastLoginTime() *timestamppb.Timestamp {
 	return nil
 }
 
+// Stats about users' licenses.
+type LicenseConfigUsageStats struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The LicenseConfig name.
+	LicenseConfig string `protobuf:"bytes,1,opt,name=license_config,json=licenseConfig,proto3" json:"license_config,omitempty"`
+	// Required. The number of licenses used.
+	UsedLicenseCount int64 `protobuf:"varint,2,opt,name=used_license_count,json=usedLicenseCount,proto3" json:"used_license_count,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LicenseConfigUsageStats) Reset() {
+	*x = LicenseConfigUsageStats{}
+	mi := &file_google_cloud_discoveryengine_v1_user_license_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LicenseConfigUsageStats) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LicenseConfigUsageStats) ProtoMessage() {}
+
+func (x *LicenseConfigUsageStats) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_user_license_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LicenseConfigUsageStats.ProtoReflect.Descriptor instead.
+func (*LicenseConfigUsageStats) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_user_license_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *LicenseConfigUsageStats) GetLicenseConfig() string {
+	if x != nil {
+		return x.LicenseConfig
+	}
+	return ""
+}
+
+func (x *LicenseConfigUsageStats) GetUsedLicenseCount() int64 {
+	if x != nil {
+		return x.UsedLicenseCount
+	}
+	return 0
+}
+
 var File_google_cloud_discoveryengine_v1_user_license_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_user_license_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/discoveryengine/v1/user_license.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa6\x05\n" +
-	"\vUserLicense\x12-\n" +
-	"\x0euser_principal\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\x02R\ruserPrincipal\x12&\n" +
-	"\fuser_profile\x18\x03 \x01(\tB\x03\xe0A\x01R\vuserProfile\x12\x82\x01\n" +
-	"\x18license_assignment_state\x18\x04 \x01(\x0e2C.google.cloud.discoveryengine.v1.UserLicense.LicenseAssignmentStateB\x03\xe0A\x03R\x16licenseAssignmentState\x12[\n" +
-	"\x0elicense_config\x18\x05 \x01(\tB4\xe0A\x01\xfaA.\n" +
-	",discoveryengine.googleapis.com/LicenseConfigR\rlicenseConfig\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12G\n" +
-	"\x0flast_login_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rlastLoginTime\"\x90\x01\n" +
+	"2google/cloud/discoveryengine/v1/user_license.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb8\x05\n" +
+	"\vUserLicense\x12,\n" +
+	"\x0euser_principal\x18\x01 \x01(\tB\x05\xe2A\x02\x05\x02R\ruserPrincipal\x12'\n" +
+	"\fuser_profile\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vuserProfile\x12\x83\x01\n" +
+	"\x18license_assignment_state\x18\x04 \x01(\x0e2C.google.cloud.discoveryengine.v1.UserLicense.LicenseAssignmentStateB\x04\xe2A\x01\x03R\x16licenseAssignmentState\x12\\\n" +
+	"\x0elicense_config\x18\x05 \x01(\tB5\xe2A\x01\x01\xfaA.\n" +
+	",discoveryengine.googleapis.com/LicenseConfigR\rlicenseConfig\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12H\n" +
+	"\x0flast_login_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rlastLoginTime\"\x9d\x01\n" +
 	"\x16LicenseAssignmentState\x12(\n" +
 	"$LICENSE_ASSIGNMENT_STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bASSIGNED\x10\x01\x12\x0e\n" +
@@ -236,7 +295,11 @@ const file_google_cloud_discoveryengine_v1_user_license_proto_rawDesc = "" +
 	"UNASSIGNED\x10\x02\x12\x0e\n" +
 	"\n" +
 	"NO_LICENSE\x10\x03\x12\x1e\n" +
-	"\x1aNO_LICENSE_ATTEMPTED_LOGIN\x10\x04B\x83\x02\n" +
+	"\x1aNO_LICENSE_ATTEMPTED_LOGIN\x10\x04\x12\v\n" +
+	"\aBLOCKED\x10\x05\"z\n" +
+	"\x17LicenseConfigUsageStats\x12+\n" +
+	"\x0elicense_config\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rlicenseConfig\x122\n" +
+	"\x12used_license_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\x10usedLicenseCountB\x83\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x10UserLicenseProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (
@@ -252,17 +315,18 @@ func file_google_cloud_discoveryengine_v1_user_license_proto_rawDescGZIP() []byt
 }
 
 var file_google_cloud_discoveryengine_v1_user_license_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_discoveryengine_v1_user_license_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_google_cloud_discoveryengine_v1_user_license_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_google_cloud_discoveryengine_v1_user_license_proto_goTypes = []any{
 	(UserLicense_LicenseAssignmentState)(0), // 0: google.cloud.discoveryengine.v1.UserLicense.LicenseAssignmentState
 	(*UserLicense)(nil),                     // 1: google.cloud.discoveryengine.v1.UserLicense
-	(*timestamppb.Timestamp)(nil),           // 2: google.protobuf.Timestamp
+	(*LicenseConfigUsageStats)(nil),         // 2: google.cloud.discoveryengine.v1.LicenseConfigUsageStats
+	(*timestamppb.Timestamp)(nil),           // 3: google.protobuf.Timestamp
 }
 var file_google_cloud_discoveryengine_v1_user_license_proto_depIdxs = []int32{
 	0, // 0: google.cloud.discoveryengine.v1.UserLicense.license_assignment_state:type_name -> google.cloud.discoveryengine.v1.UserLicense.LicenseAssignmentState
-	2, // 1: google.cloud.discoveryengine.v1.UserLicense.create_time:type_name -> google.protobuf.Timestamp
-	2, // 2: google.cloud.discoveryengine.v1.UserLicense.update_time:type_name -> google.protobuf.Timestamp
-	2, // 3: google.cloud.discoveryengine.v1.UserLicense.last_login_time:type_name -> google.protobuf.Timestamp
+	3, // 1: google.cloud.discoveryengine.v1.UserLicense.create_time:type_name -> google.protobuf.Timestamp
+	3, // 2: google.cloud.discoveryengine.v1.UserLicense.update_time:type_name -> google.protobuf.Timestamp
+	3, // 3: google.cloud.discoveryengine.v1.UserLicense.last_login_time:type_name -> google.protobuf.Timestamp
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
@@ -281,7 +345,7 @@ func file_google_cloud_discoveryengine_v1_user_license_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_user_license_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_user_license_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

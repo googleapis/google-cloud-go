@@ -1385,38 +1385,38 @@ var File_google_cloud_retail_v2_import_config_proto protoreflect.FileDescriptor
 
 const file_google_cloud_retail_v2_import_config_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/retail/v2/import_config.proto\x12\x16google.cloud.retail.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/retail/v2/product.proto\x1a'google/cloud/retail/v2/user_event.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/date.proto\"P\n" +
-	"\tGcsSource\x12\"\n" +
+	"*google/cloud/retail/v2/import_config.proto\x12\x16google.cloud.retail.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/retail/v2/product.proto\x1a'google/cloud/retail/v2/user_event.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/date.proto\"Q\n" +
+	"\tGcsSource\x12#\n" +
 	"\n" +
-	"input_uris\x18\x01 \x03(\tB\x03\xe0A\x02R\tinputUris\x12\x1f\n" +
+	"input_uris\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\tinputUris\x12\x1f\n" +
 	"\vdata_schema\x18\x02 \x01(\tR\n" +
-	"dataSchema\"\x85\x02\n" +
+	"dataSchema\"\x87\x02\n" +
 	"\x0eBigQuerySource\x12:\n" +
 	"\x0epartition_date\x18\x06 \x01(\v2\x11.google.type.DateH\x00R\rpartitionDate\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x05 \x01(\tR\tprojectId\x12\"\n" +
+	"project_id\x18\x05 \x01(\tR\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x02 \x01(\tB\x03\xe0A\x02R\atableId\x12&\n" +
+	"dataset_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12&\n" +
 	"\x0fgcs_staging_dir\x18\x03 \x01(\tR\rgcsStagingDir\x12\x1f\n" +
 	"\vdata_schema\x18\x04 \x01(\tR\n" +
 	"dataSchemaB\v\n" +
-	"\tpartition\"W\n" +
-	"\x13ProductInlineSource\x12@\n" +
-	"\bproducts\x18\x01 \x03(\v2\x1f.google.cloud.retail.v2.ProductB\x03\xe0A\x02R\bproducts\"`\n" +
-	"\x15UserEventInlineSource\x12G\n" +
-	"\vuser_events\x18\x01 \x03(\v2!.google.cloud.retail.v2.UserEventB\x03\xe0A\x02R\n" +
+	"\tpartition\"X\n" +
+	"\x13ProductInlineSource\x12A\n" +
+	"\bproducts\x18\x01 \x03(\v2\x1f.google.cloud.retail.v2.ProductB\x04\xe2A\x01\x02R\bproducts\"a\n" +
+	"\x15UserEventInlineSource\x12H\n" +
+	"\vuser_events\x18\x01 \x03(\v2!.google.cloud.retail.v2.UserEventB\x04\xe2A\x01\x02R\n" +
 	"userEvents\"D\n" +
 	"\x12ImportErrorsConfig\x12\x1f\n" +
 	"\n" +
 	"gcs_prefix\x18\x01 \x01(\tH\x00R\tgcsPrefixB\r\n" +
-	"\vdestination\"\xdf\x04\n" +
-	"\x15ImportProductsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\vdestination\"\xe1\x04\n" +
+	"\x15ImportProductsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1cretail.googleapis.com/BranchR\x06parent\x12!\n" +
 	"\n" +
-	"request_id\x18\x06 \x01(\tB\x02\x18\x01R\trequestId\x12R\n" +
-	"\finput_config\x18\x02 \x01(\v2*.google.cloud.retail.v2.ProductInputConfigB\x03\xe0A\x02R\vinputConfig\x12O\n" +
+	"request_id\x18\x06 \x01(\tB\x02\x18\x01R\trequestId\x12S\n" +
+	"\finput_config\x18\x02 \x01(\v2*.google.cloud.retail.v2.ProductInputConfigB\x04\xe2A\x01\x02R\vinputConfig\x12O\n" +
 	"\rerrors_config\x18\x03 \x01(\v2*.google.cloud.retail.v2.ImportErrorsConfigR\ferrorsConfig\x12;\n" +
 	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12q\n" +
@@ -1425,31 +1425,31 @@ const file_google_cloud_retail_v2_import_config_proto_rawDesc = "" +
 	"\x12ReconciliationMode\x12#\n" +
 	"\x1fRECONCILIATION_MODE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vINCREMENTAL\x10\x01\x12\b\n" +
-	"\x04FULL\x10\x02\"\xff\x01\n" +
-	"\x17ImportUserEventsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12T\n" +
-	"\finput_config\x18\x02 \x01(\v2,.google.cloud.retail.v2.UserEventInputConfigB\x03\xe0A\x02R\vinputConfig\x12O\n" +
-	"\rerrors_config\x18\x03 \x01(\v2*.google.cloud.retail.v2.ImportErrorsConfigR\ferrorsConfig\"\xf3\x01\n" +
-	"\x1bImportCompletionDataRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12Y\n" +
-	"\finput_config\x18\x02 \x01(\v21.google.cloud.retail.v2.CompletionDataInputConfigB\x03\xe0A\x02R\vinputConfig\x12:\n" +
+	"\x04FULL\x10\x02\"\x81\x02\n" +
+	"\x17ImportUserEventsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12U\n" +
+	"\finput_config\x18\x02 \x01(\v2,.google.cloud.retail.v2.UserEventInputConfigB\x04\xe2A\x01\x02R\vinputConfig\x12O\n" +
+	"\rerrors_config\x18\x03 \x01(\v2*.google.cloud.retail.v2.ImportErrorsConfigR\ferrorsConfig\"\xf5\x01\n" +
+	"\x1bImportCompletionDataRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12Z\n" +
+	"\finput_config\x18\x02 \x01(\v21.google.cloud.retail.v2.CompletionDataInputConfigB\x04\xe2A\x01\x02R\vinputConfig\x12:\n" +
 	"\x19notification_pubsub_topic\x18\x03 \x01(\tR\x17notificationPubsubTopic\"\x99\x02\n" +
 	"\x12ProductInputConfig\x12a\n" +
 	"\x15product_inline_source\x18\x01 \x01(\v2+.google.cloud.retail.v2.ProductInlineSourceH\x00R\x13productInlineSource\x12B\n" +
 	"\n" +
 	"gcs_source\x18\x02 \x01(\v2!.google.cloud.retail.v2.GcsSourceH\x00R\tgcsSource\x12R\n" +
 	"\x10big_query_source\x18\x03 \x01(\v2&.google.cloud.retail.v2.BigQuerySourceH\x00R\x0ebigQuerySourceB\b\n" +
-	"\x06source\"\xb1\x02\n" +
-	"\x14UserEventInputConfig\x12m\n" +
-	"\x18user_event_inline_source\x18\x01 \x01(\v2-.google.cloud.retail.v2.UserEventInlineSourceB\x03\xe0A\x02H\x00R\x15userEventInlineSource\x12G\n" +
+	"\x06source\"\xb4\x02\n" +
+	"\x14UserEventInputConfig\x12n\n" +
+	"\x18user_event_inline_source\x18\x01 \x01(\v2-.google.cloud.retail.v2.UserEventInlineSourceB\x04\xe2A\x01\x02H\x00R\x15userEventInlineSource\x12H\n" +
 	"\n" +
-	"gcs_source\x18\x02 \x01(\v2!.google.cloud.retail.v2.GcsSourceB\x03\xe0A\x02H\x00R\tgcsSource\x12W\n" +
-	"\x10big_query_source\x18\x03 \x01(\v2&.google.cloud.retail.v2.BigQuerySourceB\x03\xe0A\x02H\x00R\x0ebigQuerySourceB\b\n" +
-	"\x06source\"~\n" +
-	"\x19CompletionDataInputConfig\x12W\n" +
-	"\x10big_query_source\x18\x01 \x01(\v2&.google.cloud.retail.v2.BigQuerySourceB\x03\xe0A\x02H\x00R\x0ebigQuerySourceB\b\n" +
+	"gcs_source\x18\x02 \x01(\v2!.google.cloud.retail.v2.GcsSourceB\x04\xe2A\x01\x02H\x00R\tgcsSource\x12X\n" +
+	"\x10big_query_source\x18\x03 \x01(\v2&.google.cloud.retail.v2.BigQuerySourceB\x04\xe2A\x01\x02H\x00R\x0ebigQuerySourceB\b\n" +
+	"\x06source\"\x7f\n" +
+	"\x19CompletionDataInputConfig\x12X\n" +
+	"\x10big_query_source\x18\x01 \x01(\v2&.google.cloud.retail.v2.BigQuerySourceB\x04\xe2A\x01\x02H\x00R\x0ebigQuerySourceB\b\n" +
 	"\x06source\"\xb3\x02\n" +
 	"\x0eImportMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +

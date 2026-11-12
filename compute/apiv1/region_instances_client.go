@@ -261,6 +261,12 @@ func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instances/bulkInsert", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}

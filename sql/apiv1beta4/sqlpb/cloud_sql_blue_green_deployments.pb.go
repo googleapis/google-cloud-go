@@ -1435,50 +1435,50 @@ var File_google_cloud_sql_v1beta4_cloud_sql_blue_green_deployments_proto protore
 
 const file_google_cloud_sql_v1beta4_cloud_sql_blue_green_deployments_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/sql/v1beta4/cloud_sql_blue_green_deployments.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x1b\n" +
-	"\x13BlueGreenDeployment\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12N\n" +
-	"\x05state\x18\x04 \x01(\x0e23.google.cloud.sql.v1beta4.BlueGreenDeployment.StateB\x03\xe0A\x03R\x05state\x12/\n" +
-	"\x0fsource_instance\x18\x05 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x0esourceInstance\x12i\n" +
-	"\rtarget_config\x18\x06 \x01(\v2:.google.cloud.sql.v1beta4.BlueGreenDeployment.TargetConfigB\b\xe0A\x01\xe0A\x05\x18\x01R\ftargetConfig\x12A\n" +
-	"\x1aswitchover_target_instance\x18\a \x01(\tB\x03\xe0A\x03R\x18switchoverTargetInstance\x12n\n" +
-	"\fpaired_nodes\x18\b \x03(\v2D.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNodeB\x05\xe0A\x03\x18\x01R\vpairedNodes\x12&\n" +
-	"\ferror_detail\x18\t \x01(\tB\x03\xe0A\x03R\verrorDetail\x12z\n" +
+	"?google/cloud/sql/v1beta4/cloud_sql_blue_green_deployments.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x1b\n" +
+	"\x13BlueGreenDeployment\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12O\n" +
+	"\x05state\x18\x04 \x01(\x0e23.google.cloud.sql.v1beta4.BlueGreenDeployment.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x0fsource_instance\x18\x05 \x01(\tB\x05\xe2A\x02\x02\x05R\x0esourceInstance\x12h\n" +
+	"\rtarget_config\x18\x06 \x01(\v2:.google.cloud.sql.v1beta4.BlueGreenDeployment.TargetConfigB\a\xe2A\x02\x01\x05\x18\x01R\ftargetConfig\x12B\n" +
+	"\x1aswitchover_target_instance\x18\a \x01(\tB\x04\xe2A\x01\x03R\x18switchoverTargetInstance\x12o\n" +
+	"\fpaired_nodes\x18\b \x03(\v2D.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNodeB\x06\xe2A\x01\x03\x18\x01R\vpairedNodes\x12'\n" +
+	"\ferror_detail\x18\t \x01(\tB\x04\xe2A\x01\x03R\verrorDetail\x12{\n" +
 	"\x13deployment_mappings\x18\n" +
-	" \x03(\v2D.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNodeB\x03\xe0A\x03R\x12deploymentMappings\x12m\n" +
-	"\x10deployment_tasks\x18\v \x01(\v2=.google.cloud.sql.v1beta4.BlueGreenDeployment.DeploymentTasksB\x03\xe0A\x03R\x0fdeploymentTasks\x12p\n" +
-	"\x10requested_config\x18\f \x01(\v2=.google.cloud.sql.v1beta4.BlueGreenDeployment.RequestedConfigB\x06\xe0A\x01\xe0A\x05R\x0frequestedConfig\x1aB\n" +
-	"\fTargetConfig\x12.\n" +
-	"\x10database_version\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fdatabaseVersion:\x02\x18\x01\x1a\x7f\n" +
-	"\x0fDeploymentTasks\x12l\n" +
-	"\x04task\x18\x01 \x03(\v2S.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.DeploymentTaskB\x03\xe0A\x03R\x04task\x1aA\n" +
-	"\x0fRequestedConfig\x12.\n" +
-	"\x10database_version\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fdatabaseVersion\x1a\x9e\x0f\n" +
-	"\x16SourceTargetPairedNode\x12j\n" +
-	"\x06source\x18\x01 \x01(\v2M.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.NodeInfoB\x03\xe0A\x03R\x06source\x12j\n" +
-	"\x06target\x18\x02 \x01(\v2M.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.NodeInfoB\x03\xe0A\x03R\x06target\x12e\n" +
-	"\x05state\x18\x03 \x01(\x0e2J.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.StateB\x03\xe0A\x03R\x05state\x12\x9f\x01\n" +
-	"\x19currently_serving_traffic\x18\x04 \x01(\x0e2\\.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.CurrentlyServingTrafficB\x05\xe0A\x03\x18\x01R\x17currentlyServingTraffic\x12n\n" +
-	"\x05tasks\x18\x05 \x03(\v2S.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.DeploymentTaskB\x03\xe0A\x03R\x05tasks\x12j\n" +
-	"\x05diffs\x18d \x03(\v2O.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.ConfigDiffB\x03\xe0A\x03R\x05diffs\x1a\xb2\x01\n" +
-	"\bNodeInfo\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x03R\binstance\x12#\n" +
+	" \x03(\v2D.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNodeB\x04\xe2A\x01\x03R\x12deploymentMappings\x12n\n" +
+	"\x10deployment_tasks\x18\v \x01(\v2=.google.cloud.sql.v1beta4.BlueGreenDeployment.DeploymentTasksB\x04\xe2A\x01\x03R\x0fdeploymentTasks\x12o\n" +
+	"\x10requested_config\x18\f \x01(\v2=.google.cloud.sql.v1beta4.BlueGreenDeployment.RequestedConfigB\x05\xe2A\x02\x01\x05R\x0frequestedConfig\x1aC\n" +
+	"\fTargetConfig\x12/\n" +
+	"\x10database_version\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fdatabaseVersion:\x02\x18\x01\x1a\x80\x01\n" +
+	"\x0fDeploymentTasks\x12m\n" +
+	"\x04task\x18\x01 \x03(\v2S.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.DeploymentTaskB\x04\xe2A\x01\x03R\x04task\x1aB\n" +
+	"\x0fRequestedConfig\x12/\n" +
+	"\x10database_version\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fdatabaseVersion\x1a\xb0\x0f\n" +
+	"\x16SourceTargetPairedNode\x12k\n" +
+	"\x06source\x18\x01 \x01(\v2M.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.NodeInfoB\x04\xe2A\x01\x03R\x06source\x12k\n" +
+	"\x06target\x18\x02 \x01(\v2M.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.NodeInfoB\x04\xe2A\x01\x03R\x06target\x12f\n" +
+	"\x05state\x18\x03 \x01(\x0e2J.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.StateB\x04\xe2A\x01\x03R\x05state\x12\xa0\x01\n" +
+	"\x19currently_serving_traffic\x18\x04 \x01(\x0e2\\.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.CurrentlyServingTrafficB\x06\xe2A\x01\x03\x18\x01R\x17currentlyServingTraffic\x12o\n" +
+	"\x05tasks\x18\x05 \x03(\v2S.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.DeploymentTaskB\x04\xe2A\x01\x03R\x05tasks\x12k\n" +
+	"\x05diffs\x18d \x03(\v2O.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.ConfigDiffB\x04\xe2A\x01\x03R\x05diffs\x1a\xb6\x01\n" +
+	"\bNodeInfo\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\binstance\x12$\n" +
 	"\n" +
-	"connection\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"connection\x12\x15\n" +
-	"\x03dns\x18\x03 \x01(\tB\x03\xe0A\x03R\x03dns\x12I\n" +
-	"\vip_mappings\x18\x04 \x03(\v2#.google.cloud.sql.v1beta4.IpMappingB\x03\xe0A\x03R\n" +
-	"ipMappings\x1a\xea\x04\n" +
-	"\x0eDeploymentTask\x12q\n" +
-	"\x04type\x18\x01 \x01(\x0e2X.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.DeploymentTask.TypeB\x03\xe0A\x03R\x04type\x12t\n" +
-	"\x05state\x18\x02 \x01(\x0e2Y.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.DeploymentTask.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"connection\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"connection\x12\x16\n" +
+	"\x03dns\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03dns\x12J\n" +
+	"\vip_mappings\x18\x04 \x03(\v2#.google.cloud.sql.v1beta4.IpMappingB\x04\xe2A\x01\x03R\n" +
+	"ipMappings\x1a\xef\x04\n" +
+	"\x0eDeploymentTask\x12r\n" +
+	"\x04type\x18\x01 \x01(\x0e2X.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.DeploymentTask.TypeB\x04\xe2A\x01\x03R\x04type\x12u\n" +
+	"\x05state\x18\x02 \x01(\x0e2Y.google.cloud.sql.v1beta4.BlueGreenDeployment.SourceTargetPairedNode.DeploymentTask.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12(\n" +
-	"\rerror_message\x18\x05 \x01(\tB\x03\xe0A\x03R\ferrorMessage\"t\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12)\n" +
+	"\rerror_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\ferrorMessage\"t\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tPROVISION\x10\x01\x12\v\n" +
@@ -1494,12 +1494,12 @@ const file_google_cloud_sql_v1beta4_cloud_sql_blue_green_deployments_proto_rawDe
 	"\aRUNNING\x10\x02\x12\r\n" +
 	"\tSUCCEEDED\x10\x03\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x04\x1aw\n" +
+	"\x06FAILED\x10\x04\x1az\n" +
 	"\n" +
-	"ConfigDiff\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x03R\x05field\x12&\n" +
-	"\fsource_value\x18\x02 \x01(\tB\x03\xe0A\x03R\vsourceValue\x12&\n" +
-	"\ftarget_value\x18\x03 \x01(\tB\x03\xe0A\x03R\vtargetValue\"\xcd\x01\n" +
+	"ConfigDiff\x12\x1a\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05field\x12'\n" +
+	"\fsource_value\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vsourceValue\x12'\n" +
+	"\ftarget_value\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vtargetValue\"\xcd\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fPROVISIONING\x10\x01\x12\x0f\n" +
@@ -1525,33 +1525,33 @@ const file_google_cloud_sql_v1beta4_cloud_sql_blue_green_deployments_proto_rawDe
 	"\x16SWITCHOVER_IN_PROGRESS\x10\x04\x12\x18\n" +
 	"\x14SWITCHOVER_COMPLETED\x10\x05\x12\f\n" +
 	"\bDELETING\x10\x06:\xb2\x01\xeaA\xae\x01\n" +
-	"+sqladmin.googleapis.com/BlueGreenDeployment\x12Tprojects/{project}/locations/{location}/blueGreenDeployments/{blue_green_deployment}*\x14blueGreenDeployments2\x13blueGreenDeployment\"\x95\x02\n" +
-	" CreateBlueGreenDeploymentRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+sqladmin.googleapis.com/BlueGreenDeploymentR\x06parent\x12<\n" +
-	"\x18blue_green_deployment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15blueGreenDeploymentId\x12f\n" +
-	"\x15blue_green_deployment\x18\x03 \x01(\v2-.google.cloud.sql.v1beta4.BlueGreenDeploymentB\x03\xe0A\x02R\x13blueGreenDeployment\"\xb2\x02\n" +
-	"\x1dGetBlueGreenDeploymentRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+sqladmin.googleapis.com/BlueGreenDeploymentR\x04name\x12h\n" +
-	"\x04view\x18\x02 \x01(\x0e2O.google.cloud.sql.v1beta4.GetBlueGreenDeploymentRequest.BlueGreenDeploymentViewB\x03\xe0A\x01R\x04view\"^\n" +
+	"+sqladmin.googleapis.com/BlueGreenDeployment\x12Tprojects/{project}/locations/{location}/blueGreenDeployments/{blue_green_deployment}*\x14blueGreenDeployments2\x13blueGreenDeployment\"\x98\x02\n" +
+	" CreateBlueGreenDeploymentRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+sqladmin.googleapis.com/BlueGreenDeploymentR\x06parent\x12=\n" +
+	"\x18blue_green_deployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15blueGreenDeploymentId\x12g\n" +
+	"\x15blue_green_deployment\x18\x03 \x01(\v2-.google.cloud.sql.v1beta4.BlueGreenDeploymentB\x04\xe2A\x01\x02R\x13blueGreenDeployment\"\xb4\x02\n" +
+	"\x1dGetBlueGreenDeploymentRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+sqladmin.googleapis.com/BlueGreenDeploymentR\x04name\x12i\n" +
+	"\x04view\x18\x02 \x01(\x0e2O.google.cloud.sql.v1beta4.GetBlueGreenDeploymentRequest.BlueGreenDeploymentViewB\x04\xe2A\x01\x01R\x04view\"^\n" +
 	"\x17BlueGreenDeploymentView\x12*\n" +
 	"&BLUE_GREEN_DEPLOYMENT_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\f\n" +
-	"\bDETAILED\x10\x02\"\xf1\x01\n" +
-	"\x1fListBlueGreenDeploymentsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+sqladmin.googleapis.com/BlueGreenDeploymentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\bDETAILED\x10\x02\"\xf6\x01\n" +
+	"\x1fListBlueGreenDeploymentsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+sqladmin.googleapis.com/BlueGreenDeploymentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"o\n" +
-	"$SwitchoverBlueGreenDeploymentRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+sqladmin.googleapis.com/BlueGreenDeploymentR\x04name\"\x9c\x01\n" +
-	" DeleteBlueGreenDeploymentRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+sqladmin.googleapis.com/BlueGreenDeploymentR\x04name\x12/\n" +
-	"\x11delete_old_source\x18\x02 \x01(\bB\x03\xe0A\x01R\x0fdeleteOldSource\"\xaf\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"p\n" +
+	"$SwitchoverBlueGreenDeploymentRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+sqladmin.googleapis.com/BlueGreenDeploymentR\x04name\"\x9e\x01\n" +
+	" DeleteBlueGreenDeploymentRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+sqladmin.googleapis.com/BlueGreenDeploymentR\x04name\x120\n" +
+	"\x11delete_old_source\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0fdeleteOldSource\"\xaf\x01\n" +
 	" ListBlueGreenDeploymentsResponse\x12c\n" +
 	"\x16blue_green_deployments\x18\x01 \x03(\v2-.google.cloud.sql.v1beta4.BlueGreenDeploymentR\x14blueGreenDeployments\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xaa\n" +

@@ -904,27 +904,27 @@ var File_google_cloud_discoveryengine_v1alpha_schema_proto protoreflect.FileDesc
 
 const file_google_cloud_discoveryengine_v1alpha_schema_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/discoveryengine/v1alpha/schema.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd6\x03\n" +
+	"1google/cloud/discoveryengine/v1alpha/schema.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd8\x03\n" +
 	"\x06Schema\x12>\n" +
 	"\rstruct_schema\x18\x02 \x01(\v2\x17.google.protobuf.StructH\x00R\fstructSchema\x12!\n" +
 	"\vjson_schema\x18\x03 \x01(\tH\x00R\n" +
-	"jsonSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12[\n" +
-	"\rfield_configs\x18\x04 \x03(\v21.google.cloud.discoveryengine.v1alpha.FieldConfigB\x03\xe0A\x03R\ffieldConfigs:\xe8\x01\xeaA\xe4\x01\n" +
+	"jsonSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\\\n" +
+	"\rfield_configs\x18\x04 \x03(\v21.google.cloud.discoveryengine.v1alpha.FieldConfigB\x04\xe2A\x01\x03R\ffieldConfigs:\xe8\x01\xeaA\xe4\x01\n" +
 	"%discoveryengine.googleapis.com/Schema\x12Pprojects/{project}/locations/{location}/dataStores/{data_store}/schemas/{schema}\x12iprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/schemas/{schema}B\b\n" +
-	"\x06schema\"\xfc\x0f\n" +
-	"\vFieldConfig\x12\"\n" +
+	"\x06schema\"\xff\x0f\n" +
+	"\vFieldConfig\x12#\n" +
 	"\n" +
-	"field_path\x18\x01 \x01(\tB\x03\xe0A\x02R\tfieldPath\x12_\n" +
+	"field_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tfieldPath\x12`\n" +
 	"\n" +
-	"field_type\x18\x02 \x01(\x0e2;.google.cloud.discoveryengine.v1alpha.FieldConfig.FieldTypeB\x03\xe0A\x03R\tfieldType\x12l\n" +
+	"field_type\x18\x02 \x01(\x0e2;.google.cloud.discoveryengine.v1alpha.FieldConfig.FieldTypeB\x04\xe2A\x01\x03R\tfieldType\x12l\n" +
 	"\x10indexable_option\x18\x03 \x01(\x0e2A.google.cloud.discoveryengine.v1alpha.FieldConfig.IndexableOptionR\x0findexableOption\x12\x82\x01\n" +
 	"\x18dynamic_facetable_option\x18\x04 \x01(\x0e2H.google.cloud.discoveryengine.v1alpha.FieldConfig.DynamicFacetableOptionR\x16dynamicFacetableOption\x12o\n" +
 	"\x11searchable_option\x18\x05 \x01(\x0e2B.google.cloud.discoveryengine.v1alpha.FieldConfig.SearchableOptionR\x10searchableOption\x12r\n" +
 	"\x12retrievable_option\x18\x06 \x01(\x0e2C.google.cloud.discoveryengine.v1alpha.FieldConfig.RetrievableOptionR\x11retrievableOption\x12r\n" +
 	"\x12completable_option\x18\b \x01(\x0e2C.google.cloud.discoveryengine.v1alpha.FieldConfig.CompletableOptionR\x11completableOption\x12x\n" +
-	"\x16recs_filterable_option\x18\t \x01(\x0e2B.google.cloud.discoveryengine.v1alpha.FieldConfig.FilterableOptionR\x14recsFilterableOption\x12/\n" +
-	"\x11key_property_type\x18\a \x01(\tB\x03\xe0A\x03R\x0fkeyPropertyType\x12\x98\x01\n" +
+	"\x16recs_filterable_option\x18\t \x01(\x0e2B.google.cloud.discoveryengine.v1alpha.FieldConfig.FilterableOptionR\x14recsFilterableOption\x120\n" +
+	"\x11key_property_type\x18\a \x01(\tB\x04\xe2A\x01\x03R\x0fkeyPropertyType\x12\x98\x01\n" +
 	"!advanced_site_search_data_sources\x18\n" +
 	" \x03(\x0e2N.google.cloud.discoveryengine.v1alpha.FieldConfig.AdvancedSiteSearchDataSourceR\x1dadvancedSiteSearchDataSources\x12(\n" +
 	"\x10schema_org_paths\x18\v \x03(\tR\x0eschemaOrgPaths\"\x84\x01\n" +

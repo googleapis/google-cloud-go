@@ -1930,9 +1930,9 @@ const file_google_cloud_edgecontainer_v1_service_proto_rawDesc = "" +
 	"\rstatus_reason\x18\t \x01(\x0e2=.google.cloud.edgecontainer.v1.OperationMetadata.StatusReasonR\fstatusReason\"A\n" +
 	"\fStatusReason\x12\x1d\n" +
 	"\x19STATUS_REASON_UNSPECIFIED\x10\x00\x12\x12\n" +
-	"\x0eUPGRADE_PAUSED\x10\x01\"\xca\x01\n" +
-	"\x13ListClustersRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$edgecontainer.googleapis.com/ClusterR\x06parent\x12\x1b\n" +
+	"\x0eUPGRADE_PAUSED\x10\x01\"\xcb\x01\n" +
+	"\x13ListClustersRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$edgecontainer.googleapis.com/ClusterR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -1941,15 +1941,15 @@ const file_google_cloud_edgecontainer_v1_service_proto_rawDesc = "" +
 	"\x14ListClustersResponse\x12B\n" +
 	"\bclusters\x18\x01 \x03(\v2&.google.cloud.edgecontainer.v1.ClusterR\bclusters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"U\n" +
-	"\x11GetClusterRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$edgecontainer.googleapis.com/ClusterR\x04name\"\xe6\x01\n" +
-	"\x14CreateClusterRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$edgecontainer.googleapis.com/ClusterR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"V\n" +
+	"\x11GetClusterRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$edgecontainer.googleapis.com/ClusterR\x04name\"\xe9\x01\n" +
+	"\x14CreateClusterRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$edgecontainer.googleapis.com/ClusterR\x06parent\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tclusterId\x12E\n" +
-	"\acluster\x18\x03 \x01(\v2&.google.cloud.edgecontainer.v1.ClusterB\x03\xe0A\x02R\acluster\x12\x1d\n" +
+	"cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12F\n" +
+	"\acluster\x18\x03 \x01(\v2&.google.cloud.edgecontainer.v1.ClusterB\x04\xe2A\x01\x02R\acluster\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x04 \x01(\tR\trequestId\"\xb4\x01\n" +
 	"\x14UpdateClusterRequest\x12;\n" +
@@ -1957,41 +1957,41 @@ const file_google_cloud_edgecontainer_v1_service_proto_rawDesc = "" +
 	"updateMask\x12@\n" +
 	"\acluster\x18\x02 \x01(\v2&.google.cloud.edgecontainer.v1.ClusterR\acluster\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"\xb6\x02\n" +
-	"\x15UpgradeClusterRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$edgecontainer.googleapis.com/ClusterR\x04name\x12*\n" +
-	"\x0etarget_version\x18\x02 \x01(\tB\x03\xe0A\x02R\rtargetVersion\x12Y\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"\xb8\x02\n" +
+	"\x15UpgradeClusterRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$edgecontainer.googleapis.com/ClusterR\x04name\x12+\n" +
+	"\x0etarget_version\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rtargetVersion\x12Y\n" +
 	"\bschedule\x18\x03 \x01(\x0e2=.google.cloud.edgecontainer.v1.UpgradeClusterRequest.ScheduleR\bschedule\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x04 \x01(\tR\trequestId\"5\n" +
 	"\bSchedule\x12\x18\n" +
 	"\x14SCHEDULE_UNSPECIFIED\x10\x00\x12\x0f\n" +
-	"\vIMMEDIATELY\x10\x01\"w\n" +
-	"\x14DeleteClusterRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\vIMMEDIATELY\x10\x01\"x\n" +
+	"\x14DeleteClusterRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$edgecontainer.googleapis.com/ClusterR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"d\n" +
-	"\x1aGenerateAccessTokenRequest\x12F\n" +
-	"\acluster\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$edgecontainer.googleapis.com/ClusterR\acluster\"\x87\x01\n" +
-	"\x1bGenerateAccessTokenResponse\x12&\n" +
-	"\faccess_token\x18\x01 \x01(\tB\x03\xe0A\x03R\vaccessToken\x12@\n" +
-	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\"j\n" +
-	" GenerateOfflineCredentialRequest\x12F\n" +
-	"\acluster\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$edgecontainer.googleapis.com/ClusterR\acluster\"\xdb\x01\n" +
-	"!GenerateOfflineCredentialResponse\x122\n" +
-	"\x12client_certificate\x18\x01 \x01(\tB\x03\xe0A\x03R\x11clientCertificate\x12\"\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"e\n" +
+	"\x1aGenerateAccessTokenRequest\x12G\n" +
+	"\acluster\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$edgecontainer.googleapis.com/ClusterR\acluster\"\x89\x01\n" +
+	"\x1bGenerateAccessTokenResponse\x12'\n" +
+	"\faccess_token\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vaccessToken\x12A\n" +
+	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\"k\n" +
+	" GenerateOfflineCredentialRequest\x12G\n" +
+	"\acluster\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$edgecontainer.googleapis.com/ClusterR\acluster\"\xdf\x01\n" +
+	"!GenerateOfflineCredentialResponse\x123\n" +
+	"\x12client_certificate\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x11clientCertificate\x12#\n" +
 	"\n" +
-	"client_key\x18\x02 \x01(\tB\x03\xe0A\x03R\tclientKey\x12\x1c\n" +
-	"\auser_id\x18\x03 \x01(\tB\x03\xe0A\x03R\x06userId\x12@\n" +
-	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\"\xcc\x01\n" +
-	"\x14ListNodePoolsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%edgecontainer.googleapis.com/NodePoolR\x06parent\x12\x1b\n" +
+	"client_key\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tclientKey\x12\x1d\n" +
+	"\auser_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06userId\x12A\n" +
+	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\"\xcd\x01\n" +
+	"\x14ListNodePoolsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%edgecontainer.googleapis.com/NodePoolR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2001,15 +2001,15 @@ const file_google_cloud_edgecontainer_v1_service_proto_rawDesc = "" +
 	"\n" +
 	"node_pools\x18\x01 \x03(\v2'.google.cloud.edgecontainer.v1.NodePoolR\tnodePools\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x12GetNodePoolRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%edgecontainer.googleapis.com/NodePoolR\x04name\"\xef\x01\n" +
-	"\x15CreateNodePoolRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%edgecontainer.googleapis.com/NodePoolR\x06parent\x12%\n" +
-	"\fnode_pool_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"nodePoolId\x12I\n" +
-	"\tnode_pool\x18\x03 \x01(\v2'.google.cloud.edgecontainer.v1.NodePoolB\x03\xe0A\x02R\bnodePool\x12\x1d\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x12GetNodePoolRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%edgecontainer.googleapis.com/NodePoolR\x04name\"\xf2\x01\n" +
+	"\x15CreateNodePoolRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%edgecontainer.googleapis.com/NodePoolR\x06parent\x12&\n" +
+	"\fnode_pool_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"nodePoolId\x12J\n" +
+	"\tnode_pool\x18\x03 \x01(\v2'.google.cloud.edgecontainer.v1.NodePoolB\x04\xe2A\x01\x02R\bnodePool\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x04 \x01(\tR\trequestId\"\xb9\x01\n" +
 	"\x15UpdateNodePoolRequest\x12;\n" +
@@ -2017,14 +2017,14 @@ const file_google_cloud_edgecontainer_v1_service_proto_rawDesc = "" +
 	"updateMask\x12D\n" +
 	"\tnode_pool\x18\x02 \x01(\v2'.google.cloud.edgecontainer.v1.NodePoolR\bnodePool\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"y\n" +
-	"\x15DeleteNodePoolRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"z\n" +
+	"\x15DeleteNodePoolRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%edgecontainer.googleapis.com/NodePoolR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"\xca\x01\n" +
-	"\x13ListMachinesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$edgecontainer.googleapis.com/MachineR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\xcb\x01\n" +
+	"\x13ListMachinesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$edgecontainer.googleapis.com/MachineR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2033,12 +2033,12 @@ const file_google_cloud_edgecontainer_v1_service_proto_rawDesc = "" +
 	"\x14ListMachinesResponse\x12B\n" +
 	"\bmachines\x18\x01 \x03(\v2&.google.cloud.edgecontainer.v1.MachineR\bmachines\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"U\n" +
-	"\x11GetMachineRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$edgecontainer.googleapis.com/MachineR\x04name\"\xd6\x01\n" +
-	"\x19ListVpnConnectionsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*edgecontainer.googleapis.com/VpnConnectionR\x06parent\x12\x1b\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"V\n" +
+	"\x11GetMachineRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$edgecontainer.googleapis.com/MachineR\x04name\"\xd7\x01\n" +
+	"\x19ListVpnConnectionsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*edgecontainer.googleapis.com/VpnConnectionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2047,23 +2047,23 @@ const file_google_cloud_edgecontainer_v1_service_proto_rawDesc = "" +
 	"\x1aListVpnConnectionsResponse\x12U\n" +
 	"\x0fvpn_connections\x18\x01 \x03(\v2,.google.cloud.edgecontainer.v1.VpnConnectionR\x0evpnConnections\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"a\n" +
-	"\x17GetVpnConnectionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*edgecontainer.googleapis.com/VpnConnectionR\x04name\"\x92\x02\n" +
-	"\x1aCreateVpnConnectionRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*edgecontainer.googleapis.com/VpnConnectionR\x06parent\x12/\n" +
-	"\x11vpn_connection_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fvpnConnectionId\x12X\n" +
-	"\x0evpn_connection\x18\x03 \x01(\v2,.google.cloud.edgecontainer.v1.VpnConnectionB\x03\xe0A\x02R\rvpnConnection\x12\x1d\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"b\n" +
+	"\x17GetVpnConnectionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*edgecontainer.googleapis.com/VpnConnectionR\x04name\"\x95\x02\n" +
+	"\x1aCreateVpnConnectionRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*edgecontainer.googleapis.com/VpnConnectionR\x06parent\x120\n" +
+	"\x11vpn_connection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fvpnConnectionId\x12Y\n" +
+	"\x0evpn_connection\x18\x03 \x01(\v2,.google.cloud.edgecontainer.v1.VpnConnectionB\x04\xe2A\x01\x02R\rvpnConnection\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\x83\x01\n" +
-	"\x1aDeleteVpnConnectionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\x84\x01\n" +
+	"\x1aDeleteVpnConnectionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*edgecontainer.googleapis.com/VpnConnectionR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"W\n" +
-	"\x16GetServerConfigRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"X\n" +
+	"\x16GetServerConfigRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x04name2\xfb!\n" +
 	"\rEdgeContainer\x12\xb6\x01\n" +
 	"\fListClusters\x122.google.cloud.edgecontainer.v1.ListClustersRequest\x1a3.google.cloud.edgecontainer.v1.ListClustersResponse\"=\xdaA\x06parent\x82\xd3\xe4\x93\x02.\x12,/v1/{parent=projects/*/locations/*}/clusters\x12\xa3\x01\n" +

@@ -171,13 +171,13 @@ var File_google_cloud_ces_v1beta_file_search_tool_proto protoreflect.FileDescrip
 
 const file_google_cloud_ces_v1beta_file_search_tool_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/ces/v1beta/file_search_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\x9e\x02\n" +
-	"\x0eFileSearchTool\x12X\n" +
-	"\vcorpus_type\x18\x03 \x01(\x0e22.google.cloud.ces.v1beta.FileSearchTool.CorpusTypeB\x03\xe0A\x01R\n" +
-	"corpusType\x12\x17\n" +
-	"\x04name\x18\x04 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12$\n" +
-	"\vfile_corpus\x18\x06 \x01(\tB\x03\xe0A\x01R\n" +
+	".google/cloud/ces/v1beta/file_search_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xa2\x02\n" +
+	"\x0eFileSearchTool\x12Y\n" +
+	"\vcorpus_type\x18\x03 \x01(\x0e22.google.cloud.ces.v1beta.FileSearchTool.CorpusTypeB\x04\xe2A\x01\x01R\n" +
+	"corpusType\x12\x18\n" +
+	"\x04name\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12%\n" +
+	"\vfile_corpus\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"fileCorpus\"L\n" +
 	"\n" +
 	"CorpusType\x12\x1b\n" +

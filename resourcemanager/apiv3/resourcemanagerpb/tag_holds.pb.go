@@ -492,31 +492,31 @@ var File_google_cloud_resourcemanager_v3_tag_holds_proto protoreflect.FileDescri
 
 const file_google_cloud_resourcemanager_v3_tag_holds_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/resourcemanager/v3/tag_holds.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9d\x02\n" +
-	"\aTagHold\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1b\n" +
-	"\x06holder\x18\x02 \x01(\tB\x03\xe0A\x02R\x06holder\x12\x1b\n" +
-	"\x06origin\x18\x03 \x01(\tB\x03\xe0A\x01R\x06origin\x12 \n" +
-	"\thelp_link\x18\x04 \x01(\tB\x03\xe0A\x01R\bhelpLink\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"/google/cloud/resourcemanager/v3/tag_holds.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa2\x02\n" +
+	"\aTagHold\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1c\n" +
+	"\x06holder\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06holder\x12\x1c\n" +
+	"\x06origin\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06origin\x12!\n" +
+	"\thelp_link\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bhelpLink\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime:[\xeaAX\n" +
-	"+cloudresourcemanager.googleapis.com/TagHold\x12)tagValues/{tag_value}/tagHolds/{tag_hold}\"\xd7\x01\n" +
-	"\x14CreateTagHoldRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+cloudresourcemanager.googleapis.com/TagHoldR\x06parent\x12H\n" +
-	"\btag_hold\x18\x02 \x01(\v2(.google.cloud.resourcemanager.v3.TagHoldB\x03\xe0A\x02R\atagHold\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x17\n" +
-	"\x15CreateTagHoldMetadata\"\x89\x01\n" +
-	"\x14DeleteTagHoldRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/TagHoldR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x17\n" +
-	"\x15DeleteTagHoldMetadata\"\xc5\x01\n" +
-	"\x13ListTagHoldsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+cloudresourcemanager.googleapis.com/TagHoldR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"+cloudresourcemanager.googleapis.com/TagHold\x12)tagValues/{tag_value}/tagHolds/{tag_hold}\"\xda\x01\n" +
+	"\x14CreateTagHoldRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+cloudresourcemanager.googleapis.com/TagHoldR\x06parent\x12I\n" +
+	"\btag_hold\x18\x02 \x01(\v2(.google.cloud.resourcemanager.v3.TagHoldB\x04\xe2A\x01\x02R\atagHold\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x17\n" +
+	"\x15CreateTagHoldMetadata\"\x8b\x01\n" +
+	"\x14DeleteTagHoldRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/TagHoldR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x17\n" +
+	"\x15DeleteTagHoldMetadata\"\xc9\x01\n" +
+	"\x13ListTagHoldsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+cloudresourcemanager.googleapis.com/TagHoldR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x85\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x85\x01\n" +
 	"\x14ListTagHoldsResponse\x12E\n" +
 	"\ttag_holds\x18\x01 \x03(\v2(.google.cloud.resourcemanager.v3.TagHoldR\btagHolds\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xec\x05\n" +

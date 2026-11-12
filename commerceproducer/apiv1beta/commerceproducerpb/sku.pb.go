@@ -2541,37 +2541,37 @@ var File_google_cloud_commerceproducer_v1beta_sku_proto protoreflect.FileDescrip
 
 const file_google_cloud_commerceproducer_v1beta_sku_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/commerceproducer/v1beta/sku.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17google/type/money.proto\"\xde<\n" +
-	"\x03Sku\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x12e\n" +
-	"\x12sku_price_timeline\x18\x03 \x03(\v22.google.cloud.commerceproducer.v1beta.Sku.SkuPriceB\x03\xe0A\x03R\x10skuPriceTimeline\x1a\xb0:\n" +
-	"\bSkuPrice\x12f\n" +
-	"\binactive\x18\x02 \x01(\v2C.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.InactiveSkuPriceB\x03\xe0A\x03H\x00R\binactive\x12\x9e\x01\n" +
-	" managed_service_metric_usage_fee\x18\x03 \x01(\v2O.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ManagedServiceMetricUsageFeeB\x03\xe0A\x03H\x00R\x1cmanagedServiceMetricUsageFee\x12\x89\x01\n" +
-	"\x15gce_license_usage_fee\x18\x04 \x01(\v2O.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ComputeEngineLicenseUsageFeeB\x03\xe0A\x03H\x00R\x12gceLicenseUsageFee\x12\x80\x01\n" +
-	"\x11gke_pod_usage_fee\x18\x05 \x01(\v2N.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.KubernetesEnginePodUsageFeeB\x03\xe0A\x03H\x00R\x0egkePodUsageFee\x12\xa5\x01\n" +
-	"#ai_platform_managed_model_usage_fee\x18\x06 \x01(\v2Q.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFeeB\x03\xe0A\x03H\x00R\x1eaiPlatformManagedModelUsageFee\x12\xb0\x01\n" +
-	"&ai_platform_provisioned_throughput_fee\x18\a \x01(\v2U.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformProvisionedThroughputFeeB\x03\xe0A\x03H\x00R\"aiPlatformProvisionedThroughputFee\x12\xa8\x01\n" +
-	"$ai_platform_deployed_model_usage_fee\x18\b \x01(\v2R.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformDeployedModelUsageFeeB\x03\xe0A\x03H\x00R\x1faiPlatformDeployedModelUsageFee\x12\x81\x01\n" +
-	"\x15flat_subscription_fee\x18\t \x01(\v2F.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.FlatSubscriptionFeeB\x03\xe0A\x03H\x00R\x13flatSubscriptionFee\x12F\n" +
-	"\x0eeffective_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\reffectiveTime\x1a\x12\n" +
-	"\x10InactiveSkuPrice\x1a\xcb\x01\n" +
-	"\x1cManagedServiceMetricUsageFee\x12h\n" +
-	"\ftiered_price\x18\x02 \x01(\v2>.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.TieredPriceB\x03\xe0A\x03H\x00R\vtieredPrice\x12.\n" +
-	"\x10canonical_metric\x18\x01 \x01(\tB\x03\xe0A\x03R\x0fcanonicalMetricB\x11\n" +
-	"\x0fprice_structure\x1a\xca\a\n" +
+	".google/cloud/commerceproducer/v1beta/sku.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17google/type/money.proto\"\x98=\n" +
+	"\x03Sku\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12f\n" +
+	"\x12sku_price_timeline\x18\x03 \x03(\v22.google.cloud.commerceproducer.v1beta.Sku.SkuPriceB\x04\xe2A\x01\x03R\x10skuPriceTimeline\x1a\xe9:\n" +
+	"\bSkuPrice\x12g\n" +
+	"\binactive\x18\x02 \x01(\v2C.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.InactiveSkuPriceB\x04\xe2A\x01\x03H\x00R\binactive\x12\x9f\x01\n" +
+	" managed_service_metric_usage_fee\x18\x03 \x01(\v2O.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ManagedServiceMetricUsageFeeB\x04\xe2A\x01\x03H\x00R\x1cmanagedServiceMetricUsageFee\x12\x8a\x01\n" +
+	"\x15gce_license_usage_fee\x18\x04 \x01(\v2O.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ComputeEngineLicenseUsageFeeB\x04\xe2A\x01\x03H\x00R\x12gceLicenseUsageFee\x12\x81\x01\n" +
+	"\x11gke_pod_usage_fee\x18\x05 \x01(\v2N.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.KubernetesEnginePodUsageFeeB\x04\xe2A\x01\x03H\x00R\x0egkePodUsageFee\x12\xa6\x01\n" +
+	"#ai_platform_managed_model_usage_fee\x18\x06 \x01(\v2Q.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFeeB\x04\xe2A\x01\x03H\x00R\x1eaiPlatformManagedModelUsageFee\x12\xb1\x01\n" +
+	"&ai_platform_provisioned_throughput_fee\x18\a \x01(\v2U.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformProvisionedThroughputFeeB\x04\xe2A\x01\x03H\x00R\"aiPlatformProvisionedThroughputFee\x12\xa9\x01\n" +
+	"$ai_platform_deployed_model_usage_fee\x18\b \x01(\v2R.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformDeployedModelUsageFeeB\x04\xe2A\x01\x03H\x00R\x1faiPlatformDeployedModelUsageFee\x12\x82\x01\n" +
+	"\x15flat_subscription_fee\x18\t \x01(\v2F.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.FlatSubscriptionFeeB\x04\xe2A\x01\x03H\x00R\x13flatSubscriptionFee\x12G\n" +
+	"\x0eeffective_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\reffectiveTime\x1a\x12\n" +
+	"\x10InactiveSkuPrice\x1a\xcd\x01\n" +
+	"\x1cManagedServiceMetricUsageFee\x12i\n" +
+	"\ftiered_price\x18\x02 \x01(\v2>.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.TieredPriceB\x04\xe2A\x01\x03H\x00R\vtieredPrice\x12/\n" +
+	"\x10canonical_metric\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0fcanonicalMetricB\x11\n" +
+	"\x0fprice_structure\x1a\xd1\a\n" +
 	"\x1cComputeEngineLicenseUsageFee\x12:\n" +
-	"\x0eprice_per_unit\x18\x06 \x01(\v2\x12.google.type.MoneyH\x00R\fpricePerUnit\x12&\n" +
-	"\flicense_code\x18\x01 \x01(\tB\x03\xe0A\x03R\vlicenseCode\x12\x8f\x01\n" +
-	"\x10machine_resource\x18\x02 \x01(\x0e2_.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ComputeEngineLicenseUsageFee.MachineResourceB\x03\xe0A\x03R\x0fmachineResource\x12\x9f\x01\n" +
-	"\x16machine_resource_range\x18\x03 \x01(\v2d.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ComputeEngineLicenseUsageFee.MachineResourceRangeB\x03\xe0A\x03R\x14machineResourceRange\x12\x92\x01\n" +
-	"\x11usage_calculation\x18\x04 \x01(\x0e2`.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ComputeEngineLicenseUsageFee.UsageCalculationB\x03\xe0A\x03R\x10usageCalculation\x12\x17\n" +
-	"\x04unit\x18\x05 \x01(\tB\x03\xe0A\x03R\x04unit\x1aq\n" +
-	"\x14MachineResourceRange\x12$\n" +
-	"\vstart_value\x18\x01 \x01(\x03B\x03\xe0A\x03R\n" +
-	"startValue\x12%\n" +
-	"\tend_value\x18\x02 \x01(\x03B\x03\xe0A\x03H\x00R\bendValue\x88\x01\x01B\f\n" +
+	"\x0eprice_per_unit\x18\x06 \x01(\v2\x12.google.type.MoneyH\x00R\fpricePerUnit\x12'\n" +
+	"\flicense_code\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vlicenseCode\x12\x90\x01\n" +
+	"\x10machine_resource\x18\x02 \x01(\x0e2_.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ComputeEngineLicenseUsageFee.MachineResourceB\x04\xe2A\x01\x03R\x0fmachineResource\x12\xa0\x01\n" +
+	"\x16machine_resource_range\x18\x03 \x01(\v2d.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ComputeEngineLicenseUsageFee.MachineResourceRangeB\x04\xe2A\x01\x03R\x14machineResourceRange\x12\x93\x01\n" +
+	"\x11usage_calculation\x18\x04 \x01(\x0e2`.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.ComputeEngineLicenseUsageFee.UsageCalculationB\x04\xe2A\x01\x03R\x10usageCalculation\x12\x18\n" +
+	"\x04unit\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04unit\x1as\n" +
+	"\x14MachineResourceRange\x12%\n" +
+	"\vstart_value\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"startValue\x12&\n" +
+	"\tend_value\x18\x02 \x01(\x03B\x04\xe2A\x01\x03H\x00R\bendValue\x88\x01\x01B\f\n" +
 	"\n" +
 	"_end_value\"d\n" +
 	"\x0fMachineResource\x12 \n" +
@@ -2584,17 +2584,17 @@ const file_google_cloud_commerceproducer_v1beta_sku_proto_rawDesc = "" +
 	"\x1dUSAGE_CALCULATION_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10INSTANCE_RUNTIME\x10\x01\x12+\n" +
 	"'LINEAR_RESOURCE_SCALED_INSTANCE_RUNTIME\x10\x02B\x11\n" +
-	"\x0fprice_structure\x1a\xff\x06\n" +
+	"\x0fprice_structure\x1a\x85\a\n" +
 	"\x1bKubernetesEnginePodUsageFee\x12:\n" +
-	"\x0eprice_per_unit\x18\x06 \x01(\v2\x12.google.type.MoneyH\x00R\fpricePerUnit\x12\x82\x01\n" +
-	"\fpod_resource\x18\x02 \x01(\x0e2Z.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.KubernetesEnginePodUsageFee.PodResourceB\x03\xe0A\x03R\vpodResource\x12\x92\x01\n" +
-	"\x12pod_resource_range\x18\x03 \x01(\v2_.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.KubernetesEnginePodUsageFee.PodResourceRangeB\x03\xe0A\x03R\x10podResourceRange\x12\x91\x01\n" +
-	"\x11usage_calculation\x18\x04 \x01(\x0e2_.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.KubernetesEnginePodUsageFee.UsageCalculationB\x03\xe0A\x03R\x10usageCalculation\x12\x17\n" +
-	"\x04unit\x18\x05 \x01(\tB\x03\xe0A\x03R\x04unit\x1am\n" +
-	"\x10PodResourceRange\x12$\n" +
-	"\vstart_value\x18\x01 \x01(\x03B\x03\xe0A\x03R\n" +
-	"startValue\x12%\n" +
-	"\tend_value\x18\x02 \x01(\x03B\x03\xe0A\x03H\x00R\bendValue\x88\x01\x01B\f\n" +
+	"\x0eprice_per_unit\x18\x06 \x01(\v2\x12.google.type.MoneyH\x00R\fpricePerUnit\x12\x83\x01\n" +
+	"\fpod_resource\x18\x02 \x01(\x0e2Z.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.KubernetesEnginePodUsageFee.PodResourceB\x04\xe2A\x01\x03R\vpodResource\x12\x93\x01\n" +
+	"\x12pod_resource_range\x18\x03 \x01(\v2_.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.KubernetesEnginePodUsageFee.PodResourceRangeB\x04\xe2A\x01\x03R\x10podResourceRange\x12\x92\x01\n" +
+	"\x11usage_calculation\x18\x04 \x01(\x0e2_.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.KubernetesEnginePodUsageFee.UsageCalculationB\x04\xe2A\x01\x03R\x10usageCalculation\x12\x18\n" +
+	"\x04unit\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04unit\x1ao\n" +
+	"\x10PodResourceRange\x12%\n" +
+	"\vstart_value\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"startValue\x12&\n" +
+	"\tend_value\x18\x02 \x01(\x03B\x04\xe2A\x01\x03H\x00R\bendValue\x88\x01\x01B\f\n" +
 	"\n" +
 	"_end_value\"k\n" +
 	"\vPodResource\x12\x1c\n" +
@@ -2608,74 +2608,74 @@ const file_google_cloud_commerceproducer_v1beta_sku_proto_rawDesc = "" +
 	"\x1dUSAGE_CALCULATION_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vPOD_RUNTIME\x10\x01\x12&\n" +
 	"\"LINEAR_RESOURCE_SCALED_POD_RUNTIME\x10\x02B\x11\n" +
-	"\x0fprice_structure\x1a\x8c\x14\n" +
-	"\x1eAiPlatformManagedModelUsageFee\x12h\n" +
-	"\ftiered_price\x18\a \x01(\v2>.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.TieredPriceB\x03\xe0A\x03H\x00R\vtieredPrice\x12\x9b\x01\n" +
-	"\fusage_metric\x18\x01 \x01(\v2s.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetricB\x03\xe0A\x03R\vusageMetric\x12z\n" +
-	"\blocation\x18\x03 \x01(\v2Y.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelEndpointLocationB\x03\xe0A\x03R\blocation\x12\x8e\x01\n" +
-	"\x0fprediction_mode\x18\x04 \x01(\x0e2`.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.PredictionModeB\x03\xe0A\x03R\x0epredictionMode\x12\xc4\x01\n" +
-	"#combined_request_input_tokens_range\x18\x05 \x01(\v2q.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.CombinedRequestInputTokensRangeB\x03\xe0A\x03R\x1fcombinedRequestInputTokensRange\x12\xb9\x01\n" +
-	"\x1eprovisioned_throughput_overage\x18\x06 \x01(\v2n.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.ProvisionedThroughputOverageB\x03\xe0A\x03R\x1cprovisionedThroughputOverage\x1a\xf5\t\n" +
-	"!AiPlatformManagedModelUsageMetric\x12\xbd\x01\n" +
-	"\x13input_tokens_metric\x18\x01 \x01(\v2\x85\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.InputTokensMetricB\x03\xe0A\x03H\x00R\x11inputTokensMetric\x12\xda\x01\n" +
-	"\x1ecache_read_input_tokens_metric\x18\x02 \x01(\v2\x8e\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.CacheReadInputTokensMetricB\x03\xe0A\x03H\x00R\x1acacheReadInputTokensMetric\x12\xdd\x01\n" +
-	"\x1fcache_write_input_tokens_metric\x18\x03 \x01(\v2\x8f\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.CacheWriteInputTokensMetricB\x03\xe0A\x03H\x00R\x1bcacheWriteInputTokensMetric\x12\xc0\x01\n" +
-	"\x14output_tokens_metric\x18\x04 \x01(\v2\x86\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.OutputTokensMetricB\x03\xe0A\x03H\x00R\x12outputTokensMetric\x12\xd0\x01\n" +
-	"\x1aweb_search_requests_metric\x18\x05 \x01(\v2\x8b\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.WebSearchRequestsMetricB\x03\xe0A\x03H\x00R\x17webSearchRequestsMetric\x1a\x13\n" +
+	"\x0fprice_structure\x1a\x9b\x14\n" +
+	"\x1eAiPlatformManagedModelUsageFee\x12i\n" +
+	"\ftiered_price\x18\a \x01(\v2>.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.TieredPriceB\x04\xe2A\x01\x03H\x00R\vtieredPrice\x12\x9c\x01\n" +
+	"\fusage_metric\x18\x01 \x01(\v2s.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetricB\x04\xe2A\x01\x03R\vusageMetric\x12{\n" +
+	"\blocation\x18\x03 \x01(\v2Y.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelEndpointLocationB\x04\xe2A\x01\x03R\blocation\x12\x8f\x01\n" +
+	"\x0fprediction_mode\x18\x04 \x01(\x0e2`.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.PredictionModeB\x04\xe2A\x01\x03R\x0epredictionMode\x12\xc5\x01\n" +
+	"#combined_request_input_tokens_range\x18\x05 \x01(\v2q.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.CombinedRequestInputTokensRangeB\x04\xe2A\x01\x03R\x1fcombinedRequestInputTokensRange\x12\xba\x01\n" +
+	"\x1eprovisioned_throughput_overage\x18\x06 \x01(\v2n.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.ProvisionedThroughputOverageB\x04\xe2A\x01\x03R\x1cprovisionedThroughputOverage\x1a\xfb\t\n" +
+	"!AiPlatformManagedModelUsageMetric\x12\xbe\x01\n" +
+	"\x13input_tokens_metric\x18\x01 \x01(\v2\x85\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.InputTokensMetricB\x04\xe2A\x01\x03H\x00R\x11inputTokensMetric\x12\xdb\x01\n" +
+	"\x1ecache_read_input_tokens_metric\x18\x02 \x01(\v2\x8e\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.CacheReadInputTokensMetricB\x04\xe2A\x01\x03H\x00R\x1acacheReadInputTokensMetric\x12\xde\x01\n" +
+	"\x1fcache_write_input_tokens_metric\x18\x03 \x01(\v2\x8f\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.CacheWriteInputTokensMetricB\x04\xe2A\x01\x03H\x00R\x1bcacheWriteInputTokensMetric\x12\xc1\x01\n" +
+	"\x14output_tokens_metric\x18\x04 \x01(\v2\x86\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.OutputTokensMetricB\x04\xe2A\x01\x03H\x00R\x12outputTokensMetric\x12\xd1\x01\n" +
+	"\x1aweb_search_requests_metric\x18\x05 \x01(\v2\x8b\x01.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelUsageFee.AiPlatformManagedModelUsageMetric.WebSearchRequestsMetricB\x04\xe2A\x01\x03H\x00R\x17webSearchRequestsMetric\x1a\x13\n" +
 	"\x11InputTokensMetric\x1a\x1c\n" +
-	"\x1aCacheReadInputTokensMetric\x1aO\n" +
-	"\x1bCacheWriteInputTokensMetric\x120\n" +
-	"\x03ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x03ttl\x1a\x14\n" +
+	"\x1aCacheReadInputTokensMetric\x1aP\n" +
+	"\x1bCacheWriteInputTokensMetric\x121\n" +
+	"\x03ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x03ttl\x1a\x14\n" +
 	"\x12OutputTokensMetric\x1a\x19\n" +
 	"\x17WebSearchRequestsMetricB\b\n" +
-	"\x06metric\x1a|\n" +
-	"\x1fCombinedRequestInputTokensRange\x12$\n" +
-	"\vstart_value\x18\x01 \x01(\x03B\x03\xe0A\x03R\n" +
-	"startValue\x12%\n" +
-	"\tend_value\x18\x02 \x01(\x03B\x03\xe0A\x03H\x00R\bendValue\x88\x01\x01B\f\n" +
+	"\x06metric\x1a~\n" +
+	"\x1fCombinedRequestInputTokensRange\x12%\n" +
+	"\vstart_value\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"startValue\x12&\n" +
+	"\tend_value\x18\x02 \x01(\x03B\x04\xe2A\x01\x03H\x00R\bendValue\x88\x01\x01B\f\n" +
 	"\n" +
-	"_end_value\x1ai\n" +
-	"\x1cProvisionedThroughputOverage\x12I\n" +
-	"\aservice\x18\x01 \x01(\tB/\xe0A\x03\xfaA)\x12'commerceproducer.googleapis.com/ServiceR\aservice\"^\n" +
+	"_end_value\x1aj\n" +
+	"\x1cProvisionedThroughputOverage\x12J\n" +
+	"\aservice\x18\x01 \x01(\tB0\xe2A\x01\x03\xfaA)\x12'commerceproducer.googleapis.com/ServiceR\aservice\"^\n" +
 	"\x0ePredictionMode\x12\x1f\n" +
 	"\x1bPREDICTION_MODE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11ONLINE_PREDICTION\x10\x01\x12\x14\n" +
 	"\x10BATCH_PREDICTION\x10\x02B\x11\n" +
-	"\x0fprice_structure\x1a\xd0\x02\n" +
-	"\"AiPlatformProvisionedThroughputFee\x127\n" +
-	"\x14term_duration_months\x18\x02 \x01(\x05B\x03\xe0A\x03H\x00R\x12termDurationMonths\x12A\n" +
-	"\x12gsu_price_per_unit\x18\x04 \x01(\v2\x12.google.type.MoneyH\x01R\x0fgsuPricePerUnit\x12z\n" +
-	"\blocation\x18\x01 \x01(\v2Y.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelEndpointLocationB\x03\xe0A\x03R\blocation\x12\x17\n" +
-	"\x04unit\x18\x03 \x01(\tB\x03\xe0A\x03R\x04unitB\x06\n" +
+	"\x0fprice_structure\x1a\xd3\x02\n" +
+	"\"AiPlatformProvisionedThroughputFee\x128\n" +
+	"\x14term_duration_months\x18\x02 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x12termDurationMonths\x12A\n" +
+	"\x12gsu_price_per_unit\x18\x04 \x01(\v2\x12.google.type.MoneyH\x01R\x0fgsuPricePerUnit\x12{\n" +
+	"\blocation\x18\x01 \x01(\v2Y.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformManagedModelEndpointLocationB\x04\xe2A\x01\x03R\blocation\x12\x18\n" +
+	"\x04unit\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04unitB\x06\n" +
 	"\x04termB\x11\n" +
-	"\x0fprice_structure\x1a\xd3\x03\n" +
-	"\x1fAiPlatformDeployedModelUsageFee\x120\n" +
-	"\x10accelerator_type\x18\x02 \x01(\tB\x03\xe0A\x03H\x00R\x0facceleratorType\x12?\n" +
-	"\x0eprice_per_unit\x18\x05 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x03H\x01R\fpricePerUnit\x12\x17\n" +
-	"\x04unit\x18\x03 \x01(\tB\x03\xe0A\x03R\x04unit\x12\x95\x01\n" +
-	"\x11usage_calculation\x18\x04 \x01(\x0e2c.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformDeployedModelUsageFee.UsageCalculationB\x03\xe0A\x03R\x10usageCalculation\"d\n" +
+	"\x0fprice_structure\x1a\xd7\x03\n" +
+	"\x1fAiPlatformDeployedModelUsageFee\x121\n" +
+	"\x10accelerator_type\x18\x02 \x01(\tB\x04\xe2A\x01\x03H\x00R\x0facceleratorType\x12@\n" +
+	"\x0eprice_per_unit\x18\x05 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x03H\x01R\fpricePerUnit\x12\x18\n" +
+	"\x04unit\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04unit\x12\x96\x01\n" +
+	"\x11usage_calculation\x18\x04 \x01(\x0e2c.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.AiPlatformDeployedModelUsageFee.UsageCalculationB\x04\xe2A\x01\x03R\x10usageCalculation\"d\n" +
 	"\x10UsageCalculation\x12!\n" +
 	"\x1dUSAGE_CALCULATION_UNSPECIFIED\x10\x00\x12-\n" +
 	")LINEAR_RESOURCE_SCALED_DEPLOYMENT_RUNTIME\x10\x02B\x13\n" +
 	"\x11hardware_resourceB\x11\n" +
-	"\x0fprice_structure\x1a\x82\x01\n" +
-	"\x13FlatSubscriptionFee\x12?\n" +
-	"\x0eprice_per_unit\x18\x03 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x03H\x00R\fpricePerUnit\x12\x17\n" +
-	"\x04unit\x18\x02 \x01(\tB\x03\xe0A\x03R\x04unitB\x11\n" +
-	"\x0fprice_structure\x1a\x85\x03\n" +
-	"\vTieredPrice\x12\x17\n" +
-	"\x04unit\x18\x01 \x01(\tB\x03\xe0A\x03R\x04unit\x12.\n" +
-	"\x10unit_description\x18\x02 \x01(\tB\x03\xe0A\x03R\x0funitDescription\x12C\n" +
-	"\x10price_unit_count\x18\x03 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\x0epriceUnitCount\x12n\n" +
-	"\vprice_tiers\x18\x04 \x03(\v2H.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.TieredPrice.PriceTierB\x03\xe0A\x03R\n" +
-	"priceTiers\x1ax\n" +
-	"\tPriceTier\x12<\n" +
-	"\fstart_amount\x18\x01 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\vstartAmount\x12-\n" +
-	"\x05price\x18\x02 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x03R\x05price\x1a\xb7\x01\n" +
-	"&AiPlatformManagedModelEndpointLocation\x12\"\n" +
-	"\tregion_id\x18\x01 \x01(\tB\x03\xe0A\x03H\x00R\bregionId\x12.\n" +
-	"\x0fglobal_endpoint\x18\x02 \x01(\bB\x03\xe0A\x03H\x00R\x0eglobalEndpoint\x12-\n" +
-	"\x0fmulti_region_id\x18\x03 \x01(\tB\x03\xe0A\x03H\x00R\rmultiRegionIdB\n" +
+	"\x0fprice_structure\x1a\x84\x01\n" +
+	"\x13FlatSubscriptionFee\x12@\n" +
+	"\x0eprice_per_unit\x18\x03 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x03H\x00R\fpricePerUnit\x12\x18\n" +
+	"\x04unit\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04unitB\x11\n" +
+	"\x0fprice_structure\x1a\x8b\x03\n" +
+	"\vTieredPrice\x12\x18\n" +
+	"\x04unit\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04unit\x12/\n" +
+	"\x10unit_description\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0funitDescription\x12D\n" +
+	"\x10price_unit_count\x18\x03 \x01(\v2\x14.google.type.DecimalB\x04\xe2A\x01\x03R\x0epriceUnitCount\x12o\n" +
+	"\vprice_tiers\x18\x04 \x03(\v2H.google.cloud.commerceproducer.v1beta.Sku.SkuPrice.TieredPrice.PriceTierB\x04\xe2A\x01\x03R\n" +
+	"priceTiers\x1az\n" +
+	"\tPriceTier\x12=\n" +
+	"\fstart_amount\x18\x01 \x01(\v2\x14.google.type.DecimalB\x04\xe2A\x01\x03R\vstartAmount\x12.\n" +
+	"\x05price\x18\x02 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x03R\x05price\x1a\xba\x01\n" +
+	"&AiPlatformManagedModelEndpointLocation\x12#\n" +
+	"\tregion_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03H\x00R\bregionId\x12/\n" +
+	"\x0fglobal_endpoint\x18\x02 \x01(\bB\x04\xe2A\x01\x03H\x00R\x0eglobalEndpoint\x12.\n" +
+	"\x0fmulti_region_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03H\x00R\rmultiRegionIdB\n" +
 	"\n" +
 	"\blocationB\n" +
 	"\n" +

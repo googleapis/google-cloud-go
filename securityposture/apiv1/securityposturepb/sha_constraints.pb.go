@@ -230,15 +230,15 @@ var File_google_cloud_securityposture_v1_sha_constraints_proto protoreflect.File
 
 const file_google_cloud_securityposture_v1_sha_constraints_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/securityposture/v1/sha_constraints.proto\x12\x1fgoogle.cloud.securityposture.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a7google/cloud/securityposture/v1/sha_custom_config.proto\"\xaf\x01\n" +
-	"\x1dSecurityHealthAnalyticsModule\x12$\n" +
-	"\vmodule_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"5google/cloud/securityposture/v1/sha_constraints.proto\x12\x1fgoogle.cloud.securityposture.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a7google/cloud/securityposture/v1/sha_custom_config.proto\"\xb0\x01\n" +
+	"\x1dSecurityHealthAnalyticsModule\x12%\n" +
+	"\vmodule_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"moduleName\x12h\n" +
-	"\x17module_enablement_state\x18\x02 \x01(\x0e20.google.cloud.securityposture.v1.EnablementStateR\x15moduleEnablementState\"\x9b\x02\n" +
-	"#SecurityHealthAnalyticsCustomModule\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\x03R\x02id\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12J\n" +
-	"\x06config\x18\x03 \x01(\v2-.google.cloud.securityposture.v1.CustomConfigB\x03\xe0A\x02R\x06config\x12h\n" +
+	"\x17module_enablement_state\x18\x02 \x01(\x0e20.google.cloud.securityposture.v1.EnablementStateR\x15moduleEnablementState\"\x9c\x02\n" +
+	"#SecurityHealthAnalyticsCustomModule\x12\x15\n" +
+	"\x02id\x18\x01 \x01(\tB\x05\xe2A\x02\x05\x03R\x02id\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12K\n" +
+	"\x06config\x18\x03 \x01(\v2-.google.cloud.securityposture.v1.CustomConfigB\x04\xe2A\x01\x02R\x06config\x12h\n" +
 	"\x17module_enablement_state\x18\x04 \x01(\x0e20.google.cloud.securityposture.v1.EnablementStateR\x15moduleEnablementState*N\n" +
 	"\x0fEnablementState\x12 \n" +
 	"\x1cENABLEMENT_STATE_UNSPECIFIED\x10\x00\x12\v\n" +

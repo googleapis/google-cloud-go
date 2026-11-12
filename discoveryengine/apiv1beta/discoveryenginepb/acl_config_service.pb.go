@@ -138,13 +138,13 @@ var File_google_cloud_discoveryengine_v1beta_acl_config_service_proto protorefle
 
 const file_google_cloud_discoveryengine_v1beta_acl_config_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1beta/acl_config_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/acl_config.proto\"[\n" +
-	"\x13GetAclConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/AclConfigR\x04name\"l\n" +
-	"\x16UpdateAclConfigRequest\x12R\n" +
+	"<google/cloud/discoveryengine/v1beta/acl_config_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/acl_config.proto\"\\\n" +
+	"\x13GetAclConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/AclConfigR\x04name\"m\n" +
+	"\x16UpdateAclConfigRequest\x12S\n" +
 	"\n" +
-	"acl_config\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1beta.AclConfigB\x03\xe0A\x02R\taclConfig2\xf0\x04\n" +
+	"acl_config\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1beta.AclConfigB\x04\xe2A\x01\x02R\taclConfig2\xf0\x04\n" +
 	"\x10AclConfigService\x12\xce\x01\n" +
 	"\x0fUpdateAclConfig\x12;.google.cloud.discoveryengine.v1beta.UpdateAclConfigRequest\x1a..google.cloud.discoveryengine.v1beta.AclConfig\"N\x82\xd3\xe4\x93\x02H:\n" +
 	"acl_config2:/v1beta/{acl_config.name=projects/*/locations/*/aclConfig}\x12\xb8\x01\n" +

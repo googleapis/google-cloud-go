@@ -102,10 +102,10 @@ var File_google_cloud_tasks_v2beta3_cmek_config_proto protoreflect.FileDescripto
 
 const file_google_cloud_tasks_v2beta3_cmek_config_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/tasks/v2beta3/cmek_config.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc5\x01\n" +
+	",google/cloud/tasks/v2beta3/cmek_config.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc6\x01\n" +
 	"\n" +
-	"CmekConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12?\n" +
+	"CmekConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12?\n" +
 	"\akms_key\x18\x02 \x01(\tB&\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey:]\xeaAZ\n" +
 	"$cloudtasks.googleapis.com/CmekConfig\x122projects/{project}/locations/{location}/cmekConfigB\xf3\x01\xeaAx\n" +

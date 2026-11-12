@@ -486,18 +486,18 @@ var File_google_cloud_networksecurity_v1_url_list_proto protoreflect.FileDescrip
 
 const file_google_cloud_networksecurity_v1_url_list_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/networksecurity/v1/url_list.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd4\x02\n" +
-	"\aUrlList\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1b\n" +
-	"\x06values\x18\x05 \x03(\tB\x03\xe0A\x02R\x06values:h\xeaAe\n" +
-	"&networksecurity.googleapis.com/UrlList\x12;projects/{project}/locations/{location}/urlLists/{url_list}\"\x94\x01\n" +
-	"\x13ListUrlListsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	".google/cloud/networksecurity/v1/url_list.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\x02\n" +
+	"\aUrlList\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1c\n" +
+	"\x06values\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\x06values:h\xeaAe\n" +
+	"&networksecurity.googleapis.com/UrlList\x12;projects/{project}/locations/{location}/urlLists/{url_list}\"\x95\x01\n" +
+	"\x13ListUrlListsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -505,20 +505,20 @@ const file_google_cloud_networksecurity_v1_url_list_proto_rawDesc = "" +
 	"\x14ListUrlListsResponse\x12E\n" +
 	"\turl_lists\x18\x01 \x03(\v2(.google.cloud.networksecurity.v1.UrlListR\burlLists\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x11GetUrlListRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networksecurity.googleapis.com/UrlListR\x04name\"\xcd\x01\n" +
-	"\x14CreateUrlListRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&networksecurity.googleapis.com/UrlListR\x06parent\x12#\n" +
-	"\vurl_list_id\x18\x02 \x01(\tB\x03\xe0A\x02R\turlListId\x12H\n" +
-	"\burl_list\x18\x03 \x01(\v2(.google.cloud.networksecurity.v1.UrlListB\x03\xe0A\x02R\aurlList\"\xa2\x01\n" +
-	"\x14UpdateUrlListRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12H\n" +
-	"\burl_list\x18\x02 \x01(\v2(.google.cloud.networksecurity.v1.UrlListB\x03\xe0A\x02R\aurlList\"Z\n" +
-	"\x14DeleteUrlListRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x11GetUrlListRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networksecurity.googleapis.com/UrlListR\x04name\"\xd0\x01\n" +
+	"\x14CreateUrlListRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&networksecurity.googleapis.com/UrlListR\x06parent\x12$\n" +
+	"\vurl_list_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\turlListId\x12I\n" +
+	"\burl_list\x18\x03 \x01(\v2(.google.cloud.networksecurity.v1.UrlListB\x04\xe2A\x01\x02R\aurlList\"\xa4\x01\n" +
+	"\x14UpdateUrlListRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12I\n" +
+	"\burl_list\x18\x02 \x01(\v2(.google.cloud.networksecurity.v1.UrlListB\x04\xe2A\x01\x02R\aurlList\"[\n" +
+	"\x14DeleteUrlListRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&networksecurity.googleapis.com/UrlListR\x04nameB\xed\x01\n" +
 	"#com.google.cloud.networksecurity.v1B\fUrlListProtoP\x01ZMcloud.google.com/go/networksecurity/apiv1/networksecuritypb;networksecuritypb\xaa\x02\x1fGoogle.Cloud.NetworkSecurity.V1\xca\x02\x1fGoogle\\Cloud\\NetworkSecurity\\V1\xea\x02\"Google::Cloud::NetworkSecurity::V1b\x06proto3"
 

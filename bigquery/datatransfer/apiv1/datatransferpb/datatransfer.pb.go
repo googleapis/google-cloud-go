@@ -2322,10 +2322,10 @@ const file_google_cloud_bigquery_datatransfer_v1_datatransfer_proto_rawDesc = ""
 	"\n" +
 	"\x06RECORD\x10\x05\x12\r\n" +
 	"\tPLUS_PAGE\x10\x06\x12\b\n" +
-	"\x04LIST\x10\a\"\xc9\v\n" +
+	"\x04LIST\x10\a\"\xca\v\n" +
 	"\n" +
-	"DataSource\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12$\n" +
+	"DataSource\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12$\n" +
 	"\x0edata_source_id\x18\x02 \x01(\tR\fdataSourceId\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x1b\n" +
@@ -2355,54 +2355,54 @@ const file_google_cloud_bigquery_datatransfer_v1_datatransfer_proto_rawDesc = ""
 	"\x1dDATA_REFRESH_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSLIDING_WINDOW\x10\x01\x12\x19\n" +
 	"\x15CUSTOM_SLIDING_WINDOW\x10\x02:\xa5\x01\xeaA\xa1\x01\n" +
-	".bigquerydatatransfer.googleapis.com/DataSource\x12,projects/{project}/dataSources/{data_source}\x12Aprojects/{project}/locations/{location}/dataSources/{data_source}\"b\n" +
-	"\x14GetDataSourceRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".bigquerydatatransfer.googleapis.com/DataSourceR\x04name\"\xa4\x01\n" +
-	"\x16ListDataSourcesRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.bigquerydatatransfer.googleapis.com/DataSourceR\x06parent\x12\x1d\n" +
+	".bigquerydatatransfer.googleapis.com/DataSource\x12,projects/{project}/dataSources/{data_source}\x12Aprojects/{project}/locations/{location}/dataSources/{data_source}\"c\n" +
+	"\x14GetDataSourceRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".bigquerydatatransfer.googleapis.com/DataSourceR\x04name\"\xa5\x01\n" +
+	"\x16ListDataSourcesRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.bigquerydatatransfer.googleapis.com/DataSourceR\x06parent\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\x9c\x01\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\x9d\x01\n" +
 	"\x17ListDataSourcesResponse\x12T\n" +
-	"\fdata_sources\x18\x01 \x03(\v21.google.cloud.bigquery.datatransfer.v1.DataSourceR\vdataSources\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xde\x02\n" +
-	"\x1bCreateTransferConfigRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122bigquerydatatransfer.googleapis.com/TransferConfigR\x06parent\x12c\n" +
-	"\x0ftransfer_config\x18\x02 \x01(\v25.google.cloud.bigquery.datatransfer.v1.TransferConfigB\x03\xe0A\x02R\x0etransferConfig\x121\n" +
+	"\fdata_sources\x18\x01 \x03(\v21.google.cloud.bigquery.datatransfer.v1.DataSourceR\vdataSources\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xe0\x02\n" +
+	"\x1bCreateTransferConfigRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122bigquerydatatransfer.googleapis.com/TransferConfigR\x06parent\x12d\n" +
+	"\x0ftransfer_config\x18\x02 \x01(\v25.google.cloud.bigquery.datatransfer.v1.TransferConfigB\x04\xe2A\x01\x02R\x0etransferConfig\x121\n" +
 	"\x12authorization_code\x18\x03 \x01(\tB\x02\x18\x01R\x11authorizationCode\x12!\n" +
 	"\fversion_info\x18\x05 \x01(\tR\vversionInfo\x120\n" +
-	"\x14service_account_name\x18\x06 \x01(\tR\x12serviceAccountName\"\xcc\x02\n" +
-	"\x1bUpdateTransferConfigRequest\x12c\n" +
-	"\x0ftransfer_config\x18\x01 \x01(\v25.google.cloud.bigquery.datatransfer.v1.TransferConfigB\x03\xe0A\x02R\x0etransferConfig\x121\n" +
-	"\x12authorization_code\x18\x03 \x01(\tB\x02\x18\x01R\x11authorizationCode\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x14service_account_name\x18\x06 \x01(\tR\x12serviceAccountName\"\xce\x02\n" +
+	"\x1bUpdateTransferConfigRequest\x12d\n" +
+	"\x0ftransfer_config\x18\x01 \x01(\v25.google.cloud.bigquery.datatransfer.v1.TransferConfigB\x04\xe2A\x01\x02R\x0etransferConfig\x121\n" +
+	"\x12authorization_code\x18\x03 \x01(\tB\x02\x18\x01R\x11authorizationCode\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\x12!\n" +
 	"\fversion_info\x18\x05 \x01(\tR\vversionInfo\x120\n" +
-	"\x14service_account_name\x18\x06 \x01(\tR\x12serviceAccountName\"j\n" +
-	"\x18GetTransferConfigRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2bigquerydatatransfer.googleapis.com/TransferConfigR\x04name\"m\n" +
-	"\x1bDeleteTransferConfigRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2bigquerydatatransfer.googleapis.com/TransferConfigR\x04name\"\\\n" +
-	"\x15GetTransferRunRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'bigquerydatatransfer.googleapis.com/RunR\x04name\"_\n" +
-	"\x18DeleteTransferRunRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'bigquerydatatransfer.googleapis.com/RunR\x04name\"\xd4\x01\n" +
-	"\x1aListTransferConfigsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122bigquerydatatransfer.googleapis.com/TransferConfigR\x06parent\x12&\n" +
+	"\x14service_account_name\x18\x06 \x01(\tR\x12serviceAccountName\"k\n" +
+	"\x18GetTransferConfigRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2bigquerydatatransfer.googleapis.com/TransferConfigR\x04name\"n\n" +
+	"\x1bDeleteTransferConfigRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2bigquerydatatransfer.googleapis.com/TransferConfigR\x04name\"]\n" +
+	"\x15GetTransferRunRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'bigquerydatatransfer.googleapis.com/RunR\x04name\"`\n" +
+	"\x18DeleteTransferRunRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'bigquerydatatransfer.googleapis.com/RunR\x04name\"\xd5\x01\n" +
+	"\x1aListTransferConfigsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122bigquerydatatransfer.googleapis.com/TransferConfigR\x06parent\x12&\n" +
 	"\x0fdata_source_ids\x18\x02 \x03(\tR\rdataSourceIds\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xb1\x01\n" +
-	"\x1bListTransferConfigsResponse\x12e\n" +
-	"\x10transfer_configs\x18\x01 \x03(\v25.google.cloud.bigquery.datatransfer.v1.TransferConfigB\x03\xe0A\x03R\x0ftransferConfigs\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\x8f\x03\n" +
-	"\x17ListTransferRunsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'bigquerydatatransfer.googleapis.com/RunR\x06parent\x12L\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xb3\x01\n" +
+	"\x1bListTransferConfigsResponse\x12f\n" +
+	"\x10transfer_configs\x18\x01 \x03(\v25.google.cloud.bigquery.datatransfer.v1.TransferConfigB\x04\xe2A\x01\x03R\x0ftransferConfigs\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\x90\x03\n" +
+	"\x17ListTransferRunsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'bigquerydatatransfer.googleapis.com/RunR\x06parent\x12L\n" +
 	"\x06states\x18\x02 \x03(\x0e24.google.cloud.bigquery.datatransfer.v1.TransferStateR\x06states\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
@@ -2413,35 +2413,35 @@ const file_google_cloud_bigquery_datatransfer_v1_datatransfer_proto_rawDesc = ""
 	"RunAttempt\x12\x1b\n" +
 	"\x17RUN_ATTEMPT_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06LATEST\x10\x01\"\xa5\x01\n" +
-	"\x18ListTransferRunsResponse\x12\\\n" +
-	"\rtransfer_runs\x18\x01 \x03(\v22.google.cloud.bigquery.datatransfer.v1.TransferRunB\x03\xe0A\x03R\ftransferRuns\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\x8b\x02\n" +
-	"\x17ListTransferLogsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x06LATEST\x10\x01\"\xa7\x01\n" +
+	"\x18ListTransferRunsResponse\x12]\n" +
+	"\rtransfer_runs\x18\x01 \x03(\v22.google.cloud.bigquery.datatransfer.v1.TransferRunB\x04\xe2A\x01\x03R\ftransferRuns\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\x8c\x02\n" +
+	"\x17ListTransferLogsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'bigquerydatatransfer.googleapis.com/RunR\x06parent\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\x12\x1b\n" +
 	"\tpage_size\x18\x05 \x01(\x05R\bpageSize\x12k\n" +
-	"\rmessage_types\x18\x06 \x03(\x0e2F.google.cloud.bigquery.datatransfer.v1.TransferMessage.MessageSeverityR\fmessageTypes\"\xb1\x01\n" +
-	"\x18ListTransferLogsResponse\x12h\n" +
-	"\x11transfer_messages\x18\x01 \x03(\v26.google.cloud.bigquery.datatransfer.v1.TransferMessageB\x03\xe0A\x03R\x10transferMessages\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"d\n" +
-	"\x16CheckValidCredsRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\rmessage_types\x18\x06 \x03(\x0e2F.google.cloud.bigquery.datatransfer.v1.TransferMessage.MessageSeverityR\fmessageTypes\"\xb3\x01\n" +
+	"\x18ListTransferLogsResponse\x12i\n" +
+	"\x11transfer_messages\x18\x01 \x03(\v26.google.cloud.bigquery.datatransfer.v1.TransferMessageB\x04\xe2A\x01\x03R\x10transferMessages\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"e\n" +
+	"\x16CheckValidCredsRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".bigquerydatatransfer.googleapis.com/DataSourceR\x04name\"A\n" +
 	"\x17CheckValidCredsResponse\x12&\n" +
-	"\x0fhas_valid_creds\x18\x01 \x01(\bR\rhasValidCreds\"\xed\x01\n" +
-	"\x1bScheduleTransferRunsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2bigquerydatatransfer.googleapis.com/TransferConfigR\x06parent\x12>\n" +
+	"\x0fhas_valid_creds\x18\x01 \x01(\bR\rhasValidCreds\"\xf0\x01\n" +
+	"\x1bScheduleTransferRunsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2bigquerydatatransfer.googleapis.com/TransferConfigR\x06parent\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\aendTime\"f\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\aendTime\"f\n" +
 	"\x1cScheduleTransferRunsResponse\x12F\n" +
-	"\x04runs\x18\x01 \x03(\v22.google.cloud.bigquery.datatransfer.v1.TransferRunR\x04runs\"\xcd\x03\n" +
-	"\x1eStartManualTransferRunsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
+	"\x04runs\x18\x01 \x03(\v22.google.cloud.bigquery.datatransfer.v1.TransferRunR\x04runs\"\xce\x03\n" +
+	"\x1eStartManualTransferRunsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
 	"2bigquerydatatransfer.googleapis.com/TransferConfigR\x06parent\x12\x83\x01\n" +
 	"\x14requested_time_range\x18\x03 \x01(\v2O.google.cloud.bigquery.datatransfer.v1.StartManualTransferRunsRequest.TimeRangeH\x00R\x12requestedTimeRange\x12J\n" +
 	"\x12requested_run_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x10requestedRunTime\x1a}\n" +
@@ -2451,12 +2451,12 @@ const file_google_cloud_bigquery_datatransfer_v1_datatransfer_proto_rawDesc = ""
 	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTimeB\x06\n" +
 	"\x04time\"i\n" +
 	"\x1fStartManualTransferRunsResponse\x12F\n" +
-	"\x04runs\x18\x01 \x03(\v22.google.cloud.bigquery.datatransfer.v1.TransferRunR\x04runs\"[\n" +
-	"\x18EnrollDataSourcesRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12&\n" +
-	"\x0fdata_source_ids\x18\x02 \x03(\tR\rdataSourceIds\"]\n" +
-	"\x1aUnenrollDataSourcesRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12&\n" +
+	"\x04runs\x18\x01 \x03(\v22.google.cloud.bigquery.datatransfer.v1.TransferRunR\x04runs\"\\\n" +
+	"\x18EnrollDataSourcesRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\x0fdata_source_ids\x18\x02 \x03(\tR\rdataSourceIds\"^\n" +
+	"\x1aUnenrollDataSourcesRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
 	"\x0fdata_source_ids\x18\x02 \x03(\tR\rdataSourceIds2\xd5\"\n" +
 	"\x13DataTransferService\x12\xe6\x01\n" +
 	"\rGetDataSource\x12;.google.cloud.bigquery.datatransfer.v1.GetDataSourceRequest\x1a1.google.cloud.bigquery.datatransfer.v1.DataSource\"e\xdaA\x04name\x82\xd3\xe4\x93\x02XZ%\x12#/v1/{name=projects/*/dataSources/*}\x12//v1/{name=projects/*/locations/*/dataSources/*}\x12\xf9\x01\n" +

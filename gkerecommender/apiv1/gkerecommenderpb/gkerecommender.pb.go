@@ -1755,127 +1755,127 @@ var File_google_cloud_gkerecommender_v1_gkerecommender_proto protoreflect.FileDe
 
 const file_google_cloud_gkerecommender_v1_gkerecommender_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/gkerecommender/v1/gkerecommender.proto\x12\x1egoogle.cloud.gkerecommender.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x81\x01\n" +
-	"\x12FetchModelsRequest\x12%\n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\bpageSize\x88\x01\x01\x12'\n" +
+	"3google/cloud/gkerecommender/v1/gkerecommender.proto\x12\x1egoogle.cloud.gkerecommender.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x83\x01\n" +
+	"\x12FetchModelsRequest\x12&\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\bpageSize\x88\x01\x01\x12(\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\tpageToken\x88\x01\x01B\f\n" +
-	"\n" +
-	"_page_sizeB\r\n" +
-	"\v_page_token\"_\n" +
-	"\x13FetchModelsResponse\x12\x1b\n" +
-	"\x06models\x18\x01 \x03(\tB\x03\xe0A\x03R\x06models\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xa2\x01\n" +
-	"\x18FetchModelServersRequest\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x02R\x05model\x12%\n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01H\x00R\bpageSize\x88\x01\x01\x12'\n" +
-	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01H\x01R\tpageToken\x88\x01\x01B\f\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\tpageToken\x88\x01\x01B\f\n" +
 	"\n" +
 	"_page_sizeB\r\n" +
-	"\v_page_token\"r\n" +
-	"\x19FetchModelServersResponse\x12(\n" +
-	"\rmodel_servers\x18\x01 \x03(\tB\x03\xe0A\x03R\fmodelServers\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xd1\x01\n" +
-	"\x1fFetchModelServerVersionsRequest\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x02R\x05model\x12&\n" +
-	"\fmodel_server\x18\x02 \x01(\tB\x03\xe0A\x02R\vmodelServer\x12%\n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01H\x00R\bpageSize\x88\x01\x01\x12'\n" +
+	"\v_page_token\"a\n" +
+	"\x13FetchModelsResponse\x12\x1c\n" +
+	"\x06models\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\x06models\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xa5\x01\n" +
+	"\x18FetchModelServersRequest\x12\x1a\n" +
+	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05model\x12&\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x00R\bpageSize\x88\x01\x01\x12(\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01H\x01R\tpageToken\x88\x01\x01B\f\n" +
-	"\n" +
-	"_page_sizeB\r\n" +
-	"\v_page_token\"\x88\x01\n" +
-	" FetchModelServerVersionsResponse\x127\n" +
-	"\x15model_server_versions\x18\x01 \x03(\tB\x03\xe0A\x03R\x13modelServerVersions\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xd4\x01\n" +
-	"\x1cFetchBenchmarkingDataRequest\x12`\n" +
-	"\x11model_server_info\x18\x01 \x01(\v2/.google.cloud.gkerecommender.v1.ModelServerInfoB\x03\xe0A\x02R\x0fmodelServerInfo\x12(\n" +
-	"\rinstance_type\x18\x03 \x01(\tB\x03\xe0A\x01R\finstanceType\x12(\n" +
-	"\rpricing_model\x18\x04 \x01(\tB\x03\xe0A\x01R\fpricingModel\"g\n" +
-	"\x1dFetchBenchmarkingDataResponse\x12F\n" +
-	"\aprofile\x18\x01 \x03(\v2'.google.cloud.gkerecommender.v1.ProfileB\x03\xe0A\x03R\aprofile\"\xf6\x02\n" +
-	"\x14FetchProfilesRequest\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x01R\x05model\x12&\n" +
-	"\fmodel_server\x18\x02 \x01(\tB\x03\xe0A\x01R\vmodelServer\x125\n" +
-	"\x14model_server_version\x18\x03 \x01(\tB\x03\xe0A\x01R\x12modelServerVersion\x12w\n" +
-	"\x18performance_requirements\x18\x04 \x01(\v27.google.cloud.gkerecommender.v1.PerformanceRequirementsB\x03\xe0A\x01R\x17performanceRequirements\x12%\n" +
-	"\tpage_size\x18\x05 \x01(\x05B\x03\xe0A\x01H\x00R\bpageSize\x88\x01\x01\x12'\n" +
-	"\n" +
-	"page_token\x18\x06 \x01(\tB\x03\xe0A\x01H\x01R\tpageToken\x88\x01\x01B\f\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x01R\tpageToken\x88\x01\x01B\f\n" +
 	"\n" +
 	"_page_sizeB\r\n" +
-	"\v_page_token\"\xaa\x02\n" +
-	"\x17PerformanceRequirements\x12D\n" +
-	"\x19target_ntpot_milliseconds\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\x17targetNtpotMilliseconds\x88\x01\x01\x12B\n" +
-	"\x18target_ttft_milliseconds\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x16targetTtftMilliseconds\x88\x01\x01\x12J\n" +
-	"\vtarget_cost\x18\x03 \x01(\v2$.google.cloud.gkerecommender.v1.CostB\x03\xe0A\x01R\n" +
+	"\v_page_token\"t\n" +
+	"\x19FetchModelServersResponse\x12)\n" +
+	"\rmodel_servers\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\fmodelServers\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xd5\x01\n" +
+	"\x1fFetchModelServerVersionsRequest\x12\x1a\n" +
+	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05model\x12'\n" +
+	"\fmodel_server\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vmodelServer\x12&\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01H\x00R\bpageSize\x88\x01\x01\x12(\n" +
+	"\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x01R\tpageToken\x88\x01\x01B\f\n" +
+	"\n" +
+	"_page_sizeB\r\n" +
+	"\v_page_token\"\x8a\x01\n" +
+	" FetchModelServerVersionsResponse\x128\n" +
+	"\x15model_server_versions\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\x13modelServerVersions\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xd7\x01\n" +
+	"\x1cFetchBenchmarkingDataRequest\x12a\n" +
+	"\x11model_server_info\x18\x01 \x01(\v2/.google.cloud.gkerecommender.v1.ModelServerInfoB\x04\xe2A\x01\x02R\x0fmodelServerInfo\x12)\n" +
+	"\rinstance_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\finstanceType\x12)\n" +
+	"\rpricing_model\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fpricingModel\"h\n" +
+	"\x1dFetchBenchmarkingDataResponse\x12G\n" +
+	"\aprofile\x18\x01 \x03(\v2'.google.cloud.gkerecommender.v1.ProfileB\x04\xe2A\x01\x03R\aprofile\"\xfc\x02\n" +
+	"\x14FetchProfilesRequest\x12\x1a\n" +
+	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05model\x12'\n" +
+	"\fmodel_server\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vmodelServer\x126\n" +
+	"\x14model_server_version\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x12modelServerVersion\x12x\n" +
+	"\x18performance_requirements\x18\x04 \x01(\v27.google.cloud.gkerecommender.v1.PerformanceRequirementsB\x04\xe2A\x01\x01R\x17performanceRequirements\x12&\n" +
+	"\tpage_size\x18\x05 \x01(\x05B\x04\xe2A\x01\x01H\x00R\bpageSize\x88\x01\x01\x12(\n" +
+	"\n" +
+	"page_token\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x01R\tpageToken\x88\x01\x01B\f\n" +
+	"\n" +
+	"_page_sizeB\r\n" +
+	"\v_page_token\"\xad\x02\n" +
+	"\x17PerformanceRequirements\x12E\n" +
+	"\x19target_ntpot_milliseconds\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x17targetNtpotMilliseconds\x88\x01\x01\x12C\n" +
+	"\x18target_ttft_milliseconds\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x16targetTtftMilliseconds\x88\x01\x01\x12K\n" +
+	"\vtarget_cost\x18\x03 \x01(\v2$.google.cloud.gkerecommender.v1.CostB\x04\xe2A\x01\x01R\n" +
 	"targetCostB\x1c\n" +
 	"\x1a_target_ntpot_millisecondsB\x1b\n" +
-	"\x19_target_ttft_milliseconds\">\n" +
-	"\x06Amount\x12\x19\n" +
-	"\x05units\x18\x01 \x01(\x03B\x03\xe0A\x03R\x05units\x12\x19\n" +
-	"\x05nanos\x18\x02 \x01(\x05B\x03\xe0A\x03R\x05nanos\"\xed\x02\n" +
-	"\x04Cost\x12o\n" +
-	"\x1ecost_per_million_output_tokens\x18\x01 \x01(\v2&.google.cloud.gkerecommender.v1.AmountB\x03\xe0A\x01R\x1acostPerMillionOutputTokens\x12m\n" +
-	"\x1dcost_per_million_input_tokens\x18\x02 \x01(\v2&.google.cloud.gkerecommender.v1.AmountB\x03\xe0A\x01R\x19costPerMillionInputTokens\x12(\n" +
-	"\rpricing_model\x18\x03 \x01(\tB\x03\xe0A\x01R\fpricingModel\x12?\n" +
-	"\x17output_input_cost_ratio\x18\x04 \x01(\x02B\x03\xe0A\x01H\x00R\x14outputInputCostRatio\x88\x01\x01B\x1a\n" +
-	"\x18_output_input_cost_ratio\"D\n" +
-	"\x14TokensPerSecondRange\x12\x15\n" +
-	"\x03min\x18\x01 \x01(\x05B\x03\xe0A\x03R\x03min\x12\x15\n" +
-	"\x03max\x18\x02 \x01(\x05B\x03\xe0A\x03R\x03max\"@\n" +
-	"\x10MillisecondRange\x12\x15\n" +
-	"\x03min\x18\x01 \x01(\x05B\x03\xe0A\x03R\x03min\x12\x15\n" +
-	"\x03max\x18\x02 \x01(\x05B\x03\xe0A\x03R\x03max\"\xb3\x02\n" +
-	"\x10PerformanceRange\x12q\n" +
-	"\x17throughput_output_range\x18\x01 \x01(\v24.google.cloud.gkerecommender.v1.TokensPerSecondRangeB\x03\xe0A\x03R\x15throughputOutputRange\x12T\n" +
+	"\x19_target_ttft_milliseconds\"@\n" +
+	"\x06Amount\x12\x1a\n" +
+	"\x05units\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\x05units\x12\x1a\n" +
+	"\x05nanos\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x05nanos\"\xf1\x02\n" +
+	"\x04Cost\x12p\n" +
+	"\x1ecost_per_million_output_tokens\x18\x01 \x01(\v2&.google.cloud.gkerecommender.v1.AmountB\x04\xe2A\x01\x01R\x1acostPerMillionOutputTokens\x12n\n" +
+	"\x1dcost_per_million_input_tokens\x18\x02 \x01(\v2&.google.cloud.gkerecommender.v1.AmountB\x04\xe2A\x01\x01R\x19costPerMillionInputTokens\x12)\n" +
+	"\rpricing_model\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fpricingModel\x12@\n" +
+	"\x17output_input_cost_ratio\x18\x04 \x01(\x02B\x04\xe2A\x01\x01H\x00R\x14outputInputCostRatio\x88\x01\x01B\x1a\n" +
+	"\x18_output_input_cost_ratio\"F\n" +
+	"\x14TokensPerSecondRange\x12\x16\n" +
+	"\x03min\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x03min\x12\x16\n" +
+	"\x03max\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x03max\"B\n" +
+	"\x10MillisecondRange\x12\x16\n" +
+	"\x03min\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x03min\x12\x16\n" +
+	"\x03max\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x03max\"\xb6\x02\n" +
+	"\x10PerformanceRange\x12r\n" +
+	"\x17throughput_output_range\x18\x01 \x01(\v24.google.cloud.gkerecommender.v1.TokensPerSecondRangeB\x04\xe2A\x01\x03R\x15throughputOutputRange\x12U\n" +
 	"\n" +
-	"ttft_range\x18\x02 \x01(\v20.google.cloud.gkerecommender.v1.MillisecondRangeB\x03\xe0A\x03R\tttftRange\x12V\n" +
-	"\vntpot_range\x18\x03 \x01(\v20.google.cloud.gkerecommender.v1.MillisecondRangeB\x03\xe0A\x03R\n" +
-	"ntpotRange\"\x91\x02\n" +
-	"\x15FetchProfilesResponse\x12F\n" +
-	"\aprofile\x18\x01 \x03(\v2'.google.cloud.gkerecommender.v1.ProfileB\x03\xe0A\x03R\aprofile\x12b\n" +
-	"\x11performance_range\x18\x02 \x01(\v20.google.cloud.gkerecommender.v1.PerformanceRangeB\x03\xe0A\x03R\x10performanceRange\x12\x1f\n" +
-	"\bcomments\x18\x03 \x01(\tB\x03\xe0A\x03R\bcomments\x12+\n" +
-	"\x0fnext_page_token\x18\x04 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\x8b\x01\n" +
-	"\x0fModelServerInfo\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x02R\x05model\x12&\n" +
-	"\fmodel_server\x18\x02 \x01(\tB\x03\xe0A\x02R\vmodelServer\x125\n" +
-	"\x14model_server_version\x18\x03 \x01(\tB\x03\xe0A\x01R\x12modelServerVersion\"A\n" +
-	"\rResourcesUsed\x120\n" +
-	"\x11accelerator_count\x18\x01 \x01(\x05B\x03\xe0A\x03R\x10acceleratorCount\"\xa8\x02\n" +
-	"\x10PerformanceStats\x121\n" +
-	"\x12queries_per_second\x18\x01 \x01(\x02B\x03\xe0A\x03R\x10queriesPerSecond\x12<\n" +
-	"\x18output_tokens_per_second\x18\x02 \x01(\x05B\x03\xe0A\x03R\x15outputTokensPerSecond\x122\n" +
-	"\x12ntpot_milliseconds\x18\x03 \x01(\x05B\x03\xe0A\x03R\x11ntpotMilliseconds\x120\n" +
-	"\x11ttft_milliseconds\x18\x04 \x01(\x05B\x03\xe0A\x03R\x10ttftMilliseconds\x12=\n" +
-	"\x04cost\x18\x05 \x03(\v2$.google.cloud.gkerecommender.v1.CostB\x03\xe0A\x03R\x04cost\"\xac\x03\n" +
-	"\aProfile\x12`\n" +
-	"\x11model_server_info\x18\x01 \x01(\v2/.google.cloud.gkerecommender.v1.ModelServerInfoB\x03\xe0A\x03R\x0fmodelServerInfo\x12.\n" +
-	"\x10accelerator_type\x18\x02 \x01(\tB\x03\xe0A\x03R\x0facceleratorType\x12&\n" +
-	"\ftpu_topology\x18\x03 \x01(\tB\x03\xe0A\x03R\vtpuTopology\x12(\n" +
-	"\rinstance_type\x18\x04 \x01(\tB\x03\xe0A\x03R\finstanceType\x12Y\n" +
-	"\x0eresources_used\x18\x05 \x01(\v2-.google.cloud.gkerecommender.v1.ResourcesUsedB\x03\xe0A\x03R\rresourcesUsed\x12b\n" +
-	"\x11performance_stats\x18\x06 \x03(\v20.google.cloud.gkerecommender.v1.PerformanceStatsB\x03\xe0A\x03R\x10performanceStats\"\xc0\x03\n" +
-	" GenerateOptimizedManifestRequest\x12`\n" +
-	"\x11model_server_info\x18\x01 \x01(\v2/.google.cloud.gkerecommender.v1.ModelServerInfoB\x03\xe0A\x02R\x0fmodelServerInfo\x12.\n" +
-	"\x10accelerator_type\x18\x02 \x01(\tB\x03\xe0A\x02R\x0facceleratorType\x126\n" +
-	"\x14kubernetes_namespace\x18\x03 \x01(\tB\x03\xe0A\x01R\x13kubernetesNamespace\x12w\n" +
-	"\x18performance_requirements\x18\x04 \x01(\v27.google.cloud.gkerecommender.v1.PerformanceRequirementsB\x03\xe0A\x01R\x17performanceRequirements\x12Y\n" +
-	"\x0estorage_config\x18\x05 \x01(\v2-.google.cloud.gkerecommender.v1.StorageConfigB\x03\xe0A\x01R\rstorageConfig\"r\n" +
-	"\x12KubernetesManifest\x12\x17\n" +
-	"\x04kind\x18\x01 \x01(\tB\x03\xe0A\x03R\x04kind\x12$\n" +
-	"\vapi_version\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\x12\x1d\n" +
-	"\acontent\x18\x03 \x01(\tB\x03\xe0A\x03R\acontent\"\xe0\x01\n" +
-	"!GenerateOptimizedManifestResponse\x12j\n" +
-	"\x14kubernetes_manifests\x18\x01 \x03(\v22.google.cloud.gkerecommender.v1.KubernetesManifestB\x03\xe0A\x03R\x13kubernetesManifests\x12\x1f\n" +
-	"\bcomments\x18\x02 \x03(\tB\x03\xe0A\x03R\bcomments\x12.\n" +
-	"\x10manifest_version\x18\x03 \x01(\tB\x03\xe0A\x03R\x0fmanifestVersion\"t\n" +
-	"\rStorageConfig\x12-\n" +
-	"\x10model_bucket_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\x0emodelBucketUri\x124\n" +
-	"\x14xla_cache_bucket_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\x11xlaCacheBucketUri2\x9a\t\n" +
+	"ttft_range\x18\x02 \x01(\v20.google.cloud.gkerecommender.v1.MillisecondRangeB\x04\xe2A\x01\x03R\tttftRange\x12W\n" +
+	"\vntpot_range\x18\x03 \x01(\v20.google.cloud.gkerecommender.v1.MillisecondRangeB\x04\xe2A\x01\x03R\n" +
+	"ntpotRange\"\x95\x02\n" +
+	"\x15FetchProfilesResponse\x12G\n" +
+	"\aprofile\x18\x01 \x03(\v2'.google.cloud.gkerecommender.v1.ProfileB\x04\xe2A\x01\x03R\aprofile\x12c\n" +
+	"\x11performance_range\x18\x02 \x01(\v20.google.cloud.gkerecommender.v1.PerformanceRangeB\x04\xe2A\x01\x03R\x10performanceRange\x12 \n" +
+	"\bcomments\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bcomments\x12,\n" +
+	"\x0fnext_page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\x8e\x01\n" +
+	"\x0fModelServerInfo\x12\x1a\n" +
+	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05model\x12'\n" +
+	"\fmodel_server\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vmodelServer\x126\n" +
+	"\x14model_server_version\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x12modelServerVersion\"B\n" +
+	"\rResourcesUsed\x121\n" +
+	"\x11accelerator_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x10acceleratorCount\"\xad\x02\n" +
+	"\x10PerformanceStats\x122\n" +
+	"\x12queries_per_second\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x10queriesPerSecond\x12=\n" +
+	"\x18output_tokens_per_second\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x15outputTokensPerSecond\x123\n" +
+	"\x12ntpot_milliseconds\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x11ntpotMilliseconds\x121\n" +
+	"\x11ttft_milliseconds\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\x10ttftMilliseconds\x12>\n" +
+	"\x04cost\x18\x05 \x03(\v2$.google.cloud.gkerecommender.v1.CostB\x04\xe2A\x01\x03R\x04cost\"\xb2\x03\n" +
+	"\aProfile\x12a\n" +
+	"\x11model_server_info\x18\x01 \x01(\v2/.google.cloud.gkerecommender.v1.ModelServerInfoB\x04\xe2A\x01\x03R\x0fmodelServerInfo\x12/\n" +
+	"\x10accelerator_type\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0facceleratorType\x12'\n" +
+	"\ftpu_topology\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vtpuTopology\x12)\n" +
+	"\rinstance_type\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\finstanceType\x12Z\n" +
+	"\x0eresources_used\x18\x05 \x01(\v2-.google.cloud.gkerecommender.v1.ResourcesUsedB\x04\xe2A\x01\x03R\rresourcesUsed\x12c\n" +
+	"\x11performance_stats\x18\x06 \x03(\v20.google.cloud.gkerecommender.v1.PerformanceStatsB\x04\xe2A\x01\x03R\x10performanceStats\"\xc5\x03\n" +
+	" GenerateOptimizedManifestRequest\x12a\n" +
+	"\x11model_server_info\x18\x01 \x01(\v2/.google.cloud.gkerecommender.v1.ModelServerInfoB\x04\xe2A\x01\x02R\x0fmodelServerInfo\x12/\n" +
+	"\x10accelerator_type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0facceleratorType\x127\n" +
+	"\x14kubernetes_namespace\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x13kubernetesNamespace\x12x\n" +
+	"\x18performance_requirements\x18\x04 \x01(\v27.google.cloud.gkerecommender.v1.PerformanceRequirementsB\x04\xe2A\x01\x01R\x17performanceRequirements\x12Z\n" +
+	"\x0estorage_config\x18\x05 \x01(\v2-.google.cloud.gkerecommender.v1.StorageConfigB\x04\xe2A\x01\x01R\rstorageConfig\"u\n" +
+	"\x12KubernetesManifest\x12\x18\n" +
+	"\x04kind\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04kind\x12%\n" +
+	"\vapi_version\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\x12\x1e\n" +
+	"\acontent\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\acontent\"\xe3\x01\n" +
+	"!GenerateOptimizedManifestResponse\x12k\n" +
+	"\x14kubernetes_manifests\x18\x01 \x03(\v22.google.cloud.gkerecommender.v1.KubernetesManifestB\x04\xe2A\x01\x03R\x13kubernetesManifests\x12 \n" +
+	"\bcomments\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\bcomments\x12/\n" +
+	"\x10manifest_version\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0fmanifestVersion\"v\n" +
+	"\rStorageConfig\x12.\n" +
+	"\x10model_bucket_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0emodelBucketUri\x125\n" +
+	"\x14xla_cache_bucket_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x11xlaCacheBucketUri2\x9a\t\n" +
 	"\x16GkeInferenceQuickstart\x12\x90\x01\n" +
 	"\vFetchModels\x122.google.cloud.gkerecommender.v1.FetchModelsRequest\x1a3.google.cloud.gkerecommender.v1.FetchModelsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/models:fetch\x12\xa8\x01\n" +
 	"\x11FetchModelServers\x128.google.cloud.gkerecommender.v1.FetchModelServersRequest\x1a9.google.cloud.gkerecommender.v1.FetchModelServersResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/modelServers:fetch\x12\xc4\x01\n" +

@@ -434,6 +434,12 @@ func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetImage(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images/%v", req.GetProject(), req.GetImage())
 
 	params := url.Values{}
@@ -506,6 +512,12 @@ func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.Depreca
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetImage(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images/%v/deprecate", req.GetProject(), req.GetImage())
 
 	params := url.Values{}
@@ -569,6 +581,12 @@ func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetImage(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images/%v", req.GetProject(), req.GetImage())
 
 	// Build HTTP headers from client and context metadata.
@@ -620,6 +638,12 @@ func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetFamily(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images/family/%v", req.GetProject(), req.GetFamily())
 
 	// Build HTTP headers from client and context metadata.
@@ -668,6 +692,12 @@ func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.Get
 func (c *imagesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyImageRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -732,6 +762,11 @@ func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImag
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images", req.GetProject())
@@ -819,6 +854,11 @@ func (c *imagesRESTClient) List(ctx context.Context, req *computepb.ListImagesRe
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images", req.GetProject())
 
 		params := url.Values{}
@@ -904,6 +944,12 @@ func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetImage(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images/%v", req.GetProject(), req.GetImage())
 
 	params := url.Values{}
@@ -975,6 +1021,12 @@ func (c *imagesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetI
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1030,6 +1082,12 @@ func (c *imagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images/%v/setLabels", req.GetProject(), req.GetResource())
@@ -1093,6 +1151,12 @@ func (c *imagesRESTClient) TestIamPermissions(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/images/%v/testIamPermissions", req.GetProject(), req.GetResource())

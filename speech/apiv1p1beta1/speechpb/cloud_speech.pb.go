@@ -2620,43 +2620,43 @@ var File_google_cloud_speech_v1p1beta1_cloud_speech_proto protoreflect.FileDescr
 
 const file_google_cloud_speech_v1p1beta1_cloud_speech_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/speech/v1p1beta1/cloud_speech.proto\x12\x1dgoogle.cloud.speech.v1p1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/cloud/speech/v1p1beta1/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xad\x01\n" +
-	"\x10RecognizeRequest\x12M\n" +
-	"\x06config\x18\x01 \x01(\v20.google.cloud.speech.v1p1beta1.RecognitionConfigB\x03\xe0A\x02R\x06config\x12J\n" +
-	"\x05audio\x18\x02 \x01(\v2/.google.cloud.speech.v1p1beta1.RecognitionAudioB\x03\xe0A\x02R\x05audio\"\x99\x02\n" +
-	"\x1bLongRunningRecognizeRequest\x12M\n" +
-	"\x06config\x18\x01 \x01(\v20.google.cloud.speech.v1p1beta1.RecognitionConfigB\x03\xe0A\x02R\x06config\x12J\n" +
-	"\x05audio\x18\x02 \x01(\v2/.google.cloud.speech.v1p1beta1.RecognitionAudioB\x03\xe0A\x02R\x05audio\x12_\n" +
-	"\routput_config\x18\x04 \x01(\v25.google.cloud.speech.v1p1beta1.TranscriptOutputConfigB\x03\xe0A\x01R\foutputConfig\"B\n" +
+	"0google/cloud/speech/v1p1beta1/cloud_speech.proto\x12\x1dgoogle.cloud.speech.v1p1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/cloud/speech/v1p1beta1/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xaf\x01\n" +
+	"\x10RecognizeRequest\x12N\n" +
+	"\x06config\x18\x01 \x01(\v20.google.cloud.speech.v1p1beta1.RecognitionConfigB\x04\xe2A\x01\x02R\x06config\x12K\n" +
+	"\x05audio\x18\x02 \x01(\v2/.google.cloud.speech.v1p1beta1.RecognitionAudioB\x04\xe2A\x01\x02R\x05audio\"\x9c\x02\n" +
+	"\x1bLongRunningRecognizeRequest\x12N\n" +
+	"\x06config\x18\x01 \x01(\v20.google.cloud.speech.v1p1beta1.RecognitionConfigB\x04\xe2A\x01\x02R\x06config\x12K\n" +
+	"\x05audio\x18\x02 \x01(\v2/.google.cloud.speech.v1p1beta1.RecognitionAudioB\x04\xe2A\x01\x02R\x05audio\x12`\n" +
+	"\routput_config\x18\x04 \x01(\v25.google.cloud.speech.v1p1beta1.TranscriptOutputConfigB\x04\xe2A\x01\x01R\foutputConfig\"B\n" +
 	"\x16TranscriptOutputConfig\x12\x19\n" +
 	"\agcs_uri\x18\x01 \x01(\tH\x00R\x06gcsUriB\r\n" +
 	"\voutput_type\"\xbf\x01\n" +
 	"\x19StreamingRecognizeRequest\x12f\n" +
 	"\x10streaming_config\x18\x01 \x01(\v29.google.cloud.speech.v1p1beta1.StreamingRecognitionConfigH\x00R\x0fstreamingConfig\x12%\n" +
 	"\raudio_content\x18\x02 \x01(\fH\x00R\faudioContentB\x13\n" +
-	"\x11streaming_request\"\xb6\x04\n" +
-	"\x1aStreamingRecognitionConfig\x12M\n" +
-	"\x06config\x18\x01 \x01(\v20.google.cloud.speech.v1p1beta1.RecognitionConfigB\x03\xe0A\x02R\x06config\x12)\n" +
+	"\x11streaming_request\"\xb7\x04\n" +
+	"\x1aStreamingRecognitionConfig\x12N\n" +
+	"\x06config\x18\x01 \x01(\v20.google.cloud.speech.v1p1beta1.RecognitionConfigB\x04\xe2A\x01\x02R\x06config\x12)\n" +
 	"\x10single_utterance\x18\x02 \x01(\bR\x0fsingleUtterance\x12'\n" +
 	"\x0finterim_results\x18\x03 \x01(\bR\x0einterimResults\x12?\n" +
 	"\x1cenable_voice_activity_events\x18\x05 \x01(\bR\x19enableVoiceActivityEvents\x12\x84\x01\n" +
 	"\x16voice_activity_timeout\x18\x06 \x01(\v2N.google.cloud.speech.v1p1beta1.StreamingRecognitionConfig.VoiceActivityTimeoutR\x14voiceActivityTimeout\x1a\xac\x01\n" +
 	"\x14VoiceActivityTimeout\x12K\n" +
 	"\x14speech_start_timeout\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x12speechStartTimeout\x12G\n" +
-	"\x12speech_end_timeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x10speechEndTimeout\"\xf9\f\n" +
+	"\x12speech_end_timeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x10speechEndTimeout\"\xfb\f\n" +
 	"\x11RecognitionConfig\x12Z\n" +
 	"\bencoding\x18\x01 \x01(\x0e2>.google.cloud.speech.v1p1beta1.RecognitionConfig.AudioEncodingR\bencoding\x12*\n" +
 	"\x11sample_rate_hertz\x18\x02 \x01(\x05R\x0fsampleRateHertz\x12.\n" +
 	"\x13audio_channel_count\x18\a \x01(\x05R\x11audioChannelCount\x12T\n" +
-	"'enable_separate_recognition_per_channel\x18\f \x01(\bR#enableSeparateRecognitionPerChannel\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x02R\flanguageCode\x12<\n" +
+	"'enable_separate_recognition_per_channel\x18\f \x01(\bR#enableSeparateRecognitionPerChannel\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\flanguageCode\x12<\n" +
 	"\x1aalternative_language_codes\x18\x12 \x03(\tR\x18alternativeLanguageCodes\x12)\n" +
 	"\x10max_alternatives\x18\x04 \x01(\x05R\x0fmaxAlternatives\x12)\n" +
 	"\x10profanity_filter\x18\x05 \x01(\bR\x0fprofanityFilter\x12O\n" +
 	"\n" +
 	"adaptation\x18\x14 \x01(\v2/.google.cloud.speech.v1p1beta1.SpeechAdaptationR\n" +
-	"adaptation\x12v\n" +
-	"\x18transcript_normalization\x18\x18 \x01(\v26.google.cloud.speech.v1p1beta1.TranscriptNormalizationB\x03\xe0A\x01R\x17transcriptNormalization\x12U\n" +
+	"adaptation\x12w\n" +
+	"\x18transcript_normalization\x18\x18 \x01(\v26.google.cloud.speech.v1p1beta1.TranscriptNormalizationB\x04\xe2A\x01\x01R\x17transcriptNormalization\x12U\n" +
 	"\x0fspeech_contexts\x18\x06 \x03(\v2,.google.cloud.speech.v1p1beta1.SpeechContextR\x0espeechContexts\x127\n" +
 	"\x18enable_word_time_offsets\x18\b \x01(\bR\x15enableWordTimeOffsets\x124\n" +
 	"\x16enable_word_confidence\x18\x0f \x01(\bR\x14enableWordConfidence\x12@\n" +
@@ -2682,12 +2682,12 @@ const file_google_cloud_speech_v1p1beta1_cloud_speech_proto_rawDesc = "" +
 	"\x03MP3\x10\b\x12\r\n" +
 	"\tWEBM_OPUS\x10\t\x12\b\n" +
 	"\x04ALAW\x10\n" +
-	"\"\xd8\x01\n" +
+	"\"\xd9\x01\n" +
 	"\x18SpeakerDiarizationConfig\x12<\n" +
 	"\x1aenable_speaker_diarization\x18\x01 \x01(\bR\x18enableSpeakerDiarization\x12*\n" +
 	"\x11min_speaker_count\x18\x02 \x01(\x05R\x0fminSpeakerCount\x12*\n" +
-	"\x11max_speaker_count\x18\x03 \x01(\x05R\x0fmaxSpeakerCount\x12&\n" +
-	"\vspeaker_tag\x18\x05 \x01(\x05B\x05\xe0A\x03\x18\x01R\n" +
+	"\x11max_speaker_count\x18\x03 \x01(\x05R\x0fmaxSpeakerCount\x12'\n" +
+	"\vspeaker_tag\x18\x05 \x01(\x05B\x06\xe2A\x01\x03\x18\x01R\n" +
 	"speakerTag\"\x83\n" +
 	"\n" +
 	"\x13RecognitionMetadata\x12m\n" +
@@ -2754,14 +2754,14 @@ const file_google_cloud_speech_v1p1beta1_cloud_speech_proto_rawDesc = "" +
 	"\foutput_error\x18\a \x01(\v2\x12.google.rpc.StatusR\voutputError\x12i\n" +
 	"\x16speech_adaptation_info\x18\b \x01(\v23.google.cloud.speech.v1p1beta1.SpeechAdaptationInfoR\x14speechAdaptationInfo\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\t \x01(\x03R\trequestId\"\xc2\x02\n" +
+	"request_id\x18\t \x01(\x03R\trequestId\"\xc4\x02\n" +
 	"\x1cLongRunningRecognizeMetadata\x12)\n" +
 	"\x10progress_percent\x18\x01 \x01(\x05R\x0fprogressPercent\x129\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12D\n" +
-	"\x10last_update_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0elastUpdateTime\x12\x15\n" +
-	"\x03uri\x18\x04 \x01(\tB\x03\xe0A\x03R\x03uri\x12_\n" +
-	"\routput_config\x18\x05 \x01(\v25.google.cloud.speech.v1p1beta1.TranscriptOutputConfigB\x03\xe0A\x03R\foutputConfig\"\xca\x05\n" +
+	"\x10last_update_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0elastUpdateTime\x12\x16\n" +
+	"\x03uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12`\n" +
+	"\routput_config\x18\x05 \x01(\v25.google.cloud.speech.v1p1beta1.TranscriptOutputConfigB\x04\xe2A\x01\x03R\foutputConfig\"\xca\x05\n" +
 	"\x1aStreamingRecognizeResponse\x12(\n" +
 	"\x05error\x18\x01 \x01(\v2\x12.google.rpc.StatusR\x05error\x12S\n" +
 	"\aresults\x18\x02 \x03(\v29.google.cloud.speech.v1p1beta1.StreamingRecognitionResultR\aresults\x12u\n" +
@@ -2777,21 +2777,21 @@ const file_google_cloud_speech_v1p1beta1_cloud_speech_proto_rawDesc = "" +
 	"\x17END_OF_SINGLE_UTTERANCE\x10\x01\x12\x19\n" +
 	"\x15SPEECH_ACTIVITY_BEGIN\x10\x02\x12\x17\n" +
 	"\x13SPEECH_ACTIVITY_END\x10\x03\x12\x1b\n" +
-	"\x17SPEECH_ACTIVITY_TIMEOUT\x10\x04\"\xc4\x02\n" +
+	"\x17SPEECH_ACTIVITY_TIMEOUT\x10\x04\"\xc5\x02\n" +
 	"\x1aStreamingRecognitionResult\x12_\n" +
 	"\falternatives\x18\x01 \x03(\v2;.google.cloud.speech.v1p1beta1.SpeechRecognitionAlternativeR\falternatives\x12\x19\n" +
 	"\bis_final\x18\x02 \x01(\bR\aisFinal\x12\x1c\n" +
 	"\tstability\x18\x03 \x01(\x02R\tstability\x12A\n" +
 	"\x0fresult_end_time\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\rresultEndTime\x12\x1f\n" +
 	"\vchannel_tag\x18\x05 \x01(\x05R\n" +
-	"channelTag\x12(\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x03\xe0A\x03R\flanguageCode\"\x88\x02\n" +
+	"channelTag\x12)\n" +
+	"\rlanguage_code\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\"\x89\x02\n" +
 	"\x17SpeechRecognitionResult\x12_\n" +
 	"\falternatives\x18\x01 \x03(\v2;.google.cloud.speech.v1p1beta1.SpeechRecognitionAlternativeR\falternatives\x12\x1f\n" +
 	"\vchannel_tag\x18\x02 \x01(\x05R\n" +
 	"channelTag\x12A\n" +
-	"\x0fresult_end_time\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\rresultEndTime\x12(\n" +
-	"\rlanguage_code\x18\x05 \x01(\tB\x03\xe0A\x03R\flanguageCode\"\x9d\x01\n" +
+	"\x0fresult_end_time\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\rresultEndTime\x12)\n" +
+	"\rlanguage_code\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\"\x9d\x01\n" +
 	"\x1cSpeechRecognitionAlternative\x12\x1e\n" +
 	"\n" +
 	"transcript\x18\x01 \x01(\tR\n" +
@@ -2799,7 +2799,7 @@ const file_google_cloud_speech_v1p1beta1_cloud_speech_proto_rawDesc = "" +
 	"\n" +
 	"confidence\x18\x02 \x01(\x02R\n" +
 	"confidence\x12=\n" +
-	"\x05words\x18\x03 \x03(\v2'.google.cloud.speech.v1p1beta1.WordInfoR\x05words\"\x80\x02\n" +
+	"\x05words\x18\x03 \x03(\v2'.google.cloud.speech.v1p1beta1.WordInfoR\x05words\"\x82\x02\n" +
 	"\bWordInfo\x128\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\tstartTime\x124\n" +
@@ -2807,10 +2807,10 @@ const file_google_cloud_speech_v1p1beta1_cloud_speech_proto_rawDesc = "" +
 	"\x04word\x18\x03 \x01(\tR\x04word\x12\x1e\n" +
 	"\n" +
 	"confidence\x18\x04 \x01(\x02R\n" +
-	"confidence\x12&\n" +
-	"\vspeaker_tag\x18\x05 \x01(\x05B\x05\xe0A\x03\x18\x01R\n" +
-	"speakerTag\x12(\n" +
-	"\rspeaker_label\x18\x06 \x01(\tB\x03\xe0A\x03R\fspeakerLabel\"n\n" +
+	"confidence\x12'\n" +
+	"\vspeaker_tag\x18\x05 \x01(\x05B\x06\xe2A\x01\x03\x18\x01R\n" +
+	"speakerTag\x12)\n" +
+	"\rspeaker_label\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\fspeakerLabel\"n\n" +
 	"\x14SpeechAdaptationInfo\x12-\n" +
 	"\x12adaptation_timeout\x18\x01 \x01(\bR\x11adaptationTimeout\x12'\n" +
 	"\x0ftimeout_message\x18\x04 \x01(\tR\x0etimeoutMessage2\x82\x05\n" +

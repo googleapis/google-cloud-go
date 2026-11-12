@@ -1158,53 +1158,53 @@ var File_google_shopping_merchant_promotions_v1_promotions_common_proto protoref
 
 const file_google_shopping_merchant_promotions_v1_promotions_common_proto_rawDesc = "" +
 	"\n" +
-	">google/shopping/merchant/promotions/v1/promotions_common.proto\x12&google.shopping.merchant.promotions.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\x86\x10\n" +
+	">google/shopping/merchant/promotions/v1/promotions_common.proto\x12&google.shopping.merchant.promotions.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xa4\x10\n" +
 	"\n" +
-	"Attributes\x12v\n" +
-	"\x15product_applicability\x18\x01 \x01(\x0e2<.google.shopping.merchant.promotions.v1.ProductApplicabilityB\x03\xe0A\x02R\x14productApplicability\x12U\n" +
+	"Attributes\x12w\n" +
+	"\x15product_applicability\x18\x01 \x01(\x0e2<.google.shopping.merchant.promotions.v1.ProductApplicabilityB\x04\xe2A\x01\x02R\x14productApplicability\x12V\n" +
 	"\n" +
-	"offer_type\x18\x02 \x01(\x0e21.google.shopping.merchant.promotions.v1.OfferTypeB\x03\xe0A\x02R\tofferType\x12;\n" +
-	"\x17generic_redemption_code\x18\x03 \x01(\tB\x03\xe0A\x01R\x15genericRedemptionCode\x12\"\n" +
+	"offer_type\x18\x02 \x01(\x0e21.google.shopping.merchant.promotions.v1.OfferTypeB\x04\xe2A\x01\x02R\tofferType\x12<\n" +
+	"\x17generic_redemption_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x15genericRedemptionCode\x12#\n" +
 	"\n" +
-	"long_title\x18\x04 \x01(\tB\x03\xe0A\x02R\tlongTitle\x12h\n" +
-	"\x11coupon_value_type\x18\x05 \x01(\x0e27.google.shopping.merchant.promotions.v1.CouponValueTypeB\x03\xe0A\x02R\x0fcouponValueType\x12m\n" +
-	"\x16promotion_destinations\x18\x06 \x03(\x0e21.google.shopping.type.Destination.DestinationEnumB\x03\xe0A\x02R\x15promotionDestinations\x12/\n" +
-	"\x11item_id_inclusion\x18\a \x03(\tB\x03\xe0A\x01R\x0fitemIdInclusion\x12,\n" +
-	"\x0fbrand_inclusion\x18\b \x03(\tB\x03\xe0A\x01R\x0ebrandInclusion\x12:\n" +
-	"\x17item_group_id_inclusion\x18\t \x03(\tB\x03\xe0A\x01R\x14itemGroupIdInclusion\x129\n" +
+	"long_title\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\tlongTitle\x12i\n" +
+	"\x11coupon_value_type\x18\x05 \x01(\x0e27.google.shopping.merchant.promotions.v1.CouponValueTypeB\x04\xe2A\x01\x02R\x0fcouponValueType\x12n\n" +
+	"\x16promotion_destinations\x18\x06 \x03(\x0e21.google.shopping.type.Destination.DestinationEnumB\x04\xe2A\x01\x02R\x15promotionDestinations\x120\n" +
+	"\x11item_id_inclusion\x18\a \x03(\tB\x04\xe2A\x01\x01R\x0fitemIdInclusion\x12-\n" +
+	"\x0fbrand_inclusion\x18\b \x03(\tB\x04\xe2A\x01\x01R\x0ebrandInclusion\x12;\n" +
+	"\x17item_group_id_inclusion\x18\t \x03(\tB\x04\xe2A\x01\x01R\x14itemGroupIdInclusion\x12:\n" +
 	"\x16product_type_inclusion\x18\n" +
-	" \x03(\tB\x03\xe0A\x01R\x14productTypeInclusion\x12/\n" +
-	"\x11item_id_exclusion\x18\v \x03(\tB\x03\xe0A\x01R\x0fitemIdExclusion\x12,\n" +
-	"\x0fbrand_exclusion\x18\f \x03(\tB\x03\xe0A\x01R\x0ebrandExclusion\x12:\n" +
-	"\x17item_group_id_exclusion\x18\r \x03(\tB\x03\xe0A\x01R\x14itemGroupIdExclusion\x129\n" +
-	"\x16product_type_exclusion\x18\x0e \x03(\tB\x03\xe0A\x01R\x14productTypeExclusion\x12X\n" +
-	"\x17minimum_purchase_amount\x18\x0f \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\x15minimumPurchaseAmount\x12?\n" +
-	"\x19minimum_purchase_quantity\x18\x10 \x01(\x03B\x03\xe0A\x01R\x17minimumPurchaseQuantity\x12*\n" +
-	"\x0elimit_quantity\x18\x11 \x01(\x03B\x03\xe0A\x01R\rlimitQuantity\x12A\n" +
-	"\vlimit_value\x18\x12 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\n" +
-	"limitValue\x12$\n" +
-	"\vpercent_off\x18\x13 \x01(\x03B\x03\xe0A\x01R\n" +
-	"percentOff\x12J\n" +
-	"\x10money_off_amount\x18\x14 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\x0emoneyOffAmount\x12D\n" +
-	"\x1cget_this_quantity_discounted\x18\x15 \x01(\x03B\x03\xe0A\x01R\x19getThisQuantityDiscounted\x12H\n" +
-	"\x0ffree_gift_value\x18\x16 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\rfreeGiftValue\x127\n" +
-	"\x15free_gift_description\x18\x17 \x01(\tB\x03\xe0A\x01R\x13freeGiftDescription\x12.\n" +
-	"\x11free_gift_item_id\x18\x18 \x01(\tB\x03\xe0A\x01R\x0efreeGiftItemId\x12a\n" +
-	"\x1fpromotion_effective_time_period\x18\x19 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x02R\x1cpromotionEffectiveTimePeriod\x12]\n" +
-	"\x1dpromotion_display_time_period\x18\x1a \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x01R\x1apromotionDisplayTimePeriod\x12p\n" +
-	"\x13store_applicability\x18\x1c \x01(\x0e2:.google.shopping.merchant.promotions.v1.StoreApplicabilityB\x03\xe0A\x01R\x12storeApplicability\x127\n" +
-	"\x15store_codes_inclusion\x18\x1d \x03(\tB\x03\xe0A\x01R\x13storeCodesInclusion\x127\n" +
-	"\x15store_codes_exclusion\x18\x1e \x03(\tB\x03\xe0A\x01R\x13storeCodesExclusion\x12(\n" +
-	"\rpromotion_url\x18\x1f \x01(\tB\x03\xe0A\x01R\fpromotionUrl\"\xd2\n" +
+	" \x03(\tB\x04\xe2A\x01\x01R\x14productTypeInclusion\x120\n" +
+	"\x11item_id_exclusion\x18\v \x03(\tB\x04\xe2A\x01\x01R\x0fitemIdExclusion\x12-\n" +
+	"\x0fbrand_exclusion\x18\f \x03(\tB\x04\xe2A\x01\x01R\x0ebrandExclusion\x12;\n" +
+	"\x17item_group_id_exclusion\x18\r \x03(\tB\x04\xe2A\x01\x01R\x14itemGroupIdExclusion\x12:\n" +
+	"\x16product_type_exclusion\x18\x0e \x03(\tB\x04\xe2A\x01\x01R\x14productTypeExclusion\x12Y\n" +
+	"\x17minimum_purchase_amount\x18\x0f \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01R\x15minimumPurchaseAmount\x12@\n" +
+	"\x19minimum_purchase_quantity\x18\x10 \x01(\x03B\x04\xe2A\x01\x01R\x17minimumPurchaseQuantity\x12+\n" +
+	"\x0elimit_quantity\x18\x11 \x01(\x03B\x04\xe2A\x01\x01R\rlimitQuantity\x12B\n" +
+	"\vlimit_value\x18\x12 \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01R\n" +
+	"limitValue\x12%\n" +
+	"\vpercent_off\x18\x13 \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"percentOff\x12K\n" +
+	"\x10money_off_amount\x18\x14 \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01R\x0emoneyOffAmount\x12E\n" +
+	"\x1cget_this_quantity_discounted\x18\x15 \x01(\x03B\x04\xe2A\x01\x01R\x19getThisQuantityDiscounted\x12I\n" +
+	"\x0ffree_gift_value\x18\x16 \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01R\rfreeGiftValue\x128\n" +
+	"\x15free_gift_description\x18\x17 \x01(\tB\x04\xe2A\x01\x01R\x13freeGiftDescription\x12/\n" +
+	"\x11free_gift_item_id\x18\x18 \x01(\tB\x04\xe2A\x01\x01R\x0efreeGiftItemId\x12b\n" +
+	"\x1fpromotion_effective_time_period\x18\x19 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x02R\x1cpromotionEffectiveTimePeriod\x12^\n" +
+	"\x1dpromotion_display_time_period\x18\x1a \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x01R\x1apromotionDisplayTimePeriod\x12q\n" +
+	"\x13store_applicability\x18\x1c \x01(\x0e2:.google.shopping.merchant.promotions.v1.StoreApplicabilityB\x04\xe2A\x01\x01R\x12storeApplicability\x128\n" +
+	"\x15store_codes_inclusion\x18\x1d \x03(\tB\x04\xe2A\x01\x01R\x13storeCodesInclusion\x128\n" +
+	"\x15store_codes_exclusion\x18\x1e \x03(\tB\x04\xe2A\x01\x01R\x13storeCodesExclusion\x12)\n" +
+	"\rpromotion_url\x18\x1f \x01(\tB\x04\xe2A\x01\x01R\fpromotionUrl\"\xe1\n" +
 	"\n" +
-	"\x0fPromotionStatus\x12\x81\x01\n" +
-	"\x14destination_statuses\x18\x01 \x03(\v2I.google.shopping.merchant.promotions.v1.PromotionStatus.DestinationStatusB\x03\xe0A\x03R\x13destinationStatuses\x12w\n" +
-	"\x11item_level_issues\x18\x02 \x03(\v2F.google.shopping.merchant.promotions.v1.PromotionStatus.ItemLevelIssueB\x03\xe0A\x03R\x0fitemLevelIssues\x12D\n" +
-	"\rcreation_date\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcreationDate\x12I\n" +
-	"\x10last_update_date\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastUpdateDate\x1a\xde\x02\n" +
-	"\x11DestinationStatus\x12m\n" +
-	"\x11reporting_context\x18\x01 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumB\x03\xe0A\x03R\x10reportingContext\x12l\n" +
-	"\x06status\x18\x02 \x01(\x0e2O.google.shopping.merchant.promotions.v1.PromotionStatus.DestinationStatus.StateB\x03\xe0A\x03R\x06status\"l\n" +
+	"\x0fPromotionStatus\x12\x82\x01\n" +
+	"\x14destination_statuses\x18\x01 \x03(\v2I.google.shopping.merchant.promotions.v1.PromotionStatus.DestinationStatusB\x04\xe2A\x01\x03R\x13destinationStatuses\x12x\n" +
+	"\x11item_level_issues\x18\x02 \x03(\v2F.google.shopping.merchant.promotions.v1.PromotionStatus.ItemLevelIssueB\x04\xe2A\x01\x03R\x0fitemLevelIssues\x12E\n" +
+	"\rcreation_date\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcreationDate\x12J\n" +
+	"\x10last_update_date\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastUpdateDate\x1a\xe0\x02\n" +
+	"\x11DestinationStatus\x12n\n" +
+	"\x11reporting_context\x18\x01 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumB\x04\xe2A\x01\x03R\x10reportingContext\x12m\n" +
+	"\x06status\x18\x02 \x01(\x0e2O.google.shopping.merchant.promotions.v1.PromotionStatus.DestinationStatus.StateB\x04\xe2A\x01\x03R\x06status\"l\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tIN_REVIEW\x10\x01\x12\f\n" +
@@ -1212,19 +1212,19 @@ const file_google_shopping_merchant_promotions_v1_promotions_common_proto_rawDes
 	"\x04LIVE\x10\x03\x12\v\n" +
 	"\aSTOPPED\x10\x04\x12\v\n" +
 	"\aEXPIRED\x10\x05\x12\v\n" +
-	"\aPENDING\x10\x06\x1a\xcf\x04\n" +
-	"\x0eItemLevelIssue\x12\x17\n" +
-	"\x04code\x18\x01 \x01(\tB\x03\xe0A\x03R\x04code\x12p\n" +
-	"\bseverity\x18\x02 \x01(\x0e2O.google.shopping.merchant.promotions.v1.PromotionStatus.ItemLevelIssue.SeverityB\x03\xe0A\x03R\bseverity\x12#\n" +
+	"\aPENDING\x10\x06\x1a\xd8\x04\n" +
+	"\x0eItemLevelIssue\x12\x18\n" +
+	"\x04code\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04code\x12q\n" +
+	"\bseverity\x18\x02 \x01(\x0e2O.google.shopping.merchant.promotions.v1.PromotionStatus.ItemLevelIssue.SeverityB\x04\xe2A\x01\x03R\bseverity\x12$\n" +
 	"\n" +
-	"resolution\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
-	"resolution\x12!\n" +
-	"\tattribute\x18\x04 \x01(\tB\x03\xe0A\x03R\tattribute\x12m\n" +
-	"\x11reporting_context\x18\x05 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumB\x03\xe0A\x03R\x10reportingContext\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x03R\vdescription\x12\x1b\n" +
-	"\x06detail\x18\a \x01(\tB\x03\xe0A\x03R\x06detail\x12)\n" +
-	"\rdocumentation\x18\b \x01(\tB\x03\xe0A\x03R\rdocumentation\x126\n" +
-	"\x14applicable_countries\x18\t \x03(\tB\x03\xe0A\x03R\x13applicableCountries\"T\n" +
+	"resolution\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"resolution\x12\"\n" +
+	"\tattribute\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\tattribute\x12n\n" +
+	"\x11reporting_context\x18\x05 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumB\x04\xe2A\x01\x03R\x10reportingContext\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12\x1c\n" +
+	"\x06detail\x18\a \x01(\tB\x04\xe2A\x01\x03R\x06detail\x12*\n" +
+	"\rdocumentation\x18\b \x01(\tB\x04\xe2A\x01\x03R\rdocumentation\x127\n" +
+	"\x14applicable_countries\x18\t \x03(\tB\x04\xe2A\x01\x03R\x13applicableCountries\"T\n" +
 	"\bSeverity\x12\x18\n" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fNOT_IMPACTED\x10\x01\x12\v\n" +

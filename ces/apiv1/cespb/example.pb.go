@@ -871,68 +871,68 @@ var File_google_cloud_ces_v1_example_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_example_proto_rawDesc = "" +
 	"\n" +
-	"!google/cloud/ces/v1/example.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/ces/v1/toolset_tool.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa5\x04\n" +
-	"\aExample\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12A\n" +
-	"\ventry_agent\x18\x04 \x01(\tB \xe0A\x01\xfaA\x1a\n" +
+	"!google/cloud/ces/v1/example.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/ces/v1/toolset_tool.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xad\x04\n" +
+	"\aExample\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12B\n" +
+	"\ventry_agent\x18\x04 \x01(\tB!\xe2A\x01\x01\xfaA\x1a\n" +
 	"\x18ces.googleapis.com/AgentR\n" +
-	"entryAgent\x12=\n" +
-	"\bmessages\x18\x05 \x03(\v2\x1c.google.cloud.ces.v1.MessageB\x03\xe0A\x01R\bmessages\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1d\n" +
-	"\ainvalid\x18\b \x01(\bB\x03\xe0A\x03R\ainvalid\x12\x12\n" +
+	"entryAgent\x12>\n" +
+	"\bmessages\x18\x05 \x03(\v2\x1c.google.cloud.ces.v1.MessageB\x04\xe2A\x01\x01R\bmessages\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1e\n" +
+	"\ainvalid\x18\b \x01(\bB\x04\xe2A\x01\x03R\ainvalid\x12\x12\n" +
 	"\x04etag\x18\t \x01(\tR\x04etag:y\xeaAv\n" +
-	"\x1aces.googleapis.com/Example\x12Eprojects/{project}/locations/{location}/apps/{app}/examples/{example}*\bexamples2\aexample\"\x9b\x01\n" +
-	"\aMessage\x12\x17\n" +
-	"\x04role\x18\x01 \x01(\tB\x03\xe0A\x01R\x04role\x127\n" +
-	"\x06chunks\x18\x02 \x03(\v2\x1a.google.cloud.ces.v1.ChunkB\x03\xe0A\x01R\x06chunks\x12>\n" +
+	"\x1aces.googleapis.com/Example\x12Eprojects/{project}/locations/{location}/apps/{app}/examples/{example}*\bexamples2\aexample\"\x9e\x01\n" +
+	"\aMessage\x12\x18\n" +
+	"\x04role\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04role\x128\n" +
+	"\x06chunks\x18\x02 \x03(\v2\x1a.google.cloud.ces.v1.ChunkB\x04\xe2A\x01\x01R\x06chunks\x12?\n" +
 	"\n" +
-	"event_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\teventTime\"\xee\x04\n" +
-	"\x05Chunk\x12\x19\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x04text\x12%\n" +
+	"event_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\teventTime\"\xf6\x04\n" +
+	"\x05Chunk\x12\x1a\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04text\x12&\n" +
 	"\n" +
-	"transcript\x18\t \x01(\tB\x03\xe0A\x01H\x00R\n" +
-	"transcript\x124\n" +
-	"\x04blob\x18\a \x01(\v2\x19.google.cloud.ces.v1.BlobB\x03\xe0A\x01H\x00R\x04blob\x128\n" +
-	"\apayload\x18\v \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01H\x00R\apayload\x127\n" +
-	"\x05image\x18\x05 \x01(\v2\x1a.google.cloud.ces.v1.ImageB\x03\xe0A\x01H\x00R\x05image\x12A\n" +
-	"\ttool_call\x18\x02 \x01(\v2\x1d.google.cloud.ces.v1.ToolCallB\x03\xe0A\x01H\x00R\btoolCall\x12M\n" +
-	"\rtool_response\x18\x03 \x01(\v2!.google.cloud.ces.v1.ToolResponseB\x03\xe0A\x01H\x00R\ftoolResponse\x12P\n" +
-	"\x0eagent_transfer\x18\x04 \x01(\v2\".google.cloud.ces.v1.AgentTransferB\x03\xe0A\x01H\x00R\ragentTransfer\x12F\n" +
+	"transcript\x18\t \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
+	"transcript\x125\n" +
+	"\x04blob\x18\a \x01(\v2\x19.google.cloud.ces.v1.BlobB\x04\xe2A\x01\x01H\x00R\x04blob\x129\n" +
+	"\apayload\x18\v \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01H\x00R\apayload\x128\n" +
+	"\x05image\x18\x05 \x01(\v2\x1a.google.cloud.ces.v1.ImageB\x04\xe2A\x01\x01H\x00R\x05image\x12B\n" +
+	"\ttool_call\x18\x02 \x01(\v2\x1d.google.cloud.ces.v1.ToolCallB\x04\xe2A\x01\x01H\x00R\btoolCall\x12N\n" +
+	"\rtool_response\x18\x03 \x01(\v2!.google.cloud.ces.v1.ToolResponseB\x04\xe2A\x01\x01H\x00R\ftoolResponse\x12Q\n" +
+	"\x0eagent_transfer\x18\x04 \x01(\v2\".google.cloud.ces.v1.AgentTransferB\x04\xe2A\x01\x01H\x00R\ragentTransfer\x12F\n" +
 	"\x11updated_variables\x18\b \x01(\v2\x17.google.protobuf.StructH\x00R\x10updatedVariables\x12F\n" +
 	"\x11default_variables\x18\n" +
 	" \x01(\v2\x17.google.protobuf.StructH\x00R\x10defaultVariablesB\x06\n" +
-	"\x04data\"A\n" +
-	"\x04Blob\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x17\n" +
-	"\x04data\x18\x02 \x01(\fB\x03\xe0A\x02R\x04data\"B\n" +
-	"\x05Image\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x17\n" +
-	"\x04data\x18\x02 \x01(\fB\x03\xe0A\x02R\x04data\"\x8f\x02\n" +
-	"\bToolCall\x125\n" +
-	"\x04tool\x18\x02 \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12J\n" +
-	"\ftoolset_tool\x18\x05 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x03\xe0A\x01H\x00R\vtoolsetTool\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x03R\vdisplayName\x120\n" +
-	"\x04args\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x04argsB\x11\n" +
-	"\x0ftool_identifier\"\x9b\x02\n" +
-	"\fToolResponse\x125\n" +
-	"\x04tool\x18\x02 \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12J\n" +
-	"\ftoolset_tool\x18\x05 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x03\xe0A\x01H\x00R\vtoolsetTool\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x03R\vdisplayName\x128\n" +
-	"\bresponse\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x02R\bresponseB\x11\n" +
-	"\x0ftool_identifier\"|\n" +
-	"\rAgentTransfer\x12C\n" +
-	"\ftarget_agent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18ces.googleapis.com/AgentR\vtargetAgent\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayNameBT\n" +
+	"\x04data\"C\n" +
+	"\x04Blob\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x18\n" +
+	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\"D\n" +
+	"\x05Image\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x18\n" +
+	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\"\x94\x02\n" +
+	"\bToolCall\x126\n" +
+	"\x04tool\x18\x02 \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12K\n" +
+	"\ftoolset_tool\x18\x05 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x04\xe2A\x01\x01H\x00R\vtoolsetTool\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x121\n" +
+	"\x04args\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x04argsB\x11\n" +
+	"\x0ftool_identifier\"\xa0\x02\n" +
+	"\fToolResponse\x126\n" +
+	"\x04tool\x18\x02 \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12K\n" +
+	"\ftoolset_tool\x18\x05 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x04\xe2A\x01\x01H\x00R\vtoolsetTool\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x129\n" +
+	"\bresponse\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x02R\bresponseB\x11\n" +
+	"\x0ftool_identifier\"~\n" +
+	"\rAgentTransfer\x12D\n" +
+	"\ftarget_agent\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +
+	"\x18ces.googleapis.com/AgentR\vtargetAgent\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayNameBT\n" +
 	"\x17com.google.cloud.ces.v1B\fExampleProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (

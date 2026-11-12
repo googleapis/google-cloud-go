@@ -396,23 +396,23 @@ var File_google_cloud_talent_v4_tenant_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_talent_v4_tenant_service_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/talent/v4/tenant_service.proto\x12\x16google.cloud.talent.v4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/talent/v4/common.proto\x1a#google/cloud/talent/v4/tenant.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x9f\x01\n" +
-	"\x13CreateTenantRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12;\n" +
-	"\x06tenant\x18\x02 \x01(\v2\x1e.google.cloud.talent.v4.TenantB\x03\xe0A\x02R\x06tenant\"J\n" +
-	"\x10GetTenantRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1ajobs.googleapis.com/TenantR\x04name\"\x8f\x01\n" +
-	"\x13UpdateTenantRequest\x12;\n" +
-	"\x06tenant\x18\x01 \x01(\v2\x1e.google.cloud.talent.v4.TenantB\x03\xe0A\x02R\x06tenant\x12;\n" +
+	"+google/cloud/talent/v4/tenant_service.proto\x12\x16google.cloud.talent.v4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/talent/v4/common.proto\x1a#google/cloud/talent/v4/tenant.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa1\x01\n" +
+	"\x13CreateTenantRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12<\n" +
+	"\x06tenant\x18\x02 \x01(\v2\x1e.google.cloud.talent.v4.TenantB\x04\xe2A\x01\x02R\x06tenant\"K\n" +
+	"\x10GetTenantRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1ajobs.googleapis.com/TenantR\x04name\"\x90\x01\n" +
+	"\x13UpdateTenantRequest\x12<\n" +
+	"\x06tenant\x18\x01 \x01(\v2\x1e.google.cloud.talent.v4.TenantB\x04\xe2A\x01\x02R\x06tenant\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"M\n" +
-	"\x13DeleteTenantRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1ajobs.googleapis.com/TenantR\x04name\"\x9d\x01\n" +
-	"\x12ListTenantsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"updateMask\"N\n" +
+	"\x13DeleteTenantRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1ajobs.googleapis.com/TenantR\x04name\"\x9e\x01\n" +
+	"\x12ListTenantsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x1b\n" +

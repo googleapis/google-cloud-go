@@ -17,6 +17,7 @@ package adapt
 import (
 	"encoding/base64"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
@@ -358,7 +359,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	}
 	// Start constructing a DescriptorProto.
 	dp := &descriptorpb.DescriptorProto{
-		Name:  proto.String(scope),
+		Name:  new(scope),
 		Field: fields,
 	}
 
@@ -376,12 +377,12 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	// Now, construct a FileDescriptorProto.
 	fdp := &descriptorpb.FileDescriptorProto{
 		MessageType: []*descriptorpb.DescriptorProto{dp},
-		Name:        proto.String(fmt.Sprintf("%s.proto", scope)),
-		Syntax:      proto.String("proto3"),
+		Name:        new(fmt.Sprintf("%s.proto", scope)),
+		Syntax:      new("proto3"),
 		Dependency:  depNames,
 	}
 	if !cfg.useProto3 {
-		fdp.Syntax = proto.String("proto2")
+		fdp.Syntax = new("proto2")
 	}
 
 	// We'll need a FileDescriptorSet as we have a FileDescriptorProto for the current
@@ -447,23 +448,23 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 
 	if field.GetType() == storagepb.TableFieldSchema_STRUCT {
 		fdp = &descriptorpb.FieldDescriptorProto{
-			Name:     proto.String(name),
-			Number:   proto.Int32(idx),
-			TypeName: proto.String(scope),
+			Name:     new(name),
+			Number:   new(idx),
+			TypeName: new(scope),
 			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
 		}
 	} else if field.GetType() == storagepb.TableFieldSchema_RANGE {
 		fdp = &descriptorpb.FieldDescriptorProto{
-			Name:     proto.String(name),
-			Number:   proto.Int32(idx),
-			TypeName: proto.String(fmt.Sprintf("%s%s", rangeTypesPrefix, strings.ToLower(field.GetRangeElementType().GetType().String()))),
+			Name:     new(name),
+			Number:   new(idx),
+			TypeName: new(fmt.Sprintf("%s%s", rangeTypesPrefix, strings.ToLower(field.GetRangeElementType().GetType().String()))),
 			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
 		}
 	} else {
 		typeName, outType, label := resolveType(scope, field, cfg)
 		fdp = &descriptorpb.FieldDescriptorProto{
-			Name:     proto.String(name),
-			Number:   proto.Int32(idx),
+			Name:     new(name),
+			Number:   new(idx),
 			Type:     outType.Enum(),
 			TypeName: typeName,
 			Label:    label,
@@ -471,12 +472,9 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 
 		// Special case: proto2 repeated fields may benefit from using packed annotation.
 		if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !cfg.useProto3 {
-			for _, v := range packedTypes {
-				if outType == v {
-					fdp.Options = &descriptorpb.FieldOptions{
-						Packed: proto.Bool(true),
-					}
-					break
+			if slices.Contains(packedTypes, outType) {
+				fdp.Options = &descriptorpb.FieldOptions{
+					Packed: new(true),
 				}
 			}
 		}
@@ -486,7 +484,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 		// Base 64 standard encoding may also contain certain characters (+,/,=) which
 		// we remove from the generated name.
 		encoded := strings.Trim(base64.StdEncoding.EncodeToString([]byte(name)), "+/=")
-		fdp.Name = proto.String(fmt.Sprintf("col_%s", encoded))
+		fdp.Name = new(fmt.Sprintf("col_%s", encoded))
 		opts := fdp.GetOptions()
 		if opts == nil {
 			fdp.Options = &descriptorpb.FieldOptions{}
@@ -501,7 +499,7 @@ func resolveType(scope string, field *storagepb.TableFieldSchema, cfg *customCon
 	if override := cfg.protoMappingOverrides.getByField(field, path); override != nil {
 		var typeName *string
 		if override.TypeName != "" {
-			typeName = proto.String(override.TypeName)
+			typeName = new(override.TypeName)
 		}
 		return typeName, override.Type, convertModeToLabel(field.GetMode(), cfg.useProto3)
 	}
@@ -510,7 +508,7 @@ func resolveType(scope string, field *storagepb.TableFieldSchema, cfg *customCon
 		return nil, bqTypeToFieldTypeMap[field.GetType()], convertModeToLabel(field.GetMode(), cfg.useProto3)
 	}
 	// For NULLABLE proto3 fields, use a wrapper type.
-	return proto.String(bqTypeToWrapperMap[field.GetType()]), descriptorpb.FieldDescriptorProto_TYPE_MESSAGE, descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()
+	return new(bqTypeToWrapperMap[field.GetType()]), descriptorpb.FieldDescriptorProto_TYPE_MESSAGE, descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()
 }
 
 // nameRequiresAnnotation determines whether a field name requires unicode-annotation.
@@ -547,7 +545,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 		root = resultDP
 	}
 	fullProtoName := string(in.FullName())
-	resultDP.Name = proto.String(normalizeName(fullProtoName))
+	resultDP.Name = new(normalizeName(fullProtoName))
 	visitedTypes.add(fullProtoName)
 	for i := 0; i < in.Fields().Len(); i++ {
 		inField := in.Fields().Get(i)
@@ -556,13 +554,13 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 		if !inField.HasPresence() && inField.Cardinality() != protoreflect.Repeated {
 			switch resultFDP.GetType() {
 			case descriptorpb.FieldDescriptorProto_TYPE_BOOL:
-				resultFDP.DefaultValue = proto.String("false")
+				resultFDP.DefaultValue = new("false")
 			case descriptorpb.FieldDescriptorProto_TYPE_BYTES, descriptorpb.FieldDescriptorProto_TYPE_STRING:
-				resultFDP.DefaultValue = proto.String("")
+				resultFDP.DefaultValue = new("")
 			case descriptorpb.FieldDescriptorProto_TYPE_ENUM:
 				// Resolve the proto3 default value.  The default value should be the value name.
 				defValue := inField.Enum().Values().ByNumber(inField.Default().Enum())
-				resultFDP.DefaultValue = proto.String(string(defValue.Name()))
+				resultFDP.DefaultValue = new(string(defValue.Name()))
 			case descriptorpb.FieldDescriptorProto_TYPE_DOUBLE,
 				descriptorpb.FieldDescriptorProto_TYPE_FLOAT,
 				descriptorpb.FieldDescriptorProto_TYPE_INT64,
@@ -575,7 +573,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 				descriptorpb.FieldDescriptorProto_TYPE_SFIXED64,
 				descriptorpb.FieldDescriptorProto_TYPE_SINT32,
 				descriptorpb.FieldDescriptorProto_TYPE_SINT64:
-				resultFDP.DefaultValue = proto.String("0")
+				resultFDP.DefaultValue = new("0")
 			}
 		}
 		// Clear proto3 optional annotation, as the backend converter can
@@ -594,7 +592,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 				// for everything but well known types, normalize.
 				normName := normalizeName(string(msgFullName))
 				if structTypes.contains(msgFullName) {
-					resultFDP.TypeName = proto.String(normName)
+					resultFDP.TypeName = new(normName)
 				} else {
 					if visitedTypes.contains(msgFullName) {
 						return nil, fmt.Errorf("recursive type not supported: %s", inField.FullName())
@@ -607,7 +605,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 					root.NestedType = append(root.NestedType, dp)
 					visitedTypes.delete(msgFullName)
 					lastNested := root.GetNestedType()[len(root.GetNestedType())-1].GetName()
-					resultFDP.TypeName = proto.String(lastNested)
+					resultFDP.TypeName = new(lastNested)
 				}
 			}
 		}
@@ -620,10 +618,10 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 			enumName := string(inField.Enum().Name())
 			actualFullName := fmt.Sprintf("%s.%s", enclosingTypeName, enumName)
 			if enumTypes.contains(enumFullName) {
-				resultFDP.TypeName = proto.String(actualFullName)
+				resultFDP.TypeName = new(actualFullName)
 			} else {
 				enumDP := protodesc.ToEnumDescriptorProto(inField.Enum())
-				enumDP.Name = proto.String(enumName)
+				enumDP.Name = new(enumName)
 				// Ensure values in enum are sorted.
 				vals := enumDP.GetValue()
 				sort.SliceStable(vals, func(i, j int) bool {
@@ -631,10 +629,10 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 				})
 				// Append wrapped enum to nested types.
 				root.NestedType = append(root.NestedType, &descriptorpb.DescriptorProto{
-					Name:     proto.String(enclosingTypeName),
+					Name:     new(enclosingTypeName),
 					EnumType: []*descriptorpb.EnumDescriptorProto{enumDP},
 				})
-				resultFDP.TypeName = proto.String(actualFullName)
+				resultFDP.TypeName = new(actualFullName)
 				enumTypes.add(enumFullName)
 			}
 		}
@@ -700,10 +698,5 @@ var normalizationSkipList = []string{
 }
 
 func skipNormalization(fullName string) bool {
-	for _, v := range normalizationSkipList {
-		if v == fullName {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(normalizationSkipList, fullName)
 }

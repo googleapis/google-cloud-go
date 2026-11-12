@@ -1,5 +1,33 @@
 # Changes
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.36.1...cloudbuild/v1.37.0) (2026-11-05)
+
+
+### Features
+
+* Update API sources and regenerate ([#20848](https://github.com/googleapis/google-cloud-go/issues/20848)) ([7437b30](https://github.com/googleapis/google-cloud-go/commit/7437b30bc59a2f6a30b5f101c91b496512fb84a4))
+
+## [1.36.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.36.0...cloudbuild/v1.36.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.35.0...cloudbuild/v1.36.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.34.0...cloudbuild/v1.35.0) (2026-10-15)
+
+
+### Features
+
+* Update API sources and regenerate ([#20683](https://github.com/googleapis/google-cloud-go/issues/20683)) ([005d7ce](https://github.com/googleapis/google-cloud-go/commit/005d7ce4872f1cf1ad269cd5d0ce8da7a844d3c8))
+
 ## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.33.0...cloudbuild/v1.34.0) (2026-09-23)
 
 

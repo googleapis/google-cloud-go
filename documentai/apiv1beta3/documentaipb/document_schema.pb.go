@@ -952,13 +952,13 @@ const file_google_cloud_documentai_v1beta3_document_schema_proto_rawDesc = "" +
 	"\binactive\x18\x03 \x01(\bR\binactive\x12t\n" +
 	"\x19field_extraction_metadata\x18\t \x01(\v28.google.cloud.documentai.v1beta3.FieldExtractionMetadataR\x17fieldExtractionMetadata\"0\n" +
 	"\x12EntityTypeMetadata\x12\x1a\n" +
-	"\binactive\x18\x05 \x01(\bR\binactive\"\xac\r\n" +
+	"\binactive\x18\x05 \x01(\bR\binactive\"\xad\r\n" +
 	"\x0eDocumentSchema\x12!\n" +
 	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12]\n" +
 	"\fentity_types\x18\x03 \x03(\v2:.google.cloud.documentai.v1beta3.DocumentSchema.EntityTypeR\ventityTypes\x12T\n" +
-	"\bmetadata\x18\x04 \x01(\v28.google.cloud.documentai.v1beta3.DocumentSchema.MetadataR\bmetadata\x12,\n" +
-	"\x0fdocument_prompt\x18\x05 \x01(\tB\x03\xe0A\x01R\x0edocumentPrompt\x1a\xf9\b\n" +
+	"\bmetadata\x18\x04 \x01(\v28.google.cloud.documentai.v1beta3.DocumentSchema.MetadataR\bmetadata\x12-\n" +
+	"\x0fdocument_prompt\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0edocumentPrompt\x1a\xf9\b\n" +
 	"\n" +
 	"EntityType\x12h\n" +
 	"\venum_values\x18\x0e \x01(\v2E.google.cloud.documentai.v1beta3.DocumentSchema.EntityType.EnumValuesH\x00R\n" +

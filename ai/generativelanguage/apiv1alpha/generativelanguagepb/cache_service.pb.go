@@ -356,25 +356,25 @@ var File_google_ai_generativelanguage_v1alpha_cache_service_proto protoreflect.F
 
 const file_google_ai_generativelanguage_v1alpha_cache_service_proto_rawDesc = "" +
 	"\n" +
-	"8google/ai/generativelanguage/v1alpha/cache_service.proto\x12$google.ai.generativelanguage.v1alpha\x1a9google/ai/generativelanguage/v1alpha/cached_content.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"a\n" +
-	"\x19ListCachedContentsRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"8google/ai/generativelanguage/v1alpha/cache_service.proto\x12$google.ai.generativelanguage.v1alpha\x1a9google/ai/generativelanguage/v1alpha/cached_content.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"c\n" +
+	"\x19ListCachedContentsRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa2\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa2\x01\n" +
 	"\x1aListCachedContentsResponse\x12\\\n" +
 	"\x0fcached_contents\x18\x01 \x03(\v23.google.ai.generativelanguage.v1alpha.CachedContentR\x0ecachedContents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"}\n" +
-	"\x1aCreateCachedContentRequest\x12_\n" +
-	"\x0ecached_content\x18\x01 \x01(\v23.google.ai.generativelanguage.v1alpha.CachedContentB\x03\xe0A\x02R\rcachedContent\"f\n" +
-	"\x17GetCachedContentRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/generativelanguage.googleapis.com/CachedContentR\x04name\"\xba\x01\n" +
-	"\x1aUpdateCachedContentRequest\x12_\n" +
-	"\x0ecached_content\x18\x01 \x01(\v23.google.ai.generativelanguage.v1alpha.CachedContentB\x03\xe0A\x02R\rcachedContent\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"~\n" +
+	"\x1aCreateCachedContentRequest\x12`\n" +
+	"\x0ecached_content\x18\x01 \x01(\v23.google.ai.generativelanguage.v1alpha.CachedContentB\x04\xe2A\x01\x02R\rcachedContent\"g\n" +
+	"\x17GetCachedContentRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/generativelanguage.googleapis.com/CachedContentR\x04name\"\xbb\x01\n" +
+	"\x1aUpdateCachedContentRequest\x12`\n" +
+	"\x0ecached_content\x18\x01 \x01(\v23.google.ai.generativelanguage.v1alpha.CachedContentB\x04\xe2A\x01\x02R\rcachedContent\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"i\n" +
-	"\x1aDeleteCachedContentRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"updateMask\"j\n" +
+	"\x1aDeleteCachedContentRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/generativelanguage.googleapis.com/CachedContentR\x04name2\x95\b\n" +
 	"\fCacheService\x12\xbb\x01\n" +
 	"\x12ListCachedContents\x12?.google.ai.generativelanguage.v1alpha.ListCachedContentsRequest\x1a@.google.ai.generativelanguage.v1alpha.ListCachedContentsResponse\"\"\xdaA\x00\x82\xd3\xe4\x93\x02\x19\x12\x17/v1alpha/cachedContents\x12\xce\x01\n" +

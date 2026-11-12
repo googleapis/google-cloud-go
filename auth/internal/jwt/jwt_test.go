@@ -20,6 +20,7 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"testing"
+	"time"
 )
 
 func TestSignAndVerifyDecode(t *testing.T) {
@@ -128,5 +129,31 @@ func TestVerifyFailsOnMalformedClaim(t *testing.T) {
 	err := VerifyJWS("abc.def", nil)
 	if err == nil {
 		t.Error("got no errors; want improperly formed JWT not to be verified")
+	}
+}
+
+func TestDecodeJWS_Invalid(t *testing.T) {
+	for _, tok := range []string{
+		"fake_token",
+		"eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJhdWQifQ",
+		"eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJhdWQifQ.c2ln.extra",
+		"eyJhbGciOiJSUzI1NiJ9.!!!invalid-base64!!!.sig",
+		"eyJhbGciOiJSUzI1NiJ9.bm90LWpzb24.sig",
+	} {
+		if _, err := DecodeJWS(tok); err == nil {
+			t.Errorf("DecodeJWS(%q) = nil, want error", tok)
+		}
+	}
+}
+
+func TestClaimsExpiry(t *testing.T) {
+	if got := (&Claims{}).Expiry(); !got.IsZero() {
+		t.Errorf("Expiry() with Exp=0 = %v, want zero time", got)
+	}
+	if got := (&Claims{Exp: -1}).Expiry(); !got.IsZero() {
+		t.Errorf("Expiry() with Exp=-1 = %v, want zero time", got)
+	}
+	if got, want := (&Claims{Exp: 1700000000}).Expiry(), time.Unix(1700000000, 0); !got.Equal(want) {
+		t.Errorf("Expiry() = %v, want %v", got, want)
 	}
 }

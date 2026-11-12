@@ -1118,6 +1118,11 @@ func (c *organizationVpcFlowLogsRESTClient) ListVpcFlowLogsConfigs(ctx context.C
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/vpcFlowLogsConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -1187,6 +1192,11 @@ func (c *organizationVpcFlowLogsRESTClient) ListVpcFlowLogsConfigs(ctx context.C
 func (c *organizationVpcFlowLogsRESTClient) GetVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.GetVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*networkmanagementpb.VpcFlowLogsConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1268,6 +1278,11 @@ func (c *organizationVpcFlowLogsRESTClient) CreateVpcFlowLogsConfig(ctx context.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/vpcFlowLogsConfigs", req.GetParent())
@@ -1359,6 +1374,11 @@ func (c *organizationVpcFlowLogsRESTClient) UpdateVpcFlowLogsConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetVpcFlowLogsConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetVpcFlowLogsConfig().GetName())
 
 	params := url.Values{}
@@ -1427,6 +1447,11 @@ func (c *organizationVpcFlowLogsRESTClient) DeleteVpcFlowLogsConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1486,6 +1511,11 @@ func (c *organizationVpcFlowLogsRESTClient) DeleteVpcFlowLogsConfig(ctx context.
 func (c *organizationVpcFlowLogsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1563,6 +1593,11 @@ func (c *organizationVpcFlowLogsRESTClient) ListLocations(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1632,6 +1667,11 @@ func (c *organizationVpcFlowLogsRESTClient) GetIamPolicy(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1697,6 +1737,11 @@ func (c *organizationVpcFlowLogsRESTClient) SetIamPolicy(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -1765,6 +1810,11 @@ func (c *organizationVpcFlowLogsRESTClient) TestIamPermissions(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1825,6 +1875,11 @@ func (c *organizationVpcFlowLogsRESTClient) CancelOperation(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1864,6 +1919,11 @@ func (c *organizationVpcFlowLogsRESTClient) DeleteOperation(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1901,6 +1961,11 @@ func (c *organizationVpcFlowLogsRESTClient) DeleteOperation(ctx context.Context,
 func (c *organizationVpcFlowLogsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1968,6 +2033,11 @@ func (c *organizationVpcFlowLogsRESTClient) ListOperations(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

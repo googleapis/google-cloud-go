@@ -919,6 +919,11 @@ func (c *cloudSchedulerRESTClient) ListJobs(ctx context.Context, req *schedulerp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/jobs", req.GetParent())
 
 		params := url.Values{}
@@ -984,6 +989,11 @@ func (c *cloudSchedulerRESTClient) GetJob(ctx context.Context, req *schedulerpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1043,6 +1053,11 @@ func (c *cloudSchedulerRESTClient) CreateJob(ctx context.Context, req *scheduler
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/jobs", req.GetParent())
@@ -1115,6 +1130,11 @@ func (c *cloudSchedulerRESTClient) UpdateJob(ctx context.Context, req *scheduler
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetJob().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetJob().GetName())
 
 	params := url.Values{}
@@ -1176,6 +1196,11 @@ func (c *cloudSchedulerRESTClient) DeleteJob(ctx context.Context, req *scheduler
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1228,6 +1253,11 @@ func (c *cloudSchedulerRESTClient) PauseJob(ctx context.Context, req *schedulerp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:pause", req.GetName())
@@ -1298,6 +1328,11 @@ func (c *cloudSchedulerRESTClient) ResumeJob(ctx context.Context, req *scheduler
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resume", req.GetName())
 
 	params := url.Values{}
@@ -1361,6 +1396,11 @@ func (c *cloudSchedulerRESTClient) RunJob(ctx context.Context, req *schedulerpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:run", req.GetName())
 
 	params := url.Values{}
@@ -1413,6 +1453,11 @@ func (c *cloudSchedulerRESTClient) RunJob(ctx context.Context, req *schedulerpb.
 func (c *cloudSchedulerRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1480,6 +1525,11 @@ func (c *cloudSchedulerRESTClient) ListLocations(ctx context.Context, req *locat
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())

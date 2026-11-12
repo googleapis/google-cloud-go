@@ -1674,6 +1674,11 @@ func (c *authProviderRESTClient) ListAuthProviders(ctx context.Context, req *age
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/authProviders", req.GetParent())
 
 		params := url.Values{}
@@ -1748,6 +1753,11 @@ func (c *authProviderRESTClient) GetAuthProvider(ctx context.Context, req *agent
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1807,6 +1817,11 @@ func (c *authProviderRESTClient) CreateAuthProvider(ctx context.Context, req *ag
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/authProviders", req.GetParent())
@@ -1874,6 +1889,11 @@ func (c *authProviderRESTClient) UpdateAuthProvider(ctx context.Context, req *ag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAuthProvider().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetAuthProvider().GetName())
 
 	params := url.Values{}
@@ -1938,6 +1958,11 @@ func (c *authProviderRESTClient) DeleteAuthProvider(ctx context.Context, req *ag
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1984,6 +2009,11 @@ func (c *authProviderRESTClient) UndeleteAuthProvider(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:undelete", req.GetName())
@@ -2051,6 +2081,11 @@ func (c *authProviderRESTClient) QueryAuthProviders(ctx context.Context, req *ag
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/authProviders:query", req.GetParent())
@@ -2132,6 +2167,11 @@ func (c *authProviderRESTClient) QueryWorkloads(ctx context.Context, req *agenti
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v:queryWorkloads", req.GetName())
 
 		params := url.Values{}
@@ -2210,6 +2250,11 @@ func (c *authProviderRESTClient) ListAuthorizations(ctx context.Context, req *ag
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/authorizations", req.GetParent())
 
 		params := url.Values{}
@@ -2281,6 +2326,11 @@ func (c *authProviderRESTClient) GetAuthorization(ctx context.Context, req *agen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -2333,6 +2383,11 @@ func (c *authProviderRESTClient) GetAuthorization(ctx context.Context, req *agen
 func (c *authProviderRESTClient) DeleteAuthorization(ctx context.Context, req *agentidentitypb.DeleteAuthorizationRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -2392,6 +2447,11 @@ func (c *authProviderRESTClient) ListAccessSummaries(ctx context.Context, req *a
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/accessSummaries", req.GetParent())
@@ -2465,6 +2525,11 @@ func (c *authProviderRESTClient) GetAccessSummary(ctx context.Context, req *agen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -2527,6 +2592,11 @@ func (c *authProviderRESTClient) RevokeAuthorization(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:revokeAuthorization", req.GetName())
 
 	params := url.Values{}
@@ -2585,6 +2655,11 @@ func (c *authProviderRESTClient) EnableAuthProvider(ctx context.Context, req *ag
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:enable", req.GetName())
@@ -2647,6 +2722,11 @@ func (c *authProviderRESTClient) DisableAuthProvider(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:disable", req.GetName())
 
 	params := url.Values{}
@@ -2699,6 +2779,11 @@ func (c *authProviderRESTClient) DisableAuthProvider(ctx context.Context, req *a
 func (c *authProviderRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -2783,6 +2868,11 @@ func (c *authProviderRESTClient) ListLocations(ctx context.Context, req *locatio
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2852,6 +2942,11 @@ func (c *authProviderRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2919,6 +3014,11 @@ func (c *authProviderRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2983,6 +3083,11 @@ func (c *authProviderRESTClient) TestIamPermissions(ctx context.Context, req *ia
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:testIamPermissions", req.GetResource())

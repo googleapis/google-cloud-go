@@ -1141,7 +1141,7 @@ var File_google_cloud_securitycenter_v1_finding_proto protoreflect.FileDescripto
 
 const file_google_cloud_securitycenter_v1_finding_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/securitycenter/v1/finding.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/securitycenter/v1/access.proto\x1a*google/cloud/securitycenter/v1/agent.proto\x1a2google/cloud/securitycenter/v1/agent_anomaly.proto\x1a2google/cloud/securitycenter/v1/agent_session.proto\x1a0google/cloud/securitycenter/v1/application.proto\x1a4google/cloud/securitycenter/v1/attack_exposure.proto\x1a=google/cloud/securitycenter/v1/backup_disaster_recovery.proto\x1a/google/cloud/securitycenter/v1/chokepoint.proto\x1a0google/cloud/securitycenter/v1/cloud_armor.proto\x1a;google/cloud/securitycenter/v1/cloud_dlp_data_profile.proto\x1a9google/cloud/securitycenter/v1/cloud_dlp_inspection.proto\x1a/google/cloud/securitycenter/v1/compliance.proto\x1a/google/cloud/securitycenter/v1/connection.proto\x1a4google/cloud/securitycenter/v1/contact_details.proto\x1a.google/cloud/securitycenter/v1/container.proto\x1a-google/cloud/securitycenter/v1/database.proto\x1a1google/cloud/securitycenter/v1/exfiltration.proto\x1a6google/cloud/securitycenter/v1/external_exposure.proto\x1a4google/cloud/securitycenter/v1/external_system.proto\x1a)google/cloud/securitycenter/v1/file.proto\x1a5google/cloud/securitycenter/v1/group_membership.proto\x1a0google/cloud/securitycenter/v1/iam_binding.proto\x1a.google/cloud/securitycenter/v1/indicator.proto\x1a3google/cloud/securitycenter/v1/kernel_rootkit.proto\x1a/google/cloud/securitycenter/v1/kubernetes.proto\x1a2google/cloud/securitycenter/v1/load_balancer.proto\x1a.google/cloud/securitycenter/v1/log_entry.proto\x1a1google/cloud/securitycenter/v1/mitre_attack.proto\x1a-google/cloud/securitycenter/v1/notebook.proto\x1a/google/cloud/securitycenter/v1/org_policy.proto\x1a,google/cloud/securitycenter/v1/process.proto\x1a3google/cloud/securitycenter/v1/security_marks.proto\x1a5google/cloud/securitycenter/v1/security_posture.proto\x1a6google/cloud/securitycenter/v1/toxic_combination.proto\x1a2google/cloud/securitycenter/v1/vulnerability.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb*\n" +
+	",google/cloud/securitycenter/v1/finding.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/securitycenter/v1/access.proto\x1a*google/cloud/securitycenter/v1/agent.proto\x1a2google/cloud/securitycenter/v1/agent_anomaly.proto\x1a2google/cloud/securitycenter/v1/agent_session.proto\x1a0google/cloud/securitycenter/v1/application.proto\x1a4google/cloud/securitycenter/v1/attack_exposure.proto\x1a=google/cloud/securitycenter/v1/backup_disaster_recovery.proto\x1a/google/cloud/securitycenter/v1/chokepoint.proto\x1a0google/cloud/securitycenter/v1/cloud_armor.proto\x1a;google/cloud/securitycenter/v1/cloud_dlp_data_profile.proto\x1a9google/cloud/securitycenter/v1/cloud_dlp_inspection.proto\x1a/google/cloud/securitycenter/v1/compliance.proto\x1a/google/cloud/securitycenter/v1/connection.proto\x1a4google/cloud/securitycenter/v1/contact_details.proto\x1a.google/cloud/securitycenter/v1/container.proto\x1a-google/cloud/securitycenter/v1/database.proto\x1a1google/cloud/securitycenter/v1/exfiltration.proto\x1a6google/cloud/securitycenter/v1/external_exposure.proto\x1a4google/cloud/securitycenter/v1/external_system.proto\x1a)google/cloud/securitycenter/v1/file.proto\x1a5google/cloud/securitycenter/v1/group_membership.proto\x1a0google/cloud/securitycenter/v1/iam_binding.proto\x1a.google/cloud/securitycenter/v1/indicator.proto\x1a3google/cloud/securitycenter/v1/kernel_rootkit.proto\x1a/google/cloud/securitycenter/v1/kubernetes.proto\x1a2google/cloud/securitycenter/v1/load_balancer.proto\x1a.google/cloud/securitycenter/v1/log_entry.proto\x1a1google/cloud/securitycenter/v1/mitre_attack.proto\x1a-google/cloud/securitycenter/v1/notebook.proto\x1a/google/cloud/securitycenter/v1/org_policy.proto\x1a,google/cloud/securitycenter/v1/process.proto\x1a3google/cloud/securitycenter/v1/security_marks.proto\x1a5google/cloud/securitycenter/v1/security_posture.proto\x1a6google/cloud/securitycenter/v1/toxic_combination.proto\x1a2google/cloud/securitycenter/v1/vulnerability.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe1*\n" +
 	"\aFinding\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
 	"\x06parent\x18\x02 \x01(\tR\x06parent\x12#\n" +
@@ -1149,8 +1149,8 @@ const file_google_cloud_securitycenter_v1_finding_proto_rawDesc = "" +
 	"\x05state\x18\x04 \x01(\x0e2-.google.cloud.securitycenter.v1.Finding.StateR\x05state\x12\x1a\n" +
 	"\bcategory\x18\x05 \x01(\tR\bcategory\x12!\n" +
 	"\fexternal_uri\x18\x06 \x01(\tR\vexternalUri\x12j\n" +
-	"\x11source_properties\x18\a \x03(\v2=.google.cloud.securitycenter.v1.Finding.SourcePropertiesEntryR\x10sourceProperties\x12Y\n" +
-	"\x0esecurity_marks\x18\b \x01(\v2-.google.cloud.securitycenter.v1.SecurityMarksB\x03\xe0A\x03R\rsecurityMarks\x129\n" +
+	"\x11source_properties\x18\a \x03(\v2=.google.cloud.securitycenter.v1.Finding.SourcePropertiesEntryR\x10sourceProperties\x12Z\n" +
+	"\x0esecurity_marks\x18\b \x01(\v2-.google.cloud.securitycenter.v1.SecurityMarksB\x04\xe2A\x01\x03R\rsecurityMarks\x129\n" +
 	"\n" +
 	"event_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\teventTime\x12;\n" +
 	"\vcreate_time\x18\n" +
@@ -1161,18 +1161,18 @@ const file_google_cloud_securitycenter_v1_finding_proto_rawDesc = "" +
 	"\x04mute\x18\x0f \x01(\x0e2,.google.cloud.securitycenter.v1.Finding.MuteR\x04mute\x12Y\n" +
 	"\rfinding_class\x18\x11 \x01(\x0e24.google.cloud.securitycenter.v1.Finding.FindingClassR\ffindingClass\x12G\n" +
 	"\tindicator\x18\x12 \x01(\v2).google.cloud.securitycenter.v1.IndicatorR\tindicator\x12S\n" +
-	"\rvulnerability\x18\x14 \x01(\v2-.google.cloud.securitycenter.v1.VulnerabilityR\rvulnerability\x12I\n" +
-	"\x10mute_update_time\x18\x15 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0emuteUpdateTime\x12l\n" +
-	"\x10external_systems\x18\x16 \x03(\v2<.google.cloud.securitycenter.v1.Finding.ExternalSystemsEntryB\x03\xe0A\x03R\x0fexternalSystems\x12N\n" +
+	"\rvulnerability\x18\x14 \x01(\v2-.google.cloud.securitycenter.v1.VulnerabilityR\rvulnerability\x12J\n" +
+	"\x10mute_update_time\x18\x15 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0emuteUpdateTime\x12m\n" +
+	"\x10external_systems\x18\x16 \x03(\v2<.google.cloud.securitycenter.v1.Finding.ExternalSystemsEntryB\x04\xe2A\x01\x03R\x0fexternalSystems\x12N\n" +
 	"\fmitre_attack\x18\x19 \x01(\v2+.google.cloud.securitycenter.v1.MitreAttackR\vmitreAttack\x12>\n" +
 	"\x06access\x18\x1a \x01(\v2&.google.cloud.securitycenter.v1.AccessR\x06access\x12L\n" +
 	"\vconnections\x18\x1f \x03(\v2*.google.cloud.securitycenter.v1.ConnectionR\vconnections\x12%\n" +
-	"\x0emute_initiator\x18\x1c \x01(\tR\rmuteInitiator\x12R\n" +
-	"\tmute_info\x18= \x01(\v20.google.cloud.securitycenter.v1.Finding.MuteInfoB\x03\xe0A\x03R\bmuteInfo\x12E\n" +
-	"\tprocesses\x18\x1e \x03(\v2'.google.cloud.securitycenter.v1.ProcessR\tprocesses\x12V\n" +
-	"\bcontacts\x18! \x03(\v25.google.cloud.securitycenter.v1.Finding.ContactsEntryB\x03\xe0A\x03R\bcontacts\x12L\n" +
-	"\vcompliances\x18\" \x03(\v2*.google.cloud.securitycenter.v1.ComplianceR\vcompliances\x123\n" +
-	"\x13parent_display_name\x18$ \x01(\tB\x03\xe0A\x03R\x11parentDisplayName\x12 \n" +
+	"\x0emute_initiator\x18\x1c \x01(\tR\rmuteInitiator\x12S\n" +
+	"\tmute_info\x18= \x01(\v20.google.cloud.securitycenter.v1.Finding.MuteInfoB\x04\xe2A\x01\x03R\bmuteInfo\x12E\n" +
+	"\tprocesses\x18\x1e \x03(\v2'.google.cloud.securitycenter.v1.ProcessR\tprocesses\x12W\n" +
+	"\bcontacts\x18! \x03(\v25.google.cloud.securitycenter.v1.Finding.ContactsEntryB\x04\xe2A\x01\x03R\bcontacts\x12L\n" +
+	"\vcompliances\x18\" \x03(\v2*.google.cloud.securitycenter.v1.ComplianceR\vcompliances\x124\n" +
+	"\x13parent_display_name\x18$ \x01(\tB\x04\xe2A\x01\x03R\x11parentDisplayName\x12 \n" +
 	"\vdescription\x18% \x01(\tR\vdescription\x12P\n" +
 	"\fexfiltration\x18& \x01(\v2,.google.cloud.securitycenter.v1.ExfiltrationR\fexfiltration\x12M\n" +
 	"\fiam_bindings\x18' \x03(\v2*.google.cloud.securitycenter.v1.IamBindingR\viamBindings\x12\x1d\n" +

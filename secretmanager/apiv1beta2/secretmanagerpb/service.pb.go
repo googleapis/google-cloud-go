@@ -1008,71 +1008,71 @@ var File_google_cloud_secretmanager_v1beta2_service_proto protoreflect.FileDescr
 
 const file_google_cloud_secretmanager_v1beta2_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/secretmanager/v1beta2/service.proto\x12\"google.cloud.secretmanager.v1beta2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/secretmanager/v1beta2/resources.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xbc\x01\n" +
-	"\x12ListSecretsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#secretmanager.googleapis.com/SecretR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"0google/cloud/secretmanager/v1beta2/service.proto\x12\"google.cloud.secretmanager.v1beta2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/secretmanager/v1beta2/resources.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc0\x01\n" +
+	"\x12ListSecretsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#secretmanager.googleapis.com/SecretR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa2\x01\n" +
 	"\x13ListSecretsResponse\x12D\n" +
 	"\asecrets\x18\x01 \x03(\v2*.google.cloud.secretmanager.v1beta2.SecretR\asecrets\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xc5\x01\n" +
-	"\x13CreateSecretRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#secretmanager.googleapis.com/SecretR\x06parent\x12 \n" +
-	"\tsecret_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bsecretId\x12G\n" +
-	"\x06secret\x18\x03 \x01(\v2*.google.cloud.secretmanager.v1beta2.SecretB\x03\xe0A\x02R\x06secret\"\xb0\x01\n" +
-	"\x17AddSecretVersionRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#secretmanager.googleapis.com/SecretR\x06parent\x12P\n" +
-	"\apayload\x18\x02 \x01(\v21.google.cloud.secretmanager.v1beta2.SecretPayloadB\x03\xe0A\x02R\apayload\"S\n" +
-	"\x10GetSecretRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#secretmanager.googleapis.com/SecretR\x04name\"\xc3\x01\n" +
-	"\x19ListSecretVersionsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#secretmanager.googleapis.com/SecretR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xc8\x01\n" +
+	"\x13CreateSecretRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#secretmanager.googleapis.com/SecretR\x06parent\x12!\n" +
+	"\tsecret_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bsecretId\x12H\n" +
+	"\x06secret\x18\x03 \x01(\v2*.google.cloud.secretmanager.v1beta2.SecretB\x04\xe2A\x01\x02R\x06secret\"\xb2\x01\n" +
+	"\x17AddSecretVersionRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#secretmanager.googleapis.com/SecretR\x06parent\x12Q\n" +
+	"\apayload\x18\x02 \x01(\v21.google.cloud.secretmanager.v1beta2.SecretPayloadB\x04\xe2A\x01\x02R\apayload\"T\n" +
+	"\x10GetSecretRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#secretmanager.googleapis.com/SecretR\x04name\"\xc7\x01\n" +
+	"\x19ListSecretVersionsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#secretmanager.googleapis.com/SecretR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xb2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xb2\x01\n" +
 	"\x1aListSecretVersionsResponse\x12M\n" +
 	"\bversions\x18\x01 \x03(\v21.google.cloud.secretmanager.v1beta2.SecretVersionR\bversions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"a\n" +
-	"\x17GetSecretVersionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x04name\"\xa0\x01\n" +
-	"\x13UpdateSecretRequest\x12G\n" +
-	"\x06secret\x18\x01 \x01(\v2*.google.cloud.secretmanager.v1beta2.SecretB\x03\xe0A\x02R\x06secret\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"d\n" +
-	"\x1aAccessSecretVersionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"b\n" +
+	"\x17GetSecretVersionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x04name\"\xa2\x01\n" +
+	"\x13UpdateSecretRequest\x12H\n" +
+	"\x06secret\x18\x01 \x01(\v2*.google.cloud.secretmanager.v1beta2.SecretB\x04\xe2A\x01\x02R\x06secret\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"e\n" +
+	"\x1aAccessSecretVersionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\x04name\"\xaf\x01\n" +
 	"\x1bAccessSecretVersionResponse\x12C\n" +
 	"\x04name\x18\x01 \x01(\tB/\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\x04name\x12K\n" +
-	"\apayload\x18\x02 \x01(\v21.google.cloud.secretmanager.v1beta2.SecretPayloadR\apayload\"o\n" +
-	"\x13DeleteSecretRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#secretmanager.googleapis.com/SecretR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"~\n" +
-	"\x1bDisableSecretVersionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"}\n" +
-	"\x1aEnableSecretVersionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"~\n" +
-	"\x1bDestroySecretVersionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag2\xf7\x1e\n" +
+	"\apayload\x18\x02 \x01(\v21.google.cloud.secretmanager.v1beta2.SecretPayloadR\apayload\"q\n" +
+	"\x13DeleteSecretRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#secretmanager.googleapis.com/SecretR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x80\x01\n" +
+	"\x1bDisableSecretVersionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x7f\n" +
+	"\x1aEnableSecretVersionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x80\x01\n" +
+	"\x1bDestroySecretVersionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag2\xf7\x1e\n" +
 	"\x14SecretManagerService\x12\xe9\x01\n" +
 	"\vListSecrets\x126.google.cloud.secretmanager.v1beta2.ListSecretsRequest\x1a7.google.cloud.secretmanager.v1beta2.ListSecretsResponse\"i\xdaA\x06parent\x82\xd3\xe4\x93\x02ZZ2\x120/v1beta2/{parent=projects/*/locations/*}/secrets\x12$/v1beta2/{parent=projects/*}/secrets\x12\x80\x02\n" +
 	"\fCreateSecret\x127.google.cloud.secretmanager.v1beta2.CreateSecretRequest\x1a*.google.cloud.secretmanager.v1beta2.Secret\"\x8a\x01\xdaA\x17parent,secret_id,secret\x82\xd3\xe4\x93\x02j:\x06secretZ::\x06secret\"0/v1beta2/{parent=projects/*/locations/*}/secrets\"$/v1beta2/{parent=projects/*}/secrets\x12\x96\x02\n" +

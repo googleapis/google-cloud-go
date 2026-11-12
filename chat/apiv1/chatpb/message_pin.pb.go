@@ -338,27 +338,27 @@ const file_google_chat_v1_message_pin_proto_rawDesc = "" +
 	"\n" +
 	" google/chat/v1/message_pin.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xcf\x01\n" +
 	"\n" +
-	"MessagePin\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\amessage\x18\x02 \x01(\tB&\xe0A\x05\xe0A\x02\xfaA\x1d\n" +
+	"MessagePin\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12?\n" +
+	"\amessage\x18\x02 \x01(\tB%\xe2A\x02\x05\x02\xfaA\x1d\n" +
 	"\x1bchat.googleapis.com/MessageR\amessage:f\xeaAc\n" +
 	"\x1echat.googleapis.com/MessagePin\x12(spaces/{space}/messagePins/{message_pin}*\vmessagePins2\n" +
-	"messagePin\"\x9e\x01\n" +
-	"\x16ListMessagePinsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1echat.googleapis.com/MessagePinR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"messagePin\"\xa1\x01\n" +
+	"\x16ListMessagePinsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1echat.googleapis.com/MessagePinR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x80\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x80\x01\n" +
 	"\x17ListMessagePinsResponse\x12=\n" +
 	"\fmessage_pins\x18\x01 \x03(\v2\x1a.google.chat.v1.MessagePinR\vmessagePins\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x96\x01\n" +
-	"\x17CreateMessagePinRequest\x129\n" +
-	"\x06parent\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19chat.googleapis.com/SpaceR\x06parent\x12@\n" +
-	"\vmessage_pin\x18\x02 \x01(\v2\x1a.google.chat.v1.MessagePinB\x03\xe0A\x02R\n" +
-	"messagePin\"U\n" +
-	"\x17DeleteMessagePinRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x01\n" +
+	"\x17CreateMessagePinRequest\x12:\n" +
+	"\x06parent\x18\x01 \x01(\tB\"\xe2A\x01\x02\xfaA\x1b\n" +
+	"\x19chat.googleapis.com/SpaceR\x06parent\x12A\n" +
+	"\vmessage_pin\x18\x02 \x01(\v2\x1a.google.chat.v1.MessagePinB\x04\xe2A\x01\x02R\n" +
+	"messagePin\"V\n" +
+	"\x17DeleteMessagePinRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1echat.googleapis.com/MessagePinR\x04nameB\xa8\x01\n" +
 	"\x12com.google.chat.v1B\x0fMessagePinProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 

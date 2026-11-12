@@ -1247,6 +1247,11 @@ func (c *documentsRESTClient) ListDocuments(ctx context.Context, req *dialogflow
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/documents", req.GetParent())
 
 		params := url.Values{}
@@ -1316,6 +1321,11 @@ func (c *documentsRESTClient) ListDocuments(ctx context.Context, req *dialogflow
 func (c *documentsRESTClient) GetDocument(ctx context.Context, req *dialogflowpb.GetDocumentRequest, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
@@ -1389,6 +1399,11 @@ func (c *documentsRESTClient) CreateDocument(ctx context.Context, req *dialogflo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/documents", req.GetParent())
@@ -1473,6 +1488,11 @@ func (c *documentsRESTClient) ImportDocuments(ctx context.Context, req *dialogfl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/documents:import", req.GetParent())
 
 	params := url.Values{}
@@ -1545,6 +1565,11 @@ func (c *documentsRESTClient) ImportDocuments(ctx context.Context, req *dialogfl
 func (c *documentsRESTClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
@@ -1625,6 +1650,11 @@ func (c *documentsRESTClient) UpdateDocument(ctx context.Context, req *dialogflo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDocument().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetDocument().GetName())
@@ -1719,6 +1749,11 @@ func (c *documentsRESTClient) ReloadDocument(ctx context.Context, req *dialogflo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:reload", req.GetName())
 
 	params := url.Values{}
@@ -1778,6 +1813,11 @@ func (c *documentsRESTClient) ReloadDocument(ctx context.Context, req *dialogflo
 func (c *documentsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
@@ -1862,6 +1902,11 @@ func (c *documentsRESTClient) ListLocations(ctx context.Context, req *locationpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1930,6 +1975,11 @@ func (c *documentsRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1967,6 +2017,11 @@ func (c *documentsRESTClient) CancelOperation(ctx context.Context, req *longrunn
 func (c *documentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
@@ -2034,6 +2089,11 @@ func (c *documentsRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())

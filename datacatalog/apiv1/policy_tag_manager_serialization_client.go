@@ -711,6 +711,11 @@ func (c *policyTagManagerSerializationRESTClient) ReplaceTaxonomy(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:replace", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -773,6 +778,11 @@ func (c *policyTagManagerSerializationRESTClient) ImportTaxonomies(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/taxonomies:import", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -825,6 +835,11 @@ func (c *policyTagManagerSerializationRESTClient) ImportTaxonomies(ctx context.C
 func (c *policyTagManagerSerializationRESTClient) ExportTaxonomies(ctx context.Context, req *datacatalogpb.ExportTaxonomiesRequest, opts ...gax.CallOption) (*datacatalogpb.ExportTaxonomiesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/taxonomies:export", req.GetParent())
@@ -888,6 +903,11 @@ func (c *policyTagManagerSerializationRESTClient) CancelOperation(ctx context.Co
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -922,6 +942,11 @@ func (c *policyTagManagerSerializationRESTClient) DeleteOperation(ctx context.Co
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -954,6 +979,11 @@ func (c *policyTagManagerSerializationRESTClient) DeleteOperation(ctx context.Co
 func (c *policyTagManagerSerializationRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1016,6 +1046,11 @@ func (c *policyTagManagerSerializationRESTClient) ListOperations(ctx context.Con
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

@@ -1309,9 +1309,9 @@ const file_google_cloud_bigquery_datatransfer_v1_transfer_proto_rawDesc = "" +
 	"\x13pubsub_subscription\x18\x01 \x01(\tR\x12pubsubSubscription\"/\n" +
 	"\bUserInfo\x12\x19\n" +
 	"\x05email\x18\x01 \x01(\tH\x00R\x05email\x88\x01\x01B\b\n" +
-	"\x06_email\"\xb6\v\n" +
-	"\x0eTransferConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x126\n" +
+	"\x06_email\"\xbd\v\n" +
+	"\x0eTransferConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x126\n" +
 	"\x16destination_dataset_id\x18\x02 \x01(\tH\x00R\x14destinationDatasetId\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12$\n" +
 	"\x0edata_source_id\x18\x05 \x01(\tR\fdataSourceId\x12/\n" +
@@ -1320,45 +1320,45 @@ const file_google_cloud_bigquery_datatransfer_v1_transfer_proto_rawDesc = "" +
 	"\x10schedule_options\x18\x18 \x01(\v26.google.cloud.bigquery.datatransfer.v1.ScheduleOptionsR\x0fscheduleOptions\x12h\n" +
 	"\x13schedule_options_v2\x18\x1f \x01(\v28.google.cloud.bigquery.datatransfer.v1.ScheduleOptionsV2R\x11scheduleOptionsV2\x127\n" +
 	"\x18data_refresh_window_days\x18\f \x01(\x05R\x15dataRefreshWindowDays\x12\x1a\n" +
-	"\bdisabled\x18\r \x01(\bR\bdisabled\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12C\n" +
-	"\rnext_run_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vnextRunTime\x12O\n" +
+	"\bdisabled\x18\r \x01(\bR\bdisabled\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12D\n" +
+	"\rnext_run_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vnextRunTime\x12P\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e24.google.cloud.bigquery.datatransfer.v1.TransferStateB\x03\xe0A\x03R\x05state\x12\x17\n" +
-	"\auser_id\x18\v \x01(\x03R\x06userId\x12*\n" +
-	"\x0edataset_region\x18\x0e \x01(\tB\x03\xe0A\x03R\rdatasetRegion\x12:\n" +
+	" \x01(\x0e24.google.cloud.bigquery.datatransfer.v1.TransferStateB\x04\xe2A\x01\x03R\x05state\x12\x17\n" +
+	"\auser_id\x18\v \x01(\x03R\x06userId\x12+\n" +
+	"\x0edataset_region\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\rdatasetRegion\x12:\n" +
 	"\x19notification_pubsub_topic\x18\x0f \x01(\tR\x17notificationPubsubTopic\x12d\n" +
-	"\x11email_preferences\x18\x12 \x01(\v27.google.cloud.bigquery.datatransfer.v1.EmailPreferencesR\x10emailPreferences\x12X\n" +
+	"\x11email_preferences\x18\x12 \x01(\v27.google.cloud.bigquery.datatransfer.v1.EmailPreferencesR\x10emailPreferences\x12Y\n" +
 	"\n" +
-	"owner_info\x18\x1b \x01(\v2/.google.cloud.bigquery.datatransfer.v1.UserInfoB\x03\xe0A\x03H\x01R\townerInfo\x88\x01\x01\x12y\n" +
-	"\x18encryption_configuration\x18\x1c \x01(\v2>.google.cloud.bigquery.datatransfer.v1.EncryptionConfigurationR\x17encryptionConfiguration\x12-\n" +
-	"\x05error\x18  \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error:\xb9\x01\xeaA\xb5\x01\n" +
+	"owner_info\x18\x1b \x01(\v2/.google.cloud.bigquery.datatransfer.v1.UserInfoB\x04\xe2A\x01\x03H\x01R\townerInfo\x88\x01\x01\x12y\n" +
+	"\x18encryption_configuration\x18\x1c \x01(\v2>.google.cloud.bigquery.datatransfer.v1.EncryptionConfigurationR\x17encryptionConfiguration\x12.\n" +
+	"\x05error\x18  \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error:\xb9\x01\xeaA\xb5\x01\n" +
 	"2bigquerydatatransfer.googleapis.com/TransferConfig\x124projects/{project}/transferConfigs/{transfer_config}\x12Iprojects/{project}/locations/{location}/transferConfigs/{transfer_config}B\r\n" +
 	"\vdestinationB\r\n" +
 	"\v_owner_info\"Y\n" +
 	"\x17EncryptionConfiguration\x12>\n" +
 	"\fkms_key_name\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueR\n" +
-	"kmsKeyName\"\xb9\b\n" +
-	"\vTransferRun\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12?\n" +
+	"kmsKeyName\"\xc3\b\n" +
+	"\vTransferRun\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12?\n" +
 	"\rschedule_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\fscheduleTime\x125\n" +
 	"\brun_time\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\arunTime\x125\n" +
-	"\ferror_status\x18\x15 \x01(\v2\x12.google.rpc.StatusR\verrorStatus\x12>\n" +
+	"\ferror_status\x18\x15 \x01(\v2\x12.google.rpc.StatusR\verrorStatus\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x124\n" +
-	"\x06params\x18\t \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x06params\x12;\n" +
-	"\x16destination_dataset_id\x18\x02 \x01(\tB\x03\xe0A\x03H\x00R\x14destinationDatasetId\x12)\n" +
-	"\x0edata_source_id\x18\a \x01(\tB\x03\xe0A\x03R\fdataSourceId\x12J\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x125\n" +
+	"\x06params\x18\t \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x06params\x12<\n" +
+	"\x16destination_dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03H\x00R\x14destinationDatasetId\x12*\n" +
+	"\x0edata_source_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\fdataSourceId\x12J\n" +
 	"\x05state\x18\b \x01(\x0e24.google.cloud.bigquery.datatransfer.v1.TransferStateR\x05state\x12\x17\n" +
-	"\auser_id\x18\v \x01(\x03R\x06userId\x12\x1f\n" +
-	"\bschedule\x18\f \x01(\tB\x03\xe0A\x03R\bschedule\x12?\n" +
-	"\x19notification_pubsub_topic\x18\x17 \x01(\tB\x03\xe0A\x03R\x17notificationPubsubTopic\x12i\n" +
-	"\x11email_preferences\x18\x19 \x01(\v27.google.cloud.bigquery.datatransfer.v1.EmailPreferencesB\x03\xe0A\x03R\x10emailPreferences:\xc4\x01\xeaA\xc0\x01\n" +
+	"\auser_id\x18\v \x01(\x03R\x06userId\x12 \n" +
+	"\bschedule\x18\f \x01(\tB\x04\xe2A\x01\x03R\bschedule\x12@\n" +
+	"\x19notification_pubsub_topic\x18\x17 \x01(\tB\x04\xe2A\x01\x03R\x17notificationPubsubTopic\x12j\n" +
+	"\x11email_preferences\x18\x19 \x01(\v27.google.cloud.bigquery.datatransfer.v1.EmailPreferencesB\x04\xe2A\x01\x03R\x10emailPreferences:\xc4\x01\xeaA\xc0\x01\n" +
 	"'bigquerydatatransfer.googleapis.com/Run\x12?projects/{project}/transferConfigs/{transfer_config}/runs/{run}\x12Tprojects/{project}/locations/{location}/transferConfigs/{transfer_config}/runs/{run}B\r\n" +
 	"\vdestination\"\xae\x02\n" +
 	"\x0fTransferMessage\x12=\n" +

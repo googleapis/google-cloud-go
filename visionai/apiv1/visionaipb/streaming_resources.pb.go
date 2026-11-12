@@ -661,15 +661,15 @@ const file_google_cloud_visionai_v1_streaming_resources_proto_rawDesc = "" +
 	"ingestTime\"M\n" +
 	"\x0eSeriesMetadata\x12;\n" +
 	"\x06series\x18\x01 \x01(\tB#\xfaA \n" +
-	"\x1evisionai.googleapis.com/SeriesR\x06series\"\xc6\x03\n" +
-	"\fPacketHeader\x12B\n" +
-	"\fcapture_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x04R\vcaptureTime\x12@\n" +
-	"\x04type\x18\x02 \x01(\v2$.google.cloud.visionai.v1.PacketTypeB\x06\xe0A\x04\xe0A\x05R\x04type\x128\n" +
-	"\bmetadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x04R\bmetadata\x12V\n" +
-	"\x0fserver_metadata\x18\x04 \x01(\v2(.google.cloud.visionai.v1.ServerMetadataB\x03\xe0A\x03R\x0eserverMetadata\x12Y\n" +
-	"\x0fseries_metadata\x18\x05 \x01(\v2(.google.cloud.visionai.v1.SeriesMetadataB\x06\xe0A\x04\xe0A\x05R\x0eseriesMetadata\x12\x19\n" +
-	"\x05flags\x18\x06 \x01(\x05B\x03\xe0A\x05R\x05flags\x12(\n" +
-	"\rtrace_context\x18\a \x01(\tB\x03\xe0A\x05R\ftraceContext\"b\n" +
+	"\x1evisionai.googleapis.com/SeriesR\x06series\"\xc9\x03\n" +
+	"\fPacketHeader\x12C\n" +
+	"\fcapture_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x04R\vcaptureTime\x12?\n" +
+	"\x04type\x18\x02 \x01(\v2$.google.cloud.visionai.v1.PacketTypeB\x05\xe2A\x02\x04\x05R\x04type\x129\n" +
+	"\bmetadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x04R\bmetadata\x12W\n" +
+	"\x0fserver_metadata\x18\x04 \x01(\v2(.google.cloud.visionai.v1.ServerMetadataB\x04\xe2A\x01\x03R\x0eserverMetadata\x12X\n" +
+	"\x0fseries_metadata\x18\x05 \x01(\v2(.google.cloud.visionai.v1.SeriesMetadataB\x05\xe2A\x02\x04\x05R\x0eseriesMetadata\x12\x1a\n" +
+	"\x05flags\x18\x06 \x01(\x05B\x04\xe2A\x01\x05R\x05flags\x12)\n" +
+	"\rtrace_context\x18\a \x01(\tB\x04\xe2A\x01\x05R\ftraceContext\"b\n" +
 	"\x06Packet\x12>\n" +
 	"\x06header\x18\x01 \x01(\v2&.google.cloud.visionai.v1.PacketHeaderR\x06header\x12\x18\n" +
 	"\apayload\x18\x02 \x01(\fR\apayloadB\xc7\x01\n" +

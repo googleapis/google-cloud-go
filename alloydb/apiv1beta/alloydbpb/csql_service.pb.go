@@ -140,13 +140,13 @@ var File_google_cloud_alloydb_v1beta_csql_service_proto protoreflect.FileDescrip
 
 const file_google_cloud_alloydb_v1beta_csql_service_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/alloydb/v1beta/csql_service.proto\x12\x1bgoogle.cloud.alloydb.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/alloydb/v1beta/csql_resources.proto\x1a+google/cloud/alloydb/v1beta/resources.proto\x1a)google/cloud/alloydb/v1beta/service.proto\x1a#google/longrunning/operations.proto\"\xc4\x02\n" +
+	".google/cloud/alloydb/v1beta/csql_service.proto\x12\x1bgoogle.cloud.alloydb.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/alloydb/v1beta/csql_resources.proto\x1a+google/cloud/alloydb/v1beta/resources.proto\x1a)google/cloud/alloydb/v1beta/service.proto\x1a#google/longrunning/operations.proto\"\xc7\x02\n" +
 	"\x1aRestoreFromCloudSQLRequest\x12s\n" +
-	"\x1acloudsql_backup_run_source\x18e \x01(\v24.google.cloud.alloydb.v1beta.CloudSQLBackupRunSourceH\x00R\x17cloudsqlBackupRunSource\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1ealloydb.googleapis.com/ClusterR\x06parent\x12\"\n" +
+	"\x1acloudsql_backup_run_source\x18e \x01(\v24.google.cloud.alloydb.v1beta.CloudSQLBackupRunSourceH\x00R\x17cloudsqlBackupRunSource\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1ealloydb.googleapis.com/ClusterR\x06parent\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tclusterId\x12C\n" +
-	"\acluster\x18\x03 \x01(\v2$.google.cloud.alloydb.v1beta.ClusterB\x03\xe0A\x02R\aclusterB\b\n" +
+	"cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12D\n" +
+	"\acluster\x18\x03 \x01(\v2$.google.cloud.alloydb.v1beta.ClusterB\x04\xe2A\x01\x02R\aclusterB\b\n" +
 	"\x06source2\xd3\x02\n" +
 	"\x10AlloyDBCSQLAdmin\x12\xf2\x01\n" +
 	"\x13RestoreFromCloudSQL\x127.google.cloud.alloydb.v1beta.RestoreFromCloudSQLRequest\x1a\x1d.google.longrunning.Operation\"\x82\x01\xcaA\x1c\n" +

@@ -1165,6 +1165,11 @@ func (c *intentsRESTClient) ListIntents(ctx context.Context, req *dialogflowpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/intents", req.GetParent())
 
 		params := url.Values{}
@@ -1234,6 +1239,11 @@ func (c *intentsRESTClient) ListIntents(ctx context.Context, req *dialogflowpb.L
 func (c *intentsRESTClient) GetIntent(ctx context.Context, req *dialogflowpb.GetIntentRequest, opts ...gax.CallOption) (*dialogflowpb.Intent, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1307,6 +1317,11 @@ func (c *intentsRESTClient) CreateIntent(ctx context.Context, req *dialogflowpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/intents", req.GetParent())
 
 	params := url.Values{}
@@ -1376,6 +1391,11 @@ func (c *intentsRESTClient) UpdateIntent(ctx context.Context, req *dialogflowpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntent().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntent().GetName())
@@ -1449,6 +1469,11 @@ func (c *intentsRESTClient) DeleteIntent(ctx context.Context, req *dialogflowpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1506,6 +1531,11 @@ func (c *intentsRESTClient) BatchUpdateIntents(ctx context.Context, req *dialogf
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/intents:batchUpdate", req.GetParent())
@@ -1589,6 +1619,11 @@ func (c *intentsRESTClient) BatchDeleteIntents(ctx context.Context, req *dialogf
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/intents:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -1648,6 +1683,11 @@ func (c *intentsRESTClient) BatchDeleteIntents(ctx context.Context, req *dialogf
 func (c *intentsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1732,6 +1772,11 @@ func (c *intentsRESTClient) ListLocations(ctx context.Context, req *locationpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1800,6 +1845,11 @@ func (c *intentsRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1837,6 +1887,11 @@ func (c *intentsRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 func (c *intentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1904,6 +1959,11 @@ func (c *intentsRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())

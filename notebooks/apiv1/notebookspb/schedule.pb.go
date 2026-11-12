@@ -256,21 +256,21 @@ var File_google_cloud_notebooks_v1_schedule_proto protoreflect.FileDescriptor
 
 const file_google_cloud_notebooks_v1_schedule_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/notebooks/v1/schedule.proto\x12\x19google.cloud.notebooks.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/notebooks/v1/execution.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\x06\n" +
-	"\bSchedule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12 \n" +
+	"(google/cloud/notebooks/v1/schedule.proto\x12\x19google.cloud.notebooks.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/notebooks/v1/execution.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8d\x06\n" +
+	"\bSchedule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12?\n" +
 	"\x05state\x18\x04 \x01(\x0e2).google.cloud.notebooks.v1.Schedule.StateR\x05state\x12#\n" +
 	"\rcron_schedule\x18\x05 \x01(\tR\fcronSchedule\x12\x1b\n" +
-	"\ttime_zone\x18\x06 \x01(\tR\btimeZone\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\ttime_zone\x18\x06 \x01(\tR\btimeZone\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12[\n" +
-	"\x12execution_template\x18\t \x01(\v2,.google.cloud.notebooks.v1.ExecutionTemplateR\x11executionTemplate\x12V\n" +
+	"\x12execution_template\x18\t \x01(\v2,.google.cloud.notebooks.v1.ExecutionTemplateR\x11executionTemplate\x12W\n" +
 	"\x11recent_executions\x18\n" +
-	" \x03(\v2$.google.cloud.notebooks.v1.ExecutionB\x03\xe0A\x03R\x10recentExecutions\"x\n" +
+	" \x03(\v2$.google.cloud.notebooks.v1.ExecutionB\x04\xe2A\x01\x03R\x10recentExecutions\"x\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\n" +

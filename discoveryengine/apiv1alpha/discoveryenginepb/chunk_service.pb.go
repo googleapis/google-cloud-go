@@ -243,12 +243,12 @@ var File_google_cloud_discoveryengine_v1alpha_chunk_service_proto protoreflect.F
 
 const file_google_cloud_discoveryengine_v1alpha_chunk_service_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/discoveryengine/v1alpha/chunk_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1alpha/chunk.proto\"S\n" +
-	"\x0fGetChunkRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$discoveryengine.googleapis.com/ChunkR\x04name\"\x98\x01\n" +
-	"\x11ListChunksRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"8google/cloud/discoveryengine/v1alpha/chunk_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1alpha/chunk.proto\"T\n" +
+	"\x0fGetChunkRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$discoveryengine.googleapis.com/ChunkR\x04name\"\x99\x01\n" +
+	"\x11ListChunksRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/DocumentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

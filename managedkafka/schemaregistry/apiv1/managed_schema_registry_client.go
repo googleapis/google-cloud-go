@@ -1792,6 +1792,11 @@ func (c *managedSchemaRegistryRESTClient) GetSchemaRegistry(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1844,6 +1849,11 @@ func (c *managedSchemaRegistryRESTClient) GetSchemaRegistry(ctx context.Context,
 func (c *managedSchemaRegistryRESTClient) ListSchemaRegistries(ctx context.Context, req *schemaregistrypb.ListSchemaRegistriesRequest, opts ...gax.CallOption) (*schemaregistrypb.ListSchemaRegistriesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/schemaRegistries", req.GetParent())
@@ -1906,6 +1916,11 @@ func (c *managedSchemaRegistryRESTClient) CreateSchemaRegistry(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/schemaRegistries", req.GetParent())
 
 	params := url.Values{}
@@ -1960,6 +1975,11 @@ func (c *managedSchemaRegistryRESTClient) DeleteSchemaRegistry(ctx context.Conte
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1997,6 +2017,11 @@ func (c *managedSchemaRegistryRESTClient) DeleteSchemaRegistry(ctx context.Conte
 func (c *managedSchemaRegistryRESTClient) GetContext(ctx context.Context, req *schemaregistrypb.GetContextRequest, opts ...gax.CallOption) (*schemaregistrypb.Context, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2053,6 +2078,11 @@ func (c *managedSchemaRegistryRESTClient) ListContexts(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/contexts", req.GetParent())
 
 	params := url.Values{}
@@ -2105,6 +2135,11 @@ func (c *managedSchemaRegistryRESTClient) ListContexts(ctx context.Context, req 
 func (c *managedSchemaRegistryRESTClient) GetSchema(ctx context.Context, req *schemaregistrypb.GetSchemaRequest, opts ...gax.CallOption) (*schemaregistrypb.Schema, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2165,6 +2200,11 @@ func (c *managedSchemaRegistryRESTClient) GetRawSchema(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/schema", req.GetName())
 
 	params := url.Values{}
@@ -2222,6 +2262,11 @@ func (c *managedSchemaRegistryRESTClient) GetRawSchema(ctx context.Context, req 
 func (c *managedSchemaRegistryRESTClient) ListSchemaVersions(ctx context.Context, req *schemaregistrypb.ListSchemaVersionsRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
@@ -2285,6 +2330,11 @@ func (c *managedSchemaRegistryRESTClient) ListSchemaTypes(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/schemas/types", req.GetParent())
 
 	params := url.Values{}
@@ -2338,6 +2388,11 @@ func (c *managedSchemaRegistryRESTClient) ListSchemaTypes(ctx context.Context, r
 func (c *managedSchemaRegistryRESTClient) ListSubjects(ctx context.Context, req *schemaregistrypb.ListSubjectsRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/subjects", req.GetParent())
@@ -2401,6 +2456,11 @@ func (c *managedSchemaRegistryRESTClient) ListSubjectsBySchemaId(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/subjects", req.GetParent())
 
 	params := url.Values{}
@@ -2460,6 +2520,11 @@ func (c *managedSchemaRegistryRESTClient) ListSubjectsBySchemaId(ctx context.Con
 func (c *managedSchemaRegistryRESTClient) DeleteSubject(ctx context.Context, req *schemaregistrypb.DeleteSubjectRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2525,6 +2590,11 @@ func (c *managedSchemaRegistryRESTClient) LookupVersion(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetParent())
 
 	params := url.Values{}
@@ -2577,6 +2647,11 @@ func (c *managedSchemaRegistryRESTClient) LookupVersion(ctx context.Context, req
 func (c *managedSchemaRegistryRESTClient) GetVersion(ctx context.Context, req *schemaregistrypb.GetVersionRequest, opts ...gax.CallOption) (*schemaregistrypb.SchemaVersion, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2637,6 +2712,11 @@ func (c *managedSchemaRegistryRESTClient) GetRawSchemaVersion(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/schema", req.GetName())
 
 	params := url.Values{}
@@ -2693,6 +2773,11 @@ func (c *managedSchemaRegistryRESTClient) GetRawSchemaVersion(ctx context.Contex
 func (c *managedSchemaRegistryRESTClient) ListVersions(ctx context.Context, req *schemaregistrypb.ListVersionsRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
@@ -2758,6 +2843,11 @@ func (c *managedSchemaRegistryRESTClient) CreateVersion(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
 
 	params := url.Values{}
@@ -2811,6 +2901,11 @@ func (c *managedSchemaRegistryRESTClient) CreateVersion(ctx context.Context, req
 func (c *managedSchemaRegistryRESTClient) DeleteVersion(ctx context.Context, req *schemaregistrypb.DeleteVersionRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2869,6 +2964,11 @@ func (c *managedSchemaRegistryRESTClient) DeleteVersion(ctx context.Context, req
 func (c *managedSchemaRegistryRESTClient) ListReferencedSchemas(ctx context.Context, req *schemaregistrypb.ListReferencedSchemasRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/referencedby", req.GetParent())
@@ -2932,6 +3032,11 @@ func (c *managedSchemaRegistryRESTClient) CheckCompatibility(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2984,6 +3089,11 @@ func (c *managedSchemaRegistryRESTClient) CheckCompatibility(ctx context.Context
 func (c *managedSchemaRegistryRESTClient) GetSchemaConfig(ctx context.Context, req *schemaregistrypb.GetSchemaConfigRequest, opts ...gax.CallOption) (*schemaregistrypb.SchemaConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3050,6 +3160,11 @@ func (c *managedSchemaRegistryRESTClient) UpdateSchemaConfig(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3104,6 +3219,11 @@ func (c *managedSchemaRegistryRESTClient) DeleteSchemaConfig(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3156,6 +3276,11 @@ func (c *managedSchemaRegistryRESTClient) DeleteSchemaConfig(ctx context.Context
 func (c *managedSchemaRegistryRESTClient) GetSchemaMode(ctx context.Context, req *schemaregistrypb.GetSchemaModeRequest, opts ...gax.CallOption) (*schemaregistrypb.SchemaMode, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3218,6 +3343,11 @@ func (c *managedSchemaRegistryRESTClient) UpdateSchemaMode(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3272,6 +3402,11 @@ func (c *managedSchemaRegistryRESTClient) DeleteSchemaMode(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3324,6 +3459,11 @@ func (c *managedSchemaRegistryRESTClient) DeleteSchemaMode(ctx context.Context, 
 func (c *managedSchemaRegistryRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3391,6 +3531,11 @@ func (c *managedSchemaRegistryRESTClient) ListLocations(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -3467,6 +3612,11 @@ func (c *managedSchemaRegistryRESTClient) CancelOperation(ctx context.Context, r
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3506,6 +3656,11 @@ func (c *managedSchemaRegistryRESTClient) DeleteOperation(ctx context.Context, r
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3543,6 +3698,11 @@ func (c *managedSchemaRegistryRESTClient) DeleteOperation(ctx context.Context, r
 func (c *managedSchemaRegistryRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3610,6 +3770,11 @@ func (c *managedSchemaRegistryRESTClient) ListOperations(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

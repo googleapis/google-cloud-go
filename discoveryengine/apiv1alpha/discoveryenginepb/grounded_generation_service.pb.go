@@ -362,9 +362,9 @@ const file_google_cloud_discoveryengine_v1alpha_grounded_generation_service_prot
 	"Fgoogle/cloud/discoveryengine/v1alpha/grounded_generation_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1alpha/grounding.proto\"_\n" +
 	"\x12CheckGroundingSpec\x122\n" +
 	"\x12citation_threshold\x18\x01 \x01(\x01H\x00R\x11citationThreshold\x88\x01\x01B\x15\n" +
-	"\x13_citation_threshold\"\xfe\x03\n" +
-	"\x15CheckGroundingRequest\x12a\n" +
-	"\x10grounding_config\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\x13_citation_threshold\"\xff\x03\n" +
+	"\x15CheckGroundingRequest\x12b\n" +
+	"\x10grounding_config\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".discoveryengine.googleapis.com/GroundingConfigR\x0fgroundingConfig\x12)\n" +
 	"\x10answer_candidate\x18\x02 \x01(\tR\x0fanswerCandidate\x12I\n" +
 	"\x05facts\x18\x03 \x03(\v23.google.cloud.discoveryengine.v1alpha.GroundingFactR\x05facts\x12_\n" +

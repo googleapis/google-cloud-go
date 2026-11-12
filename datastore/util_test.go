@@ -537,7 +537,7 @@ func (e *BadMultiPropEntity) Load(props []Property) error {
 func (e *BadMultiPropEntity) Save() ([]Property, error) {
 	// Write multiple properties with the same name "I".
 	var props []Property
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		props = append(props, Property{
 			Name:  "I",
 			Value: int64(i),
@@ -1866,12 +1866,12 @@ var testCases = []testCase{
 		"",
 	},
 	{
-		// Request/Bug: https://github.com/googleapis/google-cloud-go/issues/5026
-		// User expected this to work as it worked when the last field. (above test)
+		// The flatten option applies only to the field it is declared on.
+		// https://github.com/googleapis/google-cloud-go/issues/5026
 		"first field flattened",
 		&FirstFlattened{},
-		nil,
-		"flattening nested structs leads to a slice of slices: field \"IDs\"",
+		&FirstFlattened{},
+		"",
 		"",
 	},
 	{

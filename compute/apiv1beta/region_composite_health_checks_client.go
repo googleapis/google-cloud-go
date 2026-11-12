@@ -406,6 +406,11 @@ func (c *regionCompositeHealthChecksRESTClient) AggregatedList(ctx context.Conte
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/compositeHealthChecks", req.GetProject())
 
 		params := url.Values{}
@@ -492,6 +497,13 @@ func (c *regionCompositeHealthChecksRESTClient) Delete(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetCompositeHealthCheck(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/compositeHealthChecks/%v", req.GetProject(), req.GetRegion(), req.GetCompositeHealthCheck())
 
 	params := url.Values{}
@@ -556,6 +568,13 @@ func (c *regionCompositeHealthChecksRESTClient) Get(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetCompositeHealthCheck(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/compositeHealthChecks/%v", req.GetProject(), req.GetRegion(), req.GetCompositeHealthCheck())
 
 	// Build HTTP headers from client and context metadata.
@@ -604,6 +623,13 @@ func (c *regionCompositeHealthChecksRESTClient) Get(ctx context.Context, req *co
 func (c *regionCompositeHealthChecksRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthRegionCompositeHealthCheckRequest, opts ...gax.CallOption) (*computepb.CompositeHealthCheckHealth, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetCompositeHealthCheck(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/compositeHealthChecks/%v/getHealth", req.GetProject(), req.GetRegion(), req.GetCompositeHealthCheck())
@@ -661,6 +687,12 @@ func (c *regionCompositeHealthChecksRESTClient) Insert(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/compositeHealthChecks", req.GetProject(), req.GetRegion())
@@ -738,6 +770,12 @@ func (c *regionCompositeHealthChecksRESTClient) List(ctx context.Context, req *c
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/compositeHealthChecks", req.GetProject(), req.GetRegion())
@@ -823,6 +861,13 @@ func (c *regionCompositeHealthChecksRESTClient) Patch(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetCompositeHealthCheck(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/compositeHealthChecks/%v", req.GetProject(), req.GetRegion(), req.GetCompositeHealthCheck())
 
 	params := url.Values{}
@@ -892,6 +937,13 @@ func (c *regionCompositeHealthChecksRESTClient) TestIamPermissions(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/compositeHealthChecks/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

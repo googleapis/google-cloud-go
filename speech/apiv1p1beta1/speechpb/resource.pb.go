@@ -881,27 +881,27 @@ var File_google_cloud_speech_v1p1beta1_resource_proto protoreflect.FileDescripto
 
 const file_google_cloud_speech_v1p1beta1_resource_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/speech/v1p1beta1/resource.proto\x12\x1dgoogle.cloud.speech.v1p1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\b\n" +
+	",google/cloud/speech/v1p1beta1/resource.proto\x12\x1dgoogle.cloud.speech.v1p1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8d\b\n" +
 	"\vCustomClass\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
 	"\x0fcustom_class_id\x18\x02 \x01(\tR\rcustomClassId\x12J\n" +
-	"\x05items\x18\x03 \x03(\v24.google.cloud.speech.v1p1beta1.CustomClass.ClassItemR\x05items\x12K\n" +
-	"\fkms_key_name\x18\x06 \x01(\tB)\xe0A\x03\xfaA#\n" +
+	"\x05items\x18\x03 \x03(\v24.google.cloud.speech.v1p1beta1.CustomClass.ClassItemR\x05items\x12L\n" +
+	"\fkms_key_name\x18\x06 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12a\n" +
-	"\x14kms_key_version_name\x18\a \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\x12\x15\n" +
-	"\x03uid\x18\b \x01(\tB\x03\xe0A\x03R\x03uid\x12&\n" +
-	"\fdisplay_name\x18\t \x01(\tB\x03\xe0A\x03R\vdisplayName\x12K\n" +
+	"kmsKeyName\x12b\n" +
+	"\x14kms_key_version_name\x18\a \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\x12\x16\n" +
+	"\x03uid\x18\b \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12'\n" +
+	"\fdisplay_name\x18\t \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12L\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e20.google.cloud.speech.v1p1beta1.CustomClass.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12b\n" +
-	"\vannotations\x18\r \x03(\v2;.google.cloud.speech.v1p1beta1.CustomClass.AnnotationsEntryB\x03\xe0A\x03R\vannotations\x12\x17\n" +
-	"\x04etag\x18\x0e \x01(\tB\x03\xe0A\x03R\x04etag\x12%\n" +
-	"\vreconciling\x18\x0f \x01(\bB\x03\xe0A\x03R\vreconciling\x1a!\n" +
+	" \x01(\x0e20.google.cloud.speech.v1p1beta1.CustomClass.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12c\n" +
+	"\vannotations\x18\r \x03(\v2;.google.cloud.speech.v1p1beta1.CustomClass.AnnotationsEntryB\x04\xe2A\x01\x03R\vannotations\x12\x18\n" +
+	"\x04etag\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12&\n" +
+	"\vreconciling\x18\x0f \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x1a!\n" +
 	"\tClassItem\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
@@ -912,27 +912,27 @@ const file_google_cloud_speech_v1p1beta1_resource_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x02\x12\v\n" +
 	"\aDELETED\x10\x04:l\xeaAi\n" +
-	"!speech.googleapis.com/CustomClass\x12Dprojects/{project}/locations/{location}/customClasses/{custom_class}\"\xf6\a\n" +
+	"!speech.googleapis.com/CustomClass\x12Dprojects/{project}/locations/{location}/customClasses/{custom_class}\"\x80\b\n" +
 	"\tPhraseSet\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12I\n" +
 	"\aphrases\x18\x02 \x03(\v2/.google.cloud.speech.v1p1beta1.PhraseSet.PhraseR\aphrases\x12\x14\n" +
-	"\x05boost\x18\x04 \x01(\x02R\x05boost\x12K\n" +
-	"\fkms_key_name\x18\a \x01(\tB)\xe0A\x03\xfaA#\n" +
+	"\x05boost\x18\x04 \x01(\x02R\x05boost\x12L\n" +
+	"\fkms_key_name\x18\a \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12a\n" +
-	"\x14kms_key_version_name\x18\b \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\x12\x15\n" +
-	"\x03uid\x18\t \x01(\tB\x03\xe0A\x03R\x03uid\x12&\n" +
+	"kmsKeyName\x12b\n" +
+	"\x14kms_key_version_name\x18\b \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\x12\x16\n" +
+	"\x03uid\x18\t \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12'\n" +
 	"\fdisplay_name\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\vdisplayName\x12I\n" +
-	"\x05state\x18\v \x01(\x0e2..google.cloud.speech.v1p1beta1.PhraseSet.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vdelete_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12`\n" +
-	"\vannotations\x18\x0e \x03(\v29.google.cloud.speech.v1p1beta1.PhraseSet.AnnotationsEntryB\x03\xe0A\x03R\vannotations\x12\x17\n" +
-	"\x04etag\x18\x0f \x01(\tB\x03\xe0A\x03R\x04etag\x12%\n" +
-	"\vreconciling\x18\x10 \x01(\bB\x03\xe0A\x03R\vreconciling\x1a4\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12J\n" +
+	"\x05state\x18\v \x01(\x0e2..google.cloud.speech.v1p1beta1.PhraseSet.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vdelete_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12a\n" +
+	"\vannotations\x18\x0e \x03(\v29.google.cloud.speech.v1p1beta1.PhraseSet.AnnotationsEntryB\x04\xe2A\x01\x03R\vannotations\x12\x18\n" +
+	"\x04etag\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12&\n" +
+	"\vreconciling\x18\x10 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x1a4\n" +
 	"\x06Phrase\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12\x14\n" +
 	"\x05boost\x18\x02 \x01(\x02R\x05boost\x1a>\n" +

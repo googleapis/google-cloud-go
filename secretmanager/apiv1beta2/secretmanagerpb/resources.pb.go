@@ -1350,24 +1350,24 @@ var File_google_cloud_secretmanager_v1beta2_resources_proto protoreflect.FileDes
 
 const file_google_cloud_secretmanager_v1beta2_resources_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/secretmanager/v1beta2/resources.proto\x12\"google.cloud.secretmanager.v1beta2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\n" +
+	"2google/cloud/secretmanager/v1beta2/resources.proto\x12\"google.cloud.secretmanager.v1beta2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\n" +
 	"\n" +
-	"\x06Secret\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12Y\n" +
-	"\vreplication\x18\x02 \x01(\v2/.google.cloud.secretmanager.v1beta2.ReplicationB\x06\xe0A\x05\xe0A\x01R\vreplication\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x06Secret\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12X\n" +
+	"\vreplication\x18\x02 \x01(\v2/.google.cloud.secretmanager.v1beta2.ReplicationB\x05\xe2A\x02\x05\x01R\vreplication\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12N\n" +
-	"\x06labels\x18\x04 \x03(\v26.google.cloud.secretmanager.v1beta2.Secret.LabelsEntryR\x06labels\x12F\n" +
-	"\x06topics\x18\x05 \x03(\v2).google.cloud.secretmanager.v1beta2.TopicB\x03\xe0A\x01R\x06topics\x12B\n" +
-	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x00R\n" +
-	"expireTime\x122\n" +
-	"\x03ttl\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04H\x00R\x03ttl\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\x12M\n" +
-	"\brotation\x18\t \x01(\v2,.google.cloud.secretmanager.v1beta2.RotationB\x03\xe0A\x01R\brotation\x12l\n" +
-	"\x0fversion_aliases\x18\v \x03(\v2>.google.cloud.secretmanager.v1beta2.Secret.VersionAliasesEntryB\x03\xe0A\x01R\x0eversionAliases\x12b\n" +
-	"\vannotations\x18\r \x03(\v2;.google.cloud.secretmanager.v1beta2.Secret.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12N\n" +
-	"\x13version_destroy_ttl\x18\x0e \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x11versionDestroyTtl\x12\x82\x01\n" +
-	"\x1bcustomer_managed_encryption\x18\x0f \x01(\v2=.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionB\x03\xe0A\x01R\x19customerManagedEncryption\x1a9\n" +
+	"\x06labels\x18\x04 \x03(\v26.google.cloud.secretmanager.v1beta2.Secret.LabelsEntryR\x06labels\x12G\n" +
+	"\x06topics\x18\x05 \x03(\v2).google.cloud.secretmanager.v1beta2.TopicB\x04\xe2A\x01\x01R\x06topics\x12C\n" +
+	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\x00R\n" +
+	"expireTime\x123\n" +
+	"\x03ttl\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04H\x00R\x03ttl\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12N\n" +
+	"\brotation\x18\t \x01(\v2,.google.cloud.secretmanager.v1beta2.RotationB\x04\xe2A\x01\x01R\brotation\x12m\n" +
+	"\x0fversion_aliases\x18\v \x03(\v2>.google.cloud.secretmanager.v1beta2.Secret.VersionAliasesEntryB\x04\xe2A\x01\x01R\x0eversionAliases\x12c\n" +
+	"\vannotations\x18\r \x03(\v2;.google.cloud.secretmanager.v1beta2.Secret.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12O\n" +
+	"\x13version_destroy_ttl\x18\x0e \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x11versionDestroyTtl\x12\x83\x01\n" +
+	"\x1bcustomer_managed_encryption\x18\x0f \x01(\v2=.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionB\x04\xe2A\x01\x01R\x19customerManagedEncryption\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aA\n" +
@@ -1379,60 +1379,60 @@ const file_google_cloud_secretmanager_v1beta2_resources_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x99\x01\xeaA\x95\x01\n" +
 	"#secretmanager.googleapis.com/Secret\x12#projects/{project}/secrets/{secret}\x128projects/{project}/locations/{location}/secrets/{secret}*\asecrets2\x06secretB\f\n" +
 	"\n" +
-	"expiration\"\xe2\a\n" +
-	"\rSecretVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12B\n" +
-	"\fdestroy_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vdestroyTime\x12R\n" +
-	"\x05state\x18\x04 \x01(\x0e27.google.cloud.secretmanager.v1beta2.SecretVersion.StateB\x03\xe0A\x03R\x05state\x12d\n" +
-	"\x12replication_status\x18\x05 \x01(\v25.google.cloud.secretmanager.v1beta2.ReplicationStatusR\x11replicationStatus\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x03R\x04etag\x12N\n" +
-	"!client_specified_payload_checksum\x18\a \x01(\bB\x03\xe0A\x03R\x1eclientSpecifiedPayloadChecksum\x12U\n" +
-	"\x16scheduled_destroy_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14scheduledDestroyTime\x12\x88\x01\n" +
-	"\x1bcustomer_managed_encryption\x18\t \x01(\v2C.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionStatusB\x03\xe0A\x03R\x19customerManagedEncryption\"H\n" +
+	"expiration\"\xea\a\n" +
+	"\rSecretVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12C\n" +
+	"\fdestroy_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vdestroyTime\x12S\n" +
+	"\x05state\x18\x04 \x01(\x0e27.google.cloud.secretmanager.v1beta2.SecretVersion.StateB\x04\xe2A\x01\x03R\x05state\x12d\n" +
+	"\x12replication_status\x18\x05 \x01(\v25.google.cloud.secretmanager.v1beta2.ReplicationStatusR\x11replicationStatus\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12O\n" +
+	"!client_specified_payload_checksum\x18\a \x01(\bB\x04\xe2A\x01\x03R\x1eclientSpecifiedPayloadChecksum\x12V\n" +
+	"\x16scheduled_destroy_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14scheduledDestroyTime\x12\x89\x01\n" +
+	"\x1bcustomer_managed_encryption\x18\t \x01(\v2C.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionStatusB\x04\xe2A\x01\x03R\x19customerManagedEncryption\"H\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
 	"\bDISABLED\x10\x02\x12\r\n" +
 	"\tDESTROYED\x10\x03:\xe2\x01\xeaA\xde\x01\n" +
-	"*secretmanager.googleapis.com/SecretVersion\x12=projects/{project}/secrets/{secret}/versions/{secret_version}\x12Rprojects/{project}/locations/{location}/secrets/{secret}/versions/{secret_version}*\x0esecretVersions2\rsecretVersion\"\x8f\x05\n" +
+	"*secretmanager.googleapis.com/SecretVersion\x12=projects/{project}/secrets/{secret}/versions/{secret_version}\x12Rprojects/{project}/locations/{location}/secrets/{secret}/versions/{secret_version}*\x0esecretVersions2\rsecretVersion\"\x92\x05\n" +
 	"\vReplication\x12Y\n" +
 	"\tautomatic\x18\x01 \x01(\v29.google.cloud.secretmanager.v1beta2.Replication.AutomaticH\x00R\tautomatic\x12`\n" +
-	"\fuser_managed\x18\x02 \x01(\v2;.google.cloud.secretmanager.v1beta2.Replication.UserManagedH\x00R\vuserManaged\x1a\x90\x01\n" +
-	"\tAutomatic\x12\x82\x01\n" +
-	"\x1bcustomer_managed_encryption\x18\x01 \x01(\v2=.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionB\x03\xe0A\x01R\x19customerManagedEncryption\x1a\xa0\x02\n" +
-	"\vUserManaged\x12d\n" +
-	"\breplicas\x18\x01 \x03(\v2C.google.cloud.secretmanager.v1beta2.Replication.UserManaged.ReplicaB\x03\xe0A\x02R\breplicas\x1a\xaa\x01\n" +
+	"\fuser_managed\x18\x02 \x01(\v2;.google.cloud.secretmanager.v1beta2.Replication.UserManagedH\x00R\vuserManaged\x1a\x91\x01\n" +
+	"\tAutomatic\x12\x83\x01\n" +
+	"\x1bcustomer_managed_encryption\x18\x01 \x01(\v2=.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionB\x04\xe2A\x01\x01R\x19customerManagedEncryption\x1a\xa2\x02\n" +
+	"\vUserManaged\x12e\n" +
+	"\breplicas\x18\x01 \x03(\v2C.google.cloud.secretmanager.v1beta2.Replication.UserManaged.ReplicaB\x04\xe2A\x01\x02R\breplicas\x1a\xab\x01\n" +
 	"\aReplica\x12\x1a\n" +
-	"\blocation\x18\x01 \x01(\tR\blocation\x12\x82\x01\n" +
-	"\x1bcustomer_managed_encryption\x18\x02 \x01(\v2=.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionB\x03\xe0A\x01R\x19customerManagedEncryptionB\r\n" +
-	"\vreplication\"B\n" +
-	"\x19CustomerManagedEncryption\x12%\n" +
-	"\fkms_key_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"kmsKeyName\"\xe9\x05\n" +
+	"\blocation\x18\x01 \x01(\tR\blocation\x12\x83\x01\n" +
+	"\x1bcustomer_managed_encryption\x18\x02 \x01(\v2=.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionB\x04\xe2A\x01\x01R\x19customerManagedEncryptionB\r\n" +
+	"\vreplication\"C\n" +
+	"\x19CustomerManagedEncryption\x12&\n" +
+	"\fkms_key_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"kmsKeyName\"\xed\x05\n" +
 	"\x11ReplicationStatus\x12e\n" +
 	"\tautomatic\x18\x01 \x01(\v2E.google.cloud.secretmanager.v1beta2.ReplicationStatus.AutomaticStatusH\x00R\tautomatic\x12l\n" +
-	"\fuser_managed\x18\x02 \x01(\v2G.google.cloud.secretmanager.v1beta2.ReplicationStatus.UserManagedStatusH\x00R\vuserManaged\x1a\x9c\x01\n" +
-	"\x0fAutomaticStatus\x12\x88\x01\n" +
-	"\x1bcustomer_managed_encryption\x18\x01 \x01(\v2C.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionStatusB\x03\xe0A\x03R\x19customerManagedEncryption\x1a\xc9\x02\n" +
-	"\x11UserManagedStatus\x12v\n" +
-	"\breplicas\x18\x01 \x03(\v2U.google.cloud.secretmanager.v1beta2.ReplicationStatus.UserManagedStatus.ReplicaStatusB\x03\xe0A\x03R\breplicas\x1a\xbb\x01\n" +
-	"\rReplicaStatus\x12\x1f\n" +
-	"\blocation\x18\x01 \x01(\tB\x03\xe0A\x03R\blocation\x12\x88\x01\n" +
-	"\x1bcustomer_managed_encryption\x18\x02 \x01(\v2C.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionStatusB\x03\xe0A\x03R\x19customerManagedEncryptionB\x14\n" +
-	"\x12replication_status\"W\n" +
-	"\x1fCustomerManagedEncryptionStatus\x124\n" +
-	"\x14kms_key_version_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x11kmsKeyVersionName\"e\n" +
-	"\x05Topic\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name:C\xeaA@\n" +
-	"\x1bpubsub.googleapis.com/Topic\x12!projects/{project}/topics/{topic}\"\xa2\x01\n" +
-	"\bRotation\x12M\n" +
-	"\x12next_rotation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x10nextRotationTime\x12G\n" +
-	"\x0frotation_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04R\x0erotationPeriod\"^\n" +
+	"\fuser_managed\x18\x02 \x01(\v2G.google.cloud.secretmanager.v1beta2.ReplicationStatus.UserManagedStatusH\x00R\vuserManaged\x1a\x9d\x01\n" +
+	"\x0fAutomaticStatus\x12\x89\x01\n" +
+	"\x1bcustomer_managed_encryption\x18\x01 \x01(\v2C.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionStatusB\x04\xe2A\x01\x03R\x19customerManagedEncryption\x1a\xcc\x02\n" +
+	"\x11UserManagedStatus\x12w\n" +
+	"\breplicas\x18\x01 \x03(\v2U.google.cloud.secretmanager.v1beta2.ReplicationStatus.UserManagedStatus.ReplicaStatusB\x04\xe2A\x01\x03R\breplicas\x1a\xbd\x01\n" +
+	"\rReplicaStatus\x12 \n" +
+	"\blocation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12\x89\x01\n" +
+	"\x1bcustomer_managed_encryption\x18\x02 \x01(\v2C.google.cloud.secretmanager.v1beta2.CustomerManagedEncryptionStatusB\x04\xe2A\x01\x03R\x19customerManagedEncryptionB\x14\n" +
+	"\x12replication_status\"X\n" +
+	"\x1fCustomerManagedEncryptionStatus\x125\n" +
+	"\x14kms_key_version_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11kmsKeyVersionName\"f\n" +
+	"\x05Topic\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name:C\xeaA@\n" +
+	"\x1bpubsub.googleapis.com/Topic\x12!projects/{project}/topics/{topic}\"\xa4\x01\n" +
+	"\bRotation\x12N\n" +
+	"\x12next_rotation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x10nextRotationTime\x12H\n" +
+	"\x0frotation_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04R\x0erotationPeriod\"_\n" +
 	"\rSecretPayload\x12\x12\n" +
-	"\x04data\x18\x01 \x01(\fR\x04data\x12)\n" +
-	"\vdata_crc32c\x18\x02 \x01(\x03B\x03\xe0A\x01H\x00R\n" +
+	"\x04data\x18\x01 \x01(\fR\x04data\x12*\n" +
+	"\vdata_crc32c\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x00R\n" +
 	"dataCrc32c\x88\x01\x01B\x0e\n" +
 	"\f_data_crc32cB\x80\x02\n" +
 	"&com.google.cloud.secretmanager.v1beta2B\x0eResourcesProtoP\x01ZLcloud.google.com/go/secretmanager/apiv1beta2/secretmanagerpb;secretmanagerpb\xa2\x02\x03GSM\xaa\x02\"Google.Cloud.SecretManager.V1Beta2\xca\x02\"Google\\Cloud\\SecretManager\\V1beta2\xea\x02%Google::Cloud::SecretManager::V1beta2b\x06proto3"

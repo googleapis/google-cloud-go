@@ -569,21 +569,21 @@ var File_google_cloud_networksecurity_v1_security_profile_group_threatprevention
 
 const file_google_cloud_networksecurity_v1_security_profile_group_threatprevention_proto_rawDesc = "" +
 	"\n" +
-	"Mgoogle/cloud/networksecurity/v1/security_profile_group_threatprevention.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xcb\x02\n" +
-	"\x17ThreatPreventionProfile\x12e\n" +
-	"\x12severity_overrides\x18\x01 \x03(\v21.google.cloud.networksecurity.v1.SeverityOverrideB\x03\xe0A\x01R\x11severityOverrides\x12_\n" +
-	"\x10threat_overrides\x18\x02 \x03(\v2/.google.cloud.networksecurity.v1.ThreatOverrideB\x03\xe0A\x01R\x0fthreatOverrides\x12h\n" +
-	"\x13antivirus_overrides\x18\x04 \x03(\v22.google.cloud.networksecurity.v1.AntivirusOverrideB\x03\xe0A\x01R\x12antivirusOverrides\"\xaa\x01\n" +
-	"\x10SeverityOverride\x12J\n" +
-	"\bseverity\x18\x01 \x01(\x0e2).google.cloud.networksecurity.v1.SeverityB\x03\xe0A\x02R\bseverity\x12J\n" +
-	"\x06action\x18\x02 \x01(\x0e2-.google.cloud.networksecurity.v1.ThreatActionB\x03\xe0A\x02R\x06action\"\xc4\x01\n" +
-	"\x0eThreatOverride\x12 \n" +
-	"\tthreat_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bthreatId\x12D\n" +
-	"\x04type\x18\x02 \x01(\x0e2+.google.cloud.networksecurity.v1.ThreatTypeB\x03\xe0A\x03R\x04type\x12J\n" +
-	"\x06action\x18\x03 \x01(\x0e2-.google.cloud.networksecurity.v1.ThreatActionB\x03\xe0A\x02R\x06action\"\xab\x01\n" +
-	"\x11AntivirusOverride\x12J\n" +
-	"\bprotocol\x18\x01 \x01(\x0e2).google.cloud.networksecurity.v1.ProtocolB\x03\xe0A\x02R\bprotocol\x12J\n" +
-	"\x06action\x18\x02 \x01(\x0e2-.google.cloud.networksecurity.v1.ThreatActionB\x03\xe0A\x02R\x06action*d\n" +
+	"Mgoogle/cloud/networksecurity/v1/security_profile_group_threatprevention.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xce\x02\n" +
+	"\x17ThreatPreventionProfile\x12f\n" +
+	"\x12severity_overrides\x18\x01 \x03(\v21.google.cloud.networksecurity.v1.SeverityOverrideB\x04\xe2A\x01\x01R\x11severityOverrides\x12`\n" +
+	"\x10threat_overrides\x18\x02 \x03(\v2/.google.cloud.networksecurity.v1.ThreatOverrideB\x04\xe2A\x01\x01R\x0fthreatOverrides\x12i\n" +
+	"\x13antivirus_overrides\x18\x04 \x03(\v22.google.cloud.networksecurity.v1.AntivirusOverrideB\x04\xe2A\x01\x01R\x12antivirusOverrides\"\xac\x01\n" +
+	"\x10SeverityOverride\x12K\n" +
+	"\bseverity\x18\x01 \x01(\x0e2).google.cloud.networksecurity.v1.SeverityB\x04\xe2A\x01\x02R\bseverity\x12K\n" +
+	"\x06action\x18\x02 \x01(\x0e2-.google.cloud.networksecurity.v1.ThreatActionB\x04\xe2A\x01\x02R\x06action\"\xc7\x01\n" +
+	"\x0eThreatOverride\x12!\n" +
+	"\tthreat_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bthreatId\x12E\n" +
+	"\x04type\x18\x02 \x01(\x0e2+.google.cloud.networksecurity.v1.ThreatTypeB\x04\xe2A\x01\x03R\x04type\x12K\n" +
+	"\x06action\x18\x03 \x01(\x0e2-.google.cloud.networksecurity.v1.ThreatActionB\x04\xe2A\x01\x02R\x06action\"\xad\x01\n" +
+	"\x11AntivirusOverride\x12K\n" +
+	"\bprotocol\x18\x01 \x01(\x0e2).google.cloud.networksecurity.v1.ProtocolB\x04\xe2A\x01\x02R\bprotocol\x12K\n" +
+	"\x06action\x18\x02 \x01(\x0e2-.google.cloud.networksecurity.v1.ThreatActionB\x04\xe2A\x01\x02R\x06action*d\n" +
 	"\bSeverity\x12\x18\n" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rINFORMATIONAL\x10\x01\x12\a\n" +

@@ -541,15 +541,15 @@ var File_google_cloud_discoveryengine_v1beta_conversation_proto protoreflect.Fil
 
 const file_google_cloud_discoveryengine_v1beta_conversation_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/discoveryengine/v1beta/conversation.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\x06\n" +
-	"\fConversation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12M\n" +
+	"6google/cloud/discoveryengine/v1beta/conversation.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\x06\n" +
+	"\fConversation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12M\n" +
 	"\x05state\x18\x02 \x01(\x0e27.google.cloud.discoveryengine.v1beta.Conversation.StateR\x05state\x12$\n" +
 	"\x0euser_pseudo_id\x18\x03 \x01(\tR\fuserPseudoId\x12T\n" +
-	"\bmessages\x18\x04 \x03(\v28.google.cloud.discoveryengine.v1beta.ConversationMessageR\bmessages\x12>\n" +
+	"\bmessages\x18\x04 \x03(\v28.google.cloud.discoveryengine.v1beta.ConversationMessageR\bmessages\x12?\n" +
 	"\n" +
-	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\">\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\">\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01\x12\r\n" +
@@ -572,12 +572,12 @@ const file_google_cloud_discoveryengine_v1beta_conversation_proto_rawDesc = "" +
 	"\x0factive_document\x18\x02 \x01(\tR\x0eactiveDocument\"u\n" +
 	"\tTextInput\x12\x14\n" +
 	"\x05input\x18\x01 \x01(\tR\x05input\x12R\n" +
-	"\acontext\x18\x02 \x01(\v28.google.cloud.discoveryengine.v1beta.ConversationContextR\acontext\"\xf7\x01\n" +
+	"\acontext\x18\x02 \x01(\v28.google.cloud.discoveryengine.v1beta.ConversationContextR\acontext\"\xf8\x01\n" +
 	"\x13ConversationMessage\x12O\n" +
 	"\n" +
 	"user_input\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1beta.TextInputH\x00R\tuserInput\x12B\n" +
-	"\x05reply\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1beta.ReplyH\x00R\x05reply\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x05reply\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1beta.ReplyH\x00R\x05reply\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTimeB\t\n" +
 	"\amessageB\x98\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x11ConversationProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"

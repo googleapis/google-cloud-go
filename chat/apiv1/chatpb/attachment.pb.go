@@ -497,17 +497,17 @@ var File_google_chat_v1_attachment_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_attachment_proto_rawDesc = "" +
 	"\n" +
-	"\x1fgoogle/chat/v1/attachment.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe1\x04\n" +
+	"\x1fgoogle/chat/v1/attachment.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe9\x04\n" +
 	"\n" +
-	"Attachment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fcontent_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vcontentName\x12&\n" +
-	"\fcontent_type\x18\x03 \x01(\tB\x03\xe0A\x03R\vcontentType\x12X\n" +
-	"\x13attachment_data_ref\x18\x04 \x01(\v2!.google.chat.v1.AttachmentDataRefB\x03\xe0A\x01H\x00R\x11attachmentDataRef\x12I\n" +
-	"\x0edrive_data_ref\x18\a \x01(\v2\x1c.google.chat.v1.DriveDataRefB\x03\xe0A\x03H\x00R\fdriveDataRef\x12(\n" +
-	"\rthumbnail_uri\x18\x05 \x01(\tB\x03\xe0A\x03R\fthumbnailUri\x12&\n" +
-	"\fdownload_uri\x18\x06 \x01(\tB\x03\xe0A\x03R\vdownloadUri\x12>\n" +
-	"\x06source\x18\t \x01(\x0e2!.google.chat.v1.Attachment.SourceB\x03\xe0A\x03R\x06source\"F\n" +
+	"Attachment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fcontent_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vcontentName\x12'\n" +
+	"\fcontent_type\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vcontentType\x12Y\n" +
+	"\x13attachment_data_ref\x18\x04 \x01(\v2!.google.chat.v1.AttachmentDataRefB\x04\xe2A\x01\x01H\x00R\x11attachmentDataRef\x12J\n" +
+	"\x0edrive_data_ref\x18\a \x01(\v2\x1c.google.chat.v1.DriveDataRefB\x04\xe2A\x01\x03H\x00R\fdriveDataRef\x12)\n" +
+	"\rthumbnail_uri\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\fthumbnailUri\x12'\n" +
+	"\fdownload_uri\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vdownloadUri\x12?\n" +
+	"\x06source\x18\t \x01(\x0e2!.google.chat.v1.Attachment.SourceB\x04\xe2A\x01\x03R\x06source\"F\n" +
 	"\x06Source\x12\x16\n" +
 	"\x12SOURCE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -517,16 +517,16 @@ const file_google_chat_v1_attachment_proto_rawDesc = "" +
 	"\n" +
 	"\bdata_ref\"2\n" +
 	"\fDriveDataRef\x12\"\n" +
-	"\rdrive_file_id\x18\x02 \x01(\tR\vdriveFileId\"z\n" +
-	"\x11AttachmentDataRef\x12(\n" +
-	"\rresource_name\x18\x01 \x01(\tB\x03\xe0A\x01R\fresourceName\x12;\n" +
-	"\x17attachment_upload_token\x18\x02 \x01(\tB\x03\xe0A\x01R\x15attachmentUploadToken\"R\n" +
-	"\x14GetAttachmentRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1echat.googleapis.com/AttachmentR\x04name\"w\n" +
-	"\x17UploadAttachmentRequest\x12;\n" +
-	"\x06parent\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\x12\x1bchat.googleapis.com/MessageR\x06parent\x12\x1f\n" +
-	"\bfilename\x18\x04 \x01(\tB\x03\xe0A\x02R\bfilename\"m\n" +
+	"\rdrive_file_id\x18\x02 \x01(\tR\vdriveFileId\"|\n" +
+	"\x11AttachmentDataRef\x12)\n" +
+	"\rresource_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fresourceName\x12<\n" +
+	"\x17attachment_upload_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x15attachmentUploadToken\"S\n" +
+	"\x14GetAttachmentRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1echat.googleapis.com/AttachmentR\x04name\"y\n" +
+	"\x17UploadAttachmentRequest\x12<\n" +
+	"\x06parent\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\x12\x1bchat.googleapis.com/MessageR\x06parent\x12 \n" +
+	"\bfilename\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\bfilename\"m\n" +
 	"\x18UploadAttachmentResponse\x12Q\n" +
 	"\x13attachment_data_ref\x18\x01 \x01(\v2!.google.chat.v1.AttachmentDataRefR\x11attachmentDataRefB\xa8\x01\n" +
 	"\x12com.google.chat.v1B\x0fAttachmentProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"

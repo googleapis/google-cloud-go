@@ -376,20 +376,20 @@ var File_google_datastore_admin_v1_index_proto protoreflect.FileDescriptor
 
 const file_google_datastore_admin_v1_index_proto_rawDesc = "" +
 	"\n" +
-	"%google/datastore/admin/v1/index.proto\x12\x19google.datastore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xae\x05\n" +
-	"\x05Index\x12\"\n" +
+	"%google/datastore/admin/v1/index.proto\x12\x19google.datastore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xb6\x05\n" +
+	"\x05Index\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x03R\tprojectId\x12\x1e\n" +
-	"\bindex_id\x18\x03 \x01(\tB\x03\xe0A\x03R\aindexId\x12\x17\n" +
-	"\x04kind\x18\x04 \x01(\tB\x03\xe0A\x02R\x04kind\x12N\n" +
-	"\bancestor\x18\x05 \x01(\x0e2-.google.datastore.admin.v1.Index.AncestorModeB\x03\xe0A\x02R\bancestor\x12U\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tprojectId\x12\x1f\n" +
+	"\bindex_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\aindexId\x12\x18\n" +
+	"\x04kind\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x04kind\x12O\n" +
+	"\bancestor\x18\x05 \x01(\x0e2-.google.datastore.admin.v1.Index.AncestorModeB\x04\xe2A\x01\x02R\bancestor\x12V\n" +
 	"\n" +
-	"properties\x18\x06 \x03(\v20.google.datastore.admin.v1.Index.IndexedPropertyB\x03\xe0A\x02R\n" +
-	"properties\x12A\n" +
-	"\x05state\x18\a \x01(\x0e2&.google.datastore.admin.v1.Index.StateB\x03\xe0A\x03R\x05state\x1ay\n" +
-	"\x0fIndexedProperty\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12M\n" +
-	"\tdirection\x18\x02 \x01(\x0e2*.google.datastore.admin.v1.Index.DirectionB\x03\xe0A\x02R\tdirection\"J\n" +
+	"properties\x18\x06 \x03(\v20.google.datastore.admin.v1.Index.IndexedPropertyB\x04\xe2A\x01\x02R\n" +
+	"properties\x12B\n" +
+	"\x05state\x18\a \x01(\x0e2&.google.datastore.admin.v1.Index.StateB\x04\xe2A\x01\x03R\x05state\x1a{\n" +
+	"\x0fIndexedProperty\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12N\n" +
+	"\tdirection\x18\x02 \x01(\x0e2*.google.datastore.admin.v1.Index.DirectionB\x04\xe2A\x01\x02R\tdirection\"J\n" +
 	"\fAncestorMode\x12\x1d\n" +
 	"\x19ANCESTOR_MODE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\x11\n" +

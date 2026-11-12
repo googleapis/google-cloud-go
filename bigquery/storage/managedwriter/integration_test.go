@@ -51,11 +51,11 @@ var (
 
 // our test data has cardinality 5 for names, 3 for values
 var testSimpleData = []*testdata.SimpleMessageProto2{
-	{Name: proto.String("one"), Value: proto.Int64(1)},
-	{Name: proto.String("two"), Value: proto.Int64(2)},
-	{Name: proto.String("three"), Value: proto.Int64(3)},
-	{Name: proto.String("four"), Value: proto.Int64(1)},
-	{Name: proto.String("five"), Value: proto.Int64(2)},
+	{Name: new("one"), Value: proto.Int64(1)},
+	{Name: new("two"), Value: proto.Int64(2)},
+	{Name: new("three"), Value: proto.Int64(3)},
+	{Name: new("four"), Value: proto.Int64(1)},
+	{Name: new("five"), Value: proto.Int64(2)},
 }
 
 func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) (*Client, *bigquery.Client) {
@@ -668,27 +668,27 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	initialEmployees := []*testdata.ExampleEmployeeCDC{
 		{
 			Id:           proto.Int64(1),
-			Username:     proto.String("alice"),
-			GivenName:    proto.String("Alice CEO"),
+			Username:     new("alice"),
+			GivenName:    new("Alice CEO"),
 			Departments:  []string{"product", "support", "internal"},
 			Salary:       proto.Int64(1),
-			XCHANGE_TYPE: proto.String("INSERT"),
+			XCHANGE_TYPE: new("INSERT"),
 		},
 		{
 			Id:           proto.Int64(2),
-			Username:     proto.String("bob"),
-			GivenName:    proto.String("Bob Bobberson"),
+			Username:     new("bob"),
+			GivenName:    new("Bob Bobberson"),
 			Departments:  []string{"research"},
 			Salary:       proto.Int64(100000),
-			XCHANGE_TYPE: proto.String("INSERT"),
+			XCHANGE_TYPE: new("INSERT"),
 		},
 		{
 			Id:           proto.Int64(3),
-			Username:     proto.String("clarice"),
-			GivenName:    proto.String("Clarice Clearwater"),
+			Username:     new("clarice"),
+			GivenName:    new("Clarice Clearwater"),
 			Departments:  []string{"product"},
 			Salary:       proto.Int64(100001),
-			XCHANGE_TYPE: proto.String("INSERT"),
+			XCHANGE_TYPE: new("INSERT"),
 		},
 	}
 
@@ -726,7 +726,7 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	newBob := proto.CloneOf(initialEmployees[1])
 	newBob.Salary = proto.Int64(105000)
 	newBob.Departments = []string{"research", "product"}
-	newBob.XCHANGE_TYPE = proto.String("UPSERT")
+	newBob.XCHANGE_TYPE = new("UPSERT")
 	b, err := proto.Marshal(newBob)
 	if err != nil {
 		t.Fatalf("failed to marshal new bob: %v", err)
@@ -745,7 +745,7 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	// remote clarice via DELETE CDC
 	removeClarice := &testdata.ExampleEmployeeCDC{
 		Id:           proto.Int64(3),
-		XCHANGE_TYPE: proto.String("DELETE"),
+		XCHANGE_TYPE: new("DELETE"),
 	}
 	b, err = proto.Marshal(removeClarice)
 	if err != nil {
@@ -982,7 +982,7 @@ func testLargeInsertNoRetry(ctx context.Context, t *testing.T, mwClient *Client,
 	numRows := targetSize / len(b)
 	data = make([][]byte, numRows)
 
-	for i := 0; i < numRows; i++ {
+	for i := range numRows {
 		data[i] = b
 	}
 
@@ -1047,7 +1047,7 @@ func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Clien
 	numRows := targetSize / len(b)
 	data = make([][]byte, numRows)
 
-	for i := 0; i < numRows; i++ {
+	for i := range numRows {
 		data[i] = b
 	}
 
@@ -1279,9 +1279,9 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 	// ready evolved message and descriptor
 	m2 := &testdata.SimpleMessageEvolvedProto2{
-		Name:  proto.String("evolved"),
+		Name:  new("evolved"),
 		Value: proto.Int64(180),
-		Other: proto.String("hello evolution"),
+		Other: new("hello evolution"),
 	}
 	descriptorProto = protodesc.ToDescriptorProto(m2.ProtoReflect().Descriptor())
 	b, err := proto.Marshal(m2)
@@ -1302,10 +1302,9 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// Try to force connection errors from concurrent appends.
 	// We drop setting of offset to avoid commingling out-of-order append errors.
 	var wg sync.WaitGroup
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		id := i
-		wg.Add(1)
-		go func() {
+		wg.Go(func() {
 			res, err := ms.AppendRows(ctx, [][]byte{b})
 			if err != nil {
 				t.Errorf("failed concurrent append %d: %v", id, err)
@@ -1314,8 +1313,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 			if err != nil {
 				t.Errorf("error on concurrent append %d: %v", id, err)
 			}
-			wg.Done()
-		}()
+		})
 	}
 	wg.Wait()
 
@@ -1334,7 +1332,7 @@ func testDefaultValueHandling(ctx context.Context, t *testing.T, mwClient *Clien
 
 	m := &testdata.DefaultValuesPartialSchema{
 		// We only populate the id, as remaining fields are used to test default values.
-		Id: proto.String("someval"),
+		Id: new("someval"),
 	}
 	var data []byte
 	var err error
@@ -1467,7 +1465,7 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 					Value: []string{"top"},
 				},
 				RangeType: &testdata.RangeTypeTimestamp{
-					End: proto.Int64(time.Now().UnixNano()),
+					End: new(time.Now().UnixNano()),
 				},
 				JsonType: &jsonData,
 			}
@@ -1504,7 +1502,7 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 			schema := testdata.ExternalEnumMessageSchema
 			mesg := &testdata.ExternalEnumMessage{
 				MsgA: &testdata.EnumMsgA{
-					Foo: proto.String("foo"),
+					Foo: new("foo"),
 					Bar: testdata.ExtEnum_THING.Enum(),
 				},
 				MsgB: &testdata.EnumMsgB{
@@ -1587,7 +1585,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 			}(),
 			sampleRow: func() []byte {
 				msg := &testdata.SimpleMessageProto2{
-					Name:  proto.String("sample_name"),
+					Name:  new("sample_name"),
 					Value: proto.Int64(1001),
 				}
 				b, _ := proto.Marshal(msg)
@@ -1609,7 +1607,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 			sampleRow: func() []byte {
 				msg := &testdata.ValidationP2Optional{
 					Int64Field:  proto.Int64(69),
-					StringField: proto.String("validation_string"),
+					StringField: new("validation_string"),
 				}
 				b, _ := proto.Marshal(msg)
 				return b
@@ -1629,8 +1627,8 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 			}(),
 			sampleRow: func() []byte {
 				msg := &testdata.GithubArchiveMessageProto2{
-					Payload: proto.String("payload_string"),
-					Id:      proto.String("some_id"),
+					Payload: new("payload_string"),
+					Id:      new("some_id"),
 				}
 				b, _ := proto.Marshal(msg)
 				return b
@@ -1651,7 +1649,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 
 	var gotFirstPool *connectionPool
 	var results []*AppendResult
-	for i := 0; i < wantWrites; i++ {
+	for i := range wantWrites {
 		for k, testTable := range testTables {
 			// create a writer and send a single append
 			ms, err := mwClient.NewManagedStream(ctx,
@@ -1729,7 +1727,7 @@ func TestIntegration_MingledContexts(t *testing.T) {
 	contexts := make([]context.Context, numWriters)
 	cancels := make([]context.CancelFunc, numWriters)
 	writers := make([]*ManagedStream, numWriters)
-	for i := 0; i < numWriters; i++ {
+	for i := range numWriters {
 		contexts[i], cancels[i] = context.WithCancel(ctx)
 		ms, err := mwClient.NewManagedStream(contexts[i],
 			WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
@@ -1743,14 +1741,14 @@ func TestIntegration_MingledContexts(t *testing.T) {
 	}
 
 	sampleRow, err := proto.Marshal(&testdata.SimpleMessageProto2{
-		Name:  proto.String("datafield"),
+		Name:  new("datafield"),
 		Value: proto.Int64(1234),
 	})
 	if err != nil {
 		t.Fatalf("failed to generate sample row")
 	}
 
-	for i := 0; i < numWriters; i++ {
+	for i := range numWriters {
 		res, err := writers[i].AppendRows(contexts[i], [][]byte{sampleRow})
 		if err != nil {
 			t.Errorf("initial write on %d failed: %v", i, err)

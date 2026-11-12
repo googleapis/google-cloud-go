@@ -119,11 +119,11 @@ var File_google_identity_accesscontextmanager_v1_gcp_user_access_binding_proto p
 
 const file_google_identity_accesscontextmanager_v1_gcp_user_access_binding_proto_rawDesc = "" +
 	"\n" +
-	"Egoogle/identity/accesscontextmanager/v1/gcp_user_access_binding.proto\x12'google.identity.accesscontextmanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc1\x02\n" +
-	"\x14GcpUserAccessBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12#\n" +
-	"\tgroup_key\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\bgroupKey\x12\\\n" +
-	"\raccess_levels\x18\x03 \x03(\tB7\xe0A\x02\xfaA1\n" +
+	"Egoogle/identity/accesscontextmanager/v1/gcp_user_access_binding.proto\x12'google.identity.accesscontextmanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc2\x02\n" +
+	"\x14GcpUserAccessBinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\"\n" +
+	"\tgroup_key\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\bgroupKey\x12]\n" +
+	"\raccess_levels\x18\x03 \x03(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/accesscontextmanager.googleapis.com/AccessLevelR\faccessLevels:\x8c\x01\xeaA\x88\x01\n" +
 	"8accesscontextmanager.googleapis.com/GcpUserAccessBinding\x12Lorganizations/{organization}/gcpUserAccessBindings/{gcp_user_access_binding}B\xb0\x02\n" +
 	"+com.google.identity.accesscontextmanager.v1B\x19GcpUserAccessBindingProtoP\x01Z\\cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb;accesscontextmanagerpb\xa2\x02\x04GACM\xaa\x02'Google.Identity.AccessContextManager.V1\xca\x02'Google\\Identity\\AccessContextManager\\V1\xea\x02*Google::Identity::AccessContextManager::V1b\x06proto3"

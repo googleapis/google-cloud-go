@@ -795,51 +795,51 @@ var File_google_cloud_ces_v1beta_auth_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_auth_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/ces/v1beta/auth.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd1\x02\n" +
-	"\fApiKeyConfig\x12\x1e\n" +
-	"\bkey_name\x18\x01 \x01(\tB\x03\xe0A\x02R\akeyName\x12g\n" +
-	"\x16api_key_secret_version\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x13apiKeySecretVersion\x12e\n" +
-	"\x10request_location\x18\x03 \x01(\x0e25.google.cloud.ces.v1beta.ApiKeyConfig.RequestLocationB\x03\xe0A\x02R\x0frequestLocation\"Q\n" +
+	"\"google/cloud/ces/v1beta/auth.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd4\x02\n" +
+	"\fApiKeyConfig\x12\x1f\n" +
+	"\bkey_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\akeyName\x12h\n" +
+	"\x16api_key_secret_version\x18\x02 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x13apiKeySecretVersion\x12f\n" +
+	"\x10request_location\x18\x03 \x01(\x0e25.google.cloud.ces.v1beta.ApiKeyConfig.RequestLocationB\x04\xe2A\x01\x02R\x0frequestLocation\"Q\n" +
 	"\x0fRequestLocation\x12 \n" +
 	"\x1cREQUEST_LOCATION_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06HEADER\x10\x01\x12\x10\n" +
-	"\fQUERY_STRING\x10\x02\"\x8f\x03\n" +
-	"\vOAuthConfig\x12b\n" +
-	"\x10oauth_grant_type\x18\x01 \x01(\x0e23.google.cloud.ces.v1beta.OAuthConfig.OauthGrantTypeB\x03\xe0A\x02R\x0eoauthGrantType\x12 \n" +
-	"\tclient_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bclientId\x12f\n" +
-	"\x15client_secret_version\x18\x03 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x13clientSecretVersion\x12*\n" +
-	"\x0etoken_endpoint\x18\x04 \x01(\tB\x03\xe0A\x02R\rtokenEndpoint\x12\x1b\n" +
-	"\x06scopes\x18\x05 \x03(\tB\x03\xe0A\x01R\x06scopes\"I\n" +
+	"\fQUERY_STRING\x10\x02\"\x94\x03\n" +
+	"\vOAuthConfig\x12c\n" +
+	"\x10oauth_grant_type\x18\x01 \x01(\x0e23.google.cloud.ces.v1beta.OAuthConfig.OauthGrantTypeB\x04\xe2A\x01\x02R\x0eoauthGrantType\x12!\n" +
+	"\tclient_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12g\n" +
+	"\x15client_secret_version\x18\x03 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x13clientSecretVersion\x12+\n" +
+	"\x0etoken_endpoint\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\rtokenEndpoint\x12\x1c\n" +
+	"\x06scopes\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x06scopes\"I\n" +
 	"\x0eOauthGrantType\x12 \n" +
 	"\x1cOAUTH_GRANT_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11CLIENT_CREDENTIAL\x10\x01\"\x1f\n" +
-	"\x1dServiceAgentIdTokenAuthConfig\"e\n" +
-	"\x18ServiceAccountAuthConfig\x12,\n" +
-	"\x0fservice_account\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eserviceAccount\x12\x1b\n" +
-	"\x06scopes\x18\x02 \x03(\tB\x03\xe0A\x01R\x06scopes\".\n" +
-	"\x11BearerTokenConfig\x12\x19\n" +
-	"\x05token\x18\x01 \x01(\tB\x03\xe0A\x02R\x05token\"\xd0\x03\n" +
+	"\x1dServiceAgentIdTokenAuthConfig\"g\n" +
+	"\x18ServiceAccountAuthConfig\x12-\n" +
+	"\x0fservice_account\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eserviceAccount\x12\x1c\n" +
+	"\x06scopes\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x06scopes\"/\n" +
+	"\x11BearerTokenConfig\x12\x1a\n" +
+	"\x05token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05token\"\xd4\x03\n" +
 	"\x11EndUserAuthConfig\x12x\n" +
 	"\x17oauth2_auth_code_config\x18\x02 \x01(\v2?.google.cloud.ces.v1beta.EndUserAuthConfig.Oauth2AuthCodeConfigH\x00R\x14oauth2AuthCodeConfig\x12{\n" +
-	"\x18oauth2_jwt_bearer_config\x18\x03 \x01(\v2@.google.cloud.ces.v1beta.EndUserAuthConfig.Oauth2JwtBearerConfigH\x00R\x15oauth2JwtBearerConfig\x1a<\n" +
-	"\x14Oauth2AuthCodeConfig\x12$\n" +
-	"\voauth_token\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"oauthToken\x1aw\n" +
-	"\x15Oauth2JwtBearerConfig\x12\x1b\n" +
-	"\x06issuer\x18\x01 \x01(\tB\x03\xe0A\x02R\x06issuer\x12\x1d\n" +
-	"\asubject\x18\x02 \x01(\tB\x03\xe0A\x02R\asubject\x12\"\n" +
+	"\x18oauth2_jwt_bearer_config\x18\x03 \x01(\v2@.google.cloud.ces.v1beta.EndUserAuthConfig.Oauth2JwtBearerConfigH\x00R\x15oauth2JwtBearerConfig\x1a=\n" +
+	"\x14Oauth2AuthCodeConfig\x12%\n" +
+	"\voauth_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"oauthToken\x1az\n" +
+	"\x15Oauth2JwtBearerConfig\x12\x1c\n" +
+	"\x06issuer\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06issuer\x12\x1e\n" +
+	"\asubject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\asubject\x12#\n" +
 	"\n" +
-	"client_key\x18\x03 \x01(\tB\x03\xe0A\x02R\tclientKeyB\r\n" +
-	"\vauth_config\"\xad\x04\n" +
-	"\x11ApiAuthentication\x12R\n" +
-	"\x0eapi_key_config\x18\x01 \x01(\v2%.google.cloud.ces.v1beta.ApiKeyConfigB\x03\xe0A\x01H\x00R\fapiKeyConfig\x12N\n" +
-	"\foauth_config\x18\x02 \x01(\v2$.google.cloud.ces.v1beta.OAuthConfigB\x03\xe0A\x01H\x00R\voauthConfig\x12\x88\x01\n" +
-	"\"service_agent_id_token_auth_config\x18\x03 \x01(\v26.google.cloud.ces.v1beta.ServiceAgentIdTokenAuthConfigB\x03\xe0A\x01H\x00R\x1dserviceAgentIdTokenAuthConfig\x12w\n" +
-	"\x1bservice_account_auth_config\x18\x04 \x01(\v21.google.cloud.ces.v1beta.ServiceAccountAuthConfigB\x03\xe0A\x01H\x00R\x18serviceAccountAuthConfig\x12a\n" +
-	"\x13bearer_token_config\x18\x05 \x01(\v2*.google.cloud.ces.v1beta.BearerTokenConfigB\x03\xe0A\x01H\x00R\x11bearerTokenConfigB\r\n" +
+	"client_key\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tclientKeyB\r\n" +
+	"\vauth_config\"\xb2\x04\n" +
+	"\x11ApiAuthentication\x12S\n" +
+	"\x0eapi_key_config\x18\x01 \x01(\v2%.google.cloud.ces.v1beta.ApiKeyConfigB\x04\xe2A\x01\x01H\x00R\fapiKeyConfig\x12O\n" +
+	"\foauth_config\x18\x02 \x01(\v2$.google.cloud.ces.v1beta.OAuthConfigB\x04\xe2A\x01\x01H\x00R\voauthConfig\x12\x89\x01\n" +
+	"\"service_agent_id_token_auth_config\x18\x03 \x01(\v26.google.cloud.ces.v1beta.ServiceAgentIdTokenAuthConfigB\x04\xe2A\x01\x01H\x00R\x1dserviceAgentIdTokenAuthConfig\x12x\n" +
+	"\x1bservice_account_auth_config\x18\x04 \x01(\v21.google.cloud.ces.v1beta.ServiceAccountAuthConfigB\x04\xe2A\x01\x01H\x00R\x18serviceAccountAuthConfig\x12b\n" +
+	"\x13bearer_token_config\x18\x05 \x01(\v2*.google.cloud.ces.v1beta.BearerTokenConfigB\x04\xe2A\x01\x01H\x00R\x11bearerTokenConfigB\r\n" +
 	"\vauth_configB\xc7\x01\xeaAk\n" +
 	"*secretmanager.googleapis.com/SecretVersion\x12=projects/{project}/secrets/{secret}/versions/{secret_version}\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\tAuthProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"

@@ -2265,6 +2265,9 @@ func (c *storageControlGRPCClient) UpdateManagedFolder(ctx context.Context, req 
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateManagedFolder")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).UpdateManagedFolder[0:len((*c.CallOptions).UpdateManagedFolder):len((*c.CallOptions).UpdateManagedFolder)], opts...)
 	var resp *controlpb.ManagedFolder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2563,6 +2566,9 @@ func (c *storageControlGRPCClient) CreateRapidCache(ctx context.Context, req *co
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateRapidCache")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).CreateRapidCache[0:len((*c.CallOptions).CreateRapidCache):len((*c.CallOptions).CreateRapidCache)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2598,6 +2604,9 @@ func (c *storageControlGRPCClient) UpdateRapidCache(ctx context.Context, req *co
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateRapidCache")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).UpdateRapidCache[0:len((*c.CallOptions).UpdateRapidCache):len((*c.CallOptions).UpdateRapidCache)], opts...)
 	var resp *longrunningpb.Operation
@@ -2635,6 +2644,9 @@ func (c *storageControlGRPCClient) DisableRapidCache(ctx context.Context, req *c
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DisableRapidCache")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).DisableRapidCache[0:len((*c.CallOptions).DisableRapidCache):len((*c.CallOptions).DisableRapidCache)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2670,6 +2682,9 @@ func (c *storageControlGRPCClient) GetRapidCache(ctx context.Context, req *contr
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetRapidCache")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).GetRapidCache[0:len((*c.CallOptions).GetRapidCache):len((*c.CallOptions).GetRapidCache)], opts...)
 	var resp *controlpb.RapidCache
@@ -2771,6 +2786,9 @@ func (c *storageControlGRPCClient) UpdateProjectIntelligenceConfig(ctx context.C
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateProjectIntelligenceConfig")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).UpdateProjectIntelligenceConfig[0:len((*c.CallOptions).UpdateProjectIntelligenceConfig):len((*c.CallOptions).UpdateProjectIntelligenceConfig)], opts...)
 	var resp *controlpb.IntelligenceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2813,6 +2831,9 @@ func (c *storageControlGRPCClient) UpdateFolderIntelligenceConfig(ctx context.Co
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateFolderIntelligenceConfig")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).UpdateFolderIntelligenceConfig[0:len((*c.CallOptions).UpdateFolderIntelligenceConfig):len((*c.CallOptions).UpdateFolderIntelligenceConfig)], opts...)
 	var resp *controlpb.IntelligenceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2854,6 +2875,9 @@ func (c *storageControlGRPCClient) UpdateOrganizationIntelligenceConfig(ctx cont
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateOrganizationIntelligenceConfig")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).UpdateOrganizationIntelligenceConfig[0:len((*c.CallOptions).UpdateOrganizationIntelligenceConfig):len((*c.CallOptions).UpdateOrganizationIntelligenceConfig)], opts...)
 	var resp *controlpb.IntelligenceConfig
@@ -3206,6 +3230,11 @@ func (c *storageControlRESTClient) CreateFolder(ctx context.Context, req *contro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/folders", req.GetParent())
 
 	params := url.Values{}
@@ -3280,6 +3309,11 @@ func (c *storageControlRESTClient) DeleteFolder(ctx context.Context, req *contro
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3339,6 +3373,11 @@ func (c *storageControlRESTClient) GetFolder(ctx context.Context, req *controlpb
 	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -3425,6 +3464,11 @@ func (c *storageControlRESTClient) ListFolders(ctx context.Context, req *control
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/folders", req.GetParent())
@@ -3519,6 +3563,11 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
 
 	params := url.Values{}
@@ -3599,6 +3648,11 @@ func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:deleteRecursive", req.GetName())
 
 	params := url.Values{}
@@ -3670,6 +3724,11 @@ func (c *storageControlRESTClient) GetStorageLayout(ctx context.Context, req *co
 	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -4051,6 +4110,9 @@ func (c *storageControlRESTClient) ListManagedFolders(ctx context.Context, req *
 // UpdateManagedFolder updates a managed folder. Currently, this RPC only supports updating the
 // rapid_cache_config field.
 func (c *storageControlRESTClient) UpdateManagedFolder(ctx context.Context, req *controlpb.UpdateManagedFolderRequest, opts ...gax.CallOption) (*controlpb.ManagedFolder, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -4747,6 +4809,9 @@ func (c *storageControlRESTClient) ListAnywhereCaches(ctx context.Context, req *
 
 // CreateRapidCache creates a Rapid Cache instance.
 func (c *storageControlRESTClient) CreateRapidCache(ctx context.Context, req *controlpb.CreateRapidCacheRequest, opts ...gax.CallOption) (*CreateRapidCacheOperation, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -4859,6 +4924,9 @@ func (c *storageControlRESTClient) CreateRapidCache(ctx context.Context, req *co
 
 // UpdateRapidCache updates a Rapid Cache instance.
 func (c *storageControlRESTClient) UpdateRapidCache(ctx context.Context, req *controlpb.UpdateRapidCacheRequest, opts ...gax.CallOption) (*UpdateRapidCacheOperation, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -4977,6 +5045,9 @@ func (c *storageControlRESTClient) UpdateRapidCache(ctx context.Context, req *co
 
 // DisableRapidCache disables a Rapid Cache instance.
 func (c *storageControlRESTClient) DisableRapidCache(ctx context.Context, req *controlpb.DisableRapidCacheRequest, opts ...gax.CallOption) (*DisableRapidCacheOperation, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -5050,6 +5121,9 @@ func (c *storageControlRESTClient) DisableRapidCache(ctx context.Context, req *c
 
 // GetRapidCache gets a Rapid Cache instance.
 func (c *storageControlRESTClient) GetRapidCache(ctx context.Context, req *controlpb.GetRapidCacheRequest, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -5202,6 +5276,11 @@ func (c *storageControlRESTClient) GetProjectIntelligenceConfig(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5252,6 +5331,9 @@ func (c *storageControlRESTClient) GetProjectIntelligenceConfig(ctx context.Cont
 
 // UpdateProjectIntelligenceConfig updates the Project scoped singleton IntelligenceConfig resource.
 func (c *storageControlRESTClient) UpdateProjectIntelligenceConfig(ctx context.Context, req *controlpb.UpdateProjectIntelligenceConfigRequest, opts ...gax.CallOption) (*controlpb.IntelligenceConfig, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetIntelligenceConfig()
 	jsonReq, err := m.Marshal(body)
@@ -5261,6 +5343,11 @@ func (c *storageControlRESTClient) UpdateProjectIntelligenceConfig(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntelligenceConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntelligenceConfig().GetName())
@@ -5327,6 +5414,11 @@ func (c *storageControlRESTClient) GetFolderIntelligenceConfig(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5377,6 +5469,9 @@ func (c *storageControlRESTClient) GetFolderIntelligenceConfig(ctx context.Conte
 
 // UpdateFolderIntelligenceConfig updates the Folder scoped singleton IntelligenceConfig resource.
 func (c *storageControlRESTClient) UpdateFolderIntelligenceConfig(ctx context.Context, req *controlpb.UpdateFolderIntelligenceConfigRequest, opts ...gax.CallOption) (*controlpb.IntelligenceConfig, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetIntelligenceConfig()
 	jsonReq, err := m.Marshal(body)
@@ -5386,6 +5481,11 @@ func (c *storageControlRESTClient) UpdateFolderIntelligenceConfig(ctx context.Co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntelligenceConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntelligenceConfig().GetName())
@@ -5452,6 +5552,11 @@ func (c *storageControlRESTClient) GetOrganizationIntelligenceConfig(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5502,6 +5607,9 @@ func (c *storageControlRESTClient) GetOrganizationIntelligenceConfig(ctx context
 
 // UpdateOrganizationIntelligenceConfig updates the Organization scoped singleton IntelligenceConfig resource.
 func (c *storageControlRESTClient) UpdateOrganizationIntelligenceConfig(ctx context.Context, req *controlpb.UpdateOrganizationIntelligenceConfigRequest, opts ...gax.CallOption) (*controlpb.IntelligenceConfig, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetIntelligenceConfig()
 	jsonReq, err := m.Marshal(body)
@@ -5511,6 +5619,11 @@ func (c *storageControlRESTClient) UpdateOrganizationIntelligenceConfig(ctx cont
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntelligenceConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntelligenceConfig().GetName())
@@ -5813,6 +5926,11 @@ func (c *storageControlRESTClient) GetIntelligenceFinding(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5878,6 +5996,11 @@ func (c *storageControlRESTClient) ListIntelligenceFindings(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/intelligenceFindings", req.GetParent())
@@ -5962,6 +6085,11 @@ func (c *storageControlRESTClient) SummarizeIntelligenceFindings(ctx context.Con
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/intelligenceFindings:summarize", req.GetParent())
 
 		params := url.Values{}
@@ -6033,6 +6161,11 @@ func (c *storageControlRESTClient) GetIntelligenceFindingRevision(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -6098,6 +6231,11 @@ func (c *storageControlRESTClient) ListIntelligenceFindingRevisions(ctx context.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/revisions", req.GetParent())
@@ -6171,6 +6309,11 @@ func (c *storageControlRESTClient) ListIntelligenceFindingRevisions(ctx context.
 func (c *storageControlRESTClient) ViewObjectFullContext(ctx context.Context, req *controlpb.ViewObjectFullContextRequest, opts ...gax.CallOption) (*controlpb.ObjectFullContext, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:viewFullContext", req.GetName())

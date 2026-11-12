@@ -293,20 +293,20 @@ var File_google_ads_datamanager_v1_user_list_license_pricing_proto protoreflect.
 
 const file_google_ads_datamanager_v1_user_list_license_pricing_proto_rawDesc = "" +
 	"\n" +
-	"9google/ads/datamanager/v1/user_list_license_pricing.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa5\a\n" +
-	"\x16UserListLicensePricing\x12\"\n" +
+	"9google/ads/datamanager/v1/user_list_license_pricing.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xae\a\n" +
+	"\x16UserListLicensePricing\x12#\n" +
 	"\n" +
-	"pricing_id\x18\x01 \x01(\x03B\x03\xe0A\x03R\tpricingId\x12)\n" +
-	"\vcost_micros\x18\x02 \x01(\x03B\x03\xe0A\x01H\x00R\n" +
-	"costMicros\x88\x01\x01\x12-\n" +
-	"\rcurrency_code\x18\t \x01(\tB\x03\xe0A\x01H\x01R\fcurrencyCode\x88\x01\x01\x12>\n" +
+	"pricing_id\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\tpricingId\x12*\n" +
+	"\vcost_micros\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x00R\n" +
+	"costMicros\x88\x01\x01\x12.\n" +
+	"\rcurrency_code\x18\t \x01(\tB\x04\xe2A\x01\x01H\x01R\fcurrencyCode\x88\x01\x01\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime\x12*\n" +
-	"\x0epricing_active\x18\x05 \x01(\bB\x03\xe0A\x03R\rpricingActive\x12\x8a\x01\n" +
-	"\x14buyer_approval_state\x18\x06 \x01(\x0e2S.google.ads.datamanager.v1.UserListLicensePricing.UserListPricingBuyerApprovalStateB\x03\xe0A\x03R\x12buyerApprovalState\x12p\n" +
-	"\tcost_type\x18\a \x01(\x0e2I.google.ads.datamanager.v1.UserListLicensePricing.UserListPricingCostTypeB\x03\xe0A\x05H\x02R\bcostType\x88\x01\x01\x120\n" +
-	"\x0fmax_cost_micros\x18\b \x01(\x03B\x03\xe0A\x01H\x03R\rmaxCostMicros\x88\x01\x01\"\x84\x01\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\aendTime\x12+\n" +
+	"\x0epricing_active\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\rpricingActive\x12\x8b\x01\n" +
+	"\x14buyer_approval_state\x18\x06 \x01(\x0e2S.google.ads.datamanager.v1.UserListLicensePricing.UserListPricingBuyerApprovalStateB\x04\xe2A\x01\x03R\x12buyerApprovalState\x12q\n" +
+	"\tcost_type\x18\a \x01(\x0e2I.google.ads.datamanager.v1.UserListLicensePricing.UserListPricingCostTypeB\x04\xe2A\x01\x05H\x02R\bcostType\x88\x01\x01\x121\n" +
+	"\x0fmax_cost_micros\x18\b \x01(\x03B\x04\xe2A\x01\x01H\x03R\rmaxCostMicros\x88\x01\x01\"\x84\x01\n" +
 	"!UserListPricingBuyerApprovalState\x126\n" +
 	"2USER_LIST_PRICING_BUYER_APPROVAL_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\f\n" +

@@ -897,6 +897,12 @@ func (c *jobRESTClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJob
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetJobId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/jobs/%v/cancel", req.GetProjectId(), req.GetJobId())
 
 	params := url.Values{}
@@ -957,6 +963,12 @@ func (c *jobRESTClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJob
 func (c *jobRESTClient) GetJob(ctx context.Context, req *bigquerypb.GetJobRequest, opts ...gax.CallOption) (*bigquerypb.Job, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetJobId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/jobs/%v", req.GetProjectId(), req.GetJobId())
@@ -1045,6 +1057,11 @@ func (c *jobRESTClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJob
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/jobs", req.GetProjectId())
 
 	// Build HTTP headers from client and context metadata.
@@ -1095,6 +1112,12 @@ func (c *jobRESTClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJob
 func (c *jobRESTClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJobRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetJobId(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/jobs/%v/delete", req.GetProjectId(), req.GetJobId())
@@ -1164,6 +1187,11 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRe
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/jobs", req.GetProjectId())
@@ -1273,6 +1301,12 @@ func (c *jobRESTClient) GetQueryResults(ctx context.Context, req *bigquerypb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetJobId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/queries/%v", req.GetProjectId(), req.GetJobId())
 
 	params := url.Values{}
@@ -1372,6 +1406,11 @@ func (c *jobRESTClient) Query(ctx context.Context, req *bigquerypb.PostQueryRequ
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/queries", req.GetProjectId())

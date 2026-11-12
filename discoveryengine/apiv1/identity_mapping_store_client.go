@@ -962,6 +962,11 @@ func (c *identityMappingStoreRESTClient) CreateIdentityMappingStore(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/identityMappingStores", req.GetParent())
 
 	params := url.Values{}
@@ -1023,6 +1028,11 @@ func (c *identityMappingStoreRESTClient) GetIdentityMappingStore(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1075,6 +1085,11 @@ func (c *identityMappingStoreRESTClient) GetIdentityMappingStore(ctx context.Con
 func (c *identityMappingStoreRESTClient) DeleteIdentityMappingStore(ctx context.Context, req *discoveryenginepb.DeleteIdentityMappingStoreRequest, opts ...gax.CallOption) (*DeleteIdentityMappingStoreOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1144,6 +1159,11 @@ func (c *identityMappingStoreRESTClient) ImportIdentityMappings(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIdentityMappingStore(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:importIdentityMappings", req.GetIdentityMappingStore())
 
 	params := url.Values{}
@@ -1210,6 +1230,11 @@ func (c *identityMappingStoreRESTClient) PurgeIdentityMappings(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIdentityMappingStore(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:purgeIdentityMappings", req.GetIdentityMappingStore())
@@ -1284,6 +1309,11 @@ func (c *identityMappingStoreRESTClient) ListIdentityMappings(ctx context.Contex
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetIdentityMappingStore(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listIdentityMappings", req.GetIdentityMappingStore())
@@ -1364,6 +1394,11 @@ func (c *identityMappingStoreRESTClient) ListIdentityMappingStores(ctx context.C
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/identityMappingStores", req.GetParent())
 
 		params := url.Values{}
@@ -1435,6 +1470,11 @@ func (c *identityMappingStoreRESTClient) CancelOperation(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1472,6 +1512,11 @@ func (c *identityMappingStoreRESTClient) CancelOperation(ctx context.Context, re
 func (c *identityMappingStoreRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1539,6 +1584,11 @@ func (c *identityMappingStoreRESTClient) ListOperations(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

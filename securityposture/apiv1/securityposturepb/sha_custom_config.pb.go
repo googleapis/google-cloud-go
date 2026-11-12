@@ -356,23 +356,23 @@ var File_google_cloud_securityposture_v1_sha_custom_config_proto protoreflect.Fi
 
 const file_google_cloud_securityposture_v1_sha_custom_config_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/securityposture/v1/sha_custom_config.proto\x12\x1fgoogle.cloud.securityposture.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16google/type/expr.proto\"\xcb\x06\n" +
-	"\fCustomConfig\x124\n" +
-	"\tpredicate\x18\x01 \x01(\v2\x11.google.type.ExprB\x03\xe0A\x02R\tpredicate\x12h\n" +
-	"\rcustom_output\x18\x02 \x01(\v2>.google.cloud.securityposture.v1.CustomConfig.CustomOutputSpecB\x03\xe0A\x01R\fcustomOutput\x12p\n" +
-	"\x11resource_selector\x18\x03 \x01(\v2>.google.cloud.securityposture.v1.CustomConfig.ResourceSelectorB\x03\xe0A\x02R\x10resourceSelector\x12W\n" +
-	"\bseverity\x18\x04 \x01(\x0e26.google.cloud.securityposture.v1.CustomConfig.SeverityB\x03\xe0A\x02R\bseverity\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12+\n" +
-	"\x0erecommendation\x18\x06 \x01(\tB\x03\xe0A\x01R\x0erecommendation\x1a\xe8\x01\n" +
-	"\x10CustomOutputSpec\x12l\n" +
+	"7google/cloud/securityposture/v1/sha_custom_config.proto\x12\x1fgoogle.cloud.securityposture.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16google/type/expr.proto\"\xd5\x06\n" +
+	"\fCustomConfig\x125\n" +
+	"\tpredicate\x18\x01 \x01(\v2\x11.google.type.ExprB\x04\xe2A\x01\x02R\tpredicate\x12i\n" +
+	"\rcustom_output\x18\x02 \x01(\v2>.google.cloud.securityposture.v1.CustomConfig.CustomOutputSpecB\x04\xe2A\x01\x01R\fcustomOutput\x12q\n" +
+	"\x11resource_selector\x18\x03 \x01(\v2>.google.cloud.securityposture.v1.CustomConfig.ResourceSelectorB\x04\xe2A\x01\x02R\x10resourceSelector\x12X\n" +
+	"\bseverity\x18\x04 \x01(\x0e26.google.cloud.securityposture.v1.CustomConfig.SeverityB\x04\xe2A\x01\x02R\bseverity\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12,\n" +
+	"\x0erecommendation\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0erecommendation\x1a\xeb\x01\n" +
+	"\x10CustomOutputSpec\x12m\n" +
 	"\n" +
-	"properties\x18\x01 \x03(\v2G.google.cloud.securityposture.v1.CustomConfig.CustomOutputSpec.PropertyB\x03\xe0A\x01R\n" +
-	"properties\x1af\n" +
-	"\bProperty\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12A\n" +
-	"\x10value_expression\x18\x02 \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\x0fvalueExpression\x1a>\n" +
-	"\x10ResourceSelector\x12*\n" +
-	"\x0eresource_types\x18\x01 \x03(\tB\x03\xe0A\x02R\rresourceTypes\"Q\n" +
+	"properties\x18\x01 \x03(\v2G.google.cloud.securityposture.v1.CustomConfig.CustomOutputSpec.PropertyB\x04\xe2A\x01\x01R\n" +
+	"properties\x1ah\n" +
+	"\bProperty\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12B\n" +
+	"\x10value_expression\x18\x02 \x01(\v2\x11.google.type.ExprB\x04\xe2A\x01\x01R\x0fvalueExpression\x1a?\n" +
+	"\x10ResourceSelector\x12+\n" +
+	"\x0eresource_types\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\rresourceTypes\"Q\n" +
 	"\bSeverity\x12\x18\n" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCRITICAL\x10\x01\x12\b\n" +

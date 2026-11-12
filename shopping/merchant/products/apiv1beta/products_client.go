@@ -521,6 +521,11 @@ func (c *restClient) GetProduct(ctx context.Context, req *productspb.GetProductR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/products/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -591,6 +596,11 @@ func (c *restClient) ListProducts(ctx context.Context, req *productspb.ListProdu
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/products/v1beta/%v/products", req.GetParent())

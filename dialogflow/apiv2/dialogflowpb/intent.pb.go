@@ -3837,57 +3837,57 @@ var File_google_cloud_dialogflow_v2_intent_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_intent_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/dialogflow/v2/intent.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dialogflow/v2/context.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xbaC\n" +
-	"\x06Intent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12Y\n" +
-	"\rwebhook_state\x18\x06 \x01(\x0e2/.google.cloud.dialogflow.v2.Intent.WebhookStateB\x03\xe0A\x01R\fwebhookState\x12\x1f\n" +
-	"\bpriority\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpriority\x12$\n" +
-	"\vis_fallback\x18\x04 \x01(\bB\x03\xe0A\x01R\n" +
-	"isFallback\x12$\n" +
-	"\vml_disabled\x18\x13 \x01(\bB\x03\xe0A\x01R\n" +
-	"mlDisabled\x121\n" +
-	"\x12live_agent_handoff\x18\x14 \x01(\bB\x03\xe0A\x01R\x10liveAgentHandoff\x12,\n" +
-	"\x0fend_interaction\x18\x15 \x01(\bB\x03\xe0A\x01R\x0eendInteraction\x123\n" +
-	"\x13input_context_names\x18\a \x03(\tB\x03\xe0A\x01R\x11inputContextNames\x12\x1b\n" +
-	"\x06events\x18\b \x03(\tB\x03\xe0A\x01R\x06events\x12a\n" +
-	"\x10training_phrases\x18\t \x03(\v21.google.cloud.dialogflow.v2.Intent.TrainingPhraseB\x03\xe0A\x01R\x0ftrainingPhrases\x12\x1b\n" +
+	"'google/cloud/dialogflow/v2/intent.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dialogflow/v2/context.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x90D\n" +
+	"\x06Intent\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12Z\n" +
+	"\rwebhook_state\x18\x06 \x01(\x0e2/.google.cloud.dialogflow.v2.Intent.WebhookStateB\x04\xe2A\x01\x01R\fwebhookState\x12 \n" +
+	"\bpriority\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpriority\x12%\n" +
+	"\vis_fallback\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"isFallback\x12%\n" +
+	"\vml_disabled\x18\x13 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"mlDisabled\x122\n" +
+	"\x12live_agent_handoff\x18\x14 \x01(\bB\x04\xe2A\x01\x01R\x10liveAgentHandoff\x12-\n" +
+	"\x0fend_interaction\x18\x15 \x01(\bB\x04\xe2A\x01\x01R\x0eendInteraction\x124\n" +
+	"\x13input_context_names\x18\a \x03(\tB\x04\xe2A\x01\x01R\x11inputContextNames\x12\x1c\n" +
+	"\x06events\x18\b \x03(\tB\x04\xe2A\x01\x01R\x06events\x12b\n" +
+	"\x10training_phrases\x18\t \x03(\v21.google.cloud.dialogflow.v2.Intent.TrainingPhraseB\x04\xe2A\x01\x01R\x0ftrainingPhrases\x12\x1c\n" +
 	"\x06action\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x06action\x12Q\n" +
-	"\x0foutput_contexts\x18\v \x03(\v2#.google.cloud.dialogflow.v2.ContextB\x03\xe0A\x01R\x0eoutputContexts\x12*\n" +
-	"\x0ereset_contexts\x18\f \x01(\bB\x03\xe0A\x01R\rresetContexts\x12Q\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x06action\x12R\n" +
+	"\x0foutput_contexts\x18\v \x03(\v2#.google.cloud.dialogflow.v2.ContextB\x04\xe2A\x01\x01R\x0eoutputContexts\x12+\n" +
+	"\x0ereset_contexts\x18\f \x01(\bB\x04\xe2A\x01\x01R\rresetContexts\x12R\n" +
 	"\n" +
-	"parameters\x18\r \x03(\v2,.google.cloud.dialogflow.v2.Intent.ParameterB\x03\xe0A\x01R\n" +
-	"parameters\x12K\n" +
-	"\bmessages\x18\x0e \x03(\v2*.google.cloud.dialogflow.v2.Intent.MessageB\x03\xe0A\x01R\bmessages\x12v\n" +
-	"\x1adefault_response_platforms\x18\x0f \x03(\x0e23.google.cloud.dialogflow.v2.Intent.Message.PlatformB\x03\xe0A\x01R\x18defaultResponsePlatforms\x12>\n" +
-	"\x19root_followup_intent_name\x18\x10 \x01(\tB\x03\xe0A\x03R\x16rootFollowupIntentName\x12=\n" +
-	"\x1bparent_followup_intent_name\x18\x11 \x01(\tR\x18parentFollowupIntentName\x12l\n" +
-	"\x14followup_intent_info\x18\x12 \x03(\v25.google.cloud.dialogflow.v2.Intent.FollowupIntentInfoB\x03\xe0A\x03R\x12followupIntentInfo\x1a\xc1\x03\n" +
-	"\x0eTrainingPhrase\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12O\n" +
-	"\x04type\x18\x02 \x01(\x0e26.google.cloud.dialogflow.v2.Intent.TrainingPhrase.TypeB\x03\xe0A\x02R\x04type\x12Q\n" +
-	"\x05parts\x18\x03 \x03(\v26.google.cloud.dialogflow.v2.Intent.TrainingPhrase.PartB\x03\xe0A\x02R\x05parts\x12/\n" +
-	"\x11times_added_count\x18\x04 \x01(\x05B\x03\xe0A\x01R\x0ftimesAddedCount\x1a\x83\x01\n" +
+	"parameters\x18\r \x03(\v2,.google.cloud.dialogflow.v2.Intent.ParameterB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12L\n" +
+	"\bmessages\x18\x0e \x03(\v2*.google.cloud.dialogflow.v2.Intent.MessageB\x04\xe2A\x01\x01R\bmessages\x12w\n" +
+	"\x1adefault_response_platforms\x18\x0f \x03(\x0e23.google.cloud.dialogflow.v2.Intent.Message.PlatformB\x04\xe2A\x01\x01R\x18defaultResponsePlatforms\x12?\n" +
+	"\x19root_followup_intent_name\x18\x10 \x01(\tB\x04\xe2A\x01\x03R\x16rootFollowupIntentName\x12=\n" +
+	"\x1bparent_followup_intent_name\x18\x11 \x01(\tR\x18parentFollowupIntentName\x12m\n" +
+	"\x14followup_intent_info\x18\x12 \x03(\v25.google.cloud.dialogflow.v2.Intent.FollowupIntentInfoB\x04\xe2A\x01\x03R\x12followupIntentInfo\x1a\xc8\x03\n" +
+	"\x0eTrainingPhrase\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12P\n" +
+	"\x04type\x18\x02 \x01(\x0e26.google.cloud.dialogflow.v2.Intent.TrainingPhrase.TypeB\x04\xe2A\x01\x02R\x04type\x12R\n" +
+	"\x05parts\x18\x03 \x03(\v26.google.cloud.dialogflow.v2.Intent.TrainingPhrase.PartB\x04\xe2A\x01\x02R\x05parts\x120\n" +
+	"\x11times_added_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x0ftimesAddedCount\x1a\x86\x01\n" +
 	"\x04Part\x12\x12\n" +
-	"\x04text\x18\x01 \x01(\tR\x04text\x12$\n" +
-	"\ventity_type\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"entityType\x12\x19\n" +
-	"\x05alias\x18\x03 \x01(\tB\x03\xe0A\x01R\x05alias\x12&\n" +
-	"\fuser_defined\x18\x04 \x01(\bB\x03\xe0A\x01R\vuserDefined\";\n" +
+	"\x04text\x18\x01 \x01(\tR\x04text\x12%\n" +
+	"\ventity_type\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"entityType\x12\x1a\n" +
+	"\x05alias\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05alias\x12'\n" +
+	"\fuser_defined\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\vuserDefined\";\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aEXAMPLE\x10\x01\x12\x10\n" +
-	"\bTEMPLATE\x10\x02\x1a\x02\b\x01\x1a\xa5\x02\n" +
+	"\bTEMPLATE\x10\x02\x1a\x02\b\x01\x1a\xab\x02\n" +
 	"\tParameter\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x19\n" +
-	"\x05value\x18\x03 \x01(\tB\x03\xe0A\x01R\x05value\x12(\n" +
-	"\rdefault_value\x18\x04 \x01(\tB\x03\xe0A\x01R\fdefaultValue\x12<\n" +
-	"\x18entity_type_display_name\x18\x05 \x01(\tB\x03\xe0A\x01R\x15entityTypeDisplayName\x12!\n" +
-	"\tmandatory\x18\x06 \x01(\bB\x03\xe0A\x01R\tmandatory\x12\x1d\n" +
-	"\aprompts\x18\a \x03(\tB\x03\xe0A\x01R\aprompts\x12\x1c\n" +
-	"\ais_list\x18\b \x01(\bB\x03\xe0A\x01R\x06isList\x1a\xf10\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1a\n" +
+	"\x05value\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05value\x12)\n" +
+	"\rdefault_value\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fdefaultValue\x12=\n" +
+	"\x18entity_type_display_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x15entityTypeDisplayName\x12\"\n" +
+	"\tmandatory\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\tmandatory\x12\x1e\n" +
+	"\aprompts\x18\a \x03(\tB\x04\xe2A\x01\x01R\aprompts\x12\x1d\n" +
+	"\ais_list\x18\b \x01(\bB\x04\xe2A\x01\x01R\x06isList\x1a\xa71\n" +
 	"\aMessage\x12E\n" +
 	"\x04text\x18\x01 \x01(\v2/.google.cloud.dialogflow.v2.Intent.Message.TextH\x00R\x04text\x12H\n" +
 	"\x05image\x18\x02 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageH\x00R\x05image\x12^\n" +
@@ -3906,97 +3906,97 @@ const file_google_cloud_dialogflow_v2_intent_proto_rawDesc = "" +
 	"\x14browse_carousel_card\x18\x16 \x01(\v2=.google.cloud.dialogflow.v2.Intent.Message.BrowseCarouselCardH\x00R\x12browseCarouselCard\x12U\n" +
 	"\n" +
 	"table_card\x18\x17 \x01(\v24.google.cloud.dialogflow.v2.Intent.Message.TableCardH\x00R\ttableCard\x12^\n" +
-	"\rmedia_content\x18\x18 \x01(\v27.google.cloud.dialogflow.v2.Intent.Message.MediaContentH\x00R\fmediaContent\x12T\n" +
-	"\bplatform\x18\x06 \x01(\x0e23.google.cloud.dialogflow.v2.Intent.Message.PlatformB\x03\xe0A\x01R\bplatform\x1a\x1f\n" +
-	"\x04Text\x12\x17\n" +
-	"\x04text\x18\x01 \x03(\tB\x03\xe0A\x01R\x04text\x1a]\n" +
-	"\x05Image\x12 \n" +
-	"\timage_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\bimageUri\x122\n" +
-	"\x12accessibility_text\x18\x02 \x01(\tB\x03\xe0A\x01R\x11accessibilityText\x1aS\n" +
-	"\fQuickReplies\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x01R\x05title\x12(\n" +
-	"\rquick_replies\x18\x02 \x03(\tB\x03\xe0A\x01R\fquickReplies\x1a\xff\x01\n" +
-	"\x04Card\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x01R\x05title\x12\x1f\n" +
-	"\bsubtitle\x18\x02 \x01(\tB\x03\xe0A\x01R\bsubtitle\x12 \n" +
-	"\timage_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\bimageUri\x12U\n" +
-	"\abuttons\x18\x04 \x03(\v26.google.cloud.dialogflow.v2.Intent.Message.Card.ButtonB\x03\xe0A\x01R\abuttons\x1aB\n" +
-	"\x06Button\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01R\x04text\x12\x1f\n" +
-	"\bpostback\x18\x02 \x01(\tB\x03\xe0A\x01R\bpostback\x1ar\n" +
+	"\rmedia_content\x18\x18 \x01(\v27.google.cloud.dialogflow.v2.Intent.Message.MediaContentH\x00R\fmediaContent\x12U\n" +
+	"\bplatform\x18\x06 \x01(\x0e23.google.cloud.dialogflow.v2.Intent.Message.PlatformB\x04\xe2A\x01\x01R\bplatform\x1a \n" +
+	"\x04Text\x12\x18\n" +
+	"\x04text\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x04text\x1a_\n" +
+	"\x05Image\x12!\n" +
+	"\timage_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bimageUri\x123\n" +
+	"\x12accessibility_text\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x11accessibilityText\x1aU\n" +
+	"\fQuickReplies\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12)\n" +
+	"\rquick_replies\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\fquickReplies\x1a\x85\x02\n" +
+	"\x04Card\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12 \n" +
+	"\bsubtitle\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bsubtitle\x12!\n" +
+	"\timage_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bimageUri\x12V\n" +
+	"\abuttons\x18\x04 \x03(\v26.google.cloud.dialogflow.v2.Intent.Message.Card.ButtonB\x04\xe2A\x01\x01R\abuttons\x1aD\n" +
+	"\x06Button\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04text\x12 \n" +
+	"\bpostback\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bpostback\x1as\n" +
 	"\x0eSimpleResponse\x12$\n" +
 	"\x0etext_to_speech\x18\x01 \x01(\tR\ftextToSpeech\x12\x12\n" +
-	"\x04ssml\x18\x02 \x01(\tR\x04ssml\x12&\n" +
-	"\fdisplay_text\x18\x03 \x01(\tB\x03\xe0A\x01R\vdisplayText\x1a|\n" +
-	"\x0fSimpleResponses\x12i\n" +
-	"\x10simple_responses\x18\x01 \x03(\v29.google.cloud.dialogflow.v2.Intent.Message.SimpleResponseB\x03\xe0A\x02R\x0fsimpleResponses\x1a\xd3\x03\n" +
-	"\tBasicCard\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x01R\x05title\x12\x1f\n" +
-	"\bsubtitle\x18\x02 \x01(\tB\x03\xe0A\x01R\bsubtitle\x12%\n" +
-	"\x0eformatted_text\x18\x03 \x01(\tR\rformattedText\x12K\n" +
-	"\x05image\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x03\xe0A\x01R\x05image\x12Z\n" +
-	"\abuttons\x18\x05 \x03(\v2;.google.cloud.dialogflow.v2.Intent.Message.BasicCard.ButtonB\x03\xe0A\x01R\abuttons\x1a\xb9\x01\n" +
+	"\x04ssml\x18\x02 \x01(\tR\x04ssml\x12'\n" +
+	"\fdisplay_text\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdisplayText\x1a}\n" +
+	"\x0fSimpleResponses\x12j\n" +
+	"\x10simple_responses\x18\x01 \x03(\v29.google.cloud.dialogflow.v2.Intent.Message.SimpleResponseB\x04\xe2A\x01\x02R\x0fsimpleResponses\x1a\xd8\x03\n" +
+	"\tBasicCard\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12 \n" +
+	"\bsubtitle\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bsubtitle\x12%\n" +
+	"\x0eformatted_text\x18\x03 \x01(\tR\rformattedText\x12L\n" +
+	"\x05image\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x04\xe2A\x01\x01R\x05image\x12[\n" +
+	"\abuttons\x18\x05 \x03(\v2;.google.cloud.dialogflow.v2.Intent.Message.BasicCard.ButtonB\x04\xe2A\x01\x01R\abuttons\x1a\xba\x01\n" +
 	"\x06Button\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\x12v\n" +
-	"\x0fopen_uri_action\x18\x02 \x01(\v2I.google.cloud.dialogflow.v2.Intent.Message.BasicCard.Button.OpenUriActionB\x03\xe0A\x02R\ropenUriAction\x1a!\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12w\n" +
+	"\x0fopen_uri_action\x18\x02 \x01(\v2I.google.cloud.dialogflow.v2.Intent.Message.BasicCard.Button.OpenUriActionB\x04\xe2A\x01\x02R\ropenUriAction\x1a!\n" +
 	"\rOpenUriAction\x12\x10\n" +
-	"\x03uri\x18\x01 \x01(\tR\x03uri\x1a'\n" +
+	"\x03uri\x18\x01 \x01(\tR\x03uri\x1a(\n" +
 	"\n" +
-	"Suggestion\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x02R\x05title\x1ak\n" +
-	"\vSuggestions\x12\\\n" +
-	"\vsuggestions\x18\x01 \x03(\v25.google.cloud.dialogflow.v2.Intent.Message.SuggestionB\x03\xe0A\x02R\vsuggestions\x1aZ\n" +
-	"\x11LinkOutSuggestion\x12.\n" +
-	"\x10destination_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x0fdestinationName\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x03uri\x1a\x8b\x03\n" +
+	"Suggestion\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05title\x1al\n" +
+	"\vSuggestions\x12]\n" +
+	"\vsuggestions\x18\x01 \x03(\v25.google.cloud.dialogflow.v2.Intent.Message.SuggestionB\x04\xe2A\x01\x02R\vsuggestions\x1a\\\n" +
+	"\x11LinkOutSuggestion\x12/\n" +
+	"\x10destination_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0fdestinationName\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x1a\x92\x03\n" +
 	"\n" +
-	"ListSelect\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x01R\x05title\x12U\n" +
-	"\x05items\x18\x02 \x03(\v2:.google.cloud.dialogflow.v2.Intent.Message.ListSelect.ItemB\x03\xe0A\x02R\x05items\x12\x1f\n" +
-	"\bsubtitle\x18\x03 \x01(\tB\x03\xe0A\x01R\bsubtitle\x1a\xe9\x01\n" +
-	"\x04Item\x12R\n" +
-	"\x04info\x18\x01 \x01(\v29.google.cloud.dialogflow.v2.Intent.Message.SelectItemInfoB\x03\xe0A\x02R\x04info\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12K\n" +
-	"\x05image\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x03\xe0A\x01R\x05image\x1a\xd7\x02\n" +
-	"\x0eCarouselSelect\x12Y\n" +
-	"\x05items\x18\x01 \x03(\v2>.google.cloud.dialogflow.v2.Intent.Message.CarouselSelect.ItemB\x03\xe0A\x02R\x05items\x1a\xe9\x01\n" +
-	"\x04Item\x12R\n" +
-	"\x04info\x18\x01 \x01(\v29.google.cloud.dialogflow.v2.Intent.Message.SelectItemInfoB\x03\xe0A\x02R\x04info\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12K\n" +
-	"\x05image\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x03\xe0A\x01R\x05image\x1aH\n" +
-	"\x0eSelectItemInfo\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12\x1f\n" +
-	"\bsynonyms\x18\x02 \x03(\tB\x03\xe0A\x01R\bsynonyms\x1a\xd8\x04\n" +
-	"\fMediaContent\x12m\n" +
+	"ListSelect\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12V\n" +
+	"\x05items\x18\x02 \x03(\v2:.google.cloud.dialogflow.v2.Intent.Message.ListSelect.ItemB\x04\xe2A\x01\x02R\x05items\x12 \n" +
+	"\bsubtitle\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bsubtitle\x1a\xed\x01\n" +
+	"\x04Item\x12S\n" +
+	"\x04info\x18\x01 \x01(\v29.google.cloud.dialogflow.v2.Intent.Message.SelectItemInfoB\x04\xe2A\x01\x02R\x04info\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12L\n" +
+	"\x05image\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x04\xe2A\x01\x01R\x05image\x1a\xdc\x02\n" +
+	"\x0eCarouselSelect\x12Z\n" +
+	"\x05items\x18\x01 \x03(\v2>.google.cloud.dialogflow.v2.Intent.Message.CarouselSelect.ItemB\x04\xe2A\x01\x02R\x05items\x1a\xed\x01\n" +
+	"\x04Item\x12S\n" +
+	"\x04info\x18\x01 \x01(\v29.google.cloud.dialogflow.v2.Intent.Message.SelectItemInfoB\x04\xe2A\x01\x02R\x04info\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12L\n" +
+	"\x05image\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x04\xe2A\x01\x01R\x05image\x1aJ\n" +
+	"\x0eSelectItemInfo\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12 \n" +
+	"\bsynonyms\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\bsynonyms\x1a\xdc\x04\n" +
+	"\fMediaContent\x12n\n" +
 	"\n" +
-	"media_type\x18\x01 \x01(\x0e2I.google.cloud.dialogflow.v2.Intent.Message.MediaContent.ResponseMediaTypeB\x03\xe0A\x01R\tmediaType\x12p\n" +
-	"\rmedia_objects\x18\x02 \x03(\v2K.google.cloud.dialogflow.v2.Intent.Message.MediaContent.ResponseMediaObjectR\fmediaObjects\x1a\xa1\x02\n" +
+	"media_type\x18\x01 \x01(\x0e2I.google.cloud.dialogflow.v2.Intent.Message.MediaContent.ResponseMediaTypeB\x04\xe2A\x01\x01R\tmediaType\x12p\n" +
+	"\rmedia_objects\x18\x02 \x03(\v2K.google.cloud.dialogflow.v2.Intent.Message.MediaContent.ResponseMediaObjectR\fmediaObjects\x1a\xa4\x02\n" +
 	"\x13ResponseMediaObject\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12X\n" +
-	"\vlarge_image\x18\x03 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x03\xe0A\x01H\x00R\n" +
-	"largeImage\x12K\n" +
-	"\x04icon\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x03\xe0A\x01H\x00R\x04icon\x12\x1f\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Y\n" +
+	"\vlarge_image\x18\x03 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x04\xe2A\x01\x01H\x00R\n" +
+	"largeImage\x12L\n" +
+	"\x04icon\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x04\xe2A\x01\x01H\x00R\x04icon\x12\x1f\n" +
 	"\vcontent_url\x18\x05 \x01(\tR\n" +
 	"contentUrlB\a\n" +
 	"\x05image\"C\n" +
 	"\x11ResponseMediaType\x12#\n" +
 	"\x1fRESPONSE_MEDIA_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05AUDIO\x10\x01\x1a\xe1\a\n" +
+	"\x05AUDIO\x10\x01\x1a\xe6\a\n" +
 	"\x12BrowseCarouselCard\x12j\n" +
-	"\x05items\x18\x01 \x03(\v2T.google.cloud.dialogflow.v2.Intent.Message.BrowseCarouselCard.BrowseCarouselCardItemR\x05items\x12\x8a\x01\n" +
-	"\x15image_display_options\x18\x02 \x01(\x0e2Q.google.cloud.dialogflow.v2.Intent.Message.BrowseCarouselCard.ImageDisplayOptionsB\x03\xe0A\x01R\x13imageDisplayOptions\x1a\xd9\x04\n" +
+	"\x05items\x18\x01 \x03(\v2T.google.cloud.dialogflow.v2.Intent.Message.BrowseCarouselCard.BrowseCarouselCardItemR\x05items\x12\x8b\x01\n" +
+	"\x15image_display_options\x18\x02 \x01(\x0e2Q.google.cloud.dialogflow.v2.Intent.Message.BrowseCarouselCard.ImageDisplayOptionsB\x04\xe2A\x01\x01R\x13imageDisplayOptions\x1a\xdd\x04\n" +
 	"\x16BrowseCarouselCardItem\x12\x8a\x01\n" +
 	"\x0fopen_uri_action\x18\x01 \x01(\v2b.google.cloud.dialogflow.v2.Intent.Message.BrowseCarouselCard.BrowseCarouselCardItem.OpenUrlActionR\ropenUriAction\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12K\n" +
-	"\x05image\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x03\xe0A\x01R\x05image\x12\x1b\n" +
-	"\x06footer\x18\x05 \x01(\tB\x03\xe0A\x01R\x06footer\x1a\x8a\x02\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12L\n" +
+	"\x05image\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x04\xe2A\x01\x01R\x05image\x12\x1c\n" +
+	"\x06footer\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06footer\x1a\x8b\x02\n" +
 	"\rOpenUrlAction\x12\x10\n" +
-	"\x03url\x18\x01 \x01(\tR\x03url\x12\x97\x01\n" +
-	"\rurl_type_hint\x18\x03 \x01(\x0e2n.google.cloud.dialogflow.v2.Intent.Message.BrowseCarouselCard.BrowseCarouselCardItem.OpenUrlAction.UrlTypeHintB\x03\xe0A\x01R\vurlTypeHint\"M\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url\x12\x98\x01\n" +
+	"\rurl_type_hint\x18\x03 \x01(\x0e2n.google.cloud.dialogflow.v2.Intent.Message.BrowseCarouselCard.BrowseCarouselCardItem.OpenUrlAction.UrlTypeHintB\x04\xe2A\x01\x01R\vurlTypeHint\"M\n" +
 	"\vUrlTypeHint\x12\x1d\n" +
 	"\x19URL_TYPE_HINT_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -4007,26 +4007,26 @@ const file_google_cloud_dialogflow_v2_intent_proto_rawDesc = "" +
 	"\x04GRAY\x10\x01\x12\t\n" +
 	"\x05WHITE\x10\x02\x12\v\n" +
 	"\aCROPPED\x10\x03\x12\x16\n" +
-	"\x12BLURRED_BACKGROUND\x10\x04\x1a\xac\x03\n" +
+	"\x12BLURRED_BACKGROUND\x10\x04\x1a\xb1\x03\n" +
 	"\tTableCard\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\x12\x1f\n" +
-	"\bsubtitle\x18\x02 \x01(\tB\x03\xe0A\x01R\bsubtitle\x12K\n" +
-	"\x05image\x18\x03 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x03\xe0A\x01R\x05image\x12m\n" +
-	"\x11column_properties\x18\x04 \x03(\v2;.google.cloud.dialogflow.v2.Intent.Message.ColumnPropertiesB\x03\xe0A\x01R\x10columnProperties\x12P\n" +
-	"\x04rows\x18\x05 \x03(\v27.google.cloud.dialogflow.v2.Intent.Message.TableCardRowB\x03\xe0A\x01R\x04rows\x12Z\n" +
-	"\abuttons\x18\x06 \x03(\v2;.google.cloud.dialogflow.v2.Intent.Message.BasicCard.ButtonB\x03\xe0A\x01R\abuttons\x1a\x98\x02\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
+	"\bsubtitle\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bsubtitle\x12L\n" +
+	"\x05image\x18\x03 \x01(\v20.google.cloud.dialogflow.v2.Intent.Message.ImageB\x04\xe2A\x01\x01R\x05image\x12n\n" +
+	"\x11column_properties\x18\x04 \x03(\v2;.google.cloud.dialogflow.v2.Intent.Message.ColumnPropertiesB\x04\xe2A\x01\x01R\x10columnProperties\x12Q\n" +
+	"\x04rows\x18\x05 \x03(\v27.google.cloud.dialogflow.v2.Intent.Message.TableCardRowB\x04\xe2A\x01\x01R\x04rows\x12[\n" +
+	"\abuttons\x18\x06 \x03(\v2;.google.cloud.dialogflow.v2.Intent.Message.BasicCard.ButtonB\x04\xe2A\x01\x01R\abuttons\x1a\x99\x02\n" +
 	"\x10ColumnProperties\x12\x16\n" +
-	"\x06header\x18\x01 \x01(\tR\x06header\x12\x87\x01\n" +
-	"\x14horizontal_alignment\x18\x02 \x01(\x0e2O.google.cloud.dialogflow.v2.Intent.Message.ColumnProperties.HorizontalAlignmentB\x03\xe0A\x01R\x13horizontalAlignment\"b\n" +
+	"\x06header\x18\x01 \x01(\tR\x06header\x12\x88\x01\n" +
+	"\x14horizontal_alignment\x18\x02 \x01(\x0e2O.google.cloud.dialogflow.v2.Intent.Message.ColumnProperties.HorizontalAlignmentB\x04\xe2A\x01\x01R\x13horizontalAlignment\"b\n" +
 	"\x13HorizontalAlignment\x12$\n" +
 	" HORIZONTAL_ALIGNMENT_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aLEADING\x10\x01\x12\n" +
 	"\n" +
 	"\x06CENTER\x10\x02\x12\f\n" +
-	"\bTRAILING\x10\x03\x1a\x8d\x01\n" +
-	"\fTableCardRow\x12S\n" +
-	"\x05cells\x18\x01 \x03(\v28.google.cloud.dialogflow.v2.Intent.Message.TableCardCellB\x03\xe0A\x01R\x05cells\x12(\n" +
-	"\rdivider_after\x18\x02 \x01(\bB\x03\xe0A\x01R\fdividerAfter\x1a#\n" +
+	"\bTRAILING\x10\x03\x1a\x8f\x01\n" +
+	"\fTableCardRow\x12T\n" +
+	"\x05cells\x18\x01 \x03(\v28.google.cloud.dialogflow.v2.Intent.Message.TableCardCellB\x04\xe2A\x01\x01R\x05cells\x12)\n" +
+	"\rdivider_after\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fdividerAfter\x1a#\n" +
 	"\rTableCardCell\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\"\xa0\x01\n" +
 	"\bPlatform\x12\x18\n" +
@@ -4048,55 +4048,55 @@ const file_google_cloud_dialogflow_v2_intent_proto_rawDesc = "" +
 	"\x19WEBHOOK_STATE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15WEBHOOK_STATE_ENABLED\x10\x01\x12*\n" +
 	"&WEBHOOK_STATE_ENABLED_FOR_SLOT_FILLING\x10\x02:\x91\x01\xeaA\x8d\x01\n" +
-	" dialogflow.googleapis.com/Intent\x12)projects/{project}/agent/intents/{intent}\x12>projects/{project}/locations/{location}/agent/intents/{intent}\"\x94\x02\n" +
-	"\x12ListIntentsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12L\n" +
-	"\vintent_view\x18\x03 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x03\xe0A\x01R\n" +
-	"intentView\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	" dialogflow.googleapis.com/Intent\x12)projects/{project}/agent/intents/{intent}\x12>projects/{project}/locations/{location}/agent/intents/{intent}\"\x99\x02\n" +
+	"\x12ListIntentsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12M\n" +
+	"\vintent_view\x18\x03 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x04\xe2A\x01\x01R\n" +
+	"intentView\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"{\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"{\n" +
 	"\x13ListIntentsResponse\x12<\n" +
 	"\aintents\x18\x01 \x03(\v2\".google.cloud.dialogflow.v2.IntentR\aintents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc8\x01\n" +
-	"\x10GetIntentRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dialogflow.googleapis.com/IntentR\x04name\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12L\n" +
-	"\vintent_view\x18\x03 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x03\xe0A\x01R\n" +
-	"intentView\"\x90\x02\n" +
-	"\x13CreateIntentRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12?\n" +
-	"\x06intent\x18\x02 \x01(\v2\".google.cloud.dialogflow.v2.IntentB\x03\xe0A\x02R\x06intent\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12L\n" +
-	"\vintent_view\x18\x04 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x03\xe0A\x01R\n" +
-	"intentView\"\x90\x02\n" +
-	"\x13UpdateIntentRequest\x12?\n" +
-	"\x06intent\x18\x01 \x01(\v2\".google.cloud.dialogflow.v2.IntentB\x03\xe0A\x02R\x06intent\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12L\n" +
-	"\vintent_view\x18\x04 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x03\xe0A\x01R\n" +
-	"intentView\"S\n" +
-	"\x13DeleteIntentRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dialogflow.googleapis.com/IntentR\x04name\"\xae\x03\n" +
-	"\x19BatchUpdateIntentsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcb\x01\n" +
+	"\x10GetIntentRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dialogflow.googleapis.com/IntentR\x04name\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12M\n" +
+	"\vintent_view\x18\x03 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x04\xe2A\x01\x01R\n" +
+	"intentView\"\x94\x02\n" +
+	"\x13CreateIntentRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12@\n" +
+	"\x06intent\x18\x02 \x01(\v2\".google.cloud.dialogflow.v2.IntentB\x04\xe2A\x01\x02R\x06intent\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12M\n" +
+	"\vintent_view\x18\x04 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x04\xe2A\x01\x01R\n" +
+	"intentView\"\x94\x02\n" +
+	"\x13UpdateIntentRequest\x12@\n" +
+	"\x06intent\x18\x01 \x01(\v2\".google.cloud.dialogflow.v2.IntentB\x04\xe2A\x01\x02R\x06intent\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12M\n" +
+	"\vintent_view\x18\x04 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x04\xe2A\x01\x01R\n" +
+	"intentView\"T\n" +
+	"\x13DeleteIntentRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dialogflow.googleapis.com/IntentR\x04name\"\xb2\x03\n" +
+	"\x19BatchUpdateIntentsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12*\n" +
 	"\x10intent_batch_uri\x18\x02 \x01(\tH\x00R\x0eintentBatchUri\x12Y\n" +
-	"\x13intent_batch_inline\x18\x03 \x01(\v2'.google.cloud.dialogflow.v2.IntentBatchH\x00R\x11intentBatchInline\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12@\n" +
-	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12L\n" +
-	"\vintent_view\x18\x06 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x03\xe0A\x01R\n" +
+	"\x13intent_batch_inline\x18\x03 \x01(\v2'.google.cloud.dialogflow.v2.IntentBatchH\x00R\x11intentBatchInline\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12A\n" +
+	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12M\n" +
+	"\vintent_view\x18\x06 \x01(\x0e2&.google.cloud.dialogflow.v2.IntentViewB\x04\xe2A\x01\x01R\n" +
 	"intentViewB\x0e\n" +
 	"\fintent_batch\"Z\n" +
 	"\x1aBatchUpdateIntentsResponse\x12<\n" +
-	"\aintents\x18\x01 \x03(\v2\".google.cloud.dialogflow.v2.IntentR\aintents\"\xa0\x01\n" +
-	"\x19BatchDeleteIntentsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12A\n" +
-	"\aintents\x18\x02 \x03(\v2\".google.cloud.dialogflow.v2.IntentB\x03\xe0A\x02R\aintents\"K\n" +
+	"\aintents\x18\x01 \x03(\v2\".google.cloud.dialogflow.v2.IntentR\aintents\"\xa2\x01\n" +
+	"\x19BatchDeleteIntentsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12B\n" +
+	"\aintents\x18\x02 \x03(\v2\".google.cloud.dialogflow.v2.IntentB\x04\xe2A\x01\x02R\aintents\"K\n" +
 	"\vIntentBatch\x12<\n" +
 	"\aintents\x18\x01 \x03(\v2\".google.cloud.dialogflow.v2.IntentR\aintents*?\n" +
 	"\n" +

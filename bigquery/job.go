@@ -1061,7 +1061,7 @@ func (c *Client) Jobs(ctx context.Context) *JobIterator {
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.items) },
-		func() interface{} { b := it.items; it.items = nil; return b })
+		func() any { b := it.items; it.items = nil; return b })
 	return it
 }
 

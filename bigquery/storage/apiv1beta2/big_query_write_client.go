@@ -807,6 +807,11 @@ func (c *bigQueryWriteRESTClient) CreateWriteStream(ctx context.Context, req *st
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -891,6 +896,11 @@ func (c *bigQueryWriteRESTClient) GetWriteStream(ctx context.Context, req *stora
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -949,6 +959,11 @@ func (c *bigQueryWriteRESTClient) FinalizeWriteStream(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1002,6 +1017,11 @@ func (c *bigQueryWriteRESTClient) FinalizeWriteStream(ctx context.Context, req *
 func (c *bigQueryWriteRESTClient) BatchCommitWriteStreams(ctx context.Context, req *storagepb.BatchCommitWriteStreamsRequest, opts ...gax.CallOption) (*storagepb.BatchCommitWriteStreamsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetParent())
@@ -1073,6 +1093,11 @@ func (c *bigQueryWriteRESTClient) FlushRows(ctx context.Context, req *storagepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWriteStream(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetWriteStream())

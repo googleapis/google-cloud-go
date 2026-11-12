@@ -4603,88 +4603,88 @@ var File_google_cloud_configdelivery_v1_config_delivery_proto protoreflect.FileD
 
 const file_google_cloud_configdelivery_v1_config_delivery_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/configdelivery/v1/config_delivery.proto\x12\x1egoogle.cloud.configdelivery.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\x04\n" +
-	"\x0eResourceBundle\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12W\n" +
-	"\x06labels\x18\x04 \x03(\v2:.google.cloud.configdelivery.v1.ResourceBundle.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x1a9\n" +
+	"4google/cloud/configdelivery/v1/config_delivery.proto\x12\x1egoogle.cloud.configdelivery.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8e\x04\n" +
+	"\x0eResourceBundle\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12X\n" +
+	"\x06labels\x18\x04 \x03(\v2:.google.cloud.configdelivery.v1.ResourceBundle.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9e\x01\xeaA\x9a\x01\n" +
-	",configdelivery.googleapis.com/ResourceBundle\x12Iprojects/{project}/locations/{location}/resourceBundles/{resource_bundle}*\x0fresourceBundles2\x0eresourceBundle\"\xed\x01\n" +
-	"\x1aListResourceBundlesRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,configdelivery.googleapis.com/ResourceBundleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	",configdelivery.googleapis.com/ResourceBundle\x12Iprojects/{project}/locations/{location}/resourceBundles/{resource_bundle}*\x0fresourceBundles2\x0eresourceBundle\"\xf2\x01\n" +
+	"\x1aListResourceBundlesRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,configdelivery.googleapis.com/ResourceBundleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc7\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc8\x01\n" +
 	"\x1bListResourceBundlesResponse\x12Y\n" +
 	"\x10resource_bundles\x18\x01 \x03(\v2..google.cloud.configdelivery.v1.ResourceBundleR\x0fresourceBundles\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"d\n" +
-	"\x18GetResourceBundleRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",configdelivery.googleapis.com/ResourceBundleR\x04name\"\xa8\x02\n" +
-	"\x1bCreateResourceBundleRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,configdelivery.googleapis.com/ResourceBundleR\x06parent\x121\n" +
-	"\x12resource_bundle_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10resourceBundleId\x12\\\n" +
-	"\x0fresource_bundle\x18\x03 \x01(\v2..google.cloud.configdelivery.v1.ResourceBundleB\x03\xe0A\x02R\x0eresourceBundle\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"e\n" +
+	"\x18GetResourceBundleRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",configdelivery.googleapis.com/ResourceBundleR\x04name\"\xac\x02\n" +
+	"\x1bCreateResourceBundleRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,configdelivery.googleapis.com/ResourceBundleR\x06parent\x122\n" +
+	"\x12resource_bundle_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10resourceBundleId\x12]\n" +
+	"\x0fresource_bundle\x18\x03 \x01(\v2..google.cloud.configdelivery.v1.ResourceBundleB\x04\xe2A\x01\x02R\x0eresourceBundle\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe9\x01\n" +
-	"\x1bUpdateResourceBundleRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\\\n" +
-	"\x0fresource_bundle\x18\x02 \x01(\v2..google.cloud.configdelivery.v1.ResourceBundleB\x03\xe0A\x02R\x0eresourceBundle\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xec\x01\n" +
+	"\x1bUpdateResourceBundleRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12]\n" +
+	"\x0fresource_bundle\x18\x02 \x01(\v2..google.cloud.configdelivery.v1.ResourceBundleB\x04\xe2A\x01\x02R\x0eresourceBundle\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xae\x01\n" +
-	"\x1bDeleteResourceBundleRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",configdelivery.googleapis.com/ResourceBundleR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb1\x01\n" +
+	"\x1bDeleteResourceBundleRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",configdelivery.googleapis.com/ResourceBundleR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xf4\x0f\n" +
-	"\fFleetPackage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12U\n" +
-	"\x06labels\x18\x04 \x03(\v28.google.cloud.configdelivery.v1.FleetPackage.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x82\x01\n" +
-	"\x18resource_bundle_selector\x18\x05 \x01(\v2C.google.cloud.configdelivery.v1.FleetPackage.ResourceBundleSelectorB\x03\xe0A\x02R\x16resourceBundleSelector\x12P\n" +
-	"\x06target\x18\t \x01(\v23.google.cloud.configdelivery.v1.FleetPackage.TargetB\x03\xe0A\x01R\x06target\x12_\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\x87\x10\n" +
+	"\fFleetPackage\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12V\n" +
+	"\x06labels\x18\x04 \x03(\v28.google.cloud.configdelivery.v1.FleetPackage.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x83\x01\n" +
+	"\x18resource_bundle_selector\x18\x05 \x01(\v2C.google.cloud.configdelivery.v1.FleetPackage.ResourceBundleSelectorB\x04\xe2A\x01\x02R\x16resourceBundleSelector\x12Q\n" +
+	"\x06target\x18\t \x01(\v23.google.cloud.configdelivery.v1.FleetPackage.TargetB\x04\xe2A\x01\x01R\x06target\x12`\n" +
 	"\x10rollout_strategy\x18\n" +
-	" \x01(\v2/.google.cloud.configdelivery.v1.RolloutStrategyB\x03\xe0A\x01R\x0frolloutStrategy\x12l\n" +
-	"\x10variant_selector\x18\v \x01(\v2<.google.cloud.configdelivery.v1.FleetPackage.VariantSelectorB\x03\xe0A\x02R\x0fvariantSelector\x12I\n" +
-	"\x04info\x18\r \x01(\v20.google.cloud.configdelivery.v1.FleetPackageInfoB\x03\xe0A\x03R\x04info\x12~\n" +
-	"\x1bdeletion_propagation_policy\x18\x0f \x01(\x0e29.google.cloud.configdelivery.v1.DeletionPropagationPolicyB\x03\xe0A\x01R\x19deletionPropagationPolicy\x12M\n" +
-	"\x05state\x18\x10 \x01(\x0e22.google.cloud.configdelivery.v1.FleetPackage.StateB\x03\xe0A\x01R\x05state\x1a\x88\x02\n" +
+	" \x01(\v2/.google.cloud.configdelivery.v1.RolloutStrategyB\x04\xe2A\x01\x01R\x0frolloutStrategy\x12m\n" +
+	"\x10variant_selector\x18\v \x01(\v2<.google.cloud.configdelivery.v1.FleetPackage.VariantSelectorB\x04\xe2A\x01\x02R\x0fvariantSelector\x12J\n" +
+	"\x04info\x18\r \x01(\v20.google.cloud.configdelivery.v1.FleetPackageInfoB\x04\xe2A\x01\x03R\x04info\x12\x7f\n" +
+	"\x1bdeletion_propagation_policy\x18\x0f \x01(\x0e29.google.cloud.configdelivery.v1.DeletionPropagationPolicyB\x04\xe2A\x01\x01R\x19deletionPropagationPolicy\x12N\n" +
+	"\x05state\x18\x10 \x01(\x0e22.google.cloud.configdelivery.v1.FleetPackage.StateB\x04\xe2A\x01\x01R\x05state\x1a\x88\x02\n" +
 	"\x16ResourceBundleSelector\x12i\n" +
 	"\x0fresource_bundle\x18\x01 \x01(\v2>.google.cloud.configdelivery.v1.FleetPackage.ResourceBundleTagH\x00R\x0eresourceBundle\x12y\n" +
 	"\x16cloud_build_repository\x18\x03 \x01(\v2A.google.cloud.configdelivery.v1.FleetPackage.CloudBuildRepositoryH\x00R\x14cloudBuildRepositoryB\b\n" +
-	"\x06source\x1at\n" +
-	"\x11ResourceBundleTag\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",configdelivery.googleapis.com/ResourceBundleR\x04name\x12\x15\n" +
-	"\x03tag\x18\x02 \x01(\tB\x03\xe0A\x02R\x03tag\x1a\xf4\x01\n" +
-	"\x14CloudBuildRepository\x120\n" +
-	"\x10variants_pattern\x18\x05 \x01(\tB\x03\xe0A\x01H\x00R\x0fvariantsPattern\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudbuild.googleapis.com/RepositoryR\x04name\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x01R\x04path\x12\x15\n" +
-	"\x03tag\x18\x03 \x01(\tB\x03\xe0A\x02R\x03tag\x12,\n" +
-	"\x0fservice_account\x18\x04 \x01(\tB\x03\xe0A\x02R\x0eserviceAccountB\n" +
+	"\x06source\x1av\n" +
+	"\x11ResourceBundleTag\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",configdelivery.googleapis.com/ResourceBundleR\x04name\x12\x16\n" +
+	"\x03tag\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03tag\x1a\xf9\x01\n" +
+	"\x14CloudBuildRepository\x121\n" +
+	"\x10variants_pattern\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x00R\x0fvariantsPattern\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudbuild.googleapis.com/RepositoryR\x04name\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12\x16\n" +
+	"\x03tag\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x03tag\x12-\n" +
+	"\x0fservice_account\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0eserviceAccountB\n" +
 	"\n" +
 	"\bvariants\x1aQ\n" +
 	"\x06Target\x12=\n" +
 	"\x05fleet\x18\x01 \x01(\v2%.google.cloud.configdelivery.v1.FleetH\x00R\x05fleetB\b\n" +
-	"\x06target\x1aX\n" +
-	"\x0fVariantSelector\x129\n" +
-	"\x15variant_name_template\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x13variantNameTemplateB\n" +
+	"\x06target\x1aY\n" +
+	"\x0fVariantSelector\x12:\n" +
+	"\x15variant_name_template\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\x13variantNameTemplateB\n" +
 	"\n" +
 	"\bstrategy\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
@@ -4696,13 +4696,13 @@ const file_google_cloud_configdelivery_v1_config_delivery_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x01\x12\r\n" +
 	"\tSUSPENDED\x10\x02:\x94\x01\xeaA\x90\x01\n" +
 	"*configdelivery.googleapis.com/FleetPackage\x12Eprojects/{project}/locations/{location}/fleetPackages/{fleet_package}*\rfleetPackages2\ffleetPackage\"\xcb\x03\n" +
-	"\x10FleetPackageInfo\x12T\n" +
-	"\x0eactive_rollout\x18\x01 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%configdelivery.googleapis.com/RolloutR\ractiveRollout\x12c\n" +
-	"\x16last_completed_rollout\x18\x02 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%configdelivery.googleapis.com/RolloutR\x14lastCompletedRollout\x12T\n" +
-	"\x05state\x18\x03 \x01(\x0e26.google.cloud.configdelivery.v1.FleetPackageInfo.StateB\x06\xe0A\x03\xe0A\x01R\x05state\x12Q\n" +
-	"\x06errors\x18\x06 \x03(\v21.google.cloud.configdelivery.v1.FleetPackageErrorB\x06\xe0A\x03\xe0A\x01R\x06errors\"S\n" +
+	"\x10FleetPackageInfo\x12U\n" +
+	"\x0eactive_rollout\x18\x01 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%configdelivery.googleapis.com/RolloutR\ractiveRollout\x12d\n" +
+	"\x16last_completed_rollout\x18\x02 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%configdelivery.googleapis.com/RolloutR\x14lastCompletedRollout\x12S\n" +
+	"\x05state\x18\x03 \x01(\x0e26.google.cloud.configdelivery.v1.FleetPackageInfo.StateB\x05\xe2A\x02\x03\x01R\x05state\x12P\n" +
+	"\x06errors\x18\x06 \x03(\v21.google.cloud.configdelivery.v1.FleetPackageErrorB\x05\xe2A\x02\x03\x01R\x06errors\"S\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -4710,22 +4710,22 @@ const file_google_cloud_configdelivery_v1_config_delivery_proto_rawDesc = "" +
 	"\tSUSPENDED\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03\x12\f\n" +
-	"\bDELETING\x10\x04\"=\n" +
-	"\x11FleetPackageError\x12(\n" +
-	"\rerror_message\x18\x01 \x01(\tB\x03\xe0A\x01R\ferrorMessage\"\xfa\x05\n" +
-	"\vClusterInfo\x12H\n" +
+	"\bDELETING\x10\x04\">\n" +
+	"\x11FleetPackageError\x12)\n" +
+	"\rerror_message\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\ferrorMessage\"\x80\x06\n" +
+	"\vClusterInfo\x12I\n" +
 	"\n" +
-	"membership\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
+	"membership\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
 	" gkehub.googleapis.com/MembershipR\n" +
-	"membership\x12[\n" +
-	"\adesired\x18\x02 \x01(\v2<.google.cloud.configdelivery.v1.ResourceBundleDeploymentInfoB\x03\xe0A\x03R\adesired\x12[\n" +
-	"\ainitial\x18\x03 \x01(\v2<.google.cloud.configdelivery.v1.ResourceBundleDeploymentInfoB\x03\xe0A\x03R\ainitial\x12[\n" +
-	"\acurrent\x18\x04 \x01(\v2<.google.cloud.configdelivery.v1.ResourceBundleDeploymentInfoB\x03\xe0A\x03R\acurrent\x12L\n" +
-	"\x05state\x18\x05 \x01(\x0e21.google.cloud.configdelivery.v1.ClusterInfo.StateB\x03\xe0A\x03R\x05state\x12\"\n" +
-	"\bmessages\x18\x06 \x03(\tB\x06\xe0A\x06\xe0A\x03R\bmessages\x12>\n" +
+	"membership\x12\\\n" +
+	"\adesired\x18\x02 \x01(\v2<.google.cloud.configdelivery.v1.ResourceBundleDeploymentInfoB\x04\xe2A\x01\x03R\adesired\x12\\\n" +
+	"\ainitial\x18\x03 \x01(\v2<.google.cloud.configdelivery.v1.ResourceBundleDeploymentInfoB\x04\xe2A\x01\x03R\ainitial\x12\\\n" +
+	"\acurrent\x18\x04 \x01(\v2<.google.cloud.configdelivery.v1.ResourceBundleDeploymentInfoB\x04\xe2A\x01\x03R\acurrent\x12M\n" +
+	"\x05state\x18\x05 \x01(\x0e21.google.cloud.configdelivery.v1.ClusterInfo.StateB\x04\xe2A\x01\x03R\x05state\x12!\n" +
+	"\bmessages\x18\x06 \x03(\tB\x05\xe2A\x02\x06\x03R\bmessages\x12?\n" +
 	"\n" +
-	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\"\x9b\x01\n" +
+	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\"\x9b\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aWAITING\x10\x01\x12\x0f\n" +
@@ -4736,15 +4736,15 @@ const file_google_cloud_configdelivery_v1_config_delivery_proto_rawDesc = "" +
 	"\tCANCELLED\x10\x06\x12\t\n" +
 	"\x05ERROR\x10\a\x12\r\n" +
 	"\tUNCHANGED\x10\b\x12\v\n" +
-	"\aSKIPPED\x10\t\"\xd2\x03\n" +
-	"\x1cResourceBundleDeploymentInfo\x12G\n" +
-	"\arelease\x18\x01 \x01(\tB-\xe0A\x03\xfaA'\n" +
-	"%configdelivery.googleapis.com/ReleaseR\arelease\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x03R\aversion\x12\x1d\n" +
-	"\avariant\x18\x03 \x01(\tB\x03\xe0A\x03R\avariant\x12j\n" +
+	"\aSKIPPED\x10\t\"\xd5\x03\n" +
+	"\x1cResourceBundleDeploymentInfo\x12H\n" +
+	"\arelease\x18\x01 \x01(\tB.\xe2A\x01\x03\xfaA'\n" +
+	"%configdelivery.googleapis.com/ReleaseR\arelease\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\aversion\x12\x1e\n" +
+	"\avariant\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\avariant\x12k\n" +
 	"\n" +
-	"sync_state\x18\x04 \x01(\x0e2F.google.cloud.configdelivery.v1.ResourceBundleDeploymentInfo.SyncStateB\x03\xe0A\x03R\tsyncState\x12\"\n" +
-	"\bmessages\x18\x05 \x03(\tB\x06\xe0A\x03\xe0A\x06R\bmessages\"\x9a\x01\n" +
+	"sync_state\x18\x04 \x01(\x0e2F.google.cloud.configdelivery.v1.ResourceBundleDeploymentInfo.SyncStateB\x04\xe2A\x01\x03R\tsyncState\x12!\n" +
+	"\bmessages\x18\x05 \x03(\tB\x05\xe2A\x02\x03\x06R\bmessages\"\x9a\x01\n" +
 	"\tSyncState\x12\x1a\n" +
 	"\x16SYNC_STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vRECONCILING\x10\x01\x12\v\n" +
@@ -4755,19 +4755,19 @@ const file_google_cloud_configdelivery_v1_config_delivery_proto_rawDesc = "" +
 	"\x05ERROR\x10\x05\x12\x14\n" +
 	"\x10DELETION_PENDING\x10\x06\x12\f\n" +
 	"\bDELETING\x10\a\x12\v\n" +
-	"\aDELETED\x10\b\"\xec\x02\n" +
-	"\x05Fleet\x12M\n" +
-	"\aproject\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\aproject\x12T\n" +
-	"\bselector\x18\x02 \x01(\v23.google.cloud.configdelivery.v1.Fleet.LabelSelectorB\x03\xe0A\x01R\bselector\x1a\xbd\x01\n" +
-	"\rLabelSelector\x12l\n" +
-	"\fmatch_labels\x18\x01 \x03(\v2D.google.cloud.configdelivery.v1.Fleet.LabelSelector.MatchLabelsEntryB\x03\xe0A\x01R\vmatchLabels\x1a>\n" +
+	"\aDELETED\x10\b\"\xef\x02\n" +
+	"\x05Fleet\x12N\n" +
+	"\aproject\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\aproject\x12U\n" +
+	"\bselector\x18\x02 \x01(\v23.google.cloud.configdelivery.v1.Fleet.LabelSelectorB\x04\xe2A\x01\x01R\bselector\x1a\xbe\x01\n" +
+	"\rLabelSelector\x12m\n" +
+	"\fmatch_labels\x18\x01 \x03(\v2D.google.cloud.configdelivery.v1.Fleet.LabelSelector.MatchLabelsEntryB\x04\xe2A\x01\x01R\vmatchLabels\x1a>\n" +
 	"\x10MatchLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x13\n" +
-	"\x11AllAtOnceStrategy\"=\n" +
-	"\x0fRollingStrategy\x12*\n" +
-	"\x0emax_concurrent\x18\x01 \x01(\x05B\x03\xe0A\x01R\rmaxConcurrent\"\xbf\x01\n" +
+	"\x11AllAtOnceStrategy\">\n" +
+	"\x0fRollingStrategy\x12+\n" +
+	"\x0emax_concurrent\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\rmaxConcurrent\"\xbf\x01\n" +
 	"\x0fRolloutStrategy\x12S\n" +
 	"\vall_at_once\x18\x01 \x01(\v21.google.cloud.configdelivery.v1.AllAtOnceStrategyH\x00R\tallAtOnce\x12K\n" +
 	"\arolling\x18\x02 \x01(\v2/.google.cloud.configdelivery.v1.RollingStrategyH\x00R\arollingB\n" +
@@ -4777,65 +4777,65 @@ const file_google_cloud_configdelivery_v1_config_delivery_proto_rawDesc = "" +
 	"\x19all_at_once_strategy_info\x18\x01 \x01(\v25.google.cloud.configdelivery.v1.AllAtOnceStrategyInfoH\x00R\x15allAtOnceStrategyInfo\x12i\n" +
 	"\x15rolling_strategy_info\x18\x02 \x01(\v23.google.cloud.configdelivery.v1.RollingStrategyInfoH\x00R\x13rollingStrategyInfoB\n" +
 	"\n" +
-	"\bstrategy\"e\n" +
-	"\x15AllAtOnceStrategyInfo\x12L\n" +
-	"\bclusters\x18\x01 \x03(\v2+.google.cloud.configdelivery.v1.ClusterInfoB\x03\xe0A\x06R\bclusters\"c\n" +
-	"\x13RollingStrategyInfo\x12L\n" +
-	"\bclusters\x18\x01 \x03(\v2+.google.cloud.configdelivery.v1.ClusterInfoB\x03\xe0A\x06R\bclusters\"\xe9\x01\n" +
-	"\x18ListFleetPackagesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*configdelivery.googleapis.com/FleetPackageR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\bstrategy\"f\n" +
+	"\x15AllAtOnceStrategyInfo\x12M\n" +
+	"\bclusters\x18\x01 \x03(\v2+.google.cloud.configdelivery.v1.ClusterInfoB\x04\xe2A\x01\x06R\bclusters\"d\n" +
+	"\x13RollingStrategyInfo\x12M\n" +
+	"\bclusters\x18\x01 \x03(\v2+.google.cloud.configdelivery.v1.ClusterInfoB\x04\xe2A\x01\x06R\bclusters\"\xee\x01\n" +
+	"\x18ListFleetPackagesRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*configdelivery.googleapis.com/FleetPackageR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbf\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc0\x01\n" +
 	"\x19ListFleetPackagesResponse\x12S\n" +
 	"\x0efleet_packages\x18\x01 \x03(\v2,.google.cloud.configdelivery.v1.FleetPackageR\rfleetPackages\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"`\n" +
-	"\x16GetFleetPackageRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*configdelivery.googleapis.com/FleetPackageR\x04name\"\x9a\x02\n" +
-	"\x19CreateFleetPackageRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*configdelivery.googleapis.com/FleetPackageR\x06parent\x12-\n" +
-	"\x10fleet_package_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0efleetPackageId\x12V\n" +
-	"\rfleet_package\x18\x03 \x01(\v2,.google.cloud.configdelivery.v1.FleetPackageB\x03\xe0A\x02R\ffleetPackage\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"a\n" +
+	"\x16GetFleetPackageRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*configdelivery.googleapis.com/FleetPackageR\x04name\"\x9e\x02\n" +
+	"\x19CreateFleetPackageRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*configdelivery.googleapis.com/FleetPackageR\x06parent\x12.\n" +
+	"\x10fleet_package_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0efleetPackageId\x12W\n" +
+	"\rfleet_package\x18\x03 \x01(\v2,.google.cloud.configdelivery.v1.FleetPackageB\x04\xe2A\x01\x02R\ffleetPackage\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe1\x01\n" +
-	"\x19UpdateFleetPackageRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12V\n" +
-	"\rfleet_package\x18\x02 \x01(\v2,.google.cloud.configdelivery.v1.FleetPackageB\x03\xe0A\x02R\ffleetPackage\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe4\x01\n" +
+	"\x19UpdateFleetPackageRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12W\n" +
+	"\rfleet_package\x18\x02 \x01(\v2,.google.cloud.configdelivery.v1.FleetPackageB\x04\xe2A\x01\x02R\ffleetPackage\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd4\x01\n" +
-	"\x19DeleteFleetPackageRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*configdelivery.googleapis.com/FleetPackageR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd8\x01\n" +
+	"\x19DeleteFleetPackageRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*configdelivery.googleapis.com/FleetPackageR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\x93\x06\n" +
-	"\aRelease\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12P\n" +
-	"\x06labels\x18\x04 \x03(\v23.google.cloud.configdelivery.v1.Release.LabelsEntryB\x03\xe0A\x01R\x06labels\x12T\n" +
-	"\tlifecycle\x18\x05 \x01(\x0e21.google.cloud.configdelivery.v1.Release.LifecycleB\x03\xe0A\x01R\tlifecycle\x12\x1d\n" +
-	"\aversion\x18\x06 \x01(\tB\x03\xe0A\x02R\aversion\x12B\n" +
-	"\fpublish_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vpublishTime\x12D\n" +
-	"\x04info\x18\t \x01(\v2+.google.cloud.configdelivery.v1.ReleaseInfoB\x03\xe0A\x01R\x04info\x1a9\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\x9b\x06\n" +
+	"\aRelease\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12Q\n" +
+	"\x06labels\x18\x04 \x03(\v23.google.cloud.configdelivery.v1.Release.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12U\n" +
+	"\tlifecycle\x18\x05 \x01(\x0e21.google.cloud.configdelivery.v1.Release.LifecycleB\x04\xe2A\x01\x01R\tlifecycle\x12\x1e\n" +
+	"\aversion\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12C\n" +
+	"\fpublish_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vpublishTime\x12E\n" +
+	"\x04info\x18\t \x01(\v2+.google.cloud.configdelivery.v1.ReleaseInfoB\x04\xe2A\x01\x01R\x04info\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"@\n" +
@@ -4843,111 +4843,111 @@ const file_google_cloud_configdelivery_v1_config_delivery_proto_rawDesc = "" +
 	"\x15LIFECYCLE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05DRAFT\x10\x01\x12\r\n" +
 	"\tPUBLISHED\x10\x02:\x9c\x01\xeaA\x98\x01\n" +
-	"%configdelivery.googleapis.com/Release\x12\\projects/{project}/locations/{location}/resourceBundles/{resource_bundle}/releases/{release}*\breleases2\arelease\"\x8e\x04\n" +
-	"\aVariant\x12P\n" +
-	"\x06labels\x18\x01 \x03(\v23.google.cloud.configdelivery.v1.Variant.LabelsEntryB\x03\xe0A\x01R\x06labels\x12'\n" +
-	"\tresources\x18\x02 \x03(\tB\t\xe0A\x02\xe0A\x06\xe0A\x04R\tresources\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"%configdelivery.googleapis.com/Release\x12\\projects/{project}/locations/{location}/resourceBundles/{resource_bundle}/releases/{release}*\breleases2\arelease\"\x8f\x04\n" +
+	"\aVariant\x12Q\n" +
+	"\x06labels\x18\x01 \x03(\v23.google.cloud.configdelivery.v1.Variant.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12$\n" +
+	"\tresources\x18\x02 \x03(\tB\x06\xe2A\x03\x02\x06\x04R\tresources\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xaf\x01\xeaA\xab\x01\n" +
-	"%configdelivery.googleapis.com/Variant\x12oprojects/{project}/locations/{location}/resourceBundles/{resource_bundle}/releases/{release}/variants/{variant}*\bvariants2\avariant\"\xdf\x01\n" +
-	"\x13ListVariantsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%configdelivery.googleapis.com/VariantR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"%configdelivery.googleapis.com/Variant\x12oprojects/{project}/locations/{location}/resourceBundles/{resource_bundle}/releases/{release}/variants/{variant}*\bvariants2\avariant\"\xe4\x01\n" +
+	"\x13ListVariantsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%configdelivery.googleapis.com/VariantR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xaa\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xab\x01\n" +
 	"\x14ListVariantsResponse\x12C\n" +
 	"\bvariants\x18\x01 \x03(\v2'.google.cloud.configdelivery.v1.VariantR\bvariants\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"V\n" +
-	"\x11GetVariantRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%configdelivery.googleapis.com/VariantR\x04name\"\xf5\x01\n" +
-	"\x14CreateVariantRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%configdelivery.googleapis.com/VariantR\x06parent\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"W\n" +
+	"\x11GetVariantRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%configdelivery.googleapis.com/VariantR\x04name\"\xf9\x01\n" +
+	"\x14CreateVariantRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%configdelivery.googleapis.com/VariantR\x06parent\x12#\n" +
 	"\n" +
-	"variant_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tvariantId\x12F\n" +
-	"\avariant\x18\x03 \x01(\v2'.google.cloud.configdelivery.v1.VariantB\x03\xe0A\x02R\avariant\x12*\n" +
+	"variant_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tvariantId\x12G\n" +
+	"\avariant\x18\x03 \x01(\v2'.google.cloud.configdelivery.v1.VariantB\x04\xe2A\x01\x02R\avariant\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcc\x01\n" +
-	"\x14UpdateVariantRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12F\n" +
-	"\avariant\x18\x02 \x01(\v2'.google.cloud.configdelivery.v1.VariantB\x03\xe0A\x02R\avariant\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcf\x01\n" +
+	"\x14UpdateVariantRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12G\n" +
+	"\avariant\x18\x02 \x01(\v2'.google.cloud.configdelivery.v1.VariantB\x04\xe2A\x01\x02R\avariant\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x85\x01\n" +
-	"\x14DeleteVariantRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%configdelivery.googleapis.com/VariantR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x87\x01\n" +
+	"\x14DeleteVariantRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%configdelivery.googleapis.com/VariantR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x85\x02\n" +
-	"\vReleaseInfo\x12)\n" +
-	"\x0eoci_image_path\x18\x01 \x01(\tB\x03\xe0A\x03R\fociImagePath\x12\x81\x01\n" +
-	"\x17variant_oci_image_paths\x18\x02 \x03(\v2E.google.cloud.configdelivery.v1.ReleaseInfo.VariantOciImagePathsEntryB\x03\xe0A\x01R\x14variantOciImagePaths\x1aG\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x87\x02\n" +
+	"\vReleaseInfo\x12*\n" +
+	"\x0eoci_image_path\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fociImagePath\x12\x82\x01\n" +
+	"\x17variant_oci_image_paths\x18\x02 \x03(\v2E.google.cloud.configdelivery.v1.ReleaseInfo.VariantOciImagePathsEntryB\x04\xe2A\x01\x01R\x14variantOciImagePaths\x1aG\n" +
 	"\x19VariantOciImagePathsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xdf\x01\n" +
-	"\x13ListReleasesRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%configdelivery.googleapis.com/ReleaseR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe4\x01\n" +
+	"\x13ListReleasesRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%configdelivery.googleapis.com/ReleaseR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xaa\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xab\x01\n" +
 	"\x14ListReleasesResponse\x12C\n" +
 	"\breleases\x18\x01 \x03(\v2'.google.cloud.configdelivery.v1.ReleaseR\breleases\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"V\n" +
-	"\x11GetReleaseRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%configdelivery.googleapis.com/ReleaseR\x04name\"\xf5\x01\n" +
-	"\x14CreateReleaseRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%configdelivery.googleapis.com/ReleaseR\x06parent\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"W\n" +
+	"\x11GetReleaseRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%configdelivery.googleapis.com/ReleaseR\x04name\"\xf9\x01\n" +
+	"\x14CreateReleaseRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%configdelivery.googleapis.com/ReleaseR\x06parent\x12#\n" +
 	"\n" +
-	"release_id\x18\x02 \x01(\tB\x03\xe0A\x02R\treleaseId\x12F\n" +
-	"\arelease\x18\x03 \x01(\v2'.google.cloud.configdelivery.v1.ReleaseB\x03\xe0A\x02R\arelease\x12*\n" +
+	"release_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\treleaseId\x12G\n" +
+	"\arelease\x18\x03 \x01(\v2'.google.cloud.configdelivery.v1.ReleaseB\x04\xe2A\x01\x02R\arelease\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcc\x01\n" +
-	"\x14UpdateReleaseRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12F\n" +
-	"\arelease\x18\x02 \x01(\v2'.google.cloud.configdelivery.v1.ReleaseB\x03\xe0A\x02R\arelease\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcf\x01\n" +
+	"\x14UpdateReleaseRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12G\n" +
+	"\arelease\x18\x02 \x01(\v2'.google.cloud.configdelivery.v1.ReleaseB\x04\xe2A\x01\x02R\arelease\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa0\x01\n" +
-	"\x14DeleteReleaseRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%configdelivery.googleapis.com/ReleaseR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa3\x01\n" +
+	"\x14DeleteReleaseRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%configdelivery.googleapis.com/ReleaseR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xdf\x01\n" +
-	"\x13ListRolloutsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%configdelivery.googleapis.com/RolloutR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xe4\x01\n" +
+	"\x13ListRolloutsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%configdelivery.googleapis.com/RolloutR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xaa\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xab\x01\n" +
 	"\x14ListRolloutsResponse\x12C\n" +
 	"\brollouts\x18\x01 \x03(\v2'.google.cloud.configdelivery.v1.RolloutR\brollouts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"V\n" +
-	"\x11GetRolloutRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%configdelivery.googleapis.com/RolloutR\x04name\"\xeb\x03\n" +
-	"\vRolloutInfo\x12L\n" +
-	"\x05state\x18\x01 \x01(\x0e21.google.cloud.configdelivery.v1.RolloutInfo.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"W\n" +
+	"\x11GetRolloutRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%configdelivery.googleapis.com/RolloutR\x04name\"\xf0\x03\n" +
+	"\vRolloutInfo\x12M\n" +
+	"\x05state\x18\x01 \x01(\x0e21.google.cloud.configdelivery.v1.RolloutInfo.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1d\n" +
-	"\amessage\x18\x06 \x01(\tB\x03\xe0A\x03R\amessage\x12l\n" +
-	"\x15rollout_strategy_info\x18\a \x01(\v23.google.cloud.configdelivery.v1.RolloutStrategyInfoB\x03\xe0A\x03R\x13rolloutStrategyInfo\"\x84\x01\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1e\n" +
+	"\amessage\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\amessage\x12m\n" +
+	"\x15rollout_strategy_info\x18\a \x01(\v23.google.cloud.configdelivery.v1.RolloutStrategyInfoB\x04\xe2A\x01\x03R\x13rolloutStrategyInfo\"\x84\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOMPLETED\x10\x01\x12\r\n" +
@@ -4956,31 +4956,31 @@ const file_google_cloud_configdelivery_v1_config_delivery_proto_rawDesc = "" +
 	"\vIN_PROGRESS\x10\x05\x12\v\n" +
 	"\aSTALLED\x10\x06\x12\r\n" +
 	"\tCANCELLED\x10\a\x12\f\n" +
-	"\bABORTING\x10\b\"\x9f\x05\n" +
-	"\aRollout\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12D\n" +
+	"\bABORTING\x10\b\"\xa2\x05\n" +
+	"\aRollout\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12D\n" +
 	"\arelease\x18\x02 \x01(\tB*\xfaA'\n" +
 	"%configdelivery.googleapis.com/ReleaseR\arelease\x12Z\n" +
 	"\x10rollout_strategy\x18\x04 \x01(\v2/.google.cloud.configdelivery.v1.RolloutStrategyR\x0frolloutStrategy\x12?\n" +
 	"\x04info\x18\x05 \x01(\v2+.google.cloud.configdelivery.v1.RolloutInfoR\x04info\x12y\n" +
-	"\x1bdeletion_propagation_policy\x18\a \x01(\x0e29.google.cloud.configdelivery.v1.DeletionPropagationPolicyR\x19deletionPropagationPolicy\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1bdeletion_propagation_policy\x18\a \x01(\x0e29.google.cloud.configdelivery.v1.DeletionPropagationPolicyR\x19deletionPropagationPolicy\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\x98\x01\xeaA\x94\x01\n" +
-	"%configdelivery.googleapis.com/Rollout\x12Xprojects/{project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{rollout}*\brollouts2\arollout\"w\n" +
-	"\x15SuspendRolloutRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%configdelivery.googleapis.com/RolloutR\x04name\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x01R\x06reason\"v\n" +
-	"\x14ResumeRolloutRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%configdelivery.googleapis.com/RolloutR\x04name\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x01R\x06reason\"u\n" +
-	"\x13AbortRolloutRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%configdelivery.googleapis.com/RolloutR\x04name\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x01R\x06reason*d\n" +
+	"%configdelivery.googleapis.com/Rollout\x12Xprojects/{project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{rollout}*\brollouts2\arollout\"y\n" +
+	"\x15SuspendRolloutRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%configdelivery.googleapis.com/RolloutR\x04name\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06reason\"x\n" +
+	"\x14ResumeRolloutRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%configdelivery.googleapis.com/RolloutR\x04name\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06reason\"w\n" +
+	"\x13AbortRolloutRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%configdelivery.googleapis.com/RolloutR\x04name\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06reason*d\n" +
 	"\x19DeletionPropagationPolicy\x12+\n" +
 	"'DELETION_PROPAGATION_POLICY_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

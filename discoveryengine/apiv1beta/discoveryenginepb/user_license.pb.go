@@ -276,18 +276,18 @@ var File_google_cloud_discoveryengine_v1beta_user_license_proto protoreflect.Fil
 
 const file_google_cloud_discoveryengine_v1beta_user_license_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/discoveryengine/v1beta/user_license.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\x05\n" +
-	"\vUserLicense\x12-\n" +
-	"\x0euser_principal\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\x02R\ruserPrincipal\x12&\n" +
-	"\fuser_profile\x18\x03 \x01(\tB\x03\xe0A\x01R\vuserProfile\x12\x86\x01\n" +
-	"\x18license_assignment_state\x18\x04 \x01(\x0e2G.google.cloud.discoveryengine.v1beta.UserLicense.LicenseAssignmentStateB\x03\xe0A\x03R\x16licenseAssignmentState\x12[\n" +
-	"\x0elicense_config\x18\x05 \x01(\tB4\xe0A\x01\xfaA.\n" +
-	",discoveryengine.googleapis.com/LicenseConfigR\rlicenseConfig\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12G\n" +
-	"\x0flast_login_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rlastLoginTime\"\x9d\x01\n" +
+	"6google/cloud/discoveryengine/v1beta/user_license.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbc\x05\n" +
+	"\vUserLicense\x12,\n" +
+	"\x0euser_principal\x18\x01 \x01(\tB\x05\xe2A\x02\x05\x02R\ruserPrincipal\x12'\n" +
+	"\fuser_profile\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vuserProfile\x12\x87\x01\n" +
+	"\x18license_assignment_state\x18\x04 \x01(\x0e2G.google.cloud.discoveryengine.v1beta.UserLicense.LicenseAssignmentStateB\x04\xe2A\x01\x03R\x16licenseAssignmentState\x12\\\n" +
+	"\x0elicense_config\x18\x05 \x01(\tB5\xe2A\x01\x01\xfaA.\n" +
+	",discoveryengine.googleapis.com/LicenseConfigR\rlicenseConfig\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12H\n" +
+	"\x0flast_login_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rlastLoginTime\"\x9d\x01\n" +
 	"\x16LicenseAssignmentState\x12(\n" +
 	"$LICENSE_ASSIGNMENT_STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bASSIGNED\x10\x01\x12\x0e\n" +
@@ -296,10 +296,10 @@ const file_google_cloud_discoveryengine_v1beta_user_license_proto_rawDesc = "" +
 	"\n" +
 	"NO_LICENSE\x10\x03\x12\x1e\n" +
 	"\x1aNO_LICENSE_ATTEMPTED_LOGIN\x10\x04\x12\v\n" +
-	"\aBLOCKED\x10\x05\"x\n" +
-	"\x17LicenseConfigUsageStats\x12*\n" +
-	"\x0elicense_config\x18\x01 \x01(\tB\x03\xe0A\x02R\rlicenseConfig\x121\n" +
-	"\x12used_license_count\x18\x02 \x01(\x03B\x03\xe0A\x02R\x10usedLicenseCountB\x97\x02\n" +
+	"\aBLOCKED\x10\x05\"z\n" +
+	"\x17LicenseConfigUsageStats\x12+\n" +
+	"\x0elicense_config\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rlicenseConfig\x122\n" +
+	"\x12used_license_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\x10usedLicenseCountB\x97\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x10UserLicenseProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (

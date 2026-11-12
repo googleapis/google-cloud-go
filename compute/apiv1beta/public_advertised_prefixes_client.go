@@ -352,6 +352,12 @@ func (c *publicAdvertisedPrefixesRESTClient) Announce(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPublicAdvertisedPrefix(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicAdvertisedPrefixes/%v/announce", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
 	params := url.Values{}
@@ -413,6 +419,12 @@ func (c *publicAdvertisedPrefixesRESTClient) Announce(ctx context.Context, req *
 func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPublicAdvertisedPrefix(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
@@ -478,6 +490,12 @@ func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPublicAdvertisedPrefix(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
 	// Build HTTP headers from client and context metadata.
@@ -533,6 +551,11 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicAdvertisedPrefixes", req.GetProject())
@@ -609,6 +632,11 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicAdvertisedPrefixes", req.GetProject())
@@ -694,6 +722,12 @@ func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPublicAdvertisedPrefix(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
 	params := url.Values{}
@@ -755,6 +789,12 @@ func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *com
 func (c *publicAdvertisedPrefixesRESTClient) Withdraw(ctx context.Context, req *computepb.WithdrawPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPublicAdvertisedPrefix(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicAdvertisedPrefixes/%v/withdraw", req.GetProject(), req.GetPublicAdvertisedPrefix())

@@ -51,9 +51,10 @@ type CreateServiceRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Service instance to create.
 	Service *Service `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
-	// Required. The unique identifier for the Service. It must begin with letter,
+	// Optional. The unique identifier for the Service. It must begin with letter,
 	// and cannot end with hyphen; must contain fewer than 50 characters.
 	// The name of the service becomes {parent}/services/{service_id}.
+	// If not provided, the server will generate a unique `service_id`.
 	ServiceId string `protobuf:"bytes,3,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
 	// Indicates that the request should be validated and default values
 	// populated, without persisting the request or creating any resources.
@@ -133,9 +134,18 @@ type UpdateServiceRequest struct {
 	// Optional. If set to true, and if the Service does not exist, it will create
 	// a new one. The caller must have 'run.services.create' permissions if this
 	// is set to true and the Service does not exist.
-	AllowMissing  bool `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	AllowMissing bool `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
+	// Optional. If set to true, a new revision will be created from the template
+	// even if the system doesn't detect any changes from the previously deployed
+	// revision.
+	//
+	// This may be useful for cases where the underlying resources need to be
+	// recreated or reinitialized. For example if the image is specified by label,
+	// but the underlying image digest has changed) or if the container performs
+	// deployment initialization work that needs to be performed again.
+	ForceNewRevision bool `protobuf:"varint,5,opt,name=force_new_revision,json=forceNewRevision,proto3" json:"force_new_revision,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *UpdateServiceRequest) Reset() {
@@ -192,6 +202,13 @@ func (x *UpdateServiceRequest) GetValidateOnly() bool {
 func (x *UpdateServiceRequest) GetAllowMissing() bool {
 	if x != nil {
 		return x.AllowMissing
+	}
+	return false
+}
+
+func (x *UpdateServiceRequest) GetForceNewRevision() bool {
+	if x != nil {
+		return x.ForceNewRevision
 	}
 	return false
 }
@@ -558,6 +575,8 @@ type Service struct {
 	Urls []string `protobuf:"bytes,24,rep,name=urls,proto3" json:"urls,omitempty"`
 	// Optional. IAP settings on the Service.
 	IapEnabled bool `protobuf:"varint,25,opt,name=iap_enabled,json=iapEnabled,proto3" json:"iap_enabled,omitempty"`
+	// Optional. Enables SSH access to the Service.
+	SshEnabled *bool `protobuf:"varint,29,opt,name=ssh_enabled,json=sshEnabled,proto3,oneof" json:"ssh_enabled,omitempty"`
 	// Optional. Settings for multi-region deployment.
 	MultiRegionSettings *Service_MultiRegionSettings `protobuf:"bytes,26,opt,name=multi_region_settings,json=multiRegionSettings,proto3" json:"multi_region_settings,omitempty"`
 	// One or more custom audiences that you want this service to support. Specify
@@ -603,6 +622,8 @@ type Service struct {
 	ThreatDetectionEnabled bool `protobuf:"varint,40,opt,name=threat_detection_enabled,json=threatDetectionEnabled,proto3" json:"threat_detection_enabled,omitempty"`
 	// Optional. Configuration for building a Cloud Run function.
 	BuildConfig *BuildConfig `protobuf:"bytes,41,opt,name=build_config,json=buildConfig,proto3" json:"build_config,omitempty"`
+	// Optional. The functional type of the Service.
+	FunctionalType FunctionalType `protobuf:"varint,42,opt,name=functional_type,json=functionalType,proto3,enum=google.cloud.run.v2.FunctionalType" json:"functional_type,omitempty"`
 	// Output only. Returns true if the Service is currently being acted upon by
 	// the system to bring it into the desired state.
 	//
@@ -831,6 +852,13 @@ func (x *Service) GetIapEnabled() bool {
 	return false
 }
 
+func (x *Service) GetSshEnabled() bool {
+	if x != nil && x.SshEnabled != nil {
+		return *x.SshEnabled
+	}
+	return false
+}
+
 func (x *Service) GetMultiRegionSettings() *Service_MultiRegionSettings {
 	if x != nil {
 		return x.MultiRegionSettings
@@ -915,6 +943,13 @@ func (x *Service) GetBuildConfig() *BuildConfig {
 	return nil
 }
 
+func (x *Service) GetFunctionalType() FunctionalType {
+	if x != nil {
+		return x.FunctionalType
+	}
+	return FunctionalType_FUNCTIONAL_TYPE_UNSPECIFIED
+}
+
 func (x *Service) GetReconciling() bool {
 	if x != nil {
 		return x.Reconciling
@@ -988,98 +1023,103 @@ var File_google_cloud_run_v2_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_service_proto_rawDesc = "" +
 	"\n" +
-	"!google/cloud/run/v2/service.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a+google/cloud/run/v2/revision_template.proto\x1a(google/cloud/run/v2/traffic_target.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd8\x01\n" +
-	"\x14CreateServiceRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1arun.googleapis.com/ServiceR\x06parent\x12;\n" +
-	"\aservice\x18\x02 \x01(\v2\x1c.google.cloud.run.v2.ServiceB\x03\xe0A\x02R\aservice\x12\"\n" +
+	"!google/cloud/run/v2/service.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a+google/cloud/run/v2/revision_template.proto\x1a(google/cloud/run/v2/traffic_target.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x01\n" +
+	"\x14CreateServiceRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1arun.googleapis.com/ServiceR\x06parent\x12<\n" +
+	"\aservice\x18\x02 \x01(\v2\x1c.google.cloud.run.v2.ServiceB\x04\xe2A\x01\x02R\aservice\x12#\n" +
 	"\n" +
-	"service_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tserviceId\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xe4\x01\n" +
-	"\x14UpdateServiceRequest\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12;\n" +
-	"\aservice\x18\x01 \x01(\v2\x1c.google.cloud.run.v2.ServiceB\x03\xe0A\x02R\aservice\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xb0\x01\n" +
-	"\x13ListServicesRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1arun.googleapis.com/ServiceR\x06parent\x12\x1b\n" +
+	"service_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tserviceId\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\x9b\x02\n" +
+	"\x14UpdateServiceRequest\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12<\n" +
+	"\aservice\x18\x01 \x01(\v2\x1c.google.cloud.run.v2.ServiceB\x04\xe2A\x01\x02R\aservice\x12#\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x122\n" +
+	"\x12force_new_revision\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x10forceNewRevision\"\xb1\x01\n" +
+	"\x13ListServicesRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1arun.googleapis.com/ServiceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12!\n" +
-	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\x9f\x01\n" +
+	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\xa0\x01\n" +
 	"\x14ListServicesResponse\x128\n" +
 	"\bservices\x18\x01 \x03(\v2\x1c.google.cloud.run.v2.ServiceR\bservices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"K\n" +
-	"\x11GetServiceRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1arun.googleapis.com/ServiceR\x04name\"\x87\x01\n" +
-	"\x14DeleteServiceRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"L\n" +
+	"\x11GetServiceRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1arun.googleapis.com/ServiceR\x04name\"\x88\x01\n" +
+	"\x14DeleteServiceRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
 	"\x1arun.googleapis.com/ServiceR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\xcd\x13\n" +
-	"\aService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12#\n" +
+	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x81\x15\n" +
+	"\aService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12$\n" +
 	"\n" +
-	"generation\x18\x04 \x01(\x03B\x03\xe0A\x03R\n" +
-	"generation\x12E\n" +
-	"\x06labels\x18\x05 \x03(\v2(.google.cloud.run.v2.Service.LabelsEntryB\x03\xe0A\x01R\x06labels\x12T\n" +
-	"\vannotations\x18\x06 \x03(\v2-.google.cloud.run.v2.Service.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
+	"generation\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"generation\x12F\n" +
+	"\x06labels\x18\x05 \x03(\v2(.google.cloud.run.v2.Service.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12U\n" +
+	"\vannotations\x18\x06 \x03(\v2-.google.cloud.run.v2.Service.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
 	"\vexpire_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12\x1d\n" +
-	"\acreator\x18\v \x01(\tB\x03\xe0A\x03R\acreator\x12(\n" +
-	"\rlast_modifier\x18\f \x01(\tB\x03\xe0A\x03R\flastModifier\x12\x16\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12\x1e\n" +
+	"\acreator\x18\v \x01(\tB\x04\xe2A\x01\x03R\acreator\x12)\n" +
+	"\rlast_modifier\x18\f \x01(\tB\x04\xe2A\x01\x03R\flastModifier\x12\x16\n" +
 	"\x06client\x18\r \x01(\tR\x06client\x12%\n" +
-	"\x0eclient_version\x18\x0e \x01(\tR\rclientVersion\x12B\n" +
-	"\aingress\x18\x0f \x01(\x0e2#.google.cloud.run.v2.IngressTrafficB\x03\xe0A\x01R\aingress\x12?\n" +
-	"\flaunch_stage\x18\x10 \x01(\x0e2\x17.google.api.LaunchStageB\x03\xe0A\x01R\vlaunchStage\x12`\n" +
-	"\x14binary_authorization\x18\x11 \x01(\v2(.google.cloud.run.v2.BinaryAuthorizationB\x03\xe0A\x01R\x13binaryAuthorization\x12F\n" +
-	"\btemplate\x18\x12 \x01(\v2%.google.cloud.run.v2.RevisionTemplateB\x03\xe0A\x02R\btemplate\x12A\n" +
-	"\atraffic\x18\x13 \x03(\v2\".google.cloud.run.v2.TrafficTargetB\x03\xe0A\x01R\atraffic\x12B\n" +
-	"\ascaling\x18\x14 \x01(\v2#.google.cloud.run.v2.ServiceScalingB\x03\xe0A\x01R\ascaling\x125\n" +
-	"\x14invoker_iam_disabled\x18\x15 \x01(\bB\x03\xe0A\x01R\x12invokerIamDisabled\x125\n" +
-	"\x14default_uri_disabled\x18\x16 \x01(\bB\x03\xe0A\x01R\x12defaultUriDisabled\x12\x17\n" +
-	"\x04urls\x18\x18 \x03(\tB\x03\xe0A\x03R\x04urls\x12$\n" +
-	"\viap_enabled\x18\x19 \x01(\bB\x03\xe0A\x01R\n" +
-	"iapEnabled\x12i\n" +
-	"\x15multi_region_settings\x18\x1a \x01(\v20.google.cloud.run.v2.Service.MultiRegionSettingsB\x03\xe0A\x01R\x13multiRegionSettings\x12)\n" +
-	"\x10custom_audiences\x18% \x03(\tR\x0fcustomAudiences\x124\n" +
-	"\x13observed_generation\x18\x1e \x01(\x03B\x03\xe0A\x03R\x12observedGeneration\x12R\n" +
-	"\x12terminal_condition\x18\x1f \x01(\v2\x1e.google.cloud.run.v2.ConditionB\x03\xe0A\x03R\x11terminalCondition\x12C\n" +
+	"\x0eclient_version\x18\x0e \x01(\tR\rclientVersion\x12C\n" +
+	"\aingress\x18\x0f \x01(\x0e2#.google.cloud.run.v2.IngressTrafficB\x04\xe2A\x01\x01R\aingress\x12@\n" +
+	"\flaunch_stage\x18\x10 \x01(\x0e2\x17.google.api.LaunchStageB\x04\xe2A\x01\x01R\vlaunchStage\x12a\n" +
+	"\x14binary_authorization\x18\x11 \x01(\v2(.google.cloud.run.v2.BinaryAuthorizationB\x04\xe2A\x01\x01R\x13binaryAuthorization\x12G\n" +
+	"\btemplate\x18\x12 \x01(\v2%.google.cloud.run.v2.RevisionTemplateB\x04\xe2A\x01\x02R\btemplate\x12B\n" +
+	"\atraffic\x18\x13 \x03(\v2\".google.cloud.run.v2.TrafficTargetB\x04\xe2A\x01\x01R\atraffic\x12C\n" +
+	"\ascaling\x18\x14 \x01(\v2#.google.cloud.run.v2.ServiceScalingB\x04\xe2A\x01\x01R\ascaling\x126\n" +
+	"\x14invoker_iam_disabled\x18\x15 \x01(\bB\x04\xe2A\x01\x01R\x12invokerIamDisabled\x126\n" +
+	"\x14default_uri_disabled\x18\x16 \x01(\bB\x04\xe2A\x01\x01R\x12defaultUriDisabled\x12\x18\n" +
+	"\x04urls\x18\x18 \x03(\tB\x04\xe2A\x01\x03R\x04urls\x12%\n" +
+	"\viap_enabled\x18\x19 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"iapEnabled\x12*\n" +
+	"\vssh_enabled\x18\x1d \x01(\bB\x04\xe2A\x01\x01H\x00R\n" +
+	"sshEnabled\x88\x01\x01\x12j\n" +
+	"\x15multi_region_settings\x18\x1a \x01(\v20.google.cloud.run.v2.Service.MultiRegionSettingsB\x04\xe2A\x01\x01R\x13multiRegionSettings\x12)\n" +
+	"\x10custom_audiences\x18% \x03(\tR\x0fcustomAudiences\x125\n" +
+	"\x13observed_generation\x18\x1e \x01(\x03B\x04\xe2A\x01\x03R\x12observedGeneration\x12S\n" +
+	"\x12terminal_condition\x18\x1f \x01(\v2\x1e.google.cloud.run.v2.ConditionB\x04\xe2A\x01\x03R\x11terminalCondition\x12D\n" +
 	"\n" +
-	"conditions\x18  \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x03\xe0A\x03R\n" +
-	"conditions\x12W\n" +
-	"\x15latest_ready_revision\x18! \x01(\tB#\xe0A\x03\xfaA\x1d\n" +
-	"\x1brun.googleapis.com/RevisionR\x13latestReadyRevision\x12[\n" +
-	"\x17latest_created_revision\x18\" \x01(\tB#\xe0A\x03\xfaA\x1d\n" +
-	"\x1brun.googleapis.com/RevisionR\x15latestCreatedRevision\x12X\n" +
-	"\x10traffic_statuses\x18# \x03(\v2(.google.cloud.run.v2.TrafficTargetStatusB\x03\xe0A\x03R\x0ftrafficStatuses\x12\x15\n" +
-	"\x03uri\x18$ \x01(\tB\x03\xe0A\x03R\x03uri\x12(\n" +
-	"\rsatisfies_pzs\x18& \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12=\n" +
-	"\x18threat_detection_enabled\x18( \x01(\bB\x03\xe0A\x03R\x16threatDetectionEnabled\x12H\n" +
-	"\fbuild_config\x18) \x01(\v2 .google.cloud.run.v2.BuildConfigB\x03\xe0A\x01R\vbuildConfig\x12%\n" +
-	"\vreconciling\x18b \x01(\bB\x03\xe0A\x03R\vreconciling\x12\x17\n" +
-	"\x04etag\x18c \x01(\tB\x03\xe0A\x01R\x04etag\x1aa\n" +
-	"\x13MultiRegionSettings\x12\x1d\n" +
-	"\aregions\x18\x01 \x03(\tB\x03\xe0A\x02R\aregions\x12+\n" +
-	"\x0fmulti_region_id\x18\x02 \x01(\tB\x03\xe0A\x01R\rmultiRegionId\x1a9\n" +
+	"conditions\x18  \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x04\xe2A\x01\x03R\n" +
+	"conditions\x12X\n" +
+	"\x15latest_ready_revision\x18! \x01(\tB$\xe2A\x01\x03\xfaA\x1d\n" +
+	"\x1brun.googleapis.com/RevisionR\x13latestReadyRevision\x12\\\n" +
+	"\x17latest_created_revision\x18\" \x01(\tB$\xe2A\x01\x03\xfaA\x1d\n" +
+	"\x1brun.googleapis.com/RevisionR\x15latestCreatedRevision\x12Y\n" +
+	"\x10traffic_statuses\x18# \x03(\v2(.google.cloud.run.v2.TrafficTargetStatusB\x04\xe2A\x01\x03R\x0ftrafficStatuses\x12\x16\n" +
+	"\x03uri\x18$ \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12)\n" +
+	"\rsatisfies_pzs\x18& \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12>\n" +
+	"\x18threat_detection_enabled\x18( \x01(\bB\x04\xe2A\x01\x03R\x16threatDetectionEnabled\x12I\n" +
+	"\fbuild_config\x18) \x01(\v2 .google.cloud.run.v2.BuildConfigB\x04\xe2A\x01\x01R\vbuildConfig\x12R\n" +
+	"\x0ffunctional_type\x18* \x01(\x0e2#.google.cloud.run.v2.FunctionalTypeB\x04\xe2A\x01\x01R\x0efunctionalType\x12&\n" +
+	"\vreconciling\x18b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12\x18\n" +
+	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1ac\n" +
+	"\x13MultiRegionSettings\x12\x1e\n" +
+	"\aregions\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\aregions\x12,\n" +
+	"\x0fmulti_region_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rmultiRegionId\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:^\xeaA[\n" +
-	"\x1arun.googleapis.com/Service\x12:projects/{project}/locations/{location}/services/{service}R\x01\x012\xcd\r\n" +
+	"\x1arun.googleapis.com/Service\x12:projects/{project}/locations/{location}/services/{service}R\x01\x01B\x0e\n" +
+	"\f_ssh_enabled2\x9f\x0e\n" +
 	"\bServices\x12\xfd\x01\n" +
 	"\rCreateService\x12).google.cloud.run.v2.CreateServiceRequest\x1a\x1d.google.longrunning.Operation\"\xa1\x01\xcaA\x12\n" +
 	"\aService\x12\aService\xdaA\x19parent,service,service_id\x82\xd3\xe4\x93\x027:\aservice\",/v2/{parent=projects/*/locations/*}/services\x8a\xd3\xe4\x93\x02-\x12+\n" +
@@ -1097,7 +1137,7 @@ const file_google_cloud_run_v2_service_proto_rawDesc = "" +
 	"\x04name\x12$projects/*/locations/{location=*}/**\x12\x90\x01\n" +
 	"\fGetIamPolicy\x12\".google.iam.v1.GetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"E\x82\xd3\xe4\x93\x02?\x12=/v2/{resource=projects/*/locations/*/services/*}:getIamPolicy\x12\x93\x01\n" +
 	"\fSetIamPolicy\x12\".google.iam.v1.SetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"H\x82\xd3\xe4\x93\x02B:\x01*\"=/v2/{resource=projects/*/locations/*/services/*}:setIamPolicy\x12\xb9\x01\n" +
-	"\x12TestIamPermissions\x12(.google.iam.v1.TestIamPermissionsRequest\x1a).google.iam.v1.TestIamPermissionsResponse\"N\x82\xd3\xe4\x93\x02H:\x01*\"C/v2/{resource=projects/*/locations/*/services/*}:testIamPermissions\x1aF\xcaA\x12run.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBT\n" +
+	"\x12TestIamPermissions\x12(.google.iam.v1.TestIamPermissionsRequest\x1a).google.iam.v1.TestIamPermissionsResponse\"N\x82\xd3\xe4\x93\x02H:\x01*\"C/v2/{resource=projects/*/locations/*/services/*}:testIamPermissions\x1a\x97\x01\xcaA\x12run.googleapis.com\xd2A\x7fhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/run,https://www.googleapis.com/auth/run.readonlyBT\n" +
 	"\x17com.google.cloud.run.v2B\fServiceProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
 
 var (
@@ -1135,12 +1175,13 @@ var file_google_cloud_run_v2_service_proto_goTypes = []any{
 	(*Condition)(nil),                        // 18: google.cloud.run.v2.Condition
 	(*TrafficTargetStatus)(nil),              // 19: google.cloud.run.v2.TrafficTargetStatus
 	(*BuildConfig)(nil),                      // 20: google.cloud.run.v2.BuildConfig
-	(*iampb.GetIamPolicyRequest)(nil),        // 21: google.iam.v1.GetIamPolicyRequest
-	(*iampb.SetIamPolicyRequest)(nil),        // 22: google.iam.v1.SetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),  // 23: google.iam.v1.TestIamPermissionsRequest
-	(*longrunningpb.Operation)(nil),          // 24: google.longrunning.Operation
-	(*iampb.Policy)(nil),                     // 25: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil), // 26: google.iam.v1.TestIamPermissionsResponse
+	(FunctionalType)(0),                      // 21: google.cloud.run.v2.FunctionalType
+	(*iampb.GetIamPolicyRequest)(nil),        // 22: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 23: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 24: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),          // 25: google.longrunning.Operation
+	(*iampb.Policy)(nil),                     // 26: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 27: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_run_v2_service_proto_depIdxs = []int32{
 	6,  // 0: google.cloud.run.v2.CreateServiceRequest.service:type_name -> google.cloud.run.v2.Service
@@ -1164,27 +1205,28 @@ var file_google_cloud_run_v2_service_proto_depIdxs = []int32{
 	18, // 18: google.cloud.run.v2.Service.conditions:type_name -> google.cloud.run.v2.Condition
 	19, // 19: google.cloud.run.v2.Service.traffic_statuses:type_name -> google.cloud.run.v2.TrafficTargetStatus
 	20, // 20: google.cloud.run.v2.Service.build_config:type_name -> google.cloud.run.v2.BuildConfig
-	0,  // 21: google.cloud.run.v2.Services.CreateService:input_type -> google.cloud.run.v2.CreateServiceRequest
-	4,  // 22: google.cloud.run.v2.Services.GetService:input_type -> google.cloud.run.v2.GetServiceRequest
-	2,  // 23: google.cloud.run.v2.Services.ListServices:input_type -> google.cloud.run.v2.ListServicesRequest
-	1,  // 24: google.cloud.run.v2.Services.UpdateService:input_type -> google.cloud.run.v2.UpdateServiceRequest
-	5,  // 25: google.cloud.run.v2.Services.DeleteService:input_type -> google.cloud.run.v2.DeleteServiceRequest
-	21, // 26: google.cloud.run.v2.Services.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	22, // 27: google.cloud.run.v2.Services.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	23, // 28: google.cloud.run.v2.Services.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	24, // 29: google.cloud.run.v2.Services.CreateService:output_type -> google.longrunning.Operation
-	6,  // 30: google.cloud.run.v2.Services.GetService:output_type -> google.cloud.run.v2.Service
-	3,  // 31: google.cloud.run.v2.Services.ListServices:output_type -> google.cloud.run.v2.ListServicesResponse
-	24, // 32: google.cloud.run.v2.Services.UpdateService:output_type -> google.longrunning.Operation
-	24, // 33: google.cloud.run.v2.Services.DeleteService:output_type -> google.longrunning.Operation
-	25, // 34: google.cloud.run.v2.Services.GetIamPolicy:output_type -> google.iam.v1.Policy
-	25, // 35: google.cloud.run.v2.Services.SetIamPolicy:output_type -> google.iam.v1.Policy
-	26, // 36: google.cloud.run.v2.Services.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	29, // [29:37] is the sub-list for method output_type
-	21, // [21:29] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	21, // 21: google.cloud.run.v2.Service.functional_type:type_name -> google.cloud.run.v2.FunctionalType
+	0,  // 22: google.cloud.run.v2.Services.CreateService:input_type -> google.cloud.run.v2.CreateServiceRequest
+	4,  // 23: google.cloud.run.v2.Services.GetService:input_type -> google.cloud.run.v2.GetServiceRequest
+	2,  // 24: google.cloud.run.v2.Services.ListServices:input_type -> google.cloud.run.v2.ListServicesRequest
+	1,  // 25: google.cloud.run.v2.Services.UpdateService:input_type -> google.cloud.run.v2.UpdateServiceRequest
+	5,  // 26: google.cloud.run.v2.Services.DeleteService:input_type -> google.cloud.run.v2.DeleteServiceRequest
+	22, // 27: google.cloud.run.v2.Services.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	23, // 28: google.cloud.run.v2.Services.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	24, // 29: google.cloud.run.v2.Services.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	25, // 30: google.cloud.run.v2.Services.CreateService:output_type -> google.longrunning.Operation
+	6,  // 31: google.cloud.run.v2.Services.GetService:output_type -> google.cloud.run.v2.Service
+	3,  // 32: google.cloud.run.v2.Services.ListServices:output_type -> google.cloud.run.v2.ListServicesResponse
+	25, // 33: google.cloud.run.v2.Services.UpdateService:output_type -> google.longrunning.Operation
+	25, // 34: google.cloud.run.v2.Services.DeleteService:output_type -> google.longrunning.Operation
+	26, // 35: google.cloud.run.v2.Services.GetIamPolicy:output_type -> google.iam.v1.Policy
+	26, // 36: google.cloud.run.v2.Services.SetIamPolicy:output_type -> google.iam.v1.Policy
+	27, // 37: google.cloud.run.v2.Services.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	30, // [30:38] is the sub-list for method output_type
+	22, // [22:30] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_service_proto_init() }
@@ -1196,6 +1238,7 @@ func file_google_cloud_run_v2_service_proto_init() {
 	file_google_cloud_run_v2_revision_template_proto_init()
 	file_google_cloud_run_v2_traffic_target_proto_init()
 	file_google_cloud_run_v2_vendor_settings_proto_init()
+	file_google_cloud_run_v2_service_proto_msgTypes[6].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

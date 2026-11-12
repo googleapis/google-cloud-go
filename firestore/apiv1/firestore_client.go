@@ -1714,6 +1714,11 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1799,6 +1804,12 @@ func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+			req.GetCollectionId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/%v", req.GetParent(), req.GetCollectionId())
@@ -1899,6 +1910,11 @@ func (c *restClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDocument().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDocument().GetName())
 
 	params := url.Values{}
@@ -1978,6 +1994,11 @@ func (c *restClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2039,6 +2060,11 @@ func (c *restClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:batchGet", req.GetDatabase())
@@ -2147,6 +2173,11 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:beginTransaction", req.GetDatabase())
 
 	params := url.Values{}
@@ -2205,6 +2236,11 @@ func (c *restClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:commit", req.GetDatabase())
@@ -2267,6 +2303,11 @@ func (c *restClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequ
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:rollback", req.GetDatabase())
 
 	params := url.Values{}
@@ -2310,6 +2351,11 @@ func (c *restClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:runQuery", req.GetParent())
@@ -2416,6 +2462,11 @@ func (c *restClient) ExecutePipeline(ctx context.Context, req *firestorepb.Execu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:executePipeline", req.GetDatabase())
@@ -2548,6 +2599,11 @@ func (c *restClient) RunAggregationQuery(ctx context.Context, req *firestorepb.R
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:runAggregationQuery", req.GetParent())
 
 	params := url.Values{}
@@ -2669,6 +2725,11 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:partitionQuery", req.GetParent())
 
 		params := url.Values{}
@@ -2763,6 +2824,11 @@ func (c *restClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listCollectionIds", req.GetParent())
 
 		params := url.Values{}
@@ -2837,6 +2903,11 @@ func (c *restClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWrite
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:batchWrite", req.GetDatabase())
 
 	params := url.Values{}
@@ -2896,6 +2967,12 @@ func (c *restClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+		req.GetCollectionId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/%v", req.GetParent(), req.GetCollectionId())
@@ -2971,6 +3048,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3010,6 +3092,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3047,6 +3134,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3114,6 +3206,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

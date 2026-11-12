@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,11 @@ import (
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	structpb "google.golang.org/protobuf/types/known/structpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -51,6 +54,9 @@ const (
 	AssistAnswer_SUCCEEDED AssistAnswer_State = 3
 	// Assist operation has been skipped.
 	AssistAnswer_SKIPPED AssistAnswer_State = 4
+	// Assist operation has been cancelled (e.g. client closed the stream).
+	// May contain a partial response.
+	AssistAnswer_CANCELLED AssistAnswer_State = 5
 )
 
 // Enum value maps for AssistAnswer_State.
@@ -61,6 +67,7 @@ var (
 		2: "FAILED",
 		3: "SUCCEEDED",
 		4: "SKIPPED",
+		5: "CANCELLED",
 	}
 	AssistAnswer_State_value = map[string]int32{
 		"STATE_UNSPECIFIED": 0,
@@ -68,6 +75,7 @@ var (
 		"FAILED":            2,
 		"SUCCEEDED":         3,
 		"SKIPPED":           4,
+		"CANCELLED":         5,
 	}
 )
 
@@ -154,6 +162,117 @@ func (AssistAnswer_AssistSkippedReason) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{0, 1}
 }
 
+// The verdict of the customer policy enforcement.
+type AssistAnswer_CustomerPolicyEnforcementResult_Verdict int32
+
+const (
+	// Unknown value.
+	AssistAnswer_CustomerPolicyEnforcementResult_UNSPECIFIED AssistAnswer_CustomerPolicyEnforcementResult_Verdict = 0
+	// There was no policy violation.
+	AssistAnswer_CustomerPolicyEnforcementResult_ALLOW AssistAnswer_CustomerPolicyEnforcementResult_Verdict = 1
+	// Processing was blocked by the customer policy.
+	AssistAnswer_CustomerPolicyEnforcementResult_BLOCK AssistAnswer_CustomerPolicyEnforcementResult_Verdict = 2
+)
+
+// Enum value maps for AssistAnswer_CustomerPolicyEnforcementResult_Verdict.
+var (
+	AssistAnswer_CustomerPolicyEnforcementResult_Verdict_name = map[int32]string{
+		0: "UNSPECIFIED",
+		1: "ALLOW",
+		2: "BLOCK",
+	}
+	AssistAnswer_CustomerPolicyEnforcementResult_Verdict_value = map[string]int32{
+		"UNSPECIFIED": 0,
+		"ALLOW":       1,
+		"BLOCK":       2,
+	}
+)
+
+func (x AssistAnswer_CustomerPolicyEnforcementResult_Verdict) Enum() *AssistAnswer_CustomerPolicyEnforcementResult_Verdict {
+	p := new(AssistAnswer_CustomerPolicyEnforcementResult_Verdict)
+	*p = x
+	return p
+}
+
+func (x AssistAnswer_CustomerPolicyEnforcementResult_Verdict) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AssistAnswer_CustomerPolicyEnforcementResult_Verdict) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[2].Descriptor()
+}
+
+func (AssistAnswer_CustomerPolicyEnforcementResult_Verdict) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[2]
+}
+
+func (x AssistAnswer_CustomerPolicyEnforcementResult_Verdict) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AssistAnswer_CustomerPolicyEnforcementResult_Verdict.Descriptor instead.
+func (AssistAnswer_CustomerPolicyEnforcementResult_Verdict) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{0, 1, 0}
+}
+
+// If the assist call was skipped due to a policy violation, this contains
+// the source of the violation.
+type AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource int32
+
+const (
+	// Unknown value.
+	AssistAnswer_CustomerPolicyEnforcementResult_VIOLATION_SOURCE_UNSPECIFIED AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource = 0
+	// Violation found in the system response.
+	AssistAnswer_CustomerPolicyEnforcementResult_SYSTEM AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource = 1
+	// Violation found in the user prompt.
+	AssistAnswer_CustomerPolicyEnforcementResult_PROMPT AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource = 2
+	// Violation found in the user attachment.
+	AssistAnswer_CustomerPolicyEnforcementResult_ATTACHMENT AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource = 3
+)
+
+// Enum value maps for AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource.
+var (
+	AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource_name = map[int32]string{
+		0: "VIOLATION_SOURCE_UNSPECIFIED",
+		1: "SYSTEM",
+		2: "PROMPT",
+		3: "ATTACHMENT",
+	}
+	AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource_value = map[string]int32{
+		"VIOLATION_SOURCE_UNSPECIFIED": 0,
+		"SYSTEM":                       1,
+		"PROMPT":                       2,
+		"ATTACHMENT":                   3,
+	}
+)
+
+func (x AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource) Enum() *AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource {
+	p := new(AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource)
+	*p = x
+	return p
+}
+
+func (x AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[3].Descriptor()
+}
+
+func (AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[3]
+}
+
+func (x AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource.Descriptor instead.
+func (AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{0, 1, 1}
+}
+
 // Enumeration of possible outcomes of the code execution.
 type AssistantContent_CodeExecutionResult_Outcome int32
 
@@ -197,11 +316,11 @@ func (x AssistantContent_CodeExecutionResult_Outcome) String() string {
 }
 
 func (AssistantContent_CodeExecutionResult_Outcome) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[4].Descriptor()
 }
 
 func (AssistantContent_CodeExecutionResult_Outcome) Type() protoreflect.EnumType {
-	return &file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[2]
+	return &file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[4]
 }
 
 func (x AssistantContent_CodeExecutionResult_Outcome) Number() protoreflect.EnumNumber {
@@ -213,11 +332,62 @@ func (AssistantContent_CodeExecutionResult_Outcome) EnumDescriptor() ([]byte, []
 	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{1, 3, 0}
 }
 
+// Language of the referenced content. For now, it is only used for
+// code.
+type AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language int32
+
+const (
+	AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_LANGUAGE_UNSPECIFIED AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language = 0
+	AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_PYTHON               AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language = 1
+	AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_SQL                  AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language = 2
+)
+
+// Enum value maps for AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language.
+var (
+	AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language_name = map[int32]string{
+		0: "LANGUAGE_UNSPECIFIED",
+		1: "PYTHON",
+		2: "SQL",
+	}
+	AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language_value = map[string]int32{
+		"LANGUAGE_UNSPECIFIED": 0,
+		"PYTHON":               1,
+		"SQL":                  2,
+	}
+)
+
+func (x AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language) Enum() *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language {
+	p := new(AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language)
+	*p = x
+	return p
+}
+
+func (x AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[5].Descriptor()
+}
+
+func (AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes[5]
+}
+
+func (x AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language.Descriptor instead.
+func (AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{2, 0, 2, 0, 0}
+}
+
 // AssistAnswer resource, main part of
 // [AssistResponse][google.cloud.discoveryengine.v1.AssistResponse].
 type AssistAnswer struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Immutable. Resource name of the `AssistAnswer`.
+	// Immutable. Identifier. Resource name of the `AssistAnswer`.
 	// Format:
 	// `projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}/assistAnswers/{assist_answer}`
 	//
@@ -226,12 +396,23 @@ type AssistAnswer struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// State of the answer generation.
 	State AssistAnswer_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.cloud.discoveryengine.v1.AssistAnswer_State" json:"state,omitempty"`
+	// Output only. Maps an internal connector agent name (the machine identifier
+	// embedded in tool names, e.g. `custom_mcp_<fingerprint>_agent`) to the
+	// connector's human-readable display name. Populated at serving time for
+	// custom MCP / agent gateway connectors so user-facing surfaces (e.g. the
+	// tool-call chip) can show the connector name instead of its internal
+	// identifier. Empty when there are no such connectors.
+	ConnectorDisplayNames map[string]string `protobuf:"bytes,14,rep,name=connector_display_names,json=connectorDisplayNames,proto3" json:"connector_display_names,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Replies of the assistant.
 	Replies []*AssistAnswer_Reply `protobuf:"bytes,3,rep,name=replies,proto3" json:"replies,omitempty"`
 	// Reasons for not answering the assist call.
 	AssistSkippedReasons []AssistAnswer_AssistSkippedReason `protobuf:"varint,5,rep,packed,name=assist_skipped_reasons,json=assistSkippedReasons,proto3,enum=google.cloud.discoveryengine.v1.AssistAnswer_AssistSkippedReason" json:"assist_skipped_reasons,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// Optional. The field contains information about the various policy checks'
+	// results like the banned phrases or the Model Armor checks. This field is
+	// populated only if the assist call was skipped due to a policy violation.
+	CustomerPolicyEnforcementResult *AssistAnswer_CustomerPolicyEnforcementResult `protobuf:"bytes,8,opt,name=customer_policy_enforcement_result,json=customerPolicyEnforcementResult,proto3" json:"customer_policy_enforcement_result,omitempty"`
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
 }
 
 func (x *AssistAnswer) Reset() {
@@ -278,6 +459,13 @@ func (x *AssistAnswer) GetState() AssistAnswer_State {
 	return AssistAnswer_STATE_UNSPECIFIED
 }
 
+func (x *AssistAnswer) GetConnectorDisplayNames() map[string]string {
+	if x != nil {
+		return x.ConnectorDisplayNames
+	}
+	return nil
+}
+
 func (x *AssistAnswer) GetReplies() []*AssistAnswer_Reply {
 	if x != nil {
 		return x.Replies
@@ -288,6 +476,13 @@ func (x *AssistAnswer) GetReplies() []*AssistAnswer_Reply {
 func (x *AssistAnswer) GetAssistSkippedReasons() []AssistAnswer_AssistSkippedReason {
 	if x != nil {
 		return x.AssistSkippedReasons
+	}
+	return nil
+}
+
+func (x *AssistAnswer) GetCustomerPolicyEnforcementResult() *AssistAnswer_CustomerPolicyEnforcementResult {
+	if x != nil {
+		return x.CustomerPolicyEnforcementResult
 	}
 	return nil
 }
@@ -461,9 +656,12 @@ type AssistantGroundedContent struct {
 	//	*AssistantGroundedContent_TextGroundingMetadata_
 	Metadata isAssistantGroundedContent_Metadata `protobuf_oneof:"metadata"`
 	// The content.
-	Content       *AssistantContent `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Content *AssistantContent `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
+	// Source attribution of the generated content. See also
+	// https://cloud.google.com/vertex-ai/generative-ai/docs/learn/overview#citation_check
+	CitationMetadata *CitationMetadata `protobuf:"bytes,5,opt,name=citation_metadata,json=citationMetadata,proto3" json:"citation_metadata,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *AssistantGroundedContent) Reset() {
@@ -519,6 +717,13 @@ func (x *AssistantGroundedContent) GetContent() *AssistantContent {
 	return nil
 }
 
+func (x *AssistantGroundedContent) GetCitationMetadata() *CitationMetadata {
+	if x != nil {
+		return x.CitationMetadata
+	}
+	return nil
+}
+
 type isAssistantGroundedContent_Metadata interface {
 	isAssistantGroundedContent_Metadata()
 }
@@ -538,7 +743,9 @@ type AssistAnswer_Reply struct {
 	// Types that are valid to be assigned to Reply:
 	//
 	//	*AssistAnswer_Reply_GroundedContent
-	Reply         isAssistAnswer_Reply_Reply `protobuf_oneof:"reply"`
+	Reply isAssistAnswer_Reply_Reply `protobuf_oneof:"reply"`
+	// The time when the reply was created.
+	CreateTime    *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -589,6 +796,13 @@ func (x *AssistAnswer_Reply) GetGroundedContent() *AssistantGroundedContent {
 	return nil
 }
 
+func (x *AssistAnswer_Reply) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
 type isAssistAnswer_Reply_Reply interface {
 	isAssistAnswer_Reply_Reply()
 }
@@ -599,6 +813,301 @@ type AssistAnswer_Reply_GroundedContent struct {
 }
 
 func (*AssistAnswer_Reply_GroundedContent) isAssistAnswer_Reply_Reply() {}
+
+// Customer policy enforcement results. Contains the results of the various
+// policy checks, like the banned phrases or the Model Armor checks.
+type AssistAnswer_CustomerPolicyEnforcementResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Final verdict of the customer policy enforcement. If only one policy
+	// blocked the processing, the verdict is BLOCK.
+	Verdict AssistAnswer_CustomerPolicyEnforcementResult_Verdict `protobuf:"varint,1,opt,name=verdict,proto3,enum=google.cloud.discoveryengine.v1.AssistAnswer_CustomerPolicyEnforcementResult_Verdict" json:"verdict,omitempty"`
+	// Customer policy enforcement results.
+	// Populated only if the assist call was skipped due to a policy
+	// violation. It contains results from those filters that blocked the
+	// processing of the query.
+	PolicyResults []*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult `protobuf:"bytes,3,rep,name=policy_results,json=policyResults,proto3" json:"policy_results,omitempty"`
+	// Output only. The source of the violation.
+	ViolationSource AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource `protobuf:"varint,4,opt,name=violation_source,json=violationSource,proto3,enum=google.cloud.discoveryengine.v1.AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource" json:"violation_source,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult) Reset() {
+	*x = AssistAnswer_CustomerPolicyEnforcementResult{}
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssistAnswer_CustomerPolicyEnforcementResult) ProtoMessage() {}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssistAnswer_CustomerPolicyEnforcementResult.ProtoReflect.Descriptor instead.
+func (*AssistAnswer_CustomerPolicyEnforcementResult) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{0, 1}
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult) GetVerdict() AssistAnswer_CustomerPolicyEnforcementResult_Verdict {
+	if x != nil {
+		return x.Verdict
+	}
+	return AssistAnswer_CustomerPolicyEnforcementResult_UNSPECIFIED
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult) GetPolicyResults() []*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult {
+	if x != nil {
+		return x.PolicyResults
+	}
+	return nil
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult) GetViolationSource() AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource {
+	if x != nil {
+		return x.ViolationSource
+	}
+	return AssistAnswer_CustomerPolicyEnforcementResult_VIOLATION_SOURCE_UNSPECIFIED
+}
+
+// Customer policy enforcement result for the banned phrase policy.
+type AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The banned phrases that were found in the query or the answer.
+	BannedPhrases []string `protobuf:"bytes,1,rep,name=banned_phrases,json=bannedPhrases,proto3" json:"banned_phrases,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult) Reset() {
+	*x = AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult{}
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult) ProtoMessage() {}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult.ProtoReflect.Descriptor instead.
+func (*AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{0, 1, 0}
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult) GetBannedPhrases() []string {
+	if x != nil {
+		return x.BannedPhrases
+	}
+	return nil
+}
+
+// Customer policy enforcement result for the Model Armor policy.
+type AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The Model Armor policy result.
+	//
+	// Types that are valid to be assigned to Result:
+	//
+	//	*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_ModelArmorViolation
+	//	*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Error
+	Result        isAssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Result `protobuf_oneof:"result"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult) Reset() {
+	*x = AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult{}
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult) ProtoMessage() {}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult.ProtoReflect.Descriptor instead.
+func (*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{0, 1, 1}
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult) GetResult() isAssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult) GetModelArmorViolation() string {
+	if x != nil {
+		if x, ok := x.Result.(*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_ModelArmorViolation); ok {
+			return x.ModelArmorViolation
+		}
+	}
+	return ""
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult) GetError() *status.Status {
+	if x != nil {
+		if x, ok := x.Result.(*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Error); ok {
+			return x.Error
+		}
+	}
+	return nil
+}
+
+type isAssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Result interface {
+	isAssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Result()
+}
+
+type AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_ModelArmorViolation struct {
+	// The Model Armor violation that was found.
+	ModelArmorViolation string `protobuf:"bytes,1,opt,name=model_armor_violation,json=modelArmorViolation,proto3,oneof"`
+}
+
+type AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Error struct {
+	// The error returned by Model Armor if the policy enforcement failed
+	// for some reason.
+	Error *status.Status `protobuf:"bytes,2,opt,name=error,proto3,oneof"`
+}
+
+func (*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_ModelArmorViolation) isAssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Result() {
+}
+
+func (*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Error) isAssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Result() {
+}
+
+// Customer policy enforcement result for a single policy type.
+type AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The policy type specific result. It can be either an error or a
+	// detailed information about the policy enforcement result.
+	//
+	// Types that are valid to be assigned to EnforcementResult:
+	//
+	//	*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_BannedPhraseEnforcementResult
+	//	*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_ModelArmorEnforcementResult
+	EnforcementResult isAssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_EnforcementResult `protobuf_oneof:"enforcement_result"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult) Reset() {
+	*x = AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult{}
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult) ProtoMessage() {}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult.ProtoReflect.Descriptor instead.
+func (*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{0, 1, 2}
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult) GetEnforcementResult() isAssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_EnforcementResult {
+	if x != nil {
+		return x.EnforcementResult
+	}
+	return nil
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult) GetBannedPhraseEnforcementResult() *AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult {
+	if x != nil {
+		if x, ok := x.EnforcementResult.(*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_BannedPhraseEnforcementResult); ok {
+			return x.BannedPhraseEnforcementResult
+		}
+	}
+	return nil
+}
+
+func (x *AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult) GetModelArmorEnforcementResult() *AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult {
+	if x != nil {
+		if x, ok := x.EnforcementResult.(*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_ModelArmorEnforcementResult); ok {
+			return x.ModelArmorEnforcementResult
+		}
+	}
+	return nil
+}
+
+type isAssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_EnforcementResult interface {
+	isAssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_EnforcementResult()
+}
+
+type AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_BannedPhraseEnforcementResult struct {
+	// The policy enforcement result for the banned phrase policy.
+	BannedPhraseEnforcementResult *AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult `protobuf:"bytes,3,opt,name=banned_phrase_enforcement_result,json=bannedPhraseEnforcementResult,proto3,oneof"`
+}
+
+type AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_ModelArmorEnforcementResult struct {
+	// The policy enforcement result for the Model Armor policy.
+	ModelArmorEnforcementResult *AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult `protobuf:"bytes,4,opt,name=model_armor_enforcement_result,json=modelArmorEnforcementResult,proto3,oneof"`
+}
+
+func (*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_BannedPhraseEnforcementResult) isAssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_EnforcementResult() {
+}
+
+func (*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_ModelArmorEnforcementResult) isAssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_EnforcementResult() {
+}
 
 // Inline blob.
 type AssistantContent_Blob struct {
@@ -613,7 +1122,7 @@ type AssistantContent_Blob struct {
 
 func (x *AssistantContent_Blob) Reset() {
 	*x = AssistantContent_Blob{}
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[4]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -625,7 +1134,7 @@ func (x *AssistantContent_Blob) String() string {
 func (*AssistantContent_Blob) ProtoMessage() {}
 
 func (x *AssistantContent_Blob) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[4]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -668,7 +1177,7 @@ type AssistantContent_File struct {
 
 func (x *AssistantContent_File) Reset() {
 	*x = AssistantContent_File{}
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -680,7 +1189,7 @@ func (x *AssistantContent_File) String() string {
 func (*AssistantContent_File) ProtoMessage() {}
 
 func (x *AssistantContent_File) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -721,7 +1230,7 @@ type AssistantContent_ExecutableCode struct {
 
 func (x *AssistantContent_ExecutableCode) Reset() {
 	*x = AssistantContent_ExecutableCode{}
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[6]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -733,7 +1242,7 @@ func (x *AssistantContent_ExecutableCode) String() string {
 func (*AssistantContent_ExecutableCode) ProtoMessage() {}
 
 func (x *AssistantContent_ExecutableCode) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[6]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -770,7 +1279,7 @@ type AssistantContent_CodeExecutionResult struct {
 
 func (x *AssistantContent_CodeExecutionResult) Reset() {
 	*x = AssistantContent_CodeExecutionResult{}
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[7]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -782,7 +1291,7 @@ func (x *AssistantContent_CodeExecutionResult) String() string {
 func (*AssistantContent_CodeExecutionResult) ProtoMessage() {}
 
 func (x *AssistantContent_CodeExecutionResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[7]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -817,6 +1326,8 @@ type AssistantGroundedContent_TextGroundingMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Grounding information for parts of the text.
 	Segments []*AssistantGroundedContent_TextGroundingMetadata_Segment `protobuf:"bytes,4,rep,name=segments,proto3" json:"segments,omitempty"`
+	// Grounding information for parts of the visual content.
+	VisualSegments []*AssistantGroundedContent_TextGroundingMetadata_VisualSegment `protobuf:"bytes,6,rep,name=visual_segments,json=visualSegments,proto3" json:"visual_segments,omitempty"`
 	// References for the grounded text.
 	References    []*AssistantGroundedContent_TextGroundingMetadata_Reference `protobuf:"bytes,2,rep,name=references,proto3" json:"references,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -825,7 +1336,7 @@ type AssistantGroundedContent_TextGroundingMetadata struct {
 
 func (x *AssistantGroundedContent_TextGroundingMetadata) Reset() {
 	*x = AssistantGroundedContent_TextGroundingMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[8]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -837,7 +1348,7 @@ func (x *AssistantGroundedContent_TextGroundingMetadata) String() string {
 func (*AssistantGroundedContent_TextGroundingMetadata) ProtoMessage() {}
 
 func (x *AssistantGroundedContent_TextGroundingMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[8]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -856,6 +1367,13 @@ func (*AssistantGroundedContent_TextGroundingMetadata) Descriptor() ([]byte, []i
 func (x *AssistantGroundedContent_TextGroundingMetadata) GetSegments() []*AssistantGroundedContent_TextGroundingMetadata_Segment {
 	if x != nil {
 		return x.Segments
+	}
+	return nil
+}
+
+func (x *AssistantGroundedContent_TextGroundingMetadata) GetVisualSegments() []*AssistantGroundedContent_TextGroundingMetadata_VisualSegment {
+	if x != nil {
+		return x.VisualSegments
 	}
 	return nil
 }
@@ -888,7 +1406,7 @@ type AssistantGroundedContent_TextGroundingMetadata_Segment struct {
 
 func (x *AssistantGroundedContent_TextGroundingMetadata_Segment) Reset() {
 	*x = AssistantGroundedContent_TextGroundingMetadata_Segment{}
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[9]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -900,7 +1418,7 @@ func (x *AssistantGroundedContent_TextGroundingMetadata_Segment) String() string
 func (*AssistantGroundedContent_TextGroundingMetadata_Segment) ProtoMessage() {}
 
 func (x *AssistantGroundedContent_TextGroundingMetadata_Segment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[9]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -951,20 +1469,82 @@ func (x *AssistantGroundedContent_TextGroundingMetadata_Segment) GetText() strin
 	return ""
 }
 
+// Grounding information for a visual segment.
+type AssistantGroundedContent_TextGroundingMetadata_VisualSegment struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// References for the visual segment.
+	ReferenceIndices []int32 `protobuf:"varint,1,rep,packed,name=reference_indices,json=referenceIndices,proto3" json:"reference_indices,omitempty"`
+	// The content id of the visual segment. In order to display the citation
+	// of the visual element, this content_id needs to match with the
+	// `grounded_content.content_metadata.content_id` field.
+	ContentId     string `protobuf:"bytes,2,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssistantGroundedContent_TextGroundingMetadata_VisualSegment) Reset() {
+	*x = AssistantGroundedContent_TextGroundingMetadata_VisualSegment{}
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssistantGroundedContent_TextGroundingMetadata_VisualSegment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssistantGroundedContent_TextGroundingMetadata_VisualSegment) ProtoMessage() {}
+
+func (x *AssistantGroundedContent_TextGroundingMetadata_VisualSegment) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssistantGroundedContent_TextGroundingMetadata_VisualSegment.ProtoReflect.Descriptor instead.
+func (*AssistantGroundedContent_TextGroundingMetadata_VisualSegment) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{2, 0, 1}
+}
+
+func (x *AssistantGroundedContent_TextGroundingMetadata_VisualSegment) GetReferenceIndices() []int32 {
+	if x != nil {
+		return x.ReferenceIndices
+	}
+	return nil
+}
+
+func (x *AssistantGroundedContent_TextGroundingMetadata_VisualSegment) GetContentId() string {
+	if x != nil {
+		return x.ContentId
+	}
+	return ""
+}
+
 // Referenced content and related document metadata.
 type AssistantGroundedContent_TextGroundingMetadata_Reference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Referenced text content.
 	Content string `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
+	// Chunk of code snippet from the referenced document.
+	CodeSnippet string `protobuf:"bytes,4,opt,name=code_snippet,json=codeSnippet,proto3" json:"code_snippet,omitempty"`
 	// Document metadata.
 	DocumentMetadata *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata `protobuf:"bytes,2,opt,name=document_metadata,json=documentMetadata,proto3" json:"document_metadata,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Output only. Generic structured chunk metadata from upstream data
+	// source connectors.
+	ChunkMetadata *structpb.Struct `protobuf:"bytes,5,opt,name=chunk_metadata,json=chunkMetadata,proto3" json:"chunk_metadata,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AssistantGroundedContent_TextGroundingMetadata_Reference) Reset() {
 	*x = AssistantGroundedContent_TextGroundingMetadata_Reference{}
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[10]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -976,7 +1556,7 @@ func (x *AssistantGroundedContent_TextGroundingMetadata_Reference) String() stri
 func (*AssistantGroundedContent_TextGroundingMetadata_Reference) ProtoMessage() {}
 
 func (x *AssistantGroundedContent_TextGroundingMetadata_Reference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[10]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -989,12 +1569,19 @@ func (x *AssistantGroundedContent_TextGroundingMetadata_Reference) ProtoReflect(
 
 // Deprecated: Use AssistantGroundedContent_TextGroundingMetadata_Reference.ProtoReflect.Descriptor instead.
 func (*AssistantGroundedContent_TextGroundingMetadata_Reference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{2, 0, 1}
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{2, 0, 2}
 }
 
 func (x *AssistantGroundedContent_TextGroundingMetadata_Reference) GetContent() string {
 	if x != nil {
 		return x.Content
+	}
+	return ""
+}
+
+func (x *AssistantGroundedContent_TextGroundingMetadata_Reference) GetCodeSnippet() string {
+	if x != nil {
+		return x.CodeSnippet
 	}
 	return ""
 }
@@ -1006,9 +1593,17 @@ func (x *AssistantGroundedContent_TextGroundingMetadata_Reference) GetDocumentMe
 	return nil
 }
 
+func (x *AssistantGroundedContent_TextGroundingMetadata_Reference) GetChunkMetadata() *structpb.Struct {
+	if x != nil {
+		return x.ChunkMetadata
+	}
+	return nil
+}
+
 // Document metadata.
 type AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state    protoimpl.MessageState                                                             `protogen:"open.v1"`
+	Language AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language `protobuf:"varint,8,opt,name=language,proto3,enum=google.cloud.discoveryengine.v1.AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language" json:"language,omitempty"`
 	// Document resource name.
 	Document *string `protobuf:"bytes,1,opt,name=document,proto3,oneof" json:"document,omitempty"`
 	// URI for the document. It may contain a URL that redirects to the
@@ -1021,14 +1616,17 @@ type AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata s
 	// Domain name from the document URI. Note that the `uri` field may
 	// contain a URL that redirects to the actual website, in which case
 	// this will contain the domain name of the target site.
-	Domain        *string `protobuf:"bytes,5,opt,name=domain,proto3,oneof" json:"domain,omitempty"`
+	Domain *string `protobuf:"bytes,5,opt,name=domain,proto3,oneof" json:"domain,omitempty"`
+	// The mime type of the document.
+	// https://www.iana.org/assignments/media-types/media-types.xhtml.
+	MimeType      *string `protobuf:"bytes,7,opt,name=mime_type,json=mimeType,proto3,oneof" json:"mime_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata) Reset() {
 	*x = AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[11]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1040,7 +1638,7 @@ func (x *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetada
 func (*AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata) ProtoMessage() {}
 
 func (x *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[11]
+	mi := &file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1053,7 +1651,14 @@ func (x *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetada
 
 // Deprecated: Use AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata.ProtoReflect.Descriptor instead.
 func (*AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{2, 0, 1, 0}
+	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP(), []int{2, 0, 2, 0}
+}
+
+func (x *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata) GetLanguage() AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language {
+	if x != nil {
+		return x.Language
+	}
+	return AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_LANGUAGE_UNSPECIFIED
 }
 
 func (x *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata) GetDocument() string {
@@ -1091,31 +1696,72 @@ func (x *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetada
 	return ""
 }
 
+func (x *AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata) GetMimeType() string {
+	if x != nil && x.MimeType != nil {
+		return *x.MimeType
+	}
+	return ""
+}
+
 var File_google_cloud_discoveryengine_v1_assist_answer_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/discoveryengine/v1/assist_answer.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xca\x06\n" +
-	"\fAssistAnswer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12I\n" +
-	"\x05state\x18\x02 \x01(\x0e23.google.cloud.discoveryengine.v1.AssistAnswer.StateR\x05state\x12M\n" +
+	"3google/cloud/discoveryengine/v1/assist_answer.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aAgoogle/cloud/discoveryengine/v1/grounded_generation_service.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xc5\x13\n" +
+	"\fAssistAnswer\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12I\n" +
+	"\x05state\x18\x02 \x01(\x0e23.google.cloud.discoveryengine.v1.AssistAnswer.StateR\x05state\x12\x86\x01\n" +
+	"\x17connector_display_names\x18\x0e \x03(\v2H.google.cloud.discoveryengine.v1.AssistAnswer.ConnectorDisplayNamesEntryB\x04\xe2A\x01\x03R\x15connectorDisplayNames\x12M\n" +
 	"\areplies\x18\x03 \x03(\v23.google.cloud.discoveryengine.v1.AssistAnswer.ReplyR\areplies\x12w\n" +
-	"\x16assist_skipped_reasons\x18\x05 \x03(\x0e2A.google.cloud.discoveryengine.v1.AssistAnswer.AssistSkippedReasonR\x14assistSkippedReasons\x1ax\n" +
+	"\x16assist_skipped_reasons\x18\x05 \x03(\x0e2A.google.cloud.discoveryengine.v1.AssistAnswer.AssistSkippedReasonR\x14assistSkippedReasons\x12\xa0\x01\n" +
+	"\"customer_policy_enforcement_result\x18\b \x01(\v2M.google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResultB\x04\xe2A\x01\x01R\x1fcustomerPolicyEnforcementResult\x1a\xb5\x01\n" +
 	"\x05Reply\x12f\n" +
-	"\x10grounded_content\x18\x01 \x01(\v29.google.cloud.discoveryengine.v1.AssistantGroundedContentH\x00R\x0fgroundedContentB\a\n" +
-	"\x05reply\"W\n" +
+	"\x10grounded_content\x18\x01 \x01(\v29.google.cloud.discoveryengine.v1.AssistantGroundedContentH\x00R\x0fgroundedContent\x12;\n" +
+	"\vcreate_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"createTimeB\a\n" +
+	"\x05reply\x1a\xb3\t\n" +
+	"\x1fCustomerPolicyEnforcementResult\x12o\n" +
+	"\averdict\x18\x01 \x01(\x0e2U.google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.VerdictR\averdict\x12\x8c\x01\n" +
+	"\x0epolicy_results\x18\x03 \x03(\v2e.google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.PolicyEnforcementResultR\rpolicyResults\x12\x8e\x01\n" +
+	"\x10violation_source\x18\x04 \x01(\x0e2].google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.ViolationSourceB\x04\xe2A\x01\x03R\x0fviolationSource\x1aF\n" +
+	"\x1dBannedPhraseEnforcementResult\x12%\n" +
+	"\x0ebanned_phrases\x18\x01 \x03(\tR\rbannedPhrases\x1a\x89\x01\n" +
+	"\x1bModelArmorEnforcementResult\x124\n" +
+	"\x15model_armor_violation\x18\x01 \x01(\tH\x00R\x13modelArmorViolation\x12*\n" +
+	"\x05error\x18\x02 \x01(\v2\x12.google.rpc.StatusH\x00R\x05errorB\b\n" +
+	"\x06result\x1a\x9b\x03\n" +
+	"\x17PolicyEnforcementResult\x12\xb6\x01\n" +
+	" banned_phrase_enforcement_result\x18\x03 \x01(\v2k.google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.BannedPhraseEnforcementResultH\x00R\x1dbannedPhraseEnforcementResult\x12\xb0\x01\n" +
+	"\x1emodel_armor_enforcement_result\x18\x04 \x01(\v2i.google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.ModelArmorEnforcementResultH\x00R\x1bmodelArmorEnforcementResultB\x14\n" +
+	"\x12enforcement_result\"0\n" +
+	"\aVerdict\x12\x0f\n" +
+	"\vUNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05ALLOW\x10\x01\x12\t\n" +
+	"\x05BLOCK\x10\x02\"[\n" +
+	"\x0fViolationSource\x12 \n" +
+	"\x1cVIOLATION_SOURCE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06SYSTEM\x10\x01\x12\n" +
+	"\n" +
+	"\x06PROMPT\x10\x02\x12\x0e\n" +
+	"\n" +
+	"ATTACHMENT\x10\x03\x1aH\n" +
+	"\x1aConnectorDisplayNamesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"f\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x02\x12\r\n" +
 	"\tSUCCEEDED\x10\x03\x12\v\n" +
-	"\aSKIPPED\x10\x04\"\x81\x01\n" +
+	"\aSKIPPED\x10\x04\x12\r\n" +
+	"\tCANCELLED\x10\x05\"\x81\x01\n" +
 	"\x13AssistSkippedReason\x12%\n" +
 	"!ASSIST_SKIPPED_REASON_UNSPECIFIED\x10\x00\x12$\n" +
 	" NON_ASSIST_SEEKING_QUERY_IGNORED\x10\x01\x12\x1d\n" +
 	"\x19CUSTOMER_POLICY_VIOLATION\x10\x02:\xb6\x01\xeaA\xb2\x01\n" +
-	"+discoveryengine.googleapis.com/AssistAnswer\x12\x82\x01projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}/assistAnswers/{assist_answer}\"\xb6\a\n" +
+	"+discoveryengine.googleapis.com/AssistAnswer\x12\x82\x01projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}/assistAnswers/{assist_answer}\"\xbe\a\n" +
 	"\x10AssistantContent\x12\x14\n" +
 	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12Y\n" +
 	"\vinline_data\x18\x03 \x01(\v26.google.cloud.discoveryengine.v1.AssistantContent.BlobH\x00R\n" +
@@ -1123,31 +1769,33 @@ const file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDesc = "" +
 	"\x04file\x18\x04 \x01(\v26.google.cloud.discoveryengine.v1.AssistantContent.FileH\x00R\x04file\x12k\n" +
 	"\x0fexecutable_code\x18\a \x01(\v2@.google.cloud.discoveryengine.v1.AssistantContent.ExecutableCodeH\x00R\x0eexecutableCode\x12{\n" +
 	"\x15code_execution_result\x18\b \x01(\v2E.google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResultH\x00R\x13codeExecutionResult\x12\x12\n" +
-	"\x04role\x18\x01 \x01(\tR\x04role\x12\x1d\n" +
-	"\athought\x18\x06 \x01(\bB\x03\xe0A\x01R\athought\x1aA\n" +
-	"\x04Blob\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x17\n" +
-	"\x04data\x18\x02 \x01(\fB\x03\xe0A\x02R\x04data\x1aF\n" +
-	"\x04File\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x1c\n" +
-	"\afile_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06fileId\x1a)\n" +
-	"\x0eExecutableCode\x12\x17\n" +
-	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\x1a\x87\x02\n" +
-	"\x13CodeExecutionResult\x12l\n" +
-	"\aoutcome\x18\x01 \x01(\x0e2M.google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.OutcomeB\x03\xe0A\x02R\aoutcome\x12\x1b\n" +
-	"\x06output\x18\x02 \x01(\tB\x03\xe0A\x01R\x06output\"e\n" +
+	"\x04role\x18\x01 \x01(\tR\x04role\x12\x1e\n" +
+	"\athought\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\athought\x1aC\n" +
+	"\x04Blob\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x18\n" +
+	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\x1aH\n" +
+	"\x04File\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x1d\n" +
+	"\afile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06fileId\x1a*\n" +
+	"\x0eExecutableCode\x12\x18\n" +
+	"\x04code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04code\x1a\x89\x02\n" +
+	"\x13CodeExecutionResult\x12m\n" +
+	"\aoutcome\x18\x01 \x01(\x0e2M.google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.OutcomeB\x04\xe2A\x01\x02R\aoutcome\x12\x1c\n" +
+	"\x06output\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06output\"e\n" +
 	"\aOutcome\x12\x17\n" +
 	"\x13OUTCOME_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"OUTCOME_OK\x10\x01\x12\x12\n" +
 	"\x0eOUTCOME_FAILED\x10\x02\x12\x1d\n" +
 	"\x19OUTCOME_DEADLINE_EXCEEDED\x10\x03B\x06\n" +
-	"\x04data\"\x9e\t\n" +
+	"\x04data\"\xca\x0e\n" +
 	"\x18AssistantGroundedContent\x12\x89\x01\n" +
 	"\x17text_grounding_metadata\x18\x03 \x01(\v2O.google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadataH\x00R\x15textGroundingMetadata\x12K\n" +
-	"\acontent\x18\x01 \x01(\v21.google.cloud.discoveryengine.v1.AssistantContentR\acontent\x1a\x9c\a\n" +
+	"\acontent\x18\x01 \x01(\v21.google.cloud.discoveryengine.v1.AssistantContentR\acontent\x12^\n" +
+	"\x11citation_metadata\x18\x05 \x01(\v21.google.cloud.discoveryengine.v1.CitationMetadataR\x10citationMetadata\x1a\xe8\v\n" +
 	"\x15TextGroundingMetadata\x12s\n" +
-	"\bsegments\x18\x04 \x03(\v2W.google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.SegmentR\bsegments\x12y\n" +
+	"\bsegments\x18\x04 \x03(\v2W.google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.SegmentR\bsegments\x12\x86\x01\n" +
+	"\x0fvisual_segments\x18\x06 \x03(\v2].google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.VisualSegmentR\x0evisualSegments\x12y\n" +
 	"\n" +
 	"references\x18\x02 \x03(\v2Y.google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.ReferenceR\n" +
 	"references\x1a\xb1\x01\n" +
@@ -1157,22 +1805,37 @@ const file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDesc = "" +
 	"\tend_index\x18\x02 \x01(\x03R\bendIndex\x12+\n" +
 	"\x11reference_indices\x18\x04 \x03(\x05R\x10referenceIndices\x12'\n" +
 	"\x0fgrounding_score\x18\x05 \x01(\x02R\x0egroundingScore\x12\x12\n" +
-	"\x04text\x18\x06 \x01(\tR\x04text\x1a\xde\x03\n" +
+	"\x04text\x18\x06 \x01(\tR\x04text\x1a[\n" +
+	"\rVisualSegment\x12+\n" +
+	"\x11reference_indices\x18\x01 \x03(\x05R\x10referenceIndices\x12\x1d\n" +
+	"\n" +
+	"content_id\x18\x02 \x01(\tR\tcontentId\x1a\xc4\x06\n" +
 	"\tReference\x12\x18\n" +
-	"\acontent\x18\x01 \x01(\tR\acontent\x12\x97\x01\n" +
-	"\x11document_metadata\x18\x02 \x01(\v2j.google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadataR\x10documentMetadata\x1a\x9c\x02\n" +
-	"\x10DocumentMetadata\x12M\n" +
+	"\acontent\x18\x01 \x01(\tR\acontent\x12!\n" +
+	"\fcode_snippet\x18\x04 \x01(\tR\vcodeSnippet\x12\x97\x01\n" +
+	"\x11document_metadata\x18\x02 \x01(\v2j.google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadataR\x10documentMetadata\x12D\n" +
+	"\x0echunk_metadata\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\rchunkMetadata\x1a\x99\x04\n" +
+	"\x10DocumentMetadata\x12\x8f\x01\n" +
+	"\blanguage\x18\b \x01(\x0e2s.google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadata.LanguageR\blanguage\x12M\n" +
 	"\bdocument\x18\x01 \x01(\tB,\xfaA)\n" +
 	"'discoveryengine.googleapis.com/DocumentH\x00R\bdocument\x88\x01\x01\x12\x15\n" +
 	"\x03uri\x18\x02 \x01(\tH\x01R\x03uri\x88\x01\x01\x12\x19\n" +
 	"\x05title\x18\x03 \x01(\tH\x02R\x05title\x88\x01\x01\x12,\n" +
 	"\x0fpage_identifier\x18\x04 \x01(\tH\x03R\x0epageIdentifier\x88\x01\x01\x12\x1b\n" +
-	"\x06domain\x18\x05 \x01(\tH\x04R\x06domain\x88\x01\x01B\v\n" +
+	"\x06domain\x18\x05 \x01(\tH\x04R\x06domain\x88\x01\x01\x12 \n" +
+	"\tmime_type\x18\a \x01(\tH\x05R\bmimeType\x88\x01\x01\"9\n" +
+	"\bLanguage\x12\x18\n" +
+	"\x14LANGUAGE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06PYTHON\x10\x01\x12\a\n" +
+	"\x03SQL\x10\x02B\v\n" +
 	"\t_documentB\x06\n" +
 	"\x04_uriB\b\n" +
 	"\x06_titleB\x12\n" +
 	"\x10_page_identifierB\t\n" +
-	"\a_domainB\n" +
+	"\a_domainB\f\n" +
+	"\n" +
+	"_mime_typeB\n" +
 	"\n" +
 	"\bmetadataB\x84\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x11AssistAnswerProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
@@ -1189,45 +1852,71 @@ func file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescGZIP() []by
 	return file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_google_cloud_discoveryengine_v1_assist_answer_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_google_cloud_discoveryengine_v1_assist_answer_proto_goTypes = []any{
-	(AssistAnswer_State)(0),                                                           // 0: google.cloud.discoveryengine.v1.AssistAnswer.State
-	(AssistAnswer_AssistSkippedReason)(0),                                             // 1: google.cloud.discoveryengine.v1.AssistAnswer.AssistSkippedReason
-	(AssistantContent_CodeExecutionResult_Outcome)(0),                                 // 2: google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.Outcome
-	(*AssistAnswer)(nil),                                                              // 3: google.cloud.discoveryengine.v1.AssistAnswer
-	(*AssistantContent)(nil),                                                          // 4: google.cloud.discoveryengine.v1.AssistantContent
-	(*AssistantGroundedContent)(nil),                                                  // 5: google.cloud.discoveryengine.v1.AssistantGroundedContent
-	(*AssistAnswer_Reply)(nil),                                                        // 6: google.cloud.discoveryengine.v1.AssistAnswer.Reply
-	(*AssistantContent_Blob)(nil),                                                     // 7: google.cloud.discoveryengine.v1.AssistantContent.Blob
-	(*AssistantContent_File)(nil),                                                     // 8: google.cloud.discoveryengine.v1.AssistantContent.File
-	(*AssistantContent_ExecutableCode)(nil),                                           // 9: google.cloud.discoveryengine.v1.AssistantContent.ExecutableCode
-	(*AssistantContent_CodeExecutionResult)(nil),                                      // 10: google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult
-	(*AssistantGroundedContent_TextGroundingMetadata)(nil),                            // 11: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata
-	(*AssistantGroundedContent_TextGroundingMetadata_Segment)(nil),                    // 12: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Segment
-	(*AssistantGroundedContent_TextGroundingMetadata_Reference)(nil),                  // 13: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference
-	(*AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata)(nil), // 14: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadata
+	(AssistAnswer_State)(0),                                                                 // 0: google.cloud.discoveryengine.v1.AssistAnswer.State
+	(AssistAnswer_AssistSkippedReason)(0),                                                   // 1: google.cloud.discoveryengine.v1.AssistAnswer.AssistSkippedReason
+	(AssistAnswer_CustomerPolicyEnforcementResult_Verdict)(0),                               // 2: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.Verdict
+	(AssistAnswer_CustomerPolicyEnforcementResult_ViolationSource)(0),                       // 3: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.ViolationSource
+	(AssistantContent_CodeExecutionResult_Outcome)(0),                                       // 4: google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.Outcome
+	(AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata_Language)(0), // 5: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadata.Language
+	(*AssistAnswer)(nil),                                                                    // 6: google.cloud.discoveryengine.v1.AssistAnswer
+	(*AssistantContent)(nil),                                                                // 7: google.cloud.discoveryengine.v1.AssistantContent
+	(*AssistantGroundedContent)(nil),                                                        // 8: google.cloud.discoveryengine.v1.AssistantGroundedContent
+	(*AssistAnswer_Reply)(nil),                                                              // 9: google.cloud.discoveryengine.v1.AssistAnswer.Reply
+	(*AssistAnswer_CustomerPolicyEnforcementResult)(nil),                                    // 10: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult
+	nil, // 11: google.cloud.discoveryengine.v1.AssistAnswer.ConnectorDisplayNamesEntry
+	(*AssistAnswer_CustomerPolicyEnforcementResult_BannedPhraseEnforcementResult)(nil), // 12: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.BannedPhraseEnforcementResult
+	(*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult)(nil),   // 13: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.ModelArmorEnforcementResult
+	(*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult)(nil),       // 14: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.PolicyEnforcementResult
+	(*AssistantContent_Blob)(nil),                                                     // 15: google.cloud.discoveryengine.v1.AssistantContent.Blob
+	(*AssistantContent_File)(nil),                                                     // 16: google.cloud.discoveryengine.v1.AssistantContent.File
+	(*AssistantContent_ExecutableCode)(nil),                                           // 17: google.cloud.discoveryengine.v1.AssistantContent.ExecutableCode
+	(*AssistantContent_CodeExecutionResult)(nil),                                      // 18: google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult
+	(*AssistantGroundedContent_TextGroundingMetadata)(nil),                            // 19: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata
+	(*AssistantGroundedContent_TextGroundingMetadata_Segment)(nil),                    // 20: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Segment
+	(*AssistantGroundedContent_TextGroundingMetadata_VisualSegment)(nil),              // 21: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.VisualSegment
+	(*AssistantGroundedContent_TextGroundingMetadata_Reference)(nil),                  // 22: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference
+	(*AssistantGroundedContent_TextGroundingMetadata_Reference_DocumentMetadata)(nil), // 23: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadata
+	(*CitationMetadata)(nil),                                                          // 24: google.cloud.discoveryengine.v1.CitationMetadata
+	(*timestamppb.Timestamp)(nil),                                                     // 25: google.protobuf.Timestamp
+	(*status.Status)(nil),                                                             // 26: google.rpc.Status
+	(*structpb.Struct)(nil),                                                           // 27: google.protobuf.Struct
 }
 var file_google_cloud_discoveryengine_v1_assist_answer_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.discoveryengine.v1.AssistAnswer.state:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.State
-	6,  // 1: google.cloud.discoveryengine.v1.AssistAnswer.replies:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.Reply
-	1,  // 2: google.cloud.discoveryengine.v1.AssistAnswer.assist_skipped_reasons:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.AssistSkippedReason
-	7,  // 3: google.cloud.discoveryengine.v1.AssistantContent.inline_data:type_name -> google.cloud.discoveryengine.v1.AssistantContent.Blob
-	8,  // 4: google.cloud.discoveryengine.v1.AssistantContent.file:type_name -> google.cloud.discoveryengine.v1.AssistantContent.File
-	9,  // 5: google.cloud.discoveryengine.v1.AssistantContent.executable_code:type_name -> google.cloud.discoveryengine.v1.AssistantContent.ExecutableCode
-	10, // 6: google.cloud.discoveryengine.v1.AssistantContent.code_execution_result:type_name -> google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult
-	11, // 7: google.cloud.discoveryengine.v1.AssistantGroundedContent.text_grounding_metadata:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata
-	4,  // 8: google.cloud.discoveryengine.v1.AssistantGroundedContent.content:type_name -> google.cloud.discoveryengine.v1.AssistantContent
-	5,  // 9: google.cloud.discoveryengine.v1.AssistAnswer.Reply.grounded_content:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent
-	2,  // 10: google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.outcome:type_name -> google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.Outcome
-	12, // 11: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.segments:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Segment
-	13, // 12: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.references:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference
-	14, // 13: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.document_metadata:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadata
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	11, // 1: google.cloud.discoveryengine.v1.AssistAnswer.connector_display_names:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.ConnectorDisplayNamesEntry
+	9,  // 2: google.cloud.discoveryengine.v1.AssistAnswer.replies:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.Reply
+	1,  // 3: google.cloud.discoveryengine.v1.AssistAnswer.assist_skipped_reasons:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.AssistSkippedReason
+	10, // 4: google.cloud.discoveryengine.v1.AssistAnswer.customer_policy_enforcement_result:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult
+	15, // 5: google.cloud.discoveryengine.v1.AssistantContent.inline_data:type_name -> google.cloud.discoveryengine.v1.AssistantContent.Blob
+	16, // 6: google.cloud.discoveryengine.v1.AssistantContent.file:type_name -> google.cloud.discoveryengine.v1.AssistantContent.File
+	17, // 7: google.cloud.discoveryengine.v1.AssistantContent.executable_code:type_name -> google.cloud.discoveryengine.v1.AssistantContent.ExecutableCode
+	18, // 8: google.cloud.discoveryengine.v1.AssistantContent.code_execution_result:type_name -> google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult
+	19, // 9: google.cloud.discoveryengine.v1.AssistantGroundedContent.text_grounding_metadata:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata
+	7,  // 10: google.cloud.discoveryengine.v1.AssistantGroundedContent.content:type_name -> google.cloud.discoveryengine.v1.AssistantContent
+	24, // 11: google.cloud.discoveryengine.v1.AssistantGroundedContent.citation_metadata:type_name -> google.cloud.discoveryengine.v1.CitationMetadata
+	8,  // 12: google.cloud.discoveryengine.v1.AssistAnswer.Reply.grounded_content:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent
+	25, // 13: google.cloud.discoveryengine.v1.AssistAnswer.Reply.create_time:type_name -> google.protobuf.Timestamp
+	2,  // 14: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.verdict:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.Verdict
+	14, // 15: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.policy_results:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.PolicyEnforcementResult
+	3,  // 16: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.violation_source:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.ViolationSource
+	26, // 17: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.ModelArmorEnforcementResult.error:type_name -> google.rpc.Status
+	12, // 18: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.PolicyEnforcementResult.banned_phrase_enforcement_result:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.BannedPhraseEnforcementResult
+	13, // 19: google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.PolicyEnforcementResult.model_armor_enforcement_result:type_name -> google.cloud.discoveryengine.v1.AssistAnswer.CustomerPolicyEnforcementResult.ModelArmorEnforcementResult
+	4,  // 20: google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.outcome:type_name -> google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.Outcome
+	20, // 21: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.segments:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Segment
+	21, // 22: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.visual_segments:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.VisualSegment
+	22, // 23: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.references:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference
+	23, // 24: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.document_metadata:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadata
+	27, // 25: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.chunk_metadata:type_name -> google.protobuf.Struct
+	5,  // 26: google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadata.language:type_name -> google.cloud.discoveryengine.v1.AssistantGroundedContent.TextGroundingMetadata.Reference.DocumentMetadata.Language
+	27, // [27:27] is the sub-list for method output_type
+	27, // [27:27] is the sub-list for method input_type
+	27, // [27:27] is the sub-list for extension type_name
+	27, // [27:27] is the sub-list for extension extendee
+	0,  // [0:27] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_assist_answer_proto_init() }
@@ -1235,6 +1924,7 @@ func file_google_cloud_discoveryengine_v1_assist_answer_proto_init() {
 	if File_google_cloud_discoveryengine_v1_assist_answer_proto != nil {
 		return
 	}
+	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_init()
 	file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[1].OneofWrappers = []any{
 		(*AssistantContent_Text)(nil),
 		(*AssistantContent_InlineData)(nil),
@@ -1248,14 +1938,22 @@ func file_google_cloud_discoveryengine_v1_assist_answer_proto_init() {
 	file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[3].OneofWrappers = []any{
 		(*AssistAnswer_Reply_GroundedContent)(nil),
 	}
-	file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[11].OneofWrappers = []any{}
+	file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[7].OneofWrappers = []any{
+		(*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_ModelArmorViolation)(nil),
+		(*AssistAnswer_CustomerPolicyEnforcementResult_ModelArmorEnforcementResult_Error)(nil),
+	}
+	file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[8].OneofWrappers = []any{
+		(*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_BannedPhraseEnforcementResult)(nil),
+		(*AssistAnswer_CustomerPolicyEnforcementResult_PolicyEnforcementResult_ModelArmorEnforcementResult)(nil),
+	}
+	file_google_cloud_discoveryengine_v1_assist_answer_proto_msgTypes[17].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   12,
+			NumEnums:      6,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

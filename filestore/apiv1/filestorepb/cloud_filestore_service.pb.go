@@ -3486,12 +3486,12 @@ var File_google_cloud_filestore_v1_cloud_filestore_service_proto protoreflect.Fi
 
 const file_google_cloud_filestore_v1_cloud_filestore_service_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/filestore/v1/cloud_filestore_service.proto\x12\x19google.cloud.filestore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/common/operation_metadata.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xbb\x03\n" +
+	"7google/cloud/filestore/v1/cloud_filestore_service.proto\x12\x19google.cloud.filestore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/common/operation_metadata.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xbc\x03\n" +
 	"\rNetworkConfig\x12\x18\n" +
 	"\anetwork\x18\x01 \x01(\tR\anetwork\x12J\n" +
 	"\x05modes\x18\x03 \x03(\x0e24.google.cloud.filestore.v1.NetworkConfig.AddressModeR\x05modes\x12*\n" +
-	"\x11reserved_ip_range\x18\x04 \x01(\tR\x0freservedIpRange\x12&\n" +
-	"\fip_addresses\x18\x05 \x03(\tB\x03\xe0A\x03R\vipAddresses\x12W\n" +
+	"\x11reserved_ip_range\x18\x04 \x01(\tR\x0freservedIpRange\x12'\n" +
+	"\fip_addresses\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\vipAddresses\x12W\n" +
 	"\fconnect_mode\x18\x06 \x01(\x0e24.google.cloud.filestore.v1.NetworkConfig.ConnectModeR\vconnectMode\":\n" +
 	"\vAddressMode\x12\x1c\n" +
 	"\x18ADDRESS_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
@@ -3526,14 +3526,14 @@ const file_google_cloud_filestore_v1_cloud_filestore_service_proto_rawDesc = "" 
 	"SquashMode\x12\x1b\n" +
 	"\x17SQUASH_MODE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eNO_ROOT_SQUASH\x10\x01\x12\x0f\n" +
-	"\vROOT_SQUASH\x10\x02\"\x8b\x04\n" +
-	"\rReplicaConfig\x12I\n" +
-	"\x05state\x18\x01 \x01(\x0e2..google.cloud.filestore.v1.ReplicaConfig.StateB\x03\xe0A\x03R\x05state\x12^\n" +
-	"\rstate_reasons\x18\x02 \x03(\x0e24.google.cloud.filestore.v1.ReplicaConfig.StateReasonB\x03\xe0A\x03R\fstateReasons\x12I\n" +
-	"\rpeer_instance\x18\x03 \x01(\tB$\xe0A\x01\xfaA\x1e\n" +
-	"\x1cfile.googleapis.com/InstanceR\fpeerInstance\x12R\n" +
+	"\vROOT_SQUASH\x10\x02\"\x8f\x04\n" +
+	"\rReplicaConfig\x12J\n" +
+	"\x05state\x18\x01 \x01(\x0e2..google.cloud.filestore.v1.ReplicaConfig.StateB\x04\xe2A\x01\x03R\x05state\x12_\n" +
+	"\rstate_reasons\x18\x02 \x03(\x0e24.google.cloud.filestore.v1.ReplicaConfig.StateReasonB\x04\xe2A\x01\x03R\fstateReasons\x12J\n" +
+	"\rpeer_instance\x18\x03 \x01(\tB%\xe2A\x01\x01\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/InstanceR\fpeerInstance\x12S\n" +
 	"\x15last_active_sync_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12lastActiveSyncTime\"Q\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12lastActiveSyncTime\"Q\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\t\n" +
@@ -3544,21 +3544,21 @@ const file_google_cloud_filestore_v1_cloud_filestore_service_proto_rawDesc = "" 
 	"\vStateReason\x12\x1c\n" +
 	"\x18STATE_REASON_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19PEER_INSTANCE_UNREACHABLE\x10\x01\x12\x11\n" +
-	"\rREMOVE_FAILED\x10\x02\"\xd5\x01\n" +
-	"\vReplication\x12D\n" +
-	"\x04role\x18\x01 \x01(\x0e2+.google.cloud.filestore.v1.Replication.RoleB\x03\xe0A\x01R\x04role\x12I\n" +
-	"\breplicas\x18\x02 \x03(\v2(.google.cloud.filestore.v1.ReplicaConfigB\x03\xe0A\x01R\breplicas\"5\n" +
+	"\rREMOVE_FAILED\x10\x02\"\xd7\x01\n" +
+	"\vReplication\x12E\n" +
+	"\x04role\x18\x01 \x01(\x0e2+.google.cloud.filestore.v1.Replication.RoleB\x04\xe2A\x01\x01R\x04role\x12J\n" +
+	"\breplicas\x18\x02 \x03(\v2(.google.cloud.filestore.v1.ReplicaConfigB\x04\xe2A\x01\x01R\breplicas\"5\n" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\v\n" +
-	"\aSTANDBY\x10\x02\"\x9a\x15\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12D\n" +
-	"\x05state\x18\x05 \x01(\x0e2).google.cloud.filestore.v1.Instance.StateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0estatus_message\x18\x06 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\aSTANDBY\x10\x02\"\xac\x15\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12E\n" +
+	"\x05state\x18\x05 \x01(\x0e2).google.cloud.filestore.v1.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0estatus_message\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12<\n" +
 	"\x04tier\x18\b \x01(\x0e2(.google.cloud.filestore.v1.Instance.TierR\x04tier\x12G\n" +
 	"\x06labels\x18\t \x03(\v2/.google.cloud.filestore.v1.Instance.LabelsEntryR\x06labels\x12K\n" +
@@ -3566,35 +3566,35 @@ const file_google_cloud_filestore_v1_cloud_filestore_service_proto_rawDesc = "" 
 	" \x03(\v2*.google.cloud.filestore.v1.FileShareConfigR\n" +
 	"fileShares\x12D\n" +
 	"\bnetworks\x18\v \x03(\v2(.google.cloud.filestore.v1.NetworkConfigR\bnetworks\x12\x12\n" +
-	"\x04etag\x18\f \x01(\tR\x04etag\x12D\n" +
-	"\rsatisfies_pzs\x18\r \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\x12 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x12 \n" +
+	"\x04etag\x18\f \x01(\tR\x04etag\x12E\n" +
+	"\rsatisfies_pzs\x18\r \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\x12 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x12 \n" +
 	"\fkms_key_name\x18\x0e \x01(\tR\n" +
-	"kmsKeyName\x12h\n" +
-	"\x12suspension_reasons\x18\x0f \x03(\x0e24.google.cloud.filestore.v1.Instance.SuspensionReasonB\x03\xe0A\x03R\x11suspensionReasons\x12M\n" +
-	"\vreplication\x18\x13 \x01(\v2&.google.cloud.filestore.v1.ReplicationB\x03\xe0A\x01R\vreplication\x12L\n" +
-	"\x04tags\x18\x14 \x03(\v2-.google.cloud.filestore.v1.Instance.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x12Q\n" +
-	"\bprotocol\x18\x15 \x01(\x0e20.google.cloud.filestore.v1.Instance.FileProtocolB\x03\xe0A\x05R\bprotocol\x12E\n" +
-	"\x1ccustom_performance_supported\x18\x17 \x01(\bB\x03\xe0A\x03R\x1acustomPerformanceSupported\x12i\n" +
-	"\x12performance_config\x18\x18 \x01(\v25.google.cloud.filestore.v1.Instance.PerformanceConfigB\x03\xe0A\x01R\x11performanceConfig\x12i\n" +
-	"\x12performance_limits\x18\x19 \x01(\v25.google.cloud.filestore.v1.Instance.PerformanceLimitsB\x03\xe0A\x03R\x11performanceLimits\x12C\n" +
-	"\x1bdeletion_protection_enabled\x18\x1a \x01(\bB\x03\xe0A\x01R\x19deletionProtectionEnabled\x12A\n" +
-	"\x1adeletion_protection_reason\x18\x1b \x01(\tB\x03\xe0A\x01R\x18deletionProtectionReason\x1a7\n" +
-	"\tIOPSPerTB\x12*\n" +
-	"\x0fmax_iops_per_tb\x18\x02 \x01(\x03B\x03\xe0A\x02R\fmaxIopsPerTb\x1a+\n" +
-	"\tFixedIOPS\x12\x1e\n" +
-	"\bmax_iops\x18\x02 \x01(\x03B\x03\xe0A\x02R\amaxIops\x1a\xbc\x01\n" +
+	"kmsKeyName\x12i\n" +
+	"\x12suspension_reasons\x18\x0f \x03(\x0e24.google.cloud.filestore.v1.Instance.SuspensionReasonB\x04\xe2A\x01\x03R\x11suspensionReasons\x12N\n" +
+	"\vreplication\x18\x13 \x01(\v2&.google.cloud.filestore.v1.ReplicationB\x04\xe2A\x01\x01R\vreplication\x12I\n" +
+	"\x04tags\x18\x14 \x03(\v2-.google.cloud.filestore.v1.Instance.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x12R\n" +
+	"\bprotocol\x18\x15 \x01(\x0e20.google.cloud.filestore.v1.Instance.FileProtocolB\x04\xe2A\x01\x05R\bprotocol\x12F\n" +
+	"\x1ccustom_performance_supported\x18\x17 \x01(\bB\x04\xe2A\x01\x03R\x1acustomPerformanceSupported\x12j\n" +
+	"\x12performance_config\x18\x18 \x01(\v25.google.cloud.filestore.v1.Instance.PerformanceConfigB\x04\xe2A\x01\x01R\x11performanceConfig\x12j\n" +
+	"\x12performance_limits\x18\x19 \x01(\v25.google.cloud.filestore.v1.Instance.PerformanceLimitsB\x04\xe2A\x01\x03R\x11performanceLimits\x12D\n" +
+	"\x1bdeletion_protection_enabled\x18\x1a \x01(\bB\x04\xe2A\x01\x01R\x19deletionProtectionEnabled\x12B\n" +
+	"\x1adeletion_protection_reason\x18\x1b \x01(\tB\x04\xe2A\x01\x01R\x18deletionProtectionReason\x1a8\n" +
+	"\tIOPSPerTB\x12+\n" +
+	"\x0fmax_iops_per_tb\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\fmaxIopsPerTb\x1a,\n" +
+	"\tFixedIOPS\x12\x1f\n" +
+	"\bmax_iops\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\amaxIops\x1a\xbc\x01\n" +
 	"\x11PerformanceConfig\x12O\n" +
 	"\viops_per_tb\x18\x04 \x01(\v2-.google.cloud.filestore.v1.Instance.IOPSPerTBH\x00R\tiopsPerTb\x12N\n" +
 	"\n" +
 	"fixed_iops\x18\x02 \x01(\v2-.google.cloud.filestore.v1.Instance.FixedIOPSH\x00R\tfixedIopsB\x06\n" +
-	"\x04mode\x1a\x81\x02\n" +
-	"\x11PerformanceLimits\x12\x1e\n" +
-	"\bmax_iops\x18\a \x01(\x03B\x03\xe0A\x03R\amaxIops\x12'\n" +
-	"\rmax_read_iops\x18\x01 \x01(\x03B\x03\xe0A\x03R\vmaxReadIops\x12)\n" +
-	"\x0emax_write_iops\x18\x02 \x01(\x03B\x03\xe0A\x03R\fmaxWriteIops\x12:\n" +
-	"\x17max_read_throughput_bps\x18\x05 \x01(\x03B\x03\xe0A\x03R\x14maxReadThroughputBps\x12<\n" +
-	"\x18max_write_throughput_bps\x18\x06 \x01(\x03B\x03\xe0A\x03R\x15maxWriteThroughputBps\x1a9\n" +
+	"\x04mode\x1a\x86\x02\n" +
+	"\x11PerformanceLimits\x12\x1f\n" +
+	"\bmax_iops\x18\a \x01(\x03B\x04\xe2A\x01\x03R\amaxIops\x12(\n" +
+	"\rmax_read_iops\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\vmaxReadIops\x12*\n" +
+	"\x0emax_write_iops\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\fmaxWriteIops\x12;\n" +
+	"\x17max_read_throughput_bps\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\x14maxReadThroughputBps\x12=\n" +
+	"\x18max_write_throughput_bps\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\x15maxWriteThroughputBps\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
@@ -3635,57 +3635,57 @@ const file_google_cloud_filestore_v1_cloud_filestore_service_proto_rawDesc = "" 
 	"\n" +
 	"\x06NFS_V3\x10\x01\x12\f\n" +
 	"\bNFS_V4_1\x10\x02:_\xeaA\\\n" +
-	"\x1cfile.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}\"\xc6\x01\n" +
-	"\x15CreateInstanceRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12D\n" +
-	"\binstance\x18\x03 \x01(\v2#.google.cloud.filestore.v1.InstanceB\x03\xe0A\x02R\binstance\"N\n" +
-	"\x12GetInstanceRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}\"\xc9\x01\n" +
+	"\x15CreateInstanceRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12E\n" +
+	"\binstance\x18\x03 \x01(\v2#.google.cloud.filestore.v1.InstanceB\x04\xe2A\x01\x02R\binstance\"O\n" +
+	"\x12GetInstanceRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1cfile.googleapis.com/InstanceR\x04name\"\x95\x01\n" +
 	"\x15UpdateInstanceRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12?\n" +
-	"\binstance\x18\x02 \x01(\v2#.google.cloud.filestore.v1.InstanceR\binstance\"\xc8\x01\n" +
-	"\x16RestoreInstanceRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cfile.googleapis.com/InstanceR\x04name\x12\"\n" +
+	"\binstance\x18\x02 \x01(\v2#.google.cloud.filestore.v1.InstanceR\binstance\"\xca\x01\n" +
+	"\x16RestoreInstanceRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/InstanceR\x04name\x12#\n" +
 	"\n" +
-	"file_share\x18\x02 \x01(\tB\x03\xe0A\x02R\tfileShare\x12F\n" +
+	"file_share\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tfileShare\x12F\n" +
 	"\rsource_backup\x18\x03 \x01(\tB\x1f\xfaA\x1c\n" +
 	"\x1afile.googleapis.com/BackupH\x00R\fsourceBackupB\b\n" +
-	"\x06source\"\x84\x01\n" +
-	"\x15RevertInstanceRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cfile.googleapis.com/InstanceR\x04name\x121\n" +
-	"\x12target_snapshot_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10targetSnapshotId\"g\n" +
-	"\x15DeleteInstanceRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\x06source\"\x86\x01\n" +
+	"\x15RevertInstanceRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/InstanceR\x04name\x122\n" +
+	"\x12target_snapshot_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10targetSnapshotId\"h\n" +
+	"\x15DeleteInstanceRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1cfile.googleapis.com/InstanceR\x04name\x12\x14\n" +
-	"\x05force\x18\x02 \x01(\bR\x05force\"\xc8\x01\n" +
-	"\x14ListInstancesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05force\x18\x02 \x01(\bR\x05force\"\xc9\x01\n" +
+	"\x14ListInstancesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\x12\x16\n" +
-	"\x06filter\x18\x05 \x01(\tR\x06filter\"\xa9\x01\n" +
+	"\x06filter\x18\x05 \x01(\tR\x06filter\"\xaa\x01\n" +
 	"\x15ListInstancesResponse\x12A\n" +
 	"\tinstances\x18\x01 \x03(\v2#.google.cloud.filestore.v1.InstanceR\tinstances\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xce\x05\n" +
-	"\bSnapshot\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12D\n" +
-	"\x05state\x18\x03 \x01(\x0e2).google.cloud.filestore.v1.Snapshot.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\xcf\x05\n" +
+	"\bSnapshot\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12E\n" +
+	"\x05state\x18\x03 \x01(\x0e2).google.cloud.filestore.v1.Snapshot.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12G\n" +
-	"\x06labels\x18\x05 \x03(\v2/.google.cloud.filestore.v1.Snapshot.LabelsEntryR\x06labels\x127\n" +
-	"\x15filesystem_used_bytes\x18\x06 \x01(\x03B\x03\xe0A\x03R\x13filesystemUsedBytes\x12L\n" +
-	"\x04tags\x18\a \x03(\v2-.google.cloud.filestore.v1.Snapshot.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x1a9\n" +
+	"\x06labels\x18\x05 \x03(\v2/.google.cloud.filestore.v1.Snapshot.LabelsEntryR\x06labels\x128\n" +
+	"\x15filesystem_used_bytes\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\x13filesystemUsedBytes\x12I\n" +
+	"\x04tags\x18\a \x03(\v2-.google.cloud.filestore.v1.Snapshot.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
@@ -3697,57 +3697,57 @@ const file_google_cloud_filestore_v1_cloud_filestore_service_proto_rawDesc = "" 
 	"\bCREATING\x10\x01\x12\t\n" +
 	"\x05READY\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:t\xeaAq\n" +
-	"\x1cfile.googleapis.com/Snapshot\x12Qprojects/{project}/locations/{location}/instances/{instance}/snapshots/{snapshot}\"\xc1\x01\n" +
-	"\x15CreateSnapshotRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cfile.googleapis.com/InstanceR\x06parent\x12$\n" +
-	"\vsnapshot_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"snapshotId\x12D\n" +
-	"\bsnapshot\x18\x03 \x01(\v2#.google.cloud.filestore.v1.SnapshotB\x03\xe0A\x02R\bsnapshot\"N\n" +
-	"\x12GetSnapshotRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cfile.googleapis.com/SnapshotR\x04name\"Q\n" +
-	"\x15DeleteSnapshotRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cfile.googleapis.com/SnapshotR\x04name\"\x9f\x01\n" +
-	"\x15UpdateSnapshotRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12D\n" +
-	"\bsnapshot\x18\x02 \x01(\v2#.google.cloud.filestore.v1.SnapshotB\x03\xe0A\x02R\bsnapshot\"\xfe\x01\n" +
-	"\x14ListSnapshotsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/Snapshot\x12Qprojects/{project}/locations/{location}/instances/{instance}/snapshots/{snapshot}\"\xc4\x01\n" +
+	"\x15CreateSnapshotRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/InstanceR\x06parent\x12%\n" +
+	"\vsnapshot_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"snapshotId\x12E\n" +
+	"\bsnapshot\x18\x03 \x01(\v2#.google.cloud.filestore.v1.SnapshotB\x04\xe2A\x01\x02R\bsnapshot\"O\n" +
+	"\x12GetSnapshotRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/SnapshotR\x04name\"R\n" +
+	"\x15DeleteSnapshotRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/SnapshotR\x04name\"\xa1\x01\n" +
+	"\x15UpdateSnapshotRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12E\n" +
+	"\bsnapshot\x18\x02 \x01(\v2#.google.cloud.filestore.v1.SnapshotB\x04\xe2A\x01\x02R\bsnapshot\"\x80\x02\n" +
+	"\x14ListSnapshotsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1cfile.googleapis.com/InstanceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\x12\x16\n" +
-	"\x06filter\x18\x05 \x01(\tR\x06filter\x129\n" +
-	"\x16return_partial_success\x18\x06 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\"\xa9\x01\n" +
+	"\x06filter\x18\x05 \x01(\tR\x06filter\x12:\n" +
+	"\x16return_partial_success\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\"\xaa\x01\n" +
 	"\x15ListSnapshotsResponse\x12A\n" +
 	"\tsnapshots\x18\x01 \x03(\v2#.google.cloud.filestore.v1.SnapshotR\tsnapshots\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xdb\t\n" +
-	"\x06Backup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12B\n" +
-	"\x05state\x18\x03 \x01(\x0e2'.google.cloud.filestore.v1.Backup.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\xe3\t\n" +
+	"\x06Backup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12C\n" +
+	"\x05state\x18\x03 \x01(\x0e2'.google.cloud.filestore.v1.Backup.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12E\n" +
-	"\x06labels\x18\x05 \x03(\v2-.google.cloud.filestore.v1.Backup.LabelsEntryR\x06labels\x12$\n" +
-	"\vcapacity_gb\x18\x06 \x01(\x03B\x03\xe0A\x03R\n" +
-	"capacityGb\x12(\n" +
-	"\rstorage_bytes\x18\a \x01(\x03B\x03\xe0A\x03R\fstorageBytes\x12J\n" +
+	"\x06labels\x18\x05 \x03(\v2-.google.cloud.filestore.v1.Backup.LabelsEntryR\x06labels\x12%\n" +
+	"\vcapacity_gb\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"capacityGb\x12)\n" +
+	"\rstorage_bytes\x18\a \x01(\x03B\x04\xe2A\x01\x03R\fstorageBytes\x12J\n" +
 	"\x0fsource_instance\x18\b \x01(\tB!\xfaA\x1e\n" +
 	"\x1cfile.googleapis.com/InstanceR\x0esourceInstance\x12*\n" +
-	"\x11source_file_share\x18\t \x01(\tR\x0fsourceFileShare\x12_\n" +
+	"\x11source_file_share\x18\t \x01(\tR\x0fsourceFileShare\x12`\n" +
 	"\x14source_instance_tier\x18\n" +
-	" \x01(\x0e2(.google.cloud.filestore.v1.Instance.TierB\x03\xe0A\x03R\x12sourceInstanceTier\x12*\n" +
-	"\x0edownload_bytes\x18\v \x01(\x03B\x03\xe0A\x03R\rdownloadBytes\x12D\n" +
-	"\rsatisfies_pzs\x18\f \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\x0e \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x12\x1c\n" +
-	"\akms_key\x18\r \x01(\tB\x03\xe0A\x05R\x06kmsKey\x12J\n" +
-	"\x04tags\x18\x0f \x03(\v2+.google.cloud.filestore.v1.Backup.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x12g\n" +
-	"\x14file_system_protocol\x18\x10 \x01(\x0e20.google.cloud.filestore.v1.Instance.FileProtocolB\x03\xe0A\x03R\x12fileSystemProtocol\x1a9\n" +
+	" \x01(\x0e2(.google.cloud.filestore.v1.Instance.TierB\x04\xe2A\x01\x03R\x12sourceInstanceTier\x12+\n" +
+	"\x0edownload_bytes\x18\v \x01(\x03B\x04\xe2A\x01\x03R\rdownloadBytes\x12E\n" +
+	"\rsatisfies_pzs\x18\f \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\x0e \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x12\x1d\n" +
+	"\akms_key\x18\r \x01(\tB\x04\xe2A\x01\x05R\x06kmsKey\x12G\n" +
+	"\x04tags\x18\x0f \x03(\v2+.google.cloud.filestore.v1.Backup.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x12h\n" +
+	"\x14file_system_protocol\x18\x10 \x01(\x0e20.google.cloud.filestore.v1.Instance.FileProtocolB\x04\xe2A\x01\x03R\x12fileSystemProtocol\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
@@ -3762,39 +3762,39 @@ const file_google_cloud_filestore_v1_cloud_filestore_service_proto_rawDesc = "" 
 	"\x05READY\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04\x12\v\n" +
 	"\aINVALID\x10\x05:Y\xeaAV\n" +
-	"\x1afile.googleapis.com/Backup\x128projects/{project}/locations/{location}/backups/{backup}\"\xba\x01\n" +
-	"\x13CreateBackupRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12>\n" +
-	"\x06backup\x18\x02 \x01(\v2!.google.cloud.filestore.v1.BackupB\x03\xe0A\x02R\x06backup\x12 \n" +
-	"\tbackup_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bbackupId\"M\n" +
-	"\x13DeleteBackupRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1afile.googleapis.com/BackupR\x04name\"\x97\x01\n" +
-	"\x13UpdateBackupRequest\x12>\n" +
-	"\x06backup\x18\x01 \x01(\v2!.google.cloud.filestore.v1.BackupB\x03\xe0A\x02R\x06backup\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x9c\x01\n" +
-	"\x15PromoteReplicaRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cfile.googleapis.com/InstanceR\x04name\x12I\n" +
-	"\rpeer_instance\x18\x02 \x01(\tB$\xe0A\x01\xfaA\x1e\n" +
-	"\x1cfile.googleapis.com/InstanceR\fpeerInstance\"J\n" +
-	"\x10GetBackupRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1afile.googleapis.com/BackupR\x04name\"\xc6\x01\n" +
-	"\x12ListBackupsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x1afile.googleapis.com/Backup\x128projects/{project}/locations/{location}/backups/{backup}\"\xbd\x01\n" +
+	"\x13CreateBackupRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12?\n" +
+	"\x06backup\x18\x02 \x01(\v2!.google.cloud.filestore.v1.BackupB\x04\xe2A\x01\x02R\x06backup\x12!\n" +
+	"\tbackup_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bbackupId\"N\n" +
+	"\x13DeleteBackupRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1afile.googleapis.com/BackupR\x04name\"\x99\x01\n" +
+	"\x13UpdateBackupRequest\x12?\n" +
+	"\x06backup\x18\x01 \x01(\v2!.google.cloud.filestore.v1.BackupB\x04\xe2A\x01\x02R\x06backup\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x9e\x01\n" +
+	"\x15PromoteReplicaRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/InstanceR\x04name\x12J\n" +
+	"\rpeer_instance\x18\x02 \x01(\tB%\xe2A\x01\x01\xfaA\x1e\n" +
+	"\x1cfile.googleapis.com/InstanceR\fpeerInstance\"K\n" +
+	"\x10GetBackupRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1afile.googleapis.com/BackupR\x04name\"\xc7\x01\n" +
+	"\x12ListBackupsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\x12\x16\n" +
-	"\x06filter\x18\x05 \x01(\tR\x06filter\"\xa1\x01\n" +
+	"\x06filter\x18\x05 \x01(\tR\x06filter\"\xa2\x01\n" +
 	"\x13ListBackupsResponse\x12;\n" +
 	"\abackups\x18\x01 \x03(\v2!.google.cloud.filestore.v1.BackupR\abackups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable2\x85\x1f\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable2\x85\x1f\n" +
 	"\x15CloudFilestoreManager\x12\xb2\x01\n" +
 	"\rListInstances\x12/.google.cloud.filestore.v1.ListInstancesRequest\x1a0.google.cloud.filestore.v1.ListInstancesResponse\">\xdaA\x06parent\x82\xd3\xe4\x93\x02/\x12-/v1/{parent=projects/*/locations/*}/instances\x12\x9f\x01\n" +
 	"\vGetInstance\x12-.google.cloud.filestore.v1.GetInstanceRequest\x1a#.google.cloud.filestore.v1.Instance\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/\x12-/v1/{name=projects/*/locations/*/instances/*}\x12\xf5\x01\n" +

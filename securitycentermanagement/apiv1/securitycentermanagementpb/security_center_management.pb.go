@@ -3956,18 +3956,18 @@ var File_google_cloud_securitycentermanagement_v1_security_center_management_pro
 
 const file_google_cloud_securitycentermanagement_v1_security_center_management_proto_rawDesc = "" +
 	"\n" +
-	"Igoogle/cloud/securitycentermanagement/v1/security_center_management.proto\x12(google.cloud.securitycentermanagement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/expr.proto\"\xdf\v\n" +
-	"\x15SecurityCenterService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x90\x01\n" +
-	"\x19intended_enablement_state\x18\x02 \x01(\x0e2O.google.cloud.securitycentermanagement.v1.SecurityCenterService.EnablementStateB\x03\xe0A\x01R\x17intendedEnablementState\x12\x92\x01\n" +
-	"\x1aeffective_enablement_state\x18\x03 \x01(\x0e2O.google.cloud.securitycentermanagement.v1.SecurityCenterService.EnablementStateB\x03\xe0A\x03R\x18effectiveEnablementState\x12k\n" +
-	"\amodules\x18\x04 \x03(\v2L.google.cloud.securitycentermanagement.v1.SecurityCenterService.ModulesEntryB\x03\xe0A\x01R\amodules\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12C\n" +
-	"\x0eservice_config\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\rserviceConfig\x1a\xb8\x02\n" +
-	"\x0eModuleSettings\x12\x90\x01\n" +
-	"\x19intended_enablement_state\x18\x01 \x01(\x0e2O.google.cloud.securitycentermanagement.v1.SecurityCenterService.EnablementStateB\x03\xe0A\x01R\x17intendedEnablementState\x12\x92\x01\n" +
-	"\x1aeffective_enablement_state\x18\x02 \x01(\x0e2O.google.cloud.securitycentermanagement.v1.SecurityCenterService.EnablementStateB\x03\xe0A\x03R\x18effectiveEnablementState\x1a\x8a\x01\n" +
+	"Igoogle/cloud/securitycentermanagement/v1/security_center_management.proto\x12(google.cloud.securitycentermanagement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/expr.proto\"\xe7\v\n" +
+	"\x15SecurityCenterService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x91\x01\n" +
+	"\x19intended_enablement_state\x18\x02 \x01(\x0e2O.google.cloud.securitycentermanagement.v1.SecurityCenterService.EnablementStateB\x04\xe2A\x01\x01R\x17intendedEnablementState\x12\x93\x01\n" +
+	"\x1aeffective_enablement_state\x18\x03 \x01(\x0e2O.google.cloud.securitycentermanagement.v1.SecurityCenterService.EnablementStateB\x04\xe2A\x01\x03R\x18effectiveEnablementState\x12l\n" +
+	"\amodules\x18\x04 \x03(\v2L.google.cloud.securitycentermanagement.v1.SecurityCenterService.ModulesEntryB\x04\xe2A\x01\x01R\amodules\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12D\n" +
+	"\x0eservice_config\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\rserviceConfig\x1a\xba\x02\n" +
+	"\x0eModuleSettings\x12\x91\x01\n" +
+	"\x19intended_enablement_state\x18\x01 \x01(\x0e2O.google.cloud.securitycentermanagement.v1.SecurityCenterService.EnablementStateB\x04\xe2A\x01\x01R\x17intendedEnablementState\x12\x93\x01\n" +
+	"\x1aeffective_enablement_state\x18\x02 \x01(\x0e2O.google.cloud.securitycentermanagement.v1.SecurityCenterService.EnablementStateB\x04\xe2A\x01\x03R\x18effectiveEnablementState\x1a\x8a\x01\n" +
 	"\fModulesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12d\n" +
 	"\x05value\x18\x02 \x01(\v2N.google.cloud.securitycentermanagement.v1.SecurityCenterService.ModuleSettingsR\x05value:\x028\x01\"n\n" +
@@ -3977,114 +3977,114 @@ const file_google_cloud_securitycentermanagement_v1_security_center_management_p
 	"\aENABLED\x10\x02\x12\f\n" +
 	"\bDISABLED\x10\x03\x12\x0f\n" +
 	"\vINGEST_ONLY\x10\x04:\xd8\x02\xeaA\xd4\x02\n" +
-	"=securitycentermanagement.googleapis.com/SecurityCenterService\x12Hprojects/{project}/locations/{location}/securityCenterServices/{service}\x12Ffolders/{folder}/locations/{location}/securityCenterServices/{service}\x12Rorganizations/{organization}/locations/{location}/securityCenterServices/{service}*\x16securityCenterServices2\x15securityCenterService\"\xa0\b\n" +
-	",EffectiveSecurityHealthAnalyticsCustomModule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12`\n" +
-	"\rcustom_config\x18\x02 \x01(\v26.google.cloud.securitycentermanagement.v1.CustomConfigB\x03\xe0A\x03R\fcustomConfig\x12\x96\x01\n" +
-	"\x10enablement_state\x18\x03 \x01(\x0e2f.google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule.EnablementStateB\x03\xe0A\x03R\x0fenablementState\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x03R\vdisplayName\"N\n" +
+	"=securitycentermanagement.googleapis.com/SecurityCenterService\x12Hprojects/{project}/locations/{location}/securityCenterServices/{service}\x12Ffolders/{folder}/locations/{location}/securityCenterServices/{service}\x12Rorganizations/{organization}/locations/{location}/securityCenterServices/{service}*\x16securityCenterServices2\x15securityCenterService\"\xa4\b\n" +
+	",EffectiveSecurityHealthAnalyticsCustomModule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12a\n" +
+	"\rcustom_config\x18\x02 \x01(\v26.google.cloud.securitycentermanagement.v1.CustomConfigB\x04\xe2A\x01\x03R\fcustomConfig\x12\x97\x01\n" +
+	"\x10enablement_state\x18\x03 \x01(\x0e2f.google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule.EnablementStateB\x04\xe2A\x01\x03R\x0fenablementState\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"N\n" +
 	"\x0fEnablementState\x12 \n" +
 	"\x1cENABLEMENT_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
 	"\bDISABLED\x10\x02:\xe3\x04\xeaA\xdf\x04\n" +
-	"Tsecuritycentermanagement.googleapis.com/EffectiveSecurityHealthAnalyticsCustomModule\x12\x93\x01organizations/{organization}/locations/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}\x12\x89\x01projects/{project}/locations/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}\x12\x87\x01folders/{folder}/locations/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}*-effectiveSecurityHealthAnalyticsCustomModules2,effectiveSecurityHealthAnalyticsCustomModule\"\xf6\x01\n" +
-	"8ListEffectiveSecurityHealthAnalyticsCustomModulesRequest\x12t\n" +
-	"\x06parent\x18\x01 \x01(\tB\\\xe0A\x02\xfaAV\x12Tsecuritycentermanagement.googleapis.com/EffectiveSecurityHealthAnalyticsCustomModuleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Tsecuritycentermanagement.googleapis.com/EffectiveSecurityHealthAnalyticsCustomModule\x12\x93\x01organizations/{organization}/locations/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}\x12\x89\x01projects/{project}/locations/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}\x12\x87\x01folders/{folder}/locations/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}*-effectiveSecurityHealthAnalyticsCustomModules2,effectiveSecurityHealthAnalyticsCustomModule\"\xf9\x01\n" +
+	"8ListEffectiveSecurityHealthAnalyticsCustomModulesRequest\x12u\n" +
+	"\x06parent\x18\x01 \x01(\tB]\xe2A\x01\x02\xfaAV\x12Tsecuritycentermanagement.googleapis.com/EffectiveSecurityHealthAnalyticsCustomModuleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa7\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa7\x02\n" +
 	"9ListEffectiveSecurityHealthAnalyticsCustomModulesResponse\x12\xc1\x01\n" +
 	"2effective_security_health_analytics_custom_modules\x18\x01 \x03(\v2V.google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModuleR-effectiveSecurityHealthAnalyticsCustomModules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xaa\x01\n" +
-	"6GetEffectiveSecurityHealthAnalyticsCustomModuleRequest\x12p\n" +
-	"\x04name\x18\x01 \x01(\tB\\\xe0A\x02\xfaAV\n" +
-	"Tsecuritycentermanagement.googleapis.com/EffectiveSecurityHealthAnalyticsCustomModuleR\x04name\"\xad\t\n" +
-	"#SecurityHealthAnalyticsCustomModule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x8d\x01\n" +
-	"\x10enablement_state\x18\x03 \x01(\x0e2].google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule.EnablementStateB\x03\xe0A\x01R\x0fenablementState\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12$\n" +
-	"\vlast_editor\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
-	"lastEditor\x12|\n" +
-	"\x0fancestor_module\x18\x06 \x01(\tBS\xe0A\x03\xfaAM\n" +
-	"Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x0eancestorModule\x12`\n" +
-	"\rcustom_config\x18\a \x01(\v26.google.cloud.securitycentermanagement.v1.CustomConfigB\x03\xe0A\x01R\fcustomConfig\"]\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xab\x01\n" +
+	"6GetEffectiveSecurityHealthAnalyticsCustomModuleRequest\x12q\n" +
+	"\x04name\x18\x01 \x01(\tB]\xe2A\x01\x02\xfaAV\n" +
+	"Tsecuritycentermanagement.googleapis.com/EffectiveSecurityHealthAnalyticsCustomModuleR\x04name\"\xb4\t\n" +
+	"#SecurityHealthAnalyticsCustomModule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x8e\x01\n" +
+	"\x10enablement_state\x18\x03 \x01(\x0e2].google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule.EnablementStateB\x04\xe2A\x01\x01R\x0fenablementState\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12%\n" +
+	"\vlast_editor\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"lastEditor\x12}\n" +
+	"\x0fancestor_module\x18\x06 \x01(\tBT\xe2A\x01\x03\xfaAM\n" +
+	"Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x0eancestorModule\x12a\n" +
+	"\rcustom_config\x18\a \x01(\v26.google.cloud.securitycentermanagement.v1.CustomConfigB\x04\xe2A\x01\x01R\fcustomConfig\"]\n" +
 	"\x0fEnablementState\x12 \n" +
 	"\x1cENABLEMENT_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
 	"\bDISABLED\x10\x02\x12\r\n" +
 	"\tINHERITED\x10\x03:\x8d\x04\xeaA\x89\x04\n" +
-	"Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModule\x12\x80\x01organizations/{organization}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}\x12vprojects/{project}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}\x12tfolders/{folder}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}*$securityHealthAnalyticsCustomModules2#securityHealthAnalyticsCustomModule\"\xef\x06\n" +
-	"\fCustomConfig\x124\n" +
-	"\tpredicate\x18\x01 \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\tpredicate\x12q\n" +
-	"\rcustom_output\x18\x02 \x01(\v2G.google.cloud.securitycentermanagement.v1.CustomConfig.CustomOutputSpecB\x03\xe0A\x01R\fcustomOutput\x12y\n" +
-	"\x11resource_selector\x18\x03 \x01(\v2G.google.cloud.securitycentermanagement.v1.CustomConfig.ResourceSelectorB\x03\xe0A\x01R\x10resourceSelector\x12`\n" +
-	"\bseverity\x18\x04 \x01(\x0e2?.google.cloud.securitycentermanagement.v1.CustomConfig.SeverityB\x03\xe0A\x01R\bseverity\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12+\n" +
-	"\x0erecommendation\x18\x06 \x01(\tB\x03\xe0A\x01R\x0erecommendation\x1a\xf1\x01\n" +
-	"\x10CustomOutputSpec\x12u\n" +
+	"Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModule\x12\x80\x01organizations/{organization}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}\x12vprojects/{project}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}\x12tfolders/{folder}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}*$securityHealthAnalyticsCustomModules2#securityHealthAnalyticsCustomModule\"\xf9\x06\n" +
+	"\fCustomConfig\x125\n" +
+	"\tpredicate\x18\x01 \x01(\v2\x11.google.type.ExprB\x04\xe2A\x01\x01R\tpredicate\x12r\n" +
+	"\rcustom_output\x18\x02 \x01(\v2G.google.cloud.securitycentermanagement.v1.CustomConfig.CustomOutputSpecB\x04\xe2A\x01\x01R\fcustomOutput\x12z\n" +
+	"\x11resource_selector\x18\x03 \x01(\v2G.google.cloud.securitycentermanagement.v1.CustomConfig.ResourceSelectorB\x04\xe2A\x01\x01R\x10resourceSelector\x12a\n" +
+	"\bseverity\x18\x04 \x01(\x0e2?.google.cloud.securitycentermanagement.v1.CustomConfig.SeverityB\x04\xe2A\x01\x01R\bseverity\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12,\n" +
+	"\x0erecommendation\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0erecommendation\x1a\xf4\x01\n" +
+	"\x10CustomOutputSpec\x12v\n" +
 	"\n" +
-	"properties\x18\x01 \x03(\v2P.google.cloud.securitycentermanagement.v1.CustomConfig.CustomOutputSpec.PropertyB\x03\xe0A\x01R\n" +
-	"properties\x1af\n" +
-	"\bProperty\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12A\n" +
-	"\x10value_expression\x18\x02 \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\x0fvalueExpression\x1a>\n" +
-	"\x10ResourceSelector\x12*\n" +
-	"\x0eresource_types\x18\x01 \x03(\tB\x03\xe0A\x01R\rresourceTypes\"Q\n" +
+	"properties\x18\x01 \x03(\v2P.google.cloud.securitycentermanagement.v1.CustomConfig.CustomOutputSpec.PropertyB\x04\xe2A\x01\x01R\n" +
+	"properties\x1ah\n" +
+	"\bProperty\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12B\n" +
+	"\x10value_expression\x18\x02 \x01(\v2\x11.google.type.ExprB\x04\xe2A\x01\x01R\x0fvalueExpression\x1a?\n" +
+	"\x10ResourceSelector\x12+\n" +
+	"\x0eresource_types\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\rresourceTypes\"Q\n" +
 	"\bSeverity\x12\x18\n" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCRITICAL\x10\x01\x12\b\n" +
 	"\x04HIGH\x10\x02\x12\n" +
 	"\n" +
 	"\x06MEDIUM\x10\x03\x12\a\n" +
-	"\x03LOW\x10\x04\"\xe4\x01\n" +
-	"/ListSecurityHealthAnalyticsCustomModulesRequest\x12k\n" +
-	"\x06parent\x18\x01 \x01(\tBS\xe0A\x02\xfaAM\x12Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x03LOW\x10\x04\"\xe7\x01\n" +
+	"/ListSecurityHealthAnalyticsCustomModulesRequest\x12l\n" +
+	"\x06parent\x18\x01 \x01(\tBT\xe2A\x01\x02\xfaAM\x12Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x82\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x82\x02\n" +
 	"0ListSecurityHealthAnalyticsCustomModulesResponse\x12\xa5\x01\n" +
 	"(security_health_analytics_custom_modules\x18\x01 \x03(\v2M.google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModuleR$securityHealthAnalyticsCustomModules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xee\x01\n" +
-	"9ListDescendantSecurityHealthAnalyticsCustomModulesRequest\x12k\n" +
-	"\x06parent\x18\x01 \x01(\tBS\xe0A\x02\xfaAM\x12Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf1\x01\n" +
+	"9ListDescendantSecurityHealthAnalyticsCustomModulesRequest\x12l\n" +
+	"\x06parent\x18\x01 \x01(\tBT\xe2A\x01\x02\xfaAM\x12Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8c\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8c\x02\n" +
 	":ListDescendantSecurityHealthAnalyticsCustomModulesResponse\x12\xa5\x01\n" +
 	"(security_health_analytics_custom_modules\x18\x01 \x03(\v2M.google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModuleR$securityHealthAnalyticsCustomModules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x01\n" +
-	"-GetSecurityHealthAnalyticsCustomModuleRequest\x12g\n" +
-	"\x04name\x18\x01 \x01(\tBS\xe0A\x02\xfaAM\n" +
-	"Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x04name\"\xf4\x02\n" +
-	"0CreateSecurityHealthAnalyticsCustomModuleRequest\x12k\n" +
-	"\x06parent\x18\x01 \x01(\tBS\xe0A\x02\xfaAM\x12Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x06parent\x12\xa8\x01\n" +
-	"'security_health_analytics_custom_module\x18\x02 \x01(\v2M.google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModuleB\x03\xe0A\x02R#securityHealthAnalyticsCustomModule\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xc9\x02\n" +
-	"0UpdateSecurityHealthAnalyticsCustomModuleRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\xa8\x01\n" +
-	"'security_health_analytics_custom_module\x18\x02 \x01(\v2M.google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModuleB\x03\xe0A\x02R#securityHealthAnalyticsCustomModule\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xc5\x01\n" +
-	"0DeleteSecurityHealthAnalyticsCustomModuleRequest\x12g\n" +
-	"\x04name\x18\x01 \x01(\tBS\xe0A\x02\xfaAM\n" +
-	"Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x8c\x04\n" +
-	"2SimulateSecurityHealthAnalyticsCustomModuleRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12`\n" +
-	"\rcustom_config\x18\x02 \x01(\v26.google.cloud.securitycentermanagement.v1.CustomConfigB\x03\xe0A\x02R\fcustomConfig\x12\x8f\x01\n" +
-	"\bresource\x18\x03 \x01(\v2n.google.cloud.securitycentermanagement.v1.SimulateSecurityHealthAnalyticsCustomModuleRequest.SimulatedResourceB\x03\xe0A\x02R\bresource\x1a\xc4\x01\n" +
-	"\x11SimulatedResource\x12(\n" +
-	"\rresource_type\x18\x01 \x01(\tB\x03\xe0A\x02R\fresourceType\x12A\n" +
-	"\rresource_data\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\fresourceData\x12B\n" +
-	"\x0fiam_policy_data\x18\x03 \x01(\v2\x15.google.iam.v1.PolicyB\x03\xe0A\x01R\riamPolicyData\"\xf8\t\n" +
-	"\x10SimulatedFinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x16\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x99\x01\n" +
+	"-GetSecurityHealthAnalyticsCustomModuleRequest\x12h\n" +
+	"\x04name\x18\x01 \x01(\tBT\xe2A\x01\x02\xfaAM\n" +
+	"Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x04name\"\xf7\x02\n" +
+	"0CreateSecurityHealthAnalyticsCustomModuleRequest\x12l\n" +
+	"\x06parent\x18\x01 \x01(\tBT\xe2A\x01\x02\xfaAM\x12Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x06parent\x12\xa9\x01\n" +
+	"'security_health_analytics_custom_module\x18\x02 \x01(\v2M.google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModuleB\x04\xe2A\x01\x02R#securityHealthAnalyticsCustomModule\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xcc\x02\n" +
+	"0UpdateSecurityHealthAnalyticsCustomModuleRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12\xa9\x01\n" +
+	"'security_health_analytics_custom_module\x18\x02 \x01(\v2M.google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModuleB\x04\xe2A\x01\x02R#securityHealthAnalyticsCustomModule\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xc7\x01\n" +
+	"0DeleteSecurityHealthAnalyticsCustomModuleRequest\x12h\n" +
+	"\x04name\x18\x01 \x01(\tBT\xe2A\x01\x02\xfaAM\n" +
+	"Ksecuritycentermanagement.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x92\x04\n" +
+	"2SimulateSecurityHealthAnalyticsCustomModuleRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12a\n" +
+	"\rcustom_config\x18\x02 \x01(\v26.google.cloud.securitycentermanagement.v1.CustomConfigB\x04\xe2A\x01\x02R\fcustomConfig\x12\x90\x01\n" +
+	"\bresource\x18\x03 \x01(\v2n.google.cloud.securitycentermanagement.v1.SimulateSecurityHealthAnalyticsCustomModuleRequest.SimulatedResourceB\x04\xe2A\x01\x02R\bresource\x1a\xc7\x01\n" +
+	"\x11SimulatedResource\x12)\n" +
+	"\rresource_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fresourceType\x12B\n" +
+	"\rresource_data\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\fresourceData\x12C\n" +
+	"\x0fiam_policy_data\x18\x03 \x01(\v2\x15.google.iam.v1.PolicyB\x04\xe2A\x01\x01R\riamPolicyData\"\xfa\t\n" +
+	"\x10SimulatedFinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x16\n" +
 	"\x06parent\x18\x02 \x01(\tR\x06parent\x12#\n" +
 	"\rresource_name\x18\x03 \x01(\tR\fresourceName\x12\x1a\n" +
-	"\bcategory\x18\x04 \x01(\tR\bcategory\x12[\n" +
-	"\x05state\x18\x05 \x01(\x0e2@.google.cloud.securitycentermanagement.v1.SimulatedFinding.StateB\x03\xe0A\x03R\x05state\x12}\n" +
+	"\bcategory\x18\x04 \x01(\tR\bcategory\x12\\\n" +
+	"\x05state\x18\x05 \x01(\x0e2@.google.cloud.securitycentermanagement.v1.SimulatedFinding.StateB\x04\xe2A\x01\x03R\x05state\x12}\n" +
 	"\x11source_properties\x18\x06 \x03(\v2P.google.cloud.securitycentermanagement.v1.SimulatedFinding.SourcePropertiesEntryR\x10sourceProperties\x129\n" +
 	"\n" +
 	"event_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\teventTime\x12_\n" +
@@ -4122,85 +4122,85 @@ const file_google_cloud_securitycentermanagement_v1_security_center_management_p
 	"\afinding\x18\x01 \x01(\v2:.google.cloud.securitycentermanagement.v1.SimulatedFindingH\x00R\afinding\x12;\n" +
 	"\fno_violation\x18\x02 \x01(\v2\x16.google.protobuf.EmptyH\x00R\vnoViolation\x12*\n" +
 	"\x05error\x18\x03 \x01(\v2\x12.google.rpc.StatusH\x00R\x05errorB\b\n" +
-	"\x06result\"\x93\b\n" +
-	")EffectiveEventThreatDetectionCustomModule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x124\n" +
-	"\x06config\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x06config\x12\x93\x01\n" +
-	"\x10enablement_state\x18\x03 \x01(\x0e2c.google.cloud.securitycentermanagement.v1.EffectiveEventThreatDetectionCustomModule.EnablementStateB\x03\xe0A\x03R\x0fenablementState\x12\x17\n" +
-	"\x04type\x18\x04 \x01(\tB\x03\xe0A\x03R\x04type\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x03R\vdescription\"N\n" +
+	"\x06result\"\x99\b\n" +
+	")EffectiveEventThreatDetectionCustomModule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x125\n" +
+	"\x06config\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x06config\x12\x94\x01\n" +
+	"\x10enablement_state\x18\x03 \x01(\x0e2c.google.cloud.securitycentermanagement.v1.EffectiveEventThreatDetectionCustomModule.EnablementStateB\x04\xe2A\x01\x03R\x0fenablementState\x12\x18\n" +
+	"\x04type\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04type\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vdescription\"N\n" +
 	"\x0fEnablementState\x12 \n" +
 	"\x1cENABLEMENT_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
 	"\bDISABLED\x10\x02:\xc8\x04\xeaA\xc4\x04\n" +
-	"Qsecuritycentermanagement.googleapis.com/EffectiveEventThreatDetectionCustomModule\x12\x8d\x01organizations/{organization}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}\x12\x83\x01projects/{project}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}\x12\x81\x01folders/{folder}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}**effectiveEventThreatDetectionCustomModules2)effectiveEventThreatDetectionCustomModule\"\xf0\x01\n" +
-	"5ListEffectiveEventThreatDetectionCustomModulesRequest\x12q\n" +
-	"\x06parent\x18\x01 \x01(\tBY\xe0A\x02\xfaAS\x12Qsecuritycentermanagement.googleapis.com/EffectiveEventThreatDetectionCustomModuleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Qsecuritycentermanagement.googleapis.com/EffectiveEventThreatDetectionCustomModule\x12\x8d\x01organizations/{organization}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}\x12\x83\x01projects/{project}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}\x12\x81\x01folders/{folder}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}**effectiveEventThreatDetectionCustomModules2)effectiveEventThreatDetectionCustomModule\"\xf3\x01\n" +
+	"5ListEffectiveEventThreatDetectionCustomModulesRequest\x12r\n" +
+	"\x06parent\x18\x01 \x01(\tBZ\xe2A\x01\x02\xfaAS\x12Qsecuritycentermanagement.googleapis.com/EffectiveEventThreatDetectionCustomModuleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9b\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9b\x02\n" +
 	"6ListEffectiveEventThreatDetectionCustomModulesResponse\x12\xb8\x01\n" +
 	"/effective_event_threat_detection_custom_modules\x18\x01 \x03(\v2S.google.cloud.securitycentermanagement.v1.EffectiveEventThreatDetectionCustomModuleR*effectiveEventThreatDetectionCustomModules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa4\x01\n" +
-	"3GetEffectiveEventThreatDetectionCustomModuleRequest\x12m\n" +
-	"\x04name\x18\x01 \x01(\tBY\xe0A\x02\xfaAS\n" +
-	"Qsecuritycentermanagement.googleapis.com/EffectiveEventThreatDetectionCustomModuleR\x04name\"\x9c\t\n" +
-	" EventThreatDetectionCustomModule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x124\n" +
-	"\x06config\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06config\x12y\n" +
-	"\x0fancestor_module\x18\x03 \x01(\tBP\xe0A\x03\xfaAJ\n" +
-	"Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x0eancestorModule\x12\x8a\x01\n" +
-	"\x10enablement_state\x18\x04 \x01(\x0e2Z.google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModule.EnablementStateB\x03\xe0A\x01R\x0fenablementState\x12\x17\n" +
-	"\x04type\x18\x05 \x01(\tB\x03\xe0A\x01R\x04type\x12&\n" +
-	"\fdisplay_name\x18\x06 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12$\n" +
-	"\vlast_editor\x18\t \x01(\tB\x03\xe0A\x03R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa5\x01\n" +
+	"3GetEffectiveEventThreatDetectionCustomModuleRequest\x12n\n" +
+	"\x04name\x18\x01 \x01(\tBZ\xe2A\x01\x02\xfaAS\n" +
+	"Qsecuritycentermanagement.googleapis.com/EffectiveEventThreatDetectionCustomModuleR\x04name\"\xa5\t\n" +
+	" EventThreatDetectionCustomModule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x125\n" +
+	"\x06config\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06config\x12z\n" +
+	"\x0fancestor_module\x18\x03 \x01(\tBQ\xe2A\x01\x03\xfaAJ\n" +
+	"Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x0eancestorModule\x12\x8b\x01\n" +
+	"\x10enablement_state\x18\x04 \x01(\x0e2Z.google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModule.EnablementStateB\x04\xe2A\x01\x01R\x0fenablementState\x12\x18\n" +
+	"\x04type\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04type\x12'\n" +
+	"\fdisplay_name\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12%\n" +
+	"\vlast_editor\x18\t \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"lastEditor\"]\n" +
 	"\x0fEnablementState\x12 \n" +
 	"\x1cENABLEMENT_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
 	"\bDISABLED\x10\x02\x12\r\n" +
 	"\tINHERITED\x10\x03:\xf1\x03\xeaA\xed\x03\n" +
-	"Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModule\x12zorganizations/{organization}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}\x12pprojects/{project}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}\x12nfolders/{folder}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}*!eventThreatDetectionCustomModules2 eventThreatDetectionCustomModule\"\xde\x01\n" +
-	",ListEventThreatDetectionCustomModulesRequest\x12h\n" +
-	"\x06parent\x18\x01 \x01(\tBP\xe0A\x02\xfaAJ\x12Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModule\x12zorganizations/{organization}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}\x12pprojects/{project}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}\x12nfolders/{folder}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}*!eventThreatDetectionCustomModules2 eventThreatDetectionCustomModule\"\xe1\x01\n" +
+	",ListEventThreatDetectionCustomModulesRequest\x12i\n" +
+	"\x06parent\x18\x01 \x01(\tBQ\xe2A\x01\x02\xfaAJ\x12Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xf6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xf6\x01\n" +
 	"-ListEventThreatDetectionCustomModulesResponse\x12\x9c\x01\n" +
 	"%event_threat_detection_custom_modules\x18\x01 \x03(\v2J.google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModuleR!eventThreatDetectionCustomModules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe8\x01\n" +
-	"6ListDescendantEventThreatDetectionCustomModulesRequest\x12h\n" +
-	"\x06parent\x18\x01 \x01(\tBP\xe0A\x02\xfaAJ\x12Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xeb\x01\n" +
+	"6ListDescendantEventThreatDetectionCustomModulesRequest\x12i\n" +
+	"\x06parent\x18\x01 \x01(\tBQ\xe2A\x01\x02\xfaAJ\x12Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x80\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x80\x02\n" +
 	"7ListDescendantEventThreatDetectionCustomModulesResponse\x12\x9c\x01\n" +
 	"%event_threat_detection_custom_modules\x18\x01 \x03(\v2J.google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModuleR!eventThreatDetectionCustomModules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x92\x01\n" +
-	"*GetEventThreatDetectionCustomModuleRequest\x12d\n" +
-	"\x04name\x18\x01 \x01(\tBP\xe0A\x02\xfaAJ\n" +
-	"Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x04name\"\xe5\x02\n" +
-	"-CreateEventThreatDetectionCustomModuleRequest\x12h\n" +
-	"\x06parent\x18\x01 \x01(\tBP\xe0A\x02\xfaAJ\x12Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x06parent\x12\x9f\x01\n" +
-	"$event_threat_detection_custom_module\x18\x03 \x01(\v2J.google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModuleB\x03\xe0A\x02R eventThreatDetectionCustomModule\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xbd\x02\n" +
-	"-UpdateEventThreatDetectionCustomModuleRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\x9f\x01\n" +
-	"$event_threat_detection_custom_module\x18\x02 \x01(\v2J.google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModuleB\x03\xe0A\x02R eventThreatDetectionCustomModule\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xbf\x01\n" +
-	"-DeleteEventThreatDetectionCustomModuleRequest\x12d\n" +
-	"\x04name\x18\x01 \x01(\tBP\xe0A\x02\xfaAJ\n" +
-	"Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xd4\x01\n" +
-	"/ValidateEventThreatDetectionCustomModuleRequest\x12h\n" +
-	"\x06parent\x18\x01 \x01(\tBP\xe0A\x02\xfaAJ\x12Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x06parent\x12\x1e\n" +
-	"\braw_text\x18\x02 \x01(\tB\x03\xe0A\x02R\arawText\x12\x17\n" +
-	"\x04type\x18\x03 \x01(\tB\x03\xe0A\x02R\x04type\"\x84\x05\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x93\x01\n" +
+	"*GetEventThreatDetectionCustomModuleRequest\x12e\n" +
+	"\x04name\x18\x01 \x01(\tBQ\xe2A\x01\x02\xfaAJ\n" +
+	"Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x04name\"\xe8\x02\n" +
+	"-CreateEventThreatDetectionCustomModuleRequest\x12i\n" +
+	"\x06parent\x18\x01 \x01(\tBQ\xe2A\x01\x02\xfaAJ\x12Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x06parent\x12\xa0\x01\n" +
+	"$event_threat_detection_custom_module\x18\x03 \x01(\v2J.google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModuleB\x04\xe2A\x01\x02R eventThreatDetectionCustomModule\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xc0\x02\n" +
+	"-UpdateEventThreatDetectionCustomModuleRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12\xa0\x01\n" +
+	"$event_threat_detection_custom_module\x18\x02 \x01(\v2J.google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModuleB\x04\xe2A\x01\x02R eventThreatDetectionCustomModule\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xc1\x01\n" +
+	"-DeleteEventThreatDetectionCustomModuleRequest\x12e\n" +
+	"\x04name\x18\x01 \x01(\tBQ\xe2A\x01\x02\xfaAJ\n" +
+	"Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xd7\x01\n" +
+	"/ValidateEventThreatDetectionCustomModuleRequest\x12i\n" +
+	"\x06parent\x18\x01 \x01(\tBQ\xe2A\x01\x02\xfaAJ\x12Hsecuritycentermanagement.googleapis.com/EventThreatDetectionCustomModuleR\x06parent\x12\x1f\n" +
+	"\braw_text\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\arawText\x12\x18\n" +
+	"\x04type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04type\"\x84\x05\n" +
 	"0ValidateEventThreatDetectionCustomModuleResponse\x12\x8e\x01\n" +
 	"\x06errors\x18\x02 \x03(\v2v.google.cloud.securitycentermanagement.v1.ValidateEventThreatDetectionCustomModuleResponse.CustomModuleValidationErrorR\x06errors\x1a\xec\x02\n" +
 	"\x1bCustomModuleValidationError\x12 \n" +
@@ -4214,25 +4214,25 @@ const file_google_cloud_securitycentermanagement_v1_security_center_management_p
 	"\bPosition\x12\x1f\n" +
 	"\vline_number\x18\x01 \x01(\x05R\n" +
 	"lineNumber\x12#\n" +
-	"\rcolumn_number\x18\x02 \x01(\x05R\fcolumnNumber\"\xb9\x01\n" +
-	"\x1fGetSecurityCenterServiceRequest\x12Y\n" +
-	"\x04name\x18\x01 \x01(\tBE\xe0A\x02\xfaA?\n" +
+	"\rcolumn_number\x18\x02 \x01(\x05R\fcolumnNumber\"\xba\x01\n" +
+	"\x1fGetSecurityCenterServiceRequest\x12Z\n" +
+	"\x04name\x18\x01 \x01(\tBF\xe2A\x01\x02\xfaA?\n" +
 	"=securitycentermanagement.googleapis.com/SecurityCenterServiceR\x04name\x12;\n" +
-	"\x1ashow_eligible_modules_only\x18\x02 \x01(\bR\x17showEligibleModulesOnly\"\x85\x02\n" +
-	"!ListSecurityCenterServicesRequest\x12]\n" +
-	"\x06parent\x18\x01 \x01(\tBE\xe0A\x02\xfaA?\x12=securitycentermanagement.googleapis.com/SecurityCenterServiceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1ashow_eligible_modules_only\x18\x02 \x01(\bR\x17showEligibleModulesOnly\"\x88\x02\n" +
+	"!ListSecurityCenterServicesRequest\x12^\n" +
+	"\x06parent\x18\x01 \x01(\tBF\xe2A\x01\x02\xfaA?\x12=securitycentermanagement.googleapis.com/SecurityCenterServiceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12;\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12;\n" +
 	"\x1ashow_eligible_modules_only\x18\x04 \x01(\bR\x17showEligibleModulesOnly\"\xc7\x01\n" +
 	"\"ListSecurityCenterServicesResponse\x12y\n" +
 	"\x18security_center_services\x18\x01 \x03(\v2?.google.cloud.securitycentermanagement.v1.SecurityCenterServiceR\x16securityCenterServices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8e\x02\n" +
-	"\"UpdateSecurityCenterServiceRequest\x12|\n" +
-	"\x17security_center_service\x18\x01 \x01(\v2?.google.cloud.securitycentermanagement.v1.SecurityCenterServiceB\x03\xe0A\x02R\x15securityCenterService\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly2\xceU\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x91\x02\n" +
+	"\"UpdateSecurityCenterServiceRequest\x12}\n" +
+	"\x17security_center_service\x18\x01 \x01(\v2?.google.cloud.securitycentermanagement.v1.SecurityCenterServiceB\x04\xe2A\x01\x02R\x15securityCenterService\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly2\xceU\n" +
 	"\x18SecurityCenterManagement\x12\x90\x04\n" +
 	"1ListEffectiveSecurityHealthAnalyticsCustomModules\x12b.google.cloud.securitycentermanagement.v1.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest\x1ac.google.cloud.securitycentermanagement.v1.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse\"\x91\x02\xdaA\x06parent\x82\xd3\xe4\x93\x02\x81\x02ZR\x12P/v1/{parent=folders/*/locations/*}/effectiveSecurityHealthAnalyticsCustomModulesZX\x12V/v1/{parent=organizations/*/locations/*}/effectiveSecurityHealthAnalyticsCustomModules\x12Q/v1/{parent=projects/*/locations/*}/effectiveSecurityHealthAnalyticsCustomModules\x12\xfd\x03\n" +
 	"/GetEffectiveSecurityHealthAnalyticsCustomModule\x12`.google.cloud.securitycentermanagement.v1.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest\x1aV.google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule\"\x8f\x02\xdaA\x04name\x82\xd3\xe4\x93\x02\x81\x02ZR\x12P/v1/{name=folders/*/locations/*/effectiveSecurityHealthAnalyticsCustomModules/*}ZX\x12V/v1/{name=organizations/*/locations/*/effectiveSecurityHealthAnalyticsCustomModules/*}\x12Q/v1/{name=projects/*/locations/*/effectiveSecurityHealthAnalyticsCustomModules/*}\x12\xda\x03\n" +

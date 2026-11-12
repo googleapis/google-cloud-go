@@ -474,10 +474,12 @@ func TestIntegration_SessionVRpc_DeadlineExceeded(t *testing.T) {
 	h := newSessionTestHarness(t)
 	// Every reply frame is delayed 500ms → any ctx with a sub-500ms budget
 	// times out mid-flight, exercising the mid-flight ctx-done path
-	// (session_vrpc.go tags this StateTransportFailure).
+	// (session_vrpc.go tags this StateTransportFailure). Keep the caller
+	// budget (50ms) well below defaultHeartbeatInterval (100ms) so the
+	// caller's ctx deadline fires before the missed-heartbeat watchdog.
 	h.server.setResponseDelay(500 * time.Millisecond)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cancel()
 
 	_, err := h.client.OpenTable("test-table").ReadRow(ctx, "test-row")

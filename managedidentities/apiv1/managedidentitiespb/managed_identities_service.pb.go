@@ -867,65 +867,65 @@ var File_google_cloud_managedidentities_v1_managed_identities_service_proto prot
 
 const file_google_cloud_managedidentities_v1_managed_identities_service_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/managedidentities/v1/managed_identities_service.proto\x12!google.cloud.managedidentities.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/managedidentities/v1/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa2\x02\n" +
+	"Bgoogle/cloud/managedidentities/v1/managed_identities_service.proto\x12!google.cloud.managedidentities.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/managedidentities/v1/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa8\x02\n" +
 	"\n" +
-	"OpMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12:\n" +
-	"\x16requested_cancellation\x18\x05 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xd7\x01\n" +
-	"\x1eCreateMicrosoftAdDomainRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'managedidentities.googleapis.com/DomainR\x06parent\x12$\n" +
-	"\vdomain_name\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"domainName\x12F\n" +
-	"\x06domain\x18\x03 \x01(\v2).google.cloud.managedidentities.v1.DomainB\x03\xe0A\x02R\x06domain\"`\n" +
-	"\x19ResetAdminPasswordRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"OpMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12;\n" +
+	"\x16requested_cancellation\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xda\x01\n" +
+	"\x1eCreateMicrosoftAdDomainRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'managedidentities.googleapis.com/DomainR\x06parent\x12%\n" +
+	"\vdomain_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"domainName\x12G\n" +
+	"\x06domain\x18\x03 \x01(\v2).google.cloud.managedidentities.v1.DomainB\x04\xe2A\x01\x02R\x06domain\"a\n" +
+	"\x19ResetAdminPasswordRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'managedidentities.googleapis.com/DomainR\x04name\"8\n" +
 	"\x1aResetAdminPasswordResponse\x12\x1a\n" +
-	"\bpassword\x18\x01 \x01(\tR\bpassword\"\xe0\x01\n" +
-	"\x12ListDomainsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'managedidentities.googleapis.com/DomainR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\bpassword\x18\x01 \x01(\tR\bpassword\"\xe5\x01\n" +
+	"\x12ListDomainsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'managedidentities.googleapis.com/DomainR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa4\x01\n" +
 	"\x13ListDomainsResponse\x12C\n" +
 	"\adomains\x18\x01 \x03(\v2).google.cloud.managedidentities.v1.DomainR\adomains\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x10GetDomainRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'managedidentities.googleapis.com/DomainR\x04name\"\x9f\x01\n" +
-	"\x13UpdateDomainRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12F\n" +
-	"\x06domain\x18\x02 \x01(\v2).google.cloud.managedidentities.v1.DomainB\x03\xe0A\x02R\x06domain\"Z\n" +
-	"\x13DeleteDomainRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'managedidentities.googleapis.com/DomainR\x04name\"\x9e\x01\n" +
-	"\x12AttachTrustRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'managedidentities.googleapis.com/DomainR\x04name\x12C\n" +
-	"\x05trust\x18\x02 \x01(\v2(.google.cloud.managedidentities.v1.TrustB\x03\xe0A\x02R\x05trust\"\xcd\x01\n" +
-	"\x17ReconfigureTrustRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'managedidentities.googleapis.com/DomainR\x04name\x121\n" +
-	"\x12target_domain_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x10targetDomainName\x12:\n" +
-	"\x17target_dns_ip_addresses\x18\x03 \x03(\tB\x03\xe0A\x02R\x14targetDnsIpAddresses\"\x9e\x01\n" +
-	"\x12DetachTrustRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'managedidentities.googleapis.com/DomainR\x04name\x12C\n" +
-	"\x05trust\x18\x02 \x01(\v2(.google.cloud.managedidentities.v1.TrustB\x03\xe0A\x02R\x05trust\"\xa0\x01\n" +
-	"\x14ValidateTrustRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'managedidentities.googleapis.com/DomainR\x04name\x12C\n" +
-	"\x05trust\x18\x02 \x01(\v2(.google.cloud.managedidentities.v1.TrustB\x03\xe0A\x02R\x05trust2\xf2\x11\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x10GetDomainRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'managedidentities.googleapis.com/DomainR\x04name\"\xa1\x01\n" +
+	"\x13UpdateDomainRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12G\n" +
+	"\x06domain\x18\x02 \x01(\v2).google.cloud.managedidentities.v1.DomainB\x04\xe2A\x01\x02R\x06domain\"[\n" +
+	"\x13DeleteDomainRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'managedidentities.googleapis.com/DomainR\x04name\"\xa0\x01\n" +
+	"\x12AttachTrustRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'managedidentities.googleapis.com/DomainR\x04name\x12D\n" +
+	"\x05trust\x18\x02 \x01(\v2(.google.cloud.managedidentities.v1.TrustB\x04\xe2A\x01\x02R\x05trust\"\xd0\x01\n" +
+	"\x17ReconfigureTrustRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'managedidentities.googleapis.com/DomainR\x04name\x122\n" +
+	"\x12target_domain_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10targetDomainName\x12;\n" +
+	"\x17target_dns_ip_addresses\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x14targetDnsIpAddresses\"\xa0\x01\n" +
+	"\x12DetachTrustRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'managedidentities.googleapis.com/DomainR\x04name\x12D\n" +
+	"\x05trust\x18\x02 \x01(\v2(.google.cloud.managedidentities.v1.TrustB\x04\xe2A\x01\x02R\x05trust\"\xa2\x01\n" +
+	"\x14ValidateTrustRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'managedidentities.googleapis.com/DomainR\x04name\x12D\n" +
+	"\x05trust\x18\x02 \x01(\v2(.google.cloud.managedidentities.v1.TrustB\x04\xe2A\x01\x02R\x05trust2\xf2\x11\n" +
 	"\x18ManagedIdentitiesService\x12\xf0\x01\n" +
 	"\x17CreateMicrosoftAdDomain\x12A.google.cloud.managedidentities.v1.CreateMicrosoftAdDomainRequest\x1a\x1d.google.longrunning.Operation\"s\xcaA\x14\n" +
 	"\x06Domain\x12\n" +

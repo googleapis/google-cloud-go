@@ -1493,22 +1493,22 @@ var File_google_cloud_documentai_v1beta3_document_service_proto protoreflect.Fil
 
 const file_google_cloud_documentai_v1beta3_document_service_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/documentai/v1beta3/document_service.proto\x12\x1fgoogle.cloud.documentai.v1beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/documentai/v1beta3/dataset.proto\x1a.google/cloud/documentai/v1beta3/document.proto\x1a1google/cloud/documentai/v1beta3/document_io.proto\x1a8google/cloud/documentai/v1beta3/operation_metadata.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x17google/rpc/status.proto\"\x9c\x01\n" +
-	"\x14UpdateDatasetRequest\x12G\n" +
-	"\adataset\x18\x01 \x01(\v2(.google.cloud.documentai.v1beta3.DatasetB\x03\xe0A\x02R\adataset\x12;\n" +
+	"6google/cloud/documentai/v1beta3/document_service.proto\x12\x1fgoogle.cloud.documentai.v1beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/documentai/v1beta3/dataset.proto\x1a.google/cloud/documentai/v1beta3/document.proto\x1a1google/cloud/documentai/v1beta3/document_io.proto\x1a8google/cloud/documentai/v1beta3/operation_metadata.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x17google/rpc/status.proto\"\x9d\x01\n" +
+	"\x14UpdateDatasetRequest\x12H\n" +
+	"\adataset\x18\x01 \x01(\v2(.google.cloud.documentai.v1beta3.DatasetB\x04\xe2A\x01\x02R\adataset\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"\x83\x01\n" +
 	"\x1eUpdateDatasetOperationMetadata\x12a\n" +
-	"\x0fcommon_metadata\x18\x01 \x01(\v28.google.cloud.documentai.v1beta3.CommonOperationMetadataR\x0ecommonMetadata\"\xf6\x05\n" +
-	"\x16ImportDocumentsRequest\x12C\n" +
-	"\adataset\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!documentai.googleapis.com/DatasetR\adataset\x12\x9c\x01\n" +
-	"\x1ebatch_documents_import_configs\x18\x04 \x03(\v2R.google.cloud.documentai.v1beta3.ImportDocumentsRequest.BatchDocumentsImportConfigB\x03\xe0A\x02R\x1bbatchDocumentsImportConfigs\x1a\xf7\x03\n" +
+	"\x0fcommon_metadata\x18\x01 \x01(\v28.google.cloud.documentai.v1beta3.CommonOperationMetadataR\x0ecommonMetadata\"\xf9\x05\n" +
+	"\x16ImportDocumentsRequest\x12D\n" +
+	"\adataset\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!documentai.googleapis.com/DatasetR\adataset\x12\x9d\x01\n" +
+	"\x1ebatch_documents_import_configs\x18\x04 \x03(\v2R.google.cloud.documentai.v1beta3.ImportDocumentsRequest.BatchDocumentsImportConfigB\x04\xe2A\x01\x02R\x1bbatchDocumentsImportConfigs\x1a\xf8\x03\n" +
 	"\x1aBatchDocumentsImportConfig\x12X\n" +
 	"\rdataset_split\x18\x02 \x01(\x0e21.google.cloud.documentai.v1beta3.DatasetSplitTypeH\x00R\fdatasetSplit\x12\x90\x01\n" +
 	"\x11auto_split_config\x18\x03 \x01(\v2b.google.cloud.documentai.v1beta3.ImportDocumentsRequest.BatchDocumentsImportConfig.AutoSplitConfigH\x00R\x0fautoSplitConfig\x12h\n" +
-	"\x12batch_input_config\x18\x01 \x01(\v2:.google.cloud.documentai.v1beta3.BatchDocumentsInputConfigR\x10batchInputConfig\x12(\n" +
-	"\rdocument_type\x18\x06 \x01(\tB\x03\xe0A\x01R\fdocumentType\x1aC\n" +
+	"\x12batch_input_config\x18\x01 \x01(\v2:.google.cloud.documentai.v1beta3.BatchDocumentsInputConfigR\x10batchInputConfig\x12)\n" +
+	"\rdocument_type\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\fdocumentType\x1aC\n" +
 	"\x0fAutoSplitConfig\x120\n" +
 	"\x14training_split_ratio\x18\x01 \x01(\x02R\x12trainingSplitRatioB\x13\n" +
 	"\x11split_type_config\"\x19\n" +
@@ -1524,34 +1524,34 @@ const file_google_cloud_documentai_v1beta3_document_service_proto_rawDesc = "" +
 	"\x12output_document_id\x18\x04 \x01(\v2+.google.cloud.documentai.v1beta3.DocumentIdR\x10outputDocumentId\x1at\n" +
 	"\x1cImportConfigValidationResult\x12(\n" +
 	"\x10input_gcs_source\x18\x01 \x01(\tR\x0einputGcsSource\x12*\n" +
-	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\"\xb8\x02\n" +
-	"\x12GetDocumentRequest\x12C\n" +
-	"\adataset\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!documentai.googleapis.com/DatasetR\adataset\x12Q\n" +
-	"\vdocument_id\x18\x02 \x01(\v2+.google.cloud.documentai.v1beta3.DocumentIdB\x03\xe0A\x02R\n" +
+	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\"\xba\x02\n" +
+	"\x12GetDocumentRequest\x12D\n" +
+	"\adataset\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!documentai.googleapis.com/DatasetR\adataset\x12R\n" +
+	"\vdocument_id\x18\x02 \x01(\v2+.google.cloud.documentai.v1beta3.DocumentIdB\x04\xe2A\x01\x02R\n" +
 	"documentId\x127\n" +
 	"\tread_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\breadMask\x12Q\n" +
 	"\n" +
 	"page_range\x18\x04 \x01(\v22.google.cloud.documentai.v1beta3.DocumentPageRangeR\tpageRange\"\\\n" +
 	"\x13GetDocumentResponse\x12E\n" +
-	"\bdocument\x18\x01 \x01(\v2).google.cloud.documentai.v1beta3.DocumentR\bdocument\"\xfe\x01\n" +
-	"\x14ListDocumentsRequest\x12C\n" +
-	"\adataset\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\bdocument\x18\x01 \x01(\v2).google.cloud.documentai.v1beta3.DocumentR\bdocument\"\x82\x02\n" +
+	"\x14ListDocumentsRequest\x12D\n" +
+	"\adataset\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!documentai.googleapis.com/DatasetR\adataset\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12/\n" +
-	"\x11return_total_size\x18\x06 \x01(\bB\x03\xe0A\x01R\x0freturnTotalSize\x12\x17\n" +
-	"\x04skip\x18\b \x01(\x05B\x03\xe0A\x01R\x04skip\"\xbe\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x120\n" +
+	"\x11return_total_size\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x0freturnTotalSize\x12\x18\n" +
+	"\x04skip\x18\b \x01(\x05B\x04\xe2A\x01\x01R\x04skip\"\xbe\x01\n" +
 	"\x15ListDocumentsResponse\x12^\n" +
 	"\x11document_metadata\x18\x01 \x03(\v21.google.cloud.documentai.v1beta3.DocumentMetadataR\x10documentMetadata\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xa6\x01\n" +
-	"\x1bBatchDeleteDocumentsRequest\x12\x1d\n" +
-	"\adataset\x18\x01 \x01(\tB\x03\xe0A\x02R\adataset\x12h\n" +
-	"\x11dataset_documents\x18\x03 \x01(\v26.google.cloud.documentai.v1beta3.BatchDatasetDocumentsB\x03\xe0A\x02R\x10datasetDocuments\"\x1e\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xa8\x01\n" +
+	"\x1bBatchDeleteDocumentsRequest\x12\x1e\n" +
+	"\adataset\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\adataset\x12i\n" +
+	"\x11dataset_documents\x18\x03 \x01(\v26.google.cloud.documentai.v1beta3.BatchDatasetDocumentsB\x04\xe2A\x01\x02R\x10datasetDocuments\"\x1e\n" +
 	"\x1cBatchDeleteDocumentsResponse\"\xa4\x04\n" +
 	"\x1cBatchDeleteDocumentsMetadata\x12a\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v28.google.cloud.documentai.v1beta3.CommonOperationMetadataR\x0ecommonMetadata\x12\xa2\x01\n" +
@@ -1561,13 +1561,13 @@ const file_google_cloud_documentai_v1beta3_document_service_proto_rawDesc = "" +
 	"\x1bIndividualBatchDeleteStatus\x12L\n" +
 	"\vdocument_id\x18\x01 \x01(\v2+.google.cloud.documentai.v1beta3.DocumentIdR\n" +
 	"documentId\x12*\n" +
-	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\"\x8e\x01\n" +
-	"\x17GetDatasetSchemaRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\"\x8f\x01\n" +
+	"\x17GetDatasetSchemaRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'documentai.googleapis.com/DatasetSchemaR\x04name\x12.\n" +
-	"\x13visible_fields_only\x18\x02 \x01(\bR\x11visibleFieldsOnly\"\xb5\x01\n" +
-	"\x1aUpdateDatasetSchemaRequest\x12Z\n" +
-	"\x0edataset_schema\x18\x01 \x01(\v2..google.cloud.documentai.v1beta3.DatasetSchemaB\x03\xe0A\x02R\rdatasetSchema\x12;\n" +
+	"\x13visible_fields_only\x18\x02 \x01(\bR\x11visibleFieldsOnly\"\xb6\x01\n" +
+	"\x1aUpdateDatasetSchemaRequest\x12[\n" +
+	"\x0edataset_schema\x18\x01 \x01(\v2..google.cloud.documentai.v1beta3.DatasetSchemaB\x04\xe2A\x01\x02R\rdatasetSchema\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\";\n" +
 	"\x11DocumentPageRange\x12\x14\n" +

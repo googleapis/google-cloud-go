@@ -540,6 +540,11 @@ func (c *gbpAccountsRESTClient) ListGbpAccounts(ctx context.Context, req *accoun
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/gbpAccounts", req.GetParent())
 
 		params := url.Values{}
@@ -613,6 +618,11 @@ func (c *gbpAccountsRESTClient) LinkGbpAccount(ctx context.Context, req *account
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/gbpAccounts:linkGbpAccount", req.GetParent())

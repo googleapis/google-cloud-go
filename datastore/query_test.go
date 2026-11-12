@@ -211,32 +211,32 @@ func TestCheckMultiArg(t *testing.T) {
 		{
 			[]PropertyList(nil),
 			multiArgTypePropertyLoadSaver,
-			reflect.TypeOf(PropertyList{}),
+			reflect.TypeFor[PropertyList](),
 		},
 		{
 			[]PropertyMap(nil),
 			multiArgTypePropertyLoadSaver,
-			reflect.TypeOf(PropertyMap{}),
+			reflect.TypeFor[PropertyMap](),
 		},
 		{
 			[]StructThatImplementsPLS(nil),
 			multiArgTypePropertyLoadSaver,
-			reflect.TypeOf(StructThatImplementsPLS{}),
+			reflect.TypeFor[StructThatImplementsPLS](),
 		},
 		{
 			[]StructPtrThatImplementsPLS(nil),
 			multiArgTypePropertyLoadSaver,
-			reflect.TypeOf(StructPtrThatImplementsPLS{}),
+			reflect.TypeFor[StructPtrThatImplementsPLS](),
 		},
 		{
 			[]Gopher(nil),
 			multiArgTypeStruct,
-			reflect.TypeOf(Gopher{}),
+			reflect.TypeFor[Gopher](),
 		},
 		{
 			[]*Gopher(nil),
 			multiArgTypeStructPtr,
-			reflect.TypeOf(Gopher{}),
+			reflect.TypeFor[Gopher](),
 		},
 		{
 			[]interface{}(nil),
@@ -419,7 +419,7 @@ func TestQueriesAreImmutable(t *testing.T) {
 		// 47 is an ugly number that is unlikely to be near a re-allocation
 		// point in repeated append calls. For example, it's not near a power
 		// of 2 or a multiple of 10.
-		for i := 0; i < 47; i++ {
+		for i := range 47 {
 			q = q.Order(fmt.Sprintf("x%d", i))
 		}
 		return q

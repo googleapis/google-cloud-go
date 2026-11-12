@@ -553,6 +553,11 @@ func (c *profilerRESTClient) CreateProfile(ctx context.Context, req *cloudprofil
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/profiles", req.GetParent())
 
 	params := url.Values{}
@@ -619,6 +624,11 @@ func (c *profilerRESTClient) CreateOfflineProfile(ctx context.Context, req *clou
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/profiles:createOffline", req.GetParent())
@@ -688,6 +698,11 @@ func (c *profilerRESTClient) UpdateProfile(ctx context.Context, req *cloudprofil
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProfile().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetProfile().GetName())

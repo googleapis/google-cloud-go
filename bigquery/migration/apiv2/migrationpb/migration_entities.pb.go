@@ -1456,14 +1456,14 @@ var File_google_cloud_bigquery_migration_v2_migration_entities_proto protoreflec
 const file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDesc = "" +
 	"\n" +
 	";google/cloud/bigquery/migration/v2/migration_entities.proto\x12\"google.cloud.bigquery.migration.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/bigquery/migration/v2/assessment_task.proto\x1a@google/cloud/bigquery/migration/v2/migration_error_details.proto\x1a:google/cloud/bigquery/migration/v2/migration_metrics.proto\x1a;google/cloud/bigquery/migration/v2/translation_config.proto\x1a<google/cloud/bigquery/migration/v2/translation_details.proto\x1a>google/cloud/bigquery/migration/v2/translation_usability.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/rpc/error_details.proto\"\xc9\x05\n" +
-	"\x11MigrationWorkflow\x12\x1d\n" +
-	"\x04name\x18\x01 \x01(\tB\t\xe0A\x03\xe0A\x05\xe0A\bR\x04name\x12!\n" +
+	"\x11MigrationWorkflow\x12\x1a\n" +
+	"\x04name\x18\x01 \x01(\tB\x06\xe2A\x03\x03\x05\bR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x06 \x01(\tR\vdisplayName\x12V\n" +
-	"\x05tasks\x18\x02 \x03(\v2@.google.cloud.bigquery.migration.v2.MigrationWorkflow.TasksEntryR\x05tasks\x12V\n" +
-	"\x05state\x18\x03 \x01(\x0e2;.google.cloud.bigquery.migration.v2.MigrationWorkflow.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12I\n" +
-	"\x10last_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastUpdateTime\x1ak\n" +
+	"\x05tasks\x18\x02 \x03(\v2@.google.cloud.bigquery.migration.v2.MigrationWorkflow.TasksEntryR\x05tasks\x12W\n" +
+	"\x05state\x18\x03 \x01(\x0e2;.google.cloud.bigquery.migration.v2.MigrationWorkflow.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12J\n" +
+	"\x10last_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastUpdateTime\x1ak\n" +
 	"\n" +
 	"TasksEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12G\n" +
@@ -1475,26 +1475,26 @@ const file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDesc =
 	"\n" +
 	"\x06PAUSED\x10\x03\x12\r\n" +
 	"\tCOMPLETED\x10\x04:u\xeaAr\n" +
-	"2bigquerymigration.googleapis.com/MigrationWorkflow\x12<projects/{project}/locations/{location}/workflows/{workflow}\"\xa6\n" +
+	"2bigquerymigration.googleapis.com/MigrationWorkflow\x12<projects/{project}/locations/{location}/workflows/{workflow}\"\xaf\n" +
 	"\n" +
 	"\rMigrationTask\x12s\n" +
 	"\x17assessment_task_details\x18\f \x01(\v29.google.cloud.bigquery.migration.v2.AssessmentTaskDetailsH\x00R\x15assessmentTaskDetails\x12|\n" +
 	"\x1atranslation_config_details\x18\x0e \x01(\v2<.google.cloud.bigquery.migration.v2.TranslationConfigDetailsH\x00R\x18translationConfigDetails\x12i\n" +
-	"\x13translation_details\x18\x10 \x01(\v26.google.cloud.bigquery.migration.v2.TranslationDetailsH\x00R\x12translationDetails\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x02id\x12\x12\n" +
-	"\x04type\x18\x02 \x01(\tR\x04type\x12R\n" +
-	"\x05state\x18\x04 \x01(\x0e27.google.cloud.bigquery.migration.v2.MigrationTask.StateB\x03\xe0A\x03R\x05state\x12E\n" +
-	"\x10processing_error\x18\x05 \x01(\v2\x15.google.rpc.ErrorInfoB\x03\xe0A\x03R\x0fprocessingError\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12I\n" +
-	"\x10last_update_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastUpdateTime\x12r\n" +
-	"\x16resource_error_details\x18\x11 \x03(\v27.google.cloud.bigquery.migration.v2.ResourceErrorDetailB\x03\xe0A\x03R\x14resourceErrorDetails\x125\n" +
-	"\x14resource_error_count\x18\x12 \x01(\x05B\x03\xe0A\x03R\x12resourceErrorCount\x12M\n" +
-	"\ametrics\x18\x13 \x03(\v2..google.cloud.bigquery.migration.v2.TimeSeriesB\x03\xe0A\x03R\ametrics\x12]\n" +
-	"\vtask_result\x18\x14 \x01(\v27.google.cloud.bigquery.migration.v2.MigrationTaskResultB\x03\xe0A\x03R\n" +
-	"taskResult\x12D\n" +
-	"\x1ctotal_processing_error_count\x18\x15 \x01(\x05B\x03\xe0A\x03R\x19totalProcessingErrorCount\x12@\n" +
-	"\x1atotal_resource_error_count\x18\x16 \x01(\x05B\x03\xe0A\x03R\x17totalResourceErrorCount\"r\n" +
+	"\x13translation_details\x18\x10 \x01(\v26.google.cloud.bigquery.migration.v2.TranslationDetailsH\x00R\x12translationDetails\x12\x15\n" +
+	"\x02id\x18\x01 \x01(\tB\x05\xe2A\x02\x03\x05R\x02id\x12\x12\n" +
+	"\x04type\x18\x02 \x01(\tR\x04type\x12S\n" +
+	"\x05state\x18\x04 \x01(\x0e27.google.cloud.bigquery.migration.v2.MigrationTask.StateB\x04\xe2A\x01\x03R\x05state\x12F\n" +
+	"\x10processing_error\x18\x05 \x01(\v2\x15.google.rpc.ErrorInfoB\x04\xe2A\x01\x03R\x0fprocessingError\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12J\n" +
+	"\x10last_update_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastUpdateTime\x12s\n" +
+	"\x16resource_error_details\x18\x11 \x03(\v27.google.cloud.bigquery.migration.v2.ResourceErrorDetailB\x04\xe2A\x01\x03R\x14resourceErrorDetails\x126\n" +
+	"\x14resource_error_count\x18\x12 \x01(\x05B\x04\xe2A\x01\x03R\x12resourceErrorCount\x12N\n" +
+	"\ametrics\x18\x13 \x03(\v2..google.cloud.bigquery.migration.v2.TimeSeriesB\x04\xe2A\x01\x03R\ametrics\x12^\n" +
+	"\vtask_result\x18\x14 \x01(\v27.google.cloud.bigquery.migration.v2.MigrationTaskResultB\x04\xe2A\x01\x03R\n" +
+	"taskResult\x12E\n" +
+	"\x1ctotal_processing_error_count\x18\x15 \x01(\x05B\x04\xe2A\x01\x03R\x19totalProcessingErrorCount\x12A\n" +
+	"\x1atotal_resource_error_count\x18\x16 \x01(\x05B\x04\xe2A\x01\x03R\x17totalResourceErrorCount\"r\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\x11\n" +
@@ -1505,19 +1505,19 @@ const file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDesc =
 	"\tSUCCEEDED\x10\x05\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x06B\x0e\n" +
-	"\ftask_details\"\x83\a\n" +
-	"\x10MigrationSubtask\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x04name\x12\x17\n" +
+	"\ftask_details\"\x89\a\n" +
+	"\x10MigrationSubtask\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\x05R\x04name\x12\x17\n" +
 	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\x12U\n" +
-	"\x05state\x18\x05 \x01(\x0e2:.google.cloud.bigquery.migration.v2.MigrationSubtask.StateB\x03\xe0A\x03R\x05state\x12E\n" +
-	"\x10processing_error\x18\x06 \x01(\v2\x15.google.rpc.ErrorInfoB\x03\xe0A\x03R\x0fprocessingError\x12r\n" +
-	"\x16resource_error_details\x18\f \x03(\v27.google.cloud.bigquery.migration.v2.ResourceErrorDetailB\x03\xe0A\x03R\x14resourceErrorDetails\x125\n" +
-	"\x14resource_error_count\x18\r \x01(\x05B\x03\xe0A\x03R\x12resourceErrorCount\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12I\n" +
-	"\x10last_update_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastUpdateTime\x12M\n" +
-	"\ametrics\x18\v \x03(\v2..google.cloud.bigquery.migration.v2.TimeSeriesB\x03\xe0A\x03R\ametrics\"v\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type\x12V\n" +
+	"\x05state\x18\x05 \x01(\x0e2:.google.cloud.bigquery.migration.v2.MigrationSubtask.StateB\x04\xe2A\x01\x03R\x05state\x12F\n" +
+	"\x10processing_error\x18\x06 \x01(\v2\x15.google.rpc.ErrorInfoB\x04\xe2A\x01\x03R\x0fprocessingError\x12s\n" +
+	"\x16resource_error_details\x18\f \x03(\v27.google.cloud.bigquery.migration.v2.ResourceErrorDetailB\x04\xe2A\x01\x03R\x14resourceErrorDetails\x126\n" +
+	"\x14resource_error_count\x18\r \x01(\x05B\x04\xe2A\x01\x03R\x12resourceErrorCount\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12J\n" +
+	"\x10last_update_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastUpdateTime\x12N\n" +
+	"\ametrics\x18\v \x03(\v2..google.cloud.bigquery.migration.v2.TimeSeriesB\x04\xe2A\x01\x03R\ametrics\"v\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -1541,11 +1541,11 @@ const file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDesc =
 	"\x13translated_literals\x18\x01 \x03(\v2+.google.cloud.bigquery.migration.v2.LiteralR\x12translatedLiterals\x12g\n" +
 	"\x13report_log_messages\x18\x02 \x03(\v27.google.cloud.bigquery.migration.v2.GcsReportLogMessageR\x11reportLogMessages\x12\x1f\n" +
 	"\vconsole_uri\x18\x03 \x01(\tR\n" +
-	"consoleUri\"\xcd\x02\n" +
+	"consoleUri\"\xce\x02\n" +
 	"\n" +
 	"TaskOutput\x12Z\n" +
-	"\x0elineage_output\x18\x03 \x01(\v21.google.cloud.bigquery.migration.v2.LineageOutputH\x00R\rlineageOutput\x12O\n" +
-	"\x05state\x18\x01 \x01(\x0e24.google.cloud.bigquery.migration.v2.TaskOutput.StateB\x03\xe0A\x03R\x05state\x12@\n" +
+	"\x0elineage_output\x18\x03 \x01(\v21.google.cloud.bigquery.migration.v2.LineageOutputH\x00R\rlineageOutput\x12P\n" +
+	"\x05state\x18\x01 \x01(\x0e24.google.cloud.bigquery.migration.v2.TaskOutput.StateB\x04\xe2A\x01\x03R\x05state\x12@\n" +
 	"\x10processing_error\x18\x02 \x01(\v2\x15.google.rpc.ErrorInfoR\x0fprocessingError\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
@@ -1553,28 +1553,28 @@ const file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDesc =
 	"\tSUCCEEDED\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03B\b\n" +
-	"\x06output\"\xa4\t\n" +
+	"\x06output\"\xad\t\n" +
 	"\rLineageOutput\x12\x1d\n" +
 	"\n" +
-	"webapp_uri\x18\x01 \x01(\tR\twebappUri\x12s\n" +
-	"\x11recognized_inputs\x18\x02 \x03(\v2A.google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInputB\x03\xe0A\x03R\x10recognizedInputs\x12\x85\x01\n" +
-	"\x1bprocessing_progress_reports\x18\x03 \x03(\v2@.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReportB\x03\xe0A\x03R\x19processingProgressReports\x1a\xf6\x01\n" +
-	"\x0fRecognizedInput\x12_\n" +
-	"\x04type\x18\x01 \x01(\x0e2F.google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInput.TypeB\x03\xe0A\x03R\x04type\x12;\n" +
-	"\x17uncompressed_size_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\x15uncompressedSizeBytes\"E\n" +
+	"webapp_uri\x18\x01 \x01(\tR\twebappUri\x12t\n" +
+	"\x11recognized_inputs\x18\x02 \x03(\v2A.google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInputB\x04\xe2A\x01\x03R\x10recognizedInputs\x12\x86\x01\n" +
+	"\x1bprocessing_progress_reports\x18\x03 \x03(\v2@.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReportB\x04\xe2A\x01\x03R\x19processingProgressReports\x1a\xf8\x01\n" +
+	"\x0fRecognizedInput\x12`\n" +
+	"\x04type\x18\x01 \x01(\x0e2F.google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInput.TypeB\x04\xe2A\x01\x03R\x04type\x12<\n" +
+	"\x17uncompressed_size_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x15uncompressedSizeBytes\"E\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bMETADATA\x10\x01\x12\r\n" +
 	"\tQUERY_LOG\x10\x02\x12\n" +
 	"\n" +
-	"\x06SCRIPT\x10\x03\x1a\xfd\x04\n" +
-	"\x0eProgressReport\x12\x80\x01\n" +
-	"\x10processing_stage\x18\x01 \x01(\x0e2P.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.ProcessingStageB\x03\xe0A\x03R\x0fprocessingStage\x12x\n" +
-	"\x0ework_summaries\x18\x02 \x03(\v2L.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummaryB\x03\xe0A\x03R\rworkSummaries\x1a\x8d\x02\n" +
-	"\vWorkSummary\x12m\n" +
-	"\x05state\x18\x01 \x01(\x0e2R.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummary.StateB\x03\xe0A\x03R\x05state\x12\x17\n" +
-	"\x04size\x18\x02 \x01(\x03B\x03\xe0A\x03R\x04size\x12\x1d\n" +
-	"\acomment\x18\x03 \x01(\tB\x03\xe0A\x03R\acomment\"W\n" +
+	"\x06SCRIPT\x10\x03\x1a\x82\x05\n" +
+	"\x0eProgressReport\x12\x81\x01\n" +
+	"\x10processing_stage\x18\x01 \x01(\x0e2P.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.ProcessingStageB\x04\xe2A\x01\x03R\x0fprocessingStage\x12y\n" +
+	"\x0ework_summaries\x18\x02 \x03(\v2L.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummaryB\x04\xe2A\x01\x03R\rworkSummaries\x1a\x90\x02\n" +
+	"\vWorkSummary\x12n\n" +
+	"\x05state\x18\x01 \x01(\x0e2R.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummary.StateB\x04\xe2A\x01\x03R\x05state\x12\x18\n" +
+	"\x04size\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x04size\x12\x1e\n" +
+	"\acomment\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\acomment\"W\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSUCCEEDED\x10\x01\x12\n" +

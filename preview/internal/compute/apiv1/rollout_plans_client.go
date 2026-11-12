@@ -312,6 +312,12 @@ func (c *rolloutPlansRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRolloutPlan(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rolloutPlans/%v", req.GetProject(), req.GetRolloutPlan())
 
 	params := url.Values{}
@@ -375,6 +381,12 @@ func (c *rolloutPlansRESTClient) Get(ctx context.Context, req *computepb.GetRoll
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRolloutPlan(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rolloutPlans/%v", req.GetProject(), req.GetRolloutPlan())
 
 	// Build HTTP headers from client and context metadata.
@@ -429,6 +441,11 @@ func (c *rolloutPlansRESTClient) Insert(ctx context.Context, req *computepb.Inse
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rolloutPlans", req.GetProject())
@@ -505,6 +522,11 @@ func (c *rolloutPlansRESTClient) List(ctx context.Context, req *computepb.ListRo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rolloutPlans", req.GetProject())

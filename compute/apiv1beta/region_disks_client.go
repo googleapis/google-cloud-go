@@ -527,6 +527,13 @@ func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/addResourcePolicies", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -596,6 +603,12 @@ func (c *regionDisksRESTClient) BulkInsert(ctx context.Context, req *computepb.B
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/bulkInsert", req.GetProject(), req.GetRegion())
@@ -672,6 +685,13 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/createSnapshot", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -740,6 +760,13 @@ func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -804,6 +831,13 @@ func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	// Build HTTP headers from client and context metadata.
@@ -852,6 +886,13 @@ func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegio
 func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -916,6 +957,12 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks", req.GetProject(), req.GetRegion())
@@ -999,6 +1046,12 @@ func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListReg
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -1079,6 +1132,13 @@ func (c *regionDisksRESTClient) RemoveResourcePolicies(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/removeResourcePolicies", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -1148,6 +1208,13 @@ func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.Resiz
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/resize", req.GetProject(), req.GetRegion(), req.GetDisk())
@@ -1222,6 +1289,13 @@ func (c *regionDisksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1276,6 +1350,13 @@ func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -1350,6 +1431,13 @@ func (c *regionDisksRESTClient) StartAsyncReplication(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/startAsyncReplication", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -1413,6 +1501,13 @@ func (c *regionDisksRESTClient) StartAsyncReplication(ctx context.Context, req *
 func (c *regionDisksRESTClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/stopAsyncReplication", req.GetProject(), req.GetRegion(), req.GetDisk())
@@ -1487,6 +1582,12 @@ func (c *regionDisksRESTClient) StopGroupAsyncReplication(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/stopGroupAsyncReplication", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -1558,6 +1659,13 @@ func (c *regionDisksRESTClient) TestIamPermissions(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1613,6 +1721,13 @@ func (c *regionDisksRESTClient) Update(ctx context.Context, req *computepb.Updat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v", req.GetProject(), req.GetRegion(), req.GetDisk())
@@ -1691,6 +1806,13 @@ func (c *regionDisksRESTClient) UpdateKmsKey(ctx context.Context, req *computepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDisk(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/disks/%v/updateKmsKey", req.GetProject(), req.GetRegion(), req.GetDisk())

@@ -677,32 +677,32 @@ var File_google_apps_events_subscriptions_v1beta_subscriptions_service_proto pro
 
 const file_google_apps_events_subscriptions_v1beta_subscriptions_service_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/apps/events/subscriptions/v1beta/subscriptions_service.proto\x12'google.apps.events.subscriptions.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aCgoogle/apps/events/subscriptions/v1beta/subscription_resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa5\x01\n" +
-	"\x19CreateSubscriptionRequest\x12^\n" +
-	"\fsubscription\x18\x01 \x01(\v25.google.apps.events.subscriptions.v1beta.SubscriptionB\x03\xe0A\x02R\fsubscription\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xd1\x01\n" +
-	"\x19DeleteSubscriptionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+workspaceevents.googleapis.com/SubscriptionR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\"a\n" +
-	"\x16GetSubscriptionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+workspaceevents.googleapis.com/SubscriptionR\x04name\"\xe7\x01\n" +
-	"\x19UpdateSubscriptionRequest\x12^\n" +
-	"\fsubscription\x18\x01 \x01(\v25.google.apps.events.subscriptions.v1beta.SubscriptionB\x03\xe0A\x02R\fsubscription\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"h\n" +
-	"\x1dReactivateSubscriptionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+workspaceevents.googleapis.com/SubscriptionR\x04name\"}\n" +
-	"\x18ListSubscriptionsRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Cgoogle/apps/events/subscriptions/v1beta/subscriptions_service.proto\x12'google.apps.events.subscriptions.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aCgoogle/apps/events/subscriptions/v1beta/subscription_resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa7\x01\n" +
+	"\x19CreateSubscriptionRequest\x12_\n" +
+	"\fsubscription\x18\x01 \x01(\v25.google.apps.events.subscriptions.v1beta.SubscriptionB\x04\xe2A\x01\x02R\fsubscription\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xd5\x01\n" +
+	"\x19DeleteSubscriptionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+workspaceevents.googleapis.com/SubscriptionR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"b\n" +
+	"\x16GetSubscriptionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+workspaceevents.googleapis.com/SubscriptionR\x04name\"\xea\x01\n" +
+	"\x19UpdateSubscriptionRequest\x12_\n" +
+	"\fsubscription\x18\x01 \x01(\v25.google.apps.events.subscriptions.v1beta.SubscriptionB\x04\xe2A\x01\x02R\fsubscription\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"i\n" +
+	"\x1dReactivateSubscriptionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+workspaceevents.googleapis.com/SubscriptionR\x04name\"\x80\x01\n" +
+	"\x18ListSubscriptionsRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x02R\x06filter\"\xa0\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06filter\"\xa0\x01\n" +
 	"\x19ListSubscriptionsResponse\x12[\n" +
 	"\rsubscriptions\x18\x01 \x03(\v25.google.apps.events.subscriptions.v1beta.SubscriptionR\rsubscriptions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x1c\n" +

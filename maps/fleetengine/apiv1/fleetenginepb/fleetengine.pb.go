@@ -1289,9 +1289,9 @@ const file_google_maps_fleetengine_v1_fleetengine_proto_rawDesc = "" +
 	"\bplace_id\x18\x02 \x01(\tB\x02\x18\x01H\x00R\aplaceId\x12'\n" +
 	"\fgenerated_id\x18\x03 \x01(\tB\x02\x18\x01H\x00R\vgeneratedId\x12\x18\n" +
 	"\x05value\x18\x04 \x01(\tB\x02\x18\x01R\x05value:\x02\x18\x01B\x04\n" +
-	"\x02Id\"\xbe\x02\n" +
-	"\x10TerminalLocation\x12.\n" +
-	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x02R\x05point\x12T\n" +
+	"\x02Id\"\xbf\x02\n" +
+	"\x10TerminalLocation\x12/\n" +
+	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x02R\x05point\x12T\n" +
 	"\x11terminal_point_id\x18\x02 \x01(\v2$.maps.fleetengine.v1.TerminalPointIdB\x02\x18\x01R\x0fterminalPointId\x12*\n" +
 	"\x0faccess_point_id\x18\x03 \x01(\tB\x02\x18\x01R\raccessPointId\x12\x1b\n" +
 	"\atrip_id\x18\x04 \x01(\tB\x02\x18\x01R\x06tripId\x12[\n" +
@@ -1314,7 +1314,7 @@ const file_google_maps_fleetengine_v1_fleetengine_proto_rawDesc = "" +
 	"\n" +
 	"bool_value\x18\x04 \x01(\bH\x00R\tboolValue\x12#\n" +
 	"\fnumber_value\x18\x05 \x01(\x01H\x00R\vnumberValueB\x19\n" +
-	"\x17vehicle_attribute_value\"\x9a\x12\n" +
+	"\x17vehicle_attribute_value\"\x9e\x12\n" +
 	"\x0fVehicleLocation\x12/\n" +
 	"\blocation\x18\x01 \x01(\v2\x13.google.type.LatLngR\blocation\x12Q\n" +
 	"\x13horizontal_accuracy\x18\b \x01(\v2\x1c.google.protobuf.DoubleValueB\x02\x18\x01R\x12horizontalAccuracy\x12E\n" +
@@ -1331,14 +1331,14 @@ const file_google_maps_fleetengine_v1_fleetengine_proto_rawDesc = "" +
 	"\x05speed\x18\x06 \x01(\v2\x1c.google.protobuf.DoubleValueR\x05speed\x12C\n" +
 	"\x0espeed_accuracy\x18\a \x01(\v2\x1c.google.protobuf.DoubleValueR\rspeedAccuracy\x12;\n" +
 	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\x12@\n" +
-	"\vserver_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vserver_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"serverTime\x12L\n" +
 	"\x0flocation_sensor\x18\v \x01(\x0e2#.maps.fleetengine.v1.LocationSensorR\x0elocationSensor\x12B\n" +
-	"\x0fis_road_snapped\x18\x1b \x01(\v2\x1a.google.protobuf.BoolValueR\risRoadSnapped\x12R\n" +
-	"\x15is_gps_sensor_enabled\x18\f \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x04R\x12isGpsSensorEnabled\x12L\n" +
-	"\x11time_since_update\x18\x0e \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x04R\x0ftimeSinceUpdate\x12N\n" +
-	"\x11num_stale_updates\x18\x0f \x01(\v2\x1b.google.protobuf.Int32ValueB\x05\xe0A\x04\x18\x01R\x0fnumStaleUpdates\x126\n" +
+	"\x0fis_road_snapped\x18\x1b \x01(\v2\x1a.google.protobuf.BoolValueR\risRoadSnapped\x12S\n" +
+	"\x15is_gps_sensor_enabled\x18\f \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x04R\x12isGpsSensorEnabled\x12M\n" +
+	"\x11time_since_update\x18\x0e \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x04R\x0ftimeSinceUpdate\x12O\n" +
+	"\x11num_stale_updates\x18\x0f \x01(\v2\x1b.google.protobuf.Int32ValueB\x06\xe2A\x01\x04\x18\x01R\x0fnumStaleUpdates\x126\n" +
 	"\fraw_location\x18\x10 \x01(\v2\x13.google.type.LatLngR\vrawLocation\x12F\n" +
 	"\x11raw_location_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampR\x0frawLocationTime\x12S\n" +
 	"\x13raw_location_sensor\x18\x1c \x01(\x0e2#.maps.fleetengine.v1.LocationSensorR\x11rawLocationSensor\x12P\n" +

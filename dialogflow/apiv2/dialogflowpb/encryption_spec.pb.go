@@ -282,19 +282,19 @@ var File_google_cloud_dialogflow_v2_encryption_spec_proto protoreflect.FileDescr
 
 const file_google_cloud_dialogflow_v2_encryption_spec_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/dialogflow/v2/encryption_spec.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\"`\n" +
-	"\x18GetEncryptionSpecRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dialogflow.googleapis.com/EncryptionSpecR\x04name\"\xd1\x01\n" +
-	"\x0eEncryptionSpec\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x1c\n" +
-	"\akms_key\x18\x02 \x01(\tB\x03\xe0A\x02R\x06kmsKey:\x87\x01\xeaA\x83\x01\n" +
-	"(dialogflow.googleapis.com/EncryptionSpec\x126projects/{project}/locations/{location}/encryptionSpec*\x0fencryptionSpecs2\x0eencryptionSpec\"{\n" +
-	"\x1fInitializeEncryptionSpecRequest\x12X\n" +
-	"\x0fencryption_spec\x18\x01 \x01(\v2*.google.cloud.dialogflow.v2.EncryptionSpecB\x03\xe0A\x02R\x0eencryptionSpec\"\"\n" +
-	" InitializeEncryptionSpecResponse\"~\n" +
-	" InitializeEncryptionSpecMetadata\x12Z\n" +
-	"\arequest\x18\x04 \x01(\v2;.google.cloud.dialogflow.v2.InitializeEncryptionSpecRequestB\x03\xe0A\x03R\arequest2\xf5\x04\n" +
+	"0google/cloud/dialogflow/v2/encryption_spec.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\"a\n" +
+	"\x18GetEncryptionSpecRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dialogflow.googleapis.com/EncryptionSpecR\x04name\"\xd3\x01\n" +
+	"\x0eEncryptionSpec\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x1d\n" +
+	"\akms_key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06kmsKey:\x87\x01\xeaA\x83\x01\n" +
+	"(dialogflow.googleapis.com/EncryptionSpec\x126projects/{project}/locations/{location}/encryptionSpec*\x0fencryptionSpecs2\x0eencryptionSpec\"|\n" +
+	"\x1fInitializeEncryptionSpecRequest\x12Y\n" +
+	"\x0fencryption_spec\x18\x01 \x01(\v2*.google.cloud.dialogflow.v2.EncryptionSpecB\x04\xe2A\x01\x02R\x0eencryptionSpec\"\"\n" +
+	" InitializeEncryptionSpecResponse\"\x7f\n" +
+	" InitializeEncryptionSpecMetadata\x12[\n" +
+	"\arequest\x18\x04 \x01(\v2;.google.cloud.dialogflow.v2.InitializeEncryptionSpecRequestB\x04\xe2A\x01\x03R\arequest2\xf5\x04\n" +
 	"\x15EncryptionSpecService\x12\xb6\x01\n" +
 	"\x11GetEncryptionSpec\x124.google.cloud.dialogflow.v2.GetEncryptionSpecRequest\x1a*.google.cloud.dialogflow.v2.EncryptionSpec\"?\xdaA\x04name\x82\xd3\xe4\x93\x022\x120/v2/{name=projects/*/locations/*/encryptionSpec}\x12\xa8\x02\n" +
 	"\x18InitializeEncryptionSpec\x12;.google.cloud.dialogflow.v2.InitializeEncryptionSpecRequest\x1a\x1d.google.longrunning.Operation\"\xaf\x01\xcaAD\n" +

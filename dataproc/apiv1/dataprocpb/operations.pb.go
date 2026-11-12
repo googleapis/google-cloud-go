@@ -821,41 +821,41 @@ const file_google_cloud_dataproc_v1_operations_proto_rawDesc = "" +
 	"\x06CREATE\x10\x01\x12\r\n" +
 	"\tTERMINATE\x10\x02\x12\n" +
 	"\n" +
-	"\x06DELETE\x10\x03\"\xb5\x02\n" +
-	"\x16ClusterOperationStatus\x12Q\n" +
-	"\x05state\x18\x01 \x01(\x0e26.google.cloud.dataproc.v1.ClusterOperationStatus.StateB\x03\xe0A\x03R\x05state\x12$\n" +
-	"\vinner_state\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"innerState\x12\x1d\n" +
-	"\adetails\x18\x03 \x01(\tB\x03\xe0A\x03R\adetails\x12I\n" +
-	"\x10state_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0estateStartTime\"8\n" +
+	"\x06DELETE\x10\x03\"\xb9\x02\n" +
+	"\x16ClusterOperationStatus\x12R\n" +
+	"\x05state\x18\x01 \x01(\x0e26.google.cloud.dataproc.v1.ClusterOperationStatus.StateB\x04\xe2A\x01\x03R\x05state\x12%\n" +
+	"\vinner_state\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"innerState\x12\x1e\n" +
+	"\adetails\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\adetails\x12J\n" +
+	"\x10state_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0estateStartTime\"8\n" +
 	"\x05State\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\v\n" +
 	"\aRUNNING\x10\x02\x12\b\n" +
-	"\x04DONE\x10\x03\"\xd8\x04\n" +
-	"\x18ClusterOperationMetadata\x12&\n" +
-	"\fcluster_name\x18\a \x01(\tB\x03\xe0A\x03R\vclusterName\x12&\n" +
-	"\fcluster_uuid\x18\b \x01(\tB\x03\xe0A\x03R\vclusterUuid\x12M\n" +
-	"\x06status\x18\t \x01(\v20.google.cloud.dataproc.v1.ClusterOperationStatusB\x03\xe0A\x03R\x06status\x12\\\n" +
+	"\x04DONE\x10\x03\"\xe1\x04\n" +
+	"\x18ClusterOperationMetadata\x12'\n" +
+	"\fcluster_name\x18\a \x01(\tB\x04\xe2A\x01\x03R\vclusterName\x12'\n" +
+	"\fcluster_uuid\x18\b \x01(\tB\x04\xe2A\x01\x03R\vclusterUuid\x12N\n" +
+	"\x06status\x18\t \x01(\v20.google.cloud.dataproc.v1.ClusterOperationStatusB\x04\xe2A\x01\x03R\x06status\x12]\n" +
 	"\x0estatus_history\x18\n" +
-	" \x03(\v20.google.cloud.dataproc.v1.ClusterOperationStatusB\x03\xe0A\x03R\rstatusHistory\x12*\n" +
-	"\x0eoperation_type\x18\v \x01(\tB\x03\xe0A\x03R\roperationType\x12%\n" +
-	"\vdescription\x18\f \x01(\tB\x03\xe0A\x03R\vdescription\x12[\n" +
-	"\x06labels\x18\r \x03(\v2>.google.cloud.dataproc.v1.ClusterOperationMetadata.LabelsEntryB\x03\xe0A\x03R\x06labels\x12\x1f\n" +
-	"\bwarnings\x18\x0e \x03(\tB\x03\xe0A\x03R\bwarnings\x123\n" +
-	"\x13child_operation_ids\x18\x0f \x03(\tB\x03\xe0A\x03R\x11childOperationIds\x1a9\n" +
+	" \x03(\v20.google.cloud.dataproc.v1.ClusterOperationStatusB\x04\xe2A\x01\x03R\rstatusHistory\x12+\n" +
+	"\x0eoperation_type\x18\v \x01(\tB\x04\xe2A\x01\x03R\roperationType\x12&\n" +
+	"\vdescription\x18\f \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12\\\n" +
+	"\x06labels\x18\r \x03(\v2>.google.cloud.dataproc.v1.ClusterOperationMetadata.LabelsEntryB\x04\xe2A\x01\x03R\x06labels\x12 \n" +
+	"\bwarnings\x18\x0e \x03(\tB\x04\xe2A\x01\x03R\bwarnings\x124\n" +
+	"\x13child_operation_ids\x18\x0f \x03(\tB\x04\xe2A\x01\x03R\x11childOperationIds\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe5\x05\n" +
-	"\x1aNodeGroupOperationMetadata\x12'\n" +
-	"\rnode_group_id\x18\x01 \x01(\tB\x03\xe0A\x03R\vnodeGroupId\x12&\n" +
-	"\fcluster_uuid\x18\x02 \x01(\tB\x03\xe0A\x03R\vclusterUuid\x12M\n" +
-	"\x06status\x18\x03 \x01(\v20.google.cloud.dataproc.v1.ClusterOperationStatusB\x03\xe0A\x03R\x06status\x12\\\n" +
-	"\x0estatus_history\x18\x04 \x03(\v20.google.cloud.dataproc.v1.ClusterOperationStatusB\x03\xe0A\x03R\rstatusHistory\x12r\n" +
-	"\x0eoperation_type\x18\x05 \x01(\x0e2K.google.cloud.dataproc.v1.NodeGroupOperationMetadata.NodeGroupOperationTypeR\roperationType\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x03R\vdescription\x12]\n" +
-	"\x06labels\x18\a \x03(\v2@.google.cloud.dataproc.v1.NodeGroupOperationMetadata.LabelsEntryB\x03\xe0A\x03R\x06labels\x12\x1f\n" +
-	"\bwarnings\x18\b \x03(\tB\x03\xe0A\x03R\bwarnings\x1a9\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xec\x05\n" +
+	"\x1aNodeGroupOperationMetadata\x12(\n" +
+	"\rnode_group_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vnodeGroupId\x12'\n" +
+	"\fcluster_uuid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vclusterUuid\x12N\n" +
+	"\x06status\x18\x03 \x01(\v20.google.cloud.dataproc.v1.ClusterOperationStatusB\x04\xe2A\x01\x03R\x06status\x12]\n" +
+	"\x0estatus_history\x18\x04 \x03(\v20.google.cloud.dataproc.v1.ClusterOperationStatusB\x04\xe2A\x01\x03R\rstatusHistory\x12r\n" +
+	"\x0eoperation_type\x18\x05 \x01(\x0e2K.google.cloud.dataproc.v1.NodeGroupOperationMetadata.NodeGroupOperationTypeR\roperationType\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12^\n" +
+	"\x06labels\x18\a \x03(\v2@.google.cloud.dataproc.v1.NodeGroupOperationMetadata.LabelsEntryB\x04\xe2A\x01\x03R\x06labels\x12 \n" +
+	"\bwarnings\x18\b \x03(\tB\x04\xe2A\x01\x03R\bwarnings\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"s\n" +

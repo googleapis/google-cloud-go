@@ -1367,12 +1367,12 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 				expectedNetworkMetrics = append(expectedNetworkMetrics, "gcp.storage.client.network.dns.lookup.duration")
 			}
 
-			// gfe.duration might not be strictly populated locally, but check it if present.
-			if m, ok := metricsMap["gcp.storage.client.gfe.duration"]; ok {
+			// server.duration might not be strictly populated locally, but check it if present.
+			if m, ok := metricsMap["gcp.storage.client.server.duration"]; ok {
 				if hist, ok := m.Data.(metricdata.Histogram[float64]); !ok {
-					t.Errorf("expected Histogram data for gfe.duration, got %T", m.Data)
+					t.Errorf("expected Histogram data for server.duration, got %T", m.Data)
 				} else if len(hist.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for gcp.storage.client.gfe.duration")
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.server.duration")
 				}
 			}
 
@@ -2433,6 +2433,7 @@ func TestIntegration_MultiChunkWrite(t *testing.T) {
 		w.CRC32C = crc32c
 		// Use a 1 MB chunk size.
 		w.ChunkSize = 1 << 20
+		w.ChunkTransferTimeout = 30 * time.Second
 		w.ProgressFunc = func(p int64) {
 			t.Logf("%s: committed %d\n", t.Name(), p)
 		}

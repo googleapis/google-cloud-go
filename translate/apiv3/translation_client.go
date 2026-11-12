@@ -2581,6 +2581,11 @@ func (c *translationRESTClient) TranslateText(ctx context.Context, req *translat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:translateText", req.GetParent())
 
 	params := url.Values{}
@@ -2639,6 +2644,11 @@ func (c *translationRESTClient) RomanizeText(ctx context.Context, req *translate
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:romanizeText", req.GetParent())
@@ -2701,6 +2711,11 @@ func (c *translationRESTClient) DetectLanguage(ctx context.Context, req *transla
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:detectLanguage", req.GetParent())
 
 	params := url.Values{}
@@ -2753,6 +2768,11 @@ func (c *translationRESTClient) DetectLanguage(ctx context.Context, req *transla
 func (c *translationRESTClient) GetSupportedLanguages(ctx context.Context, req *translatepb.GetSupportedLanguagesRequest, opts ...gax.CallOption) (*translatepb.SupportedLanguages, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/supportedLanguages", req.GetParent())
@@ -2821,6 +2841,11 @@ func (c *translationRESTClient) TranslateDocument(ctx context.Context, req *tran
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:translateDocument", req.GetParent())
 
 	params := url.Values{}
@@ -2885,6 +2910,11 @@ func (c *translationRESTClient) BatchTranslateText(ctx context.Context, req *tra
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:batchTranslateText", req.GetParent())
@@ -2960,6 +2990,11 @@ func (c *translationRESTClient) BatchTranslateDocument(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:batchTranslateDocument", req.GetParent())
 
 	params := url.Values{}
@@ -3029,6 +3064,11 @@ func (c *translationRESTClient) CreateGlossary(ctx context.Context, req *transla
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/glossaries", req.GetParent())
 
 	params := url.Values{}
@@ -3096,6 +3136,11 @@ func (c *translationRESTClient) UpdateGlossary(ctx context.Context, req *transla
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGlossary().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetGlossary().GetName())
@@ -3180,6 +3225,11 @@ func (c *translationRESTClient) ListGlossaries(ctx context.Context, req *transla
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/glossaries", req.GetParent())
 
 		params := url.Values{}
@@ -3249,6 +3299,11 @@ func (c *translationRESTClient) GetGlossary(ctx context.Context, req *translatep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -3303,6 +3358,11 @@ func (c *translationRESTClient) GetGlossary(ctx context.Context, req *translatep
 func (c *translationRESTClient) DeleteGlossary(ctx context.Context, req *translatepb.DeleteGlossaryRequest, opts ...gax.CallOption) (*DeleteGlossaryOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -3364,6 +3424,11 @@ func (c *translationRESTClient) DeleteGlossary(ctx context.Context, req *transla
 func (c *translationRESTClient) GetGlossaryEntry(ctx context.Context, req *translatepb.GetGlossaryEntryRequest, opts ...gax.CallOption) (*translatepb.GlossaryEntry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -3431,6 +3496,11 @@ func (c *translationRESTClient) ListGlossaryEntries(ctx context.Context, req *tr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/glossaryEntries", req.GetParent())
@@ -3505,6 +3575,11 @@ func (c *translationRESTClient) CreateGlossaryEntry(ctx context.Context, req *tr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/glossaryEntries", req.GetParent())
 
 	params := url.Values{}
@@ -3566,6 +3641,11 @@ func (c *translationRESTClient) UpdateGlossaryEntry(ctx context.Context, req *tr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGlossaryEntry().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetGlossaryEntry().GetName())
 
 	params := url.Values{}
@@ -3620,6 +3700,11 @@ func (c *translationRESTClient) DeleteGlossaryEntry(ctx context.Context, req *tr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -3664,6 +3749,11 @@ func (c *translationRESTClient) CreateDataset(ctx context.Context, req *translat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/datasets", req.GetParent())
@@ -3725,6 +3815,11 @@ func (c *translationRESTClient) CreateDataset(ctx context.Context, req *translat
 func (c *translationRESTClient) GetDataset(ctx context.Context, req *translatepb.GetDatasetRequest, opts ...gax.CallOption) (*translatepb.Dataset, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -3794,6 +3889,11 @@ func (c *translationRESTClient) ListDatasets(ctx context.Context, req *translate
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/datasets", req.GetParent())
 
 		params := url.Values{}
@@ -3857,6 +3957,11 @@ func (c *translationRESTClient) ListDatasets(ctx context.Context, req *translate
 func (c *translationRESTClient) DeleteDataset(ctx context.Context, req *translatepb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -3927,6 +4032,11 @@ func (c *translationRESTClient) CreateAdaptiveMtDataset(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/adaptiveMtDatasets", req.GetParent())
 
 	params := url.Values{}
@@ -3982,6 +4092,11 @@ func (c *translationRESTClient) DeleteAdaptiveMtDataset(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -4019,6 +4134,11 @@ func (c *translationRESTClient) DeleteAdaptiveMtDataset(ctx context.Context, req
 func (c *translationRESTClient) GetAdaptiveMtDataset(ctx context.Context, req *translatepb.GetAdaptiveMtDatasetRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtDataset, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -4086,6 +4206,11 @@ func (c *translationRESTClient) ListAdaptiveMtDatasets(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/adaptiveMtDatasets", req.GetParent())
@@ -4162,6 +4287,11 @@ func (c *translationRESTClient) AdaptiveMtTranslate(ctx context.Context, req *tr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:adaptiveMtTranslate", req.GetParent())
 
 	params := url.Values{}
@@ -4214,6 +4344,11 @@ func (c *translationRESTClient) AdaptiveMtTranslate(ctx context.Context, req *tr
 func (c *translationRESTClient) GetAdaptiveMtFile(ctx context.Context, req *translatepb.GetAdaptiveMtFileRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtFile, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -4270,6 +4405,11 @@ func (c *translationRESTClient) DeleteAdaptiveMtFile(ctx context.Context, req *t
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -4314,6 +4454,11 @@ func (c *translationRESTClient) ImportAdaptiveMtFile(ctx context.Context, req *t
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:importAdaptiveMtFile", req.GetParent())
@@ -4381,6 +4526,11 @@ func (c *translationRESTClient) ListAdaptiveMtFiles(ctx context.Context, req *tr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/adaptiveMtFiles", req.GetParent())
@@ -4461,6 +4611,11 @@ func (c *translationRESTClient) ListAdaptiveMtSentences(ctx context.Context, req
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/adaptiveMtSentences", req.GetParent())
 
 		params := url.Values{}
@@ -4532,6 +4687,11 @@ func (c *translationRESTClient) ImportData(ctx context.Context, req *translatepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataset(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:importData", req.GetDataset())
 
 	params := url.Values{}
@@ -4597,6 +4757,11 @@ func (c *translationRESTClient) ExportData(ctx context.Context, req *translatepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataset(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:exportData", req.GetDataset())
@@ -4671,6 +4836,11 @@ func (c *translationRESTClient) ListExamples(ctx context.Context, req *translate
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/examples", req.GetParent())
@@ -4748,6 +4918,11 @@ func (c *translationRESTClient) CreateModel(ctx context.Context, req *translatep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/models", req.GetParent())
 
 	params := url.Values{}
@@ -4822,6 +4997,11 @@ func (c *translationRESTClient) ListModels(ctx context.Context, req *translatepb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/models", req.GetParent())
 
 		params := url.Values{}
@@ -4890,6 +5070,11 @@ func (c *translationRESTClient) GetModel(ctx context.Context, req *translatepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -4942,6 +5127,11 @@ func (c *translationRESTClient) GetModel(ctx context.Context, req *translatepb.G
 func (c *translationRESTClient) DeleteModel(ctx context.Context, req *translatepb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -5003,6 +5193,11 @@ func (c *translationRESTClient) DeleteModel(ctx context.Context, req *translatep
 func (c *translationRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -5070,6 +5265,11 @@ func (c *translationRESTClient) ListLocations(ctx context.Context, req *location
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/locations", req.GetName())
@@ -5146,6 +5346,11 @@ func (c *translationRESTClient) CancelOperation(ctx context.Context, req *longru
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -5185,6 +5390,11 @@ func (c *translationRESTClient) DeleteOperation(ctx context.Context, req *longru
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -5222,6 +5432,11 @@ func (c *translationRESTClient) DeleteOperation(ctx context.Context, req *longru
 func (c *translationRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -5289,6 +5504,11 @@ func (c *translationRESTClient) ListOperations(ctx context.Context, req *longrun
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/operations", req.GetName())
@@ -5366,6 +5586,11 @@ func (c *translationRESTClient) WaitOperation(ctx context.Context, req *longrunn
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:wait", req.GetName())

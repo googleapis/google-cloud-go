@@ -1972,71 +1972,71 @@ var File_google_cloud_dialogflow_v2beta1_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2beta1_tool_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/dialogflow/v2beta1/tool.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb1\x01\n" +
-	"\x11CreateToolRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edialogflow.googleapis.com/ToolR\x06parent\x12>\n" +
-	"\x04tool\x18\x02 \x01(\v2%.google.cloud.dialogflow.v2beta1.ToolB\x03\xe0A\x02R\x04tool\x12\x1c\n" +
-	"\atool_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x06toolId\"L\n" +
-	"\x0eGetToolRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolR\x04name\"\x98\x01\n" +
-	"\x10ListToolsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edialogflow.googleapis.com/ToolR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"*google/cloud/dialogflow/v2beta1/tool.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb4\x01\n" +
+	"\x11CreateToolRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1edialogflow.googleapis.com/ToolR\x06parent\x12?\n" +
+	"\x04tool\x18\x02 \x01(\v2%.google.cloud.dialogflow.v2beta1.ToolB\x04\xe2A\x01\x02R\x04tool\x12\x1d\n" +
+	"\atool_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06toolId\"M\n" +
+	"\x0eGetToolRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolR\x04name\"\x9b\x01\n" +
+	"\x10ListToolsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1edialogflow.googleapis.com/ToolR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"x\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"x\n" +
 	"\x11ListToolsResponse\x12;\n" +
 	"\x05tools\x18\x01 \x03(\v2%.google.cloud.dialogflow.v2beta1.ToolR\x05tools\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"O\n" +
-	"\x11DeleteToolRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolR\x04name\"\x95\x01\n" +
-	"\x11UpdateToolRequest\x12>\n" +
-	"\x04tool\x18\x01 \x01(\v2%.google.cloud.dialogflow.v2beta1.ToolB\x03\xe0A\x02R\x04tool\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xdf%\n" +
-	"\x04Tool\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12\x1e\n" +
-	"\btool_key\x18\x02 \x01(\tB\x03\xe0A\x02R\atoolKey\x12&\n" +
-	"\fdisplay_name\x18\x13 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x95\x01\n" +
-	"\x1faction_confirmation_requirement\x18\x11 \x03(\v2H.google.cloud.dialogflow.v2beta1.Tool.ActionConfirmationRequirementEntryB\x03\xe0A\x01R\x1dactionConfirmationRequirement\x12`\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
+	"\x11DeleteToolRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolR\x04name\"\x97\x01\n" +
+	"\x11UpdateToolRequest\x12?\n" +
+	"\x04tool\x18\x01 \x01(\v2%.google.cloud.dialogflow.v2beta1.ToolB\x04\xe2A\x01\x02R\x04tool\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x85&\n" +
+	"\x04Tool\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12\x1f\n" +
+	"\btool_key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\atoolKey\x12'\n" +
+	"\fdisplay_name\x18\x13 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x96\x01\n" +
+	"\x1faction_confirmation_requirement\x18\x11 \x03(\v2H.google.cloud.dialogflow.v2beta1.Tool.ActionConfirmationRequirementEntryB\x04\xe2A\x01\x01R\x1dactionConfirmationRequirement\x12`\n" +
 	"\x0eextension_spec\x18\x04 \x01(\v23.google.cloud.dialogflow.v2beta1.Tool.ExtensionToolB\x02\x18\x01H\x00R\rextensionSpec\x12Y\n" +
 	"\rfunction_spec\x18\r \x01(\v22.google.cloud.dialogflow.v2beta1.Tool.FunctionToolH\x00R\ffunctionSpec\x12\\\n" +
 	"\x0econnector_spec\x18\x12 \x01(\v23.google.cloud.dialogflow.v2beta1.Tool.ConnectorToolH\x00R\rconnectorSpec\x12W\n" +
-	"\ropen_api_spec\x18\x14 \x01(\v21.google.cloud.dialogflow.v2beta1.Tool.OpenApiToolH\x00R\vopenApiSpec\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12-\n" +
-	"\rsatisfies_pzs\x18\x0e \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\x0f \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzi\x88\x01\x01\x1a(\n" +
-	"\rExtensionTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x1a\xea\x01\n" +
-	"\fFunctionTool\x12?\n" +
-	"\finput_schema\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\vinputSchema\x12A\n" +
-	"\routput_schema\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\foutputSchema\x12V\n" +
-	"\vmethod_type\x18\x04 \x01(\x0e20.google.cloud.dialogflow.v2beta1.Tool.MethodTypeB\x03\xe0A\x01R\n" +
-	"methodType\x1a\xf4\x02\n" +
-	"\vOpenApiTool\x12&\n" +
-	"\vtext_schema\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\n" +
-	"textSchema\x12a\n" +
-	"\x0eauthentication\x18\x02 \x01(\v24.google.cloud.dialogflow.v2beta1.Tool.AuthenticationB\x03\xe0A\x01R\x0eauthentication\x12S\n" +
+	"\ropen_api_spec\x18\x14 \x01(\v21.google.cloud.dialogflow.v2beta1.Tool.OpenApiToolH\x00R\vopenApiSpec\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12.\n" +
+	"\rsatisfies_pzs\x18\x0e \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\x0f \x01(\bB\x04\xe2A\x01\x03H\x02R\fsatisfiesPzi\x88\x01\x01\x1a)\n" +
+	"\rExtensionTool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x1a\xed\x01\n" +
+	"\fFunctionTool\x12@\n" +
+	"\finput_schema\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\vinputSchema\x12B\n" +
+	"\routput_schema\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\foutputSchema\x12W\n" +
+	"\vmethod_type\x18\x04 \x01(\x0e20.google.cloud.dialogflow.v2beta1.Tool.MethodTypeB\x04\xe2A\x01\x01R\n" +
+	"methodType\x1a\xf8\x02\n" +
+	"\vOpenApiTool\x12'\n" +
+	"\vtext_schema\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\n" +
+	"textSchema\x12b\n" +
+	"\x0eauthentication\x18\x02 \x01(\v24.google.cloud.dialogflow.v2beta1.Tool.AuthenticationB\x04\xe2A\x01\x01R\x0eauthentication\x12T\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2/.google.cloud.dialogflow.v2beta1.Tool.TLSConfigB\x03\xe0A\x01R\ttlsConfig\x12{\n" +
-	"\x18service_directory_config\x18\x04 \x01(\v2<.google.cloud.dialogflow.v2beta1.Tool.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfigB\b\n" +
-	"\x06schema\x1a\xb7\x05\n" +
-	"\rConnectorTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12Y\n" +
-	"\aactions\x18\x02 \x03(\v2:.google.cloud.dialogflow.v2beta1.Tool.ConnectorTool.ActionB\x03\xe0A\x02R\aactions\x1a\xb1\x04\n" +
+	"tls_config\x18\x03 \x01(\v2/.google.cloud.dialogflow.v2beta1.Tool.TLSConfigB\x04\xe2A\x01\x01R\ttlsConfig\x12|\n" +
+	"\x18service_directory_config\x18\x04 \x01(\v2<.google.cloud.dialogflow.v2beta1.Tool.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfigB\b\n" +
+	"\x06schema\x1a\xbd\x05\n" +
+	"\rConnectorTool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12Z\n" +
+	"\aactions\x18\x02 \x03(\v2:.google.cloud.dialogflow.v2beta1.Tool.ConnectorTool.ActionB\x04\xe2A\x01\x02R\aactions\x1a\xb5\x04\n" +
 	"\x06Action\x122\n" +
 	"\x14connection_action_id\x18\x04 \x01(\tH\x00R\x12connectionActionId\x12w\n" +
-	"\x10entity_operation\x18\x05 \x01(\v2J.google.cloud.dialogflow.v2beta1.Tool.ConnectorTool.Action.EntityOperationH\x00R\x0fentityOperation\x12&\n" +
-	"\finput_fields\x18\x02 \x03(\tB\x03\xe0A\x01R\vinputFields\x12(\n" +
-	"\routput_fields\x18\x03 \x03(\tB\x03\xe0A\x01R\foutputFields\x1a\x98\x02\n" +
-	"\x0fEntityOperation\x12 \n" +
-	"\tentity_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bentityId\x12{\n" +
-	"\toperation\x18\x02 \x01(\x0e2X.google.cloud.dialogflow.v2beta1.Tool.ConnectorTool.Action.EntityOperation.OperationTypeB\x03\xe0A\x02R\toperation\"f\n" +
+	"\x10entity_operation\x18\x05 \x01(\v2J.google.cloud.dialogflow.v2beta1.Tool.ConnectorTool.Action.EntityOperationH\x00R\x0fentityOperation\x12'\n" +
+	"\finput_fields\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\vinputFields\x12)\n" +
+	"\routput_fields\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\foutputFields\x1a\x9a\x02\n" +
+	"\x0fEntityOperation\x12!\n" +
+	"\tentity_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bentityId\x12|\n" +
+	"\toperation\x18\x02 \x01(\x0e2X.google.cloud.dialogflow.v2beta1.Tool.ConnectorTool.Action.EntityOperation.OperationTypeB\x04\xe2A\x01\x02R\toperation\"f\n" +
 	"\rOperationType\x12\x1e\n" +
 	"\x1aOPERATION_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04LIST\x10\x01\x12\a\n" +
@@ -2047,52 +2047,52 @@ const file_google_cloud_dialogflow_v2beta1_tool_proto_rawDesc = "" +
 	"\x06UPDATE\x10\x04\x12\n" +
 	"\n" +
 	"\x06DELETE\x10\x05B\r\n" +
-	"\vaction_spec\x1a\x8d\x0e\n" +
+	"\vaction_spec\x1a\x9a\x0e\n" +
 	"\x0eAuthentication\x12i\n" +
 	"\x0eapi_key_config\x18\x01 \x01(\v2A.google.cloud.dialogflow.v2beta1.Tool.Authentication.ApiKeyConfigH\x00R\fapiKeyConfig\x12e\n" +
 	"\foauth_config\x18\x02 \x01(\v2@.google.cloud.dialogflow.v2beta1.Tool.Authentication.OAuthConfigH\x00R\voauthConfig\x12\x88\x01\n" +
 	"\x19service_agent_auth_config\x18\x03 \x01(\v2K.google.cloud.dialogflow.v2beta1.Tool.Authentication.ServiceAgentAuthConfigH\x00R\x16serviceAgentAuthConfig\x12x\n" +
-	"\x13bearer_token_config\x18\x04 \x01(\v2F.google.cloud.dialogflow.v2beta1.Tool.Authentication.BearerTokenConfigH\x00R\x11bearerTokenConfig\x1a\xb2\x02\n" +
-	"\fApiKeyConfig\x12\x1e\n" +
-	"\bkey_name\x18\x01 \x01(\tB\x03\xe0A\x02R\akeyName\x12\x1c\n" +
-	"\aapi_key\x18\x02 \x01(\tB\x03\xe0A\x01R\x06apiKey\x12n\n" +
-	"\x1asecret_version_for_api_key\x18\x04 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x16secretVersionForApiKey\x12t\n" +
-	"\x10request_location\x18\x03 \x01(\x0e2D.google.cloud.dialogflow.v2beta1.Tool.Authentication.RequestLocationB\x03\xe0A\x02R\x0frequestLocation\x1a\xe9\x03\n" +
-	"\vOAuthConfig\x12~\n" +
-	"\x10oauth_grant_type\x18\x01 \x01(\x0e2O.google.cloud.dialogflow.v2beta1.Tool.Authentication.OAuthConfig.OauthGrantTypeB\x03\xe0A\x02R\x0eoauthGrantType\x12 \n" +
-	"\tclient_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bclientId\x12(\n" +
-	"\rclient_secret\x18\x03 \x01(\tB\x03\xe0A\x01R\fclientSecret\x12z\n" +
-	" secret_version_for_client_secret\x18\x06 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1csecretVersionForClientSecret\x12*\n" +
-	"\x0etoken_endpoint\x18\x04 \x01(\tB\x03\xe0A\x02R\rtokenEndpoint\x12\x1b\n" +
-	"\x06scopes\x18\x05 \x03(\tB\x03\xe0A\x01R\x06scopes\"I\n" +
+	"\x13bearer_token_config\x18\x04 \x01(\v2F.google.cloud.dialogflow.v2beta1.Tool.Authentication.BearerTokenConfigH\x00R\x11bearerTokenConfig\x1a\xb6\x02\n" +
+	"\fApiKeyConfig\x12\x1f\n" +
+	"\bkey_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\akeyName\x12\x1d\n" +
+	"\aapi_key\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06apiKey\x12o\n" +
+	"\x1asecret_version_for_api_key\x18\x04 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x16secretVersionForApiKey\x12u\n" +
+	"\x10request_location\x18\x03 \x01(\x0e2D.google.cloud.dialogflow.v2beta1.Tool.Authentication.RequestLocationB\x04\xe2A\x01\x02R\x0frequestLocation\x1a\xef\x03\n" +
+	"\vOAuthConfig\x12\x7f\n" +
+	"\x10oauth_grant_type\x18\x01 \x01(\x0e2O.google.cloud.dialogflow.v2beta1.Tool.Authentication.OAuthConfig.OauthGrantTypeB\x04\xe2A\x01\x02R\x0eoauthGrantType\x12!\n" +
+	"\tclient_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12)\n" +
+	"\rclient_secret\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fclientSecret\x12{\n" +
+	" secret_version_for_client_secret\x18\x06 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1csecretVersionForClientSecret\x12+\n" +
+	"\x0etoken_endpoint\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\rtokenEndpoint\x12\x1c\n" +
+	"\x06scopes\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x06scopes\"I\n" +
 	"\x0eOauthGrantType\x12 \n" +
 	"\x1cOAUTH_GRANT_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
-	"\x11CLIENT_CREDENTIAL\x10\x01\x1a\x82\x02\n" +
-	"\x16ServiceAgentAuthConfig\x12\x8f\x01\n" +
-	"\x12service_agent_auth\x18\x01 \x01(\x0e2\\.google.cloud.dialogflow.v2beta1.Tool.Authentication.ServiceAgentAuthConfig.ServiceAgentAuthB\x03\xe0A\x01R\x10serviceAgentAuth\"V\n" +
+	"\x11CLIENT_CREDENTIAL\x10\x01\x1a\x83\x02\n" +
+	"\x16ServiceAgentAuthConfig\x12\x90\x01\n" +
+	"\x12service_agent_auth\x18\x01 \x01(\x0e2\\.google.cloud.dialogflow.v2beta1.Tool.Authentication.ServiceAgentAuthConfig.ServiceAgentAuthB\x04\xe2A\x01\x01R\x10serviceAgentAuth\"V\n" +
 	"\x10ServiceAgentAuth\x12\"\n" +
 	"\x1eSERVICE_AGENT_AUTH_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bID_TOKEN\x10\x01\x12\x10\n" +
-	"\fACCESS_TOKEN\x10\x02\x1a\x9b\x01\n" +
-	"\x11BearerTokenConfig\x12\x19\n" +
-	"\x05token\x18\x01 \x01(\tB\x03\xe0A\x01R\x05token\x12k\n" +
-	"\x18secret_version_for_token\x18\x02 \x01(\tB2\xe0A\x01\xfaA,\n" +
+	"\fACCESS_TOKEN\x10\x02\x1a\x9d\x01\n" +
+	"\x11BearerTokenConfig\x12\x1a\n" +
+	"\x05token\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05token\x12l\n" +
+	"\x18secret_version_for_token\x18\x02 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\x15secretVersionForToken\"Q\n" +
 	"\x0fRequestLocation\x12 \n" +
 	"\x1cREQUEST_LOCATION_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06HEADER\x10\x01\x12\x10\n" +
 	"\fQUERY_STRING\x10\x02B\r\n" +
-	"\vauth_config\x1a\xae\x01\n" +
-	"\tTLSConfig\x12V\n" +
-	"\bca_certs\x18\x01 \x03(\v26.google.cloud.dialogflow.v2beta1.Tool.TLSConfig.CACertB\x03\xe0A\x02R\acaCerts\x1aI\n" +
-	"\x06CACert\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x17\n" +
-	"\x04cert\x18\x02 \x01(\fB\x03\xe0A\x02R\x04cert\x1ac\n" +
-	"\x16ServiceDirectoryConfig\x12I\n" +
-	"\aservice\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\vauth_config\x1a\xb1\x01\n" +
+	"\tTLSConfig\x12W\n" +
+	"\bca_certs\x18\x01 \x03(\v26.google.cloud.dialogflow.v2beta1.Tool.TLSConfig.CACertB\x04\xe2A\x01\x02R\acaCerts\x1aK\n" +
+	"\x06CACert\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x18\n" +
+	"\x04cert\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04cert\x1ad\n" +
+	"\x16ServiceDirectoryConfig\x12J\n" +
+	"\aservice\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'servicedirectory.googleapis.com/ServiceR\aservice\x1a\x8f\x01\n" +
 	"\"ActionConfirmationRequirementEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12S\n" +

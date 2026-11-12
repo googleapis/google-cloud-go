@@ -2164,9 +2164,9 @@ var File_google_cloud_texttospeech_v1_cloud_tts_proto protoreflect.FileDescripto
 
 const file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/texttospeech/v1/cloud_tts.proto\x12\x1cgoogle.cloud.texttospeech.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"=\n" +
-	"\x11ListVoicesRequest\x12(\n" +
-	"\rlanguage_code\x18\x01 \x01(\tB\x03\xe0A\x01R\flanguageCode\"Q\n" +
+	",google/cloud/texttospeech/v1/cloud_tts.proto\x12\x1cgoogle.cloud.texttospeech.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\">\n" +
+	"\x11ListVoicesRequest\x12)\n" +
+	"\rlanguage_code\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"Q\n" +
 	"\x12ListVoicesResponse\x12;\n" +
 	"\x06voices\x18\x01 \x03(\v2#.google.cloud.texttospeech.v1.VoiceR\x06voices\"\xcd\x01\n" +
 	"\x05Voice\x12%\n" +
@@ -2174,12 +2174,12 @@ const file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12N\n" +
 	"\vssml_gender\x18\x03 \x01(\x0e2-.google.cloud.texttospeech.v1.SsmlVoiceGenderR\n" +
 	"ssmlGender\x129\n" +
-	"\x19natural_sample_rate_hertz\x18\x04 \x01(\x05R\x16naturalSampleRateHertz\"\x92\b\n" +
+	"\x19natural_sample_rate_hertz\x18\x04 \x01(\x05R\x16naturalSampleRateHertz\"\x91\b\n" +
 	"\x14AdvancedVoiceOptions\x12F\n" +
-	"\x1dlow_latency_journey_synthesis\x18\x01 \x01(\bH\x00R\x1alowLatencyJourneySynthesis\x88\x01\x01\x12:\n" +
-	"\x14relax_safety_filters\x18\b \x01(\bB\b\xe0A\x04\xe0A\x01\x18\x01R\x12relaxSafetyFilters\x12r\n" +
-	"\x0fsafety_settings\x18\t \x01(\v2A.google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySettingsB\x06\xe0A\x04\xe0A\x01R\x0esafetySettings\x121\n" +
-	"\x0fenable_textnorm\x18\x02 \x01(\bB\x03\xe0A\x01H\x01R\x0eenableTextnorm\x88\x01\x01\x1a\xd1\x01\n" +
+	"\x1dlow_latency_journey_synthesis\x18\x01 \x01(\bH\x00R\x1alowLatencyJourneySynthesis\x88\x01\x01\x129\n" +
+	"\x14relax_safety_filters\x18\b \x01(\bB\a\xe2A\x02\x04\x01\x18\x01R\x12relaxSafetyFilters\x12q\n" +
+	"\x0fsafety_settings\x18\t \x01(\v2A.google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySettingsB\x05\xe2A\x02\x04\x01R\x0esafetySettings\x122\n" +
+	"\x0fenable_textnorm\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x01R\x0eenableTextnorm\x88\x01\x01\x1a\xd1\x01\n" +
 	"\rSafetySetting\x12[\n" +
 	"\bcategory\x18\x01 \x01(\x0e2?.google.cloud.texttospeech.v1.AdvancedVoiceOptions.HarmCategoryR\bcategory\x12c\n" +
 	"\tthreshold\x18\x02 \x01(\x0e2E.google.cloud.texttospeech.v1.AdvancedVoiceOptions.HarmBlockThresholdR\tthreshold\x1an\n" +
@@ -2200,12 +2200,12 @@ const file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDesc = "" +
 	"BLOCK_NONE\x10\x04\x12\a\n" +
 	"\x03OFF\x10\x05B \n" +
 	"\x1e_low_latency_journey_synthesisB\x12\n" +
-	"\x10_enable_textnorm\"\x93\x03\n" +
-	"\x17SynthesizeSpeechRequest\x12G\n" +
-	"\x05input\x18\x01 \x01(\v2,.google.cloud.texttospeech.v1.SynthesisInputB\x03\xe0A\x02R\x05input\x12M\n" +
-	"\x05voice\x18\x02 \x01(\v22.google.cloud.texttospeech.v1.VoiceSelectionParamsB\x03\xe0A\x02R\x05voice\x12Q\n" +
-	"\faudio_config\x18\x03 \x01(\v2).google.cloud.texttospeech.v1.AudioConfigB\x03\xe0A\x02R\vaudioConfig\x12r\n" +
-	"\x16advanced_voice_options\x18\b \x01(\v22.google.cloud.texttospeech.v1.AdvancedVoiceOptionsB\x03\xe0A\x01H\x00R\x14advancedVoiceOptions\x88\x01\x01B\x19\n" +
+	"\x10_enable_textnorm\"\x97\x03\n" +
+	"\x17SynthesizeSpeechRequest\x12H\n" +
+	"\x05input\x18\x01 \x01(\v2,.google.cloud.texttospeech.v1.SynthesisInputB\x04\xe2A\x01\x02R\x05input\x12N\n" +
+	"\x05voice\x18\x02 \x01(\v22.google.cloud.texttospeech.v1.VoiceSelectionParamsB\x04\xe2A\x01\x02R\x05voice\x12R\n" +
+	"\faudio_config\x18\x03 \x01(\v2).google.cloud.texttospeech.v1.AudioConfigB\x04\xe2A\x01\x02R\vaudioConfig\x12s\n" +
+	"\x16advanced_voice_options\x18\b \x01(\v22.google.cloud.texttospeech.v1.AdvancedVoiceOptionsB\x04\xe2A\x01\x01H\x00R\x14advancedVoiceOptions\x88\x01\x01B\x19\n" +
 	"\x17_advanced_voice_options\"\xcb\x03\n" +
 	"\x19CustomPronunciationParams\x12\x1b\n" +
 	"\x06phrase\x18\x01 \x01(\tH\x00R\x06phrase\x88\x01\x01\x12z\n" +
@@ -2221,66 +2221,66 @@ const file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDesc = "" +
 	"\x12_phonetic_encodingB\x10\n" +
 	"\x0e_pronunciation\"w\n" +
 	"\x14CustomPronunciations\x12_\n" +
-	"\x0epronunciations\x18\x01 \x03(\v27.google.cloud.texttospeech.v1.CustomPronunciationParamsR\x0epronunciations\"\xa6\x01\n" +
-	"\x12MultiSpeakerMarkup\x12P\n" +
-	"\x05turns\x18\x01 \x03(\v25.google.cloud.texttospeech.v1.MultiSpeakerMarkup.TurnB\x03\xe0A\x02R\x05turns\x1a>\n" +
-	"\x04Turn\x12\x1d\n" +
-	"\aspeaker\x18\x01 \x01(\tB\x03\xe0A\x02R\aspeaker\x12\x17\n" +
-	"\x04text\x18\x02 \x01(\tB\x03\xe0A\x02R\x04text\"i\n" +
-	"\x19MultispeakerPrebuiltVoice\x12(\n" +
-	"\rspeaker_alias\x18\x01 \x01(\tB\x03\xe0A\x02R\fspeakerAlias\x12\"\n" +
+	"\x0epronunciations\x18\x01 \x03(\v27.google.cloud.texttospeech.v1.CustomPronunciationParamsR\x0epronunciations\"\xa9\x01\n" +
+	"\x12MultiSpeakerMarkup\x12Q\n" +
+	"\x05turns\x18\x01 \x03(\v25.google.cloud.texttospeech.v1.MultiSpeakerMarkup.TurnB\x04\xe2A\x01\x02R\x05turns\x1a@\n" +
+	"\x04Turn\x12\x1e\n" +
+	"\aspeaker\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aspeaker\x12\x18\n" +
+	"\x04text\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04text\"k\n" +
+	"\x19MultispeakerPrebuiltVoice\x12)\n" +
+	"\rspeaker_alias\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fspeakerAlias\x12#\n" +
 	"\n" +
-	"speaker_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tspeakerId\"\x8b\x01\n" +
-	"\x17MultiSpeakerVoiceConfig\x12p\n" +
-	"\x15speaker_voice_configs\x18\x02 \x03(\v27.google.cloud.texttospeech.v1.MultispeakerPrebuiltVoiceB\x03\xe0A\x02R\x13speakerVoiceConfigs\"\xe2\x02\n" +
+	"speaker_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tspeakerId\"\x8c\x01\n" +
+	"\x17MultiSpeakerVoiceConfig\x12q\n" +
+	"\x15speaker_voice_configs\x18\x02 \x03(\v27.google.cloud.texttospeech.v1.MultispeakerPrebuiltVoiceB\x04\xe2A\x01\x02R\x13speakerVoiceConfigs\"\xe3\x02\n" +
 	"\x0eSynthesisInput\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12\x18\n" +
 	"\x06markup\x18\x05 \x01(\tH\x00R\x06markup\x12\x14\n" +
 	"\x04ssml\x18\x02 \x01(\tH\x00R\x04ssml\x12d\n" +
 	"\x14multi_speaker_markup\x18\x04 \x01(\v20.google.cloud.texttospeech.v1.MultiSpeakerMarkupH\x00R\x12multiSpeakerMarkup\x12\x1b\n" +
-	"\x06prompt\x18\x06 \x01(\tH\x01R\x06prompt\x88\x01\x01\x12l\n" +
-	"\x15custom_pronunciations\x18\x03 \x01(\v22.google.cloud.texttospeech.v1.CustomPronunciationsB\x03\xe0A\x01R\x14customPronunciationsB\x0e\n" +
+	"\x06prompt\x18\x06 \x01(\tH\x01R\x06prompt\x88\x01\x01\x12m\n" +
+	"\x15custom_pronunciations\x18\x03 \x01(\v22.google.cloud.texttospeech.v1.CustomPronunciationsB\x04\xe2A\x01\x01R\x14customPronunciationsB\x0e\n" +
 	"\finput_sourceB\t\n" +
-	"\a_prompt\"\xeb\x03\n" +
-	"\x14VoiceSelectionParams\x12(\n" +
-	"\rlanguage_code\x18\x01 \x01(\tB\x03\xe0A\x02R\flanguageCode\x12\x12\n" +
+	"\a_prompt\"\xef\x03\n" +
+	"\x14VoiceSelectionParams\x12)\n" +
+	"\rlanguage_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\flanguageCode\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12N\n" +
 	"\vssml_gender\x18\x03 \x01(\x0e2-.google.cloud.texttospeech.v1.SsmlVoiceGenderR\n" +
 	"ssmlGender\x12R\n" +
-	"\fcustom_voice\x18\x04 \x01(\v2/.google.cloud.texttospeech.v1.CustomVoiceParamsR\vcustomVoice\x12T\n" +
-	"\vvoice_clone\x18\x05 \x01(\v2..google.cloud.texttospeech.v1.VoiceCloneParamsB\x03\xe0A\x01R\n" +
-	"voiceClone\x12\"\n" +
+	"\fcustom_voice\x18\x04 \x01(\v2/.google.cloud.texttospeech.v1.CustomVoiceParamsR\vcustomVoice\x12U\n" +
+	"\vvoice_clone\x18\x05 \x01(\v2..google.cloud.texttospeech.v1.VoiceCloneParamsB\x04\xe2A\x01\x01R\n" +
+	"voiceClone\x12#\n" +
 	"\n" +
-	"model_name\x18\x06 \x01(\tB\x03\xe0A\x01R\tmodelName\x12w\n" +
-	"\x1amulti_speaker_voice_config\x18\a \x01(\v25.google.cloud.texttospeech.v1.MultiSpeakerVoiceConfigB\x03\xe0A\x01R\x17multiSpeakerVoiceConfig\"\xc6\x02\n" +
-	"\vAudioConfig\x12W\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e2+.google.cloud.texttospeech.v1.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12+\n" +
-	"\rspeaking_rate\x18\x02 \x01(\x01B\x06\xe0A\x04\xe0A\x01R\fspeakingRate\x12\x1c\n" +
-	"\x05pitch\x18\x03 \x01(\x01B\x06\xe0A\x04\xe0A\x01R\x05pitch\x12,\n" +
-	"\x0evolume_gain_db\x18\x04 \x01(\x01B\x06\xe0A\x04\xe0A\x01R\fvolumeGainDb\x12/\n" +
-	"\x11sample_rate_hertz\x18\x05 \x01(\x05B\x03\xe0A\x01R\x0fsampleRateHertz\x124\n" +
-	"\x12effects_profile_id\x18\x06 \x03(\tB\x06\xe0A\x04\xe0A\x01R\x10effectsProfileId\"\x87\x02\n" +
-	"\x11CustomVoiceParams\x129\n" +
-	"\x05model\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bautoml.googleapis.com/ModelR\x05model\x12k\n" +
-	"\x0ereported_usage\x18\x03 \x01(\x0e2=.google.cloud.texttospeech.v1.CustomVoiceParams.ReportedUsageB\x05\xe0A\x01\x18\x01R\rreportedUsage\"J\n" +
+	"model_name\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tmodelName\x12x\n" +
+	"\x1amulti_speaker_voice_config\x18\a \x01(\v25.google.cloud.texttospeech.v1.MultiSpeakerVoiceConfigB\x04\xe2A\x01\x01R\x17multiSpeakerVoiceConfig\"\xc4\x02\n" +
+	"\vAudioConfig\x12X\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e2+.google.cloud.texttospeech.v1.AudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x12*\n" +
+	"\rspeaking_rate\x18\x02 \x01(\x01B\x05\xe2A\x02\x04\x01R\fspeakingRate\x12\x1b\n" +
+	"\x05pitch\x18\x03 \x01(\x01B\x05\xe2A\x02\x04\x01R\x05pitch\x12+\n" +
+	"\x0evolume_gain_db\x18\x04 \x01(\x01B\x05\xe2A\x02\x04\x01R\fvolumeGainDb\x120\n" +
+	"\x11sample_rate_hertz\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x0fsampleRateHertz\x123\n" +
+	"\x12effects_profile_id\x18\x06 \x03(\tB\x05\xe2A\x02\x04\x01R\x10effectsProfileId\"\x89\x02\n" +
+	"\x11CustomVoiceParams\x12:\n" +
+	"\x05model\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bautoml.googleapis.com/ModelR\x05model\x12l\n" +
+	"\x0ereported_usage\x18\x03 \x01(\x0e2=.google.cloud.texttospeech.v1.CustomVoiceParams.ReportedUsageB\x06\xe2A\x01\x01\x18\x01R\rreportedUsage\"J\n" +
 	"\rReportedUsage\x12\x1e\n" +
 	"\x1aREPORTED_USAGE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bREALTIME\x10\x01\x12\v\n" +
-	"\aOFFLINE\x10\x02\"C\n" +
-	"\x10VoiceCloneParams\x12/\n" +
-	"\x11voice_cloning_key\x18\x01 \x01(\tB\x03\xe0A\x02R\x0fvoiceCloningKey\"?\n" +
+	"\aOFFLINE\x10\x02\"D\n" +
+	"\x10VoiceCloneParams\x120\n" +
+	"\x11voice_cloning_key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0fvoiceCloningKey\"?\n" +
 	"\x18SynthesizeSpeechResponse\x12#\n" +
-	"\raudio_content\x18\x01 \x01(\fR\faudioContent\"\xcd\x01\n" +
-	"\x14StreamingAudioConfig\x12W\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e2+.google.cloud.texttospeech.v1.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
-	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0fsampleRateHertz\x12+\n" +
-	"\rspeaking_rate\x18\x03 \x01(\x01B\x06\xe0A\x04\xe0A\x01R\fspeakingRate\"\xd6\x03\n" +
-	"\x19StreamingSynthesizeConfig\x12M\n" +
-	"\x05voice\x18\x01 \x01(\v22.google.cloud.texttospeech.v1.VoiceSelectionParamsB\x03\xe0A\x02R\x05voice\x12m\n" +
-	"\x16streaming_audio_config\x18\x04 \x01(\v22.google.cloud.texttospeech.v1.StreamingAudioConfigB\x03\xe0A\x01R\x14streamingAudioConfig\x12l\n" +
-	"\x15custom_pronunciations\x18\x05 \x01(\v22.google.cloud.texttospeech.v1.CustomPronunciationsB\x03\xe0A\x01R\x14customPronunciations\x12r\n" +
-	"\x16advanced_voice_options\x18\a \x01(\v22.google.cloud.texttospeech.v1.AdvancedVoiceOptionsB\x03\xe0A\x01H\x00R\x14advancedVoiceOptions\x88\x01\x01B\x19\n" +
+	"\raudio_content\x18\x01 \x01(\fR\faudioContent\"\xce\x01\n" +
+	"\x14StreamingAudioConfig\x12X\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e2+.google.cloud.texttospeech.v1.AudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x120\n" +
+	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0fsampleRateHertz\x12*\n" +
+	"\rspeaking_rate\x18\x03 \x01(\x01B\x05\xe2A\x02\x04\x01R\fspeakingRate\"\xda\x03\n" +
+	"\x19StreamingSynthesizeConfig\x12N\n" +
+	"\x05voice\x18\x01 \x01(\v22.google.cloud.texttospeech.v1.VoiceSelectionParamsB\x04\xe2A\x01\x02R\x05voice\x12n\n" +
+	"\x16streaming_audio_config\x18\x04 \x01(\v22.google.cloud.texttospeech.v1.StreamingAudioConfigB\x04\xe2A\x01\x01R\x14streamingAudioConfig\x12m\n" +
+	"\x15custom_pronunciations\x18\x05 \x01(\v22.google.cloud.texttospeech.v1.CustomPronunciationsB\x04\xe2A\x01\x01R\x14customPronunciations\x12s\n" +
+	"\x16advanced_voice_options\x18\a \x01(\v22.google.cloud.texttospeech.v1.AdvancedVoiceOptionsB\x04\xe2A\x01\x01H\x00R\x14advancedVoiceOptions\x88\x01\x01B\x19\n" +
 	"\x17_advanced_voice_options\"\xe7\x01\n" +
 	"\x17StreamingSynthesisInput\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12\x18\n" +

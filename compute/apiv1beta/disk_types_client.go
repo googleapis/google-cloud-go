@@ -309,6 +309,11 @@ func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/diskTypes", req.GetProject())
 
 		params := url.Values{}
@@ -395,6 +400,13 @@ func (c *diskTypesRESTClient) Get(ctx context.Context, req *computepb.GetDiskTyp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetDiskType(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/diskTypes/%v", req.GetProject(), req.GetZone(), req.GetDiskType())
 
 	// Build HTTP headers from client and context metadata.
@@ -456,6 +468,12 @@ func (c *diskTypesRESTClient) List(ctx context.Context, req *computepb.ListDiskT
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/diskTypes", req.GetProject(), req.GetZone())

@@ -958,45 +958,45 @@ var File_google_cloud_billing_budgets_v1_budget_model_proto protoreflect.FileDes
 
 const file_google_cloud_billing_budgets_v1_budget_model_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/billing/budgets/v1/budget_model.proto\x12\x1fgoogle.cloud.billing.budgets.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x16google/type/date.proto\x1a\x17google/type/money.proto\"\xa1\x04\n" +
-	"\x06Budget\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12Q\n" +
-	"\rbudget_filter\x18\x03 \x01(\v2'.google.cloud.billing.budgets.v1.FilterB\x03\xe0A\x01R\fbudgetFilter\x12J\n" +
-	"\x06amount\x18\x04 \x01(\v2-.google.cloud.billing.budgets.v1.BudgetAmountB\x03\xe0A\x02R\x06amount\x12\\\n" +
-	"\x0fthreshold_rules\x18\x05 \x03(\v2..google.cloud.billing.budgets.v1.ThresholdRuleB\x03\xe0A\x01R\x0ethresholdRules\x12f\n" +
-	"\x12notifications_rule\x18\x06 \x01(\v22.google.cloud.billing.budgets.v1.NotificationsRuleB\x03\xe0A\x01R\x11notificationsRule\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x01R\x04etag:]\xeaAZ\n" +
+	"2google/cloud/billing/budgets/v1/budget_model.proto\x12\x1fgoogle.cloud.billing.budgets.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x16google/type/date.proto\x1a\x17google/type/money.proto\"\xa7\x04\n" +
+	"\x06Budget\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12R\n" +
+	"\rbudget_filter\x18\x03 \x01(\v2'.google.cloud.billing.budgets.v1.FilterB\x04\xe2A\x01\x01R\fbudgetFilter\x12K\n" +
+	"\x06amount\x18\x04 \x01(\v2-.google.cloud.billing.budgets.v1.BudgetAmountB\x04\xe2A\x01\x02R\x06amount\x12]\n" +
+	"\x0fthreshold_rules\x18\x05 \x03(\v2..google.cloud.billing.budgets.v1.ThresholdRuleB\x04\xe2A\x01\x01R\x0ethresholdRules\x12g\n" +
+	"\x12notifications_rule\x18\x06 \x01(\v22.google.cloud.billing.budgets.v1.NotificationsRuleB\x04\xe2A\x01\x01R\x11notificationsRule\x12\x18\n" +
+	"\x04etag\x18\a \x01(\tB\x04\xe2A\x01\x01R\x04etag:]\xeaAZ\n" +
 	"$billingbudgets.googleapis.com/Budget\x122billingAccounts/{billing_account}/budgets/{budget}\"\xc3\x01\n" +
 	"\fBudgetAmount\x12?\n" +
 	"\x10specified_amount\x18\x01 \x01(\v2\x12.google.type.MoneyH\x00R\x0fspecifiedAmount\x12a\n" +
 	"\x12last_period_amount\x18\x02 \x01(\v21.google.cloud.billing.budgets.v1.LastPeriodAmountH\x00R\x10lastPeriodAmountB\x0f\n" +
 	"\rbudget_amount\"\x12\n" +
-	"\x10LastPeriodAmount\"\xe6\x01\n" +
-	"\rThresholdRule\x120\n" +
-	"\x11threshold_percent\x18\x01 \x01(\x01B\x03\xe0A\x02R\x10thresholdPercent\x12Z\n" +
-	"\vspend_basis\x18\x02 \x01(\x0e24.google.cloud.billing.budgets.v1.ThresholdRule.BasisB\x03\xe0A\x01R\n" +
+	"\x10LastPeriodAmount\"\xe8\x01\n" +
+	"\rThresholdRule\x121\n" +
+	"\x11threshold_percent\x18\x01 \x01(\x01B\x04\xe2A\x01\x02R\x10thresholdPercent\x12[\n" +
+	"\vspend_basis\x18\x02 \x01(\x0e24.google.cloud.billing.budgets.v1.ThresholdRule.BasisB\x04\xe2A\x01\x01R\n" +
 	"spendBasis\"G\n" +
 	"\x05Basis\x12\x15\n" +
 	"\x11BASIS_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rCURRENT_SPEND\x10\x01\x12\x14\n" +
-	"\x10FORECASTED_SPEND\x10\x02\"\xcc\x02\n" +
-	"\x11NotificationsRule\x12&\n" +
-	"\fpubsub_topic\x18\x01 \x01(\tB\x03\xe0A\x01R\vpubsubTopic\x12*\n" +
-	"\x0eschema_version\x18\x02 \x01(\tB\x03\xe0A\x01R\rschemaVersion\x12M\n" +
-	" monitoring_notification_channels\x18\x03 \x03(\tB\x03\xe0A\x01R\x1emonitoringNotificationChannels\x12H\n" +
-	"\x1edisable_default_iam_recipients\x18\x04 \x01(\bB\x03\xe0A\x01R\x1bdisableDefaultIamRecipients\x12J\n" +
-	"\x1fenable_project_level_recipients\x18\x05 \x01(\bB\x03\xe0A\x01R\x1cenableProjectLevelRecipients\"\xcd\x06\n" +
-	"\x06Filter\x12\x1f\n" +
-	"\bprojects\x18\x01 \x03(\tB\x03\xe0A\x01R\bprojects\x122\n" +
-	"\x12resource_ancestors\x18\x02 \x03(\tB\x03\xe0A\x01R\x11resourceAncestors\x12&\n" +
-	"\fcredit_types\x18\a \x03(\tB\x03\xe0A\x01R\vcreditTypes\x12w\n" +
-	"\x16credit_types_treatment\x18\x04 \x01(\x0e2<.google.cloud.billing.budgets.v1.Filter.CreditTypesTreatmentB\x03\xe0A\x01R\x14creditTypesTreatment\x12\x1f\n" +
-	"\bservices\x18\x03 \x03(\tB\x03\xe0A\x01R\bservices\x12%\n" +
-	"\vsubaccounts\x18\x05 \x03(\tB\x03\xe0A\x01R\vsubaccounts\x12P\n" +
-	"\x06labels\x18\x06 \x03(\v23.google.cloud.billing.budgets.v1.Filter.LabelsEntryB\x03\xe0A\x01R\x06labels\x12_\n" +
-	"\x0fcalendar_period\x18\b \x01(\x0e2/.google.cloud.billing.budgets.v1.CalendarPeriodB\x03\xe0A\x01H\x00R\x0ecalendarPeriod\x12Y\n" +
-	"\rcustom_period\x18\t \x01(\v2-.google.cloud.billing.budgets.v1.CustomPeriodB\x03\xe0A\x01H\x00R\fcustomPeriod\x1aU\n" +
+	"\x10FORECASTED_SPEND\x10\x02\"\xd1\x02\n" +
+	"\x11NotificationsRule\x12'\n" +
+	"\fpubsub_topic\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vpubsubTopic\x12+\n" +
+	"\x0eschema_version\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rschemaVersion\x12N\n" +
+	" monitoring_notification_channels\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x1emonitoringNotificationChannels\x12I\n" +
+	"\x1edisable_default_iam_recipients\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x1bdisableDefaultIamRecipients\x12K\n" +
+	"\x1fenable_project_level_recipients\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x1cenableProjectLevelRecipients\"\xd6\x06\n" +
+	"\x06Filter\x12 \n" +
+	"\bprojects\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\bprojects\x123\n" +
+	"\x12resource_ancestors\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x11resourceAncestors\x12'\n" +
+	"\fcredit_types\x18\a \x03(\tB\x04\xe2A\x01\x01R\vcreditTypes\x12x\n" +
+	"\x16credit_types_treatment\x18\x04 \x01(\x0e2<.google.cloud.billing.budgets.v1.Filter.CreditTypesTreatmentB\x04\xe2A\x01\x01R\x14creditTypesTreatment\x12 \n" +
+	"\bservices\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\bservices\x12&\n" +
+	"\vsubaccounts\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\vsubaccounts\x12Q\n" +
+	"\x06labels\x18\x06 \x03(\v23.google.cloud.billing.budgets.v1.Filter.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12`\n" +
+	"\x0fcalendar_period\x18\b \x01(\x0e2/.google.cloud.billing.budgets.v1.CalendarPeriodB\x04\xe2A\x01\x01H\x00R\x0ecalendarPeriod\x12Z\n" +
+	"\rcustom_period\x18\t \x01(\v2-.google.cloud.billing.budgets.v1.CustomPeriodB\x04\xe2A\x01\x01H\x00R\fcustomPeriod\x1aU\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x120\n" +
 	"\x05value\x18\x02 \x01(\v2\x1a.google.protobuf.ListValueR\x05value:\x028\x01\"\x8f\x01\n" +
@@ -1005,11 +1005,11 @@ const file_google_cloud_billing_budgets_v1_budget_model_proto_rawDesc = "" +
 	"\x13INCLUDE_ALL_CREDITS\x10\x01\x12\x17\n" +
 	"\x13EXCLUDE_ALL_CREDITS\x10\x02\x12\x1d\n" +
 	"\x19INCLUDE_SPECIFIED_CREDITS\x10\x03B\x0e\n" +
-	"\fusage_period\"x\n" +
-	"\fCustomPeriod\x125\n" +
+	"\fusage_period\"z\n" +
+	"\fCustomPeriod\x126\n" +
 	"\n" +
-	"start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\tstartDate\x121\n" +
-	"\bend_date\x18\x02 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\aendDate*S\n" +
+	"start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\tstartDate\x122\n" +
+	"\bend_date\x18\x02 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\aendDate*S\n" +
 	"\x0eCalendarPeriod\x12\x1f\n" +
 	"\x1bCALENDAR_PERIOD_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05MONTH\x10\x01\x12\v\n" +

@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
-	"sort"
+	"slices"
 	"unicode/utf8"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
@@ -402,7 +402,7 @@ func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []Fie
 		var mask *pb.DocumentMask
 		if updatePaths != nil {
 			sfps := toServiceFieldPaths(updatePaths)
-			sort.Strings(sfps) // TODO(jba): make tests pass without this
+			slices.Sort(sfps) // TODO(jba): make tests pass without this
 			mask = &pb.DocumentMask{FieldPaths: sfps}
 		}
 		w.UpdateMask = mask

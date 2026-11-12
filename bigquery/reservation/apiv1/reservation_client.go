@@ -2121,6 +2121,11 @@ func (c *restClient) CreateReservation(ctx context.Context, req *reservationpb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/reservations", req.GetParent())
 
 	params := url.Values{}
@@ -2191,6 +2196,11 @@ func (c *restClient) ListReservations(ctx context.Context, req *reservationpb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/reservations", req.GetParent())
 
 		params := url.Values{}
@@ -2256,6 +2266,11 @@ func (c *restClient) GetReservation(ctx context.Context, req *reservationpb.GetR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2312,6 +2327,11 @@ func (c *restClient) DeleteReservation(ctx context.Context, req *reservationpb.D
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2356,6 +2376,11 @@ func (c *restClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetReservation().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetReservation().GetName())
@@ -2429,6 +2454,11 @@ func (c *restClient) FailoverReservation(ctx context.Context, req *reservationpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:failoverReservation", req.GetName())
 
 	params := url.Values{}
@@ -2488,6 +2518,11 @@ func (c *restClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/capacityCommitments", req.GetParent())
@@ -2563,6 +2598,11 @@ func (c *restClient) ListCapacityCommitments(ctx context.Context, req *reservati
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/capacityCommitments", req.GetParent())
 
 		params := url.Values{}
@@ -2628,6 +2668,11 @@ func (c *restClient) GetCapacityCommitment(ctx context.Context, req *reservation
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2684,6 +2729,11 @@ func (c *restClient) DeleteCapacityCommitment(ctx context.Context, req *reservat
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2737,6 +2787,11 @@ func (c *restClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCapacityCommitment().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCapacityCommitment().GetName())
@@ -2813,6 +2868,11 @@ func (c *restClient) SplitCapacityCommitment(ctx context.Context, req *reservati
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:split", req.GetName())
 
 	params := url.Values{}
@@ -2877,6 +2937,11 @@ func (c *restClient) MergeCapacityCommitments(ctx context.Context, req *reservat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/capacityCommitments:merge", req.GetParent())
@@ -2975,6 +3040,11 @@ func (c *restClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/assignments", req.GetParent())
 
 	params := url.Values{}
@@ -3067,6 +3137,11 @@ func (c *restClient) ListAssignments(ctx context.Context, req *reservationpb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/assignments", req.GetParent())
 
 		params := url.Values{}
@@ -3148,6 +3223,11 @@ func (c *restClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3226,6 +3306,11 @@ func (c *restClient) SearchAssignments(ctx context.Context, req *reservationpb.S
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchAssignments", req.GetParent())
@@ -3332,6 +3417,11 @@ func (c *restClient) SearchAllAssignments(ctx context.Context, req *reservationp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchAllAssignments", req.GetParent())
 
 		params := url.Values{}
@@ -3410,6 +3500,11 @@ func (c *restClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
 
 	params := url.Values{}
@@ -3473,6 +3568,11 @@ func (c *restClient) UpdateAssignment(ctx context.Context, req *reservationpb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAssignment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAssignment().GetName())
 
 	params := url.Values{}
@@ -3532,6 +3632,11 @@ func (c *restClient) UpdateAssignment(ctx context.Context, req *reservationpb.Up
 func (c *restClient) GetBiReservation(ctx context.Context, req *reservationpb.GetBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3600,6 +3705,11 @@ func (c *restClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBiReservation().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBiReservation().GetName())
@@ -3680,6 +3790,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3753,6 +3868,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3820,6 +3940,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -3881,6 +4006,11 @@ func (c *restClient) CreateReservationGroup(ctx context.Context, req *reservatio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/reservationGroups", req.GetParent())
 
 	params := url.Values{}
@@ -3934,6 +4064,11 @@ func (c *restClient) CreateReservationGroup(ctx context.Context, req *reservatio
 func (c *restClient) GetReservationGroup(ctx context.Context, req *reservationpb.GetReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3992,6 +4127,11 @@ func (c *restClient) DeleteReservationGroup(ctx context.Context, req *reservatio
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4042,6 +4182,11 @@ func (c *restClient) ListReservationGroups(ctx context.Context, req *reservation
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/reservationGroups", req.GetParent())
@@ -4114,6 +4259,11 @@ func (c *restClient) UpdateReservationGroup(ctx context.Context, req *reservatio
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetReservationGroup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetReservationGroup().GetName())

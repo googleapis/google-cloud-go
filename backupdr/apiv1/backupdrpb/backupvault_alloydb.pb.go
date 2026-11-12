@@ -213,18 +213,18 @@ var File_google_cloud_backupdr_v1_backupvault_alloydb_proto protoreflect.FileDes
 
 const file_google_cloud_backupdr_v1_backupvault_alloydb_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/backupdr/v1/backupvault_alloydb.proto\x12\x18google.cloud.backupdr.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\"`\n" +
-	"\"AlloyDBClusterDataSourceProperties\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ealloydb.googleapis.com/ClusterR\x04name\"\xcf\x01\n" +
+	"2google/cloud/backupdr/v1/backupvault_alloydb.proto\x12\x18google.cloud.backupdr.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\"a\n" +
+	"\"AlloyDBClusterDataSourceProperties\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ealloydb.googleapis.com/ClusterR\x04name\"\xd2\x01\n" +
 	"\x1eAlloyDbClusterBackupProperties\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tH\x00R\vdescription\x88\x01\x01\x12&\n" +
-	"\fstored_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\vstoredBytes\x12\x1e\n" +
-	"\bchain_id\x18\x03 \x01(\tB\x03\xe0A\x03R\achainId\x12.\n" +
-	"\x10database_version\x18\x04 \x01(\tB\x03\xe0A\x03R\x0fdatabaseVersionB\x0e\n" +
-	"\f_description\"]\n" +
-	"-AlloyDBClusterBackupPlanAssociationProperties\x12,\n" +
-	"\vcluster_uid\x18\x01 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\n" +
+	"\vdescription\x18\x01 \x01(\tH\x00R\vdescription\x88\x01\x01\x12'\n" +
+	"\fstored_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\vstoredBytes\x12\x1f\n" +
+	"\bchain_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\achainId\x12/\n" +
+	"\x10database_version\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0fdatabaseVersionB\x0e\n" +
+	"\f_description\"^\n" +
+	"-AlloyDBClusterBackupPlanAssociationProperties\x12-\n" +
+	"\vcluster_uid\x18\x01 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\n" +
 	"clusterUidB\xa6\x02\xeaA\\\n" +
 	"\x1ealloydb.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}\n" +
 	"\x1ccom.google.cloud.backupdr.v1B\x17BackupvaultAlloyDBProtoP\x01Z8cloud.google.com/go/backupdr/apiv1/backupdrpb;backupdrpb\xaa\x02\x18Google.Cloud.BackupDR.V1\xca\x02\x18Google\\Cloud\\BackupDR\\V1\xea\x02\x1bGoogle::Cloud::BackupDR::V1b\x06proto3"

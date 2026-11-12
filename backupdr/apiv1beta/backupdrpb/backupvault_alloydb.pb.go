@@ -348,29 +348,29 @@ var File_google_cloud_backupdr_v1beta_backupvault_alloydb_proto protoreflect.Fil
 
 const file_google_cloud_backupdr_v1beta_backupvault_alloydb_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/backupdr/v1beta/backupvault_alloydb.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x01\n" +
-	"\"AlloyDBClusterDataSourceProperties\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ealloydb.googleapis.com/ClusterR\x04name\x12W\n" +
-	"\fpitr_windows\x18\x02 \x03(\v2/.google.cloud.backupdr.v1beta.AlloyDbPitrWindowB\x03\xe0A\x03R\vpitrWindows\x12$\n" +
-	"\vcluster_uid\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
-	"clusterUid\"i\n" +
-	"+AlloyDBClusterDataSourceReferenceProperties\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ealloydb.googleapis.com/ClusterR\x04name\"\xc2\x01\n" +
-	"\x11AlloyDbPitrWindow\x12>\n" +
+	"6google/cloud/backupdr/v1beta/backupvault_alloydb.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe2\x01\n" +
+	"\"AlloyDBClusterDataSourceProperties\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ealloydb.googleapis.com/ClusterR\x04name\x12X\n" +
+	"\fpitr_windows\x18\x02 \x03(\v2/.google.cloud.backupdr.v1beta.AlloyDbPitrWindowB\x04\xe2A\x01\x03R\vpitrWindows\x12%\n" +
+	"\vcluster_uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"clusterUid\"j\n" +
+	"+AlloyDBClusterDataSourceReferenceProperties\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ealloydb.googleapis.com/ClusterR\x04name\"\xc5\x01\n" +
+	"\x11AlloyDbPitrWindow\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x121\n" +
-	"\x12log_retention_days\x18\x03 \x01(\x03B\x03\xe0A\x03R\x10logRetentionDays\"\xcf\x01\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x122\n" +
+	"\x12log_retention_days\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x10logRetentionDays\"\xd2\x01\n" +
 	"\x1eAlloyDbClusterBackupProperties\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tH\x00R\vdescription\x88\x01\x01\x12&\n" +
-	"\fstored_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\vstoredBytes\x12\x1e\n" +
-	"\bchain_id\x18\x03 \x01(\tB\x03\xe0A\x03R\achainId\x12.\n" +
-	"\x10database_version\x18\x04 \x01(\tB\x03\xe0A\x03R\x0fdatabaseVersionB\x0e\n" +
-	"\f_description\"]\n" +
-	"-AlloyDBClusterBackupPlanAssociationProperties\x12,\n" +
-	"\vcluster_uid\x18\x01 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\n" +
+	"\vdescription\x18\x01 \x01(\tH\x00R\vdescription\x88\x01\x01\x12'\n" +
+	"\fstored_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\vstoredBytes\x12\x1f\n" +
+	"\bchain_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\achainId\x12/\n" +
+	"\x10database_version\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0fdatabaseVersionB\x0e\n" +
+	"\f_description\"^\n" +
+	"-AlloyDBClusterBackupPlanAssociationProperties\x12-\n" +
+	"\vcluster_uid\x18\x01 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\n" +
 	"clusterUidB\xcd\x02\xeaAo\n" +
 	"\x1ealloydb.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}*\bclusters2\acluster\n" +
 	" com.google.cloud.backupdr.v1betaB\x17BackupvaultAlloyDBProtoP\x01Z<cloud.google.com/go/backupdr/apiv1beta/backupdrpb;backupdrpb\xaa\x02\x1cGoogle.Cloud.BackupDR.V1Beta\xca\x02\x1cGoogle\\Cloud\\BackupDR\\V1beta\xea\x02\x1fGoogle::Cloud::BackupDR::V1betab\x06proto3"

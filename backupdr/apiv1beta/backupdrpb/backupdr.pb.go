@@ -1313,42 +1313,42 @@ var File_google_cloud_backupdr_v1beta_backupdr_proto protoreflect.FileDescriptor
 
 const file_google_cloud_backupdr_v1beta_backupdr_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/backupdr/v1beta/backupdr.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/backupdr/v1beta/appliedautoprotectionpolicy.proto\x1a7google/cloud/backupdr/v1beta/autoprotectionpolicy.proto\x1a>google/cloud/backupdr/v1beta/autoprotectionpolicybinding.proto\x1a-google/cloud/backupdr/v1beta/backupplan.proto\x1a8google/cloud/backupdr/v1beta/backupplanassociation.proto\x1a.google/cloud/backupdr/v1beta/backupvault.proto\x1a7google/cloud/backupdr/v1beta/backupvault_cloudsql.proto\x1a:google/cloud/backupdr/v1beta/bindingmatchingresource.proto\x1a6google/cloud/backupdr/v1beta/datasourcereference.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xd8\x01\n" +
-	"\rNetworkConfig\x12\x1d\n" +
-	"\anetwork\x18\x01 \x01(\tB\x03\xe0A\x01R\anetwork\x12_\n" +
-	"\fpeering_mode\x18\x02 \x01(\x0e27.google.cloud.backupdr.v1beta.NetworkConfig.PeeringModeB\x03\xe0A\x01R\vpeeringMode\"G\n" +
+	"+google/cloud/backupdr/v1beta/backupdr.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/backupdr/v1beta/appliedautoprotectionpolicy.proto\x1a7google/cloud/backupdr/v1beta/autoprotectionpolicy.proto\x1a>google/cloud/backupdr/v1beta/autoprotectionpolicybinding.proto\x1a-google/cloud/backupdr/v1beta/backupplan.proto\x1a8google/cloud/backupdr/v1beta/backupplanassociation.proto\x1a.google/cloud/backupdr/v1beta/backupvault.proto\x1a7google/cloud/backupdr/v1beta/backupvault_cloudsql.proto\x1a:google/cloud/backupdr/v1beta/bindingmatchingresource.proto\x1a6google/cloud/backupdr/v1beta/datasourcereference.proto\x1a3google/cloud/backupdr/v1beta/restore_template.proto\x1a=google/cloud/backupdr/v1beta/restore_template_execution.proto\x1a<google/cloud/backupdr/v1beta/restore_verification_plan.proto\x1aHgoogle/cloud/backupdr/v1beta/restore_verification_plan_association.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xda\x01\n" +
+	"\rNetworkConfig\x12\x1e\n" +
+	"\anetwork\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\anetwork\x12`\n" +
+	"\fpeering_mode\x18\x02 \x01(\x0e27.google.cloud.backupdr.v1beta.NetworkConfig.PeeringModeB\x04\xe2A\x01\x01R\vpeeringMode\"G\n" +
 	"\vPeeringMode\x12\x1c\n" +
 	"\x18PEERING_MODE_UNSPECIFIED\x10\x00\x12\x1a\n" +
-	"\x16PRIVATE_SERVICE_ACCESS\x10\x01\"B\n" +
-	"\rManagementURI\x12\x1a\n" +
-	"\x06web_ui\x18\x01 \x01(\tB\x03\xe0A\x03R\x05webUi\x12\x15\n" +
-	"\x03api\x18\x02 \x01(\tB\x03\xe0A\x03R\x03api\"\xa9\x01\n" +
-	"#WorkforceIdentityBasedManagementURI\x12@\n" +
-	"\x1afirst_party_management_uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x17firstPartyManagementUri\x12@\n" +
-	"\x1athird_party_management_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\x17thirdPartyManagementUri\"\xb0\x01\n" +
-	"$WorkforceIdentityBasedOAuth2ClientID\x12C\n" +
-	"\x1cfirst_party_oauth2_client_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x18firstPartyOauth2ClientId\x12C\n" +
-	"\x1cthird_party_oauth2_client_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x18thirdPartyOauth2ClientId\"\xdd\f\n" +
-	"\x10ManagementServer\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12W\n" +
-	"\x06labels\x18\x04 \x03(\v2:.google.cloud.backupdr.v1beta.ManagementServer.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12T\n" +
-	"\x04type\x18\x0e \x01(\x0e2;.google.cloud.backupdr.v1beta.ManagementServer.InstanceTypeB\x03\xe0A\x01R\x04type\x12W\n" +
-	"\x0emanagement_uri\x18\v \x01(\v2+.google.cloud.backupdr.v1beta.ManagementURIB\x03\xe0A\x03R\rmanagementUri\x12\x9c\x01\n" +
-	"'workforce_identity_based_management_uri\x18\x10 \x01(\v2A.google.cloud.backupdr.v1beta.WorkforceIdentityBasedManagementURIB\x03\xe0A\x03R#workforceIdentityBasedManagementUri\x12W\n" +
-	"\x05state\x18\a \x01(\x0e2<.google.cloud.backupdr.v1beta.ManagementServer.InstanceStateB\x03\xe0A\x03R\x05state\x12L\n" +
-	"\bnetworks\x18\b \x03(\v2+.google.cloud.backupdr.v1beta.NetworkConfigB\x03\xe0A\x01R\bnetworks\x12\x17\n" +
-	"\x04etag\x18\r \x01(\tB\x03\xe0A\x01R\x04etag\x12-\n" +
-	"\x10oauth2_client_id\x18\x0f \x01(\tB\x03\xe0A\x03R\x0eoauth2ClientId\x12\xa0\x01\n" +
-	")workforce_identity_based_oauth2_client_id\x18\x11 \x01(\v2B.google.cloud.backupdr.v1beta.WorkforceIdentityBasedOAuth2ClientIDB\x03\xe0A\x03R$workforceIdentityBasedOauth2ClientId\x12%\n" +
-	"\fba_proxy_uri\x18\x12 \x03(\tB\x03\xe0A\x03R\n" +
-	"baProxyUri\x12D\n" +
-	"\rsatisfies_pzs\x18\x13 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\x14 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x1a9\n" +
+	"\x16PRIVATE_SERVICE_ACCESS\x10\x01\"D\n" +
+	"\rManagementURI\x12\x1b\n" +
+	"\x06web_ui\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05webUi\x12\x16\n" +
+	"\x03api\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03api\"\xab\x01\n" +
+	"#WorkforceIdentityBasedManagementURI\x12A\n" +
+	"\x1afirst_party_management_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x17firstPartyManagementUri\x12A\n" +
+	"\x1athird_party_management_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x17thirdPartyManagementUri\"\xb2\x01\n" +
+	"$WorkforceIdentityBasedOAuth2ClientID\x12D\n" +
+	"\x1cfirst_party_oauth2_client_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x18firstPartyOauth2ClientId\x12D\n" +
+	"\x1cthird_party_oauth2_client_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x18thirdPartyOauth2ClientId\"\xeb\f\n" +
+	"\x10ManagementServer\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12X\n" +
+	"\x06labels\x18\x04 \x03(\v2:.google.cloud.backupdr.v1beta.ManagementServer.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12U\n" +
+	"\x04type\x18\x0e \x01(\x0e2;.google.cloud.backupdr.v1beta.ManagementServer.InstanceTypeB\x04\xe2A\x01\x01R\x04type\x12X\n" +
+	"\x0emanagement_uri\x18\v \x01(\v2+.google.cloud.backupdr.v1beta.ManagementURIB\x04\xe2A\x01\x03R\rmanagementUri\x12\x9d\x01\n" +
+	"'workforce_identity_based_management_uri\x18\x10 \x01(\v2A.google.cloud.backupdr.v1beta.WorkforceIdentityBasedManagementURIB\x04\xe2A\x01\x03R#workforceIdentityBasedManagementUri\x12X\n" +
+	"\x05state\x18\a \x01(\x0e2<.google.cloud.backupdr.v1beta.ManagementServer.InstanceStateB\x04\xe2A\x01\x03R\x05state\x12M\n" +
+	"\bnetworks\x18\b \x03(\v2+.google.cloud.backupdr.v1beta.NetworkConfigB\x04\xe2A\x01\x01R\bnetworks\x12\x18\n" +
+	"\x04etag\x18\r \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12.\n" +
+	"\x10oauth2_client_id\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x0eoauth2ClientId\x12\xa1\x01\n" +
+	")workforce_identity_based_oauth2_client_id\x18\x11 \x01(\v2B.google.cloud.backupdr.v1beta.WorkforceIdentityBasedOAuth2ClientIDB\x04\xe2A\x01\x03R$workforceIdentityBasedOauth2ClientId\x12&\n" +
+	"\fba_proxy_uri\x18\x12 \x03(\tB\x04\xe2A\x01\x03R\n" +
+	"baProxyUri\x12E\n" +
+	"\rsatisfies_pzs\x18\x13 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\x14 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"A\n" +
@@ -1364,67 +1364,95 @@ const file_google_cloud_backupdr_v1beta_backupdr_proto_rawDesc = "" +
 	"\tREPAIRING\x10\x05\x12\x0f\n" +
 	"\vMAINTENANCE\x10\x06\x12\t\n" +
 	"\x05ERROR\x10\a:\xa1\x01\xeaA\x9d\x01\n" +
-	"(backupdr.googleapis.com/ManagementServer\x12Lprojects/{project}/locations/{location}/managementServers/{managementserver}*\x11managementServers2\x10managementServer\"\x8d\x02\n" +
-	"\x1cListManagementServersRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(backupdr.googleapis.com/ManagementServerR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"(backupdr.googleapis.com/ManagementServer\x12Lprojects/{project}/locations/{location}/managementServers/{managementserver}*\x11managementServers2\x10managementServer\"\x92\x02\n" +
+	"\x1cListManagementServersRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(backupdr.googleapis.com/ManagementServerR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12 \n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\x06filter\x88\x01\x01\x12#\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01H\x01R\aorderBy\x88\x01\x01B\t\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12!\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\x06filter\x88\x01\x01\x12$\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x01R\aorderBy\x88\x01\x01B\t\n" +
 	"\a_filterB\v\n" +
 	"\t_order_by\"\xc8\x01\n" +
 	"\x1dListManagementServersResponse\x12]\n" +
 	"\x12management_servers\x18\x01 \x03(\v2..google.cloud.backupdr.v1beta.ManagementServerR\x11managementServers\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"b\n" +
-	"\x1aGetManagementServerRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(backupdr.googleapis.com/ManagementServerR\x04name\"\xa6\x02\n" +
-	"\x1dCreateManagementServerRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(backupdr.googleapis.com/ManagementServerR\x06parent\x125\n" +
-	"\x14management_server_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12managementServerId\x12`\n" +
-	"\x11management_server\x18\x03 \x01(\v2..google.cloud.backupdr.v1beta.ManagementServerB\x03\xe0A\x02R\x10managementServer\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"c\n" +
+	"\x1aGetManagementServerRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(backupdr.googleapis.com/ManagementServerR\x04name\"\xaa\x02\n" +
+	"\x1dCreateManagementServerRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(backupdr.googleapis.com/ManagementServerR\x06parent\x126\n" +
+	"\x14management_server_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12managementServerId\x12a\n" +
+	"\x11management_server\x18\x03 \x01(\v2..google.cloud.backupdr.v1beta.ManagementServerB\x04\xe2A\x01\x02R\x10managementServer\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x89\x01\n" +
-	"\x1dDeleteManagementServerRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(backupdr.googleapis.com/ManagementServerR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8b\x01\n" +
+	"\x1dDeleteManagementServerRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(backupdr.googleapis.com/ManagementServerR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xa7\x03\n" +
-	"\x18InitializeServiceRequest\x12\xa1\x01\n" +
-	"(cloud_sql_instance_initialization_config\x18\x04 \x01(\v2B.google.cloud.backupdr.v1beta.CloudSqlInstanceInitializationConfigB\x03\xe0A\x01H\x00R$cloudSqlInstanceInitializationConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12(\n" +
-	"\rresource_type\x18\x02 \x01(\tB\x03\xe0A\x02R\fresourceType\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xad\x03\n" +
+	"\x18InitializeServiceRequest\x12\xa2\x01\n" +
+	"(cloud_sql_instance_initialization_config\x18\x04 \x01(\v2B.google.cloud.backupdr.v1beta.CloudSqlInstanceInitializationConfigB\x04\xe2A\x01\x01H\x00R$cloudSqlInstanceInitializationConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12)\n" +
+	"\rresource_type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fresourceType\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x125\n" +
-	"\x14backup_plan_location\x18\x06 \x01(\tB\x03\xe0A\x01R\x12backupPlanLocation\x12(\n" +
-	"\rvalidate_only\x18\a \x01(\bB\x03\xe0A\x01R\fvalidateOnlyB\x17\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x126\n" +
+	"\x14backup_plan_location\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x12backupPlanLocation\x12)\n" +
+	"\rvalidate_only\x18\a \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnlyB\x17\n" +
 	"\x15initialization_config\"q\n" +
 	"\x19InitializeServiceResponse\x12*\n" +
 	"\x11backup_vault_name\x18\x01 \x01(\tR\x0fbackupVaultName\x12(\n" +
-	"\x10backup_plan_name\x18\x02 \x01(\tR\x0ebackupPlanName\"\x8b\x04\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\x12q\n" +
-	"\x0fadditional_info\x18\b \x03(\v2C.google.cloud.backupdr.v1beta.OperationMetadata.AdditionalInfoEntryB\x03\xe0A\x03R\x0eadditionalInfo\x1aA\n" +
+	"\x10backup_plan_name\x18\x02 \x01(\tR\x0ebackupPlanName\"\x93\x04\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\x12r\n" +
+	"\x0fadditional_info\x18\b \x03(\v2C.google.cloud.backupdr.v1beta.OperationMetadata.AdditionalInfoEntryB\x04\xe2A\x01\x03R\x0eadditionalInfo\x1aA\n" +
 	"\x13AdditionalInfoEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x012\xc9a\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x012\xa3\x88\x01\n" +
 	"\bBackupDR\x12\xdc\x01\n" +
 	"\x15ListManagementServers\x12:.google.cloud.backupdr.v1beta.ListManagementServersRequest\x1a;.google.cloud.backupdr.v1beta.ListManagementServersResponse\"J\xdaA\x06parent\x82\xd3\xe4\x93\x02;\x129/v1beta/{parent=projects/*/locations/*}/managementServers\x12\xc9\x01\n" +
 	"\x13GetManagementServer\x128.google.cloud.backupdr.v1beta.GetManagementServerRequest\x1a..google.cloud.backupdr.v1beta.ManagementServer\"H\xdaA\x04name\x82\xd3\xe4\x93\x02;\x129/v1beta/{name=projects/*/locations/*/managementServers/*}\x12\xa3\x02\n" +
 	"\x16CreateManagementServer\x12;.google.cloud.backupdr.v1beta.CreateManagementServerRequest\x1a\x1d.google.longrunning.Operation\"\xac\x01\xcaA%\n" +
 	"\x10ManagementServer\x12\x11OperationMetadata\xdaA-parent,management_server,management_server_id\x82\xd3\xe4\x93\x02N:\x11management_server\"9/v1beta/{parent=projects/*/locations/*}/managementServers\x12\xeb\x01\n" +
 	"\x16DeleteManagementServer\x12;.google.cloud.backupdr.v1beta.DeleteManagementServerRequest\x1a\x1d.google.longrunning.Operation\"u\xcaA*\n" +
-	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02;*9/v1beta/{name=projects/*/locations/*/managementServers/*}\x12\x80\x02\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02;*9/v1beta/{name=projects/*/locations/*/managementServers/*}\x12\x9c\x02\n" +
+	"\x15CreateRestoreTemplate\x12:.google.cloud.backupdr.v1beta.CreateRestoreTemplateRequest\x1a\x1d.google.longrunning.Operation\"\xa7\x01\xcaA$\n" +
+	"\x0fRestoreTemplate\x12\x11OperationMetadata\xdaA+parent,restore_template,restore_template_id\x82\xd3\xe4\x93\x02L:\x10restore_template\"8/v1beta/{parent=projects/*/locations/*}/restoreTemplates\x12\xc5\x01\n" +
+	"\x12GetRestoreTemplate\x127.google.cloud.backupdr.v1beta.GetRestoreTemplateRequest\x1a-.google.cloud.backupdr.v1beta.RestoreTemplate\"G\xdaA\x04name\x82\xd3\xe4\x93\x02:\x128/v1beta/{name=projects/*/locations/*/restoreTemplates/*}\x12\xd8\x01\n" +
+	"\x14ListRestoreTemplates\x129.google.cloud.backupdr.v1beta.ListRestoreTemplatesRequest\x1a:.google.cloud.backupdr.v1beta.ListRestoreTemplatesResponse\"I\xdaA\x06parent\x82\xd3\xe4\x93\x02:\x128/v1beta/{parent=projects/*/locations/*}/restoreTemplates\x12\x9e\x02\n" +
+	"\x15UpdateRestoreTemplate\x12:.google.cloud.backupdr.v1beta.UpdateRestoreTemplateRequest\x1a\x1d.google.longrunning.Operation\"\xa9\x01\xcaA$\n" +
+	"\x0fRestoreTemplate\x12\x11OperationMetadata\xdaA\x1crestore_template,update_mask\x82\xd3\xe4\x93\x02]:\x10restore_template2I/v1beta/{restore_template.name=projects/*/locations/*/restoreTemplates/*}\x12\xe8\x01\n" +
+	"\x15DeleteRestoreTemplate\x12:.google.cloud.backupdr.v1beta.DeleteRestoreTemplateRequest\x1a\x1d.google.longrunning.Operation\"t\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02:*8/v1beta/{name=projects/*/locations/*/restoreTemplates/*}\x12\xef\x01\n" +
+	"\x12RunRestoreTemplate\x127.google.cloud.backupdr.v1beta.RunRestoreTemplateRequest\x1a\x1d.google.longrunning.Operation\"\x80\x01\xcaA/\n" +
+	"\x1aRunRestoreTemplateResponse\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02A:\x01*\"</v1beta/{name=projects/*/locations/*/restoreTemplates/*}:run\x12\xed\x01\n" +
+	"\x1bGetRestoreTemplateExecution\x12@.google.cloud.backupdr.v1beta.GetRestoreTemplateExecutionRequest\x1a6.google.cloud.backupdr.v1beta.RestoreTemplateExecution\"T\xdaA\x04name\x82\xd3\xe4\x93\x02G\x12E/v1beta/{name=projects/*/locations/*/restoreTemplates/*/executions/*}\x12\x80\x02\n" +
+	"\x1dListRestoreTemplateExecutions\x12B.google.cloud.backupdr.v1beta.ListRestoreTemplateExecutionsRequest\x1aC.google.cloud.backupdr.v1beta.ListRestoreTemplateExecutionsResponse\"V\xdaA\x06parent\x82\xd3\xe4\x93\x02G\x12E/v1beta/{parent=projects/*/locations/*/restoreTemplates/*}/executions\x12\x92\x02\n" +
+	"\x15TriggerRestoreCleanup\x12:.google.cloud.backupdr.v1beta.TriggerRestoreCleanupRequest\x1a\x1d.google.longrunning.Operation\"\x9d\x01\xcaA-\n" +
+	"\x18RestoreTemplateExecution\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02`:\x01*\"[/v1beta/{name=projects/*/locations/*/restoreTemplates/*/executions/*}:triggerRestoreCleanup\x12\xd7\x02\n" +
+	"\x1dCreateRestoreVerificationPlan\x12B.google.cloud.backupdr.v1beta.CreateRestoreVerificationPlanRequest\x1a\x1d.google.longrunning.Operation\"\xd2\x01\xcaA,\n" +
+	"\x17RestoreVerificationPlan\x12\x11OperationMetadata\xdaA=parent,restore_verification_plan,restore_verification_plan_id\x82\xd3\xe4\x93\x02]:\x19restore_verification_plan\"@/v1beta/{parent=projects/*/locations/*}/restoreVerificationPlans\x12\xab\x03\n" +
+	"(CreateRestoreVerificationPlanAssociation\x12M.google.cloud.backupdr.v1beta.CreateRestoreVerificationPlanAssociationRequest\x1a\x1d.google.longrunning.Operation\"\x90\x02\xcaA7\n" +
+	"\"RestoreVerificationPlanAssociation\x12\x11OperationMetadata\xdaAUparent,restore_verification_plan_association,restore_verification_plan_association_id\x82\xd3\xe4\x93\x02x:%restore_verification_plan_association\"O/v1beta/{parent=projects/*/locations/*/restoreVerificationPlans/*}/associations\x12\x95\x02\n" +
+	"%GetRestoreVerificationPlanAssociation\x12J.google.cloud.backupdr.v1beta.GetRestoreVerificationPlanAssociationRequest\x1a@.google.cloud.backupdr.v1beta.RestoreVerificationPlanAssociation\"^\xdaA\x04name\x82\xd3\xe4\x93\x02Q\x12O/v1beta/{name=projects/*/locations/*/restoreVerificationPlans/*/associations/*}\x12\xa8\x02\n" +
+	"'ListRestoreVerificationPlanAssociations\x12L.google.cloud.backupdr.v1beta.ListRestoreVerificationPlanAssociationsRequest\x1aM.google.cloud.backupdr.v1beta.ListRestoreVerificationPlanAssociationsResponse\"`\xdaA\x06parent\x82\xd3\xe4\x93\x02Q\x12O/v1beta/{parent=projects/*/locations/*/restoreVerificationPlans/*}/associations\x12\xa6\x02\n" +
+	"(DeleteRestoreVerificationPlanAssociation\x12M.google.cloud.backupdr.v1beta.DeleteRestoreVerificationPlanAssociationRequest\x1a\x1d.google.longrunning.Operation\"\x8b\x01\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02Q*O/v1beta/{name=projects/*/locations/*/restoreVerificationPlans/*/associations/*}\x12\xb5\x02\n" +
+	"\x1aTriggerRestoreVerification\x12?.google.cloud.backupdr.v1beta.TriggerRestoreVerificationRequest\x1a\x1d.google.longrunning.Operation\"\xb6\x01\xcaA7\n" +
+	"\"TriggerRestoreVerificationResponse\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02o:\x01*\"j/v1beta/{name=projects/*/locations/*/restoreVerificationPlans/*/associations/*}:triggerRestoreVerification\x12\xe5\x01\n" +
+	"\x1aGetRestoreVerificationPlan\x12?.google.cloud.backupdr.v1beta.GetRestoreVerificationPlanRequest\x1a5.google.cloud.backupdr.v1beta.RestoreVerificationPlan\"O\xdaA\x04name\x82\xd3\xe4\x93\x02B\x12@/v1beta/{name=projects/*/locations/*/restoreVerificationPlans/*}\x12\xf8\x01\n" +
+	"\x1cListRestoreVerificationPlans\x12A.google.cloud.backupdr.v1beta.ListRestoreVerificationPlansRequest\x1aB.google.cloud.backupdr.v1beta.ListRestoreVerificationPlansResponse\"Q\xdaA\x06parent\x82\xd3\xe4\x93\x02B\x12@/v1beta/{parent=projects/*/locations/*}/restoreVerificationPlans\x12\x80\x02\n" +
+	"\x1dDeleteRestoreVerificationPlan\x12B.google.cloud.backupdr.v1beta.DeleteRestoreVerificationPlanRequest\x1a\x1d.google.longrunning.Operation\"|\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02B*@/v1beta/{name=projects/*/locations/*/restoreVerificationPlans/*}\x12\x80\x02\n" +
 	"\x11CreateBackupVault\x126.google.cloud.backupdr.v1beta.CreateBackupVaultRequest\x1a\x1d.google.longrunning.Operation\"\x93\x01\xcaA \n" +
 	"\vBackupVault\x12\x11OperationMetadata\xdaA#parent,backup_vault,backup_vault_id\x82\xd3\xe4\x93\x02D:\fbackup_vault\"4/v1beta/{parent=projects/*/locations/*}/backupVaults\x12\xc8\x01\n" +
 	"\x10ListBackupVaults\x125.google.cloud.backupdr.v1beta.ListBackupVaultsRequest\x1a6.google.cloud.backupdr.v1beta.ListBackupVaultsResponse\"E\xdaA\x06parent\x82\xd3\xe4\x93\x026\x124/v1beta/{parent=projects/*/locations/*}/backupVaults\x12\xe9\x01\n" +
@@ -1531,198 +1559,260 @@ var file_google_cloud_backupdr_v1beta_backupdr_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil),                              // 18: google.protobuf.Timestamp
 	(*wrapperspb.BoolValue)(nil),                               // 19: google.protobuf.BoolValue
 	(*CloudSqlInstanceInitializationConfig)(nil),               // 20: google.cloud.backupdr.v1beta.CloudSqlInstanceInitializationConfig
-	(*CreateBackupVaultRequest)(nil),                           // 21: google.cloud.backupdr.v1beta.CreateBackupVaultRequest
-	(*ListBackupVaultsRequest)(nil),                            // 22: google.cloud.backupdr.v1beta.ListBackupVaultsRequest
-	(*FetchUsableBackupVaultsRequest)(nil),                     // 23: google.cloud.backupdr.v1beta.FetchUsableBackupVaultsRequest
-	(*GetBackupVaultRequest)(nil),                              // 24: google.cloud.backupdr.v1beta.GetBackupVaultRequest
-	(*UpdateBackupVaultRequest)(nil),                           // 25: google.cloud.backupdr.v1beta.UpdateBackupVaultRequest
-	(*DeleteBackupVaultRequest)(nil),                           // 26: google.cloud.backupdr.v1beta.DeleteBackupVaultRequest
-	(*ListDataSourcesRequest)(nil),                             // 27: google.cloud.backupdr.v1beta.ListDataSourcesRequest
-	(*GetDataSourceRequest)(nil),                               // 28: google.cloud.backupdr.v1beta.GetDataSourceRequest
-	(*UpdateDataSourceRequest)(nil),                            // 29: google.cloud.backupdr.v1beta.UpdateDataSourceRequest
-	(*ListBackupsRequest)(nil),                                 // 30: google.cloud.backupdr.v1beta.ListBackupsRequest
-	(*FetchBackupsForResourceTypeRequest)(nil),                 // 31: google.cloud.backupdr.v1beta.FetchBackupsForResourceTypeRequest
-	(*GetBackupRequest)(nil),                                   // 32: google.cloud.backupdr.v1beta.GetBackupRequest
-	(*UpdateBackupRequest)(nil),                                // 33: google.cloud.backupdr.v1beta.UpdateBackupRequest
-	(*DeleteBackupRequest)(nil),                                // 34: google.cloud.backupdr.v1beta.DeleteBackupRequest
-	(*RestoreBackupRequest)(nil),                               // 35: google.cloud.backupdr.v1beta.RestoreBackupRequest
-	(*CreateBackupPlanRequest)(nil),                            // 36: google.cloud.backupdr.v1beta.CreateBackupPlanRequest
-	(*UpdateBackupPlanRequest)(nil),                            // 37: google.cloud.backupdr.v1beta.UpdateBackupPlanRequest
-	(*GetBackupPlanRequest)(nil),                               // 38: google.cloud.backupdr.v1beta.GetBackupPlanRequest
-	(*ListBackupPlansRequest)(nil),                             // 39: google.cloud.backupdr.v1beta.ListBackupPlansRequest
-	(*DeleteBackupPlanRequest)(nil),                            // 40: google.cloud.backupdr.v1beta.DeleteBackupPlanRequest
-	(*GetBackupPlanRevisionRequest)(nil),                       // 41: google.cloud.backupdr.v1beta.GetBackupPlanRevisionRequest
-	(*ListBackupPlanRevisionsRequest)(nil),                     // 42: google.cloud.backupdr.v1beta.ListBackupPlanRevisionsRequest
-	(*CreateBackupPlanAssociationRequest)(nil),                 // 43: google.cloud.backupdr.v1beta.CreateBackupPlanAssociationRequest
-	(*UpdateBackupPlanAssociationRequest)(nil),                 // 44: google.cloud.backupdr.v1beta.UpdateBackupPlanAssociationRequest
-	(*GetBackupPlanAssociationRequest)(nil),                    // 45: google.cloud.backupdr.v1beta.GetBackupPlanAssociationRequest
-	(*ListBackupPlanAssociationsRequest)(nil),                  // 46: google.cloud.backupdr.v1beta.ListBackupPlanAssociationsRequest
-	(*FetchBackupPlanAssociationsForResourceTypeRequest)(nil),  // 47: google.cloud.backupdr.v1beta.FetchBackupPlanAssociationsForResourceTypeRequest
-	(*DeleteBackupPlanAssociationRequest)(nil),                 // 48: google.cloud.backupdr.v1beta.DeleteBackupPlanAssociationRequest
-	(*TriggerBackupRequest)(nil),                               // 49: google.cloud.backupdr.v1beta.TriggerBackupRequest
-	(*GetDataSourceReferenceRequest)(nil),                      // 50: google.cloud.backupdr.v1beta.GetDataSourceReferenceRequest
-	(*ListDataSourceReferencesRequest)(nil),                    // 51: google.cloud.backupdr.v1beta.ListDataSourceReferencesRequest
-	(*FetchDataSourceReferencesForResourceTypeRequest)(nil),    // 52: google.cloud.backupdr.v1beta.FetchDataSourceReferencesForResourceTypeRequest
-	(*CreateAutoProtectionPolicyRequest)(nil),                  // 53: google.cloud.backupdr.v1beta.CreateAutoProtectionPolicyRequest
-	(*ListAutoProtectionPoliciesRequest)(nil),                  // 54: google.cloud.backupdr.v1beta.ListAutoProtectionPoliciesRequest
-	(*GetAutoProtectionPolicyRequest)(nil),                     // 55: google.cloud.backupdr.v1beta.GetAutoProtectionPolicyRequest
-	(*UpdateAutoProtectionPolicyRequest)(nil),                  // 56: google.cloud.backupdr.v1beta.UpdateAutoProtectionPolicyRequest
-	(*DeleteAutoProtectionPolicyRequest)(nil),                  // 57: google.cloud.backupdr.v1beta.DeleteAutoProtectionPolicyRequest
-	(*CreateAutoProtectionPolicyBindingRequest)(nil),           // 58: google.cloud.backupdr.v1beta.CreateAutoProtectionPolicyBindingRequest
-	(*GetAutoProtectionPolicyBindingRequest)(nil),              // 59: google.cloud.backupdr.v1beta.GetAutoProtectionPolicyBindingRequest
-	(*ListAutoProtectionPolicyBindingsRequest)(nil),            // 60: google.cloud.backupdr.v1beta.ListAutoProtectionPolicyBindingsRequest
-	(*ListAppliedAutoProtectionPoliciesRequest)(nil),           // 61: google.cloud.backupdr.v1beta.ListAppliedAutoProtectionPoliciesRequest
-	(*InitiateDeleteAutoProtectionPolicyBindingRequest)(nil),   // 62: google.cloud.backupdr.v1beta.InitiateDeleteAutoProtectionPolicyBindingRequest
-	(*GetBindingMatchingResourceRequest)(nil),                  // 63: google.cloud.backupdr.v1beta.GetBindingMatchingResourceRequest
-	(*ListBindingMatchingResourcesRequest)(nil),                // 64: google.cloud.backupdr.v1beta.ListBindingMatchingResourcesRequest
-	(*longrunningpb.Operation)(nil),                            // 65: google.longrunning.Operation
-	(*ListBackupVaultsResponse)(nil),                           // 66: google.cloud.backupdr.v1beta.ListBackupVaultsResponse
-	(*FetchUsableBackupVaultsResponse)(nil),                    // 67: google.cloud.backupdr.v1beta.FetchUsableBackupVaultsResponse
-	(*BackupVault)(nil),                                        // 68: google.cloud.backupdr.v1beta.BackupVault
-	(*ListDataSourcesResponse)(nil),                            // 69: google.cloud.backupdr.v1beta.ListDataSourcesResponse
-	(*DataSource)(nil),                                         // 70: google.cloud.backupdr.v1beta.DataSource
-	(*ListBackupsResponse)(nil),                                // 71: google.cloud.backupdr.v1beta.ListBackupsResponse
-	(*FetchBackupsForResourceTypeResponse)(nil),                // 72: google.cloud.backupdr.v1beta.FetchBackupsForResourceTypeResponse
-	(*Backup)(nil),                                             // 73: google.cloud.backupdr.v1beta.Backup
-	(*BackupPlan)(nil),                                         // 74: google.cloud.backupdr.v1beta.BackupPlan
-	(*ListBackupPlansResponse)(nil),                            // 75: google.cloud.backupdr.v1beta.ListBackupPlansResponse
-	(*BackupPlanRevision)(nil),                                 // 76: google.cloud.backupdr.v1beta.BackupPlanRevision
-	(*ListBackupPlanRevisionsResponse)(nil),                    // 77: google.cloud.backupdr.v1beta.ListBackupPlanRevisionsResponse
-	(*BackupPlanAssociation)(nil),                              // 78: google.cloud.backupdr.v1beta.BackupPlanAssociation
-	(*ListBackupPlanAssociationsResponse)(nil),                 // 79: google.cloud.backupdr.v1beta.ListBackupPlanAssociationsResponse
-	(*FetchBackupPlanAssociationsForResourceTypeResponse)(nil), // 80: google.cloud.backupdr.v1beta.FetchBackupPlanAssociationsForResourceTypeResponse
-	(*DataSourceReference)(nil),                                // 81: google.cloud.backupdr.v1beta.DataSourceReference
-	(*ListDataSourceReferencesResponse)(nil),                   // 82: google.cloud.backupdr.v1beta.ListDataSourceReferencesResponse
-	(*FetchDataSourceReferencesForResourceTypeResponse)(nil),   // 83: google.cloud.backupdr.v1beta.FetchDataSourceReferencesForResourceTypeResponse
-	(*ListAutoProtectionPoliciesResponse)(nil),                 // 84: google.cloud.backupdr.v1beta.ListAutoProtectionPoliciesResponse
-	(*AutoProtectionPolicy)(nil),                               // 85: google.cloud.backupdr.v1beta.AutoProtectionPolicy
-	(*AutoProtectionPolicyBinding)(nil),                        // 86: google.cloud.backupdr.v1beta.AutoProtectionPolicyBinding
-	(*ListAutoProtectionPolicyBindingsResponse)(nil),           // 87: google.cloud.backupdr.v1beta.ListAutoProtectionPolicyBindingsResponse
-	(*ListAppliedAutoProtectionPoliciesResponse)(nil),          // 88: google.cloud.backupdr.v1beta.ListAppliedAutoProtectionPoliciesResponse
-	(*BindingMatchingResource)(nil),                            // 89: google.cloud.backupdr.v1beta.BindingMatchingResource
-	(*ListBindingMatchingResourcesResponse)(nil),               // 90: google.cloud.backupdr.v1beta.ListBindingMatchingResourcesResponse
+	(*CreateRestoreTemplateRequest)(nil),                       // 21: google.cloud.backupdr.v1beta.CreateRestoreTemplateRequest
+	(*GetRestoreTemplateRequest)(nil),                          // 22: google.cloud.backupdr.v1beta.GetRestoreTemplateRequest
+	(*ListRestoreTemplatesRequest)(nil),                        // 23: google.cloud.backupdr.v1beta.ListRestoreTemplatesRequest
+	(*UpdateRestoreTemplateRequest)(nil),                       // 24: google.cloud.backupdr.v1beta.UpdateRestoreTemplateRequest
+	(*DeleteRestoreTemplateRequest)(nil),                       // 25: google.cloud.backupdr.v1beta.DeleteRestoreTemplateRequest
+	(*RunRestoreTemplateRequest)(nil),                          // 26: google.cloud.backupdr.v1beta.RunRestoreTemplateRequest
+	(*GetRestoreTemplateExecutionRequest)(nil),                 // 27: google.cloud.backupdr.v1beta.GetRestoreTemplateExecutionRequest
+	(*ListRestoreTemplateExecutionsRequest)(nil),               // 28: google.cloud.backupdr.v1beta.ListRestoreTemplateExecutionsRequest
+	(*TriggerRestoreCleanupRequest)(nil),                       // 29: google.cloud.backupdr.v1beta.TriggerRestoreCleanupRequest
+	(*CreateRestoreVerificationPlanRequest)(nil),               // 30: google.cloud.backupdr.v1beta.CreateRestoreVerificationPlanRequest
+	(*CreateRestoreVerificationPlanAssociationRequest)(nil),    // 31: google.cloud.backupdr.v1beta.CreateRestoreVerificationPlanAssociationRequest
+	(*GetRestoreVerificationPlanAssociationRequest)(nil),       // 32: google.cloud.backupdr.v1beta.GetRestoreVerificationPlanAssociationRequest
+	(*ListRestoreVerificationPlanAssociationsRequest)(nil),     // 33: google.cloud.backupdr.v1beta.ListRestoreVerificationPlanAssociationsRequest
+	(*DeleteRestoreVerificationPlanAssociationRequest)(nil),    // 34: google.cloud.backupdr.v1beta.DeleteRestoreVerificationPlanAssociationRequest
+	(*TriggerRestoreVerificationRequest)(nil),                  // 35: google.cloud.backupdr.v1beta.TriggerRestoreVerificationRequest
+	(*GetRestoreVerificationPlanRequest)(nil),                  // 36: google.cloud.backupdr.v1beta.GetRestoreVerificationPlanRequest
+	(*ListRestoreVerificationPlansRequest)(nil),                // 37: google.cloud.backupdr.v1beta.ListRestoreVerificationPlansRequest
+	(*DeleteRestoreVerificationPlanRequest)(nil),               // 38: google.cloud.backupdr.v1beta.DeleteRestoreVerificationPlanRequest
+	(*CreateBackupVaultRequest)(nil),                           // 39: google.cloud.backupdr.v1beta.CreateBackupVaultRequest
+	(*ListBackupVaultsRequest)(nil),                            // 40: google.cloud.backupdr.v1beta.ListBackupVaultsRequest
+	(*FetchUsableBackupVaultsRequest)(nil),                     // 41: google.cloud.backupdr.v1beta.FetchUsableBackupVaultsRequest
+	(*GetBackupVaultRequest)(nil),                              // 42: google.cloud.backupdr.v1beta.GetBackupVaultRequest
+	(*UpdateBackupVaultRequest)(nil),                           // 43: google.cloud.backupdr.v1beta.UpdateBackupVaultRequest
+	(*DeleteBackupVaultRequest)(nil),                           // 44: google.cloud.backupdr.v1beta.DeleteBackupVaultRequest
+	(*ListDataSourcesRequest)(nil),                             // 45: google.cloud.backupdr.v1beta.ListDataSourcesRequest
+	(*GetDataSourceRequest)(nil),                               // 46: google.cloud.backupdr.v1beta.GetDataSourceRequest
+	(*UpdateDataSourceRequest)(nil),                            // 47: google.cloud.backupdr.v1beta.UpdateDataSourceRequest
+	(*ListBackupsRequest)(nil),                                 // 48: google.cloud.backupdr.v1beta.ListBackupsRequest
+	(*FetchBackupsForResourceTypeRequest)(nil),                 // 49: google.cloud.backupdr.v1beta.FetchBackupsForResourceTypeRequest
+	(*GetBackupRequest)(nil),                                   // 50: google.cloud.backupdr.v1beta.GetBackupRequest
+	(*UpdateBackupRequest)(nil),                                // 51: google.cloud.backupdr.v1beta.UpdateBackupRequest
+	(*DeleteBackupRequest)(nil),                                // 52: google.cloud.backupdr.v1beta.DeleteBackupRequest
+	(*RestoreBackupRequest)(nil),                               // 53: google.cloud.backupdr.v1beta.RestoreBackupRequest
+	(*CreateBackupPlanRequest)(nil),                            // 54: google.cloud.backupdr.v1beta.CreateBackupPlanRequest
+	(*UpdateBackupPlanRequest)(nil),                            // 55: google.cloud.backupdr.v1beta.UpdateBackupPlanRequest
+	(*GetBackupPlanRequest)(nil),                               // 56: google.cloud.backupdr.v1beta.GetBackupPlanRequest
+	(*ListBackupPlansRequest)(nil),                             // 57: google.cloud.backupdr.v1beta.ListBackupPlansRequest
+	(*DeleteBackupPlanRequest)(nil),                            // 58: google.cloud.backupdr.v1beta.DeleteBackupPlanRequest
+	(*GetBackupPlanRevisionRequest)(nil),                       // 59: google.cloud.backupdr.v1beta.GetBackupPlanRevisionRequest
+	(*ListBackupPlanRevisionsRequest)(nil),                     // 60: google.cloud.backupdr.v1beta.ListBackupPlanRevisionsRequest
+	(*CreateBackupPlanAssociationRequest)(nil),                 // 61: google.cloud.backupdr.v1beta.CreateBackupPlanAssociationRequest
+	(*UpdateBackupPlanAssociationRequest)(nil),                 // 62: google.cloud.backupdr.v1beta.UpdateBackupPlanAssociationRequest
+	(*GetBackupPlanAssociationRequest)(nil),                    // 63: google.cloud.backupdr.v1beta.GetBackupPlanAssociationRequest
+	(*ListBackupPlanAssociationsRequest)(nil),                  // 64: google.cloud.backupdr.v1beta.ListBackupPlanAssociationsRequest
+	(*FetchBackupPlanAssociationsForResourceTypeRequest)(nil),  // 65: google.cloud.backupdr.v1beta.FetchBackupPlanAssociationsForResourceTypeRequest
+	(*DeleteBackupPlanAssociationRequest)(nil),                 // 66: google.cloud.backupdr.v1beta.DeleteBackupPlanAssociationRequest
+	(*TriggerBackupRequest)(nil),                               // 67: google.cloud.backupdr.v1beta.TriggerBackupRequest
+	(*GetDataSourceReferenceRequest)(nil),                      // 68: google.cloud.backupdr.v1beta.GetDataSourceReferenceRequest
+	(*ListDataSourceReferencesRequest)(nil),                    // 69: google.cloud.backupdr.v1beta.ListDataSourceReferencesRequest
+	(*FetchDataSourceReferencesForResourceTypeRequest)(nil),    // 70: google.cloud.backupdr.v1beta.FetchDataSourceReferencesForResourceTypeRequest
+	(*CreateAutoProtectionPolicyRequest)(nil),                  // 71: google.cloud.backupdr.v1beta.CreateAutoProtectionPolicyRequest
+	(*ListAutoProtectionPoliciesRequest)(nil),                  // 72: google.cloud.backupdr.v1beta.ListAutoProtectionPoliciesRequest
+	(*GetAutoProtectionPolicyRequest)(nil),                     // 73: google.cloud.backupdr.v1beta.GetAutoProtectionPolicyRequest
+	(*UpdateAutoProtectionPolicyRequest)(nil),                  // 74: google.cloud.backupdr.v1beta.UpdateAutoProtectionPolicyRequest
+	(*DeleteAutoProtectionPolicyRequest)(nil),                  // 75: google.cloud.backupdr.v1beta.DeleteAutoProtectionPolicyRequest
+	(*CreateAutoProtectionPolicyBindingRequest)(nil),           // 76: google.cloud.backupdr.v1beta.CreateAutoProtectionPolicyBindingRequest
+	(*GetAutoProtectionPolicyBindingRequest)(nil),              // 77: google.cloud.backupdr.v1beta.GetAutoProtectionPolicyBindingRequest
+	(*ListAutoProtectionPolicyBindingsRequest)(nil),            // 78: google.cloud.backupdr.v1beta.ListAutoProtectionPolicyBindingsRequest
+	(*ListAppliedAutoProtectionPoliciesRequest)(nil),           // 79: google.cloud.backupdr.v1beta.ListAppliedAutoProtectionPoliciesRequest
+	(*InitiateDeleteAutoProtectionPolicyBindingRequest)(nil),   // 80: google.cloud.backupdr.v1beta.InitiateDeleteAutoProtectionPolicyBindingRequest
+	(*GetBindingMatchingResourceRequest)(nil),                  // 81: google.cloud.backupdr.v1beta.GetBindingMatchingResourceRequest
+	(*ListBindingMatchingResourcesRequest)(nil),                // 82: google.cloud.backupdr.v1beta.ListBindingMatchingResourcesRequest
+	(*longrunningpb.Operation)(nil),                            // 83: google.longrunning.Operation
+	(*RestoreTemplate)(nil),                                    // 84: google.cloud.backupdr.v1beta.RestoreTemplate
+	(*ListRestoreTemplatesResponse)(nil),                       // 85: google.cloud.backupdr.v1beta.ListRestoreTemplatesResponse
+	(*RestoreTemplateExecution)(nil),                           // 86: google.cloud.backupdr.v1beta.RestoreTemplateExecution
+	(*ListRestoreTemplateExecutionsResponse)(nil),              // 87: google.cloud.backupdr.v1beta.ListRestoreTemplateExecutionsResponse
+	(*RestoreVerificationPlanAssociation)(nil),                 // 88: google.cloud.backupdr.v1beta.RestoreVerificationPlanAssociation
+	(*ListRestoreVerificationPlanAssociationsResponse)(nil),    // 89: google.cloud.backupdr.v1beta.ListRestoreVerificationPlanAssociationsResponse
+	(*RestoreVerificationPlan)(nil),                            // 90: google.cloud.backupdr.v1beta.RestoreVerificationPlan
+	(*ListRestoreVerificationPlansResponse)(nil),               // 91: google.cloud.backupdr.v1beta.ListRestoreVerificationPlansResponse
+	(*ListBackupVaultsResponse)(nil),                           // 92: google.cloud.backupdr.v1beta.ListBackupVaultsResponse
+	(*FetchUsableBackupVaultsResponse)(nil),                    // 93: google.cloud.backupdr.v1beta.FetchUsableBackupVaultsResponse
+	(*BackupVault)(nil),                                        // 94: google.cloud.backupdr.v1beta.BackupVault
+	(*ListDataSourcesResponse)(nil),                            // 95: google.cloud.backupdr.v1beta.ListDataSourcesResponse
+	(*DataSource)(nil),                                         // 96: google.cloud.backupdr.v1beta.DataSource
+	(*ListBackupsResponse)(nil),                                // 97: google.cloud.backupdr.v1beta.ListBackupsResponse
+	(*FetchBackupsForResourceTypeResponse)(nil),                // 98: google.cloud.backupdr.v1beta.FetchBackupsForResourceTypeResponse
+	(*Backup)(nil),                                             // 99: google.cloud.backupdr.v1beta.Backup
+	(*BackupPlan)(nil),                                         // 100: google.cloud.backupdr.v1beta.BackupPlan
+	(*ListBackupPlansResponse)(nil),                            // 101: google.cloud.backupdr.v1beta.ListBackupPlansResponse
+	(*BackupPlanRevision)(nil),                                 // 102: google.cloud.backupdr.v1beta.BackupPlanRevision
+	(*ListBackupPlanRevisionsResponse)(nil),                    // 103: google.cloud.backupdr.v1beta.ListBackupPlanRevisionsResponse
+	(*BackupPlanAssociation)(nil),                              // 104: google.cloud.backupdr.v1beta.BackupPlanAssociation
+	(*ListBackupPlanAssociationsResponse)(nil),                 // 105: google.cloud.backupdr.v1beta.ListBackupPlanAssociationsResponse
+	(*FetchBackupPlanAssociationsForResourceTypeResponse)(nil), // 106: google.cloud.backupdr.v1beta.FetchBackupPlanAssociationsForResourceTypeResponse
+	(*DataSourceReference)(nil),                                // 107: google.cloud.backupdr.v1beta.DataSourceReference
+	(*ListDataSourceReferencesResponse)(nil),                   // 108: google.cloud.backupdr.v1beta.ListDataSourceReferencesResponse
+	(*FetchDataSourceReferencesForResourceTypeResponse)(nil),   // 109: google.cloud.backupdr.v1beta.FetchDataSourceReferencesForResourceTypeResponse
+	(*ListAutoProtectionPoliciesResponse)(nil),                 // 110: google.cloud.backupdr.v1beta.ListAutoProtectionPoliciesResponse
+	(*AutoProtectionPolicy)(nil),                               // 111: google.cloud.backupdr.v1beta.AutoProtectionPolicy
+	(*AutoProtectionPolicyBinding)(nil),                        // 112: google.cloud.backupdr.v1beta.AutoProtectionPolicyBinding
+	(*ListAutoProtectionPolicyBindingsResponse)(nil),           // 113: google.cloud.backupdr.v1beta.ListAutoProtectionPolicyBindingsResponse
+	(*ListAppliedAutoProtectionPoliciesResponse)(nil),          // 114: google.cloud.backupdr.v1beta.ListAppliedAutoProtectionPoliciesResponse
+	(*BindingMatchingResource)(nil),                            // 115: google.cloud.backupdr.v1beta.BindingMatchingResource
+	(*ListBindingMatchingResourcesResponse)(nil),               // 116: google.cloud.backupdr.v1beta.ListBindingMatchingResourcesResponse
 }
 var file_google_cloud_backupdr_v1beta_backupdr_proto_depIdxs = []int32{
-	0,  // 0: google.cloud.backupdr.v1beta.NetworkConfig.peering_mode:type_name -> google.cloud.backupdr.v1beta.NetworkConfig.PeeringMode
-	16, // 1: google.cloud.backupdr.v1beta.ManagementServer.labels:type_name -> google.cloud.backupdr.v1beta.ManagementServer.LabelsEntry
-	18, // 2: google.cloud.backupdr.v1beta.ManagementServer.create_time:type_name -> google.protobuf.Timestamp
-	18, // 3: google.cloud.backupdr.v1beta.ManagementServer.update_time:type_name -> google.protobuf.Timestamp
-	1,  // 4: google.cloud.backupdr.v1beta.ManagementServer.type:type_name -> google.cloud.backupdr.v1beta.ManagementServer.InstanceType
-	4,  // 5: google.cloud.backupdr.v1beta.ManagementServer.management_uri:type_name -> google.cloud.backupdr.v1beta.ManagementURI
-	5,  // 6: google.cloud.backupdr.v1beta.ManagementServer.workforce_identity_based_management_uri:type_name -> google.cloud.backupdr.v1beta.WorkforceIdentityBasedManagementURI
-	2,  // 7: google.cloud.backupdr.v1beta.ManagementServer.state:type_name -> google.cloud.backupdr.v1beta.ManagementServer.InstanceState
-	3,  // 8: google.cloud.backupdr.v1beta.ManagementServer.networks:type_name -> google.cloud.backupdr.v1beta.NetworkConfig
-	6,  // 9: google.cloud.backupdr.v1beta.ManagementServer.workforce_identity_based_oauth2_client_id:type_name -> google.cloud.backupdr.v1beta.WorkforceIdentityBasedOAuth2ClientID
-	19, // 10: google.cloud.backupdr.v1beta.ManagementServer.satisfies_pzs:type_name -> google.protobuf.BoolValue
-	7,  // 11: google.cloud.backupdr.v1beta.ListManagementServersResponse.management_servers:type_name -> google.cloud.backupdr.v1beta.ManagementServer
-	7,  // 12: google.cloud.backupdr.v1beta.CreateManagementServerRequest.management_server:type_name -> google.cloud.backupdr.v1beta.ManagementServer
-	20, // 13: google.cloud.backupdr.v1beta.InitializeServiceRequest.cloud_sql_instance_initialization_config:type_name -> google.cloud.backupdr.v1beta.CloudSqlInstanceInitializationConfig
-	18, // 14: google.cloud.backupdr.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	18, // 15: google.cloud.backupdr.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	17, // 16: google.cloud.backupdr.v1beta.OperationMetadata.additional_info:type_name -> google.cloud.backupdr.v1beta.OperationMetadata.AdditionalInfoEntry
-	8,  // 17: google.cloud.backupdr.v1beta.BackupDR.ListManagementServers:input_type -> google.cloud.backupdr.v1beta.ListManagementServersRequest
-	10, // 18: google.cloud.backupdr.v1beta.BackupDR.GetManagementServer:input_type -> google.cloud.backupdr.v1beta.GetManagementServerRequest
-	11, // 19: google.cloud.backupdr.v1beta.BackupDR.CreateManagementServer:input_type -> google.cloud.backupdr.v1beta.CreateManagementServerRequest
-	12, // 20: google.cloud.backupdr.v1beta.BackupDR.DeleteManagementServer:input_type -> google.cloud.backupdr.v1beta.DeleteManagementServerRequest
-	21, // 21: google.cloud.backupdr.v1beta.BackupDR.CreateBackupVault:input_type -> google.cloud.backupdr.v1beta.CreateBackupVaultRequest
-	22, // 22: google.cloud.backupdr.v1beta.BackupDR.ListBackupVaults:input_type -> google.cloud.backupdr.v1beta.ListBackupVaultsRequest
-	23, // 23: google.cloud.backupdr.v1beta.BackupDR.FetchUsableBackupVaults:input_type -> google.cloud.backupdr.v1beta.FetchUsableBackupVaultsRequest
-	24, // 24: google.cloud.backupdr.v1beta.BackupDR.GetBackupVault:input_type -> google.cloud.backupdr.v1beta.GetBackupVaultRequest
-	25, // 25: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupVault:input_type -> google.cloud.backupdr.v1beta.UpdateBackupVaultRequest
-	26, // 26: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupVault:input_type -> google.cloud.backupdr.v1beta.DeleteBackupVaultRequest
-	27, // 27: google.cloud.backupdr.v1beta.BackupDR.ListDataSources:input_type -> google.cloud.backupdr.v1beta.ListDataSourcesRequest
-	28, // 28: google.cloud.backupdr.v1beta.BackupDR.GetDataSource:input_type -> google.cloud.backupdr.v1beta.GetDataSourceRequest
-	29, // 29: google.cloud.backupdr.v1beta.BackupDR.UpdateDataSource:input_type -> google.cloud.backupdr.v1beta.UpdateDataSourceRequest
-	30, // 30: google.cloud.backupdr.v1beta.BackupDR.ListBackups:input_type -> google.cloud.backupdr.v1beta.ListBackupsRequest
-	31, // 31: google.cloud.backupdr.v1beta.BackupDR.FetchBackupsForResourceType:input_type -> google.cloud.backupdr.v1beta.FetchBackupsForResourceTypeRequest
-	32, // 32: google.cloud.backupdr.v1beta.BackupDR.GetBackup:input_type -> google.cloud.backupdr.v1beta.GetBackupRequest
-	33, // 33: google.cloud.backupdr.v1beta.BackupDR.UpdateBackup:input_type -> google.cloud.backupdr.v1beta.UpdateBackupRequest
-	34, // 34: google.cloud.backupdr.v1beta.BackupDR.DeleteBackup:input_type -> google.cloud.backupdr.v1beta.DeleteBackupRequest
-	35, // 35: google.cloud.backupdr.v1beta.BackupDR.RestoreBackup:input_type -> google.cloud.backupdr.v1beta.RestoreBackupRequest
-	36, // 36: google.cloud.backupdr.v1beta.BackupDR.CreateBackupPlan:input_type -> google.cloud.backupdr.v1beta.CreateBackupPlanRequest
-	37, // 37: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupPlan:input_type -> google.cloud.backupdr.v1beta.UpdateBackupPlanRequest
-	38, // 38: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlan:input_type -> google.cloud.backupdr.v1beta.GetBackupPlanRequest
-	39, // 39: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlans:input_type -> google.cloud.backupdr.v1beta.ListBackupPlansRequest
-	40, // 40: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupPlan:input_type -> google.cloud.backupdr.v1beta.DeleteBackupPlanRequest
-	41, // 41: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlanRevision:input_type -> google.cloud.backupdr.v1beta.GetBackupPlanRevisionRequest
-	42, // 42: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlanRevisions:input_type -> google.cloud.backupdr.v1beta.ListBackupPlanRevisionsRequest
-	43, // 43: google.cloud.backupdr.v1beta.BackupDR.CreateBackupPlanAssociation:input_type -> google.cloud.backupdr.v1beta.CreateBackupPlanAssociationRequest
-	44, // 44: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupPlanAssociation:input_type -> google.cloud.backupdr.v1beta.UpdateBackupPlanAssociationRequest
-	45, // 45: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlanAssociation:input_type -> google.cloud.backupdr.v1beta.GetBackupPlanAssociationRequest
-	46, // 46: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlanAssociations:input_type -> google.cloud.backupdr.v1beta.ListBackupPlanAssociationsRequest
-	47, // 47: google.cloud.backupdr.v1beta.BackupDR.FetchBackupPlanAssociationsForResourceType:input_type -> google.cloud.backupdr.v1beta.FetchBackupPlanAssociationsForResourceTypeRequest
-	48, // 48: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupPlanAssociation:input_type -> google.cloud.backupdr.v1beta.DeleteBackupPlanAssociationRequest
-	49, // 49: google.cloud.backupdr.v1beta.BackupDR.TriggerBackup:input_type -> google.cloud.backupdr.v1beta.TriggerBackupRequest
-	50, // 50: google.cloud.backupdr.v1beta.BackupDR.GetDataSourceReference:input_type -> google.cloud.backupdr.v1beta.GetDataSourceReferenceRequest
-	51, // 51: google.cloud.backupdr.v1beta.BackupDR.ListDataSourceReferences:input_type -> google.cloud.backupdr.v1beta.ListDataSourceReferencesRequest
-	52, // 52: google.cloud.backupdr.v1beta.BackupDR.FetchDataSourceReferencesForResourceType:input_type -> google.cloud.backupdr.v1beta.FetchDataSourceReferencesForResourceTypeRequest
-	13, // 53: google.cloud.backupdr.v1beta.BackupDR.InitializeService:input_type -> google.cloud.backupdr.v1beta.InitializeServiceRequest
-	53, // 54: google.cloud.backupdr.v1beta.BackupDR.CreateAutoProtectionPolicy:input_type -> google.cloud.backupdr.v1beta.CreateAutoProtectionPolicyRequest
-	54, // 55: google.cloud.backupdr.v1beta.BackupDR.ListAutoProtectionPolicies:input_type -> google.cloud.backupdr.v1beta.ListAutoProtectionPoliciesRequest
-	55, // 56: google.cloud.backupdr.v1beta.BackupDR.GetAutoProtectionPolicy:input_type -> google.cloud.backupdr.v1beta.GetAutoProtectionPolicyRequest
-	56, // 57: google.cloud.backupdr.v1beta.BackupDR.UpdateAutoProtectionPolicy:input_type -> google.cloud.backupdr.v1beta.UpdateAutoProtectionPolicyRequest
-	57, // 58: google.cloud.backupdr.v1beta.BackupDR.DeleteAutoProtectionPolicy:input_type -> google.cloud.backupdr.v1beta.DeleteAutoProtectionPolicyRequest
-	58, // 59: google.cloud.backupdr.v1beta.BackupDR.CreateAutoProtectionPolicyBinding:input_type -> google.cloud.backupdr.v1beta.CreateAutoProtectionPolicyBindingRequest
-	59, // 60: google.cloud.backupdr.v1beta.BackupDR.GetAutoProtectionPolicyBinding:input_type -> google.cloud.backupdr.v1beta.GetAutoProtectionPolicyBindingRequest
-	60, // 61: google.cloud.backupdr.v1beta.BackupDR.ListAutoProtectionPolicyBindings:input_type -> google.cloud.backupdr.v1beta.ListAutoProtectionPolicyBindingsRequest
-	61, // 62: google.cloud.backupdr.v1beta.BackupDR.ListAppliedAutoProtectionPolicies:input_type -> google.cloud.backupdr.v1beta.ListAppliedAutoProtectionPoliciesRequest
-	62, // 63: google.cloud.backupdr.v1beta.BackupDR.InitiateDeleteAutoProtectionPolicyBinding:input_type -> google.cloud.backupdr.v1beta.InitiateDeleteAutoProtectionPolicyBindingRequest
-	63, // 64: google.cloud.backupdr.v1beta.BackupDR.GetBindingMatchingResource:input_type -> google.cloud.backupdr.v1beta.GetBindingMatchingResourceRequest
-	64, // 65: google.cloud.backupdr.v1beta.BackupDR.ListBindingMatchingResources:input_type -> google.cloud.backupdr.v1beta.ListBindingMatchingResourcesRequest
-	9,  // 66: google.cloud.backupdr.v1beta.BackupDR.ListManagementServers:output_type -> google.cloud.backupdr.v1beta.ListManagementServersResponse
-	7,  // 67: google.cloud.backupdr.v1beta.BackupDR.GetManagementServer:output_type -> google.cloud.backupdr.v1beta.ManagementServer
-	65, // 68: google.cloud.backupdr.v1beta.BackupDR.CreateManagementServer:output_type -> google.longrunning.Operation
-	65, // 69: google.cloud.backupdr.v1beta.BackupDR.DeleteManagementServer:output_type -> google.longrunning.Operation
-	65, // 70: google.cloud.backupdr.v1beta.BackupDR.CreateBackupVault:output_type -> google.longrunning.Operation
-	66, // 71: google.cloud.backupdr.v1beta.BackupDR.ListBackupVaults:output_type -> google.cloud.backupdr.v1beta.ListBackupVaultsResponse
-	67, // 72: google.cloud.backupdr.v1beta.BackupDR.FetchUsableBackupVaults:output_type -> google.cloud.backupdr.v1beta.FetchUsableBackupVaultsResponse
-	68, // 73: google.cloud.backupdr.v1beta.BackupDR.GetBackupVault:output_type -> google.cloud.backupdr.v1beta.BackupVault
-	65, // 74: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupVault:output_type -> google.longrunning.Operation
-	65, // 75: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupVault:output_type -> google.longrunning.Operation
-	69, // 76: google.cloud.backupdr.v1beta.BackupDR.ListDataSources:output_type -> google.cloud.backupdr.v1beta.ListDataSourcesResponse
-	70, // 77: google.cloud.backupdr.v1beta.BackupDR.GetDataSource:output_type -> google.cloud.backupdr.v1beta.DataSource
-	65, // 78: google.cloud.backupdr.v1beta.BackupDR.UpdateDataSource:output_type -> google.longrunning.Operation
-	71, // 79: google.cloud.backupdr.v1beta.BackupDR.ListBackups:output_type -> google.cloud.backupdr.v1beta.ListBackupsResponse
-	72, // 80: google.cloud.backupdr.v1beta.BackupDR.FetchBackupsForResourceType:output_type -> google.cloud.backupdr.v1beta.FetchBackupsForResourceTypeResponse
-	73, // 81: google.cloud.backupdr.v1beta.BackupDR.GetBackup:output_type -> google.cloud.backupdr.v1beta.Backup
-	65, // 82: google.cloud.backupdr.v1beta.BackupDR.UpdateBackup:output_type -> google.longrunning.Operation
-	65, // 83: google.cloud.backupdr.v1beta.BackupDR.DeleteBackup:output_type -> google.longrunning.Operation
-	65, // 84: google.cloud.backupdr.v1beta.BackupDR.RestoreBackup:output_type -> google.longrunning.Operation
-	65, // 85: google.cloud.backupdr.v1beta.BackupDR.CreateBackupPlan:output_type -> google.longrunning.Operation
-	65, // 86: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupPlan:output_type -> google.longrunning.Operation
-	74, // 87: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlan:output_type -> google.cloud.backupdr.v1beta.BackupPlan
-	75, // 88: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlans:output_type -> google.cloud.backupdr.v1beta.ListBackupPlansResponse
-	65, // 89: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupPlan:output_type -> google.longrunning.Operation
-	76, // 90: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlanRevision:output_type -> google.cloud.backupdr.v1beta.BackupPlanRevision
-	77, // 91: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlanRevisions:output_type -> google.cloud.backupdr.v1beta.ListBackupPlanRevisionsResponse
-	65, // 92: google.cloud.backupdr.v1beta.BackupDR.CreateBackupPlanAssociation:output_type -> google.longrunning.Operation
-	65, // 93: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupPlanAssociation:output_type -> google.longrunning.Operation
-	78, // 94: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlanAssociation:output_type -> google.cloud.backupdr.v1beta.BackupPlanAssociation
-	79, // 95: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlanAssociations:output_type -> google.cloud.backupdr.v1beta.ListBackupPlanAssociationsResponse
-	80, // 96: google.cloud.backupdr.v1beta.BackupDR.FetchBackupPlanAssociationsForResourceType:output_type -> google.cloud.backupdr.v1beta.FetchBackupPlanAssociationsForResourceTypeResponse
-	65, // 97: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupPlanAssociation:output_type -> google.longrunning.Operation
-	65, // 98: google.cloud.backupdr.v1beta.BackupDR.TriggerBackup:output_type -> google.longrunning.Operation
-	81, // 99: google.cloud.backupdr.v1beta.BackupDR.GetDataSourceReference:output_type -> google.cloud.backupdr.v1beta.DataSourceReference
-	82, // 100: google.cloud.backupdr.v1beta.BackupDR.ListDataSourceReferences:output_type -> google.cloud.backupdr.v1beta.ListDataSourceReferencesResponse
-	83, // 101: google.cloud.backupdr.v1beta.BackupDR.FetchDataSourceReferencesForResourceType:output_type -> google.cloud.backupdr.v1beta.FetchDataSourceReferencesForResourceTypeResponse
-	65, // 102: google.cloud.backupdr.v1beta.BackupDR.InitializeService:output_type -> google.longrunning.Operation
-	65, // 103: google.cloud.backupdr.v1beta.BackupDR.CreateAutoProtectionPolicy:output_type -> google.longrunning.Operation
-	84, // 104: google.cloud.backupdr.v1beta.BackupDR.ListAutoProtectionPolicies:output_type -> google.cloud.backupdr.v1beta.ListAutoProtectionPoliciesResponse
-	85, // 105: google.cloud.backupdr.v1beta.BackupDR.GetAutoProtectionPolicy:output_type -> google.cloud.backupdr.v1beta.AutoProtectionPolicy
-	65, // 106: google.cloud.backupdr.v1beta.BackupDR.UpdateAutoProtectionPolicy:output_type -> google.longrunning.Operation
-	65, // 107: google.cloud.backupdr.v1beta.BackupDR.DeleteAutoProtectionPolicy:output_type -> google.longrunning.Operation
-	65, // 108: google.cloud.backupdr.v1beta.BackupDR.CreateAutoProtectionPolicyBinding:output_type -> google.longrunning.Operation
-	86, // 109: google.cloud.backupdr.v1beta.BackupDR.GetAutoProtectionPolicyBinding:output_type -> google.cloud.backupdr.v1beta.AutoProtectionPolicyBinding
-	87, // 110: google.cloud.backupdr.v1beta.BackupDR.ListAutoProtectionPolicyBindings:output_type -> google.cloud.backupdr.v1beta.ListAutoProtectionPolicyBindingsResponse
-	88, // 111: google.cloud.backupdr.v1beta.BackupDR.ListAppliedAutoProtectionPolicies:output_type -> google.cloud.backupdr.v1beta.ListAppliedAutoProtectionPoliciesResponse
-	65, // 112: google.cloud.backupdr.v1beta.BackupDR.InitiateDeleteAutoProtectionPolicyBinding:output_type -> google.longrunning.Operation
-	89, // 113: google.cloud.backupdr.v1beta.BackupDR.GetBindingMatchingResource:output_type -> google.cloud.backupdr.v1beta.BindingMatchingResource
-	90, // 114: google.cloud.backupdr.v1beta.BackupDR.ListBindingMatchingResources:output_type -> google.cloud.backupdr.v1beta.ListBindingMatchingResourcesResponse
-	66, // [66:115] is the sub-list for method output_type
-	17, // [17:66] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	0,   // 0: google.cloud.backupdr.v1beta.NetworkConfig.peering_mode:type_name -> google.cloud.backupdr.v1beta.NetworkConfig.PeeringMode
+	16,  // 1: google.cloud.backupdr.v1beta.ManagementServer.labels:type_name -> google.cloud.backupdr.v1beta.ManagementServer.LabelsEntry
+	18,  // 2: google.cloud.backupdr.v1beta.ManagementServer.create_time:type_name -> google.protobuf.Timestamp
+	18,  // 3: google.cloud.backupdr.v1beta.ManagementServer.update_time:type_name -> google.protobuf.Timestamp
+	1,   // 4: google.cloud.backupdr.v1beta.ManagementServer.type:type_name -> google.cloud.backupdr.v1beta.ManagementServer.InstanceType
+	4,   // 5: google.cloud.backupdr.v1beta.ManagementServer.management_uri:type_name -> google.cloud.backupdr.v1beta.ManagementURI
+	5,   // 6: google.cloud.backupdr.v1beta.ManagementServer.workforce_identity_based_management_uri:type_name -> google.cloud.backupdr.v1beta.WorkforceIdentityBasedManagementURI
+	2,   // 7: google.cloud.backupdr.v1beta.ManagementServer.state:type_name -> google.cloud.backupdr.v1beta.ManagementServer.InstanceState
+	3,   // 8: google.cloud.backupdr.v1beta.ManagementServer.networks:type_name -> google.cloud.backupdr.v1beta.NetworkConfig
+	6,   // 9: google.cloud.backupdr.v1beta.ManagementServer.workforce_identity_based_oauth2_client_id:type_name -> google.cloud.backupdr.v1beta.WorkforceIdentityBasedOAuth2ClientID
+	19,  // 10: google.cloud.backupdr.v1beta.ManagementServer.satisfies_pzs:type_name -> google.protobuf.BoolValue
+	7,   // 11: google.cloud.backupdr.v1beta.ListManagementServersResponse.management_servers:type_name -> google.cloud.backupdr.v1beta.ManagementServer
+	7,   // 12: google.cloud.backupdr.v1beta.CreateManagementServerRequest.management_server:type_name -> google.cloud.backupdr.v1beta.ManagementServer
+	20,  // 13: google.cloud.backupdr.v1beta.InitializeServiceRequest.cloud_sql_instance_initialization_config:type_name -> google.cloud.backupdr.v1beta.CloudSqlInstanceInitializationConfig
+	18,  // 14: google.cloud.backupdr.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	18,  // 15: google.cloud.backupdr.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	17,  // 16: google.cloud.backupdr.v1beta.OperationMetadata.additional_info:type_name -> google.cloud.backupdr.v1beta.OperationMetadata.AdditionalInfoEntry
+	8,   // 17: google.cloud.backupdr.v1beta.BackupDR.ListManagementServers:input_type -> google.cloud.backupdr.v1beta.ListManagementServersRequest
+	10,  // 18: google.cloud.backupdr.v1beta.BackupDR.GetManagementServer:input_type -> google.cloud.backupdr.v1beta.GetManagementServerRequest
+	11,  // 19: google.cloud.backupdr.v1beta.BackupDR.CreateManagementServer:input_type -> google.cloud.backupdr.v1beta.CreateManagementServerRequest
+	12,  // 20: google.cloud.backupdr.v1beta.BackupDR.DeleteManagementServer:input_type -> google.cloud.backupdr.v1beta.DeleteManagementServerRequest
+	21,  // 21: google.cloud.backupdr.v1beta.BackupDR.CreateRestoreTemplate:input_type -> google.cloud.backupdr.v1beta.CreateRestoreTemplateRequest
+	22,  // 22: google.cloud.backupdr.v1beta.BackupDR.GetRestoreTemplate:input_type -> google.cloud.backupdr.v1beta.GetRestoreTemplateRequest
+	23,  // 23: google.cloud.backupdr.v1beta.BackupDR.ListRestoreTemplates:input_type -> google.cloud.backupdr.v1beta.ListRestoreTemplatesRequest
+	24,  // 24: google.cloud.backupdr.v1beta.BackupDR.UpdateRestoreTemplate:input_type -> google.cloud.backupdr.v1beta.UpdateRestoreTemplateRequest
+	25,  // 25: google.cloud.backupdr.v1beta.BackupDR.DeleteRestoreTemplate:input_type -> google.cloud.backupdr.v1beta.DeleteRestoreTemplateRequest
+	26,  // 26: google.cloud.backupdr.v1beta.BackupDR.RunRestoreTemplate:input_type -> google.cloud.backupdr.v1beta.RunRestoreTemplateRequest
+	27,  // 27: google.cloud.backupdr.v1beta.BackupDR.GetRestoreTemplateExecution:input_type -> google.cloud.backupdr.v1beta.GetRestoreTemplateExecutionRequest
+	28,  // 28: google.cloud.backupdr.v1beta.BackupDR.ListRestoreTemplateExecutions:input_type -> google.cloud.backupdr.v1beta.ListRestoreTemplateExecutionsRequest
+	29,  // 29: google.cloud.backupdr.v1beta.BackupDR.TriggerRestoreCleanup:input_type -> google.cloud.backupdr.v1beta.TriggerRestoreCleanupRequest
+	30,  // 30: google.cloud.backupdr.v1beta.BackupDR.CreateRestoreVerificationPlan:input_type -> google.cloud.backupdr.v1beta.CreateRestoreVerificationPlanRequest
+	31,  // 31: google.cloud.backupdr.v1beta.BackupDR.CreateRestoreVerificationPlanAssociation:input_type -> google.cloud.backupdr.v1beta.CreateRestoreVerificationPlanAssociationRequest
+	32,  // 32: google.cloud.backupdr.v1beta.BackupDR.GetRestoreVerificationPlanAssociation:input_type -> google.cloud.backupdr.v1beta.GetRestoreVerificationPlanAssociationRequest
+	33,  // 33: google.cloud.backupdr.v1beta.BackupDR.ListRestoreVerificationPlanAssociations:input_type -> google.cloud.backupdr.v1beta.ListRestoreVerificationPlanAssociationsRequest
+	34,  // 34: google.cloud.backupdr.v1beta.BackupDR.DeleteRestoreVerificationPlanAssociation:input_type -> google.cloud.backupdr.v1beta.DeleteRestoreVerificationPlanAssociationRequest
+	35,  // 35: google.cloud.backupdr.v1beta.BackupDR.TriggerRestoreVerification:input_type -> google.cloud.backupdr.v1beta.TriggerRestoreVerificationRequest
+	36,  // 36: google.cloud.backupdr.v1beta.BackupDR.GetRestoreVerificationPlan:input_type -> google.cloud.backupdr.v1beta.GetRestoreVerificationPlanRequest
+	37,  // 37: google.cloud.backupdr.v1beta.BackupDR.ListRestoreVerificationPlans:input_type -> google.cloud.backupdr.v1beta.ListRestoreVerificationPlansRequest
+	38,  // 38: google.cloud.backupdr.v1beta.BackupDR.DeleteRestoreVerificationPlan:input_type -> google.cloud.backupdr.v1beta.DeleteRestoreVerificationPlanRequest
+	39,  // 39: google.cloud.backupdr.v1beta.BackupDR.CreateBackupVault:input_type -> google.cloud.backupdr.v1beta.CreateBackupVaultRequest
+	40,  // 40: google.cloud.backupdr.v1beta.BackupDR.ListBackupVaults:input_type -> google.cloud.backupdr.v1beta.ListBackupVaultsRequest
+	41,  // 41: google.cloud.backupdr.v1beta.BackupDR.FetchUsableBackupVaults:input_type -> google.cloud.backupdr.v1beta.FetchUsableBackupVaultsRequest
+	42,  // 42: google.cloud.backupdr.v1beta.BackupDR.GetBackupVault:input_type -> google.cloud.backupdr.v1beta.GetBackupVaultRequest
+	43,  // 43: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupVault:input_type -> google.cloud.backupdr.v1beta.UpdateBackupVaultRequest
+	44,  // 44: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupVault:input_type -> google.cloud.backupdr.v1beta.DeleteBackupVaultRequest
+	45,  // 45: google.cloud.backupdr.v1beta.BackupDR.ListDataSources:input_type -> google.cloud.backupdr.v1beta.ListDataSourcesRequest
+	46,  // 46: google.cloud.backupdr.v1beta.BackupDR.GetDataSource:input_type -> google.cloud.backupdr.v1beta.GetDataSourceRequest
+	47,  // 47: google.cloud.backupdr.v1beta.BackupDR.UpdateDataSource:input_type -> google.cloud.backupdr.v1beta.UpdateDataSourceRequest
+	48,  // 48: google.cloud.backupdr.v1beta.BackupDR.ListBackups:input_type -> google.cloud.backupdr.v1beta.ListBackupsRequest
+	49,  // 49: google.cloud.backupdr.v1beta.BackupDR.FetchBackupsForResourceType:input_type -> google.cloud.backupdr.v1beta.FetchBackupsForResourceTypeRequest
+	50,  // 50: google.cloud.backupdr.v1beta.BackupDR.GetBackup:input_type -> google.cloud.backupdr.v1beta.GetBackupRequest
+	51,  // 51: google.cloud.backupdr.v1beta.BackupDR.UpdateBackup:input_type -> google.cloud.backupdr.v1beta.UpdateBackupRequest
+	52,  // 52: google.cloud.backupdr.v1beta.BackupDR.DeleteBackup:input_type -> google.cloud.backupdr.v1beta.DeleteBackupRequest
+	53,  // 53: google.cloud.backupdr.v1beta.BackupDR.RestoreBackup:input_type -> google.cloud.backupdr.v1beta.RestoreBackupRequest
+	54,  // 54: google.cloud.backupdr.v1beta.BackupDR.CreateBackupPlan:input_type -> google.cloud.backupdr.v1beta.CreateBackupPlanRequest
+	55,  // 55: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupPlan:input_type -> google.cloud.backupdr.v1beta.UpdateBackupPlanRequest
+	56,  // 56: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlan:input_type -> google.cloud.backupdr.v1beta.GetBackupPlanRequest
+	57,  // 57: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlans:input_type -> google.cloud.backupdr.v1beta.ListBackupPlansRequest
+	58,  // 58: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupPlan:input_type -> google.cloud.backupdr.v1beta.DeleteBackupPlanRequest
+	59,  // 59: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlanRevision:input_type -> google.cloud.backupdr.v1beta.GetBackupPlanRevisionRequest
+	60,  // 60: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlanRevisions:input_type -> google.cloud.backupdr.v1beta.ListBackupPlanRevisionsRequest
+	61,  // 61: google.cloud.backupdr.v1beta.BackupDR.CreateBackupPlanAssociation:input_type -> google.cloud.backupdr.v1beta.CreateBackupPlanAssociationRequest
+	62,  // 62: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupPlanAssociation:input_type -> google.cloud.backupdr.v1beta.UpdateBackupPlanAssociationRequest
+	63,  // 63: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlanAssociation:input_type -> google.cloud.backupdr.v1beta.GetBackupPlanAssociationRequest
+	64,  // 64: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlanAssociations:input_type -> google.cloud.backupdr.v1beta.ListBackupPlanAssociationsRequest
+	65,  // 65: google.cloud.backupdr.v1beta.BackupDR.FetchBackupPlanAssociationsForResourceType:input_type -> google.cloud.backupdr.v1beta.FetchBackupPlanAssociationsForResourceTypeRequest
+	66,  // 66: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupPlanAssociation:input_type -> google.cloud.backupdr.v1beta.DeleteBackupPlanAssociationRequest
+	67,  // 67: google.cloud.backupdr.v1beta.BackupDR.TriggerBackup:input_type -> google.cloud.backupdr.v1beta.TriggerBackupRequest
+	68,  // 68: google.cloud.backupdr.v1beta.BackupDR.GetDataSourceReference:input_type -> google.cloud.backupdr.v1beta.GetDataSourceReferenceRequest
+	69,  // 69: google.cloud.backupdr.v1beta.BackupDR.ListDataSourceReferences:input_type -> google.cloud.backupdr.v1beta.ListDataSourceReferencesRequest
+	70,  // 70: google.cloud.backupdr.v1beta.BackupDR.FetchDataSourceReferencesForResourceType:input_type -> google.cloud.backupdr.v1beta.FetchDataSourceReferencesForResourceTypeRequest
+	13,  // 71: google.cloud.backupdr.v1beta.BackupDR.InitializeService:input_type -> google.cloud.backupdr.v1beta.InitializeServiceRequest
+	71,  // 72: google.cloud.backupdr.v1beta.BackupDR.CreateAutoProtectionPolicy:input_type -> google.cloud.backupdr.v1beta.CreateAutoProtectionPolicyRequest
+	72,  // 73: google.cloud.backupdr.v1beta.BackupDR.ListAutoProtectionPolicies:input_type -> google.cloud.backupdr.v1beta.ListAutoProtectionPoliciesRequest
+	73,  // 74: google.cloud.backupdr.v1beta.BackupDR.GetAutoProtectionPolicy:input_type -> google.cloud.backupdr.v1beta.GetAutoProtectionPolicyRequest
+	74,  // 75: google.cloud.backupdr.v1beta.BackupDR.UpdateAutoProtectionPolicy:input_type -> google.cloud.backupdr.v1beta.UpdateAutoProtectionPolicyRequest
+	75,  // 76: google.cloud.backupdr.v1beta.BackupDR.DeleteAutoProtectionPolicy:input_type -> google.cloud.backupdr.v1beta.DeleteAutoProtectionPolicyRequest
+	76,  // 77: google.cloud.backupdr.v1beta.BackupDR.CreateAutoProtectionPolicyBinding:input_type -> google.cloud.backupdr.v1beta.CreateAutoProtectionPolicyBindingRequest
+	77,  // 78: google.cloud.backupdr.v1beta.BackupDR.GetAutoProtectionPolicyBinding:input_type -> google.cloud.backupdr.v1beta.GetAutoProtectionPolicyBindingRequest
+	78,  // 79: google.cloud.backupdr.v1beta.BackupDR.ListAutoProtectionPolicyBindings:input_type -> google.cloud.backupdr.v1beta.ListAutoProtectionPolicyBindingsRequest
+	79,  // 80: google.cloud.backupdr.v1beta.BackupDR.ListAppliedAutoProtectionPolicies:input_type -> google.cloud.backupdr.v1beta.ListAppliedAutoProtectionPoliciesRequest
+	80,  // 81: google.cloud.backupdr.v1beta.BackupDR.InitiateDeleteAutoProtectionPolicyBinding:input_type -> google.cloud.backupdr.v1beta.InitiateDeleteAutoProtectionPolicyBindingRequest
+	81,  // 82: google.cloud.backupdr.v1beta.BackupDR.GetBindingMatchingResource:input_type -> google.cloud.backupdr.v1beta.GetBindingMatchingResourceRequest
+	82,  // 83: google.cloud.backupdr.v1beta.BackupDR.ListBindingMatchingResources:input_type -> google.cloud.backupdr.v1beta.ListBindingMatchingResourcesRequest
+	9,   // 84: google.cloud.backupdr.v1beta.BackupDR.ListManagementServers:output_type -> google.cloud.backupdr.v1beta.ListManagementServersResponse
+	7,   // 85: google.cloud.backupdr.v1beta.BackupDR.GetManagementServer:output_type -> google.cloud.backupdr.v1beta.ManagementServer
+	83,  // 86: google.cloud.backupdr.v1beta.BackupDR.CreateManagementServer:output_type -> google.longrunning.Operation
+	83,  // 87: google.cloud.backupdr.v1beta.BackupDR.DeleteManagementServer:output_type -> google.longrunning.Operation
+	83,  // 88: google.cloud.backupdr.v1beta.BackupDR.CreateRestoreTemplate:output_type -> google.longrunning.Operation
+	84,  // 89: google.cloud.backupdr.v1beta.BackupDR.GetRestoreTemplate:output_type -> google.cloud.backupdr.v1beta.RestoreTemplate
+	85,  // 90: google.cloud.backupdr.v1beta.BackupDR.ListRestoreTemplates:output_type -> google.cloud.backupdr.v1beta.ListRestoreTemplatesResponse
+	83,  // 91: google.cloud.backupdr.v1beta.BackupDR.UpdateRestoreTemplate:output_type -> google.longrunning.Operation
+	83,  // 92: google.cloud.backupdr.v1beta.BackupDR.DeleteRestoreTemplate:output_type -> google.longrunning.Operation
+	83,  // 93: google.cloud.backupdr.v1beta.BackupDR.RunRestoreTemplate:output_type -> google.longrunning.Operation
+	86,  // 94: google.cloud.backupdr.v1beta.BackupDR.GetRestoreTemplateExecution:output_type -> google.cloud.backupdr.v1beta.RestoreTemplateExecution
+	87,  // 95: google.cloud.backupdr.v1beta.BackupDR.ListRestoreTemplateExecutions:output_type -> google.cloud.backupdr.v1beta.ListRestoreTemplateExecutionsResponse
+	83,  // 96: google.cloud.backupdr.v1beta.BackupDR.TriggerRestoreCleanup:output_type -> google.longrunning.Operation
+	83,  // 97: google.cloud.backupdr.v1beta.BackupDR.CreateRestoreVerificationPlan:output_type -> google.longrunning.Operation
+	83,  // 98: google.cloud.backupdr.v1beta.BackupDR.CreateRestoreVerificationPlanAssociation:output_type -> google.longrunning.Operation
+	88,  // 99: google.cloud.backupdr.v1beta.BackupDR.GetRestoreVerificationPlanAssociation:output_type -> google.cloud.backupdr.v1beta.RestoreVerificationPlanAssociation
+	89,  // 100: google.cloud.backupdr.v1beta.BackupDR.ListRestoreVerificationPlanAssociations:output_type -> google.cloud.backupdr.v1beta.ListRestoreVerificationPlanAssociationsResponse
+	83,  // 101: google.cloud.backupdr.v1beta.BackupDR.DeleteRestoreVerificationPlanAssociation:output_type -> google.longrunning.Operation
+	83,  // 102: google.cloud.backupdr.v1beta.BackupDR.TriggerRestoreVerification:output_type -> google.longrunning.Operation
+	90,  // 103: google.cloud.backupdr.v1beta.BackupDR.GetRestoreVerificationPlan:output_type -> google.cloud.backupdr.v1beta.RestoreVerificationPlan
+	91,  // 104: google.cloud.backupdr.v1beta.BackupDR.ListRestoreVerificationPlans:output_type -> google.cloud.backupdr.v1beta.ListRestoreVerificationPlansResponse
+	83,  // 105: google.cloud.backupdr.v1beta.BackupDR.DeleteRestoreVerificationPlan:output_type -> google.longrunning.Operation
+	83,  // 106: google.cloud.backupdr.v1beta.BackupDR.CreateBackupVault:output_type -> google.longrunning.Operation
+	92,  // 107: google.cloud.backupdr.v1beta.BackupDR.ListBackupVaults:output_type -> google.cloud.backupdr.v1beta.ListBackupVaultsResponse
+	93,  // 108: google.cloud.backupdr.v1beta.BackupDR.FetchUsableBackupVaults:output_type -> google.cloud.backupdr.v1beta.FetchUsableBackupVaultsResponse
+	94,  // 109: google.cloud.backupdr.v1beta.BackupDR.GetBackupVault:output_type -> google.cloud.backupdr.v1beta.BackupVault
+	83,  // 110: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupVault:output_type -> google.longrunning.Operation
+	83,  // 111: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupVault:output_type -> google.longrunning.Operation
+	95,  // 112: google.cloud.backupdr.v1beta.BackupDR.ListDataSources:output_type -> google.cloud.backupdr.v1beta.ListDataSourcesResponse
+	96,  // 113: google.cloud.backupdr.v1beta.BackupDR.GetDataSource:output_type -> google.cloud.backupdr.v1beta.DataSource
+	83,  // 114: google.cloud.backupdr.v1beta.BackupDR.UpdateDataSource:output_type -> google.longrunning.Operation
+	97,  // 115: google.cloud.backupdr.v1beta.BackupDR.ListBackups:output_type -> google.cloud.backupdr.v1beta.ListBackupsResponse
+	98,  // 116: google.cloud.backupdr.v1beta.BackupDR.FetchBackupsForResourceType:output_type -> google.cloud.backupdr.v1beta.FetchBackupsForResourceTypeResponse
+	99,  // 117: google.cloud.backupdr.v1beta.BackupDR.GetBackup:output_type -> google.cloud.backupdr.v1beta.Backup
+	83,  // 118: google.cloud.backupdr.v1beta.BackupDR.UpdateBackup:output_type -> google.longrunning.Operation
+	83,  // 119: google.cloud.backupdr.v1beta.BackupDR.DeleteBackup:output_type -> google.longrunning.Operation
+	83,  // 120: google.cloud.backupdr.v1beta.BackupDR.RestoreBackup:output_type -> google.longrunning.Operation
+	83,  // 121: google.cloud.backupdr.v1beta.BackupDR.CreateBackupPlan:output_type -> google.longrunning.Operation
+	83,  // 122: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupPlan:output_type -> google.longrunning.Operation
+	100, // 123: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlan:output_type -> google.cloud.backupdr.v1beta.BackupPlan
+	101, // 124: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlans:output_type -> google.cloud.backupdr.v1beta.ListBackupPlansResponse
+	83,  // 125: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupPlan:output_type -> google.longrunning.Operation
+	102, // 126: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlanRevision:output_type -> google.cloud.backupdr.v1beta.BackupPlanRevision
+	103, // 127: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlanRevisions:output_type -> google.cloud.backupdr.v1beta.ListBackupPlanRevisionsResponse
+	83,  // 128: google.cloud.backupdr.v1beta.BackupDR.CreateBackupPlanAssociation:output_type -> google.longrunning.Operation
+	83,  // 129: google.cloud.backupdr.v1beta.BackupDR.UpdateBackupPlanAssociation:output_type -> google.longrunning.Operation
+	104, // 130: google.cloud.backupdr.v1beta.BackupDR.GetBackupPlanAssociation:output_type -> google.cloud.backupdr.v1beta.BackupPlanAssociation
+	105, // 131: google.cloud.backupdr.v1beta.BackupDR.ListBackupPlanAssociations:output_type -> google.cloud.backupdr.v1beta.ListBackupPlanAssociationsResponse
+	106, // 132: google.cloud.backupdr.v1beta.BackupDR.FetchBackupPlanAssociationsForResourceType:output_type -> google.cloud.backupdr.v1beta.FetchBackupPlanAssociationsForResourceTypeResponse
+	83,  // 133: google.cloud.backupdr.v1beta.BackupDR.DeleteBackupPlanAssociation:output_type -> google.longrunning.Operation
+	83,  // 134: google.cloud.backupdr.v1beta.BackupDR.TriggerBackup:output_type -> google.longrunning.Operation
+	107, // 135: google.cloud.backupdr.v1beta.BackupDR.GetDataSourceReference:output_type -> google.cloud.backupdr.v1beta.DataSourceReference
+	108, // 136: google.cloud.backupdr.v1beta.BackupDR.ListDataSourceReferences:output_type -> google.cloud.backupdr.v1beta.ListDataSourceReferencesResponse
+	109, // 137: google.cloud.backupdr.v1beta.BackupDR.FetchDataSourceReferencesForResourceType:output_type -> google.cloud.backupdr.v1beta.FetchDataSourceReferencesForResourceTypeResponse
+	83,  // 138: google.cloud.backupdr.v1beta.BackupDR.InitializeService:output_type -> google.longrunning.Operation
+	83,  // 139: google.cloud.backupdr.v1beta.BackupDR.CreateAutoProtectionPolicy:output_type -> google.longrunning.Operation
+	110, // 140: google.cloud.backupdr.v1beta.BackupDR.ListAutoProtectionPolicies:output_type -> google.cloud.backupdr.v1beta.ListAutoProtectionPoliciesResponse
+	111, // 141: google.cloud.backupdr.v1beta.BackupDR.GetAutoProtectionPolicy:output_type -> google.cloud.backupdr.v1beta.AutoProtectionPolicy
+	83,  // 142: google.cloud.backupdr.v1beta.BackupDR.UpdateAutoProtectionPolicy:output_type -> google.longrunning.Operation
+	83,  // 143: google.cloud.backupdr.v1beta.BackupDR.DeleteAutoProtectionPolicy:output_type -> google.longrunning.Operation
+	83,  // 144: google.cloud.backupdr.v1beta.BackupDR.CreateAutoProtectionPolicyBinding:output_type -> google.longrunning.Operation
+	112, // 145: google.cloud.backupdr.v1beta.BackupDR.GetAutoProtectionPolicyBinding:output_type -> google.cloud.backupdr.v1beta.AutoProtectionPolicyBinding
+	113, // 146: google.cloud.backupdr.v1beta.BackupDR.ListAutoProtectionPolicyBindings:output_type -> google.cloud.backupdr.v1beta.ListAutoProtectionPolicyBindingsResponse
+	114, // 147: google.cloud.backupdr.v1beta.BackupDR.ListAppliedAutoProtectionPolicies:output_type -> google.cloud.backupdr.v1beta.ListAppliedAutoProtectionPoliciesResponse
+	83,  // 148: google.cloud.backupdr.v1beta.BackupDR.InitiateDeleteAutoProtectionPolicyBinding:output_type -> google.longrunning.Operation
+	115, // 149: google.cloud.backupdr.v1beta.BackupDR.GetBindingMatchingResource:output_type -> google.cloud.backupdr.v1beta.BindingMatchingResource
+	116, // 150: google.cloud.backupdr.v1beta.BackupDR.ListBindingMatchingResources:output_type -> google.cloud.backupdr.v1beta.ListBindingMatchingResourcesResponse
+	84,  // [84:151] is the sub-list for method output_type
+	17,  // [17:84] is the sub-list for method input_type
+	17,  // [17:17] is the sub-list for extension type_name
+	17,  // [17:17] is the sub-list for extension extendee
+	0,   // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_backupdr_v1beta_backupdr_proto_init() }
@@ -1739,6 +1829,10 @@ func file_google_cloud_backupdr_v1beta_backupdr_proto_init() {
 	file_google_cloud_backupdr_v1beta_backupvault_cloudsql_proto_init()
 	file_google_cloud_backupdr_v1beta_bindingmatchingresource_proto_init()
 	file_google_cloud_backupdr_v1beta_datasourcereference_proto_init()
+	file_google_cloud_backupdr_v1beta_restore_template_proto_init()
+	file_google_cloud_backupdr_v1beta_restore_template_execution_proto_init()
+	file_google_cloud_backupdr_v1beta_restore_verification_plan_proto_init()
+	file_google_cloud_backupdr_v1beta_restore_verification_plan_association_proto_init()
 	file_google_cloud_backupdr_v1beta_backupdr_proto_msgTypes[5].OneofWrappers = []any{}
 	file_google_cloud_backupdr_v1beta_backupdr_proto_msgTypes[10].OneofWrappers = []any{
 		(*InitializeServiceRequest_CloudSqlInstanceInitializationConfig)(nil),

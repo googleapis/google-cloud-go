@@ -850,53 +850,53 @@ var File_google_cloud_devicestreaming_v1_service_proto protoreflect.FileDescript
 
 const file_google_cloud_devicestreaming_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/devicestreaming/v1/service.proto\x12\x1fgoogle.cloud.devicestreaming.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/devicestreaming/v1/adb_service.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf6\x01\n" +
-	"\x1aCreateDeviceSessionRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12Z\n" +
-	"\x0edevice_session\x18\x02 \x01(\v2..google.cloud.devicestreaming.v1.DeviceSessionB\x03\xe0A\x02R\rdeviceSession\x12/\n" +
-	"\x11device_session_id\x18\x04 \x01(\tB\x03\xe0A\x01R\x0fdeviceSessionId\"\xcb\x01\n" +
-	"\x19ListDeviceSessionsRequest\x12K\n" +
-	"\x06parent\x18\x04 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"-google/cloud/devicestreaming/v1/service.proto\x12\x1fgoogle.cloud.devicestreaming.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/devicestreaming/v1/adb_service.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\x01\n" +
+	"\x1aCreateDeviceSessionRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12[\n" +
+	"\x0edevice_session\x18\x02 \x01(\v2..google.cloud.devicestreaming.v1.DeviceSessionB\x04\xe2A\x01\x02R\rdeviceSession\x120\n" +
+	"\x11device_session_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0fdeviceSessionId\"\xcf\x01\n" +
+	"\x19ListDeviceSessionsRequest\x12L\n" +
+	"\x06parent\x18\x04 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"\x9d\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x9d\x01\n" +
 	"\x1aListDeviceSessionsResponse\x12W\n" +
 	"\x0fdevice_sessions\x18\x01 \x03(\v2..google.cloud.devicestreaming.v1.DeviceSessionR\x0edeviceSessions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"c\n" +
-	"\x17GetDeviceSessionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",devicestreaming.googleapis.com/DeviceSessionR\x04name\"f\n" +
-	"\x1aCancelDeviceSessionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",devicestreaming.googleapis.com/DeviceSessionR\x04name\"\xba\x01\n" +
-	"\x1aUpdateDeviceSessionRequest\x12Z\n" +
-	"\x0edevice_session\x18\x01 \x01(\v2..google.cloud.devicestreaming.v1.DeviceSessionB\x03\xe0A\x02R\rdeviceSession\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xa9\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
+	"\x17GetDeviceSessionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",devicestreaming.googleapis.com/DeviceSessionR\x04name\"g\n" +
+	"\x1aCancelDeviceSessionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",devicestreaming.googleapis.com/DeviceSessionR\x04name\"\xbc\x01\n" +
+	"\x1aUpdateDeviceSessionRequest\x12[\n" +
+	"\x0edevice_session\x18\x01 \x01(\v2..google.cloud.devicestreaming.v1.DeviceSessionB\x04\xe2A\x01\x02R\rdeviceSession\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xb7\n" +
 	"\n" +
-	"\rDeviceSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12V\n" +
-	"\x05state\x18\x03 \x01(\x0e2;.google.cloud.devicestreaming.v1.DeviceSession.SessionStateB\x03\xe0A\x03R\x05state\x12n\n" +
-	"\x0fstate_histories\x18\x0e \x03(\v2@.google.cloud.devicestreaming.v1.DeviceSession.SessionStateEventB\x03\xe0A\x03R\x0estateHistories\x122\n" +
-	"\x03ttl\x18\r \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01H\x00R\x03ttl\x12B\n" +
-	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x00R\n" +
-	"expireTime\x12M\n" +
-	"\x12inactivity_timeout\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x11inactivityTimeout\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12K\n" +
-	"\x11active_start_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0factiveStartTime\x12Z\n" +
-	"\x0eandroid_device\x18\x0f \x01(\v2..google.cloud.devicestreaming.v1.AndroidDeviceB\x03\xe0A\x02R\randroidDevice\x12Q\n" +
-	"\vclient_info\x18\x15 \x01(\v2+.google.cloud.devicestreaming.v1.ClientInfoB\x03\xe0A\x01R\n" +
-	"clientInfo\x1a\xe4\x01\n" +
-	"\x11SessionStateEvent\x12e\n" +
-	"\rsession_state\x18\x01 \x01(\x0e2;.google.cloud.devicestreaming.v1.DeviceSession.SessionStateB\x03\xe0A\x03R\fsessionState\x12>\n" +
+	"\rDeviceSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12W\n" +
+	"\x05state\x18\x03 \x01(\x0e2;.google.cloud.devicestreaming.v1.DeviceSession.SessionStateB\x04\xe2A\x01\x03R\x05state\x12o\n" +
+	"\x0fstate_histories\x18\x0e \x03(\v2@.google.cloud.devicestreaming.v1.DeviceSession.SessionStateEventB\x04\xe2A\x01\x03R\x0estateHistories\x123\n" +
+	"\x03ttl\x18\r \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01H\x00R\x03ttl\x12C\n" +
+	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\x00R\n" +
+	"expireTime\x12N\n" +
+	"\x12inactivity_timeout\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x11inactivityTimeout\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12L\n" +
+	"\x11active_start_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0factiveStartTime\x12[\n" +
+	"\x0eandroid_device\x18\x0f \x01(\v2..google.cloud.devicestreaming.v1.AndroidDeviceB\x04\xe2A\x01\x02R\randroidDevice\x12R\n" +
+	"\vclient_info\x18\x15 \x01(\v2+.google.cloud.devicestreaming.v1.ClientInfoB\x04\xe2A\x01\x01R\n" +
+	"clientInfo\x1a\xe7\x01\n" +
+	"\x11SessionStateEvent\x12f\n" +
+	"\rsession_state\x18\x01 \x01(\x0e2;.google.cloud.devicestreaming.v1.DeviceSession.SessionStateB\x04\xe2A\x01\x03R\fsessionState\x12?\n" +
 	"\n" +
-	"event_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\teventTime\x12(\n" +
-	"\rstate_message\x18\x03 \x01(\tB\x03\xe0A\x03R\fstateMessage\"\x8c\x01\n" +
+	"event_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\teventTime\x12)\n" +
+	"\rstate_message\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\"\x8c\x01\n" +
 	"\fSessionState\x12\x1d\n" +
 	"\x19SESSION_STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tREQUESTED\x10\x01\x12\v\n" +
@@ -909,16 +909,16 @@ const file_google_cloud_devicestreaming_v1_service_proto_rawDesc = "" +
 	"\x05ERROR\x10\a:\x85\x01\xeaA\x81\x01\n" +
 	",devicestreaming.googleapis.com/DeviceSession\x122projects/{project}/deviceSessions/{device_session}*\x0edeviceSessions2\rdeviceSessionB\f\n" +
 	"\n" +
-	"expiration\"H\n" +
+	"expiration\"J\n" +
 	"\n" +
-	"ClientInfo\x12\x1b\n" +
-	"\x06client\x18\x01 \x01(\tB\x03\xe0A\x02R\x06client\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x01R\aversion\"\xb5\x01\n" +
-	"\rAndroidDevice\x12-\n" +
-	"\x10android_model_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eandroidModelId\x121\n" +
-	"\x12android_version_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10androidVersionId\x12\x1b\n" +
-	"\x06locale\x18\x03 \x01(\tB\x03\xe0A\x01R\x06locale\x12%\n" +
-	"\vorientation\x18\x04 \x01(\tB\x03\xe0A\x01R\vorientation2\xe0\t\n" +
+	"ClientInfo\x12\x1c\n" +
+	"\x06client\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06client\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aversion\"\xb9\x01\n" +
+	"\rAndroidDevice\x12.\n" +
+	"\x10android_model_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eandroidModelId\x122\n" +
+	"\x12android_version_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10androidVersionId\x12\x1c\n" +
+	"\x06locale\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06locale\x12&\n" +
+	"\vorientation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vorientation2\xe0\t\n" +
 	"\x13DirectAccessService\x12\xec\x01\n" +
 	"\x13CreateDeviceSession\x12;.google.cloud.devicestreaming.v1.CreateDeviceSessionRequest\x1a..google.cloud.devicestreaming.v1.DeviceSession\"h\xdaA'parent,device_session,device_session_id\x82\xd3\xe4\x93\x028:\x0edevice_session\"&/v1/{parent=projects/*}/deviceSessions\x12\xc6\x01\n" +
 	"\x12ListDeviceSessions\x12:.google.cloud.devicestreaming.v1.ListDeviceSessionsRequest\x1a;.google.cloud.devicestreaming.v1.ListDeviceSessionsResponse\"7\xdaA\x06parent\x82\xd3\xe4\x93\x02(\x12&/v1/{parent=projects/*}/deviceSessions\x12\xb3\x01\n" +

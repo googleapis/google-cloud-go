@@ -634,6 +634,11 @@ func (c *userListGlobalLicenseRESTClient) CreateUserListGlobalLicense(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userListGlobalLicenses", req.GetParent())
 
 	params := url.Values{}
@@ -697,6 +702,11 @@ func (c *userListGlobalLicenseRESTClient) UpdateUserListGlobalLicense(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUserListGlobalLicense().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUserListGlobalLicense().GetName())
 
 	params := url.Values{}
@@ -758,6 +768,11 @@ func (c *userListGlobalLicenseRESTClient) UpdateUserListGlobalLicense(ctx contex
 func (c *userListGlobalLicenseRESTClient) GetUserListGlobalLicense(ctx context.Context, req *datamanagerpb.GetUserListGlobalLicenseRequest, opts ...gax.CallOption) (*datamanagerpb.UserListGlobalLicense, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -827,6 +842,11 @@ func (c *userListGlobalLicenseRESTClient) ListUserListGlobalLicenses(ctx context
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/userListGlobalLicenses", req.GetParent())
@@ -910,6 +930,11 @@ func (c *userListGlobalLicenseRESTClient) ListUserListGlobalLicenseCustomerInfos
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/userListGlobalLicenseCustomerInfos", req.GetParent())

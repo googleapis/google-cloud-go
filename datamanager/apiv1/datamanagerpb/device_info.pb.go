@@ -188,24 +188,24 @@ var File_google_ads_datamanager_v1_device_info_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_device_info_proto_rawDesc = "" +
 	"\n" +
-	"+google/ads/datamanager/v1/device_info.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\"\xeb\x03\n" +
+	"+google/ads/datamanager/v1/device_info.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\"\xf7\x03\n" +
 	"\n" +
-	"DeviceInfo\x12\"\n" +
+	"DeviceInfo\x12#\n" +
 	"\n" +
-	"user_agent\x18\x01 \x01(\tB\x03\xe0A\x01R\tuserAgent\x12*\n" +
+	"user_agent\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tuserAgent\x12+\n" +
 	"\n" +
-	"ip_address\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12\x1f\n" +
-	"\bcategory\x18\x03 \x01(\tB\x03\xe0A\x01R\bcategory\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12(\n" +
-	"\rscreen_height\x18\x05 \x01(\x05B\x03\xe0A\x01R\fscreenHeight\x12&\n" +
-	"\fscreen_width\x18\x06 \x01(\x05B\x03\xe0A\x01R\vscreenWidth\x12.\n" +
-	"\x10operating_system\x18\a \x01(\tB\x03\xe0A\x01R\x0foperatingSystem\x12=\n" +
-	"\x18operating_system_version\x18\b \x01(\tB\x03\xe0A\x01R\x16operatingSystemVersion\x12\x19\n" +
-	"\x05model\x18\t \x01(\tB\x03\xe0A\x01R\x05model\x12\x19\n" +
+	"ip_address\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12 \n" +
+	"\bcategory\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bcategory\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12)\n" +
+	"\rscreen_height\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\fscreenHeight\x12'\n" +
+	"\fscreen_width\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\vscreenWidth\x12/\n" +
+	"\x10operating_system\x18\a \x01(\tB\x04\xe2A\x01\x01R\x0foperatingSystem\x12>\n" +
+	"\x18operating_system_version\x18\b \x01(\tB\x04\xe2A\x01\x01R\x16operatingSystemVersion\x12\x1a\n" +
+	"\x05model\x18\t \x01(\tB\x04\xe2A\x01\x01R\x05model\x12\x1a\n" +
 	"\x05brand\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x05brand\x12\x1d\n" +
-	"\abrowser\x18\v \x01(\tB\x03\xe0A\x01R\abrowser\x12,\n" +
-	"\x0fbrowser_version\x18\f \x01(\tB\x03\xe0A\x01R\x0ebrowserVersionB\xcc\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x05brand\x12\x1e\n" +
+	"\abrowser\x18\v \x01(\tB\x04\xe2A\x01\x01R\abrowser\x12-\n" +
+	"\x0fbrowser_version\x18\f \x01(\tB\x04\xe2A\x01\x01R\x0ebrowserVersionB\xcc\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x0fDeviceInfoProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

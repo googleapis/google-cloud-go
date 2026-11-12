@@ -1088,6 +1088,13 @@ func (c *instancesRESTClient) AddAccessConfig(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/addAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -1158,6 +1165,13 @@ func (c *instancesRESTClient) AddNetworkInterface(ctx context.Context, req *comp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/addNetworkInterface", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -1231,6 +1245,13 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/addResourcePolicies", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -1315,6 +1336,11 @@ func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/instances", req.GetProject())
@@ -1410,6 +1436,13 @@ func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.Att
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/attachDisk", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -1486,6 +1519,12 @@ func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.Bul
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/bulkInsert", req.GetProject(), req.GetZone())
 
 	params := url.Values{}
@@ -1549,6 +1588,13 @@ func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.Bul
 func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -1616,6 +1662,13 @@ func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteI
 func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *computepb.DeleteAccessConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/deleteAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -1690,6 +1743,13 @@ func (c *instancesRESTClient) DeleteNetworkInterface(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/deleteNetworkInterface", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -1753,6 +1813,13 @@ func (c *instancesRESTClient) DeleteNetworkInterface(ctx context.Context, req *c
 func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.DetachDiskInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/detachDisk", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -1820,6 +1887,13 @@ func (c *instancesRESTClient) Get(ctx context.Context, req *computepb.GetInstanc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	// Build HTTP headers from client and context metadata.
@@ -1867,6 +1941,13 @@ func (c *instancesRESTClient) Get(ctx context.Context, req *computepb.GetInstanc
 func (c *instancesRESTClient) GetEffectiveFirewalls(ctx context.Context, req *computepb.GetEffectiveFirewallsInstanceRequest, opts ...gax.CallOption) (*computepb.InstancesGetEffectiveFirewallsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getEffectiveFirewalls", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -1921,6 +2002,13 @@ func (c *instancesRESTClient) GetEffectiveFirewalls(ctx context.Context, req *co
 func (c *instancesRESTClient) GetGuestAttributes(ctx context.Context, req *computepb.GetGuestAttributesInstanceRequest, opts ...gax.CallOption) (*computepb.GuestAttributes, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getGuestAttributes", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -1983,6 +2071,13 @@ func (c *instancesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
 	params := url.Values{}
@@ -2039,6 +2134,13 @@ func (c *instancesRESTClient) GetScreenshot(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/screenshot", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	// Build HTTP headers from client and context metadata.
@@ -2086,6 +2188,13 @@ func (c *instancesRESTClient) GetScreenshot(ctx context.Context, req *computepb.
 func (c *instancesRESTClient) GetSerialPortOutput(ctx context.Context, req *computepb.GetSerialPortOutputInstanceRequest, opts ...gax.CallOption) (*computepb.SerialPortOutput, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/serialPort", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -2147,6 +2256,13 @@ func (c *instancesRESTClient) GetShieldedInstanceIdentity(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getShieldedInstanceIdentity", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	// Build HTTP headers from client and context metadata.
@@ -2202,6 +2318,12 @@ func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertI
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances", req.GetProject(), req.GetZone())
@@ -2286,6 +2408,12 @@ func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInsta
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances", req.GetProject(), req.GetZone())
@@ -2375,6 +2503,13 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetInstance(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/referrers", req.GetProject(), req.GetZone(), req.GetInstance())
 
 		params := url.Values{}
@@ -2443,6 +2578,13 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 func (c *instancesRESTClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/performMaintenance", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -2516,6 +2658,13 @@ func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/removeResourcePolicies", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -2587,6 +2736,13 @@ func (c *instancesRESTClient) ReportHostAsFaulty(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/reportHostAsFaulty", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -2651,6 +2807,13 @@ func (c *instancesRESTClient) ReportHostAsFaulty(ctx context.Context, req *compu
 func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/reset", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -2718,6 +2881,13 @@ func (c *instancesRESTClient) Resume(ctx context.Context, req *computepb.ResumeI
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/resume", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -2782,6 +2952,13 @@ func (c *instancesRESTClient) SendDiagnosticInterrupt(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/sendDiagnosticInterrupt", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	// Build HTTP headers from client and context metadata.
@@ -2829,6 +3006,13 @@ func (c *instancesRESTClient) SendDiagnosticInterrupt(ctx context.Context, req *
 func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *computepb.SetDeletionProtectionInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setDeletionProtection", req.GetProject(), req.GetZone(), req.GetResource())
@@ -2896,6 +3080,13 @@ func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *co
 func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *computepb.SetDiskAutoDeleteInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setDiskAutoDelete", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -2972,6 +3163,13 @@ func (c *instancesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -3027,6 +3225,13 @@ func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setLabels", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -3101,6 +3306,13 @@ func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setMachineResources", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -3173,6 +3385,13 @@ func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setMachineType", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -3243,6 +3462,13 @@ func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.Se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setMetadata", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -3319,6 +3545,13 @@ func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setMinCpuPlatform", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -3388,6 +3621,13 @@ func (c *instancesRESTClient) SetName(ctx context.Context, req *computepb.SetNam
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setName", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -3465,6 +3705,13 @@ func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setScheduling", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -3538,6 +3785,13 @@ func (c *instancesRESTClient) SetSecurityPolicy(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setSecurityPolicy", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -3609,6 +3863,13 @@ func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *comput
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setServiceAccount", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -3685,6 +3946,13 @@ func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setShieldedInstanceIntegrityPolicy", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -3757,6 +4025,13 @@ func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setTags", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -3820,6 +4095,13 @@ func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTag
 func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/simulateMaintenanceEvent", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -3889,6 +4171,13 @@ func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req 
 func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/start", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -3964,6 +4253,13 @@ func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/startWithEncryptionKey", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -4031,6 +4327,13 @@ func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *c
 func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/stop", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -4110,6 +4413,13 @@ func (c *instancesRESTClient) Suspend(ctx context.Context, req *computepb.Suspen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/suspend", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -4184,6 +4494,13 @@ func (c *instancesRESTClient) TestIamPermissions(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -4241,6 +4558,13 @@ func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateI
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -4326,6 +4650,13 @@ func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -4399,6 +4730,13 @@ func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *comp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateDisplayDevice", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -4477,6 +4815,13 @@ func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateNetworkInterface", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
@@ -4550,6 +4895,13 @@ func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateShieldedInstanceConfig", req.GetProject(), req.GetZone(), req.GetInstance())

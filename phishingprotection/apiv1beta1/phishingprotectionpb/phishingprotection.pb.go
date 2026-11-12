@@ -135,11 +135,11 @@ var File_google_cloud_phishingprotection_v1beta1_phishingprotection_proto protor
 
 const file_google_cloud_phishingprotection_v1beta1_phishingprotection_proto_rawDesc = "" +
 	"\n" +
-	"@google/cloud/phishingprotection/v1beta1/phishingprotection.proto\x12'google.cloud.phishingprotection.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"{\n" +
-	"\x15ReportPhishingRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x03uri\"\x18\n" +
+	"@google/cloud/phishingprotection/v1beta1/phishingprotection.proto\x12'google.cloud.phishingprotection.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"}\n" +
+	"\x15ReportPhishingRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03uri\"\x18\n" +
 	"\x16ReportPhishingResponse2\xd3\x02\n" +
 	" PhishingProtectionServiceV1Beta1\x12\xd7\x01\n" +
 	"\x0eReportPhishing\x12>.google.cloud.phishingprotection.v1beta1.ReportPhishingRequest\x1a?.google.cloud.phishingprotection.v1beta1.ReportPhishingResponse\"D\xdaA\n" +

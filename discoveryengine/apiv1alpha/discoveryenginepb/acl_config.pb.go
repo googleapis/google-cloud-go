@@ -101,9 +101,9 @@ var File_google_cloud_discoveryengine_v1alpha_acl_config_proto protoreflect.File
 
 const file_google_cloud_discoveryengine_v1alpha_acl_config_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/discoveryengine/v1alpha/acl_config.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\"\xd6\x01\n" +
-	"\tAclConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12N\n" +
+	"5google/cloud/discoveryengine/v1alpha/acl_config.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\"\xd7\x01\n" +
+	"\tAclConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12N\n" +
 	"\n" +
 	"idp_config\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1alpha.IdpConfigR\tidpConfig:`\xeaA]\n" +
 	"(discoveryengine.googleapis.com/AclConfig\x121projects/{project}/locations/{location}/aclConfigB\x9a\x02\n" +

@@ -440,24 +440,24 @@ var File_google_cloud_retail_v2beta_user_event_service_proto protoreflect.FileDe
 
 const file_google_cloud_retail_v2beta_user_event_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/retail/v2beta/user_event_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/retail/v2beta/export_config.proto\x1a.google/cloud/retail/v2beta/import_config.proto\x1a-google/cloud/retail/v2beta/purge_config.proto\x1a+google/cloud/retail/v2beta/user_event.proto\x1a#google/longrunning/operations.proto\"\xa0\x01\n" +
-	"\x15WriteUserEventRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12I\n" +
+	"3google/cloud/retail/v2beta/user_event_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/retail/v2beta/export_config.proto\x1a.google/cloud/retail/v2beta/import_config.proto\x1a-google/cloud/retail/v2beta/purge_config.proto\x1a+google/cloud/retail/v2beta/user_event.proto\x1a#google/longrunning/operations.proto\"\xa2\x01\n" +
+	"\x15WriteUserEventRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12J\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\v2%.google.cloud.retail.v2beta.UserEventB\x03\xe0A\x02R\tuserEvent\x12\x1f\n" +
+	"user_event\x18\x02 \x01(\v2%.google.cloud.retail.v2beta.UserEventB\x04\xe2A\x01\x02R\tuserEvent\x12\x1f\n" +
 	"\vwrite_async\x18\x03 \x01(\bR\n" +
-	"writeAsync\"\xd3\x01\n" +
+	"writeAsync\"\xd5\x01\n" +
 	"\x17CollectUserEventRequest\x12%\n" +
-	"\rprebuilt_rule\x18\x06 \x01(\tH\x00R\fprebuiltRule\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\"\n" +
+	"\rprebuilt_rule\x18\x06 \x01(\tH\x00R\fprebuiltRule\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12#\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\tB\x03\xe0A\x02R\tuserEvent\x12\x10\n" +
+	"user_event\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tuserEvent\x12\x10\n" +
 	"\x03uri\x18\x03 \x01(\tR\x03uri\x12\x10\n" +
 	"\x03ets\x18\x04 \x01(\x03R\x03ets\x12\x19\n" +
 	"\braw_json\x18\x05 \x01(\tR\arawJsonB\x11\n" +
-	"\x0fconversion_rule\"\xa0\x02\n" +
-	"\x17RejoinUserEventsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x7f\n" +
+	"\x0fconversion_rule\"\xa1\x02\n" +
+	"\x17RejoinUserEventsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x7f\n" +
 	"\x17user_event_rejoin_scope\x18\x02 \x01(\x0e2H.google.cloud.retail.v2beta.RejoinUserEventsRequest.UserEventRejoinScopeR\x14userEventRejoinScope\"g\n" +
 	"\x14UserEventRejoinScope\x12'\n" +
 	"#USER_EVENT_REJOIN_SCOPE_UNSPECIFIED\x10\x00\x12\x11\n" +

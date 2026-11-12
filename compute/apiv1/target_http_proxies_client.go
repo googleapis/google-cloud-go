@@ -387,6 +387,11 @@ func (c *targetHttpProxiesRESTClient) AggregatedList(ctx context.Context, req *c
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/targetHttpProxies", req.GetProject())
 
 		params := url.Values{}
@@ -470,6 +475,12 @@ func (c *targetHttpProxiesRESTClient) Delete(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetHttpProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpProxies/%v", req.GetProject(), req.GetTargetHttpProxy())
 
 	params := url.Values{}
@@ -533,6 +544,12 @@ func (c *targetHttpProxiesRESTClient) Get(ctx context.Context, req *computepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetHttpProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpProxies/%v", req.GetProject(), req.GetTargetHttpProxy())
 
 	// Build HTTP headers from client and context metadata.
@@ -588,6 +605,11 @@ func (c *targetHttpProxiesRESTClient) Insert(ctx context.Context, req *computepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpProxies", req.GetProject())
@@ -665,6 +687,11 @@ func (c *targetHttpProxiesRESTClient) List(ctx context.Context, req *computepb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpProxies", req.GetProject())
@@ -747,6 +774,12 @@ func (c *targetHttpProxiesRESTClient) Patch(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetHttpProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpProxies/%v", req.GetProject(), req.GetTargetHttpProxy())
 
 	params := url.Values{}
@@ -815,6 +848,12 @@ func (c *targetHttpProxiesRESTClient) SetUrlMap(ctx context.Context, req *comput
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetHttpProxy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/targetHttpProxies/%v/setUrlMap", req.GetProject(), req.GetTargetHttpProxy())

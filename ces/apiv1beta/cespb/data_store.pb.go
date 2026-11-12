@@ -318,15 +318,15 @@ var File_google_cloud_ces_v1beta_data_store_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_data_store_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/ces/v1beta/data_store.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8f\x06\n" +
-	"\tDataStore\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12I\n" +
-	"\x04type\x18\x02 \x01(\x0e20.google.cloud.ces.v1beta.DataStore.DataStoreTypeB\x03\xe0A\x03R\x04type\x12x\n" +
-	"\x18document_processing_mode\x18\x04 \x01(\x0e29.google.cloud.ces.v1beta.DataStore.DocumentProcessingModeB\x03\xe0A\x03R\x16documentProcessingMode\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12b\n" +
-	"\x10connector_config\x18\a \x01(\v22.google.cloud.ces.v1beta.DataStore.ConnectorConfigB\x03\xe0A\x03R\x0fconnectorConfig\x1a\x8a\x01\n" +
+	"(google/cloud/ces/v1beta/data_store.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\x06\n" +
+	"\tDataStore\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12J\n" +
+	"\x04type\x18\x02 \x01(\x0e20.google.cloud.ces.v1beta.DataStore.DataStoreTypeB\x04\xe2A\x01\x03R\x04type\x12y\n" +
+	"\x18document_processing_mode\x18\x04 \x01(\x0e29.google.cloud.ces.v1beta.DataStore.DocumentProcessingModeB\x04\xe2A\x01\x03R\x16documentProcessingMode\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12c\n" +
+	"\x10connector_config\x18\a \x01(\v22.google.cloud.ces.v1beta.DataStore.ConnectorConfigB\x04\xe2A\x01\x03R\x0fconnectorConfig\x1a\x8a\x01\n" +
 	"\x0fConnectorConfig\x12\x1e\n" +
 	"\n" +
 	"collection\x18\x01 \x01(\tR\n" +

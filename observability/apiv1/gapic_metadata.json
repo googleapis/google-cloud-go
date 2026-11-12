@@ -1,0 +1,303 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.observability.v1",
+  "libraryPackage": "cloud.google.com/go/observability/apiv1",
+  "services": {
+    "Observability": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBucket": {
+              "methods": [
+                "CreateBucket"
+              ]
+            },
+            "CreateLink": {
+              "methods": [
+                "CreateLink"
+              ]
+            },
+            "CreateTraceScope": {
+              "methods": [
+                "CreateTraceScope"
+              ]
+            },
+            "DeleteLink": {
+              "methods": [
+                "DeleteLink"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteTraceScope": {
+              "methods": [
+                "DeleteTraceScope"
+              ]
+            },
+            "GetBucket": {
+              "methods": [
+                "GetBucket"
+              ]
+            },
+            "GetDataset": {
+              "methods": [
+                "GetDataset"
+              ]
+            },
+            "GetLink": {
+              "methods": [
+                "GetLink"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetScope": {
+              "methods": [
+                "GetScope"
+              ]
+            },
+            "GetSettings": {
+              "methods": [
+                "GetSettings"
+              ]
+            },
+            "GetTraceScope": {
+              "methods": [
+                "GetTraceScope"
+              ]
+            },
+            "GetView": {
+              "methods": [
+                "GetView"
+              ]
+            },
+            "ListBuckets": {
+              "methods": [
+                "ListBuckets"
+              ]
+            },
+            "ListDatasets": {
+              "methods": [
+                "ListDatasets"
+              ]
+            },
+            "ListLinks": {
+              "methods": [
+                "ListLinks"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTraceScopes": {
+              "methods": [
+                "ListTraceScopes"
+              ]
+            },
+            "ListViews": {
+              "methods": [
+                "ListViews"
+              ]
+            },
+            "UpdateBucket": {
+              "methods": [
+                "UpdateBucket"
+              ]
+            },
+            "UpdateLink": {
+              "methods": [
+                "UpdateLink"
+              ]
+            },
+            "UpdateScope": {
+              "methods": [
+                "UpdateScope"
+              ]
+            },
+            "UpdateSettings": {
+              "methods": [
+                "UpdateSettings"
+              ]
+            },
+            "UpdateTraceScope": {
+              "methods": [
+                "UpdateTraceScope"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBucket": {
+              "methods": [
+                "CreateBucket"
+              ]
+            },
+            "CreateLink": {
+              "methods": [
+                "CreateLink"
+              ]
+            },
+            "CreateTraceScope": {
+              "methods": [
+                "CreateTraceScope"
+              ]
+            },
+            "DeleteLink": {
+              "methods": [
+                "DeleteLink"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteTraceScope": {
+              "methods": [
+                "DeleteTraceScope"
+              ]
+            },
+            "GetBucket": {
+              "methods": [
+                "GetBucket"
+              ]
+            },
+            "GetDataset": {
+              "methods": [
+                "GetDataset"
+              ]
+            },
+            "GetLink": {
+              "methods": [
+                "GetLink"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetScope": {
+              "methods": [
+                "GetScope"
+              ]
+            },
+            "GetSettings": {
+              "methods": [
+                "GetSettings"
+              ]
+            },
+            "GetTraceScope": {
+              "methods": [
+                "GetTraceScope"
+              ]
+            },
+            "GetView": {
+              "methods": [
+                "GetView"
+              ]
+            },
+            "ListBuckets": {
+              "methods": [
+                "ListBuckets"
+              ]
+            },
+            "ListDatasets": {
+              "methods": [
+                "ListDatasets"
+              ]
+            },
+            "ListLinks": {
+              "methods": [
+                "ListLinks"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTraceScopes": {
+              "methods": [
+                "ListTraceScopes"
+              ]
+            },
+            "ListViews": {
+              "methods": [
+                "ListViews"
+              ]
+            },
+            "UpdateBucket": {
+              "methods": [
+                "UpdateBucket"
+              ]
+            },
+            "UpdateLink": {
+              "methods": [
+                "UpdateLink"
+              ]
+            },
+            "UpdateScope": {
+              "methods": [
+                "UpdateScope"
+              ]
+            },
+            "UpdateSettings": {
+              "methods": [
+                "UpdateSettings"
+              ]
+            },
+            "UpdateTraceScope": {
+              "methods": [
+                "UpdateTraceScope"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

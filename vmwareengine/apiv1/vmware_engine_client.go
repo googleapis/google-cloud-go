@@ -5427,6 +5427,11 @@ func (c *restClient) ListPrivateClouds(ctx context.Context, req *vmwareenginepb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/privateClouds", req.GetParent())
 
 		params := url.Values{}
@@ -5498,6 +5503,11 @@ func (c *restClient) GetPrivateCloud(ctx context.Context, req *vmwareenginepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5563,6 +5573,11 @@ func (c *restClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/privateClouds", req.GetParent())
@@ -5645,6 +5660,11 @@ func (c *restClient) UpdatePrivateCloud(ctx context.Context, req *vmwareenginepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrivateCloud().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPrivateCloud().GetName())
@@ -5732,6 +5752,11 @@ func (c *restClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5811,6 +5836,11 @@ func (c *restClient) UndeletePrivateCloud(ctx context.Context, req *vmwareengine
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:undelete", req.GetName())
 
 	params := url.Values{}
@@ -5885,6 +5915,11 @@ func (c *restClient) ListClusters(ctx context.Context, req *vmwareenginepb.ListC
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
 
 		params := url.Values{}
@@ -5956,6 +5991,11 @@ func (c *restClient) GetCluster(ctx context.Context, req *vmwareenginepb.GetClus
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6018,6 +6058,11 @@ func (c *restClient) CreateCluster(ctx context.Context, req *vmwareenginepb.Crea
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
@@ -6101,6 +6146,11 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.Upda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCluster().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCluster().GetName())
 
 	params := url.Values{}
@@ -6176,6 +6226,11 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.Upda
 func (c *restClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6255,6 +6310,11 @@ func (c *restClient) ListNodes(ctx context.Context, req *vmwareenginepb.ListNode
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/nodes", req.GetParent())
 
 		params := url.Values{}
@@ -6318,6 +6378,11 @@ func (c *restClient) ListNodes(ctx context.Context, req *vmwareenginepb.ListNode
 func (c *restClient) GetNode(ctx context.Context, req *vmwareenginepb.GetNodeRequest, opts ...gax.CallOption) (*vmwareenginepb.Node, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6386,6 +6451,11 @@ func (c *restClient) ListExternalAddresses(ctx context.Context, req *vmwareengin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/externalAddresses", req.GetParent())
@@ -6473,6 +6543,11 @@ func (c *restClient) FetchNetworkPolicyExternalAddresses(ctx context.Context, re
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetNetworkPolicy(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchExternalAddresses", req.GetNetworkPolicy())
 
 		params := url.Values{}
@@ -6538,6 +6613,11 @@ func (c *restClient) GetExternalAddress(ctx context.Context, req *vmwareenginepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6599,6 +6679,11 @@ func (c *restClient) CreateExternalAddress(ctx context.Context, req *vmwareengin
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/externalAddresses", req.GetParent())
@@ -6679,6 +6764,11 @@ func (c *restClient) UpdateExternalAddress(ctx context.Context, req *vmwareengin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetExternalAddress().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetExternalAddress().GetName())
 
 	params := url.Values{}
@@ -6750,6 +6840,11 @@ func (c *restClient) UpdateExternalAddress(ctx context.Context, req *vmwareengin
 func (c *restClient) DeleteExternalAddress(ctx context.Context, req *vmwareenginepb.DeleteExternalAddressRequest, opts ...gax.CallOption) (*DeleteExternalAddressOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6829,6 +6924,11 @@ func (c *restClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSu
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/subnets", req.GetParent())
 
 		params := url.Values{}
@@ -6892,6 +6992,11 @@ func (c *restClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSu
 func (c *restClient) GetSubnet(ctx context.Context, req *vmwareenginepb.GetSubnetRequest, opts ...gax.CallOption) (*vmwareenginepb.Subnet, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6958,6 +7063,11 @@ func (c *restClient) UpdateSubnet(ctx context.Context, req *vmwareenginepb.Updat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubnet().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSubnet().GetName())
@@ -7041,6 +7151,11 @@ func (c *restClient) ListExternalAccessRules(ctx context.Context, req *vmwareeng
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/externalAccessRules", req.GetParent())
 
 		params := url.Values{}
@@ -7112,6 +7227,11 @@ func (c *restClient) GetExternalAccessRule(ctx context.Context, req *vmwareengin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7171,6 +7291,11 @@ func (c *restClient) CreateExternalAccessRule(ctx context.Context, req *vmwareen
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/externalAccessRules", req.GetParent())
@@ -7246,6 +7371,11 @@ func (c *restClient) UpdateExternalAccessRule(ctx context.Context, req *vmwareen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetExternalAccessRule().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetExternalAccessRule().GetName())
 
 	params := url.Values{}
@@ -7315,6 +7445,11 @@ func (c *restClient) UpdateExternalAccessRule(ctx context.Context, req *vmwareen
 func (c *restClient) DeleteExternalAccessRule(ctx context.Context, req *vmwareenginepb.DeleteExternalAccessRuleRequest, opts ...gax.CallOption) (*DeleteExternalAccessRuleOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7395,6 +7530,11 @@ func (c *restClient) ListLoggingServers(ctx context.Context, req *vmwareenginepb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/loggingServers", req.GetParent())
 
 		params := url.Values{}
@@ -7466,6 +7606,11 @@ func (c *restClient) GetLoggingServer(ctx context.Context, req *vmwareenginepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7525,6 +7670,11 @@ func (c *restClient) CreateLoggingServer(ctx context.Context, req *vmwareenginep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/loggingServers", req.GetParent())
@@ -7600,6 +7750,11 @@ func (c *restClient) UpdateLoggingServer(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLoggingServer().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetLoggingServer().GetName())
 
 	params := url.Values{}
@@ -7669,6 +7824,11 @@ func (c *restClient) UpdateLoggingServer(ctx context.Context, req *vmwareenginep
 func (c *restClient) DeleteLoggingServer(ctx context.Context, req *vmwareenginepb.DeleteLoggingServerRequest, opts ...gax.CallOption) (*DeleteLoggingServerOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7748,6 +7908,11 @@ func (c *restClient) ListNodeTypes(ctx context.Context, req *vmwareenginepb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/nodeTypes", req.GetParent())
 
 		params := url.Values{}
@@ -7816,6 +7981,11 @@ func (c *restClient) GetNodeType(ctx context.Context, req *vmwareenginepb.GetNod
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7870,6 +8040,11 @@ func (c *restClient) ShowNsxCredentials(ctx context.Context, req *vmwareenginepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrivateCloud(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:showNsxCredentials", req.GetPrivateCloud())
 
 	params := url.Values{}
@@ -7922,6 +8097,11 @@ func (c *restClient) ShowNsxCredentials(ctx context.Context, req *vmwareenginepb
 func (c *restClient) ShowVcenterCredentials(ctx context.Context, req *vmwareenginepb.ShowVcenterCredentialsRequest, opts ...gax.CallOption) (*vmwareenginepb.Credentials, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrivateCloud(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:showVcenterCredentials", req.GetPrivateCloud())
@@ -7985,6 +8165,11 @@ func (c *restClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrivateCloud(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resetNsxCredentials", req.GetPrivateCloud())
@@ -8054,6 +8239,11 @@ func (c *restClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrivateCloud(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resetVcenterCredentials", req.GetPrivateCloud())
 
 	params := url.Values{}
@@ -8113,6 +8303,11 @@ func (c *restClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 func (c *restClient) GetDnsForwarding(ctx context.Context, req *vmwareenginepb.GetDnsForwardingRequest, opts ...gax.CallOption) (*vmwareenginepb.DnsForwarding, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8175,6 +8370,11 @@ func (c *restClient) UpdateDnsForwarding(ctx context.Context, req *vmwareenginep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDnsForwarding().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDnsForwarding().GetName())
@@ -8251,6 +8451,11 @@ func (c *restClient) GetNetworkPeering(ctx context.Context, req *vmwareenginepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8317,6 +8522,11 @@ func (c *restClient) ListNetworkPeerings(ctx context.Context, req *vmwareenginep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/networkPeerings", req.GetParent())
@@ -8399,6 +8609,11 @@ func (c *restClient) CreateNetworkPeering(ctx context.Context, req *vmwareengine
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/networkPeerings", req.GetParent())
 
 	params := url.Values{}
@@ -8465,6 +8680,11 @@ func (c *restClient) CreateNetworkPeering(ctx context.Context, req *vmwareengine
 func (c *restClient) DeleteNetworkPeering(ctx context.Context, req *vmwareenginepb.DeleteNetworkPeeringRequest, opts ...gax.CallOption) (*DeleteNetworkPeeringOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8538,6 +8758,11 @@ func (c *restClient) UpdateNetworkPeering(ctx context.Context, req *vmwareengine
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetNetworkPeering().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetNetworkPeering().GetName())
@@ -8625,6 +8850,11 @@ func (c *restClient) ListPeeringRoutes(ctx context.Context, req *vmwareenginepb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/peeringRoutes", req.GetParent())
 
 		params := url.Values{}
@@ -8698,6 +8928,11 @@ func (c *restClient) CreateHcxActivationKey(ctx context.Context, req *vmwareengi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/hcxActivationKeys", req.GetParent())
@@ -8778,6 +9013,11 @@ func (c *restClient) ListHcxActivationKeys(ctx context.Context, req *vmwareengin
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/hcxActivationKeys", req.GetParent())
 
 		params := url.Values{}
@@ -8843,6 +9083,11 @@ func (c *restClient) GetHcxActivationKey(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8895,6 +9140,11 @@ func (c *restClient) GetHcxActivationKey(ctx context.Context, req *vmwareenginep
 func (c *restClient) GetNetworkPolicy(ctx context.Context, req *vmwareenginepb.GetNetworkPolicyRequest, opts ...gax.CallOption) (*vmwareenginepb.NetworkPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8962,6 +9212,11 @@ func (c *restClient) ListNetworkPolicies(ctx context.Context, req *vmwareenginep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/networkPolicies", req.GetParent())
@@ -9042,6 +9297,11 @@ func (c *restClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/networkPolicies", req.GetParent())
@@ -9127,6 +9387,11 @@ func (c *restClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetNetworkPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetNetworkPolicy().GetName())
 
 	params := url.Values{}
@@ -9198,6 +9463,11 @@ func (c *restClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginep
 func (c *restClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginepb.DeleteNetworkPolicyRequest, opts ...gax.CallOption) (*DeleteNetworkPolicyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9277,6 +9547,11 @@ func (c *restClient) ListManagementDnsZoneBindings(ctx context.Context, req *vmw
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/managementDnsZoneBindings", req.GetParent())
 
 		params := url.Values{}
@@ -9348,6 +9623,11 @@ func (c *restClient) GetManagementDnsZoneBinding(ctx context.Context, req *vmwar
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9413,6 +9693,11 @@ func (c *restClient) CreateManagementDnsZoneBinding(ctx context.Context, req *vm
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/managementDnsZoneBindings", req.GetParent())
@@ -9488,6 +9773,11 @@ func (c *restClient) UpdateManagementDnsZoneBinding(ctx context.Context, req *vm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetManagementDnsZoneBinding().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetManagementDnsZoneBinding().GetName())
 
 	params := url.Values{}
@@ -9561,6 +9851,11 @@ func (c *restClient) DeleteManagementDnsZoneBinding(ctx context.Context, req *vm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9632,6 +9927,11 @@ func (c *restClient) RepairManagementDnsZoneBinding(ctx context.Context, req *vm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:repair", req.GetName())
 
 	params := url.Values{}
@@ -9698,6 +9998,11 @@ func (c *restClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/vmwareEngineNetworks", req.GetParent())
@@ -9774,6 +10079,11 @@ func (c *restClient) UpdateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetVmwareEngineNetwork().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetVmwareEngineNetwork().GetName())
 
 	params := url.Values{}
@@ -9848,6 +10158,11 @@ func (c *restClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9918,6 +10233,11 @@ func (c *restClient) GetVmwareEngineNetwork(ctx context.Context, req *vmwareengi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9983,6 +10303,11 @@ func (c *restClient) ListVmwareEngineNetworks(ctx context.Context, req *vmwareen
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/vmwareEngineNetworks", req.GetParent())
@@ -10064,6 +10389,11 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *vmwareeng
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/privateConnections", req.GetParent())
 
 	params := url.Values{}
@@ -10131,6 +10461,11 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *vmwareengine
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -10196,6 +10531,11 @@ func (c *restClient) ListPrivateConnections(ctx context.Context, req *vmwareengi
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/privateConnections", req.GetParent())
@@ -10278,6 +10618,11 @@ func (c *restClient) UpdatePrivateConnection(ctx context.Context, req *vmwareeng
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrivateConnection().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPrivateConnection().GetName())
 
 	params := url.Values{}
@@ -10349,6 +10694,11 @@ func (c *restClient) UpdatePrivateConnection(ctx context.Context, req *vmwareeng
 func (c *restClient) DeletePrivateConnection(ctx context.Context, req *vmwareenginepb.DeletePrivateConnectionRequest, opts ...gax.CallOption) (*DeletePrivateConnectionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -10428,6 +10778,11 @@ func (c *restClient) ListPrivateConnectionPeeringRoutes(ctx context.Context, req
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/peeringRoutes", req.GetParent())
 
 		params := url.Values{}
@@ -10502,6 +10857,11 @@ func (c *restClient) GrantDnsBindPermission(ctx context.Context, req *vmwareengi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:grant", req.GetName())
 
 	params := url.Values{}
@@ -10563,6 +10923,11 @@ func (c *restClient) GrantDnsBindPermission(ctx context.Context, req *vmwareengi
 func (c *restClient) GetDnsBindPermission(ctx context.Context, req *vmwareenginepb.GetDnsBindPermissionRequest, opts ...gax.CallOption) (*vmwareenginepb.DnsBindPermission, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -10627,6 +10992,11 @@ func (c *restClient) RevokeDnsBindPermission(ctx context.Context, req *vmwareeng
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:revoke", req.GetName())
 
 	params := url.Values{}
@@ -10686,6 +11056,11 @@ func (c *restClient) RevokeDnsBindPermission(ctx context.Context, req *vmwareeng
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -10753,6 +11128,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -10824,6 +11204,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -10889,6 +11274,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -10957,6 +11347,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -11011,6 +11406,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -11048,6 +11448,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -11115,6 +11520,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

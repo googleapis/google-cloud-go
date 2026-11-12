@@ -159,22 +159,22 @@ var File_google_cloud_agentregistry_v1_endpoint_proto protoreflect.FileDescripto
 
 const file_google_cloud_agentregistry_v1_endpoint_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/agentregistry/v1/endpoint.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/agentregistry/v1/properties.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\x05\n" +
-	"\bEndpoint\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
-	"\vendpoint_id\x18\b \x01(\tB\x03\xe0A\x03R\n" +
-	"endpointId\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12M\n" +
+	",google/cloud/agentregistry/v1/endpoint.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/agentregistry/v1/properties.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa8\x05\n" +
+	"\bEndpoint\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12%\n" +
+	"\vendpoint_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"endpointId\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12N\n" +
 	"\n" +
-	"interfaces\x18\x04 \x03(\v2(.google.cloud.agentregistry.v1.InterfaceB\x03\xe0A\x02R\n" +
-	"interfaces\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\\\n" +
+	"interfaces\x18\x04 \x03(\v2(.google.cloud.agentregistry.v1.InterfaceB\x04\xe2A\x01\x02R\n" +
+	"interfaces\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12]\n" +
 	"\n" +
-	"attributes\x18\a \x03(\v27.google.cloud.agentregistry.v1.Endpoint.AttributesEntryB\x03\xe0A\x03R\n" +
+	"attributes\x18\a \x03(\v27.google.cloud.agentregistry.v1.Endpoint.AttributesEntryB\x04\xe2A\x01\x03R\n" +
 	"attributes\x1aV\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12-\n" +

@@ -277,6 +277,12 @@ func (c *adviceRESTClient) CalendarMode(ctx context.Context, req *computepb.Cale
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/advice/calendarMode", req.GetProject(), req.GetRegion())
 
 	// Build HTTP headers from client and context metadata.
@@ -335,6 +341,12 @@ func (c *adviceRESTClient) Capacity(ctx context.Context, req *computepb.Capacity
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/advice/capacity", req.GetProject(), req.GetRegion())
 
 	// Build HTTP headers from client and context metadata.
@@ -389,6 +401,12 @@ func (c *adviceRESTClient) CapacityHistory(ctx context.Context, req *computepb.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/advice/capacityHistory", req.GetProject(), req.GetRegion())

@@ -63,7 +63,7 @@ func TestValidation_Values(t *testing.T) {
 			description: "proto2 optionals w/values",
 			tableSchema: testdata.ValidationBaseSchema,
 			inputRow: &testdata.ValidationP2Optional{
-				DoubleField:   proto.Float64(math.Inf(1)),
+				DoubleField:   new(math.Inf(1)),
 				FloatField:    proto.Float32(2.0),
 				Int32Field:    proto.Int32(11),
 				Int64Field:    proto.Int64(-22),
@@ -73,8 +73,8 @@ func TestValidation_Values(t *testing.T) {
 				Fixed32Field:  proto.Uint32(1000),
 				Sfixed32Field: proto.Int32(999),
 				Sfixed64Field: proto.Int64(33),
-				BoolField:     proto.Bool(true),
-				StringField:   proto.String("test"),
+				BoolField:     new(true),
+				StringField:   new("test"),
 				BytesField:    []byte("some byte data"),
 				EnumField:     testdata.Proto2ExampleEnum_P2_THING.Enum(),
 			},
@@ -100,7 +100,7 @@ func TestValidation_Values(t *testing.T) {
 			description: "proto2 required",
 			tableSchema: testdata.ValidationBaseSchema,
 			inputRow: &testdata.ValidationP2Required{
-				DoubleField:   proto.Float64(math.Inf(1)),
+				DoubleField:   new(math.Inf(1)),
 				FloatField:    proto.Float32(2.0),
 				Int32Field:    proto.Int32(11),
 				Int64Field:    proto.Int64(-22),
@@ -110,8 +110,8 @@ func TestValidation_Values(t *testing.T) {
 				Fixed32Field:  proto.Uint32(1000),
 				Sfixed32Field: proto.Int32(999),
 				Sfixed64Field: proto.Int64(33),
-				BoolField:     proto.Bool(true),
-				StringField:   proto.String("test"),
+				BoolField:     new(true),
+				StringField:   new("test"),
 				BytesField:    []byte("some byte data"),
 				EnumField:     testdata.Proto2ExampleEnum_P2_THING.Enum(),
 			},
@@ -392,9 +392,9 @@ func TestValidation_Values(t *testing.T) {
 			description: "proto2 w/column annotations",
 			tableSchema: testdata.ValidationColumnAnnotations,
 			inputRow: &testdata.ValidationP2ColumnAnnotations{
-				First:  proto.String("first_val"),
-				Second: proto.String("second_val"),
-				Third:  proto.String("third_val"),
+				First:  new("first_val"),
+				Second: new("second_val"),
+				Third:  new("third_val"),
 			},
 			constraints: []constraintOption{
 				withExactRowCount(1),
@@ -497,8 +497,8 @@ func TestValidationRoundtripRepeated(t *testing.T) {
 	}
 	fdp := &descriptorpb.FileDescriptorProto{
 		MessageType: []*descriptorpb.DescriptorProto{normalized},
-		Name:        proto.String("lookup"),
-		Syntax:      proto.String("proto2"),
+		Name:        new("lookup"),
+		Syntax:      new("proto2"),
 	}
 	fds := &descriptorpb.FileDescriptorSet{
 		File: []*descriptorpb.FileDescriptorProto{fdp},

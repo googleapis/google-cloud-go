@@ -1062,52 +1062,52 @@ var File_google_chat_v1_section_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_section_proto_rawDesc = "" +
 	"\n" +
-	"\x1cgoogle/chat/v1/section.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\x82\x03\n" +
-	"\aSection\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x1d\n" +
+	"\x1cgoogle/chat/v1/section.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\x85\x03\n" +
+	"\aSection\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1d\n" +
 	"\n" +
-	"sort_order\x18\x03 \x01(\x05R\tsortOrder\x12<\n" +
-	"\x04type\x18\x04 \x01(\x0e2#.google.chat.v1.Section.SectionTypeB\x03\xe0A\x02R\x04type\"\x82\x01\n" +
+	"sort_order\x18\x03 \x01(\x05R\tsortOrder\x12=\n" +
+	"\x04type\x18\x04 \x01(\x0e2#.google.chat.v1.Section.SectionTypeB\x04\xe2A\x01\x02R\x04type\"\x82\x01\n" +
 	"\vSectionType\x12\x1c\n" +
 	"\x18SECTION_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eCUSTOM_SECTION\x10\x01\x12\x1b\n" +
 	"\x17DEFAULT_DIRECT_MESSAGES\x10\x02\x12\x12\n" +
 	"\x0eDEFAULT_SPACES\x10\x03\x12\x10\n" +
 	"\fDEFAULT_APPS\x10\x06:T\xeaAQ\n" +
-	"\x1bchat.googleapis.com/Section\x12\x1fusers/{user}/sections/{section}*\bsections2\asection\"\xd8\x01\n" +
-	"\vSectionItem\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x129\n" +
-	"\x05space\x18\x02 \x01(\tB!\xe0A\x01\xfaA\x1b\n" +
+	"\x1bchat.googleapis.com/Section\x12\x1fusers/{user}/sections/{section}*\bsections2\asection\"\xda\x01\n" +
+	"\vSectionItem\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12:\n" +
+	"\x05space\x18\x02 \x01(\tB\"\xe2A\x01\x01\xfaA\x1b\n" +
 	"\x19chat.googleapis.com/SpaceH\x00R\x05space:m\xeaAj\n" +
 	"\x1fchat.googleapis.com/SectionItem\x12,users/{user}/sections/{section}/items/{item}*\fsectionItems2\vsectionItemB\x06\n" +
-	"\x04item\"\x88\x01\n" +
-	"\x14CreateSectionRequest\x128\n" +
-	"\x06parent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18chat.googleapis.com/UserR\x06parent\x126\n" +
-	"\asection\x18\x02 \x01(\v2\x17.google.chat.v1.SectionB\x03\xe0A\x02R\asection\"O\n" +
-	"\x14DeleteSectionRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bchat.googleapis.com/SectionR\x04name\"\x90\x01\n" +
-	"\x14UpdateSectionRequest\x126\n" +
-	"\asection\x18\x01 \x01(\v2\x17.google.chat.v1.SectionB\x03\xe0A\x02R\asection\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x95\x01\n" +
-	"\x13ListSectionsRequest\x128\n" +
-	"\x06parent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18chat.googleapis.com/UserR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04item\"\x8a\x01\n" +
+	"\x14CreateSectionRequest\x129\n" +
+	"\x06parent\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +
+	"\x18chat.googleapis.com/UserR\x06parent\x127\n" +
+	"\asection\x18\x02 \x01(\v2\x17.google.chat.v1.SectionB\x04\xe2A\x01\x02R\asection\"P\n" +
+	"\x14DeleteSectionRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bchat.googleapis.com/SectionR\x04name\"\x92\x01\n" +
+	"\x14UpdateSectionRequest\x127\n" +
+	"\asection\x18\x01 \x01(\v2\x17.google.chat.v1.SectionB\x04\xe2A\x01\x02R\asection\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x98\x01\n" +
+	"\x13ListSectionsRequest\x129\n" +
+	"\x06parent\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +
+	"\x18chat.googleapis.com/UserR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"s\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"s\n" +
 	"\x14ListSectionsResponse\x123\n" +
 	"\bsections\x18\x01 \x03(\v2\x17.google.chat.v1.SectionR\bsections\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa2\x02\n" +
-	"\x16PositionSectionRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bchat.googleapis.com/SectionR\x04name\x12$\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa5\x02\n" +
+	"\x16PositionSectionRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bchat.googleapis.com/SectionR\x04name\x12%\n" +
 	"\n" +
-	"sort_order\x18\x02 \x01(\x05B\x03\xe0A\x01H\x00R\tsortOrder\x12c\n" +
-	"\x11relative_position\x18\x03 \x01(\x0e2/.google.chat.v1.PositionSectionRequest.PositionB\x03\xe0A\x01H\x00R\x10relativePosition\"8\n" +
+	"sort_order\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x00R\tsortOrder\x12d\n" +
+	"\x11relative_position\x18\x03 \x01(\x0e2/.google.chat.v1.PositionSectionRequest.PositionB\x04\xe2A\x01\x01H\x00R\x10relativePosition\"8\n" +
 	"\bPosition\x12\x18\n" +
 	"\x14POSITION_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05START\x10\x01\x12\a\n" +
@@ -1115,21 +1115,21 @@ const file_google_chat_v1_section_proto_rawDesc = "" +
 	"\n" +
 	"\bposition\"L\n" +
 	"\x17PositionSectionResponse\x121\n" +
-	"\asection\x18\x01 \x01(\v2\x17.google.chat.v1.SectionR\asection\"\xb9\x01\n" +
-	"\x17ListSectionItemsRequest\x12;\n" +
-	"\x06parent\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bchat.googleapis.com/SectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\asection\x18\x01 \x01(\v2\x17.google.chat.v1.SectionR\asection\"\xbd\x01\n" +
+	"\x17ListSectionItemsRequest\x12<\n" +
+	"\x06parent\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bchat.googleapis.com/SectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x84\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x84\x01\n" +
 	"\x18ListSectionItemsResponse\x12@\n" +
 	"\rsection_items\x18\x01 \x03(\v2\x1b.google.chat.v1.SectionItemR\fsectionItems\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa1\x01\n" +
-	"\x16MoveSectionItemRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fchat.googleapis.com/SectionItemR\x04name\x12J\n" +
-	"\x0etarget_section\x18\x02 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa3\x01\n" +
+	"\x16MoveSectionItemRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fchat.googleapis.com/SectionItemR\x04name\x12K\n" +
+	"\x0etarget_section\x18\x02 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
 	"\x1bchat.googleapis.com/SectionR\rtargetSection\"Y\n" +
 	"\x17MoveSectionItemResponse\x12>\n" +
 	"\fsection_item\x18\x01 \x01(\v2\x1b.google.chat.v1.SectionItemR\vsectionItemB\xd0\x01\xeaA(\n" +

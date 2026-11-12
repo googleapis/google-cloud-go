@@ -1822,114 +1822,114 @@ var File_google_cloud_gkemulticloud_v1_azure_service_proto protoreflect.FileDesc
 
 const file_google_cloud_gkemulticloud_v1_azure_service_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/gkemulticloud/v1/azure_service.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/gkemulticloud/v1/azure_resources.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\x02\n" +
-	"\x19CreateAzureClusterRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)gkemulticloud.googleapis.com/AzureClusterR\x06parent\x12U\n" +
-	"\razure_cluster\x18\x02 \x01(\v2+.google.cloud.gkemulticloud.v1.AzureClusterB\x03\xe0A\x02R\fazureCluster\x12-\n" +
-	"\x10azure_cluster_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0eazureClusterId\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly:\x02\x18\x01\"\xdd\x01\n" +
-	"\x19UpdateAzureClusterRequest\x12U\n" +
-	"\razure_cluster\x18\x01 \x01(\v2+.google.cloud.gkemulticloud.v1.AzureClusterB\x03\xe0A\x02R\fazureCluster\x12#\n" +
-	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask:\x02\x18\x01\"c\n" +
-	"\x16GetAzureClusterRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")gkemulticloud.googleapis.com/AzureClusterR\x04name:\x02\x18\x01\"\xa5\x01\n" +
-	"\x18ListAzureClustersRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)gkemulticloud.googleapis.com/AzureClusterR\x06parent\x12\x1b\n" +
+	"1google/cloud/gkemulticloud/v1/azure_service.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/gkemulticloud/v1/azure_resources.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x98\x02\n" +
+	"\x19CreateAzureClusterRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)gkemulticloud.googleapis.com/AzureClusterR\x06parent\x12V\n" +
+	"\razure_cluster\x18\x02 \x01(\v2+.google.cloud.gkemulticloud.v1.AzureClusterB\x04\xe2A\x01\x02R\fazureCluster\x12.\n" +
+	"\x10azure_cluster_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0eazureClusterId\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly:\x02\x18\x01\"\xdf\x01\n" +
+	"\x19UpdateAzureClusterRequest\x12V\n" +
+	"\razure_cluster\x18\x01 \x01(\v2+.google.cloud.gkemulticloud.v1.AzureClusterB\x04\xe2A\x01\x02R\fazureCluster\x12#\n" +
+	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask:\x02\x18\x01\"d\n" +
+	"\x16GetAzureClusterRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")gkemulticloud.googleapis.com/AzureClusterR\x04name:\x02\x18\x01\"\xa6\x01\n" +
+	"\x18ListAzureClustersRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)gkemulticloud.googleapis.com/AzureClusterR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken:\x02\x18\x01\"\x9b\x01\n" +
 	"\x19ListAzureClustersResponse\x12R\n" +
 	"\x0eazure_clusters\x18\x01 \x03(\v2+.google.cloud.gkemulticloud.v1.AzureClusterR\razureClusters\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xee\x01\n" +
-	"\x19DeleteAzureClusterRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xf0\x01\n" +
+	"\x19DeleteAzureClusterRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")gkemulticloud.googleapis.com/AzureClusterR\x04name\x12#\n" +
 	"\rallow_missing\x18\x02 \x01(\bR\fallowMissing\x12#\n" +
 	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag\x12(\n" +
-	"\rignore_errors\x18\x05 \x01(\bB\x03\xe0A\x01R\fignoreErrors:\x02\x18\x01\"\x9e\x02\n" +
-	"\x1aCreateAzureNodePoolRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*gkemulticloud.googleapis.com/AzureNodePoolR\x06parent\x12Y\n" +
-	"\x0fazure_node_pool\x18\x02 \x01(\v2,.google.cloud.gkemulticloud.v1.AzureNodePoolB\x03\xe0A\x02R\razureNodePool\x120\n" +
-	"\x12azure_node_pool_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fazureNodePoolId\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly:\x02\x18\x01\"\xe2\x01\n" +
-	"\x1aUpdateAzureNodePoolRequest\x12Y\n" +
-	"\x0fazure_node_pool\x18\x01 \x01(\v2,.google.cloud.gkemulticloud.v1.AzureNodePoolB\x03\xe0A\x02R\razureNodePool\x12#\n" +
-	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask:\x02\x18\x01\"e\n" +
-	"\x17GetAzureNodePoolRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*gkemulticloud.googleapis.com/AzureNodePoolR\x04name:\x02\x18\x01\"\xa7\x01\n" +
-	"\x19ListAzureNodePoolsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*gkemulticloud.googleapis.com/AzureNodePoolR\x06parent\x12\x1b\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag\x12)\n" +
+	"\rignore_errors\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fignoreErrors:\x02\x18\x01\"\xa1\x02\n" +
+	"\x1aCreateAzureNodePoolRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*gkemulticloud.googleapis.com/AzureNodePoolR\x06parent\x12Z\n" +
+	"\x0fazure_node_pool\x18\x02 \x01(\v2,.google.cloud.gkemulticloud.v1.AzureNodePoolB\x04\xe2A\x01\x02R\razureNodePool\x121\n" +
+	"\x12azure_node_pool_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fazureNodePoolId\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly:\x02\x18\x01\"\xe4\x01\n" +
+	"\x1aUpdateAzureNodePoolRequest\x12Z\n" +
+	"\x0fazure_node_pool\x18\x01 \x01(\v2,.google.cloud.gkemulticloud.v1.AzureNodePoolB\x04\xe2A\x01\x02R\razureNodePool\x12#\n" +
+	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask:\x02\x18\x01\"f\n" +
+	"\x17GetAzureNodePoolRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*gkemulticloud.googleapis.com/AzureNodePoolR\x04name:\x02\x18\x01\"\xa8\x01\n" +
+	"\x19ListAzureNodePoolsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*gkemulticloud.googleapis.com/AzureNodePoolR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken:\x02\x18\x01\"\xa0\x01\n" +
 	"\x1aListAzureNodePoolsResponse\x12V\n" +
 	"\x10azure_node_pools\x18\x01 \x03(\v2,.google.cloud.gkemulticloud.v1.AzureNodePoolR\x0eazureNodePools\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xf0\x01\n" +
-	"\x1aDeleteAzureNodePoolRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xf2\x01\n" +
+	"\x1aDeleteAzureNodePoolRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*gkemulticloud.googleapis.com/AzureNodePoolR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12#\n" +
 	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag\x12(\n" +
-	"\rignore_errors\x18\x05 \x01(\bB\x03\xe0A\x01R\fignoreErrors:\x02\x18\x01\"y\n" +
-	"\x1bGetAzureOpenIdConfigRequest\x12V\n" +
-	"\razure_cluster\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")gkemulticloud.googleapis.com/AzureClusterR\fazureCluster:\x02\x18\x01\"x\n" +
-	"\x1aGetAzureJsonWebKeysRequest\x12V\n" +
-	"\razure_cluster\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")gkemulticloud.googleapis.com/AzureClusterR\fazureCluster:\x02\x18\x01\"m\n" +
-	"\x1bGetAzureServerConfigRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".gkemulticloud.googleapis.com/AzureServerConfigR\x04name:\x02\x18\x01\"\x8e\x02\n" +
-	"\x18CreateAzureClientRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(gkemulticloud.googleapis.com/AzureClientR\x06parent\x12R\n" +
-	"\fazure_client\x18\x02 \x01(\v2*.google.cloud.gkemulticloud.v1.AzureClientB\x03\xe0A\x02R\vazureClient\x12+\n" +
-	"\x0fazure_client_id\x18\x04 \x01(\tB\x03\xe0A\x02R\razureClientId\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly:\x02\x18\x01\"a\n" +
-	"\x15GetAzureClientRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(gkemulticloud.googleapis.com/AzureClientR\x04name:\x02\x18\x01\"\xa3\x01\n" +
-	"\x17ListAzureClientsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(gkemulticloud.googleapis.com/AzureClientR\x06parent\x12\x1b\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag\x12)\n" +
+	"\rignore_errors\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fignoreErrors:\x02\x18\x01\"z\n" +
+	"\x1bGetAzureOpenIdConfigRequest\x12W\n" +
+	"\razure_cluster\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")gkemulticloud.googleapis.com/AzureClusterR\fazureCluster:\x02\x18\x01\"y\n" +
+	"\x1aGetAzureJsonWebKeysRequest\x12W\n" +
+	"\razure_cluster\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")gkemulticloud.googleapis.com/AzureClusterR\fazureCluster:\x02\x18\x01\"n\n" +
+	"\x1bGetAzureServerConfigRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".gkemulticloud.googleapis.com/AzureServerConfigR\x04name:\x02\x18\x01\"\x91\x02\n" +
+	"\x18CreateAzureClientRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(gkemulticloud.googleapis.com/AzureClientR\x06parent\x12S\n" +
+	"\fazure_client\x18\x02 \x01(\v2*.google.cloud.gkemulticloud.v1.AzureClientB\x04\xe2A\x01\x02R\vazureClient\x12,\n" +
+	"\x0fazure_client_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\razureClientId\x12#\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly:\x02\x18\x01\"b\n" +
+	"\x15GetAzureClientRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(gkemulticloud.googleapis.com/AzureClientR\x04name:\x02\x18\x01\"\xa4\x01\n" +
+	"\x17ListAzureClientsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(gkemulticloud.googleapis.com/AzureClientR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken:\x02\x18\x01\"\x97\x01\n" +
 	"\x18ListAzureClientsResponse\x12O\n" +
 	"\razure_clients\x18\x01 \x03(\v2*.google.cloud.gkemulticloud.v1.AzureClientR\fazureClients\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xae\x01\n" +
-	"\x18DeleteAzureClientRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xaf\x01\n" +
+	"\x18DeleteAzureClientRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(gkemulticloud.googleapis.com/AzureClientR\x04name\x12#\n" +
 	"\rallow_missing\x18\x02 \x01(\bR\fallowMissing\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly:\x02\x18\x01\"}\n" +
-	"\x1fGenerateAzureAccessTokenRequest\x12V\n" +
-	"\razure_cluster\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")gkemulticloud.googleapis.com/AzureClusterR\fazureCluster:\x02\x18\x01\"\x98\x01\n" +
-	" GenerateAzureAccessTokenResponse\x12&\n" +
-	"\faccess_token\x18\x01 \x01(\tB\x03\xe0A\x03R\vaccessToken\x12H\n" +
-	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0eexpirationTime:\x02\x18\x01\"\xdc\x03\n" +
-	"%GenerateAzureClusterAgentTokenRequest\x12V\n" +
-	"\razure_cluster\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")gkemulticloud.googleapis.com/AzureClusterR\fazureCluster\x12(\n" +
-	"\rsubject_token\x18\x02 \x01(\tB\x03\xe0A\x02R\fsubjectToken\x121\n" +
-	"\x12subject_token_type\x18\x03 \x01(\tB\x03\xe0A\x02R\x10subjectTokenType\x12\x1d\n" +
-	"\aversion\x18\x04 \x01(\tB\x03\xe0A\x02R\aversion\x12%\n" +
-	"\fnode_pool_id\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
-	"nodePoolId\x12\"\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly:\x02\x18\x01\"~\n" +
+	"\x1fGenerateAzureAccessTokenRequest\x12W\n" +
+	"\razure_cluster\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")gkemulticloud.googleapis.com/AzureClusterR\fazureCluster:\x02\x18\x01\"\x9a\x01\n" +
+	" GenerateAzureAccessTokenResponse\x12'\n" +
+	"\faccess_token\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vaccessToken\x12I\n" +
+	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0eexpirationTime:\x02\x18\x01\"\xe6\x03\n" +
+	"%GenerateAzureClusterAgentTokenRequest\x12W\n" +
+	"\razure_cluster\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")gkemulticloud.googleapis.com/AzureClusterR\fazureCluster\x12)\n" +
+	"\rsubject_token\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fsubjectToken\x122\n" +
+	"\x12subject_token_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x10subjectTokenType\x12\x1e\n" +
+	"\aversion\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12&\n" +
+	"\fnode_pool_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"nodePoolId\x12#\n" +
 	"\n" +
-	"grant_type\x18\x06 \x01(\tB\x03\xe0A\x01R\tgrantType\x12\x1f\n" +
-	"\baudience\x18\a \x01(\tB\x03\xe0A\x01R\baudience\x12\x19\n" +
-	"\x05scope\x18\b \x01(\tB\x03\xe0A\x01R\x05scope\x125\n" +
-	"\x14requested_token_type\x18\t \x01(\tB\x03\xe0A\x01R\x12requestedTokenType\x12\x1d\n" +
+	"grant_type\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tgrantType\x12 \n" +
+	"\baudience\x18\a \x01(\tB\x04\xe2A\x01\x01R\baudience\x12\x1a\n" +
+	"\x05scope\x18\b \x01(\tB\x04\xe2A\x01\x01R\x05scope\x126\n" +
+	"\x14requested_token_type\x18\t \x01(\tB\x04\xe2A\x01\x01R\x12requestedTokenType\x12\x1e\n" +
 	"\aoptions\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\aoptions:\x02\x18\x01\"\x90\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\aoptions:\x02\x18\x01\"\x90\x01\n" +
 	"&GenerateAzureClusterAgentTokenResponse\x12\"\n" +
 	"\faccess_token\x18\x01 \x01(\tR\faccess_token\x12\x1e\n" +
 	"\n" +

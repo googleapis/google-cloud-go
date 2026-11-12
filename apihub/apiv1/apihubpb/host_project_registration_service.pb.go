@@ -401,30 +401,30 @@ var File_google_cloud_apihub_v1_host_project_registration_service_proto protoref
 
 const file_google_cloud_apihub_v1_host_project_registration_service_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/apihub/v1/host_project_registration_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xad\x02\n" +
-	"$CreateHostProjectRegistrationRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-apihub.googleapis.com/HostProjectRegistrationR\x06parent\x12D\n" +
-	"\x1chost_project_registration_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x19hostProjectRegistrationId\x12p\n" +
-	"\x19host_project_registration\x18\x03 \x01(\v2/.google.cloud.apihub.v1.HostProjectRegistrationB\x03\xe0A\x02R\x17hostProjectRegistration\"n\n" +
-	"!GetHostProjectRegistrationRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-apihub.googleapis.com/HostProjectRegistrationR\x04name\"\xf7\x01\n" +
-	"#ListHostProjectRegistrationsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-apihub.googleapis.com/HostProjectRegistrationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	">google/cloud/apihub/v1/host_project_registration_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x02\n" +
+	"$CreateHostProjectRegistrationRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-apihub.googleapis.com/HostProjectRegistrationR\x06parent\x12E\n" +
+	"\x1chost_project_registration_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x19hostProjectRegistrationId\x12q\n" +
+	"\x19host_project_registration\x18\x03 \x01(\v2/.google.cloud.apihub.v1.HostProjectRegistrationB\x04\xe2A\x01\x02R\x17hostProjectRegistration\"o\n" +
+	"!GetHostProjectRegistrationRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-apihub.googleapis.com/HostProjectRegistrationR\x04name\"\xfc\x01\n" +
+	"#ListHostProjectRegistrationsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-apihub.googleapis.com/HostProjectRegistrationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbd\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xbd\x01\n" +
 	"$ListHostProjectRegistrationsResponse\x12m\n" +
 	"\x1ahost_project_registrations\x18\x01 \x03(\v2/.google.cloud.apihub.v1.HostProjectRegistrationR\x18hostProjectRegistrations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x94\x03\n" +
-	"\x17HostProjectRegistration\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
-	"\vgcp_project\x18\x02 \x01(\tB6\xe0A\x02\xe0A\x05\xfaA-\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x95\x03\n" +
+	"\x17HostProjectRegistration\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12V\n" +
+	"\vgcp_project\x18\x02 \x01(\tB5\xe2A\x02\x02\x05\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\n" +
-	"gcpProject\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"gcpProject\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime:\xc4\x01\xeaA\xc0\x01\n" +
 	"-apihub.googleapis.com/HostProjectRegistration\x12\\projects/{project}/locations/{location}/hostProjectRegistrations/{host_project_registration}*\x18hostProjectRegistrations2\x17hostProjectRegistration2\xe1\x06\n" +
 	"\x1eHostProjectRegistrationService\x12\xb0\x02\n" +

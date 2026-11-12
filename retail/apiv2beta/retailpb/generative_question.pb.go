@@ -212,19 +212,19 @@ var File_google_cloud_retail_v2beta_generative_question_proto protoreflect.FileD
 
 const file_google_cloud_retail_v2beta_generative_question_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/retail/v2beta/generative_question.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1fgoogle/api/field_behavior.proto\"\x9f\x01\n" +
-	" GenerativeQuestionsFeatureConfig\x12\x1d\n" +
-	"\acatalog\x18\x01 \x01(\tB\x03\xe0A\x02R\acatalog\x12,\n" +
-	"\x0ffeature_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x0efeatureEnabled\x12.\n" +
-	"\x10minimum_products\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0fminimumProducts\"\xc0\x02\n" +
-	"\x18GenerativeQuestionConfig\x12\x1d\n" +
-	"\acatalog\x18\x01 \x01(\tB\x03\xe0A\x02R\acatalog\x12\x19\n" +
-	"\x05facet\x18\x02 \x01(\tB\x03\xe0A\x02R\x05facet\x122\n" +
-	"\x12generated_question\x18\x03 \x01(\tB\x03\xe0A\x03R\x11generatedQuestion\x12*\n" +
-	"\x0efinal_question\x18\x04 \x01(\tB\x03\xe0A\x01R\rfinalQuestion\x12*\n" +
-	"\x0eexample_values\x18\x05 \x03(\tB\x03\xe0A\x03R\rexampleValues\x12!\n" +
-	"\tfrequency\x18\x06 \x01(\x02B\x03\xe0A\x03R\tfrequency\x12;\n" +
-	"\x17allowed_in_conversation\x18\a \x01(\bB\x03\xe0A\x01R\x15allowedInConversationB\xd6\x01\n" +
+	"4google/cloud/retail/v2beta/generative_question.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1fgoogle/api/field_behavior.proto\"\xa2\x01\n" +
+	" GenerativeQuestionsFeatureConfig\x12\x1e\n" +
+	"\acatalog\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\acatalog\x12-\n" +
+	"\x0ffeature_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0efeatureEnabled\x12/\n" +
+	"\x10minimum_products\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x0fminimumProducts\"\xc7\x02\n" +
+	"\x18GenerativeQuestionConfig\x12\x1e\n" +
+	"\acatalog\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\acatalog\x12\x1a\n" +
+	"\x05facet\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05facet\x123\n" +
+	"\x12generated_question\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x11generatedQuestion\x12+\n" +
+	"\x0efinal_question\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\rfinalQuestion\x12+\n" +
+	"\x0eexample_values\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\rexampleValues\x12\"\n" +
+	"\tfrequency\x18\x06 \x01(\x02B\x04\xe2A\x01\x03R\tfrequency\x12<\n" +
+	"\x17allowed_in_conversation\x18\a \x01(\bB\x04\xe2A\x01\x01R\x15allowedInConversationB\xd6\x01\n" +
 	"\x1ecom.google.cloud.retail.v2betaB\x17GenerativeQuestionProtoP\x01Z6cloud.google.com/go/retail/apiv2beta/retailpb;retailpb\xa2\x02\x06RETAIL\xaa\x02\x1aGoogle.Cloud.Retail.V2Beta\xca\x02\x1aGoogle\\Cloud\\Retail\\V2beta\xea\x02\x1dGoogle::Cloud::Retail::V2betab\x06proto3"
 
 var (

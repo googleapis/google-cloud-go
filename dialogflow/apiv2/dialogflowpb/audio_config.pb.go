@@ -875,9 +875,12 @@ type InputAudioConfig struct {
 	// Optional. If true, Gemini ASR will be used for transcription instead of
 	// Cloud Speech-to-Text. If false, Cloud Speech-to-Text will be used.
 	// If unset, this setting is inherited from the ConversationProfile.
-	UseGeminiAsr  *bool `protobuf:"varint,31,opt,name=use_gemini_asr,json=useGeminiAsr,proto3,oneof" json:"use_gemini_asr,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	UseGeminiAsr *bool `protobuf:"varint,31,opt,name=use_gemini_asr,json=useGeminiAsr,proto3,oneof" json:"use_gemini_asr,omitempty"`
+	// Optional. Disables emission of interim input transcriptions when set to
+	// `true`.
+	DisableInterimInputTranscripts *bool `protobuf:"varint,32,opt,name=disable_interim_input_transcripts,json=disableInterimInputTranscripts,proto3,oneof" json:"disable_interim_input_transcripts,omitempty"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *InputAudioConfig) Reset() {
@@ -1019,6 +1022,13 @@ func (x *InputAudioConfig) GetGeminiAsrConfig() *SpeechToTextConfig_GeminiAsrCon
 func (x *InputAudioConfig) GetUseGeminiAsr() bool {
 	if x != nil && x.UseGeminiAsr != nil {
 		return *x.UseGeminiAsr
+	}
+	return false
+}
+
+func (x *InputAudioConfig) GetDisableInterimInputTranscripts() bool {
+	if x != nil && x.DisableInterimInputTranscripts != nil {
+		return *x.DisableInterimInputTranscripts
 	}
 	return false
 }
@@ -1446,9 +1456,12 @@ type SpeechToTextConfig struct {
 	GeminiAsrConfig *SpeechToTextConfig_GeminiAsrConfig `protobuf:"bytes,15,opt,name=gemini_asr_config,json=geminiAsrConfig,proto3" json:"gemini_asr_config,omitempty"`
 	// Optional. If true, Gemini ASR will be used for transcription instead of
 	// Cloud Speech-to-Text.
-	UseGeminiAsr  bool `protobuf:"varint,16,opt,name=use_gemini_asr,json=useGeminiAsr,proto3" json:"use_gemini_asr,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	UseGeminiAsr bool `protobuf:"varint,16,opt,name=use_gemini_asr,json=useGeminiAsr,proto3" json:"use_gemini_asr,omitempty"`
+	// Optional. Disables emission of interim input transcriptions when set to
+	// `true`.
+	DisableInterimInputTranscripts *bool `protobuf:"varint,17,opt,name=disable_interim_input_transcripts,json=disableInterimInputTranscripts,proto3,oneof" json:"disable_interim_input_transcripts,omitempty"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *SpeechToTextConfig) Reset() {
@@ -1551,15 +1564,18 @@ func (x *SpeechToTextConfig) GetUseGeminiAsr() bool {
 	return false
 }
 
+func (x *SpeechToTextConfig) GetDisableInterimInputTranscripts() bool {
+	if x != nil && x.DisableInterimInputTranscripts != nil {
+		return *x.DisableInterimInputTranscripts
+	}
+	return false
+}
+
 // Configuration for using Gemini ASR models served via Vertex AI. This
 // message is used to override the default Gemini ASR model or provide
 // additional advanced parameters.
 type SpeechToTextConfig_GeminiAsrConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. The Gemini ASR model ID used for transcription.
-	// This value overrides the default model ID configured on the server.
-	// Example: "gemini-3-flash-lite-asr-preview"
-	ModelId string `protobuf:"bytes,1,opt,name=model_id,json=modelId,proto3" json:"model_id,omitempty"`
 	// Optional. The required duration of detected silence (or non-speech)
 	// before end-of-speech is committed.
 	SilenceDurationMs int32 `protobuf:"varint,2,opt,name=silence_duration_ms,json=silenceDurationMs,proto3" json:"silence_duration_ms,omitempty"`
@@ -1604,13 +1620,6 @@ func (*SpeechToTextConfig_GeminiAsrConfig) Descriptor() ([]byte, []int) {
 	return file_google_cloud_dialogflow_v2_audio_config_proto_rawDescGZIP(), []int{8, 0}
 }
 
-func (x *SpeechToTextConfig_GeminiAsrConfig) GetModelId() string {
-	if x != nil {
-		return x.ModelId
-	}
-	return ""
-}
-
 func (x *SpeechToTextConfig_GeminiAsrConfig) GetSilenceDurationMs() int32 {
 	if x != nil {
 		return x.SilenceDurationMs
@@ -1643,10 +1652,10 @@ var File_google_cloud_dialogflow_v2_audio_config_proto protoreflect.FileDescript
 
 const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dialogflow/v2/audio_config.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"I\n" +
-	"\rSpeechContext\x12\x1d\n" +
-	"\aphrases\x18\x01 \x03(\tB\x03\xe0A\x01R\aphrases\x12\x19\n" +
-	"\x05boost\x18\x02 \x01(\x02B\x03\xe0A\x01R\x05boost\"\xbc\x01\n" +
+	"-google/cloud/dialogflow/v2/audio_config.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"K\n" +
+	"\rSpeechContext\x12\x1e\n" +
+	"\aphrases\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\aphrases\x12\x1a\n" +
+	"\x05boost\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x05boost\"\xbc\x01\n" +
 	"\x0eSpeechWordInfo\x12\x12\n" +
 	"\x04word\x18\x03 \x01(\tR\x04word\x12<\n" +
 	"\fstart_offset\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\vstartOffset\x128\n" +
@@ -1654,39 +1663,41 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"end_offset\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\tendOffset\x12\x1e\n" +
 	"\n" +
 	"confidence\x18\x04 \x01(\x02R\n" +
-	"confidence\"\x98\b\n" +
-	"\x10InputAudioConfig\x12U\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e2).google.cloud.dialogflow.v2.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
-	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fsampleRateHertz\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x02R\flanguageCode\x12(\n" +
+	"confidence\"\x9a\t\n" +
+	"\x10InputAudioConfig\x12V\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e2).google.cloud.dialogflow.v2.AudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x120\n" +
+	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0fsampleRateHertz\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\flanguageCode\x12(\n" +
 	"\x10enable_word_info\x18\r \x01(\bR\x0eenableWordInfo\x12%\n" +
 	"\fphrase_hints\x18\x04 \x03(\tB\x02\x18\x01R\vphraseHints\x12R\n" +
 	"\x0fspeech_contexts\x18\v \x03(\v2).google.cloud.dialogflow.v2.SpeechContextR\x0espeechContexts\x12\x14\n" +
 	"\x05model\x18\a \x01(\tR\x05model\x12S\n" +
 	"\rmodel_variant\x18\n" +
 	" \x01(\x0e2..google.cloud.dialogflow.v2.SpeechModelVariantR\fmodelVariant\x12)\n" +
-	"\x10single_utterance\x18\b \x01(\bR\x0fsingleUtterance\x12D\n" +
-	"\x1cenable_voice_activity_events\x18\x1b \x01(\bB\x03\xe0A\x01R\x19enableVoiceActivityEvents\x12J\n" +
+	"\x10single_utterance\x18\b \x01(\bR\x0fsingleUtterance\x12E\n" +
+	"\x1cenable_voice_activity_events\x18\x1b \x01(\bB\x04\xe2A\x01\x01R\x19enableVoiceActivityEvents\x12J\n" +
 	"\"disable_no_speech_recognized_event\x18\x0e \x01(\bR\x1edisableNoSpeechRecognizedEvent\x12@\n" +
 	"\x1cenable_automatic_punctuation\x18\x11 \x01(\bR\x1aenableAutomaticPunctuation\x12E\n" +
 	"\vphrase_sets\x18\x14 \x03(\tB$\xfaA!\n" +
 	"\x1fspeech.googleapis.com/PhraseSetR\n" +
 	"phraseSets\x12H\n" +
-	"!opt_out_conformer_model_migration\x18\x1a \x01(\bR\x1doptOutConformerModelMigration\x12o\n" +
-	"\x11gemini_asr_config\x18\x1e \x01(\v2>.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfigB\x03\xe0A\x01R\x0fgeminiAsrConfig\x12.\n" +
-	"\x0euse_gemini_asr\x18\x1f \x01(\bB\x03\xe0A\x01H\x00R\fuseGeminiAsr\x88\x01\x01B\x11\n" +
-	"\x0f_use_gemini_asr\"\x82\x01\n" +
-	"\x14VoiceSelectionParams\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12Q\n" +
-	"\vssml_gender\x18\x02 \x01(\x0e2+.google.cloud.dialogflow.v2.SsmlVoiceGenderB\x03\xe0A\x01R\n" +
-	"ssmlGender\"\xec\x02\n" +
-	"\x16SynthesizeSpeechConfig\x12(\n" +
-	"\rspeaking_rate\x18\x01 \x01(\x01B\x03\xe0A\x01R\fspeakingRate\x12\x19\n" +
-	"\x05pitch\x18\x02 \x01(\x01B\x03\xe0A\x01R\x05pitch\x12)\n" +
-	"\x0evolume_gain_db\x18\x03 \x01(\x01B\x03\xe0A\x01R\fvolumeGainDb\x121\n" +
-	"\x12effects_profile_id\x18\x05 \x03(\tB\x03\xe0A\x01R\x10effectsProfileId\x12K\n" +
-	"\x05voice\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.VoiceSelectionParamsB\x03\xe0A\x01R\x05voice\x12b\n" +
-	"\x0epronunciations\x18\x06 \x03(\v25.google.cloud.dialogflow.v2.CustomPronunciationParamsB\x03\xe0A\x01R\x0epronunciations\"\xbf\x02\n" +
+	"!opt_out_conformer_model_migration\x18\x1a \x01(\bR\x1doptOutConformerModelMigration\x12p\n" +
+	"\x11gemini_asr_config\x18\x1e \x01(\v2>.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfigB\x04\xe2A\x01\x01R\x0fgeminiAsrConfig\x12/\n" +
+	"\x0euse_gemini_asr\x18\x1f \x01(\bB\x04\xe2A\x01\x01H\x00R\fuseGeminiAsr\x88\x01\x01\x12T\n" +
+	"!disable_interim_input_transcripts\x18  \x01(\bB\x04\xe2A\x01\x01H\x01R\x1edisableInterimInputTranscripts\x88\x01\x01B\x11\n" +
+	"\x0f_use_gemini_asrB$\n" +
+	"\"_disable_interim_input_transcripts\"\x84\x01\n" +
+	"\x14VoiceSelectionParams\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12R\n" +
+	"\vssml_gender\x18\x02 \x01(\x0e2+.google.cloud.dialogflow.v2.SsmlVoiceGenderB\x04\xe2A\x01\x01R\n" +
+	"ssmlGender\"\xf2\x02\n" +
+	"\x16SynthesizeSpeechConfig\x12)\n" +
+	"\rspeaking_rate\x18\x01 \x01(\x01B\x04\xe2A\x01\x01R\fspeakingRate\x12\x1a\n" +
+	"\x05pitch\x18\x02 \x01(\x01B\x04\xe2A\x01\x01R\x05pitch\x12*\n" +
+	"\x0evolume_gain_db\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\fvolumeGainDb\x122\n" +
+	"\x12effects_profile_id\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x10effectsProfileId\x12L\n" +
+	"\x05voice\x18\x04 \x01(\v20.google.cloud.dialogflow.v2.VoiceSelectionParamsB\x04\xe2A\x01\x01R\x05voice\x12c\n" +
+	"\x0epronunciations\x18\x06 \x03(\v25.google.cloud.dialogflow.v2.CustomPronunciationParamsB\x04\xe2A\x01\x01R\x0epronunciations\"\xbf\x02\n" +
 	"\x19CustomPronunciationParams\x12\x16\n" +
 	"\x06phrase\x18\x01 \x01(\tR\x06phrase\x12s\n" +
 	"\x11phonetic_encoding\x18\x02 \x01(\x0e2F.google.cloud.dialogflow.v2.CustomPronunciationParams.PhoneticEncodingR\x10phoneticEncoding\x12$\n" +
@@ -1694,14 +1705,14 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"\x10PhoneticEncoding\x12!\n" +
 	"\x1dPHONETIC_ENCODING_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15PHONETIC_ENCODING_IPA\x10\x01\x12\x1d\n" +
-	"\x19PHONETIC_ENCODING_X_SAMPA\x10\x02\"\x8a\x02\n" +
-	"\x11OutputAudioConfig\x12[\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e2/.google.cloud.dialogflow.v2.OutputAudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12*\n" +
+	"\x19PHONETIC_ENCODING_X_SAMPA\x10\x02\"\x8b\x02\n" +
+	"\x11OutputAudioConfig\x12\\\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e2/.google.cloud.dialogflow.v2.OutputAudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x12*\n" +
 	"\x11sample_rate_hertz\x18\x02 \x01(\x05R\x0fsampleRateHertz\x12l\n" +
 	"\x18synthesize_speech_config\x18\x03 \x01(\v22.google.cloud.dialogflow.v2.SynthesizeSpeechConfigR\x16synthesizeSpeechConfig\"a\n" +
 	"\x13TelephonyDtmfEvents\x12J\n" +
 	"\vdtmf_events\x18\x01 \x03(\x0e2).google.cloud.dialogflow.v2.TelephonyDtmfR\n" +
-	"dtmfEvents\"\x93\n" +
+	"dtmfEvents\"\xf5\n" +
 	"\n" +
 	"\x12SpeechToTextConfig\x12`\n" +
 	"\x14speech_model_variant\x18\x01 \x01(\x0e2..google.cloud.dialogflow.v2.SpeechModelVariantR\x12speechModelVariant\x12\x14\n" +
@@ -1713,15 +1724,15 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"\x11sample_rate_hertz\x18\a \x01(\x05R\x0fsampleRateHertz\x12#\n" +
 	"\rlanguage_code\x18\b \x01(\tR\flanguageCode\x12(\n" +
 	"\x10enable_word_info\x18\t \x01(\bR\x0eenableWordInfo\x12A\n" +
-	"\x1duse_timeout_based_endpointing\x18\v \x01(\bR\x1auseTimeoutBasedEndpointing\x12o\n" +
-	"\x11gemini_asr_config\x18\x0f \x01(\v2>.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfigB\x03\xe0A\x01R\x0fgeminiAsrConfig\x12)\n" +
-	"\x0euse_gemini_asr\x18\x10 \x01(\bB\x03\xe0A\x01R\fuseGeminiAsr\x1a\x91\x05\n" +
-	"\x0fGeminiAsrConfig\x12\x1e\n" +
-	"\bmodel_id\x18\x01 \x01(\tB\x03\xe0A\x01R\amodelId\x123\n" +
-	"\x13silence_duration_ms\x18\x02 \x01(\x05B\x03\xe0A\x01R\x11silenceDurationMs\x12/\n" +
-	"\x11prefix_padding_ms\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0fprefixPaddingMs\x12\x93\x01\n" +
-	"\x1bstart_of_speech_sensitivity\x18\x04 \x01(\x0e2O.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.StartSensitivityB\x03\xe0A\x01R\x18startOfSpeechSensitivity\x12\x8d\x01\n" +
-	"\x19end_of_speech_sensitivity\x18\x05 \x01(\x0e2M.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.EndSensitivityB\x03\xe0A\x01R\x16endOfSpeechSensitivity\"l\n" +
+	"\x1duse_timeout_based_endpointing\x18\v \x01(\bR\x1auseTimeoutBasedEndpointing\x12p\n" +
+	"\x11gemini_asr_config\x18\x0f \x01(\v2>.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfigB\x04\xe2A\x01\x01R\x0fgeminiAsrConfig\x12*\n" +
+	"\x0euse_gemini_asr\x18\x10 \x01(\bB\x04\xe2A\x01\x01R\fuseGeminiAsr\x12T\n" +
+	"!disable_interim_input_transcripts\x18\x11 \x01(\bB\x04\xe2A\x01\x01H\x00R\x1edisableInterimInputTranscripts\x88\x01\x01\x1a\xf5\x04\n" +
+	"\x0fGeminiAsrConfig\x124\n" +
+	"\x13silence_duration_ms\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x11silenceDurationMs\x120\n" +
+	"\x11prefix_padding_ms\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x0fprefixPaddingMs\x12\x94\x01\n" +
+	"\x1bstart_of_speech_sensitivity\x18\x04 \x01(\x0e2O.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.StartSensitivityB\x04\xe2A\x01\x01R\x18startOfSpeechSensitivity\x12\x8e\x01\n" +
+	"\x19end_of_speech_sensitivity\x18\x05 \x01(\x0e2M.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.EndSensitivityB\x04\xe2A\x01\x01R\x16endOfSpeechSensitivity\"l\n" +
 	"\x10StartSensitivity\x12!\n" +
 	"\x1dSTART_SENSITIVITY_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16START_SENSITIVITY_HIGH\x10\x01\x12\x19\n" +
@@ -1729,7 +1740,8 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"\x0eEndSensitivity\x12\x1f\n" +
 	"\x1bEND_SENSITIVITY_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14END_SENSITIVITY_HIGH\x10\x01\x12\x17\n" +
-	"\x13END_SENSITIVITY_LOW\x10\x02*\x94\x02\n" +
+	"\x13END_SENSITIVITY_LOW\x10\x02B$\n" +
+	"\"_disable_interim_input_transcripts*\x94\x02\n" +
 	"\rTelephonyDtmf\x12\x1e\n" +
 	"\x1aTELEPHONY_DTMF_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDTMF_ONE\x10\x01\x12\f\n" +
@@ -1856,6 +1868,7 @@ func file_google_cloud_dialogflow_v2_audio_config_proto_init() {
 		return
 	}
 	file_google_cloud_dialogflow_v2_audio_config_proto_msgTypes[2].OneofWrappers = []any{}
+	file_google_cloud_dialogflow_v2_audio_config_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

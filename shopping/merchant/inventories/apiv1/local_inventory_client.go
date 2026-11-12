@@ -599,6 +599,11 @@ func (c *localInventoryRESTClient) ListLocalInventories(ctx context.Context, req
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/inventories/v1/%v/localInventories", req.GetParent())
 
 		params := url.Values{}
@@ -679,6 +684,11 @@ func (c *localInventoryRESTClient) InsertLocalInventory(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/inventories/v1/%v/localInventories:insert", req.GetParent())
 
 	params := url.Values{}
@@ -735,6 +745,11 @@ func (c *localInventoryRESTClient) InsertLocalInventory(ctx context.Context, req
 func (c *localInventoryRESTClient) DeleteLocalInventory(ctx context.Context, req *inventoriespb.DeleteLocalInventoryRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/inventories/v1/%v", req.GetName())

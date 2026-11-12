@@ -325,6 +325,14 @@ func (c *reservationSlotsRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetParentName(),
+		req.GetReservationSlot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/%v/reservationSlots/%v", req.GetProject(), req.GetZone(), req.GetParentName(), req.GetReservationSlot())
 
 	// Build HTTP headers from client and context metadata.
@@ -372,6 +380,14 @@ func (c *reservationSlotsRESTClient) Get(ctx context.Context, req *computepb.Get
 func (c *reservationSlotsRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthReservationSlotRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetParentName(),
+		req.GetReservationSlot(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/%v/reservationSlots/%v/getHealth", req.GetProject(), req.GetZone(), req.GetParentName(), req.GetReservationSlot())
@@ -443,6 +459,14 @@ func (c *reservationSlotsRESTClient) GetVersion(ctx context.Context, req *comput
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetParentName(),
+		req.GetReservationSlot(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/%v/reservationSlots/%v/getVersion", req.GetProject(), req.GetZone(), req.GetParentName(), req.GetReservationSlot())
@@ -522,6 +546,13 @@ func (c *reservationSlotsRESTClient) List(ctx context.Context, req *computepb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetParentName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/%v/reservationSlots", req.GetProject(), req.GetZone(), req.GetParentName())
 
 		params := url.Values{}
@@ -597,6 +628,14 @@ func (c *reservationSlotsRESTClient) Update(ctx context.Context, req *computepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetParentName(),
+		req.GetReservationSlot(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/%v/reservationSlots/%v", req.GetProject(), req.GetZone(), req.GetParentName(), req.GetReservationSlot())

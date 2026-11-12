@@ -1315,41 +1315,41 @@ var File_google_cloud_channel_v1_reports_service_proto protoreflect.FileDescript
 
 const file_google_cloud_channel_v1_reports_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/channel/v1/reports_service.proto\x12\x17google.cloud.channel.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/channel/v1/operations.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/datetime.proto\x1a\x19google/type/decimal.proto\x1a\x17google/type/money.proto\"\xe8\x01\n" +
-	"\x13RunReportJobRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"cloudchannel.googleapis.com/ReportR\x04name\x12F\n" +
+	"-google/cloud/channel/v1/reports_service.proto\x12\x17google.cloud.channel.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/channel/v1/operations.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/datetime.proto\x1a\x19google/type/decimal.proto\x1a\x17google/type/money.proto\"\xec\x01\n" +
+	"\x13RunReportJobRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"cloudchannel.googleapis.com/ReportR\x04name\x12G\n" +
 	"\n" +
-	"date_range\x18\x02 \x01(\v2\".google.cloud.channel.v1.DateRangeB\x03\xe0A\x01R\tdateRange\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode:\x02\x18\x01\"\xb6\x01\n" +
+	"date_range\x18\x02 \x01(\v2\".google.cloud.channel.v1.DateRangeB\x04\xe2A\x01\x01R\tdateRange\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode:\x02\x18\x01\"\xb6\x01\n" +
 	"\x14RunReportJobResponse\x12A\n" +
 	"\n" +
 	"report_job\x18\x01 \x01(\v2\".google.cloud.channel.v1.ReportJobR\treportJob\x12W\n" +
-	"\x0freport_metadata\x18\x02 \x01(\v2..google.cloud.channel.v1.ReportResultsMetadataR\x0ereportMetadata:\x02\x18\x01\"\xdf\x01\n" +
-	"\x19FetchReportResultsRequest\x12L\n" +
+	"\x0freport_metadata\x18\x02 \x01(\v2..google.cloud.channel.v1.ReportResultsMetadataR\x0ereportMetadata:\x02\x18\x01\"\xe3\x01\n" +
+	"\x19FetchReportResultsRequest\x12M\n" +
 	"\n" +
-	"report_job\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%cloudchannel.googleapis.com/ReportJobR\treportJob\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"report_job\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%cloudchannel.googleapis.com/ReportJobR\treportJob\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12*\n" +
-	"\x0epartition_keys\x18\x04 \x03(\tB\x03\xe0A\x01R\rpartitionKeys:\x02\x18\x01\"\xd3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12+\n" +
+	"\x0epartition_keys\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\rpartitionKeys:\x02\x18\x01\"\xd3\x01\n" +
 	"\x1aFetchReportResultsResponse\x12W\n" +
 	"\x0freport_metadata\x18\x01 \x01(\v2..google.cloud.channel.v1.ReportResultsMetadataR\x0ereportMetadata\x120\n" +
 	"\x04rows\x18\x02 \x03(\v2\x1c.google.cloud.channel.v1.RowR\x04rows\x12&\n" +
-	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xa5\x01\n" +
-	"\x12ListReportsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xa9\x01\n" +
+	"\x12ListReportsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode:\x02\x18\x01\"|\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode:\x02\x18\x01\"|\n" +
 	"\x13ListReportsResponse\x129\n" +
 	"\areports\x18\x01 \x03(\v2\x1f.google.cloud.channel.v1.ReportR\areports\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xca\x01\n" +
-	"\tReportJob\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12J\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xcb\x01\n" +
+	"\tReportJob\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12J\n" +
 	"\rreport_status\x18\x02 \x01(\v2%.google.cloud.channel.v1.ReportStatusR\freportStatus:X\xeaAS\n" +
 	"%cloudchannel.googleapis.com/ReportJob\x12*accounts/{account}/reportJobs/{report_job}\x18\x01\"\x8a\x02\n" +
 	"\x15ReportResultsMetadata\x127\n" +
@@ -1400,9 +1400,9 @@ const file_google_cloud_channel_v1_reports_service_proto_rawDesc = "" +
 	"\aWRITING\x10\x02\x12\r\n" +
 	"\tAVAILABLE\x10\x03\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x04:\x02\x18\x01\"\xf1\x01\n" +
-	"\x06Report\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12!\n" +
+	"\x06FAILED\x10\x04:\x02\x18\x01\"\xf2\x01\n" +
+	"\x06Report\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x129\n" +
 	"\acolumns\x18\x03 \x03(\v2\x1f.google.cloud.channel.v1.ColumnR\acolumns\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription:N\xeaAI\n" +

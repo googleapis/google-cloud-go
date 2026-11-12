@@ -2862,14 +2862,14 @@ var File_google_bigtable_v2_bigtable_proto protoreflect.FileDescriptor
 
 const file_google_bigtable_v2_bigtable_proto_rawDesc = "" +
 	"\n" +
-	"!google/bigtable/v2/bigtable.proto\x12\x12google.bigtable.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1dgoogle/bigtable/v2/data.proto\x1a&google/bigtable/v2/request_stats.proto\x1a google/bigtable/v2/session.proto\x1a\x1egoogle/bigtable/v2/types.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xc4\x05\n" +
-	"\x0fReadRowsRequest\x12I\n" +
+	"!google/bigtable/v2/bigtable.proto\x12\x12google.bigtable.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1dgoogle/bigtable/v2/data.proto\x1a&google/bigtable/v2/request_stats.proto\x1a google/bigtable/v2/session.proto\x1a\x1egoogle/bigtable/v2/types.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xc7\x05\n" +
+	"\x0fReadRowsRequest\x12J\n" +
 	"\n" +
-	"table_name\x18\x01 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12e\n" +
-	"\x14authorized_view_name\x18\t \x01(\tB3\xe0A\x01\xfaA-\n" +
-	"+bigtableadmin.googleapis.com/AuthorizedViewR\x12authorizedViewName\x12k\n" +
-	"\x16materialized_view_name\x18\v \x01(\tB5\xe0A\x01\xfaA/\n" +
+	"table_name\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12f\n" +
+	"\x14authorized_view_name\x18\t \x01(\tB4\xe2A\x01\x01\xfaA-\n" +
+	"+bigtableadmin.googleapis.com/AuthorizedViewR\x12authorizedViewName\x12l\n" +
+	"\x16materialized_view_name\x18\v \x01(\tB6\xe2A\x01\x01\xfaA/\n" +
 	"-bigtableadmin.googleapis.com/MaterializedViewR\x14materializedViewName\x12$\n" +
 	"\x0eapp_profile_id\x18\x05 \x01(\tR\fappProfileId\x12.\n" +
 	"\x04rows\x18\x02 \x01(\v2\x1a.google.bigtable.v2.RowSetR\x04rows\x125\n" +
@@ -2900,42 +2900,42 @@ const file_google_bigtable_v2_bigtable_proto_rawDesc = "" +
 	"\n" +
 	"commit_row\x18\t \x01(\bH\x00R\tcommitRowB\f\n" +
 	"\n" +
-	"row_status\"\x9b\x03\n" +
-	"\x14SampleRowKeysRequest\x12I\n" +
+	"row_status\"\x9f\x03\n" +
+	"\x14SampleRowKeysRequest\x12J\n" +
 	"\n" +
-	"table_name\x18\x01 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12e\n" +
-	"\x14authorized_view_name\x18\x04 \x01(\tB3\xe0A\x01\xfaA-\n" +
-	"+bigtableadmin.googleapis.com/AuthorizedViewR\x12authorizedViewName\x12k\n" +
-	"\x16materialized_view_name\x18\x05 \x01(\tB5\xe0A\x01\xfaA/\n" +
+	"table_name\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12f\n" +
+	"\x14authorized_view_name\x18\x04 \x01(\tB4\xe2A\x01\x01\xfaA-\n" +
+	"+bigtableadmin.googleapis.com/AuthorizedViewR\x12authorizedViewName\x12l\n" +
+	"\x16materialized_view_name\x18\x05 \x01(\tB6\xe2A\x01\x01\xfaA/\n" +
 	"-bigtableadmin.googleapis.com/MaterializedViewR\x14materializedViewName\x12$\n" +
-	"\x0eapp_profile_id\x18\x02 \x01(\tR\fappProfileId\x12>\n" +
-	"\trow_range\x18\x06 \x01(\v2\x1c.google.bigtable.v2.RowRangeB\x03\xe0A\x01R\browRange\"S\n" +
+	"\x0eapp_profile_id\x18\x02 \x01(\tR\fappProfileId\x12?\n" +
+	"\trow_range\x18\x06 \x01(\v2\x1c.google.bigtable.v2.RowRangeB\x04\xe2A\x01\x01R\browRange\"S\n" +
 	"\x15SampleRowKeysResponse\x12\x17\n" +
 	"\arow_key\x18\x01 \x01(\fR\x06rowKey\x12!\n" +
-	"\foffset_bytes\x18\x02 \x01(\x03R\voffsetBytes\"\x8c\x03\n" +
-	"\x10MutateRowRequest\x12I\n" +
+	"\foffset_bytes\x18\x02 \x01(\x03R\voffsetBytes\"\x90\x03\n" +
+	"\x10MutateRowRequest\x12J\n" +
 	"\n" +
-	"table_name\x18\x01 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12e\n" +
-	"\x14authorized_view_name\x18\x06 \x01(\tB3\xe0A\x01\xfaA-\n" +
+	"table_name\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12f\n" +
+	"\x14authorized_view_name\x18\x06 \x01(\tB4\xe2A\x01\x01\xfaA-\n" +
 	"+bigtableadmin.googleapis.com/AuthorizedViewR\x12authorizedViewName\x12$\n" +
-	"\x0eapp_profile_id\x18\x04 \x01(\tR\fappProfileId\x12\x1c\n" +
-	"\arow_key\x18\x02 \x01(\fB\x03\xe0A\x02R\x06rowKey\x12?\n" +
-	"\tmutations\x18\x03 \x03(\v2\x1c.google.bigtable.v2.MutationB\x03\xe0A\x02R\tmutations\x12A\n" +
+	"\x0eapp_profile_id\x18\x04 \x01(\tR\fappProfileId\x12\x1d\n" +
+	"\arow_key\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x06rowKey\x12@\n" +
+	"\tmutations\x18\x03 \x03(\v2\x1c.google.bigtable.v2.MutationB\x04\xe2A\x01\x02R\tmutations\x12A\n" +
 	"\vidempotency\x18\b \x01(\v2\x1f.google.bigtable.v2.IdempotencyR\vidempotency\"\x13\n" +
-	"\x11MutateRowResponse\"\xde\x03\n" +
-	"\x11MutateRowsRequest\x12I\n" +
+	"\x11MutateRowResponse\"\xe2\x03\n" +
+	"\x11MutateRowsRequest\x12J\n" +
 	"\n" +
-	"table_name\x18\x01 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12e\n" +
-	"\x14authorized_view_name\x18\x05 \x01(\tB3\xe0A\x01\xfaA-\n" +
+	"table_name\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12f\n" +
+	"\x14authorized_view_name\x18\x05 \x01(\tB4\xe2A\x01\x01\xfaA-\n" +
 	"+bigtableadmin.googleapis.com/AuthorizedViewR\x12authorizedViewName\x12$\n" +
-	"\x0eapp_profile_id\x18\x03 \x01(\tR\fappProfileId\x12J\n" +
-	"\aentries\x18\x02 \x03(\v2+.google.bigtable.v2.MutateRowsRequest.EntryB\x03\xe0A\x02R\aentries\x1a\xa4\x01\n" +
+	"\x0eapp_profile_id\x18\x03 \x01(\tR\fappProfileId\x12K\n" +
+	"\aentries\x18\x02 \x03(\v2+.google.bigtable.v2.MutateRowsRequest.EntryB\x04\xe2A\x01\x02R\aentries\x1a\xa5\x01\n" +
 	"\x05Entry\x12\x17\n" +
-	"\arow_key\x18\x01 \x01(\fR\x06rowKey\x12?\n" +
-	"\tmutations\x18\x02 \x03(\v2\x1c.google.bigtable.v2.MutationB\x03\xe0A\x02R\tmutations\x12A\n" +
+	"\arow_key\x18\x01 \x01(\fR\x06rowKey\x12@\n" +
+	"\tmutations\x18\x02 \x03(\v2\x1c.google.bigtable.v2.MutationB\x04\xe2A\x01\x02R\tmutations\x12A\n" +
 	"\vidempotency\x18\x03 \x01(\v2\x1f.google.bigtable.v2.IdempotencyR\vidempotency\"\x8b\x02\n" +
 	"\x12MutateRowsResponse\x12F\n" +
 	"\aentries\x18\x01 \x03(\v2,.google.bigtable.v2.MutateRowsResponse.EntryR\aentries\x12N\n" +
@@ -2946,46 +2946,46 @@ const file_google_bigtable_v2_bigtable_proto_rawDesc = "" +
 	"\x10_rate_limit_info\"Z\n" +
 	"\rRateLimitInfo\x121\n" +
 	"\x06period\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x06period\x12\x16\n" +
-	"\x06factor\x18\x02 \x01(\x01R\x06factor\"\xe6\x03\n" +
-	"\x18CheckAndMutateRowRequest\x12I\n" +
+	"\x06factor\x18\x02 \x01(\x01R\x06factor\"\xe9\x03\n" +
+	"\x18CheckAndMutateRowRequest\x12J\n" +
 	"\n" +
-	"table_name\x18\x01 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12e\n" +
-	"\x14authorized_view_name\x18\t \x01(\tB3\xe0A\x01\xfaA-\n" +
+	"table_name\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12f\n" +
+	"\x14authorized_view_name\x18\t \x01(\tB4\xe2A\x01\x01\xfaA-\n" +
 	"+bigtableadmin.googleapis.com/AuthorizedViewR\x12authorizedViewName\x12$\n" +
-	"\x0eapp_profile_id\x18\a \x01(\tR\fappProfileId\x12\x1c\n" +
-	"\arow_key\x18\x02 \x01(\fB\x03\xe0A\x02R\x06rowKey\x12H\n" +
+	"\x0eapp_profile_id\x18\a \x01(\tR\fappProfileId\x12\x1d\n" +
+	"\arow_key\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x06rowKey\x12H\n" +
 	"\x10predicate_filter\x18\x06 \x01(\v2\x1d.google.bigtable.v2.RowFilterR\x0fpredicateFilter\x12C\n" +
 	"\x0etrue_mutations\x18\x04 \x03(\v2\x1c.google.bigtable.v2.MutationR\rtrueMutations\x12E\n" +
 	"\x0ffalse_mutations\x18\x05 \x03(\v2\x1c.google.bigtable.v2.MutationR\x0efalseMutations\"H\n" +
 	"\x19CheckAndMutateRowResponse\x12+\n" +
-	"\x11predicate_matched\x18\x01 \x01(\bR\x10predicateMatched\"}\n" +
-	"\x12PingAndWarmRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x11predicate_matched\x18\x01 \x01(\bR\x10predicateMatched\"~\n" +
+	"\x12PingAndWarmRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%bigtableadmin.googleapis.com/InstanceR\x04name\x12$\n" +
 	"\x0eapp_profile_id\x18\x02 \x01(\tR\fappProfileId\"\x15\n" +
-	"\x13PingAndWarmResponse\"\xd5\x02\n" +
-	"\x19ReadModifyWriteRowRequest\x12I\n" +
+	"\x13PingAndWarmResponse\"\xd9\x02\n" +
+	"\x19ReadModifyWriteRowRequest\x12J\n" +
 	"\n" +
-	"table_name\x18\x01 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12e\n" +
-	"\x14authorized_view_name\x18\x06 \x01(\tB3\xe0A\x01\xfaA-\n" +
+	"table_name\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12f\n" +
+	"\x14authorized_view_name\x18\x06 \x01(\tB4\xe2A\x01\x01\xfaA-\n" +
 	"+bigtableadmin.googleapis.com/AuthorizedViewR\x12authorizedViewName\x12$\n" +
-	"\x0eapp_profile_id\x18\x04 \x01(\tR\fappProfileId\x12\x1c\n" +
-	"\arow_key\x18\x02 \x01(\fB\x03\xe0A\x02R\x06rowKey\x12B\n" +
-	"\x05rules\x18\x03 \x03(\v2'.google.bigtable.v2.ReadModifyWriteRuleB\x03\xe0A\x02R\x05rules\"G\n" +
+	"\x0eapp_profile_id\x18\x04 \x01(\tR\fappProfileId\x12\x1d\n" +
+	"\arow_key\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x06rowKey\x12C\n" +
+	"\x05rules\x18\x03 \x03(\v2'.google.bigtable.v2.ReadModifyWriteRuleB\x04\xe2A\x01\x02R\x05rules\"G\n" +
 	"\x1aReadModifyWriteRowResponse\x12)\n" +
-	"\x03row\x18\x01 \x01(\v2\x17.google.bigtable.v2.RowR\x03row\"\x9f\x01\n" +
-	",GenerateInitialChangeStreamPartitionsRequest\x12I\n" +
+	"\x03row\x18\x01 \x01(\v2\x17.google.bigtable.v2.RowR\x03row\"\xa0\x01\n" +
+	",GenerateInitialChangeStreamPartitionsRequest\x12J\n" +
 	"\n" +
-	"table_name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"table_name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12$\n" +
 	"\x0eapp_profile_id\x18\x02 \x01(\tR\fappProfileId\"r\n" +
 	"-GenerateInitialChangeStreamPartitionsResponse\x12A\n" +
-	"\tpartition\x18\x01 \x01(\v2#.google.bigtable.v2.StreamPartitionR\tpartition\"\xfa\x03\n" +
-	"\x17ReadChangeStreamRequest\x12I\n" +
+	"\tpartition\x18\x01 \x01(\v2#.google.bigtable.v2.StreamPartitionR\tpartition\"\xfb\x03\n" +
+	"\x17ReadChangeStreamRequest\x12J\n" +
 	"\n" +
-	"table_name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"table_name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12$\n" +
 	"\x0eapp_profile_id\x18\x02 \x01(\tR\fappProfileId\x12A\n" +
 	"\tpartition\x18\x03 \x01(\v2#.google.bigtable.v2.StreamPartitionR\tpartition\x12;\n" +
@@ -3036,17 +3036,17 @@ const file_google_bigtable_v2_bigtable_proto_rawDesc = "" +
 	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusR\x06status\x12\\\n" +
 	"\x13continuation_tokens\x18\x02 \x03(\v2+.google.bigtable.v2.StreamContinuationTokenR\x12continuationTokens\x12J\n" +
 	"\x0enew_partitions\x18\x03 \x03(\v2#.google.bigtable.v2.StreamPartitionR\rnewPartitionsB\x0f\n" +
-	"\rstream_record\"\xca\x05\n" +
-	"\x13ExecuteQueryRequest\x12R\n" +
-	"\rinstance_name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%bigtableadmin.googleapis.com/InstanceR\finstanceName\x12)\n" +
-	"\x0eapp_profile_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fappProfileId\x12\x1b\n" +
-	"\x05query\x18\x03 \x01(\tB\x05\xe0A\x02\x18\x01R\x05query\x12%\n" +
+	"\rstream_record\"\xd0\x05\n" +
+	"\x13ExecuteQueryRequest\x12S\n" +
+	"\rinstance_name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%bigtableadmin.googleapis.com/InstanceR\finstanceName\x12*\n" +
+	"\x0eapp_profile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fappProfileId\x12\x1c\n" +
+	"\x05query\x18\x03 \x01(\tB\x06\xe2A\x01\x02\x18\x01R\x05query\x12%\n" +
 	"\x0eprepared_query\x18\t \x01(\fR\rpreparedQuery\x12H\n" +
-	"\fproto_format\x18\x04 \x01(\v2\x1f.google.bigtable.v2.ProtoFormatB\x02\x18\x01H\x00R\vprotoFormat\x12&\n" +
-	"\fresume_token\x18\b \x01(\fB\x03\xe0A\x01R\vresumeToken\x12P\n" +
-	"\x06params\x18\a \x03(\v23.google.bigtable.v2.ExecuteQueryRequest.ParamsEntryB\x03\xe0A\x02R\x06params\x12i\n" +
-	"\x0fview_parameters\x18\f \x03(\v2;.google.bigtable.v2.ExecuteQueryRequest.ViewParametersEntryB\x03\xe0A\x01R\x0eviewParameters\x1aT\n" +
+	"\fproto_format\x18\x04 \x01(\v2\x1f.google.bigtable.v2.ProtoFormatB\x02\x18\x01H\x00R\vprotoFormat\x12'\n" +
+	"\fresume_token\x18\b \x01(\fB\x04\xe2A\x01\x01R\vresumeToken\x12Q\n" +
+	"\x06params\x18\a \x03(\v23.google.bigtable.v2.ExecuteQueryRequest.ParamsEntryB\x04\xe2A\x01\x02R\x06params\x12j\n" +
+	"\x0fview_parameters\x18\f \x03(\v2;.google.bigtable.v2.ExecuteQueryRequest.ViewParametersEntryB\x04\xe2A\x01\x01R\x0eviewParameters\x1aT\n" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12/\n" +
 	"\x05value\x18\x02 \x01(\v2\x19.google.bigtable.v2.ValueR\x05value:\x028\x01\x1a\\\n" +
@@ -3058,14 +3058,14 @@ const file_google_bigtable_v2_bigtable_proto_rawDesc = "" +
 	"\bmetadata\x18\x01 \x01(\v2%.google.bigtable.v2.ResultSetMetadataH\x00R\bmetadata\x12@\n" +
 	"\aresults\x18\x02 \x01(\v2$.google.bigtable.v2.PartialResultSetH\x00R\aresultsB\n" +
 	"\n" +
-	"\bresponse\"\xbc\x03\n" +
-	"\x13PrepareQueryRequest\x12R\n" +
-	"\rinstance_name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%bigtableadmin.googleapis.com/InstanceR\finstanceName\x12)\n" +
-	"\x0eapp_profile_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fappProfileId\x12\x19\n" +
-	"\x05query\x18\x03 \x01(\tB\x03\xe0A\x02R\x05query\x12D\n" +
-	"\fproto_format\x18\x04 \x01(\v2\x1f.google.bigtable.v2.ProtoFormatH\x00R\vprotoFormat\x12]\n" +
-	"\vparam_types\x18\x06 \x03(\v27.google.bigtable.v2.PrepareQueryRequest.ParamTypesEntryB\x03\xe0A\x02R\n" +
+	"\bresponse\"\xc0\x03\n" +
+	"\x13PrepareQueryRequest\x12S\n" +
+	"\rinstance_name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%bigtableadmin.googleapis.com/InstanceR\finstanceName\x12*\n" +
+	"\x0eapp_profile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fappProfileId\x12\x1a\n" +
+	"\x05query\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12D\n" +
+	"\fproto_format\x18\x04 \x01(\v2\x1f.google.bigtable.v2.ProtoFormatH\x00R\vprotoFormat\x12^\n" +
+	"\vparam_types\x18\x06 \x03(\v27.google.bigtable.v2.PrepareQueryRequest.ParamTypesEntryB\x04\xe2A\x01\x02R\n" +
 	"paramTypes\x1aW\n" +
 	"\x0fParamTypesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12.\n" +

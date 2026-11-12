@@ -137,14 +137,14 @@ var File_google_cloud_support_v2beta_comment_proto protoreflect.FileDescriptor
 
 const file_google_cloud_support_v2beta_comment_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/support/v2beta/comment.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/support/v2beta/actor.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\x03\n" +
-	"\aComment\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\acreator\x18\x03 \x01(\v2\".google.cloud.support.v2beta.ActorB\x03\xe0A\x03R\acreator\x12\x12\n" +
-	"\x04body\x18\x04 \x01(\tR\x04body\x12-\n" +
-	"\x0fplain_text_body\x18\x05 \x01(\tB\x05\xe0A\x03\x18\x01R\rplainTextBody:\x9b\x01\xeaA\x97\x01\n" +
+	")google/cloud/support/v2beta/comment.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/support/v2beta/actor.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8d\x03\n" +
+	"\aComment\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\acreator\x18\x03 \x01(\v2\".google.cloud.support.v2beta.ActorB\x04\xe2A\x01\x03R\acreator\x12\x12\n" +
+	"\x04body\x18\x04 \x01(\tR\x04body\x12.\n" +
+	"\x0fplain_text_body\x18\x05 \x01(\tB\x06\xe2A\x01\x03\x18\x01R\rplainTextBody:\x9b\x01\xeaA\x97\x01\n" +
 	"#cloudsupport.googleapis.com/Comment\x12<organizations/{organization}/cases/{case}/comments/{comment}\x122projects/{project}/cases/{case}/comments/{comment}B\xc9\x01\n" +
 	"\x1fcom.google.cloud.support.v2betaB\fCommentProtoP\x01Z9cloud.google.com/go/support/apiv2beta/supportpb;supportpb\xaa\x02\x1bGoogle.Cloud.Support.V2Beta\xca\x02\x1bGoogle\\Cloud\\Support\\V2beta\xea\x02\x1eGoogle::Cloud::Support::V2betab\x06proto3"
 

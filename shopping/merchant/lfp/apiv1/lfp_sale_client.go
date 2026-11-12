@@ -437,6 +437,11 @@ func (c *lfpSaleRESTClient) InsertLfpSale(ctx context.Context, req *lfppb.Insert
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/lfp/v1/%v/lfpSales:insert", req.GetParent())
 
 	params := url.Values{}

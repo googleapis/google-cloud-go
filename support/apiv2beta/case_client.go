@@ -861,6 +861,11 @@ func (c *caseRESTClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -930,6 +935,11 @@ func (c *caseRESTClient) ListCases(ctx context.Context, req *supportpb.ListCases
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/cases", req.GetParent())
@@ -1016,6 +1026,11 @@ func (c *caseRESTClient) SearchCases(ctx context.Context, req *supportpb.SearchC
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/cases:search", req.GetParent())
 
 		params := url.Values{}
@@ -1095,6 +1110,11 @@ func (c *caseRESTClient) CreateCase(ctx context.Context, req *supportpb.CreateCa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/cases", req.GetParent())
 
 	params := url.Values{}
@@ -1154,6 +1174,11 @@ func (c *caseRESTClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCase().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetCase().GetName())
@@ -1229,6 +1254,11 @@ func (c *caseRESTClient) EscalateCase(ctx context.Context, req *supportpb.Escala
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:escalate", req.GetName())
 
 	params := url.Values{}
@@ -1287,6 +1317,11 @@ func (c *caseRESTClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:close", req.GetName())

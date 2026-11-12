@@ -336,18 +336,18 @@ var File_google_cloud_vectorsearch_v1_data_object_proto protoreflect.FileDescrip
 
 const file_google_cloud_vectorsearch_v1_data_object_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/vectorsearch/v1/data_object.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfa\x04\n" +
+	".google/cloud/vectorsearch/v1/data_object.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\x05\n" +
 	"\n" +
-	"DataObject\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12)\n" +
-	"\x0edata_object_id\x18\x02 \x01(\tB\x03\xe0A\x03R\fdataObjectId\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x120\n" +
-	"\x04data\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x04data\x12T\n" +
-	"\avectors\x18\a \x03(\v25.google.cloud.vectorsearch.v1.DataObject.VectorsEntryB\x03\xe0A\x01R\avectors\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\x1a`\n" +
+	"DataObject\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12*\n" +
+	"\x0edata_object_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fdataObjectId\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x121\n" +
+	"\x04data\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x04data\x12U\n" +
+	"\avectors\x18\a \x03(\v25.google.cloud.vectorsearch.v1.DataObject.VectorsEntryB\x04\xe2A\x01\x01R\avectors\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1a`\n" +
 	"\fVectorsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12:\n" +
 	"\x05value\x18\x02 \x01(\v2$.google.cloud.vectorsearch.v1.VectorR\x05value:\x028\x01:\xa0\x01\xeaA\x9c\x01\n" +
@@ -356,12 +356,12 @@ const file_google_cloud_vectorsearch_v1_data_object_proto_rawDesc = "" +
 	"\x06Vector\x12A\n" +
 	"\x05dense\x18\x02 \x01(\v2).google.cloud.vectorsearch.v1.DenseVectorH\x00R\x05dense\x12D\n" +
 	"\x06sparse\x18\x03 \x01(\v2*.google.cloud.vectorsearch.v1.SparseVectorH\x00R\x06sparseB\r\n" +
-	"\vvector_type\"*\n" +
-	"\vDenseVector\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\x02B\x03\xe0A\x02R\x06values\"J\n" +
-	"\fSparseVector\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\x02B\x03\xe0A\x02R\x06values\x12\x1d\n" +
-	"\aindices\x18\x02 \x03(\x05B\x03\xe0A\x02R\aindicesB\xdb\x01\n" +
+	"\vvector_type\"+\n" +
+	"\vDenseVector\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\x02B\x04\xe2A\x01\x02R\x06values\"L\n" +
+	"\fSparseVector\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\x02B\x04\xe2A\x01\x02R\x06values\x12\x1e\n" +
+	"\aindices\x18\x02 \x03(\x05B\x04\xe2A\x01\x02R\aindicesB\xdb\x01\n" +
 	" com.google.cloud.vectorsearch.v1B\x0fDataObjectProtoP\x01ZDcloud.google.com/go/vectorsearch/apiv1/vectorsearchpb;vectorsearchpb\xaa\x02\x1cGoogle.Cloud.VectorSearch.V1\xca\x02\x1cGoogle\\Cloud\\VectorSearch\\V1\xea\x02\x1fGoogle::Cloud::VectorSearch::V1b\x06proto3"
 
 var (

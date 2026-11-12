@@ -2991,32 +2991,32 @@ var File_google_cloud_networksecurity_v1_intercept_proto protoreflect.FileDescri
 
 const file_google_cloud_networksecurity_v1_intercept_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/networksecurity/v1/intercept.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\r\n" +
-	"\x16InterceptEndpointGroup\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12`\n" +
-	"\x06labels\x18\x04 \x03(\v2C.google.cloud.networksecurity.v1.InterceptEndpointGroup.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x80\x01\n" +
-	"\x1aintercept_deployment_group\x18\x05 \x01(\tBB\xe0A\x02\xe0A\x05\xfaA9\n" +
-	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x18interceptDeploymentGroup\x12\x93\x01\n" +
-	"\x1aconnected_deployment_group\x18\v \x01(\v2P.google.cloud.networksecurity.v1.InterceptEndpointGroup.ConnectedDeploymentGroupB\x03\xe0A\x03R\x18connectedDeploymentGroup\x12X\n" +
-	"\x05state\x18\a \x01(\x0e2=.google.cloud.networksecurity.v1.InterceptEndpointGroup.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12s\n" +
-	"\fassociations\x18\t \x03(\v2J.google.cloud.networksecurity.v1.InterceptEndpointGroup.AssociationDetailsB\x03\xe0A\x03R\fassociations\x12%\n" +
+	"/google/cloud/networksecurity/v1/intercept.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\r\n" +
+	"\x16InterceptEndpointGroup\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12a\n" +
+	"\x06labels\x18\x04 \x03(\v2C.google.cloud.networksecurity.v1.InterceptEndpointGroup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x7f\n" +
+	"\x1aintercept_deployment_group\x18\x05 \x01(\tBA\xe2A\x02\x02\x05\xfaA9\n" +
+	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x18interceptDeploymentGroup\x12\x94\x01\n" +
+	"\x1aconnected_deployment_group\x18\v \x01(\v2P.google.cloud.networksecurity.v1.InterceptEndpointGroup.ConnectedDeploymentGroupB\x04\xe2A\x01\x03R\x18connectedDeploymentGroup\x12Y\n" +
+	"\x05state\x18\a \x01(\x0e2=.google.cloud.networksecurity.v1.InterceptEndpointGroup.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12t\n" +
+	"\fassociations\x18\t \x03(\v2J.google.cloud.networksecurity.v1.InterceptEndpointGroup.AssociationDetailsB\x04\xe2A\x01\x03R\fassociations\x12&\n" +
 	"\vdescription\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\vdescription\x1a\xc6\x01\n" +
-	"\x18ConnectedDeploymentGroup\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x03\xfaA9\n" +
-	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x04name\x12U\n" +
-	"\tlocations\x18\x02 \x03(\v22.google.cloud.networksecurity.v1.InterceptLocationB\x03\xe0A\x03R\tlocations\x1a\x99\x02\n" +
-	"\x12AssociationDetails\x12\\\n" +
-	"\x04name\x18\x01 \x01(\tBH\xe0A\x03\xfaAB\n" +
-	"@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x04name\x12@\n" +
-	"\anetwork\x18\x02 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12c\n" +
-	"\x05state\x18\x03 \x01(\x0e2H.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\vdescription\x1a\xc8\x01\n" +
+	"\x18ConnectedDeploymentGroup\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x03\xfaA9\n" +
+	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x04name\x12V\n" +
+	"\tlocations\x18\x02 \x03(\v22.google.cloud.networksecurity.v1.InterceptLocationB\x04\xe2A\x01\x03R\tlocations\x1a\x9c\x02\n" +
+	"\x12AssociationDetails\x12]\n" +
+	"\x04name\x18\x01 \x01(\tBI\xe2A\x01\x03\xfaAB\n" +
+	"@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x04name\x12A\n" +
+	"\anetwork\x18\x02 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12d\n" +
+	"\x05state\x18\x03 \x01(\x0e2H.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"v\n" +
@@ -3030,57 +3030,57 @@ const file_google_cloud_networksecurity_v1_intercept_proto_rawDesc = "" +
 	"\bDELETING\x10\x04\x12\x0f\n" +
 	"\vOUT_OF_SYNC\x10\x05\x12\x11\n" +
 	"\rDELETE_FAILED\x10\x06:\xc8\x01\xeaA\xc4\x01\n" +
-	"5networksecurity.googleapis.com/InterceptEndpointGroup\x12Zprojects/{project}/locations/{location}/interceptEndpointGroups/{intercept_endpoint_group}*\x17interceptEndpointGroups2\x16interceptEndpointGroup\"\xfe\x01\n" +
-	"\"ListInterceptEndpointGroupsRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125networksecurity.googleapis.com/InterceptEndpointGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"5networksecurity.googleapis.com/InterceptEndpointGroup\x12Zprojects/{project}/locations/{location}/interceptEndpointGroups/{intercept_endpoint_group}*\x17interceptEndpointGroups2\x16interceptEndpointGroup\"\x83\x02\n" +
+	"\"ListInterceptEndpointGroupsRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125networksecurity.googleapis.com/InterceptEndpointGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc2\x01\n" +
 	"#ListInterceptEndpointGroupsResponse\x12s\n" +
 	"\x19intercept_endpoint_groups\x18\x01 \x03(\v27.google.cloud.networksecurity.v1.InterceptEndpointGroupR\x17interceptEndpointGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"u\n" +
-	" GetInterceptEndpointGroupRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5networksecurity.googleapis.com/InterceptEndpointGroupR\x04name\"\xe4\x02\n" +
-	"#CreateInterceptEndpointGroupRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125networksecurity.googleapis.com/InterceptEndpointGroupR\x06parent\x12B\n" +
-	"\x1bintercept_endpoint_group_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x18interceptEndpointGroupId\x12v\n" +
-	"\x18intercept_endpoint_group\x18\x03 \x01(\v27.google.cloud.networksecurity.v1.InterceptEndpointGroupB\x03\xe0A\x02R\x16interceptEndpointGroup\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"v\n" +
+	" GetInterceptEndpointGroupRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5networksecurity.googleapis.com/InterceptEndpointGroupR\x04name\"\xe8\x02\n" +
+	"#CreateInterceptEndpointGroupRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125networksecurity.googleapis.com/InterceptEndpointGroupR\x06parent\x12C\n" +
+	"\x1bintercept_endpoint_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x18interceptEndpointGroupId\x12w\n" +
+	"\x18intercept_endpoint_group\x18\x03 \x01(\v27.google.cloud.networksecurity.v1.InterceptEndpointGroupB\x04\xe2A\x01\x02R\x16interceptEndpointGroup\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x02\n" +
-	"#UpdateInterceptEndpointGroupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12v\n" +
-	"\x18intercept_endpoint_group\x18\x02 \x01(\v27.google.cloud.networksecurity.v1.InterceptEndpointGroupB\x03\xe0A\x02R\x16interceptEndpointGroup\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8e\x02\n" +
+	"#UpdateInterceptEndpointGroupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12w\n" +
+	"\x18intercept_endpoint_group\x18\x02 \x01(\v27.google.cloud.networksecurity.v1.InterceptEndpointGroupB\x04\xe2A\x01\x02R\x16interceptEndpointGroup\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa4\x01\n" +
-	"#DeleteInterceptEndpointGroupRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5networksecurity.googleapis.com/InterceptEndpointGroupR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa6\x01\n" +
+	"#DeleteInterceptEndpointGroupRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5networksecurity.googleapis.com/InterceptEndpointGroupR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa6\f\n" +
-	"!InterceptEndpointGroupAssociation\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12k\n" +
-	"\x06labels\x18\x04 \x03(\v2N.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.LabelsEntryB\x03\xe0A\x01R\x06labels\x12z\n" +
-	"\x18intercept_endpoint_group\x18\x05 \x01(\tB@\xe0A\x02\xe0A\x05\xfaA7\n" +
-	"5networksecurity.googleapis.com/InterceptEndpointGroupR\x16interceptEndpointGroup\x12C\n" +
-	"\anetwork\x18\x06 \x01(\tB)\xe0A\x02\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x86\x01\n" +
-	"\x11locations_details\x18\a \x03(\v2R.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.LocationDetailsB\x05\xe0A\x03\x18\x01R\x10locationsDetails\x12c\n" +
-	"\x05state\x18\b \x01(\x0e2H.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vreconciling\x18\t \x01(\bB\x03\xe0A\x03R\vreconciling\x12U\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xad\f\n" +
+	"!InterceptEndpointGroupAssociation\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12l\n" +
+	"\x06labels\x18\x04 \x03(\v2N.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12y\n" +
+	"\x18intercept_endpoint_group\x18\x05 \x01(\tB?\xe2A\x02\x02\x05\xfaA7\n" +
+	"5networksecurity.googleapis.com/InterceptEndpointGroupR\x16interceptEndpointGroup\x12B\n" +
+	"\anetwork\x18\x06 \x01(\tB(\xe2A\x02\x02\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x87\x01\n" +
+	"\x11locations_details\x18\a \x03(\v2R.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.LocationDetailsB\x06\xe2A\x01\x03\x18\x01R\x10locationsDetails\x12d\n" +
+	"\x05state\x18\b \x01(\x0e2H.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vreconciling\x18\t \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12V\n" +
 	"\tlocations\x18\n" +
-	" \x03(\v22.google.cloud.networksecurity.v1.InterceptLocationB\x03\xe0A\x03R\tlocations\x12*\n" +
-	"\x0enetwork_cookie\x18\f \x01(\rB\x03\xe0A\x03R\rnetworkCookie\x1a\xe4\x01\n" +
-	"\x0fLocationDetails\x12\x1f\n" +
-	"\blocation\x18\x01 \x01(\tB\x03\xe0A\x03R\blocation\x12s\n" +
-	"\x05state\x18\x02 \x01(\x0e2X.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.LocationDetails.StateB\x03\xe0A\x03R\x05state\";\n" +
+	" \x03(\v22.google.cloud.networksecurity.v1.InterceptLocationB\x04\xe2A\x01\x03R\tlocations\x12+\n" +
+	"\x0enetwork_cookie\x18\f \x01(\rB\x04\xe2A\x01\x03R\rnetworkCookie\x1a\xe6\x01\n" +
+	"\x0fLocationDetails\x12 \n" +
+	"\blocation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12t\n" +
+	"\x05state\x18\x02 \x01(\x0e2X.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociation.LocationDetails.StateB\x04\xe2A\x01\x03R\x05state\";\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -3099,61 +3099,61 @@ const file_google_cloud_networksecurity_v1_intercept_proto_rawDesc = "" +
 	"\x06CLOSED\x10\x04\x12\x0f\n" +
 	"\vOUT_OF_SYNC\x10\x05\x12\x11\n" +
 	"\rDELETE_FAILED\x10\x06:\x80\x02\xeaA\xfc\x01\n" +
-	"@networksecurity.googleapis.com/InterceptEndpointGroupAssociation\x12qprojects/{project}/locations/{location}/interceptEndpointGroupAssociations/{intercept_endpoint_group_association}*\"interceptEndpointGroupAssociations2!interceptEndpointGroupAssociation\"\x94\x02\n" +
-	"-ListInterceptEndpointGroupAssociationsRequest\x12`\n" +
-	"\x06parent\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\x12@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"@networksecurity.googleapis.com/InterceptEndpointGroupAssociation\x12qprojects/{project}/locations/{location}/interceptEndpointGroupAssociations/{intercept_endpoint_group_association}*\"interceptEndpointGroupAssociations2!interceptEndpointGroupAssociation\"\x99\x02\n" +
+	"-ListInterceptEndpointGroupAssociationsRequest\x12a\n" +
+	"\x06parent\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\x12@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xf0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xf0\x01\n" +
 	".ListInterceptEndpointGroupAssociationsResponse\x12\x95\x01\n" +
 	"%intercept_endpoint_group_associations\x18\x01 \x03(\v2B.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociationR\"interceptEndpointGroupAssociations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8b\x01\n" +
-	"+GetInterceptEndpointGroupAssociationRequest\x12\\\n" +
-	"\x04name\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\n" +
-	"@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x04name\"\xb4\x03\n" +
-	".CreateInterceptEndpointGroupAssociationRequest\x12`\n" +
-	"\x06parent\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\x12@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x06parent\x12Y\n" +
-	"'intercept_endpoint_group_association_id\x18\x02 \x01(\tB\x03\xe0A\x01R#interceptEndpointGroupAssociationId\x12\x98\x01\n" +
-	"$intercept_endpoint_group_association\x18\x03 \x01(\v2B.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociationB\x03\xe0A\x02R!interceptEndpointGroupAssociation\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8c\x01\n" +
+	"+GetInterceptEndpointGroupAssociationRequest\x12]\n" +
+	"\x04name\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\n" +
+	"@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x04name\"\xb8\x03\n" +
+	".CreateInterceptEndpointGroupAssociationRequest\x12a\n" +
+	"\x06parent\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\x12@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x06parent\x12Z\n" +
+	"'intercept_endpoint_group_association_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R#interceptEndpointGroupAssociationId\x12\x99\x01\n" +
+	"$intercept_endpoint_group_association\x18\x03 \x01(\v2B.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociationB\x04\xe2A\x01\x02R!interceptEndpointGroupAssociation\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb9\x02\n" +
-	".UpdateInterceptEndpointGroupAssociationRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12\x98\x01\n" +
-	"$intercept_endpoint_group_association\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociationB\x03\xe0A\x02R!interceptEndpointGroupAssociation\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbc\x02\n" +
+	".UpdateInterceptEndpointGroupAssociationRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12\x99\x01\n" +
+	"$intercept_endpoint_group_association\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.InterceptEndpointGroupAssociationB\x04\xe2A\x01\x02R!interceptEndpointGroupAssociation\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xba\x01\n" +
-	".DeleteInterceptEndpointGroupAssociationRequest\x12\\\n" +
-	"\x04name\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\n" +
-	"@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbc\x01\n" +
+	".DeleteInterceptEndpointGroupAssociationRequest\x12]\n" +
+	"\x04name\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\n" +
+	"@networksecurity.googleapis.com/InterceptEndpointGroupAssociationR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xef\v\n" +
-	"\x18InterceptDeploymentGroup\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12b\n" +
-	"\x06labels\x18\x04 \x03(\v2E.google.cloud.networksecurity.v1.InterceptDeploymentGroup.LabelsEntryB\x03\xe0A\x01R\x06labels\x12C\n" +
-	"\anetwork\x18\x05 \x01(\tB)\xe0A\x02\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x91\x01\n" +
-	"\x19connected_endpoint_groups\x18\x06 \x03(\v2P.google.cloud.networksecurity.v1.InterceptDeploymentGroup.ConnectedEndpointGroupB\x03\xe0A\x03R\x17connectedEndpointGroups\x12z\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf9\v\n" +
+	"\x18InterceptDeploymentGroup\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12c\n" +
+	"\x06labels\x18\x04 \x03(\v2E.google.cloud.networksecurity.v1.InterceptDeploymentGroup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12B\n" +
+	"\anetwork\x18\x05 \x01(\tB(\xe2A\x02\x02\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x92\x01\n" +
+	"\x19connected_endpoint_groups\x18\x06 \x03(\v2P.google.cloud.networksecurity.v1.InterceptDeploymentGroup.ConnectedEndpointGroupB\x04\xe2A\x01\x03R\x17connectedEndpointGroups\x12{\n" +
 	"\x12nested_deployments\x18\n" +
-	" \x03(\v2D.google.cloud.networksecurity.v1.InterceptDeploymentGroup.DeploymentB\x05\xe0A\x03\x18\x01R\x11nestedDeployments\x12Z\n" +
-	"\x05state\x18\a \x01(\x0e2?.google.cloud.networksecurity.v1.InterceptDeploymentGroup.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12U\n" +
-	"\tlocations\x18\v \x03(\v22.google.cloud.networksecurity.v1.InterceptLocationB\x03\xe0A\x03R\tlocations\x1ak\n" +
-	"\x16ConnectedEndpointGroup\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x03\xfaA7\n" +
-	"5networksecurity.googleapis.com/InterceptEndpointGroupR\x04name\x1a\xb3\x01\n" +
+	" \x03(\v2D.google.cloud.networksecurity.v1.InterceptDeploymentGroup.DeploymentB\x06\xe2A\x01\x03\x18\x01R\x11nestedDeployments\x12[\n" +
+	"\x05state\x18\a \x01(\x0e2?.google.cloud.networksecurity.v1.InterceptDeploymentGroup.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12V\n" +
+	"\tlocations\x18\v \x03(\v22.google.cloud.networksecurity.v1.InterceptLocationB\x04\xe2A\x01\x03R\tlocations\x1al\n" +
+	"\x16ConnectedEndpointGroup\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x03\xfaA7\n" +
+	"5networksecurity.googleapis.com/InterceptEndpointGroupR\x04name\x1a\xb5\x01\n" +
 	"\n" +
-	"Deployment\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x03\xfaA4\n" +
-	"2networksecurity.googleapis.com/InterceptDeploymentR\x04name\x12U\n" +
-	"\x05state\x18\x02 \x01(\x0e2:.google.cloud.networksecurity.v1.InterceptDeployment.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	"Deployment\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x03\xfaA4\n" +
+	"2networksecurity.googleapis.com/InterceptDeploymentR\x04name\x12V\n" +
+	"\x05state\x18\x02 \x01(\x0e2:.google.cloud.networksecurity.v1.InterceptDeployment.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"F\n" +
@@ -3163,51 +3163,51 @@ const file_google_cloud_networksecurity_v1_intercept_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x01\x12\f\n" +
 	"\bCREATING\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:\xd2\x01\xeaA\xce\x01\n" +
-	"7networksecurity.googleapis.com/InterceptDeploymentGroup\x12^projects/{project}/locations/{location}/interceptDeploymentGroups/{intercept_deployment_group}*\x19interceptDeploymentGroups2\x18interceptDeploymentGroup\"\x82\x02\n" +
-	"$ListInterceptDeploymentGroupsRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127networksecurity.googleapis.com/InterceptDeploymentGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"7networksecurity.googleapis.com/InterceptDeploymentGroup\x12^projects/{project}/locations/{location}/interceptDeploymentGroups/{intercept_deployment_group}*\x19interceptDeploymentGroups2\x18interceptDeploymentGroup\"\x87\x02\n" +
+	"$ListInterceptDeploymentGroupsRequest\x12X\n" +
+	"\x06parent\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\x127networksecurity.googleapis.com/InterceptDeploymentGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xca\x01\n" +
 	"%ListInterceptDeploymentGroupsResponse\x12y\n" +
 	"\x1bintercept_deployment_groups\x18\x01 \x03(\v29.google.cloud.networksecurity.v1.InterceptDeploymentGroupR\x19interceptDeploymentGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"y\n" +
-	"\"GetInterceptDeploymentGroupRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x04name\"\xf2\x02\n" +
-	"%CreateInterceptDeploymentGroupRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127networksecurity.googleapis.com/InterceptDeploymentGroupR\x06parent\x12F\n" +
-	"\x1dintercept_deployment_group_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x1ainterceptDeploymentGroupId\x12|\n" +
-	"\x1aintercept_deployment_group\x18\x03 \x01(\v29.google.cloud.networksecurity.v1.InterceptDeploymentGroupB\x03\xe0A\x02R\x18interceptDeploymentGroup\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"z\n" +
+	"\"GetInterceptDeploymentGroupRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x04name\"\xf6\x02\n" +
+	"%CreateInterceptDeploymentGroupRequest\x12X\n" +
+	"\x06parent\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\x127networksecurity.googleapis.com/InterceptDeploymentGroupR\x06parent\x12G\n" +
+	"\x1dintercept_deployment_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x1ainterceptDeploymentGroupId\x12}\n" +
+	"\x1aintercept_deployment_group\x18\x03 \x01(\v29.google.cloud.networksecurity.v1.InterceptDeploymentGroupB\x04\xe2A\x01\x02R\x18interceptDeploymentGroup\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x93\x02\n" +
-	"%UpdateInterceptDeploymentGroupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12|\n" +
-	"\x1aintercept_deployment_group\x18\x02 \x01(\v29.google.cloud.networksecurity.v1.InterceptDeploymentGroupB\x03\xe0A\x02R\x18interceptDeploymentGroup\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x96\x02\n" +
+	"%UpdateInterceptDeploymentGroupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12}\n" +
+	"\x1aintercept_deployment_group\x18\x02 \x01(\v29.google.cloud.networksecurity.v1.InterceptDeploymentGroupB\x04\xe2A\x01\x02R\x18interceptDeploymentGroup\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa8\x01\n" +
-	"%DeleteInterceptDeploymentGroupRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xaa\x01\n" +
+	"%DeleteInterceptDeploymentGroupRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf9\a\n" +
-	"\x13InterceptDeployment\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12]\n" +
-	"\x06labels\x18\x04 \x03(\v2@.google.cloud.networksecurity.v1.InterceptDeployment.LabelsEntryB\x03\xe0A\x01R\x06labels\x12Y\n" +
-	"\x0fforwarding_rule\x18\x05 \x01(\tB0\xe0A\x02\xe0A\x05\xfaA'\n" +
-	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12\x80\x01\n" +
-	"\x1aintercept_deployment_group\x18\x06 \x01(\tBB\xe0A\x02\xe0A\x05\xfaA9\n" +
-	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x18interceptDeploymentGroup\x12U\n" +
-	"\x05state\x18\a \x01(\x0e2:.google.cloud.networksecurity.v1.InterceptDeployment.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x1a9\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfb\a\n" +
+	"\x13InterceptDeployment\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12^\n" +
+	"\x06labels\x18\x04 \x03(\v2@.google.cloud.networksecurity.v1.InterceptDeployment.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12X\n" +
+	"\x0fforwarding_rule\x18\x05 \x01(\tB/\xe2A\x02\x02\x05\xfaA'\n" +
+	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12\x7f\n" +
+	"\x1aintercept_deployment_group\x18\x06 \x01(\tBA\xe2A\x02\x02\x05\xfaA9\n" +
+	"7networksecurity.googleapis.com/InterceptDeploymentGroupR\x18interceptDeploymentGroup\x12V\n" +
+	"\x05state\x18\a \x01(\x0e2:.google.cloud.networksecurity.v1.InterceptDeployment.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"j\n" +
@@ -3219,41 +3219,41 @@ const file_google_cloud_networksecurity_v1_intercept_proto_rawDesc = "" +
 	"\bDELETING\x10\x03\x12\x0f\n" +
 	"\vOUT_OF_SYNC\x10\x04\x12\x11\n" +
 	"\rDELETE_FAILED\x10\x05:\xb8\x01\xeaA\xb4\x01\n" +
-	"2networksecurity.googleapis.com/InterceptDeployment\x12Sprojects/{project}/locations/{location}/interceptDeployments/{intercept_deployment}*\x14interceptDeployments2\x13interceptDeployment\"\xf8\x01\n" +
-	"\x1fListInterceptDeploymentsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networksecurity.googleapis.com/InterceptDeploymentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"2networksecurity.googleapis.com/InterceptDeployment\x12Sprojects/{project}/locations/{location}/interceptDeployments/{intercept_deployment}*\x14interceptDeployments2\x13interceptDeployment\"\xfd\x01\n" +
+	"\x1fListInterceptDeploymentsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networksecurity.googleapis.com/InterceptDeploymentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd7\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd7\x01\n" +
 	" ListInterceptDeploymentsResponse\x12i\n" +
 	"\x15intercept_deployments\x18\x01 \x03(\v24.google.cloud.networksecurity.v1.InterceptDeploymentR\x14interceptDeployments\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"o\n" +
-	"\x1dGetInterceptDeploymentRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2networksecurity.googleapis.com/InterceptDeploymentR\x04name\"\xcd\x02\n" +
-	" CreateInterceptDeploymentRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networksecurity.googleapis.com/InterceptDeploymentR\x06parent\x12;\n" +
-	"\x17intercept_deployment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15interceptDeploymentId\x12l\n" +
-	"\x14intercept_deployment\x18\x03 \x01(\v24.google.cloud.networksecurity.v1.InterceptDeploymentB\x03\xe0A\x02R\x13interceptDeployment\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"p\n" +
+	"\x1dGetInterceptDeploymentRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2networksecurity.googleapis.com/InterceptDeploymentR\x04name\"\xd1\x02\n" +
+	" CreateInterceptDeploymentRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networksecurity.googleapis.com/InterceptDeploymentR\x06parent\x12<\n" +
+	"\x17intercept_deployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15interceptDeploymentId\x12m\n" +
+	"\x14intercept_deployment\x18\x03 \x01(\v24.google.cloud.networksecurity.v1.InterceptDeploymentB\x04\xe2A\x01\x02R\x13interceptDeployment\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfe\x01\n" +
-	" UpdateInterceptDeploymentRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12l\n" +
-	"\x14intercept_deployment\x18\x02 \x01(\v24.google.cloud.networksecurity.v1.InterceptDeploymentB\x03\xe0A\x02R\x13interceptDeployment\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x81\x02\n" +
+	" UpdateInterceptDeploymentRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12m\n" +
+	"\x14intercept_deployment\x18\x02 \x01(\v24.google.cloud.networksecurity.v1.InterceptDeploymentB\x04\xe2A\x01\x02R\x13interceptDeployment\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9e\x01\n" +
-	" DeleteInterceptDeploymentRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2networksecurity.googleapis.com/InterceptDeploymentR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa0\x01\n" +
+	" DeleteInterceptDeploymentRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2networksecurity.googleapis.com/InterceptDeploymentR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc6\x01\n" +
-	"\x11InterceptLocation\x12\x1f\n" +
-	"\blocation\x18\x01 \x01(\tB\x03\xe0A\x03R\blocation\x12S\n" +
-	"\x05state\x18\x02 \x01(\x0e28.google.cloud.networksecurity.v1.InterceptLocation.StateB\x03\xe0A\x03R\x05state\";\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc8\x01\n" +
+	"\x11InterceptLocation\x12 \n" +
+	"\blocation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12T\n" +
+	"\x05state\x18\x02 \x01(\x0e28.google.cloud.networksecurity.v1.InterceptLocation.StateB\x04\xe2A\x01\x03R\x05state\";\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

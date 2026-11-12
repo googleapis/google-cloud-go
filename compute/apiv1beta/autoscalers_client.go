@@ -396,6 +396,11 @@ func (c *autoscalersRESTClient) AggregatedList(ctx context.Context, req *compute
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/autoscalers", req.GetProject())
 
 		params := url.Values{}
@@ -482,6 +487,13 @@ func (c *autoscalersRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetAutoscaler(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/autoscalers/%v", req.GetProject(), req.GetZone(), req.GetAutoscaler())
 
 	params := url.Values{}
@@ -546,6 +558,13 @@ func (c *autoscalersRESTClient) Get(ctx context.Context, req *computepb.GetAutos
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetAutoscaler(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/autoscalers/%v", req.GetProject(), req.GetZone(), req.GetAutoscaler())
 
 	// Build HTTP headers from client and context metadata.
@@ -601,6 +620,12 @@ func (c *autoscalersRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/autoscalers", req.GetProject(), req.GetZone())
@@ -679,6 +704,12 @@ func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAut
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/autoscalers", req.GetProject(), req.GetZone())
@@ -764,6 +795,12 @@ func (c *autoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchA
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/autoscalers", req.GetProject(), req.GetZone())
 
 	params := url.Values{}
@@ -838,6 +875,13 @@ func (c *autoscalersRESTClient) TestIamPermissions(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/autoscalers/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -893,6 +937,12 @@ func (c *autoscalersRESTClient) Update(ctx context.Context, req *computepb.Updat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/autoscalers", req.GetProject(), req.GetZone())

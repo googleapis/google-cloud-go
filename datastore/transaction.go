@@ -275,7 +275,7 @@ func (c *Client) newTransactionWithRetry(ctx context.Context, s *transactionSett
 	var t *Transaction
 	var newTxnErr error
 	retryer := gax.OnCodes(beginTxnRetryCodes, txnBackoff)
-	for attempt := 0; attempt < maxIndividualReqTxnRetry; attempt++ {
+	for range maxIndividualReqTxnRetry {
 		t, newTxnErr = c.newTransaction(ctx, s)
 		if newTxnErr == nil {
 			return t, newTxnErr
@@ -350,7 +350,17 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 		}
 
 		var retryErr error
-		fRunErr := f(tx)
+		fRunErr := func() error {
+			panicked := true
+			defer func() {
+				if panicked {
+					_ = tx.rollbackWithRetry()
+				}
+			}()
+			err := f(tx)
+			panicked = false
+			return err
+		}()
 		if fRunErr == nil {
 			// Commit transaction
 			cmt, commitErr := tx.Commit()
@@ -491,7 +501,7 @@ func (t *Transaction) rollbackWithRetry() error {
 	}()
 
 	retryer := gax.OnCodes(rollbackRetryCodes, txnBackoff)
-	for rollbackAttempt := 0; rollbackAttempt < maxIndividualReqTxnRetry; rollbackAttempt++ {
+	for range maxIndividualReqTxnRetry {
 		rollbackErr = t.Rollback()
 		if rollbackErr == nil {
 			return nil

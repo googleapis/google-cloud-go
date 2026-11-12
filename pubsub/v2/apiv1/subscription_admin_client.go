@@ -1590,6 +1590,11 @@ func (c *subscriptionAdminRESTClient) CreateSubscription(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1642,6 +1647,11 @@ func (c *subscriptionAdminRESTClient) CreateSubscription(ctx context.Context, re
 func (c *subscriptionAdminRESTClient) GetSubscription(ctx context.Context, req *pubsubpb.GetSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSubscription())
@@ -1704,6 +1714,11 @@ func (c *subscriptionAdminRESTClient) UpdateSubscription(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSubscription().GetName())
@@ -1771,6 +1786,11 @@ func (c *subscriptionAdminRESTClient) ListSubscriptions(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/subscriptions", req.GetProject())
@@ -1842,6 +1862,11 @@ func (c *subscriptionAdminRESTClient) DeleteSubscription(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSubscription())
 
 	params := url.Values{}
@@ -1889,6 +1914,11 @@ func (c *subscriptionAdminRESTClient) ModifyAckDeadline(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:modifyAckDeadline", req.GetSubscription())
@@ -1942,6 +1972,11 @@ func (c *subscriptionAdminRESTClient) Acknowledge(ctx context.Context, req *pubs
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:acknowledge", req.GetSubscription())
 
 	params := url.Values{}
@@ -1985,6 +2020,11 @@ func (c *subscriptionAdminRESTClient) Pull(ctx context.Context, req *pubsubpb.Pu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:pull", req.GetSubscription())
@@ -2065,6 +2105,11 @@ func (c *subscriptionAdminRESTClient) ModifyPushConfig(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:modifyPushConfig", req.GetSubscription())
 
 	params := url.Values{}
@@ -2106,6 +2151,11 @@ func (c *subscriptionAdminRESTClient) ModifyPushConfig(ctx context.Context, req 
 func (c *subscriptionAdminRESTClient) GetSnapshot(ctx context.Context, req *pubsubpb.GetSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSnapshot(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSnapshot())
@@ -2176,6 +2226,11 @@ func (c *subscriptionAdminRESTClient) ListSnapshots(ctx context.Context, req *pu
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/snapshots", req.GetProject())
@@ -2264,6 +2319,11 @@ func (c *subscriptionAdminRESTClient) CreateSnapshot(ctx context.Context, req *p
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2329,6 +2389,11 @@ func (c *subscriptionAdminRESTClient) UpdateSnapshot(ctx context.Context, req *p
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSnapshot().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSnapshot().GetName())
 
 	params := url.Values{}
@@ -2391,6 +2456,11 @@ func (c *subscriptionAdminRESTClient) DeleteSnapshot(ctx context.Context, req *p
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSnapshot(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSnapshot())
 
 	params := url.Values{}
@@ -2440,6 +2510,11 @@ func (c *subscriptionAdminRESTClient) Seek(ctx context.Context, req *pubsubpb.Se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:seek", req.GetSubscription())
@@ -2495,6 +2570,11 @@ func (c *subscriptionAdminRESTClient) Seek(ctx context.Context, req *pubsubpb.Se
 func (c *subscriptionAdminRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -2564,6 +2644,11 @@ func (c *subscriptionAdminRESTClient) SetIamPolicy(ctx context.Context, req *iam
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2628,6 +2713,11 @@ func (c *subscriptionAdminRESTClient) TestIamPermissions(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())

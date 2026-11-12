@@ -496,6 +496,11 @@ func (c *discussRESTClient) GenerateMessage(ctx context.Context, req *generative
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:generateMessage", req.GetModel())
 
 	params := url.Values{}
@@ -554,6 +559,11 @@ func (c *discussRESTClient) CountMessageTokens(ctx context.Context, req *generat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:countMessageTokens", req.GetModel())

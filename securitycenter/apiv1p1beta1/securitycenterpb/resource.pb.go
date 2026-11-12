@@ -135,14 +135,14 @@ var File_google_cloud_securitycenter_v1p1beta1_resource_proto protoreflect.FileD
 
 const file_google_cloud_securitycenter_v1p1beta1_resource_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/securitycenter/v1p1beta1/resource.proto\x12%google.cloud.securitycenter.v1p1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a2google/cloud/securitycenter/v1p1beta1/folder.proto\"\x80\x02\n" +
+	"4google/cloud/securitycenter/v1p1beta1/resource.proto\x12%google.cloud.securitycenter.v1p1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a2google/cloud/securitycenter/v1p1beta1/folder.proto\"\x81\x02\n" +
 	"\bResource\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x120\n" +
 	"\x14project_display_name\x18\x03 \x01(\tR\x12projectDisplayName\x12\x16\n" +
 	"\x06parent\x18\x04 \x01(\tR\x06parent\x12.\n" +
-	"\x13parent_display_name\x18\x05 \x01(\tR\x11parentDisplayName\x12L\n" +
-	"\afolders\x18\a \x03(\v2-.google.cloud.securitycenter.v1p1beta1.FolderB\x03\xe0A\x03R\afoldersB\x8a\x02\n" +
+	"\x13parent_display_name\x18\x05 \x01(\tR\x11parentDisplayName\x12M\n" +
+	"\afolders\x18\a \x03(\v2-.google.cloud.securitycenter.v1p1beta1.FolderB\x04\xe2A\x01\x03R\afoldersB\x8a\x02\n" +
 	")com.google.cloud.securitycenter.v1p1beta1B\rResourceProtoP\x01ZQcloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb;securitycenterpb\xaa\x02%Google.Cloud.SecurityCenter.V1P1Beta1\xca\x02%Google\\Cloud\\SecurityCenter\\V1p1beta1\xea\x02(Google::Cloud::SecurityCenter::V1p1beta1b\x06proto3"
 
 var (

@@ -830,39 +830,39 @@ var File_google_cloud_networkservices_v1_gateway_proto protoreflect.FileDescript
 
 const file_google_cloud_networkservices_v1_gateway_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/networkservices/v1/gateway.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networkservices/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\r\n" +
-	"\aGateway\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\tself_link\x18\r \x01(\tB\x03\xe0A\x03R\bselfLink\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.networkservices.v1.Gateway.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12F\n" +
-	"\x04type\x18\x06 \x01(\x0e2-.google.cloud.networkservices.v1.Gateway.TypeB\x03\xe0A\x05R\x04type\x12D\n" +
-	"\taddresses\x18\a \x03(\tB&\xe0A\x01\xfaA \n" +
-	"\x1ecompute.googleapis.com/AddressR\taddresses\x12\x19\n" +
-	"\x05ports\x18\v \x03(\x05B\x03\xe0A\x02R\x05ports\x12 \n" +
-	"\tall_ports\x18\" \x01(\bB\x03\xe0A\x01R\ballPorts\x12\x19\n" +
-	"\x05scope\x18\b \x01(\tB\x03\xe0A\x01R\x05scope\x12b\n" +
-	"\x11server_tls_policy\x18\t \x01(\tB6\xe0A\x01\xfaA0\n" +
-	".networksecurity.googleapis.com/ServerTlsPolicyR\x0fserverTlsPolicy\x12`\n" +
-	"\x10certificate_urls\x18\x0e \x03(\tB5\xe0A\x01\xfaA/\n" +
-	"-certificatemanager.googleapis.com/CertificateR\x0fcertificateUrls\x12t\n" +
-	"\x17gateway_security_policy\x18\x12 \x01(\tB<\xe0A\x01\xfaA6\n" +
-	"4networksecurity.googleapis.com/GatewaySecurityPolicyR\x15gatewaySecurityPolicy\x12@\n" +
-	"\anetwork\x18\x10 \x01(\tB&\xe0A\x01\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12I\n" +
+	"-google/cloud/networkservices/v1/gateway.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networkservices/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\r\n" +
+	"\aGateway\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\tself_link\x18\r \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.networkservices.v1.Gateway.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12G\n" +
+	"\x04type\x18\x06 \x01(\x0e2-.google.cloud.networkservices.v1.Gateway.TypeB\x04\xe2A\x01\x05R\x04type\x12E\n" +
+	"\taddresses\x18\a \x03(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1ecompute.googleapis.com/AddressR\taddresses\x12\x1a\n" +
+	"\x05ports\x18\v \x03(\x05B\x04\xe2A\x01\x02R\x05ports\x12!\n" +
+	"\tall_ports\x18\" \x01(\bB\x04\xe2A\x01\x01R\ballPorts\x12\x1a\n" +
+	"\x05scope\x18\b \x01(\tB\x04\xe2A\x01\x01R\x05scope\x12c\n" +
+	"\x11server_tls_policy\x18\t \x01(\tB7\xe2A\x01\x01\xfaA0\n" +
+	".networksecurity.googleapis.com/ServerTlsPolicyR\x0fserverTlsPolicy\x12a\n" +
+	"\x10certificate_urls\x18\x0e \x03(\tB6\xe2A\x01\x01\xfaA/\n" +
+	"-certificatemanager.googleapis.com/CertificateR\x0fcertificateUrls\x12u\n" +
+	"\x17gateway_security_policy\x18\x12 \x01(\tB=\xe2A\x01\x01\xfaA6\n" +
+	"4networksecurity.googleapis.com/GatewaySecurityPolicyR\x15gatewaySecurityPolicy\x12A\n" +
+	"\anetwork\x18\x10 \x01(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12J\n" +
 	"\n" +
-	"subnetwork\x18\x11 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"subnetwork\x18\x11 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!compute.googleapis.com/SubnetworkR\n" +
-	"subnetwork\x12V\n" +
+	"subnetwork\x12W\n" +
 	"\n" +
-	"ip_version\x18\x15 \x01(\x0e22.google.cloud.networkservices.v1.Gateway.IpVersionB\x03\xe0A\x01R\tipVersion\x12\\\n" +
-	"\renvoy_headers\x18\x1c \x01(\x0e2-.google.cloud.networkservices.v1.EnvoyHeadersB\x03\xe0A\x01H\x00R\fenvoyHeaders\x88\x01\x01\x12\\\n" +
-	"\frouting_mode\x18  \x01(\x0e24.google.cloud.networkservices.v1.Gateway.RoutingModeB\x03\xe0A\x01R\vroutingMode\x123\n" +
-	"\x13allow_global_access\x18! \x01(\bB\x03\xe0A\x01R\x11allowGlobalAccess\x1a9\n" +
+	"ip_version\x18\x15 \x01(\x0e22.google.cloud.networkservices.v1.Gateway.IpVersionB\x04\xe2A\x01\x01R\tipVersion\x12]\n" +
+	"\renvoy_headers\x18\x1c \x01(\x0e2-.google.cloud.networkservices.v1.EnvoyHeadersB\x04\xe2A\x01\x01H\x00R\fenvoyHeaders\x88\x01\x01\x12]\n" +
+	"\frouting_mode\x18  \x01(\x0e24.google.cloud.networkservices.v1.Gateway.RoutingModeB\x04\xe2A\x01\x01R\vroutingMode\x124\n" +
+	"\x13allow_global_access\x18! \x01(\bB\x04\xe2A\x01\x01R\x11allowGlobalAccess\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"C\n" +
@@ -878,30 +878,30 @@ const file_google_cloud_networkservices_v1_gateway_proto_rawDesc = "" +
 	"\x15EXPLICIT_ROUTING_MODE\x10\x00\x12\x19\n" +
 	"\x15NEXT_HOP_ROUTING_MODE\x10\x01:g\xeaAd\n" +
 	"&networkservices.googleapis.com/Gateway\x12:projects/{project}/locations/{location}/gateways/{gateway}B\x10\n" +
-	"\x0e_envoy_headers\"\x99\x01\n" +
-	"\x13ListGatewaysRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&networkservices.googleapis.com/GatewayR\x06parent\x12\x1b\n" +
+	"\x0e_envoy_headers\"\x9a\x01\n" +
+	"\x13ListGatewaysRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&networkservices.googleapis.com/GatewayR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa6\x01\n" +
 	"\x14ListGatewaysResponse\x12D\n" +
 	"\bgateways\x18\x01 \x03(\v2(.google.cloud.networkservices.v1.GatewayR\bgateways\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x11GetGatewayRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkservices.googleapis.com/GatewayR\x04name\"\xcb\x01\n" +
-	"\x14CreateGatewayRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&networkservices.googleapis.com/GatewayR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x11GetGatewayRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkservices.googleapis.com/GatewayR\x04name\"\xce\x01\n" +
+	"\x14CreateGatewayRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&networkservices.googleapis.com/GatewayR\x06parent\x12#\n" +
 	"\n" +
-	"gateway_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tgatewayId\x12G\n" +
-	"\agateway\x18\x03 \x01(\v2(.google.cloud.networkservices.v1.GatewayB\x03\xe0A\x02R\agateway\"\xa1\x01\n" +
-	"\x14UpdateGatewayRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12G\n" +
-	"\agateway\x18\x02 \x01(\v2(.google.cloud.networkservices.v1.GatewayB\x03\xe0A\x02R\agateway\"Z\n" +
-	"\x14DeleteGatewayRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"gateway_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tgatewayId\x12H\n" +
+	"\agateway\x18\x03 \x01(\v2(.google.cloud.networkservices.v1.GatewayB\x04\xe2A\x01\x02R\agateway\"\xa3\x01\n" +
+	"\x14UpdateGatewayRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12H\n" +
+	"\agateway\x18\x02 \x01(\v2(.google.cloud.networkservices.v1.GatewayB\x04\xe2A\x01\x02R\agateway\"[\n" +
+	"\x14DeleteGatewayRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&networkservices.googleapis.com/GatewayR\x04nameB\x89\x06\xeaA\x91\x01\n" +
 	"4networksecurity.googleapis.com/GatewaySecurityPolicy\x12Yprojects/{project}/locations/{location}/gatewaySecurityPolicies/{gateway_security_policy}\xeaAa\n" +
 	"!compute.googleapis.com/Subnetwork\x12<projects/{project}/regions/{region}/subnetworks/{subnetwork}\xeaAN\n" +

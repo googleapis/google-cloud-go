@@ -903,29 +903,29 @@ var File_google_cloud_networkmanagement_v1_vpc_flow_logs_config_proto protorefle
 
 const file_google_cloud_networkmanagement_v1_vpc_flow_logs_config_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/networkmanagement/v1/vpc_flow_logs_config.proto\x12!google.cloud.networkmanagement.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\x12\n" +
-	"\x11VpcFlowLogsConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12*\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\vdescription\x88\x01\x01\x12Z\n" +
-	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.StateB\x03\xe0A\x01H\x02R\x05state\x88\x01\x01\x12\x85\x01\n" +
-	"\x14aggregation_interval\x18\x04 \x01(\x0e2H.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.AggregationIntervalB\x03\xe0A\x01H\x03R\x13aggregationInterval\x88\x01\x01\x12-\n" +
-	"\rflow_sampling\x18\x05 \x01(\x02B\x03\xe0A\x01H\x04R\fflowSampling\x88\x01\x01\x12c\n" +
-	"\bmetadata\x18\x06 \x01(\x0e2=.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.MetadataB\x03\xe0A\x01H\x05R\bmetadata\x88\x01\x01\x12,\n" +
-	"\x0fmetadata_fields\x18\a \x03(\tB\x03\xe0A\x01R\x0emetadataFields\x12)\n" +
-	"\vfilter_expr\x18\b \x01(\tB\x03\xe0A\x01H\x06R\n" +
-	"filterExpr\x88\x01\x01\x12\x89\x01\n" +
-	"\x16cross_project_metadata\x18\r \x01(\x0e2I.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.CrossProjectMetadataB\x03\xe0A\x01H\aR\x14crossProjectMetadata\x88\x01\x01\x12\x86\x01\n" +
-	"\x15target_resource_state\x18\f \x01(\x0e2H.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.TargetResourceStateB\x03\xe0A\x03H\bR\x13targetResourceState\x88\x01\x01\x12\x1a\n" +
+	"<google/cloud/networkmanagement/v1/vpc_flow_logs_config.proto\x12!google.cloud.networkmanagement.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa2\x12\n" +
+	"\x11VpcFlowLogsConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12+\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\vdescription\x88\x01\x01\x12[\n" +
+	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.StateB\x04\xe2A\x01\x01H\x02R\x05state\x88\x01\x01\x12\x86\x01\n" +
+	"\x14aggregation_interval\x18\x04 \x01(\x0e2H.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.AggregationIntervalB\x04\xe2A\x01\x01H\x03R\x13aggregationInterval\x88\x01\x01\x12.\n" +
+	"\rflow_sampling\x18\x05 \x01(\x02B\x04\xe2A\x01\x01H\x04R\fflowSampling\x88\x01\x01\x12d\n" +
+	"\bmetadata\x18\x06 \x01(\x0e2=.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.MetadataB\x04\xe2A\x01\x01H\x05R\bmetadata\x88\x01\x01\x12-\n" +
+	"\x0fmetadata_fields\x18\a \x03(\tB\x04\xe2A\x01\x01R\x0emetadataFields\x12*\n" +
+	"\vfilter_expr\x18\b \x01(\tB\x04\xe2A\x01\x01H\x06R\n" +
+	"filterExpr\x88\x01\x01\x12\x8a\x01\n" +
+	"\x16cross_project_metadata\x18\r \x01(\x0e2I.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.CrossProjectMetadataB\x04\xe2A\x01\x01H\aR\x14crossProjectMetadata\x88\x01\x01\x12\x87\x01\n" +
+	"\x15target_resource_state\x18\f \x01(\x0e2H.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.TargetResourceStateB\x04\xe2A\x01\x03H\bR\x13targetResourceState\x88\x01\x01\x12\x1a\n" +
 	"\anetwork\x18d \x01(\tH\x00R\anetwork\x12\x18\n" +
 	"\x06subnet\x18e \x01(\tH\x00R\x06subnet\x129\n" +
 	"\x17interconnect_attachment\x18f \x01(\tH\x00R\x16interconnectAttachment\x12\x1f\n" +
 	"\n" +
-	"vpn_tunnel\x18g \x01(\tH\x00R\tvpnTunnel\x12]\n" +
-	"\x06labels\x18\v \x03(\v2@.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"vpn_tunnel\x18g \x01(\tH\x00R\tvpnTunnel\x12^\n" +
+	"\x06labels\x18\v \x03(\v2@.google.cloud.networkmanagement.v1.VpcFlowLogsConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

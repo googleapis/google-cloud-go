@@ -527,46 +527,46 @@ var File_google_cloud_networkservices_v1_mesh_proto protoreflect.FileDescriptor
 
 const file_google_cloud_networkservices_v1_mesh_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/networkservices/v1/mesh.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networkservices/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\x05\n" +
-	"\x04Mesh\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\tself_link\x18\t \x01(\tB\x03\xe0A\x03R\bselfLink\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12N\n" +
-	"\x06labels\x18\x04 \x03(\v21.google.cloud.networkservices.v1.Mesh.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x120\n" +
-	"\x11interception_port\x18\b \x01(\x05B\x03\xe0A\x01R\x10interceptionPort\x12\\\n" +
-	"\renvoy_headers\x18\x10 \x01(\x0e2-.google.cloud.networkservices.v1.EnvoyHeadersB\x03\xe0A\x01H\x00R\fenvoyHeaders\x88\x01\x01\x1a9\n" +
+	"*google/cloud/networkservices/v1/mesh.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networkservices/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x05\n" +
+	"\x04Mesh\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\tself_link\x18\t \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12O\n" +
+	"\x06labels\x18\x04 \x03(\v21.google.cloud.networkservices.v1.Mesh.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x121\n" +
+	"\x11interception_port\x18\b \x01(\x05B\x04\xe2A\x01\x01R\x10interceptionPort\x12]\n" +
+	"\renvoy_headers\x18\x10 \x01(\x0e2-.google.cloud.networkservices.v1.EnvoyHeadersB\x04\xe2A\x01\x01H\x00R\fenvoyHeaders\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:m\xeaAj\n" +
 	"#networkservices.googleapis.com/Mesh\x125projects/{project}/locations/{location}/meshes/{mesh}*\x06meshes2\x04meshB\x10\n" +
-	"\x0e_envoy_headers\"\xcf\x01\n" +
-	"\x11ListMeshesRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#networkservices.googleapis.com/MeshR\x06parent\x12\x1b\n" +
+	"\x0e_envoy_headers\"\xd1\x01\n" +
+	"\x11ListMeshesRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#networkservices.googleapis.com/MeshR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x129\n" +
-	"\x16return_partial_success\x18\x04 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12:\n" +
+	"\x16return_partial_success\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\"\x9d\x01\n" +
 	"\x12ListMeshesResponse\x12=\n" +
 	"\x06meshes\x18\x01 \x03(\v2%.google.cloud.networkservices.v1.MeshR\x06meshes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
-	"\x0eGetMeshRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#networkservices.googleapis.com/MeshR\x04name\"\xb6\x01\n" +
-	"\x11CreateMeshRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#networkservices.googleapis.com/MeshR\x06parent\x12\x1c\n" +
-	"\amesh_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06meshId\x12>\n" +
-	"\x04mesh\x18\x03 \x01(\v2%.google.cloud.networkservices.v1.MeshB\x03\xe0A\x02R\x04mesh\"\x95\x01\n" +
-	"\x11UpdateMeshRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12>\n" +
-	"\x04mesh\x18\x02 \x01(\v2%.google.cloud.networkservices.v1.MeshB\x03\xe0A\x02R\x04mesh\"T\n" +
-	"\x11DeleteMeshRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
+	"\x0eGetMeshRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#networkservices.googleapis.com/MeshR\x04name\"\xb9\x01\n" +
+	"\x11CreateMeshRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#networkservices.googleapis.com/MeshR\x06parent\x12\x1d\n" +
+	"\amesh_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06meshId\x12?\n" +
+	"\x04mesh\x18\x03 \x01(\v2%.google.cloud.networkservices.v1.MeshB\x04\xe2A\x01\x02R\x04mesh\"\x97\x01\n" +
+	"\x11UpdateMeshRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12?\n" +
+	"\x04mesh\x18\x02 \x01(\v2%.google.cloud.networkservices.v1.MeshB\x04\xe2A\x01\x02R\x04mesh\"U\n" +
+	"\x11DeleteMeshRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#networkservices.googleapis.com/MeshR\x04nameB\xe4\x02\xeaAw\n" +
 	"(compute.googleapis.com/ServiceAttachment\x12Kprojects/{project}/regions/{region}/serviceAttachments/{service_attachment}\n" +
 	"#com.google.cloud.networkservices.v1B\tMeshProtoP\x01ZMcloud.google.com/go/networkservices/apiv1/networkservicespb;networkservicespb\xaa\x02\x1fGoogle.Cloud.NetworkServices.V1\xca\x02\x1fGoogle\\Cloud\\NetworkServices\\V1\xea\x02\"Google::Cloud::NetworkServices::V1b\x06proto3"

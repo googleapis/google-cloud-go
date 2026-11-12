@@ -563,19 +563,19 @@ var File_google_shopping_merchant_issueresolution_v1_aggregateproductstatuses_pr
 
 const file_google_shopping_merchant_issueresolution_v1_aggregateproductstatuses_proto_rawDesc = "" +
 	"\n" +
-	"Jgoogle/shopping/merchant/issueresolution/v1/aggregateproductstatuses.proto\x12+google.shopping.merchant.issueresolution.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/shopping/type/types.proto\"\xdb\x01\n" +
-	"#ListAggregateProductStatusesRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121merchantapi.googleapis.com/AggregateProductStatusR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Jgoogle/shopping/merchant/issueresolution/v1/aggregateproductstatuses.proto\x12+google.shopping.merchant.issueresolution.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/shopping/type/types.proto\"\xdf\x01\n" +
+	"#ListAggregateProductStatusesRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121merchantapi.googleapis.com/AggregateProductStatusR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xd2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xd2\x01\n" +
 	"$ListAggregateProductStatusesResponse\x12\x81\x01\n" +
 	"\x1aaggregate_product_statuses\x18\x01 \x03(\v2C.google.shopping.merchant.issueresolution.v1.AggregateProductStatusR\x18aggregateProductStatuses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe6\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe7\n" +
 	"\n" +
-	"\x16AggregateProductStatus\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12h\n" +
+	"\x16AggregateProductStatus\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12h\n" +
 	"\x11reporting_context\x18\x03 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumR\x10reportingContext\x12\x18\n" +
 	"\acountry\x18\x04 \x01(\tR\acountry\x12_\n" +
 	"\x05stats\x18\x05 \x01(\v2I.google.shopping.merchant.issueresolution.v1.AggregateProductStatus.StatsR\x05stats\x12~\n" +

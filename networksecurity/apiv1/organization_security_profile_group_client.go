@@ -1323,6 +1323,11 @@ func (c *organizationSecurityProfileGroupRESTClient) ListSecurityProfileGroups(c
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/securityProfileGroups", req.GetParent())
 
 		params := url.Values{}
@@ -1388,6 +1393,11 @@ func (c *organizationSecurityProfileGroupRESTClient) GetSecurityProfileGroup(ctx
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1447,6 +1457,11 @@ func (c *organizationSecurityProfileGroupRESTClient) CreateSecurityProfileGroup(
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/securityProfileGroups", req.GetParent())
@@ -1518,6 +1533,11 @@ func (c *organizationSecurityProfileGroupRESTClient) UpdateSecurityProfileGroup(
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityProfileGroup().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSecurityProfileGroup().GetName())
 
 	params := url.Values{}
@@ -1584,6 +1604,11 @@ func (c *organizationSecurityProfileGroupRESTClient) UpdateSecurityProfileGroup(
 func (c *organizationSecurityProfileGroupRESTClient) DeleteSecurityProfileGroup(ctx context.Context, req *networksecuritypb.DeleteSecurityProfileGroupRequest, opts ...gax.CallOption) (*DeleteSecurityProfileGroupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1663,6 +1688,11 @@ func (c *organizationSecurityProfileGroupRESTClient) ListSecurityProfiles(ctx co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/securityProfiles", req.GetParent())
 
 		params := url.Values{}
@@ -1728,6 +1758,11 @@ func (c *organizationSecurityProfileGroupRESTClient) GetSecurityProfile(ctx cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1787,6 +1822,11 @@ func (c *organizationSecurityProfileGroupRESTClient) CreateSecurityProfile(ctx c
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/securityProfiles", req.GetParent())
@@ -1858,6 +1898,11 @@ func (c *organizationSecurityProfileGroupRESTClient) UpdateSecurityProfile(ctx c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityProfile().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSecurityProfile().GetName())
 
 	params := url.Values{}
@@ -1926,6 +1971,11 @@ func (c *organizationSecurityProfileGroupRESTClient) DeleteSecurityProfile(ctx c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1988,6 +2038,11 @@ func (c *organizationSecurityProfileGroupRESTClient) DeleteSecurityProfile(ctx c
 func (c *organizationSecurityProfileGroupRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2072,6 +2127,11 @@ func (c *organizationSecurityProfileGroupRESTClient) ListLocations(ctx context.C
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2141,6 +2201,11 @@ func (c *organizationSecurityProfileGroupRESTClient) GetIamPolicy(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2206,6 +2271,11 @@ func (c *organizationSecurityProfileGroupRESTClient) SetIamPolicy(ctx context.Co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -2274,6 +2344,11 @@ func (c *organizationSecurityProfileGroupRESTClient) TestIamPermissions(ctx cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2334,6 +2409,11 @@ func (c *organizationSecurityProfileGroupRESTClient) CancelOperation(ctx context
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2373,6 +2453,11 @@ func (c *organizationSecurityProfileGroupRESTClient) DeleteOperation(ctx context
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2410,6 +2495,11 @@ func (c *organizationSecurityProfileGroupRESTClient) DeleteOperation(ctx context
 func (c *organizationSecurityProfileGroupRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2477,6 +2567,11 @@ func (c *organizationSecurityProfileGroupRESTClient) ListOperations(ctx context.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

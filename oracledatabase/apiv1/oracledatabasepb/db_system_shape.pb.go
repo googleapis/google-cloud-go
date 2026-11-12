@@ -215,24 +215,24 @@ var File_google_cloud_oracledatabase_v1_db_system_shape_proto protoreflect.FileD
 
 const file_google_cloud_oracledatabase_v1_db_system_shape_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/oracledatabase/v1/db_system_shape.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc2\a\n" +
-	"\rDbSystemShape\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
-	"\x05shape\x18\x02 \x01(\tB\x03\xe0A\x01R\x05shape\x12)\n" +
-	"\x0emin_node_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\fminNodeCount\x12)\n" +
-	"\x0emax_node_count\x18\x04 \x01(\x05B\x03\xe0A\x01R\fmaxNodeCount\x12/\n" +
-	"\x11min_storage_count\x18\x05 \x01(\x05B\x03\xe0A\x01R\x0fminStorageCount\x12/\n" +
-	"\x11max_storage_count\x18\x06 \x01(\x05B\x03\xe0A\x01R\x0fmaxStorageCount\x12E\n" +
-	"\x1davailable_core_count_per_node\x18\a \x01(\x05B\x03\xe0A\x01R\x19availableCoreCountPerNode\x12C\n" +
-	"\x1cavailable_memory_per_node_gb\x18\b \x01(\x05B\x03\xe0A\x01R\x18availableMemoryPerNodeGb\x12>\n" +
-	"\x19available_data_storage_tb\x18\t \x01(\x05B\x03\xe0A\x01R\x16availableDataStorageTb\x129\n" +
+	"4google/cloud/oracledatabase/v1/db_system_shape.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd1\a\n" +
+	"\rDbSystemShape\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1a\n" +
+	"\x05shape\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05shape\x12*\n" +
+	"\x0emin_node_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\fminNodeCount\x12*\n" +
+	"\x0emax_node_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\fmaxNodeCount\x120\n" +
+	"\x11min_storage_count\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x0fminStorageCount\x120\n" +
+	"\x11max_storage_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxStorageCount\x12F\n" +
+	"\x1davailable_core_count_per_node\x18\a \x01(\x05B\x04\xe2A\x01\x01R\x19availableCoreCountPerNode\x12D\n" +
+	"\x1cavailable_memory_per_node_gb\x18\b \x01(\x05B\x04\xe2A\x01\x01R\x18availableMemoryPerNodeGb\x12?\n" +
+	"\x19available_data_storage_tb\x18\t \x01(\x05B\x04\xe2A\x01\x01R\x16availableDataStorageTb\x12:\n" +
 	"\x17min_core_count_per_node\x18\n" +
-	" \x01(\x05B\x03\xe0A\x01R\x13minCoreCountPerNode\x127\n" +
-	"\x16min_memory_per_node_gb\x18\v \x01(\x05B\x03\xe0A\x01R\x12minMemoryPerNodeGb\x12G\n" +
-	"\x1fmin_db_node_storage_per_node_gb\x18\f \x01(\x05B\x03\xe0A\x01R\x19minDbNodeStoragePerNodeGb\x121\n" +
-	"\x12minimum_core_count\x18\r \x01(\x05B\x03\xe0A\x01R\x10minimumCoreCount\x125\n" +
-	"\x14available_core_count\x18\x0e \x01(\x05B\x03\xe0A\x01R\x12availableCoreCount\x125\n" +
-	"\x14core_count_increment\x18\x0f \x01(\x05B\x03\xe0A\x01R\x12coreCountIncrement:\x9a\x01\xeaA\x96\x01\n" +
+	" \x01(\x05B\x04\xe2A\x01\x01R\x13minCoreCountPerNode\x128\n" +
+	"\x16min_memory_per_node_gb\x18\v \x01(\x05B\x04\xe2A\x01\x01R\x12minMemoryPerNodeGb\x12H\n" +
+	"\x1fmin_db_node_storage_per_node_gb\x18\f \x01(\x05B\x04\xe2A\x01\x01R\x19minDbNodeStoragePerNodeGb\x122\n" +
+	"\x12minimum_core_count\x18\r \x01(\x05B\x04\xe2A\x01\x01R\x10minimumCoreCount\x126\n" +
+	"\x14available_core_count\x18\x0e \x01(\x05B\x04\xe2A\x01\x01R\x12availableCoreCount\x126\n" +
+	"\x14core_count_increment\x18\x0f \x01(\x05B\x04\xe2A\x01\x01R\x12coreCountIncrement:\x9a\x01\xeaA\x96\x01\n" +
 	"+oracledatabase.googleapis.com/DbSystemShape\x12Hprojects/{project}/locations/{location}/dbSystemShapes/{db_system_shape}*\x0edbSystemShapes2\rdbSystemShapeB\xec\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x12DbSystemShapeProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 

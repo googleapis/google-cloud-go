@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/dataform/apiv1beta1",
-    "version": "1.7.0"
+    "version": "1.9.0"
   },
   "snippets": [
     {
@@ -330,6 +330,52 @@
         }
       ],
       "title": "dataform CreateCompilationResult Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.dataform.v1beta1.Client.CreateCompilationResultLongRunning",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.CreateCompilationResultLongRunning",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "CreateCompilationResultLongRunning"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.CreateCompilationResultRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateCompilationResultLongRunningOperation",
+        "shortName": "CreateCompilationResultLongRunning"
+      },
+      "description": "CreateCompilationResultLongRunning creates a new CompilationResult in a given project and location\nasynchronously.",
+      "file": "Client/CreateCompilationResultLongRunning/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_CreateCompilationResultLongRunning_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform CreateCompilationResultLongRunning Sample"
     },
     {
       "clientMethod": {
@@ -1518,6 +1564,52 @@
         }
       ],
       "title": "dataform FetchWorkspaceBranches Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.dataform.v1beta1.Client.FetchWorkspaceHistory",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.FetchWorkspaceHistory",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "FetchWorkspaceHistory"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.FetchWorkspaceHistoryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CommitLogEntryIterator",
+        "shortName": "FetchWorkspaceHistory"
+      },
+      "description": "FetchWorkspaceHistory fetches a Workspace's history of commits.",
+      "file": "Client/FetchWorkspaceHistory/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_FetchWorkspaceHistory_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform FetchWorkspaceHistory Sample"
     },
     {
       "clientMethod": {

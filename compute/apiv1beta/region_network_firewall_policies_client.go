@@ -537,6 +537,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) AddAssociation(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/addAssociation", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -614,6 +621,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) AddRule(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/addRule", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -684,6 +698,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) CloneRules(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/cloneRules", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -751,6 +772,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Delete(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -815,6 +843,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Get(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -862,6 +897,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Get(ctx context.Context, req *
 func (c *regionNetworkFirewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyAssociation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/getAssociation", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
@@ -920,6 +962,12 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetEffectiveFirewalls(ctx cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/getEffectiveFirewalls", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -973,6 +1021,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetEffectiveFirewalls(ctx cont
 func (c *regionNetworkFirewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -1029,6 +1084,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetIamPolicy(ctx context.Conte
 func (c *regionNetworkFirewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/getRule", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
@@ -1092,6 +1154,12 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Insert(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies", req.GetProject(), req.GetRegion())
@@ -1170,6 +1238,12 @@ func (c *regionNetworkFirewallPoliciesRESTClient) List(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies", req.GetProject(), req.GetRegion())
@@ -1252,6 +1326,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Patch(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1321,6 +1402,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) PatchAssociation(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/patchAssociation", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
@@ -1394,6 +1482,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) PatchRule(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/patchRule", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1461,6 +1556,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) RemoveAssociation(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/removeAssociation", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1526,6 +1628,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) RemoveAssociation(ctx context.
 func (c *regionNetworkFirewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetFirewallPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/removeRule", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
@@ -1603,6 +1712,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) SetIamPolicy(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1657,6 +1773,13 @@ func (c *regionNetworkFirewallPoliciesRESTClient) TestIamPermissions(ctx context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/firewallPolicies/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

@@ -1158,6 +1158,12 @@ func (c *jobControllerRESTClient) SubmitJob(ctx context.Context, req *dataprocpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/regions/%v/jobs:submit", req.GetProjectId(), req.GetRegion())
 
 	params := url.Values{}
@@ -1216,6 +1222,12 @@ func (c *jobControllerRESTClient) SubmitJobAsOperation(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/regions/%v/jobs:submitAsOperation", req.GetProjectId(), req.GetRegion())
@@ -1277,6 +1289,13 @@ func (c *jobControllerRESTClient) SubmitJobAsOperation(ctx context.Context, req 
 func (c *jobControllerRESTClient) GetJob(ctx context.Context, req *dataprocpb.GetJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetRegion(),
+		req.GetJobId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/regions/%v/jobs/%v", req.GetProjectId(), req.GetRegion(), req.GetJobId())
@@ -1344,6 +1363,12 @@ func (c *jobControllerRESTClient) ListJobs(ctx context.Context, req *dataprocpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/projects/%v/regions/%v/jobs", req.GetProjectId(), req.GetRegion())
@@ -1427,6 +1452,13 @@ func (c *jobControllerRESTClient) UpdateJob(ctx context.Context, req *dataprocpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetRegion(),
+		req.GetJobId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/regions/%v/jobs/%v", req.GetProjectId(), req.GetRegion(), req.GetJobId())
 
 	params := url.Values{}
@@ -1498,6 +1530,13 @@ func (c *jobControllerRESTClient) CancelJob(ctx context.Context, req *dataprocpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetRegion(),
+		req.GetJobId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/regions/%v/jobs/%v:cancel", req.GetProjectId(), req.GetRegion(), req.GetJobId())
 
 	params := url.Values{}
@@ -1553,6 +1592,13 @@ func (c *jobControllerRESTClient) DeleteJob(ctx context.Context, req *dataprocpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetRegion(),
+		req.GetJobId(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/regions/%v/jobs/%v", req.GetProjectId(), req.GetRegion(), req.GetJobId())
 
 	params := url.Values{}
@@ -1597,6 +1643,11 @@ func (c *jobControllerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -1661,6 +1712,11 @@ func (c *jobControllerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -1729,6 +1785,11 @@ func (c *jobControllerRESTClient) TestIamPermissions(ctx context.Context, req *i
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1783,6 +1844,11 @@ func (c *jobControllerRESTClient) CancelOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1822,6 +1888,11 @@ func (c *jobControllerRESTClient) DeleteOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1859,6 +1930,11 @@ func (c *jobControllerRESTClient) DeleteOperation(ctx context.Context, req *long
 func (c *jobControllerRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1926,6 +2002,11 @@ func (c *jobControllerRESTClient) ListOperations(ctx context.Context, req *longr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

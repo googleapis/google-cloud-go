@@ -327,6 +327,13 @@ func (c *acceleratorInterconnectsRESTClient) Delete(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetAcceleratorInterconnect(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorInterconnects/%v", req.GetProject(), req.GetZone(), req.GetAcceleratorInterconnect())
 
 	params := url.Values{}
@@ -391,6 +398,13 @@ func (c *acceleratorInterconnectsRESTClient) Get(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetAcceleratorInterconnect(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorInterconnects/%v", req.GetProject(), req.GetZone(), req.GetAcceleratorInterconnect())
 
 	// Build HTTP headers from client and context metadata.
@@ -446,6 +460,12 @@ func (c *acceleratorInterconnectsRESTClient) Insert(ctx context.Context, req *co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorInterconnects", req.GetProject(), req.GetZone())
@@ -524,6 +544,12 @@ func (c *acceleratorInterconnectsRESTClient) List(ctx context.Context, req *comp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorInterconnects", req.GetProject(), req.GetZone())
@@ -613,6 +639,12 @@ func (c *acceleratorInterconnectsRESTClient) QueryFormability(ctx context.Contex
 
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorInterconnects:queryFormability", req.GetProject(), req.GetZone())

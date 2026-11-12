@@ -4710,35 +4710,35 @@ var File_google_cloud_security_privateca_v1_resources_proto protoreflect.FileDes
 
 const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/security/privateca/v1/resources.proto\x12\"google.cloud.security.privateca.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/expr.proto\"\xfb\x14\n" +
-	"\x14CertificateAuthority\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12Y\n" +
-	"\x04type\x18\x02 \x01(\x0e2=.google.cloud.security.privateca.v1.CertificateAuthority.TypeB\x06\xe0A\x02\xe0A\x05R\x04type\x12U\n" +
-	"\x06config\x18\x03 \x01(\v25.google.cloud.security.privateca.v1.CertificateConfigB\x06\xe0A\x02\xe0A\x05R\x06config\x12=\n" +
-	"\blifetime\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x06\xe0A\x02\xe0A\x05R\blifetime\x12j\n" +
-	"\bkey_spec\x18\x05 \x01(\v2G.google.cloud.security.privateca.v1.CertificateAuthority.KeyVersionSpecB\x06\xe0A\x02\xe0A\x05R\akeySpec\x12i\n" +
-	"\x12subordinate_config\x18\x06 \x01(\v25.google.cloud.security.privateca.v1.SubordinateConfigB\x03\xe0A\x01R\x11subordinateConfig\x12H\n" +
-	"\x04tier\x18\a \x01(\x0e2/.google.cloud.security.privateca.v1.CaPool.TierB\x03\xe0A\x03R\x04tier\x12Y\n" +
-	"\x05state\x18\b \x01(\x0e2>.google.cloud.security.privateca.v1.CertificateAuthority.StateB\x03\xe0A\x03R\x05state\x123\n" +
-	"\x13pem_ca_certificates\x18\t \x03(\tB\x03\xe0A\x03R\x11pemCaCertificates\x12\x7f\n" +
+	"2google/cloud/security/privateca/v1/resources.proto\x12\"google.cloud.security.privateca.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/expr.proto\"\x8a\x15\n" +
+	"\x14CertificateAuthority\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12X\n" +
+	"\x04type\x18\x02 \x01(\x0e2=.google.cloud.security.privateca.v1.CertificateAuthority.TypeB\x05\xe2A\x02\x02\x05R\x04type\x12T\n" +
+	"\x06config\x18\x03 \x01(\v25.google.cloud.security.privateca.v1.CertificateConfigB\x05\xe2A\x02\x02\x05R\x06config\x12<\n" +
+	"\blifetime\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x05\xe2A\x02\x02\x05R\blifetime\x12i\n" +
+	"\bkey_spec\x18\x05 \x01(\v2G.google.cloud.security.privateca.v1.CertificateAuthority.KeyVersionSpecB\x05\xe2A\x02\x02\x05R\akeySpec\x12j\n" +
+	"\x12subordinate_config\x18\x06 \x01(\v25.google.cloud.security.privateca.v1.SubordinateConfigB\x04\xe2A\x01\x01R\x11subordinateConfig\x12I\n" +
+	"\x04tier\x18\a \x01(\x0e2/.google.cloud.security.privateca.v1.CaPool.TierB\x04\xe2A\x01\x03R\x04tier\x12Z\n" +
+	"\x05state\x18\b \x01(\x0e2>.google.cloud.security.privateca.v1.CertificateAuthority.StateB\x04\xe2A\x01\x03R\x05state\x124\n" +
+	"\x13pem_ca_certificates\x18\t \x03(\tB\x04\xe2A\x01\x03R\x11pemCaCertificates\x12\x80\x01\n" +
 	"\x1bca_certificate_descriptions\x18\n" +
-	" \x03(\v2:.google.cloud.security.privateca.v1.CertificateDescriptionB\x03\xe0A\x03R\x19caCertificateDescriptions\x12\"\n" +
+	" \x03(\v2:.google.cloud.security.privateca.v1.CertificateDescriptionB\x04\xe2A\x01\x03R\x19caCertificateDescriptions\x12#\n" +
 	"\n" +
-	"gcs_bucket\x18\v \x01(\tB\x03\xe0A\x05R\tgcsBucket\x12i\n" +
-	"\vaccess_urls\x18\f \x01(\v2C.google.cloud.security.privateca.v1.CertificateAuthority.AccessUrlsB\x03\xe0A\x03R\n" +
-	"accessUrls\x12@\n" +
-	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12a\n" +
-	"\x06labels\x18\x11 \x03(\v2D.google.cloud.security.privateca.v1.CertificateAuthority.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x8c\x01\n" +
-	"\x18user_defined_access_urls\x18\x12 \x01(\v2N.google.cloud.security.privateca.v1.CertificateAuthority.UserDefinedAccessUrlsB\x03\xe0A\x01R\x15userDefinedAccessUrls\x12(\n" +
-	"\rsatisfies_pzs\x18\x13 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\x14 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x1ao\n" +
+	"gcs_bucket\x18\v \x01(\tB\x04\xe2A\x01\x05R\tgcsBucket\x12j\n" +
+	"\vaccess_urls\x18\f \x01(\v2C.google.cloud.security.privateca.v1.CertificateAuthority.AccessUrlsB\x04\xe2A\x01\x03R\n" +
+	"accessUrls\x12A\n" +
+	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12b\n" +
+	"\x06labels\x18\x11 \x03(\v2D.google.cloud.security.privateca.v1.CertificateAuthority.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x8d\x01\n" +
+	"\x18user_defined_access_urls\x18\x12 \x01(\v2N.google.cloud.security.privateca.v1.CertificateAuthority.UserDefinedAccessUrlsB\x04\xe2A\x01\x01R\x15userDefinedAccessUrls\x12)\n" +
+	"\rsatisfies_pzs\x18\x13 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\x14 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x1ao\n" +
 	"\n" +
 	"AccessUrls\x129\n" +
 	"\x19ca_certificate_access_url\x18\x01 \x01(\tR\x16caCertificateAccessUrl\x12&\n" +
@@ -4747,10 +4747,10 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x15cloud_kms_key_version\x18\x01 \x01(\tH\x00R\x12cloudKmsKeyVersion\x12j\n" +
 	"\talgorithm\x18\x02 \x01(\x0e2J.google.cloud.security.privateca.v1.CertificateAuthority.SignHashAlgorithmH\x00R\talgorithmB\f\n" +
 	"\n" +
-	"KeyVersion\x1a\x8a\x01\n" +
-	"\x15UserDefinedAccessUrls\x12D\n" +
-	"\x1caia_issuing_certificate_urls\x18\x01 \x03(\tB\x03\xe0A\x01R\x19aiaIssuingCertificateUrls\x12+\n" +
-	"\x0fcrl_access_urls\x18\x02 \x03(\tB\x03\xe0A\x01R\rcrlAccessUrls\x1a9\n" +
+	"KeyVersion\x1a\x8c\x01\n" +
+	"\x15UserDefinedAccessUrls\x12E\n" +
+	"\x1caia_issuing_certificate_urls\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x19aiaIssuingCertificateUrls\x12,\n" +
+	"\x0fcrl_access_urls\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\rcrlAccessUrls\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\">\n" +
@@ -4776,41 +4776,41 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x15RSA_PKCS1_4096_SHA256\x10\b\x12\x12\n" +
 	"\x0eEC_P256_SHA256\x10\x04\x12\x12\n" +
 	"\x0eEC_P384_SHA384\x10\x05:\x9d\x01\xeaA\x99\x01\n" +
-	"-privateca.googleapis.com/CertificateAuthority\x12hprojects/{project}/locations/{location}/caPools/{ca_pool}/certificateAuthorities/{certificate_authority}\"\x8b\x15\n" +
-	"\x06CaPool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12K\n" +
-	"\x04tier\x18\x02 \x01(\x0e2/.google.cloud.security.privateca.v1.CaPool.TierB\x06\xe0A\x02\xe0A\x05R\x04tier\x12g\n" +
-	"\x0fissuance_policy\x18\x03 \x01(\v29.google.cloud.security.privateca.v1.CaPool.IssuancePolicyB\x03\xe0A\x01R\x0eissuancePolicy\x12p\n" +
-	"\x12publishing_options\x18\x04 \x01(\v2<.google.cloud.security.privateca.v1.CaPool.PublishingOptionsB\x03\xe0A\x01R\x11publishingOptions\x12`\n" +
-	"\x0fencryption_spec\x18\b \x01(\v22.google.cloud.security.privateca.v1.EncryptionSpecB\x03\xe0A\x01R\x0eencryptionSpec\x12S\n" +
-	"\x06labels\x18\x05 \x03(\v26.google.cloud.security.privateca.v1.CaPool.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a\xa6\x02\n" +
-	"\x11PublishingOptions\x12+\n" +
-	"\x0fpublish_ca_cert\x18\x01 \x01(\bB\x03\xe0A\x01R\rpublishCaCert\x12$\n" +
-	"\vpublish_crl\x18\x02 \x01(\bB\x03\xe0A\x01R\n" +
-	"publishCrl\x12y\n" +
-	"\x0fencoding_format\x18\x03 \x01(\x0e2K.google.cloud.security.privateca.v1.CaPool.PublishingOptions.EncodingFormatB\x03\xe0A\x01R\x0eencodingFormat\"C\n" +
+	"-privateca.googleapis.com/CertificateAuthority\x12hprojects/{project}/locations/{location}/caPools/{ca_pool}/certificateAuthorities/{certificate_authority}\"\xa0\x15\n" +
+	"\x06CaPool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12J\n" +
+	"\x04tier\x18\x02 \x01(\x0e2/.google.cloud.security.privateca.v1.CaPool.TierB\x05\xe2A\x02\x02\x05R\x04tier\x12h\n" +
+	"\x0fissuance_policy\x18\x03 \x01(\v29.google.cloud.security.privateca.v1.CaPool.IssuancePolicyB\x04\xe2A\x01\x01R\x0eissuancePolicy\x12q\n" +
+	"\x12publishing_options\x18\x04 \x01(\v2<.google.cloud.security.privateca.v1.CaPool.PublishingOptionsB\x04\xe2A\x01\x01R\x11publishingOptions\x12a\n" +
+	"\x0fencryption_spec\x18\b \x01(\v22.google.cloud.security.privateca.v1.EncryptionSpecB\x04\xe2A\x01\x01R\x0eencryptionSpec\x12T\n" +
+	"\x06labels\x18\x05 \x03(\v26.google.cloud.security.privateca.v1.CaPool.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a\xa9\x02\n" +
+	"\x11PublishingOptions\x12,\n" +
+	"\x0fpublish_ca_cert\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\rpublishCaCert\x12%\n" +
+	"\vpublish_crl\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"publishCrl\x12z\n" +
+	"\x0fencoding_format\x18\x03 \x01(\x0e2K.google.cloud.security.privateca.v1.CaPool.PublishingOptions.EncodingFormatB\x04\xe2A\x01\x01R\x0eencodingFormat\"C\n" +
 	"\x0eEncodingFormat\x12\x1f\n" +
 	"\x1bENCODING_FORMAT_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03PEM\x10\x01\x12\a\n" +
-	"\x03DER\x10\x02\x1a\x89\r\n" +
-	"\x0eIssuancePolicy\x12y\n" +
-	"\x11allowed_key_types\x18\x01 \x03(\v2H.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyTypeB\x03\xe0A\x01R\x0fallowedKeyTypes\x12K\n" +
-	"\x11backdate_duration\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10backdateDuration\x12\\\n" +
-	")allow_requester_specified_not_before_time\x18\b \x01(\bB\x03\xe0A\x01R$allowRequesterSpecifiedNotBeforeTime\x12I\n" +
-	"\x10maximum_lifetime\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0fmaximumLifetime\x12\x82\x01\n" +
-	"\x16allowed_issuance_modes\x18\x03 \x01(\v2G.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.IssuanceModesB\x03\xe0A\x01R\x14allowedIssuanceModes\x12`\n" +
-	"\x0fbaseline_values\x18\x04 \x01(\v22.google.cloud.security.privateca.v1.X509ParametersB\x03\xe0A\x01R\x0ebaselineValues\x12z\n" +
-	"\x14identity_constraints\x18\x05 \x01(\v2B.google.cloud.security.privateca.v1.CertificateIdentityConstraintsB\x03\xe0A\x01R\x13identityConstraints\x12\x7f\n" +
-	"\x16passthrough_extensions\x18\x06 \x01(\v2C.google.cloud.security.privateca.v1.CertificateExtensionConstraintsB\x03\xe0A\x01R\x15passthroughExtensions\x1a\x8d\x05\n" +
+	"\x03DER\x10\x02\x1a\x97\r\n" +
+	"\x0eIssuancePolicy\x12z\n" +
+	"\x11allowed_key_types\x18\x01 \x03(\v2H.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyTypeB\x04\xe2A\x01\x01R\x0fallowedKeyTypes\x12L\n" +
+	"\x11backdate_duration\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x10backdateDuration\x12]\n" +
+	")allow_requester_specified_not_before_time\x18\b \x01(\bB\x04\xe2A\x01\x01R$allowRequesterSpecifiedNotBeforeTime\x12J\n" +
+	"\x10maximum_lifetime\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0fmaximumLifetime\x12\x83\x01\n" +
+	"\x16allowed_issuance_modes\x18\x03 \x01(\v2G.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.IssuanceModesB\x04\xe2A\x01\x01R\x14allowedIssuanceModes\x12a\n" +
+	"\x0fbaseline_values\x18\x04 \x01(\v22.google.cloud.security.privateca.v1.X509ParametersB\x04\xe2A\x01\x01R\x0ebaselineValues\x12{\n" +
+	"\x14identity_constraints\x18\x05 \x01(\v2B.google.cloud.security.privateca.v1.CertificateIdentityConstraintsB\x04\xe2A\x01\x01R\x13identityConstraints\x12\x80\x01\n" +
+	"\x16passthrough_extensions\x18\x06 \x01(\v2C.google.cloud.security.privateca.v1.CertificateExtensionConstraintsB\x04\xe2A\x01\x01R\x15passthroughExtensions\x1a\x90\x05\n" +
 	"\x0eAllowedKeyType\x12g\n" +
 	"\x03rsa\x18\x01 \x01(\v2S.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.RsaKeyTypeH\x00R\x03rsa\x12{\n" +
-	"\x0eelliptic_curve\x18\x02 \x01(\v2R.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyTypeH\x00R\rellipticCurve\x1aj\n" +
+	"\x0eelliptic_curve\x18\x02 \x01(\v2R.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyTypeH\x00R\rellipticCurve\x1al\n" +
 	"\n" +
-	"RsaKeyType\x12-\n" +
-	"\x10min_modulus_size\x18\x01 \x01(\x03B\x03\xe0A\x01R\x0eminModulusSize\x12-\n" +
-	"\x10max_modulus_size\x18\x02 \x01(\x03B\x03\xe0A\x01R\x0emaxModulusSize\x1a\x9c\x02\n" +
-	"\tEcKeyType\x12\x9d\x01\n" +
-	"\x13signature_algorithm\x18\x01 \x01(\x0e2g.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType.EcSignatureAlgorithmB\x03\xe0A\x01R\x12signatureAlgorithm\"o\n" +
+	"RsaKeyType\x12.\n" +
+	"\x10min_modulus_size\x18\x01 \x01(\x03B\x04\xe2A\x01\x01R\x0eminModulusSize\x12.\n" +
+	"\x10max_modulus_size\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x0emaxModulusSize\x1a\x9d\x02\n" +
+	"\tEcKeyType\x12\x9e\x01\n" +
+	"\x13signature_algorithm\x18\x01 \x01(\x0e2g.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType.EcSignatureAlgorithmB\x04\xe2A\x01\x01R\x12signatureAlgorithm\"o\n" +
 	"\x14EcSignatureAlgorithm\x12&\n" +
 	"\"EC_SIGNATURE_ALGORITHM_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -4819,10 +4819,10 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"ECDSA_P384\x10\x02\x12\x0f\n" +
 	"\vEDDSA_25519\x10\x03B\n" +
 	"\n" +
-	"\bkey_type\x1a\x91\x01\n" +
-	"\rIssuanceModes\x12<\n" +
-	"\x18allow_csr_based_issuance\x18\x01 \x01(\bB\x03\xe0A\x01R\x15allowCsrBasedIssuance\x12B\n" +
-	"\x1ballow_config_based_issuance\x18\x02 \x01(\bB\x03\xe0A\x01R\x18allowConfigBasedIssuance\x1a9\n" +
+	"\bkey_type\x1a\x93\x01\n" +
+	"\rIssuanceModes\x12=\n" +
+	"\x18allow_csr_based_issuance\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x15allowCsrBasedIssuance\x12C\n" +
+	"\x1ballow_config_based_issuance\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x18allowConfigBasedIssuance\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"8\n" +
@@ -4834,23 +4834,23 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x06DEVOPS\x10\x02:_\xeaA\\\n" +
 	"\x1fprivateca.googleapis.com/CaPool\x129projects/{project}/locations/{location}/caPools/{ca_pool}\"4\n" +
 	"\x0eEncryptionSpec\x12\"\n" +
-	"\rcloud_kms_key\x18\x01 \x01(\tR\vcloudKmsKey\"\xea\t\n" +
-	"\x19CertificateRevocationList\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12,\n" +
-	"\x0fsequence_number\x18\x02 \x01(\x03B\x03\xe0A\x03R\x0esequenceNumber\x12\x88\x01\n" +
-	"\x14revoked_certificates\x18\x03 \x03(\v2P.google.cloud.security.privateca.v1.CertificateRevocationList.RevokedCertificateB\x03\xe0A\x03R\x13revokedCertificates\x12\x1c\n" +
-	"\apem_crl\x18\x04 \x01(\tB\x03\xe0A\x03R\x06pemCrl\x12\"\n" +
+	"\rcloud_kms_key\x18\x01 \x01(\tR\vcloudKmsKey\"\xf4\t\n" +
+	"\x19CertificateRevocationList\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12-\n" +
+	"\x0fsequence_number\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x0esequenceNumber\x12\x89\x01\n" +
+	"\x14revoked_certificates\x18\x03 \x03(\v2P.google.cloud.security.privateca.v1.CertificateRevocationList.RevokedCertificateB\x04\xe2A\x01\x03R\x13revokedCertificates\x12\x1d\n" +
+	"\apem_crl\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06pemCrl\x12#\n" +
 	"\n" +
-	"access_url\x18\x05 \x01(\tB\x03\xe0A\x03R\taccessUrl\x12^\n" +
-	"\x05state\x18\x06 \x01(\x0e2C.google.cloud.security.privateca.v1.CertificateRevocationList.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12$\n" +
-	"\vrevision_id\x18\t \x01(\tB\x03\xe0A\x03R\n" +
-	"revisionId\x12f\n" +
+	"access_url\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\taccessUrl\x12_\n" +
+	"\x05state\x18\x06 \x01(\x0e2C.google.cloud.security.privateca.v1.CertificateRevocationList.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12%\n" +
+	"\vrevision_id\x18\t \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"revisionId\x12g\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v2I.google.cloud.security.privateca.v1.CertificateRevocationList.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a\xf0\x01\n" +
+	" \x03(\v2I.google.cloud.security.privateca.v1.CertificateRevocationList.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a\xf0\x01\n" +
 	"\x12RevokedCertificate\x12K\n" +
 	"\vcertificate\x18\x01 \x01(\tB)\xfaA&\n" +
 	"$privateca.googleapis.com/CertificateR\vcertificate\x12*\n" +
@@ -4865,28 +4865,28 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x01\x12\x0e\n" +
 	"\n" +
 	"SUPERSEDED\x10\x02:\xdc\x01\xeaA\xd8\x01\n" +
-	"2privateca.googleapis.com/CertificateRevocationList\x12\xa1\x01projects/{project}/locations/{location}/caPools/{ca_pool}/certificateAuthorities/{certificate_authority}/certificateRevocationLists/{certificate_revocation_list}\"\xbd\f\n" +
-	"\vCertificate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1e\n" +
-	"\apem_csr\x18\x02 \x01(\tB\x03\xe0A\x05H\x00R\x06pemCsr\x12T\n" +
-	"\x06config\x18\x03 \x01(\v25.google.cloud.security.privateca.v1.CertificateConfigB\x03\xe0A\x05H\x00R\x06config\x12w\n" +
-	"\x1cissuer_certificate_authority\x18\x04 \x01(\tB5\xe0A\x03\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityR\x1aissuerCertificateAuthority\x12=\n" +
-	"\blifetime\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x06\xe0A\x02\xe0A\x05R\blifetime\x12g\n" +
-	"\x14certificate_template\x18\x06 \x01(\tB4\xe0A\x05\xfaA.\n" +
-	",privateca.googleapis.com/CertificateTemplateR\x13certificateTemplate\x12^\n" +
-	"\fsubject_mode\x18\a \x01(\x0e26.google.cloud.security.privateca.v1.SubjectRequestModeB\x03\xe0A\x05R\vsubjectMode\x12u\n" +
-	"\x12revocation_details\x18\b \x01(\v2A.google.cloud.security.privateca.v1.Certificate.RevocationDetailsB\x03\xe0A\x03R\x11revocationDetails\x12,\n" +
-	"\x0fpem_certificate\x18\t \x01(\tB\x03\xe0A\x03R\x0epemCertificate\x12x\n" +
+	"2privateca.googleapis.com/CertificateRevocationList\x12\xa1\x01projects/{project}/locations/{location}/caPools/{ca_pool}/certificateAuthorities/{certificate_authority}/certificateRevocationLists/{certificate_revocation_list}\"\xca\f\n" +
+	"\vCertificate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1f\n" +
+	"\apem_csr\x18\x02 \x01(\tB\x04\xe2A\x01\x05H\x00R\x06pemCsr\x12U\n" +
+	"\x06config\x18\x03 \x01(\v25.google.cloud.security.privateca.v1.CertificateConfigB\x04\xe2A\x01\x05H\x00R\x06config\x12x\n" +
+	"\x1cissuer_certificate_authority\x18\x04 \x01(\tB6\xe2A\x01\x03\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityR\x1aissuerCertificateAuthority\x12<\n" +
+	"\blifetime\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x05\xe2A\x02\x02\x05R\blifetime\x12h\n" +
+	"\x14certificate_template\x18\x06 \x01(\tB5\xe2A\x01\x05\xfaA.\n" +
+	",privateca.googleapis.com/CertificateTemplateR\x13certificateTemplate\x12_\n" +
+	"\fsubject_mode\x18\a \x01(\x0e26.google.cloud.security.privateca.v1.SubjectRequestModeB\x04\xe2A\x01\x05R\vsubjectMode\x12v\n" +
+	"\x12revocation_details\x18\b \x01(\v2A.google.cloud.security.privateca.v1.Certificate.RevocationDetailsB\x04\xe2A\x01\x03R\x11revocationDetails\x12-\n" +
+	"\x0fpem_certificate\x18\t \x01(\tB\x04\xe2A\x01\x03R\x0epemCertificate\x12y\n" +
 	"\x17certificate_description\x18\n" +
-	" \x01(\v2:.google.cloud.security.privateca.v1.CertificateDescriptionB\x03\xe0A\x03R\x16certificateDescription\x127\n" +
-	"\x15pem_certificate_chain\x18\v \x03(\tB\x03\xe0A\x03R\x13pemCertificateChain\x12@\n" +
-	"\vcreate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12X\n" +
-	"\x06labels\x18\x0e \x03(\v2;.google.cloud.security.privateca.v1.Certificate.LabelsEntryB\x03\xe0A\x01R\x06labels\x12Z\n" +
-	"\x19requested_not_before_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x16requestedNotBeforeTime\x1a\xb9\x01\n" +
+	" \x01(\v2:.google.cloud.security.privateca.v1.CertificateDescriptionB\x04\xe2A\x01\x03R\x16certificateDescription\x128\n" +
+	"\x15pem_certificate_chain\x18\v \x03(\tB\x04\xe2A\x01\x03R\x13pemCertificateChain\x12A\n" +
+	"\vcreate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12Y\n" +
+	"\x06labels\x18\x0e \x03(\v2;.google.cloud.security.privateca.v1.Certificate.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12[\n" +
+	"\x19requested_not_before_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x16requestedNotBeforeTime\x1a\xb9\x01\n" +
 	"\x11RevocationDetails\x12_\n" +
 	"\x10revocation_state\x18\x01 \x01(\x0e24.google.cloud.security.privateca.v1.RevocationReasonR\x0frevocationState\x12C\n" +
 	"\x0frevocation_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0erevocationTime\x1a9\n" +
@@ -4894,35 +4894,35 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x7f\xeaA|\n" +
 	"$privateca.googleapis.com/Certificate\x12Tprojects/{project}/locations/{location}/caPools/{ca_pool}/certificates/{certificate}B\x14\n" +
-	"\x12certificate_config\"\xae\a\n" +
-	"\x13CertificateTemplate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12I\n" +
-	"\x10maximum_lifetime\x18\t \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0fmaximumLifetime\x12d\n" +
-	"\x11predefined_values\x18\x02 \x01(\v22.google.cloud.security.privateca.v1.X509ParametersB\x03\xe0A\x01R\x10predefinedValues\x12z\n" +
-	"\x14identity_constraints\x18\x03 \x01(\v2B.google.cloud.security.privateca.v1.CertificateIdentityConstraintsB\x03\xe0A\x01R\x13identityConstraints\x12\x7f\n" +
-	"\x16passthrough_extensions\x18\x04 \x01(\v2C.google.cloud.security.privateca.v1.CertificateExtensionConstraintsB\x03\xe0A\x01R\x15passthroughExtensions\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12`\n" +
-	"\x06labels\x18\b \x03(\v2C.google.cloud.security.privateca.v1.CertificateTemplate.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\x12certificate_config\"\xb8\a\n" +
+	"\x13CertificateTemplate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12J\n" +
+	"\x10maximum_lifetime\x18\t \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0fmaximumLifetime\x12e\n" +
+	"\x11predefined_values\x18\x02 \x01(\v22.google.cloud.security.privateca.v1.X509ParametersB\x04\xe2A\x01\x01R\x10predefinedValues\x12{\n" +
+	"\x14identity_constraints\x18\x03 \x01(\v2B.google.cloud.security.privateca.v1.CertificateIdentityConstraintsB\x04\xe2A\x01\x01R\x13identityConstraints\x12\x80\x01\n" +
+	"\x16passthrough_extensions\x18\x04 \x01(\v2C.google.cloud.security.privateca.v1.CertificateExtensionConstraintsB\x04\xe2A\x01\x01R\x15passthroughExtensions\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12a\n" +
+	"\x06labels\x18\b \x03(\v2C.google.cloud.security.privateca.v1.CertificateTemplate.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x87\x01\xeaA\x83\x01\n" +
-	",privateca.googleapis.com/CertificateTemplate\x12Sprojects/{project}/locations/{location}/certificateTemplates/{certificate_template}\"\xe3\b\n" +
-	"\x0eX509Parameters\x12N\n" +
-	"\tkey_usage\x18\x01 \x01(\v2,.google.cloud.security.privateca.v1.KeyUsageB\x03\xe0A\x01R\bkeyUsage\x12`\n" +
+	",privateca.googleapis.com/CertificateTemplate\x12Sprojects/{project}/locations/{location}/certificateTemplates/{certificate_template}\"\xeb\b\n" +
+	"\x0eX509Parameters\x12O\n" +
+	"\tkey_usage\x18\x01 \x01(\v2,.google.cloud.security.privateca.v1.KeyUsageB\x04\xe2A\x01\x01R\bkeyUsage\x12a\n" +
 	"\n" +
-	"ca_options\x18\x02 \x01(\v2<.google.cloud.security.privateca.v1.X509Parameters.CaOptionsB\x03\xe0A\x01R\tcaOptions\x12P\n" +
+	"ca_options\x18\x02 \x01(\v2<.google.cloud.security.privateca.v1.X509Parameters.CaOptionsB\x04\xe2A\x01\x01R\tcaOptions\x12Q\n" +
 	"\n" +
-	"policy_ids\x18\x03 \x03(\v2,.google.cloud.security.privateca.v1.ObjectIdB\x03\xe0A\x01R\tpolicyIds\x12-\n" +
-	"\x10aia_ocsp_servers\x18\x04 \x03(\tB\x03\xe0A\x01R\x0eaiaOcspServers\x12r\n" +
-	"\x10name_constraints\x18\x06 \x01(\v2B.google.cloud.security.privateca.v1.X509Parameters.NameConstraintsB\x03\xe0A\x01R\x0fnameConstraints\x12k\n" +
-	"\x15additional_extensions\x18\x05 \x03(\v21.google.cloud.security.privateca.v1.X509ExtensionB\x03\xe0A\x01R\x14additionalExtensions\x1a\x8e\x01\n" +
-	"\tCaOptions\x12\x1d\n" +
-	"\x05is_ca\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\x04isCa\x88\x01\x01\x12=\n" +
-	"\x16max_issuer_path_length\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x13maxIssuerPathLength\x88\x01\x01B\b\n" +
+	"policy_ids\x18\x03 \x03(\v2,.google.cloud.security.privateca.v1.ObjectIdB\x04\xe2A\x01\x01R\tpolicyIds\x12.\n" +
+	"\x10aia_ocsp_servers\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x0eaiaOcspServers\x12s\n" +
+	"\x10name_constraints\x18\x06 \x01(\v2B.google.cloud.security.privateca.v1.X509Parameters.NameConstraintsB\x04\xe2A\x01\x01R\x0fnameConstraints\x12l\n" +
+	"\x15additional_extensions\x18\x05 \x03(\v21.google.cloud.security.privateca.v1.X509ExtensionB\x04\xe2A\x01\x01R\x14additionalExtensions\x1a\x90\x01\n" +
+	"\tCaOptions\x12\x1e\n" +
+	"\x05is_ca\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\x04isCa\x88\x01\x01\x12>\n" +
+	"\x16max_issuer_path_length\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x13maxIssuerPathLength\x88\x01\x01B\b\n" +
 	"\x06_is_caB\x19\n" +
 	"\x17_max_issuer_path_length\x1a\xab\x03\n" +
 	"\x0fNameConstraints\x12\x1a\n" +
@@ -4934,32 +4934,32 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x19permitted_email_addresses\x18\x06 \x03(\tR\x17permittedEmailAddresses\x128\n" +
 	"\x18excluded_email_addresses\x18\a \x03(\tR\x16excludedEmailAddresses\x12%\n" +
 	"\x0epermitted_uris\x18\b \x03(\tR\rpermittedUris\x12#\n" +
-	"\rexcluded_uris\x18\t \x03(\tR\fexcludedUris\"\xe0\x02\n" +
-	"\x11SubordinateConfig\x12l\n" +
-	"\x15certificate_authority\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityH\x00R\x14certificateAuthority\x12}\n" +
-	"\x10pem_issuer_chain\x18\x02 \x01(\v2L.google.cloud.security.privateca.v1.SubordinateConfig.SubordinateConfigChainB\x03\xe0A\x02H\x00R\x0epemIssuerChain\x1aH\n" +
-	"\x16SubordinateConfigChain\x12.\n" +
-	"\x10pem_certificates\x18\x01 \x03(\tB\x03\xe0A\x02R\x0fpemCertificatesB\x14\n" +
-	"\x12subordinate_config\"\xaa\x01\n" +
-	"\tPublicKey\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\fB\x03\xe0A\x02R\x03key\x12T\n" +
-	"\x06format\x18\x02 \x01(\x0e27.google.cloud.security.privateca.v1.PublicKey.KeyFormatB\x03\xe0A\x02R\x06format\"0\n" +
+	"\rexcluded_uris\x18\t \x03(\tR\fexcludedUris\"\xe3\x02\n" +
+	"\x11SubordinateConfig\x12m\n" +
+	"\x15certificate_authority\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityH\x00R\x14certificateAuthority\x12~\n" +
+	"\x10pem_issuer_chain\x18\x02 \x01(\v2L.google.cloud.security.privateca.v1.SubordinateConfig.SubordinateConfigChainB\x04\xe2A\x01\x02H\x00R\x0epemIssuerChain\x1aI\n" +
+	"\x16SubordinateConfigChain\x12/\n" +
+	"\x10pem_certificates\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x0fpemCertificatesB\x14\n" +
+	"\x12subordinate_config\"\xac\x01\n" +
+	"\tPublicKey\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\x03key\x12U\n" +
+	"\x06format\x18\x02 \x01(\x0e27.google.cloud.security.privateca.v1.PublicKey.KeyFormatB\x04\xe2A\x01\x02R\x06format\"0\n" +
 	"\tKeyFormat\x12\x1a\n" +
 	"\x16KEY_FORMAT_UNSPECIFIED\x10\x00\x12\a\n" +
-	"\x03PEM\x10\x01\"\x80\x05\n" +
-	"\x11CertificateConfig\x12o\n" +
-	"\x0esubject_config\x18\x01 \x01(\v2C.google.cloud.security.privateca.v1.CertificateConfig.SubjectConfigB\x03\xe0A\x02R\rsubjectConfig\x12X\n" +
-	"\vx509_config\x18\x02 \x01(\v22.google.cloud.security.privateca.v1.X509ParametersB\x03\xe0A\x02R\n" +
-	"x509Config\x12Q\n" +
+	"\x03PEM\x10\x01\"\x87\x05\n" +
+	"\x11CertificateConfig\x12p\n" +
+	"\x0esubject_config\x18\x01 \x01(\v2C.google.cloud.security.privateca.v1.CertificateConfig.SubjectConfigB\x04\xe2A\x01\x02R\rsubjectConfig\x12Y\n" +
+	"\vx509_config\x18\x02 \x01(\v22.google.cloud.security.privateca.v1.X509ParametersB\x04\xe2A\x01\x02R\n" +
+	"x509Config\x12R\n" +
 	"\n" +
-	"public_key\x18\x03 \x01(\v2-.google.cloud.security.privateca.v1.PublicKeyB\x03\xe0A\x01R\tpublicKey\x12f\n" +
-	"\x0esubject_key_id\x18\x04 \x01(\v2;.google.cloud.security.privateca.v1.CertificateConfig.KeyIdB\x03\xe0A\x01R\fsubjectKeyId\x1a\xbf\x01\n" +
-	"\rSubjectConfig\x12J\n" +
-	"\asubject\x18\x01 \x01(\v2+.google.cloud.security.privateca.v1.SubjectB\x03\xe0A\x01R\asubject\x12b\n" +
-	"\x10subject_alt_name\x18\x02 \x01(\v23.google.cloud.security.privateca.v1.SubjectAltNamesB\x03\xe0A\x01R\x0esubjectAltName\x1a#\n" +
-	"\x05KeyId\x12\x1a\n" +
-	"\x06key_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x05keyId\"\xcc\n" +
+	"public_key\x18\x03 \x01(\v2-.google.cloud.security.privateca.v1.PublicKeyB\x04\xe2A\x01\x01R\tpublicKey\x12g\n" +
+	"\x0esubject_key_id\x18\x04 \x01(\v2;.google.cloud.security.privateca.v1.CertificateConfig.KeyIdB\x04\xe2A\x01\x01R\fsubjectKeyId\x1a\xc1\x01\n" +
+	"\rSubjectConfig\x12K\n" +
+	"\asubject\x18\x01 \x01(\v2+.google.cloud.security.privateca.v1.SubjectB\x04\xe2A\x01\x01R\asubject\x12c\n" +
+	"\x10subject_alt_name\x18\x02 \x01(\v23.google.cloud.security.privateca.v1.SubjectAltNamesB\x04\xe2A\x01\x01R\x0esubjectAltName\x1a$\n" +
+	"\x05KeyId\x12\x1b\n" +
+	"\x06key_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05keyId\"\xcd\n" +
 	"\n" +
 	"\x16CertificateDescription\x12~\n" +
 	"\x13subject_description\x18\x01 \x01(\v2M.google.cloud.security.privateca.v1.CertificateDescription.SubjectDescriptionR\x12subjectDescription\x12]\n" +
@@ -4978,18 +4978,18 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x11hex_serial_number\x18\x03 \x01(\tR\x0fhexSerialNumber\x125\n" +
 	"\blifetime\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\blifetime\x12B\n" +
 	"\x0fnot_before_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\rnotBeforeTime\x12@\n" +
-	"\x0enot_after_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\fnotAfterTime\x1a#\n" +
-	"\x05KeyId\x12\x1a\n" +
-	"\x06key_id\x18\x01 \x01(\tB\x03\xe0A\x01R\x05keyId\x1a9\n" +
+	"\x0enot_after_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\fnotAfterTime\x1a$\n" +
+	"\x05KeyId\x12\x1b\n" +
+	"\x06key_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05keyId\x1a9\n" +
 	"\x16CertificateFingerprint\x12\x1f\n" +
 	"\vsha256_hash\x18\x01 \x01(\tR\n" +
-	"sha256Hash\"5\n" +
-	"\bObjectId\x12)\n" +
-	"\x0eobject_id_path\x18\x01 \x03(\x05B\x03\xe0A\x02R\fobjectIdPath\"\x9b\x01\n" +
-	"\rX509Extension\x12N\n" +
-	"\tobject_id\x18\x01 \x01(\v2,.google.cloud.security.privateca.v1.ObjectIdB\x03\xe0A\x02R\bobjectId\x12\x1f\n" +
-	"\bcritical\x18\x02 \x01(\bB\x03\xe0A\x01R\bcritical\x12\x19\n" +
-	"\x05value\x18\x03 \x01(\fB\x03\xe0A\x02R\x05value\"\xb2\a\n" +
+	"sha256Hash\"6\n" +
+	"\bObjectId\x12*\n" +
+	"\x0eobject_id_path\x18\x01 \x03(\x05B\x04\xe2A\x01\x02R\fobjectIdPath\"\x9e\x01\n" +
+	"\rX509Extension\x12O\n" +
+	"\tobject_id\x18\x01 \x01(\v2,.google.cloud.security.privateca.v1.ObjectIdB\x04\xe2A\x01\x02R\bobjectId\x12 \n" +
+	"\bcritical\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\bcritical\x12\x1a\n" +
+	"\x05value\x18\x03 \x01(\fB\x04\xe2A\x01\x02R\x05value\"\xb2\a\n" +
 	"\bKeyUsage\x12b\n" +
 	"\x0ebase_key_usage\x18\x01 \x01(\v2<.google.cloud.security.privateca.v1.KeyUsage.KeyUsageOptionsR\fbaseKeyUsage\x12r\n" +
 	"\x12extended_key_usage\x18\x02 \x01(\v2D.google.cloud.security.privateca.v1.KeyUsage.ExtendedKeyUsageOptionsR\x10extendedKeyUsage\x12k\n" +
@@ -5040,16 +5040,16 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x0femail_addresses\x18\x03 \x03(\tR\x0eemailAddresses\x12!\n" +
 	"\fip_addresses\x18\x04 \x03(\tR\vipAddresses\x12R\n" +
 	"\vcustom_sans\x18\x05 \x03(\v21.google.cloud.security.privateca.v1.X509ExtensionR\n" +
-	"customSans\"\xc3\x02\n" +
-	"\x1eCertificateIdentityConstraints\x12=\n" +
-	"\x0ecel_expression\x18\x01 \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\rcelExpression\x12D\n" +
-	"\x19allow_subject_passthrough\x18\x02 \x01(\bB\x03\xe0A\x02H\x00R\x17allowSubjectPassthrough\x88\x01\x01\x12V\n" +
-	"#allow_subject_alt_names_passthrough\x18\x03 \x01(\bB\x03\xe0A\x02H\x01R\x1fallowSubjectAltNamesPassthrough\x88\x01\x01B\x1c\n" +
+	"customSans\"\xc6\x02\n" +
+	"\x1eCertificateIdentityConstraints\x12>\n" +
+	"\x0ecel_expression\x18\x01 \x01(\v2\x11.google.type.ExprB\x04\xe2A\x01\x01R\rcelExpression\x12E\n" +
+	"\x19allow_subject_passthrough\x18\x02 \x01(\bB\x04\xe2A\x01\x02H\x00R\x17allowSubjectPassthrough\x88\x01\x01\x12W\n" +
+	"#allow_subject_alt_names_passthrough\x18\x03 \x01(\bB\x04\xe2A\x01\x02H\x01R\x1fallowSubjectAltNamesPassthrough\x88\x01\x01B\x1c\n" +
 	"\x1a_allow_subject_passthroughB&\n" +
-	"$_allow_subject_alt_names_passthrough\"\xdc\x03\n" +
-	"\x1fCertificateExtensionConstraints\x12\x8d\x01\n" +
-	"\x10known_extensions\x18\x01 \x03(\x0e2].google.cloud.security.privateca.v1.CertificateExtensionConstraints.KnownCertificateExtensionB\x03\xe0A\x01R\x0fknownExtensions\x12f\n" +
-	"\x15additional_extensions\x18\x02 \x03(\v2,.google.cloud.security.privateca.v1.ObjectIdB\x03\xe0A\x01R\x14additionalExtensions\"\xc0\x01\n" +
+	"$_allow_subject_alt_names_passthrough\"\xde\x03\n" +
+	"\x1fCertificateExtensionConstraints\x12\x8e\x01\n" +
+	"\x10known_extensions\x18\x01 \x03(\x0e2].google.cloud.security.privateca.v1.CertificateExtensionConstraints.KnownCertificateExtensionB\x04\xe2A\x01\x01R\x0fknownExtensions\x12g\n" +
+	"\x15additional_extensions\x18\x02 \x03(\v2,.google.cloud.security.privateca.v1.ObjectIdB\x04\xe2A\x01\x01R\x14additionalExtensions\"\xc0\x01\n" +
 	"\x19KnownCertificateExtension\x12+\n" +
 	"'KNOWN_CERTIFICATE_EXTENSION_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eBASE_KEY_USAGE\x10\x01\x12\x16\n" +

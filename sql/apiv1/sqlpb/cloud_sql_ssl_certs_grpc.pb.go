@@ -34,10 +34,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	SqlSslCertsService_Delete_FullMethodName = "/google.cloud.sql.v1.SqlSslCertsService/Delete"
-	SqlSslCertsService_Get_FullMethodName    = "/google.cloud.sql.v1.SqlSslCertsService/Get"
-	SqlSslCertsService_Insert_FullMethodName = "/google.cloud.sql.v1.SqlSslCertsService/Insert"
-	SqlSslCertsService_List_FullMethodName   = "/google.cloud.sql.v1.SqlSslCertsService/List"
+	SqlSslCertsService_Delete_FullMethodName                           = "/google.cloud.sql.v1.SqlSslCertsService/Delete"
+	SqlSslCertsService_Get_FullMethodName                              = "/google.cloud.sql.v1.SqlSslCertsService/Get"
+	SqlSslCertsService_Insert_FullMethodName                           = "/google.cloud.sql.v1.SqlSslCertsService/Insert"
+	SqlSslCertsService_List_FullMethodName                             = "/google.cloud.sql.v1.SqlSslCertsService/List"
+	SqlSslCertsService_UpdateCustomerManagedCertificate_FullMethodName = "/google.cloud.sql.v1.SqlSslCertsService/UpdateCustomerManagedCertificate"
+	SqlSslCertsService_DeleteCustomerManagedCertificate_FullMethodName = "/google.cloud.sql.v1.SqlSslCertsService/DeleteCustomerManagedCertificate"
+	SqlSslCertsService_ListCustomerManagedCertificates_FullMethodName  = "/google.cloud.sql.v1.SqlSslCertsService/ListCustomerManagedCertificates"
 )
 
 // SqlSslCertsServiceClient is the client API for SqlSslCertsService service.
@@ -57,6 +60,15 @@ type SqlSslCertsServiceClient interface {
 	Insert(ctx context.Context, in *SqlSslCertsInsertRequest, opts ...grpc.CallOption) (*SslCertsInsertResponse, error)
 	// Lists all of the current SSL certificates for the instance.
 	List(ctx context.Context, in *SqlSslCertsListRequest, opts ...grpc.CallOption) (*SslCertsListResponse, error)
+	// Upload and update customer managed certificate bundle for an existing Cloud
+	// SQL instance.
+	UpdateCustomerManagedCertificate(ctx context.Context, in *UpdateCustomerManagedCertificateRequest, opts ...grpc.CallOption) (*Operation, error)
+	// Delete customer managed certificate bundle for an existing Cloud SQL
+	// instance.
+	DeleteCustomerManagedCertificate(ctx context.Context, in *DeleteCustomerManagedCertificateRequest, opts ...grpc.CallOption) (*Operation, error)
+	// List all customer managed certificate bundles for an existing Cloud SQL
+	// instance.
+	ListCustomerManagedCertificates(ctx context.Context, in *ListCustomerManagedCertificatesRequest, opts ...grpc.CallOption) (*ListCustomerManagedCertificatesResponse, error)
 }
 
 type sqlSslCertsServiceClient struct {
@@ -103,6 +115,33 @@ func (c *sqlSslCertsServiceClient) List(ctx context.Context, in *SqlSslCertsList
 	return out, nil
 }
 
+func (c *sqlSslCertsServiceClient) UpdateCustomerManagedCertificate(ctx context.Context, in *UpdateCustomerManagedCertificateRequest, opts ...grpc.CallOption) (*Operation, error) {
+	out := new(Operation)
+	err := c.cc.Invoke(ctx, SqlSslCertsService_UpdateCustomerManagedCertificate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sqlSslCertsServiceClient) DeleteCustomerManagedCertificate(ctx context.Context, in *DeleteCustomerManagedCertificateRequest, opts ...grpc.CallOption) (*Operation, error) {
+	out := new(Operation)
+	err := c.cc.Invoke(ctx, SqlSslCertsService_DeleteCustomerManagedCertificate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sqlSslCertsServiceClient) ListCustomerManagedCertificates(ctx context.Context, in *ListCustomerManagedCertificatesRequest, opts ...grpc.CallOption) (*ListCustomerManagedCertificatesResponse, error) {
+	out := new(ListCustomerManagedCertificatesResponse)
+	err := c.cc.Invoke(ctx, SqlSslCertsService_ListCustomerManagedCertificates_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SqlSslCertsServiceServer is the server API for SqlSslCertsService service.
 // All implementations should embed UnimplementedSqlSslCertsServiceServer
 // for forward compatibility
@@ -120,6 +159,15 @@ type SqlSslCertsServiceServer interface {
 	Insert(context.Context, *SqlSslCertsInsertRequest) (*SslCertsInsertResponse, error)
 	// Lists all of the current SSL certificates for the instance.
 	List(context.Context, *SqlSslCertsListRequest) (*SslCertsListResponse, error)
+	// Upload and update customer managed certificate bundle for an existing Cloud
+	// SQL instance.
+	UpdateCustomerManagedCertificate(context.Context, *UpdateCustomerManagedCertificateRequest) (*Operation, error)
+	// Delete customer managed certificate bundle for an existing Cloud SQL
+	// instance.
+	DeleteCustomerManagedCertificate(context.Context, *DeleteCustomerManagedCertificateRequest) (*Operation, error)
+	// List all customer managed certificate bundles for an existing Cloud SQL
+	// instance.
+	ListCustomerManagedCertificates(context.Context, *ListCustomerManagedCertificatesRequest) (*ListCustomerManagedCertificatesResponse, error)
 }
 
 // UnimplementedSqlSslCertsServiceServer should be embedded to have forward compatible implementations.
@@ -137,6 +185,15 @@ func (UnimplementedSqlSslCertsServiceServer) Insert(context.Context, *SqlSslCert
 }
 func (UnimplementedSqlSslCertsServiceServer) List(context.Context, *SqlSslCertsListRequest) (*SslCertsListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedSqlSslCertsServiceServer) UpdateCustomerManagedCertificate(context.Context, *UpdateCustomerManagedCertificateRequest) (*Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCustomerManagedCertificate not implemented")
+}
+func (UnimplementedSqlSslCertsServiceServer) DeleteCustomerManagedCertificate(context.Context, *DeleteCustomerManagedCertificateRequest) (*Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCustomerManagedCertificate not implemented")
+}
+func (UnimplementedSqlSslCertsServiceServer) ListCustomerManagedCertificates(context.Context, *ListCustomerManagedCertificatesRequest) (*ListCustomerManagedCertificatesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListCustomerManagedCertificates not implemented")
 }
 
 // UnsafeSqlSslCertsServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -222,6 +279,60 @@ func _SqlSslCertsService_List_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SqlSslCertsService_UpdateCustomerManagedCertificate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCustomerManagedCertificateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlSslCertsServiceServer).UpdateCustomerManagedCertificate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlSslCertsService_UpdateCustomerManagedCertificate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlSslCertsServiceServer).UpdateCustomerManagedCertificate(ctx, req.(*UpdateCustomerManagedCertificateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SqlSslCertsService_DeleteCustomerManagedCertificate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCustomerManagedCertificateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlSslCertsServiceServer).DeleteCustomerManagedCertificate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlSslCertsService_DeleteCustomerManagedCertificate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlSslCertsServiceServer).DeleteCustomerManagedCertificate(ctx, req.(*DeleteCustomerManagedCertificateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SqlSslCertsService_ListCustomerManagedCertificates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListCustomerManagedCertificatesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlSslCertsServiceServer).ListCustomerManagedCertificates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlSslCertsService_ListCustomerManagedCertificates_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlSslCertsServiceServer).ListCustomerManagedCertificates(ctx, req.(*ListCustomerManagedCertificatesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SqlSslCertsService_ServiceDesc is the grpc.ServiceDesc for SqlSslCertsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -244,6 +355,18 @@ var SqlSslCertsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _SqlSslCertsService_List_Handler,
+		},
+		{
+			MethodName: "UpdateCustomerManagedCertificate",
+			Handler:    _SqlSslCertsService_UpdateCustomerManagedCertificate_Handler,
+		},
+		{
+			MethodName: "DeleteCustomerManagedCertificate",
+			Handler:    _SqlSslCertsService_DeleteCustomerManagedCertificate_Handler,
+		},
+		{
+			MethodName: "ListCustomerManagedCertificates",
+			Handler:    _SqlSslCertsService_ListCustomerManagedCertificates_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

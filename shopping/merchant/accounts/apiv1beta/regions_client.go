@@ -693,6 +693,11 @@ func (c *regionsRESTClient) GetRegion(ctx context.Context, req *accountspb.GetRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -753,6 +758,11 @@ func (c *regionsRESTClient) CreateRegion(ctx context.Context, req *accountspb.Cr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/regions", req.GetParent())
@@ -818,6 +828,11 @@ func (c *regionsRESTClient) UpdateRegion(ctx context.Context, req *accountspb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRegion().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetRegion().GetName())
 
 	params := url.Values{}
@@ -880,6 +895,11 @@ func (c *regionsRESTClient) DeleteRegion(ctx context.Context, req *accountspb.De
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -930,6 +950,11 @@ func (c *regionsRESTClient) ListRegions(ctx context.Context, req *accountspb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/regions", req.GetParent())

@@ -100,11 +100,12 @@ func (AutoProtectionPolicyBinding_State) EnumDescriptor() ([]byte, []int) {
 // the policy should be applied.
 type AutoProtectionPolicyBinding struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. The resource name of the AutoProtectionPolicyBinding.
-	// Format:
+	// Output only. Identifier. The resource name of the
+	// AutoProtectionPolicyBinding. Format:
 	// `projects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. A description of the binding.
+	// Optional. A description of the binding. The description must be at most
+	// 2048 characters.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// Output only. The current state of the AutoProtectionPolicyBinding.
 	State AutoProtectionPolicyBinding_State `protobuf:"varint,3,opt,name=state,proto3,enum=google.cloud.backupdr.v1beta.AutoProtectionPolicyBinding_State" json:"state,omitempty"`
@@ -118,7 +119,7 @@ type AutoProtectionPolicyBinding struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The timestamp when the binding was last updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Optional. Output only. The etag for the binding.
+	// Output only. The etag for the binding.
 	// If this is provided on update, it must match the server's etag.
 	Etag          string `protobuf:"bytes,8,opt,name=etag,proto3" json:"etag,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -288,11 +289,22 @@ type CreateAutoProtectionPolicyBindingRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The ID to use for the binding.
 	// This will become the final component of the binding's resource name.
+	//
+	// This value must start with a lowercase letter followed by up to 62
+	// lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
 	AutoProtectionPolicyBindingId string `protobuf:"bytes,2,opt,name=auto_protection_policy_binding_id,json=autoProtectionPolicyBindingId,proto3" json:"auto_protection_policy_binding_id,omitempty"`
 	// Required. The AutoProtectionPolicyBinding resource to create.
 	AutoProtectionPolicyBinding *AutoProtectionPolicyBinding `protobuf:"bytes,3,opt,name=auto_protection_policy_binding,json=autoProtectionPolicyBinding,proto3" json:"auto_protection_policy_binding,omitempty"`
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	// Optional. An optional request ID to identify requests. Specify a unique
+	// request ID so that if you must retry your request, the server will know to
+	// ignore the request if it has already been completed. The server will
+	// guarantee that for at least 60 minutes since the first request.
+	//
+	// The request ID must be a valid UUID with the exception that zero UUID is
+	// not supported (00000000-0000-0000-0000-000000000000).
+	RequestId     string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateAutoProtectionPolicyBindingRequest) Reset() {
@@ -344,6 +356,13 @@ func (x *CreateAutoProtectionPolicyBindingRequest) GetAutoProtectionPolicyBindin
 		return x.AutoProtectionPolicyBinding
 	}
 	return nil
+}
+
+func (x *CreateAutoProtectionPolicyBindingRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
 }
 
 // Request message for getting an AutoProtectionPolicyBinding.
@@ -553,7 +572,19 @@ type InitiateDeleteAutoProtectionPolicyBindingRequest struct {
 	// Required. The name of the binding to delete.
 	// Format:
 	// projects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. The current etag of the AutoProtectionPolicyBinding.
+	// If an etag is provided and does not match the current etag of the
+	// binding, deletion will be blocked and an ABORTED error will be returned.
+	Etag string `protobuf:"bytes,2,opt,name=etag,proto3" json:"etag,omitempty"`
+	// Optional. An optional request ID to identify requests. Specify a unique
+	// request ID so that if you must retry your request, the server will know to
+	// ignore the request if it has already been completed. The server will
+	// guarantee that for at least 60 minutes since the first request.
+	//
+	// The request ID must be a valid UUID with the exception that zero UUID is
+	// not supported (00000000-0000-0000-0000-000000000000).
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -595,57 +626,76 @@ func (x *InitiateDeleteAutoProtectionPolicyBindingRequest) GetName() string {
 	return ""
 }
 
+func (x *InitiateDeleteAutoProtectionPolicyBindingRequest) GetEtag() string {
+	if x != nil {
+		return x.Etag
+	}
+	return ""
+}
+
+func (x *InitiateDeleteAutoProtectionPolicyBindingRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 var File_google_cloud_backupdr_v1beta_autoprotectionpolicybinding_proto protoreflect.FileDescriptor
 
 const file_google_cloud_backupdr_v1beta_autoprotectionpolicybinding_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/backupdr/v1beta/autoprotectionpolicybinding.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\x06\n" +
-	"\x1bAutoProtectionPolicyBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12Z\n" +
-	"\x05state\x18\x03 \x01(\x0e2?.google.cloud.backupdr.v1beta.AutoProtectionPolicyBinding.StateB\x03\xe0A\x03R\x05state\x12\"\n" +
-	"\x05scope\x18\x04 \x01(\tB\f\xe0A\x02\xe0A\x05\xfaA\x03\n" +
-	"\x01*R\x05scope\x12y\n" +
-	"\x1abinding_evaluation_summary\x18\x05 \x01(\v26.google.cloud.backupdr.v1beta.BindingEvaluationSummaryB\x03\xe0A\x03R\x18bindingEvaluationSummary\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\"P\n" +
+	">google/cloud/backupdr/v1beta/autoprotectionpolicybinding.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xab\x06\n" +
+	"\x1bAutoProtectionPolicyBinding\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12[\n" +
+	"\x05state\x18\x03 \x01(\x0e2?.google.cloud.backupdr.v1beta.AutoProtectionPolicyBinding.StateB\x04\xe2A\x01\x03R\x05state\x12!\n" +
+	"\x05scope\x18\x04 \x01(\tB\v\xe2A\x02\x02\x05\xfaA\x03\n" +
+	"\x01*R\x05scope\x12z\n" +
+	"\x1abinding_evaluation_summary\x18\x05 \x01(\v26.google.cloud.backupdr.v1beta.BindingEvaluationSummaryB\x04\xe2A\x01\x03R\x18bindingEvaluationSummary\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x12\n" +
+	"\x04etag\x18\b \x01(\tR\x04etag\"P\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x02\x12\x16\n" +
 	"\x12DELETION_INITIATED\x10\x03:\xe0\x01\xeaA\xdc\x01\n" +
-	"3backupdr.googleapis.com/AutoProtectionPolicyBinding\x12jprojects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}*\x1cautoProtectionPolicyBindings2\x1bautoProtectionPolicyBinding\"\xcf\x01\n" +
-	"\x18BindingEvaluationSummary\x12;\n" +
-	"\x17matching_resource_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\x15matchingResourceCount\x12=\n" +
-	"\x18protected_resource_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x16protectedResourceCount\x127\n" +
-	"\x15failed_resource_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x13failedResourceCount\"\xcd\x02\n" +
-	"(CreateAutoProtectionPolicyBindingRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",backupdr.googleapis.com/AutoProtectionPolicyR\x06parent\x12M\n" +
-	"!auto_protection_policy_binding_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x1dautoProtectionPolicyBindingId\x12\x83\x01\n" +
-	"\x1eauto_protection_policy_binding\x18\x03 \x01(\v29.google.cloud.backupdr.v1beta.AutoProtectionPolicyBindingB\x03\xe0A\x02R\x1bautoProtectionPolicyBinding\"x\n" +
-	"%GetAutoProtectionPolicyBindingRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x04name\"\xfa\x01\n" +
-	"'ListAutoProtectionPolicyBindingsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",backupdr.googleapis.com/AutoProtectionPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"3backupdr.googleapis.com/AutoProtectionPolicyBinding\x12jprojects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}*\x1cautoProtectionPolicyBindings2\x1bautoProtectionPolicyBinding\"\xd2\x01\n" +
+	"\x18BindingEvaluationSummary\x12<\n" +
+	"\x17matching_resource_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\x15matchingResourceCount\x12>\n" +
+	"\x18protected_resource_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x16protectedResourceCount\x128\n" +
+	"\x15failed_resource_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x13failedResourceCount\"\xfd\x02\n" +
+	"(CreateAutoProtectionPolicyBindingRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",backupdr.googleapis.com/AutoProtectionPolicyR\x06parent\x12N\n" +
+	"!auto_protection_policy_binding_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x1dautoProtectionPolicyBindingId\x12\x84\x01\n" +
+	"\x1eauto_protection_policy_binding\x18\x03 \x01(\v29.google.cloud.backupdr.v1beta.AutoProtectionPolicyBindingB\x04\xe2A\x01\x02R\x1bautoProtectionPolicyBinding\x12+\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xfc\x01\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"y\n" +
+	"%GetAutoProtectionPolicyBindingRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x04name\"\xff\x01\n" +
+	"'ListAutoProtectionPolicyBindingsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",backupdr.googleapis.com/AutoProtectionPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xfd\x01\n" +
 	"(ListAutoProtectionPolicyBindingsResponse\x12\x80\x01\n" +
 	"\x1fauto_protection_policy_bindings\x18\x01 \x03(\v29.google.cloud.backupdr.v1beta.AutoProtectionPolicyBindingR\x1cautoProtectionPolicyBindings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\x83\x01\n" +
-	"0InitiateDeleteAutoProtectionPolicyBindingRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x04nameB\xe4\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\xcb\x01\n" +
+	"0InitiateDeleteAutoProtectionPolicyBindingRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12+\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xe4\x01\n" +
 	" com.google.cloud.backupdr.v1betaB AutoProtectionPolicyBindingProtoP\x01Z<cloud.google.com/go/backupdr/apiv1beta/backupdrpb;backupdrpb\xaa\x02\x1cGoogle.Cloud.BackupDR.V1Beta\xca\x02\x1cGoogle\\Cloud\\BackupDR\\V1beta\xea\x02\x1fGoogle::Cloud::BackupDR::V1betab\x06proto3"
 
 var (

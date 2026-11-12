@@ -3081,6 +3081,11 @@ func (c *restClient) ListDockerImages(ctx context.Context, req *artifactregistry
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dockerImages", req.GetParent())
 
 		params := url.Values{}
@@ -3147,6 +3152,11 @@ func (c *restClient) ListDockerImages(ctx context.Context, req *artifactregistry
 func (c *restClient) GetDockerImage(ctx context.Context, req *artifactregistrypb.GetDockerImageRequest, opts ...gax.CallOption) (*artifactregistrypb.DockerImage, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3216,6 +3226,11 @@ func (c *restClient) ListMavenArtifacts(ctx context.Context, req *artifactregist
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mavenArtifacts", req.GetParent())
 
 		params := url.Values{}
@@ -3279,6 +3294,11 @@ func (c *restClient) ListMavenArtifacts(ctx context.Context, req *artifactregist
 func (c *restClient) GetMavenArtifact(ctx context.Context, req *artifactregistrypb.GetMavenArtifactRequest, opts ...gax.CallOption) (*artifactregistrypb.MavenArtifact, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3348,6 +3368,11 @@ func (c *restClient) ListNpmPackages(ctx context.Context, req *artifactregistryp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/npmPackages", req.GetParent())
 
 		params := url.Values{}
@@ -3411,6 +3436,11 @@ func (c *restClient) ListNpmPackages(ctx context.Context, req *artifactregistryp
 func (c *restClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.GetNpmPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.NpmPackage, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3480,6 +3510,11 @@ func (c *restClient) ListPythonPackages(ctx context.Context, req *artifactregist
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/pythonPackages", req.GetParent())
 
 		params := url.Values{}
@@ -3545,6 +3580,11 @@ func (c *restClient) GetPythonPackage(ctx context.Context, req *artifactregistry
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3606,6 +3646,11 @@ func (c *restClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/aptArtifacts:import", req.GetParent())
@@ -3676,6 +3721,11 @@ func (c *restClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/yumArtifacts:import", req.GetParent())
@@ -3752,6 +3802,11 @@ func (c *restClient) ListRepositories(ctx context.Context, req *artifactregistry
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/repositories", req.GetParent())
 
 		params := url.Values{}
@@ -3823,6 +3878,11 @@ func (c *restClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3883,6 +3943,11 @@ func (c *restClient) CreateRepository(ctx context.Context, req *artifactregistry
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/repositories", req.GetParent())
@@ -3954,6 +4019,11 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *artifactregistry
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRepository().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRepository().GetName())
 
 	params := url.Values{}
@@ -4015,6 +4085,11 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *artifactregistry
 func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistrypb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4091,6 +4166,11 @@ func (c *restClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/packages", req.GetParent())
 
 		params := url.Values{}
@@ -4162,6 +4242,11 @@ func (c *restClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4215,6 +4300,11 @@ func (c *restClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.DeletePackageRequest, opts ...gax.CallOption) (*DeletePackageOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4291,6 +4381,11 @@ func (c *restClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
 
 		params := url.Values{}
@@ -4365,6 +4460,11 @@ func (c *restClient) GetVersion(ctx context.Context, req *artifactregistrypb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4421,6 +4521,11 @@ func (c *restClient) GetVersion(ctx context.Context, req *artifactregistrypb.Get
 func (c *restClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.DeleteVersionRequest, opts ...gax.CallOption) (*DeleteVersionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4494,6 +4599,11 @@ func (c *restClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/versions:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -4560,6 +4670,11 @@ func (c *restClient) UpdateVersion(ctx context.Context, req *artifactregistrypb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetVersion().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetVersion().GetName())
@@ -4636,6 +4751,11 @@ func (c *restClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/files", req.GetParent())
 
 		params := url.Values{}
@@ -4707,6 +4827,11 @@ func (c *restClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4761,6 +4886,11 @@ func (c *restClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 func (c *restClient) DeleteFile(ctx context.Context, req *artifactregistrypb.DeleteFileRequest, opts ...gax.CallOption) (*DeleteFileOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4829,6 +4959,11 @@ func (c *restClient) UpdateFile(ctx context.Context, req *artifactregistrypb.Upd
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFile().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFile().GetName())
@@ -4905,6 +5040,11 @@ func (c *restClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/tags", req.GetParent())
 
 		params := url.Values{}
@@ -4973,6 +5113,11 @@ func (c *restClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5032,6 +5177,11 @@ func (c *restClient) CreateTag(ctx context.Context, req *artifactregistrypb.Crea
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/tags", req.GetParent())
@@ -5098,6 +5248,11 @@ func (c *restClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTag().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTag().GetName())
 
 	params := url.Values{}
@@ -5159,6 +5314,11 @@ func (c *restClient) DeleteTag(ctx context.Context, req *artifactregistrypb.Dele
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5203,6 +5363,11 @@ func (c *restClient) CreateRule(ctx context.Context, req *artifactregistrypb.Cre
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/rules", req.GetParent())
@@ -5275,6 +5440,11 @@ func (c *restClient) ListRules(ctx context.Context, req *artifactregistrypb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/rules", req.GetParent())
 
 		params := url.Values{}
@@ -5340,6 +5510,11 @@ func (c *restClient) GetRule(ctx context.Context, req *artifactregistrypb.GetRul
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5399,6 +5574,11 @@ func (c *restClient) UpdateRule(ctx context.Context, req *artifactregistrypb.Upd
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRule().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRule().GetName())
@@ -5462,6 +5642,11 @@ func (c *restClient) DeleteRule(ctx context.Context, req *artifactregistrypb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5505,6 +5690,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -5559,6 +5749,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -5624,6 +5819,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -5676,6 +5876,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 func (c *restClient) GetProjectSettings(ctx context.Context, req *artifactregistrypb.GetProjectSettingsRequest, opts ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5739,6 +5944,11 @@ func (c *restClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectSettings().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetProjectSettings().GetName())
 
 	params := url.Values{}
@@ -5800,6 +6010,11 @@ func (c *restClient) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5859,6 +6074,11 @@ func (c *restClient) UpdateVPCSCConfig(ctx context.Context, req *artifactregistr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetVpcscConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetVpcscConfig().GetName())
@@ -5927,6 +6147,11 @@ func (c *restClient) UpdatePackage(ctx context.Context, req *artifactregistrypb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPackage().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPackage().GetName())
@@ -6003,6 +6228,11 @@ func (c *restClient) ListAttachments(ctx context.Context, req *artifactregistryp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/attachments", req.GetParent())
 
 		params := url.Values{}
@@ -6071,6 +6301,11 @@ func (c *restClient) GetAttachment(ctx context.Context, req *artifactregistrypb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6131,6 +6366,11 @@ func (c *restClient) CreateAttachment(ctx context.Context, req *artifactregistry
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/attachments", req.GetParent())
@@ -6195,6 +6435,11 @@ func (c *restClient) CreateAttachment(ctx context.Context, req *artifactregistry
 func (c *restClient) DeleteAttachment(ctx context.Context, req *artifactregistrypb.DeleteAttachmentRequest, opts ...gax.CallOption) (*DeleteAttachmentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6264,6 +6509,11 @@ func (c *restClient) ExportArtifact(ctx context.Context, req *artifactregistrypb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRepository(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportArtifact", req.GetRepository())
 
 	params := url.Values{}
@@ -6323,6 +6573,11 @@ func (c *restClient) ExportArtifact(ctx context.Context, req *artifactregistrypb
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6400,6 +6655,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -6466,6 +6726,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

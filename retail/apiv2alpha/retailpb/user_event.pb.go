@@ -686,12 +686,12 @@ var File_google_cloud_retail_v2alpha_user_event_proto protoreflect.FileDescripto
 
 const file_google_cloud_retail_v2alpha_user_event_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/retail/v2alpha/user_event.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a(google/cloud/retail/v2alpha/common.proto\x1a)google/cloud/retail/v2alpha/product.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xbf\b\n" +
-	"\tUserEvent\x12\"\n" +
+	",google/cloud/retail/v2alpha/user_event.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a(google/cloud/retail/v2alpha/common.proto\x1a)google/cloud/retail/v2alpha/product.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xc1\b\n" +
+	"\tUserEvent\x12#\n" +
 	"\n" +
-	"event_type\x18\x01 \x01(\tB\x03\xe0A\x02R\teventType\x12\"\n" +
+	"event_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\teventType\x12#\n" +
 	"\n" +
-	"visitor_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tvisitorId\x12\x1d\n" +
+	"visitor_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tvisitorId\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x15 \x01(\tR\tsessionId\x129\n" +
 	"\n" +
@@ -719,20 +719,20 @@ const file_google_cloud_retail_v2alpha_user_event_proto_rawDesc = "" +
 	"\x06entity\x18\x17 \x01(\tR\x06entity\x1ak\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12B\n" +
-	"\x05value\x18\x02 \x01(\v2,.google.cloud.retail.v2alpha.CustomAttributeR\x05value:\x028\x01\"\x8d\x01\n" +
-	"\rProductDetail\x12C\n" +
-	"\aproduct\x18\x01 \x01(\v2$.google.cloud.retail.v2alpha.ProductB\x03\xe0A\x02R\aproduct\x127\n" +
+	"\x05value\x18\x02 \x01(\v2,.google.cloud.retail.v2alpha.CustomAttributeR\x05value:\x028\x01\"\x8e\x01\n" +
+	"\rProductDetail\x12D\n" +
+	"\aproduct\x18\x01 \x01(\v2$.google.cloud.retail.v2alpha.ProductB\x04\xe2A\x01\x02R\aproduct\x127\n" +
 	"\bquantity\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\bquantity\"\xb2\x01\n" +
 	"\x10CompletionDetail\x12@\n" +
 	"\x1ccompletion_attribution_token\x18\x01 \x01(\tR\x1acompletionAttributionToken\x12/\n" +
 	"\x13selected_suggestion\x18\x02 \x01(\tR\x12selectedSuggestion\x12+\n" +
-	"\x11selected_position\x18\x03 \x01(\x05R\x10selectedPosition\"\x94\x01\n" +
+	"\x11selected_position\x18\x03 \x01(\x05R\x10selectedPosition\"\x96\x01\n" +
 	"\x13PurchaseTransaction\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
-	"\arevenue\x18\x02 \x01(\x02B\x03\xe0A\x02R\arevenue\x12\x10\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
+	"\arevenue\x18\x02 \x01(\x02B\x04\xe2A\x01\x02R\arevenue\x12\x10\n" +
 	"\x03tax\x18\x03 \x01(\x02R\x03tax\x12\x12\n" +
-	"\x04cost\x18\x04 \x01(\x02R\x04cost\x12(\n" +
-	"\rcurrency_code\x18\x05 \x01(\tB\x03\xe0A\x02R\fcurrencyCodeB\xd2\x01\n" +
+	"\x04cost\x18\x04 \x01(\x02R\x04cost\x12)\n" +
+	"\rcurrency_code\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\fcurrencyCodeB\xd2\x01\n" +
 	"\x1fcom.google.cloud.retail.v2alphaB\x0eUserEventProtoP\x01Z7cloud.google.com/go/retail/apiv2alpha/retailpb;retailpb\xa2\x02\x06RETAIL\xaa\x02\x1bGoogle.Cloud.Retail.V2Alpha\xca\x02\x1bGoogle\\Cloud\\Retail\\V2alpha\xea\x02\x1eGoogle::Cloud::Retail::V2alphab\x06proto3"
 
 var (

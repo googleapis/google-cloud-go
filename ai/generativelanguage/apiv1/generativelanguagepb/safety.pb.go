@@ -396,10 +396,10 @@ var File_google_ai_generativelanguage_v1_safety_proto protoreflect.FileDescripto
 
 const file_google_ai_generativelanguage_v1_safety_proto_rawDesc = "" +
 	"\n" +
-	",google/ai/generativelanguage/v1/safety.proto\x12\x1fgoogle.ai.generativelanguage.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xc2\x02\n" +
-	"\fSafetyRating\x12N\n" +
-	"\bcategory\x18\x03 \x01(\x0e2-.google.ai.generativelanguage.v1.HarmCategoryB\x03\xe0A\x02R\bcategory\x12d\n" +
-	"\vprobability\x18\x04 \x01(\x0e2=.google.ai.generativelanguage.v1.SafetyRating.HarmProbabilityB\x03\xe0A\x02R\vprobability\x12\x18\n" +
+	",google/ai/generativelanguage/v1/safety.proto\x12\x1fgoogle.ai.generativelanguage.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xc4\x02\n" +
+	"\fSafetyRating\x12O\n" +
+	"\bcategory\x18\x03 \x01(\x0e2-.google.ai.generativelanguage.v1.HarmCategoryB\x04\xe2A\x01\x02R\bcategory\x12e\n" +
+	"\vprobability\x18\x04 \x01(\x0e2=.google.ai.generativelanguage.v1.SafetyRating.HarmProbabilityB\x04\xe2A\x01\x02R\vprobability\x12\x18\n" +
 	"\ablocked\x18\x05 \x01(\bR\ablocked\"b\n" +
 	"\x0fHarmProbability\x12 \n" +
 	"\x1cHARM_PROBABILITY_UNSPECIFIED\x10\x00\x12\x0e\n" +
@@ -408,10 +408,10 @@ const file_google_ai_generativelanguage_v1_safety_proto_rawDesc = "" +
 	"\x03LOW\x10\x02\x12\n" +
 	"\n" +
 	"\x06MEDIUM\x10\x03\x12\b\n" +
-	"\x04HIGH\x10\x04\"\xe5\x02\n" +
-	"\rSafetySetting\x12N\n" +
-	"\bcategory\x18\x03 \x01(\x0e2-.google.ai.generativelanguage.v1.HarmCategoryB\x03\xe0A\x02R\bcategory\x12d\n" +
-	"\tthreshold\x18\x04 \x01(\x0e2A.google.ai.generativelanguage.v1.SafetySetting.HarmBlockThresholdB\x03\xe0A\x02R\tthreshold\"\x9d\x01\n" +
+	"\x04HIGH\x10\x04\"\xe7\x02\n" +
+	"\rSafetySetting\x12O\n" +
+	"\bcategory\x18\x03 \x01(\x0e2-.google.ai.generativelanguage.v1.HarmCategoryB\x04\xe2A\x01\x02R\bcategory\x12e\n" +
+	"\tthreshold\x18\x04 \x01(\x0e2A.google.ai.generativelanguage.v1.SafetySetting.HarmBlockThresholdB\x04\xe2A\x01\x02R\tthreshold\"\x9d\x01\n" +
 	"\x12HarmBlockThreshold\x12$\n" +
 	" HARM_BLOCK_THRESHOLD_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13BLOCK_LOW_AND_ABOVE\x10\x01\x12\x1a\n" +

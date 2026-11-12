@@ -87,9 +87,9 @@ var File_google_cloud_geminidataanalytics_v1beta_agent_context_proto protoreflec
 
 const file_google_cloud_geminidataanalytics_v1beta_agent_context_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/geminidataanalytics/v1beta/agent_context.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"B\n" +
-	"\x15AgentContextReference\x12)\n" +
-	"\x0econtext_set_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fcontextSetIdB\xa2\x02\n" +
+	";google/cloud/geminidataanalytics/v1beta/agent_context.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"C\n" +
+	"\x15AgentContextReference\x12*\n" +
+	"\x0econtext_set_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fcontextSetIdB\xa2\x02\n" +
 	"+com.google.cloud.geminidataanalytics.v1betaB\x11AgentContextProtoP\x01Z]cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb;geminidataanalyticspb\xaa\x02'Google.Cloud.GeminiDataAnalytics.V1Beta\xca\x02'Google\\Cloud\\GeminiDataAnalytics\\V1beta\xea\x02*Google::Cloud::GeminiDataAnalytics::V1betab\x06proto3"
 
 var (

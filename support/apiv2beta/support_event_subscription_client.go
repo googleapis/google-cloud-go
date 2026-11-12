@@ -656,6 +656,11 @@ func (c *supportEventSubscriptionRESTClient) CreateSupportEventSubscription(ctx 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/supportEventSubscriptions", req.GetParent())
 
 	params := url.Values{}
@@ -708,6 +713,11 @@ func (c *supportEventSubscriptionRESTClient) CreateSupportEventSubscription(ctx 
 func (c *supportEventSubscriptionRESTClient) GetSupportEventSubscription(ctx context.Context, req *supportpb.GetSupportEventSubscriptionRequest, opts ...gax.CallOption) (*supportpb.SupportEventSubscription, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -775,6 +785,11 @@ func (c *supportEventSubscriptionRESTClient) ListSupportEventSubscriptions(ctx c
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/supportEventSubscriptions", req.GetParent())
@@ -855,6 +870,11 @@ func (c *supportEventSubscriptionRESTClient) UpdateSupportEventSubscription(ctx 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSupportEventSubscription().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetSupportEventSubscription().GetName())
 
 	params := url.Values{}
@@ -916,6 +936,11 @@ func (c *supportEventSubscriptionRESTClient) DeleteSupportEventSubscription(ctx 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -974,6 +999,11 @@ func (c *supportEventSubscriptionRESTClient) UndeleteSupportEventSubscription(ct
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:undelete", req.GetName())
@@ -1040,6 +1070,11 @@ func (c *supportEventSubscriptionRESTClient) ExpungeSupportEventSubscription(ctx
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:expunge", req.GetName())
