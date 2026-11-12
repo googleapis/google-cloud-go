@@ -13,6 +13,8 @@
 package storage
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"math"
 	"math/rand"
@@ -381,5 +383,183 @@ func TestBucketDelayManagerMapSize(t *testing.T) {
 	defer b.mu.Unlock()
 	if len(b.delays) != numBuckets {
 		t.Errorf("Expected %d buckets in the map, but got %d", numBuckets, len(b.delays))
+	}
+}
+
+func TestExecuteWithReadStallTimeout(t *testing.T) {
+	t.Run("nil_delay_manager", func(t *testing.T) {
+		executed := false
+		err := executeWithReadStallTimeout(context.Background(), nil, "bucket", func(ctx context.Context) error {
+			executed = true
+			return nil
+		}, nil)
+		if err != nil {
+			t.Errorf("expected nil error, got %v", err)
+		}
+		if !executed {
+			t.Error("expected openStream to be executed")
+		}
+	})
+
+	t.Run("fast_success", func(t *testing.T) {
+		dm, _ := newBucketDelayManager(0.99, 1.5, 100*time.Millisecond, 10*time.Millisecond, 10*time.Second)
+		err := executeWithReadStallTimeout(context.Background(), dm, "bucket", func(ctx context.Context) error {
+			time.Sleep(2 * time.Millisecond)
+			return nil
+		}, nil)
+		if err != nil {
+			t.Errorf("expected nil error, got %v", err)
+		}
+	})
+
+	t.Run("fast_failure", func(t *testing.T) {
+		dm, _ := newBucketDelayManager(0.99, 1.5, 100*time.Millisecond, 10*time.Millisecond, 10*time.Second)
+		initialVal := dm.getValue("bucket")
+		expectedErr := errors.New("immediate stream error")
+		stalled := false
+
+		err := executeWithReadStallTimeout(context.Background(), dm, "bucket", func(ctx context.Context) error {
+			return expectedErr
+		}, func(time.Duration) {
+			stalled = true
+		})
+
+		if !errors.Is(err, expectedErr) {
+			t.Errorf("expected error %v, got %v", expectedErr, err)
+		}
+		if stalled {
+			t.Error("expected onStall callback NOT to be invoked")
+		}
+		if newVal := dm.getValue("bucket"); newVal != initialVal {
+			t.Errorf("expected dynamic timeout NOT to change on fast failure, initial %v, new %v", initialVal, newVal)
+		}
+	})
+
+	t.Run("stall_timeout_triggered", func(t *testing.T) {
+		dm, _ := newBucketDelayManager(0.99, 1.5, 10*time.Millisecond, 10*time.Millisecond, 10*time.Second)
+		initialVal := dm.getValue("bucket")
+		stalled := false
+		var recordedStallTimeout time.Duration
+
+		err := executeWithReadStallTimeout(context.Background(), dm, "bucket", func(ctx context.Context) error {
+			<-ctx.Done()
+			return ctx.Err()
+		}, func(stallTimeout time.Duration) {
+			stalled = true
+			recordedStallTimeout = stallTimeout
+		})
+
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Errorf("expected context.DeadlineExceeded, got %v", err)
+		}
+		if !stalled {
+			t.Error("expected onStall callback to be invoked")
+		}
+		if recordedStallTimeout != initialVal {
+			t.Errorf("expected onStall to receive actual stallTimeout %v, got %v", initialVal, recordedStallTimeout)
+		}
+		if newVal := dm.getValue("bucket"); newVal <= initialVal {
+			t.Errorf("expected dynamic timeout to increase, initial %v, new %v", initialVal, newVal)
+		}
+	})
+
+	t.Run("outer_context_cancelled", func(t *testing.T) {
+		dm, _ := newBucketDelayManager(0.99, 1.5, 100*time.Millisecond, 10*time.Millisecond, 10*time.Second)
+		initialVal := dm.getValue("bucket")
+
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel() // Cancel outer context immediately.
+
+		err := executeWithReadStallTimeout(ctx, dm, "bucket", func(ctx context.Context) error {
+			<-ctx.Done()
+			return ctx.Err()
+		}, nil)
+
+		if !errors.Is(err, context.Canceled) {
+			t.Errorf("expected context.Canceled, got %v", err)
+		}
+		if newVal := dm.getValue("bucket"); newVal != initialVal {
+			t.Errorf("expected dynamic timeout NOT to increase on outer context cancellation, initial %v, new %v", initialVal, newVal)
+		}
+	})
+}
+
+func TestWriteChunkDelay(t *testing.T) {
+	if d := newWriteChunkDelay(16*1024*1024, 0); d != nil {
+		t.Fatalf("expected nil dynamicDelay when chunkTransferTimeout=0, got %+v", d)
+	}
+	var nilDelay *dynamicDelay
+	if nilDelay.recordLatency(time.Second) {
+		t.Fatal("expected nil dynamicDelay.recordLatency to return false")
+	}
+	if nilDelay.exceeds(time.Second) {
+		t.Fatal("expected nil dynamicDelay.exceeds to return false")
+	}
+	nilDelay.resetWarmUp()
+
+	// 16 MiB chunk with 5s timeout -> minDelay = 50ms + 16*10ms = 210ms.
+	d := newWriteChunkDelay(16*1024*1024, 5*time.Second)
+	if got, want := d.getValue(), 210*time.Millisecond; got != want {
+		t.Fatalf("initial value = %v, want %v", got, want)
+	}
+	// Before the first sample warms up d, exceeds() must return false even above minDelay.
+	if d.exceeds(500 * time.Millisecond) {
+		t.Fatal("expected exceeds(500ms) to be false before warm-up")
+	}
+	// First sample warms up the baseline without reporting exceeded.
+	if d.recordLatency(80 * time.Millisecond) {
+		t.Fatal("expected first recordLatency(80ms) warm-up to return false")
+	}
+	// 2 * 80ms = 160ms < minDelay (210ms), so threshold stays at 210ms.
+	if got, want := d.getValue(), 210*time.Millisecond; got != want {
+		t.Fatalf("value after fast warm-up = %v, want %v", got, want)
+	}
+	if d.exceeds(210 * time.Millisecond) {
+		t.Fatal("expected exceeds(210ms) to be false at threshold 210ms")
+	}
+	if !d.exceeds(211 * time.Millisecond) {
+		t.Fatal("expected exceeds(211ms) to be true at threshold 210ms")
+	}
+	if !d.recordLatency(300 * time.Millisecond) {
+		t.Fatal("expected recordLatency(300ms) to report exceeded=true")
+	}
+
+	// Cold first chunk (~2s) followed by steady 400ms chunks should decay the
+	// threshold via EWMA so a later 1.5s slowdown is detected.
+	cold := newWriteChunkDelay(16*1024*1024, 10*time.Second)
+	if cold.recordLatency(2 * time.Second) {
+		t.Fatal("expected cold first chunk (2s) warm-up not to trigger rotation")
+	}
+	if got, want := cold.getValue(), 4*time.Second; got != want {
+		t.Fatalf("value after 2s warm-up = %v, want %v", got, want)
+	}
+	for i := 0; i < 10; i++ {
+		if cold.recordLatency(400 * time.Millisecond) {
+			t.Fatalf("unexpected rotation on healthy 400ms chunk %d", i+2)
+		}
+	}
+	if got := cold.getValue(); got >= 1500*time.Millisecond {
+		t.Fatalf("expected threshold to decay below 1.5s after ten 400ms chunks, got %v", got)
+	}
+	if !cold.recordLatency(1500 * time.Millisecond) {
+		t.Fatal("expected step slowdown to 1.5s after recovery to trigger rotation")
+	}
+
+	// After rotating to a new stream, resetWarmUp prevents a cold first chunk
+	// (2s) on the new stream from immediately triggering another rotation while
+	// still updating the EWMA baseline.
+	beforeReset := cold.getValue()
+	cold.resetWarmUp()
+	if cold.exceeds(2 * time.Second) {
+		t.Fatal("expected exceeds(2s) to be false during new-stream warm-up")
+	}
+	if cold.recordLatency(2 * time.Second) {
+		t.Fatal("expected first chunk (2s) after resetWarmUp not to trigger rotation")
+	}
+	if got := cold.getValue(); got <= beforeReset {
+		t.Fatalf("expected new-stream warm-up chunk to update EWMA threshold: %v -> %v", beforeReset, got)
+	}
+	if !cold.exceeds(cold.getValue() + time.Millisecond) {
+		t.Fatal("expected exceeds to be active again after new-stream warm-up completes")
 	}
 }

@@ -5,6 +5,70 @@
   "protoPackage": "google.cloud.sql.v1",
   "libraryPackage": "cloud.google.com/go/sql/apiv1",
   "services": {
+    "BlueGreenDeploymentsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BlueGreenDeploymentsClient",
+          "rpcs": {
+            "CreateBlueGreenDeployment": {
+              "methods": [
+                "CreateBlueGreenDeployment"
+              ]
+            },
+            "DeleteBlueGreenDeployment": {
+              "methods": [
+                "DeleteBlueGreenDeployment"
+              ]
+            },
+            "GetBlueGreenDeployment": {
+              "methods": [
+                "GetBlueGreenDeployment"
+              ]
+            },
+            "ListBlueGreenDeployments": {
+              "methods": [
+                "ListBlueGreenDeployments"
+              ]
+            },
+            "SwitchoverBlueGreenDeployment": {
+              "methods": [
+                "SwitchoverBlueGreenDeployment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BlueGreenDeploymentsClient",
+          "rpcs": {
+            "CreateBlueGreenDeployment": {
+              "methods": [
+                "CreateBlueGreenDeployment"
+              ]
+            },
+            "DeleteBlueGreenDeployment": {
+              "methods": [
+                "DeleteBlueGreenDeployment"
+              ]
+            },
+            "GetBlueGreenDeployment": {
+              "methods": [
+                "GetBlueGreenDeployment"
+              ]
+            },
+            "ListBlueGreenDeployments": {
+              "methods": [
+                "ListBlueGreenDeployments"
+              ]
+            },
+            "SwitchoverBlueGreenDeployment": {
+              "methods": [
+                "SwitchoverBlueGreenDeployment"
+              ]
+            }
+          }
+        }
+      }
+    },
     "SqlBackupRunsService": {
       "clients": {
         "grpc": {
@@ -320,6 +384,11 @@
                 "ExecuteSql"
               ]
             },
+            "ExecuteSqlReadOnly": {
+              "methods": [
+                "ExecuteSqlReadOnly"
+              ]
+            },
             "Export": {
               "methods": [
                 "Export"
@@ -400,6 +469,11 @@
                 "PromoteReplica"
               ]
             },
+            "ReconcileNetworking": {
+              "methods": [
+                "ReconcileNetworking"
+              ]
+            },
             "Reencrypt": {
               "methods": [
                 "Reencrypt"
@@ -450,6 +524,11 @@
                 "RotateServerCertificate"
               ]
             },
+            "Start": {
+              "methods": [
+                "Start"
+              ]
+            },
             "StartExternalSync": {
               "methods": [
                 "StartExternalSync"
@@ -458,6 +537,11 @@
             "StartReplica": {
               "methods": [
                 "StartReplica"
+              ]
+            },
+            "Stop": {
+              "methods": [
+                "Stop"
               ]
             },
             "StopReplica": {
@@ -540,6 +624,11 @@
                 "ExecuteSql"
               ]
             },
+            "ExecuteSqlReadOnly": {
+              "methods": [
+                "ExecuteSqlReadOnly"
+              ]
+            },
             "Export": {
               "methods": [
                 "Export"
@@ -620,6 +709,11 @@
                 "PromoteReplica"
               ]
             },
+            "ReconcileNetworking": {
+              "methods": [
+                "ReconcileNetworking"
+              ]
+            },
             "Reencrypt": {
               "methods": [
                 "Reencrypt"
@@ -670,6 +764,11 @@
                 "RotateServerCertificate"
               ]
             },
+            "Start": {
+              "methods": [
+                "Start"
+              ]
+            },
             "StartExternalSync": {
               "methods": [
                 "StartExternalSync"
@@ -678,6 +777,11 @@
             "StartReplica": {
               "methods": [
                 "StartReplica"
+              ]
+            },
+            "Stop": {
+              "methods": [
+                "Stop"
               ]
             },
             "StopReplica": {
@@ -763,6 +867,11 @@
                 "Delete"
               ]
             },
+            "DeleteCustomerManagedCertificate": {
+              "methods": [
+                "DeleteCustomerManagedCertificate"
+              ]
+            },
             "Get": {
               "methods": [
                 "Get"
@@ -776,6 +885,16 @@
             "List": {
               "methods": [
                 "List"
+              ]
+            },
+            "ListCustomerManagedCertificates": {
+              "methods": [
+                "ListCustomerManagedCertificates"
+              ]
+            },
+            "UpdateCustomerManagedCertificate": {
+              "methods": [
+                "UpdateCustomerManagedCertificate"
               ]
             }
           }
@@ -788,6 +907,11 @@
                 "Delete"
               ]
             },
+            "DeleteCustomerManagedCertificate": {
+              "methods": [
+                "DeleteCustomerManagedCertificate"
+              ]
+            },
             "Get": {
               "methods": [
                 "Get"
@@ -801,6 +925,16 @@
             "List": {
               "methods": [
                 "List"
+              ]
+            },
+            "ListCustomerManagedCertificates": {
+              "methods": [
+                "ListCustomerManagedCertificates"
+              ]
+            },
+            "UpdateCustomerManagedCertificate": {
+              "methods": [
+                "UpdateCustomerManagedCertificate"
               ]
             }
           }
@@ -889,6 +1023,70 @@
             "Update": {
               "methods": [
                 "Update"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SqlWorkloadCapturesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SqlWorkloadCapturesClient",
+          "rpcs": {
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "Start": {
+              "methods": [
+                "Start"
+              ]
+            },
+            "StartReplay": {
+              "methods": [
+                "StartReplay"
+              ]
+            },
+            "Stop": {
+              "methods": [
+                "Stop"
+              ]
+            },
+            "StopReplay": {
+              "methods": [
+                "StopReplay"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SqlWorkloadCapturesClient",
+          "rpcs": {
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "Start": {
+              "methods": [
+                "Start"
+              ]
+            },
+            "StartReplay": {
+              "methods": [
+                "StartReplay"
+              ]
+            },
+            "Stop": {
+              "methods": [
+                "Stop"
+              ]
+            },
+            "StopReplay": {
+              "methods": [
+                "StopReplay"
               ]
             }
           }

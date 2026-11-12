@@ -394,20 +394,20 @@ const file_google_cloud_video_stitcher_v1_cdn_keys_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
 	"\bhostname\x18\x04 \x01(\tR\bhostname:c\xeaA`\n" +
 	"#videostitcher.googleapis.com/CdnKey\x129projects/{project}/locations/{location}/cdnKeys/{cdn_key}B\x10\n" +
-	"\x0ecdn_key_config\"O\n" +
-	"\fGoogleCdnKey\x12$\n" +
-	"\vprivate_key\x18\x01 \x01(\fB\x03\xe0A\x04R\n" +
+	"\x0ecdn_key_config\"P\n" +
+	"\fGoogleCdnKey\x12%\n" +
+	"\vprivate_key\x18\x01 \x01(\fB\x04\xe2A\x01\x04R\n" +
 	"privateKey\x12\x19\n" +
-	"\bkey_name\x18\x02 \x01(\tR\akeyName\"0\n" +
-	"\fAkamaiCdnKey\x12 \n" +
-	"\ttoken_key\x18\x01 \x01(\fB\x03\xe0A\x04R\btokenKey\"\xec\x01\n" +
-	"\vMediaCdnKey\x12$\n" +
-	"\vprivate_key\x18\x01 \x01(\fB\x03\xe0A\x04R\n" +
+	"\bkey_name\x18\x02 \x01(\tR\akeyName\"1\n" +
+	"\fAkamaiCdnKey\x12!\n" +
+	"\ttoken_key\x18\x01 \x01(\fB\x04\xe2A\x01\x04R\btokenKey\"\xef\x01\n" +
+	"\vMediaCdnKey\x12%\n" +
+	"\vprivate_key\x18\x01 \x01(\fB\x04\xe2A\x01\x04R\n" +
 	"privateKey\x12\x19\n" +
-	"\bkey_name\x18\x02 \x01(\tR\akeyName\x12_\n" +
-	"\ftoken_config\x18\x03 \x01(\v27.google.cloud.video.stitcher.v1.MediaCdnKey.TokenConfigB\x03\xe0A\x01R\vtokenConfig\x1a;\n" +
-	"\vTokenConfig\x12,\n" +
-	"\x0fquery_parameter\x18\x01 \x01(\tB\x03\xe0A\x01R\x0equeryParameterBt\n" +
+	"\bkey_name\x18\x02 \x01(\tR\akeyName\x12`\n" +
+	"\ftoken_config\x18\x03 \x01(\v27.google.cloud.video.stitcher.v1.MediaCdnKey.TokenConfigB\x04\xe2A\x01\x01R\vtokenConfig\x1a<\n" +
+	"\vTokenConfig\x12-\n" +
+	"\x0fquery_parameter\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0equeryParameterBt\n" +
 	"\"com.google.cloud.video.stitcher.v1B\fCdnKeysProtoP\x01Z>cloud.google.com/go/video/stitcher/apiv1/stitcherpb;stitcherpbb\x06proto3"
 
 var (

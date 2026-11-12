@@ -326,17 +326,17 @@ var File_google_cloud_cloudcontrolspartner_v1beta_ekm_connections_proto protoref
 
 const file_google_cloud_cloudcontrolspartner_v1beta_ekm_connections_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/cloudcontrolspartner/v1beta/ekm_connections.proto\x12(google.cloud.cloudcontrolspartner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xb2\x02\n" +
-	"\x0eEkmConnections\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12`\n" +
+	">google/cloud/cloudcontrolspartner/v1beta/ekm_connections.proto\x12(google.cloud.cloudcontrolspartner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xb3\x02\n" +
+	"\x0eEkmConnections\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12`\n" +
 	"\x0fekm_connections\x18\x02 \x03(\v27.google.cloud.cloudcontrolspartner.v1beta.EkmConnectionR\x0eekmConnections:\xa4\x01\xeaA\xa0\x01\n" +
-	"2cloudcontrolspartner.googleapis.com/EkmConnections\x12jorganizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/ekmConnections\"j\n" +
-	"\x18GetEkmConnectionsRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2cloudcontrolspartner.googleapis.com/EkmConnectionsR\x04name\"\xf9\x03\n" +
+	"2cloudcontrolspartner.googleapis.com/EkmConnections\x12jorganizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/ekmConnections\"k\n" +
+	"\x18GetEkmConnectionsRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2cloudcontrolspartner.googleapis.com/EkmConnectionsR\x04name\"\xfa\x03\n" +
 	"\rEkmConnection\x12'\n" +
-	"\x0fconnection_name\x18\x01 \x01(\tR\x0econnectionName\x12w\n" +
-	"\x10connection_state\x18\x02 \x01(\x0e2G.google.cloud.cloudcontrolspartner.v1beta.EkmConnection.ConnectionStateB\x03\xe0A\x03R\x0fconnectionState\x12r\n" +
+	"\x0fconnection_name\x18\x01 \x01(\tR\x0econnectionName\x12x\n" +
+	"\x10connection_state\x18\x02 \x01(\x0e2G.google.cloud.cloudcontrolspartner.v1beta.EkmConnection.ConnectionStateB\x04\xe2A\x01\x03R\x0fconnectionState\x12r\n" +
 	"\x10connection_error\x18\x03 \x01(\v2G.google.cloud.cloudcontrolspartner.v1beta.EkmConnection.ConnectionErrorR\x0fconnectionError\x1aY\n" +
 	"\x0fConnectionError\x12!\n" +
 	"\ferror_domain\x18\x01 \x01(\tR\verrorDomain\x12#\n" +

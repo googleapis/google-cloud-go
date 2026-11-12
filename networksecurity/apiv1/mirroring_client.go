@@ -625,6 +625,89 @@ func NewMirroringClient(ctx context.Context, opts ...option.ClientOption) (*Mirr
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListMirroringEndpointGroups = append(client.CallOptions.ListMirroringEndpointGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMirroringEndpointGroup = append(client.CallOptions.GetMirroringEndpointGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateMirroringEndpointGroup = append(client.CallOptions.CreateMirroringEndpointGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateMirroringEndpointGroup = append(client.CallOptions.UpdateMirroringEndpointGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMirroringEndpointGroup = append(client.CallOptions.DeleteMirroringEndpointGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMirroringEndpointGroupAssociations = append(client.CallOptions.ListMirroringEndpointGroupAssociations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMirroringEndpointGroupAssociation = append(client.CallOptions.GetMirroringEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateMirroringEndpointGroupAssociation = append(client.CallOptions.CreateMirroringEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateMirroringEndpointGroupAssociation = append(client.CallOptions.UpdateMirroringEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMirroringEndpointGroupAssociation = append(client.CallOptions.DeleteMirroringEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMirroringDeploymentGroups = append(client.CallOptions.ListMirroringDeploymentGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMirroringDeploymentGroup = append(client.CallOptions.GetMirroringDeploymentGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateMirroringDeploymentGroup = append(client.CallOptions.CreateMirroringDeploymentGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateMirroringDeploymentGroup = append(client.CallOptions.UpdateMirroringDeploymentGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMirroringDeploymentGroup = append(client.CallOptions.DeleteMirroringDeploymentGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMirroringDeployments = append(client.CallOptions.ListMirroringDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMirroringDeployment = append(client.CallOptions.GetMirroringDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateMirroringDeployment = append(client.CallOptions.CreateMirroringDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateMirroringDeployment = append(client.CallOptions.UpdateMirroringDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMirroringDeployment = append(client.CallOptions.DeleteMirroringDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListMirroringEndpointGroups = append(client.CallOptions.ListMirroringEndpointGroups, gax.WithClientLogging(logging))
+		client.CallOptions.GetMirroringEndpointGroup = append(client.CallOptions.GetMirroringEndpointGroup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateMirroringEndpointGroup = append(client.CallOptions.CreateMirroringEndpointGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateMirroringEndpointGroup = append(client.CallOptions.UpdateMirroringEndpointGroup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMirroringEndpointGroup = append(client.CallOptions.DeleteMirroringEndpointGroup, gax.WithClientLogging(logging))
+		client.CallOptions.ListMirroringEndpointGroupAssociations = append(client.CallOptions.ListMirroringEndpointGroupAssociations, gax.WithClientLogging(logging))
+		client.CallOptions.GetMirroringEndpointGroupAssociation = append(client.CallOptions.GetMirroringEndpointGroupAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.CreateMirroringEndpointGroupAssociation = append(client.CallOptions.CreateMirroringEndpointGroupAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateMirroringEndpointGroupAssociation = append(client.CallOptions.UpdateMirroringEndpointGroupAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMirroringEndpointGroupAssociation = append(client.CallOptions.DeleteMirroringEndpointGroupAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.ListMirroringDeploymentGroups = append(client.CallOptions.ListMirroringDeploymentGroups, gax.WithClientLogging(logging))
+		client.CallOptions.GetMirroringDeploymentGroup = append(client.CallOptions.GetMirroringDeploymentGroup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateMirroringDeploymentGroup = append(client.CallOptions.CreateMirroringDeploymentGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateMirroringDeploymentGroup = append(client.CallOptions.UpdateMirroringDeploymentGroup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMirroringDeploymentGroup = append(client.CallOptions.DeleteMirroringDeploymentGroup, gax.WithClientLogging(logging))
+		client.CallOptions.ListMirroringDeployments = append(client.CallOptions.ListMirroringDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.GetMirroringDeployment = append(client.CallOptions.GetMirroringDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.CreateMirroringDeployment = append(client.CallOptions.CreateMirroringDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateMirroringDeployment = append(client.CallOptions.UpdateMirroringDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMirroringDeployment = append(client.CallOptions.DeleteMirroringDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -760,6 +843,89 @@ func NewMirroringRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListMirroringEndpointGroups = append(callOpts.ListMirroringEndpointGroups, gax.WithClientTracing(tracing))
+		callOpts.GetMirroringEndpointGroup = append(callOpts.GetMirroringEndpointGroup, gax.WithClientTracing(tracing))
+		callOpts.CreateMirroringEndpointGroup = append(callOpts.CreateMirroringEndpointGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateMirroringEndpointGroup = append(callOpts.UpdateMirroringEndpointGroup, gax.WithClientTracing(tracing))
+		callOpts.DeleteMirroringEndpointGroup = append(callOpts.DeleteMirroringEndpointGroup, gax.WithClientTracing(tracing))
+		callOpts.ListMirroringEndpointGroupAssociations = append(callOpts.ListMirroringEndpointGroupAssociations, gax.WithClientTracing(tracing))
+		callOpts.GetMirroringEndpointGroupAssociation = append(callOpts.GetMirroringEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		callOpts.CreateMirroringEndpointGroupAssociation = append(callOpts.CreateMirroringEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		callOpts.UpdateMirroringEndpointGroupAssociation = append(callOpts.UpdateMirroringEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		callOpts.DeleteMirroringEndpointGroupAssociation = append(callOpts.DeleteMirroringEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		callOpts.ListMirroringDeploymentGroups = append(callOpts.ListMirroringDeploymentGroups, gax.WithClientTracing(tracing))
+		callOpts.GetMirroringDeploymentGroup = append(callOpts.GetMirroringDeploymentGroup, gax.WithClientTracing(tracing))
+		callOpts.CreateMirroringDeploymentGroup = append(callOpts.CreateMirroringDeploymentGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateMirroringDeploymentGroup = append(callOpts.UpdateMirroringDeploymentGroup, gax.WithClientTracing(tracing))
+		callOpts.DeleteMirroringDeploymentGroup = append(callOpts.DeleteMirroringDeploymentGroup, gax.WithClientTracing(tracing))
+		callOpts.ListMirroringDeployments = append(callOpts.ListMirroringDeployments, gax.WithClientTracing(tracing))
+		callOpts.GetMirroringDeployment = append(callOpts.GetMirroringDeployment, gax.WithClientTracing(tracing))
+		callOpts.CreateMirroringDeployment = append(callOpts.CreateMirroringDeployment, gax.WithClientTracing(tracing))
+		callOpts.UpdateMirroringDeployment = append(callOpts.UpdateMirroringDeployment, gax.WithClientTracing(tracing))
+		callOpts.DeleteMirroringDeployment = append(callOpts.DeleteMirroringDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListMirroringEndpointGroups = append(callOpts.ListMirroringEndpointGroups, gax.WithClientLogging(logging))
+		callOpts.GetMirroringEndpointGroup = append(callOpts.GetMirroringEndpointGroup, gax.WithClientLogging(logging))
+		callOpts.CreateMirroringEndpointGroup = append(callOpts.CreateMirroringEndpointGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateMirroringEndpointGroup = append(callOpts.UpdateMirroringEndpointGroup, gax.WithClientLogging(logging))
+		callOpts.DeleteMirroringEndpointGroup = append(callOpts.DeleteMirroringEndpointGroup, gax.WithClientLogging(logging))
+		callOpts.ListMirroringEndpointGroupAssociations = append(callOpts.ListMirroringEndpointGroupAssociations, gax.WithClientLogging(logging))
+		callOpts.GetMirroringEndpointGroupAssociation = append(callOpts.GetMirroringEndpointGroupAssociation, gax.WithClientLogging(logging))
+		callOpts.CreateMirroringEndpointGroupAssociation = append(callOpts.CreateMirroringEndpointGroupAssociation, gax.WithClientLogging(logging))
+		callOpts.UpdateMirroringEndpointGroupAssociation = append(callOpts.UpdateMirroringEndpointGroupAssociation, gax.WithClientLogging(logging))
+		callOpts.DeleteMirroringEndpointGroupAssociation = append(callOpts.DeleteMirroringEndpointGroupAssociation, gax.WithClientLogging(logging))
+		callOpts.ListMirroringDeploymentGroups = append(callOpts.ListMirroringDeploymentGroups, gax.WithClientLogging(logging))
+		callOpts.GetMirroringDeploymentGroup = append(callOpts.GetMirroringDeploymentGroup, gax.WithClientLogging(logging))
+		callOpts.CreateMirroringDeploymentGroup = append(callOpts.CreateMirroringDeploymentGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateMirroringDeploymentGroup = append(callOpts.UpdateMirroringDeploymentGroup, gax.WithClientLogging(logging))
+		callOpts.DeleteMirroringDeploymentGroup = append(callOpts.DeleteMirroringDeploymentGroup, gax.WithClientLogging(logging))
+		callOpts.ListMirroringDeployments = append(callOpts.ListMirroringDeployments, gax.WithClientLogging(logging))
+		callOpts.GetMirroringDeployment = append(callOpts.GetMirroringDeployment, gax.WithClientLogging(logging))
+		callOpts.CreateMirroringDeployment = append(callOpts.CreateMirroringDeployment, gax.WithClientLogging(logging))
+		callOpts.UpdateMirroringDeployment = append(callOpts.UpdateMirroringDeployment, gax.WithClientLogging(logging))
+		callOpts.DeleteMirroringDeployment = append(callOpts.DeleteMirroringDeployment, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -816,9 +982,6 @@ func (c *mirroringGRPCClient) ListMirroringEndpointGroups(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/ListMirroringEndpointGroups")
 	}
@@ -868,9 +1031,6 @@ func (c *mirroringGRPCClient) GetMirroringEndpointGroup(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/GetMirroringEndpointGroup")
 	}
@@ -892,9 +1052,6 @@ func (c *mirroringGRPCClient) CreateMirroringEndpointGroup(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/CreateMirroringEndpointGroup")
 	}
@@ -949,9 +1106,6 @@ func (c *mirroringGRPCClient) DeleteMirroringEndpointGroup(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/DeleteMirroringEndpointGroup")
 	}
@@ -979,9 +1133,6 @@ func (c *mirroringGRPCClient) ListMirroringEndpointGroupAssociations(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/ListMirroringEndpointGroupAssociations")
 	}
@@ -1031,9 +1182,6 @@ func (c *mirroringGRPCClient) GetMirroringEndpointGroupAssociation(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/GetMirroringEndpointGroupAssociation")
 	}
@@ -1055,9 +1203,6 @@ func (c *mirroringGRPCClient) CreateMirroringEndpointGroupAssociation(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/CreateMirroringEndpointGroupAssociation")
 	}
@@ -1112,9 +1257,6 @@ func (c *mirroringGRPCClient) DeleteMirroringEndpointGroupAssociation(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/DeleteMirroringEndpointGroupAssociation")
 	}
@@ -1142,9 +1284,6 @@ func (c *mirroringGRPCClient) ListMirroringDeploymentGroups(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/ListMirroringDeploymentGroups")
 	}
@@ -1194,9 +1333,6 @@ func (c *mirroringGRPCClient) GetMirroringDeploymentGroup(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/GetMirroringDeploymentGroup")
 	}
@@ -1218,9 +1354,6 @@ func (c *mirroringGRPCClient) CreateMirroringDeploymentGroup(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/CreateMirroringDeploymentGroup")
 	}
@@ -1275,9 +1408,6 @@ func (c *mirroringGRPCClient) DeleteMirroringDeploymentGroup(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/DeleteMirroringDeploymentGroup")
 	}
@@ -1305,9 +1435,6 @@ func (c *mirroringGRPCClient) ListMirroringDeployments(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/ListMirroringDeployments")
 	}
@@ -1357,9 +1484,6 @@ func (c *mirroringGRPCClient) GetMirroringDeployment(ctx context.Context, req *n
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/GetMirroringDeployment")
 	}
@@ -1381,9 +1505,6 @@ func (c *mirroringGRPCClient) CreateMirroringDeployment(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/CreateMirroringDeployment")
 	}
@@ -1438,9 +1559,6 @@ func (c *mirroringGRPCClient) DeleteMirroringDeployment(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/DeleteMirroringDeployment")
 	}
@@ -1538,9 +1656,6 @@ func (c *mirroringGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1562,9 +1677,6 @@ func (c *mirroringGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1586,9 +1698,6 @@ func (c *mirroringGRPCClient) TestIamPermissions(ctx context.Context, req *iampb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -1729,6 +1838,11 @@ func (c *mirroringRESTClient) ListMirroringEndpointGroups(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringEndpointGroups", req.GetParent())
 
 		params := url.Values{}
@@ -1801,6 +1915,11 @@ func (c *mirroringRESTClient) GetMirroringEndpointGroup(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1814,9 +1933,6 @@ func (c *mirroringRESTClient) GetMirroringEndpointGroup(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/GetMirroringEndpointGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mirroringEndpointGroups/*}")
@@ -1866,6 +1982,11 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringEndpointGroups", req.GetParent())
 
 	params := url.Values{}
@@ -1883,9 +2004,6 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroup(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/CreateMirroringEndpointGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/mirroringEndpointGroups")
@@ -1940,6 +2058,11 @@ func (c *mirroringRESTClient) UpdateMirroringEndpointGroup(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMirroringEndpointGroup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMirroringEndpointGroup().GetName())
@@ -2014,6 +2137,11 @@ func (c *mirroringRESTClient) DeleteMirroringEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2030,9 +2158,6 @@ func (c *mirroringRESTClient) DeleteMirroringEndpointGroup(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/DeleteMirroringEndpointGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mirroringEndpointGroups/*}")
@@ -2093,6 +2218,11 @@ func (c *mirroringRESTClient) ListMirroringEndpointGroupAssociations(ctx context
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringEndpointGroupAssociations", req.GetParent())
@@ -2167,6 +2297,11 @@ func (c *mirroringRESTClient) GetMirroringEndpointGroupAssociation(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2180,9 +2315,6 @@ func (c *mirroringRESTClient) GetMirroringEndpointGroupAssociation(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/GetMirroringEndpointGroupAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mirroringEndpointGroupAssociations/*}")
@@ -2232,6 +2364,11 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringEndpointGroupAssociations", req.GetParent())
 
 	params := url.Values{}
@@ -2251,9 +2388,6 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroupAssociation(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/CreateMirroringEndpointGroupAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/mirroringEndpointGroupAssociations")
@@ -2308,6 +2442,11 @@ func (c *mirroringRESTClient) UpdateMirroringEndpointGroupAssociation(ctx contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMirroringEndpointGroupAssociation().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMirroringEndpointGroupAssociation().GetName())
@@ -2382,6 +2521,11 @@ func (c *mirroringRESTClient) DeleteMirroringEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2398,9 +2542,6 @@ func (c *mirroringRESTClient) DeleteMirroringEndpointGroupAssociation(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/DeleteMirroringEndpointGroupAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mirroringEndpointGroupAssociations/*}")
@@ -2461,6 +2602,11 @@ func (c *mirroringRESTClient) ListMirroringDeploymentGroups(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringDeploymentGroups", req.GetParent())
@@ -2535,6 +2681,11 @@ func (c *mirroringRESTClient) GetMirroringDeploymentGroup(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2548,9 +2699,6 @@ func (c *mirroringRESTClient) GetMirroringDeploymentGroup(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/GetMirroringDeploymentGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mirroringDeploymentGroups/*}")
@@ -2600,6 +2748,11 @@ func (c *mirroringRESTClient) CreateMirroringDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringDeploymentGroups", req.GetParent())
 
 	params := url.Values{}
@@ -2617,9 +2770,6 @@ func (c *mirroringRESTClient) CreateMirroringDeploymentGroup(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/CreateMirroringDeploymentGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/mirroringDeploymentGroups")
@@ -2674,6 +2824,11 @@ func (c *mirroringRESTClient) UpdateMirroringDeploymentGroup(ctx context.Context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMirroringDeploymentGroup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMirroringDeploymentGroup().GetName())
@@ -2748,6 +2903,11 @@ func (c *mirroringRESTClient) DeleteMirroringDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2764,9 +2924,6 @@ func (c *mirroringRESTClient) DeleteMirroringDeploymentGroup(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/DeleteMirroringDeploymentGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mirroringDeploymentGroups/*}")
@@ -2827,6 +2984,11 @@ func (c *mirroringRESTClient) ListMirroringDeployments(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringDeployments", req.GetParent())
@@ -2901,6 +3063,11 @@ func (c *mirroringRESTClient) GetMirroringDeployment(ctx context.Context, req *n
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2914,9 +3081,6 @@ func (c *mirroringRESTClient) GetMirroringDeployment(ctx context.Context, req *n
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/GetMirroringDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mirroringDeployments/*}")
@@ -2966,6 +3130,11 @@ func (c *mirroringRESTClient) CreateMirroringDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringDeployments", req.GetParent())
 
 	params := url.Values{}
@@ -2983,9 +3152,6 @@ func (c *mirroringRESTClient) CreateMirroringDeployment(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/CreateMirroringDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/mirroringDeployments")
@@ -3040,6 +3206,11 @@ func (c *mirroringRESTClient) UpdateMirroringDeployment(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMirroringDeployment().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMirroringDeployment().GetName())
@@ -3114,6 +3285,11 @@ func (c *mirroringRESTClient) DeleteMirroringDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3130,9 +3306,6 @@ func (c *mirroringRESTClient) DeleteMirroringDeployment(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Mirroring/DeleteMirroringDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mirroringDeployments/*}")
@@ -3179,6 +3352,11 @@ func (c *mirroringRESTClient) DeleteMirroringDeployment(ctx context.Context, req
 func (c *mirroringRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3263,6 +3441,11 @@ func (c *mirroringRESTClient) ListLocations(ctx context.Context, req *locationpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -3332,6 +3515,11 @@ func (c *mirroringRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3348,9 +3536,6 @@ func (c *mirroringRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:getIamPolicy")
@@ -3402,6 +3587,11 @@ func (c *mirroringRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3415,9 +3605,6 @@ func (c *mirroringRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:setIamPolicy")
@@ -3471,6 +3658,11 @@ func (c *mirroringRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -3484,9 +3676,6 @@ func (c *mirroringRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:testIamPermissions")
@@ -3534,6 +3723,11 @@ func (c *mirroringRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3573,6 +3767,11 @@ func (c *mirroringRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3610,6 +3809,11 @@ func (c *mirroringRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 func (c *mirroringRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3677,6 +3881,11 @@ func (c *mirroringRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

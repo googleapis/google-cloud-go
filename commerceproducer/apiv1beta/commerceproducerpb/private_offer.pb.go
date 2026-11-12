@@ -498,31 +498,39 @@ const (
 	// The default / unset value. Do not use.
 	PrivateOfferDocument_DOCUMENT_TYPE_UNSPECIFIED PrivateOfferDocument_DocumentType = 0
 	// The document is a custom EULA used in place of the standard product EULA.
-	// A private offer may not have more than one custom EULA document.
+	// A private offer may not have more than one custom EULA document, and may
+	// not have both a custom EULA and a standard EULA.
 	//
 	// If this enum value is set, then mime_type and inline_content must
 	// be set.
 	PrivateOfferDocument_CUSTOM_END_USER_LICENSE_AGREEMENT PrivateOfferDocument_DocumentType = 1
-	// The document is the statement of work required by the [Cloud Marketplace
+	// The document is the statement of work described by the [Cloud Marketplace
 	// Product Specific
-	// Terms](https://cloud.google.com/terms/marketplace-product-terms) for all
-	// Professional Services product private offers.
-	// This document type is not permitted for private offers of any other
-	// product type.
+	// Terms](https://cloud.google.com/terms/marketplace-product-terms).
 	// A private offer may not have more than one statement of work document.
+	//
+	// Whether this document type is required, optional, or not permitted
+	// depends on the service; see `Service.document_requirement`.
 	//
 	// The mime_type and inline_content fields must be set.
 	PrivateOfferDocument_STATEMENT_OF_WORK PrivateOfferDocument_DocumentType = 2
 	// The document is the Marketplace standard EULA, with the following link:
 	// https://cloud.google.com/terms/marketplace/eula-standard-v1-12102020.
-	// Existing offers may have this document type, but this is not permitted
-	// for new offers.
+	//
+	// This edition has been superseded by
+	// STANDARD_END_USER_LICENSE_AGREEMENT_V2. Offers created before that
+	// edition was published may have this document type, but it is not
+	// permitted on any service for new offers.
 	PrivateOfferDocument_STANDARD_END_USER_LICENSE_AGREEMENT_V1 PrivateOfferDocument_DocumentType = 3
 	// The document is the Marketplace standard EULA, with the following link:
 	// https://cloud.google.com/terms/marketplace/eula-standard-v2-01272021
 	//
-	// New offers using Standard EULAs should set this enum value. This is not
-	// permitted for Professional Services products.
+	// New offers using Standard EULAs should set this enum value. A private
+	// offer may not have more than one standard EULA document, and may not
+	// have both a standard EULA and a custom EULA.
+	//
+	// Whether this document type is required, optional, or not permitted
+	// depends on the service; see `Service.document_requirement`.
 	//
 	// The mime_type and inline_content fields must not be set.
 	PrivateOfferDocument_STANDARD_END_USER_LICENSE_AGREEMENT_V2 PrivateOfferDocument_DocumentType = 4
@@ -885,8 +893,11 @@ func (*PrivateOffer_SingleProductOffer_) isPrivateOffer_Content() {}
 // is immutable. Existing documents cannot be updated or deleted, and new
 // documents cannot be added.
 //
-// A private offer must include a EULA, either by assigning a standard EULA
-// or attaching a custom EULA document, or a statement of work document.
+// A private offer may have at most one document of each type, and may not have
+// both a standard EULA and a custom EULA.
+//
+// Which document types are required, optional, or not permitted depends on the
+// service the offer is for, and is returned in `Service.document_requirement`.
 type PrivateOfferDocument struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Mechanism for storing the document content.
@@ -2832,58 +2843,58 @@ var File_google_cloud_commerceproducer_v1beta_private_offer_proto protoreflect.F
 
 const file_google_cloud_commerceproducer_v1beta_private_offer_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/commerceproducer/v1beta/private_offer.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\x1a\x19google/type/decimal.proto\x1a\x17google/type/money.proto\"\xa6:\n" +
-	"\fPrivateOffer\x12~\n" +
-	"\x14single_product_offer\x18\f \x01(\v2E.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOfferB\x03\xe0A\x01H\x00R\x12singleProductOffer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12S\n" +
-	"\x05state\x18\x03 \x01(\x0e28.google.cloud.commerceproducer.v1beta.PrivateOffer.StateB\x03\xe0A\x03R\x05state\x12\xa1\x01\n" +
-	"!publish_requirement_google_review\x18\x04 \x01(\v2Q.google.cloud.commerceproducer.v1beta.PrivateOffer.PublishRequirementGoogleReviewB\x03\xe0A\x03R\x1epublishRequirementGoogleReview\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12B\n" +
-	"\fpublish_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vpublishTime\x12@\n" +
-	"\vaccept_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"acceptTime\x12@\n" +
+	"8google/cloud/commerceproducer/v1beta/private_offer.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\x1a\x19google/type/decimal.proto\x1a\x17google/type/money.proto\"\xf2:\n" +
+	"\fPrivateOffer\x12\x7f\n" +
+	"\x14single_product_offer\x18\f \x01(\v2E.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOfferB\x04\xe2A\x01\x01H\x00R\x12singleProductOffer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12T\n" +
+	"\x05state\x18\x03 \x01(\x0e28.google.cloud.commerceproducer.v1beta.PrivateOffer.StateB\x04\xe2A\x01\x03R\x05state\x12\xa2\x01\n" +
+	"!publish_requirement_google_review\x18\x04 \x01(\v2Q.google.cloud.commerceproducer.v1beta.PrivateOffer.PublishRequirementGoogleReviewB\x04\xe2A\x01\x03R\x1epublishRequirementGoogleReview\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12C\n" +
+	"\fpublish_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vpublishTime\x12A\n" +
+	"\vaccept_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"acceptTime\x12A\n" +
 	"\vcancel_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"cancelTime\x12:\n" +
-	"\bend_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x120\n" +
-	"\x11cancellation_note\x18\v \x01(\tB\x03\xe0A\x03R\x10cancellationNote\x12r\n" +
-	"\x10reseller_contact\x18\x14 \x01(\v2B.google.cloud.commerceproducer.v1beta.PrivateOffer.ResellerContactB\x03\xe0A\x03R\x0fresellerContact\x12(\n" +
-	"\rinternal_note\x18\x10 \x01(\tB\x03\xe0A\x01R\finternalNote\x12m\n" +
-	"\x0foffer_deal_type\x18\x15 \x01(\x0e2@.google.cloud.commerceproducer.v1beta.PrivateOffer.OfferDealTypeB\x03\xe0A\x01R\rofferDealType\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x01R\x05title\x12(\n" +
-	"\rcustomer_note\x18\x11 \x01(\tB\x03\xe0A\x01R\fcustomerNote\x12o\n" +
-	"\x0fpartner_contact\x18\x0e \x01(\v2A.google.cloud.commerceproducer.v1beta.PrivateOffer.PartnerContactB\x03\xe0A\x01R\x0epartnerContact\x12\\\n" +
-	"\bcustomer\x18\r \x01(\v2;.google.cloud.commerceproducer.v1beta.PrivateOffer.CustomerB\x03\xe0A\x01R\bcustomer\x12L\n" +
-	"\x14accept_deadline_time\x18\x05 \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01R\x12acceptDeadlineTime\x12P\n" +
-	"\x04term\x18\x0f \x01(\v27.google.cloud.commerceproducer.v1beta.PrivateOffer.TermB\x03\xe0A\x01R\x04term\x1aq\n" +
-	"\x1ePublishRequirementGoogleReview\x12O\n" +
-	"\x13review_approve_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11reviewApproveTime\x1aK\n" +
-	"\x0fResellerContact\x12\x1d\n" +
-	"\acontact\x18\x01 \x01(\tB\x03\xe0A\x03R\acontact\x12\x19\n" +
-	"\x05email\x18\x02 \x01(\tB\x03\xe0A\x03R\x05email\x1aJ\n" +
-	"\x0ePartnerContact\x12\x1d\n" +
-	"\acontact\x18\x01 \x01(\tB\x03\xe0A\x01R\acontact\x12\x19\n" +
-	"\x05email\x18\x02 \x01(\tB\x03\xe0A\x01R\x05email\x1a\xf7\x01\n" +
-	"\bCustomer\x12&\n" +
-	"\fentity_title\x18\x01 \x01(\tB\x03\xe0A\x01R\ventityTitle\x12\x1d\n" +
-	"\acontact\x18\x02 \x01(\tB\x03\xe0A\x01R\acontact\x12\x19\n" +
-	"\x05email\x18\x03 \x01(\tB\x03\xe0A\x01R\x05email\x12\x1f\n" +
-	"\aaddress\x18\x04 \x01(\tB\x05\xe0A\x03\x18\x01R\aaddress\x12h\n" +
-	"\x16target_billing_account\x18\x05 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*cloudbilling.googleapis.com/BillingAccountR\x14targetBillingAccount\x1a\xc2\x06\n" +
-	"\x04Term\x12.\n" +
-	"\x0fduration_months\x18\x04 \x01(\x05B\x03\xe0A\x01H\x00R\x0edurationMonths\x12J\n" +
-	"\x12scheduled_end_time\x18\x05 \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01H\x00R\x10scheduledEndTime\x121\n" +
-	"\x11max_renewal_count\x18\x06 \x01(\x05B\x03\xe0A\x01H\x01R\x0fmaxRenewalCount\x124\n" +
-	"\x11unlimited_renewal\x18\a \x01(\bB\x05\xe0A\x03\x18\x01H\x01R\x10unlimitedRenewal\x12k\n" +
-	"\fstart_policy\x18\x01 \x01(\x0e2C.google.cloud.commerceproducer.v1beta.PrivateOffer.Term.StartPolicyB\x03\xe0A\x01R\vstartPolicy\x12L\n" +
-	"\x14scheduled_start_time\x18\x02 \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01R\x12scheduledStartTime\x12e\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"cancelTime\x12;\n" +
+	"\bend_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x121\n" +
+	"\x11cancellation_note\x18\v \x01(\tB\x04\xe2A\x01\x03R\x10cancellationNote\x12s\n" +
+	"\x10reseller_contact\x18\x14 \x01(\v2B.google.cloud.commerceproducer.v1beta.PrivateOffer.ResellerContactB\x04\xe2A\x01\x03R\x0fresellerContact\x12)\n" +
+	"\rinternal_note\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\finternalNote\x12n\n" +
+	"\x0foffer_deal_type\x18\x15 \x01(\x0e2@.google.cloud.commerceproducer.v1beta.PrivateOffer.OfferDealTypeB\x04\xe2A\x01\x01R\rofferDealType\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12)\n" +
+	"\rcustomer_note\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\fcustomerNote\x12p\n" +
+	"\x0fpartner_contact\x18\x0e \x01(\v2A.google.cloud.commerceproducer.v1beta.PrivateOffer.PartnerContactB\x04\xe2A\x01\x01R\x0epartnerContact\x12]\n" +
+	"\bcustomer\x18\r \x01(\v2;.google.cloud.commerceproducer.v1beta.PrivateOffer.CustomerB\x04\xe2A\x01\x01R\bcustomer\x12M\n" +
+	"\x14accept_deadline_time\x18\x05 \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x01R\x12acceptDeadlineTime\x12Q\n" +
+	"\x04term\x18\x0f \x01(\v27.google.cloud.commerceproducer.v1beta.PrivateOffer.TermB\x04\xe2A\x01\x01R\x04term\x1ar\n" +
+	"\x1ePublishRequirementGoogleReview\x12P\n" +
+	"\x13review_approve_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11reviewApproveTime\x1aM\n" +
+	"\x0fResellerContact\x12\x1e\n" +
+	"\acontact\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\acontact\x12\x1a\n" +
+	"\x05email\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05email\x1aL\n" +
+	"\x0ePartnerContact\x12\x1e\n" +
+	"\acontact\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\acontact\x12\x1a\n" +
+	"\x05email\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05email\x1a\xfc\x01\n" +
+	"\bCustomer\x12'\n" +
+	"\fentity_title\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\ventityTitle\x12\x1e\n" +
+	"\acontact\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\acontact\x12\x1a\n" +
+	"\x05email\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05email\x12 \n" +
+	"\aaddress\x18\x04 \x01(\tB\x06\xe2A\x01\x03\x18\x01R\aaddress\x12i\n" +
+	"\x16target_billing_account\x18\x05 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*cloudbilling.googleapis.com/BillingAccountR\x14targetBillingAccount\x1a\xca\x06\n" +
+	"\x04Term\x12/\n" +
+	"\x0fduration_months\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x0edurationMonths\x12K\n" +
+	"\x12scheduled_end_time\x18\x05 \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x01H\x00R\x10scheduledEndTime\x122\n" +
+	"\x11max_renewal_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x0fmaxRenewalCount\x125\n" +
+	"\x11unlimited_renewal\x18\a \x01(\bB\x06\xe2A\x01\x03\x18\x01H\x01R\x10unlimitedRenewal\x12l\n" +
+	"\fstart_policy\x18\x01 \x01(\x0e2C.google.cloud.commerceproducer.v1beta.PrivateOffer.Term.StartPolicyB\x04\xe2A\x01\x01R\vstartPolicy\x12M\n" +
+	"\x14scheduled_start_time\x18\x02 \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x01R\x12scheduledStartTime\x12f\n" +
 	"\n" +
-	"end_policy\x18\x03 \x01(\x0e2A.google.cloud.commerceproducer.v1beta.PrivateOffer.Term.EndPolicyB\x03\xe0A\x01R\tendPolicy\x12Q\n" +
-	"\x17effective_term_end_time\x18\b \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x03R\x14effectiveTermEndTime\"T\n" +
+	"end_policy\x18\x03 \x01(\x0e2A.google.cloud.commerceproducer.v1beta.PrivateOffer.Term.EndPolicyB\x04\xe2A\x01\x01R\tendPolicy\x12R\n" +
+	"\x17effective_term_end_time\x18\b \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x03R\x14effectiveTermEndTime\"T\n" +
 	"\vStartPolicy\x12\x1c\n" +
 	"\x18START_POLICY_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tIMMEDIATE\x10\x01\x12\x18\n" +
@@ -2894,57 +2905,57 @@ const file_google_cloud_commerceproducer_v1beta_private_offer_proto_rawDesc = ""
 	"\x12SCHEDULED_END_TIME\x10\x02\x12\x17\n" +
 	"\x13MATCH_AMENDED_OFFER\x10\x03B\x11\n" +
 	"\x0fend_policy_dataB\t\n" +
-	"\arenewal\x1a\xa9 \n" +
-	"\x12SingleProductOffer\x12j\n" +
-	"\x15amended_private_offer\x18\x03 \x01(\tB4\xe0A\x01\xfaA.\n" +
-	",commerceproducer.googleapis.com/PrivateOfferH\x00R\x13amendedPrivateOffer\x12m\n" +
-	"\x16amended_standard_offer\x18\x04 \x01(\tB5\xe0A\x01\xfaA/\n" +
-	"-commerceproducer.googleapis.com/StandardOfferH\x00R\x14amendedStandardOffer\x12\x9a\x01\n" +
-	"\x17standard_interval_price\x18\x05 \x01(\v2[.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPriceB\x03\xe0A\x01H\x01R\x15standardIntervalPrice\x12\x94\x01\n" +
-	"\x15custom_interval_price\x18\x06 \x01(\v2Y.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.CustomIntervalPriceB\x03\xe0A\x01H\x01R\x13customIntervalPrice\x12e\n" +
-	"\x13base_standard_offer\x18\x01 \x01(\tB5\xe0A\x01\xfaA/\n" +
-	"-commerceproducer.googleapis.com/StandardOfferR\x11baseStandardOffer\x12(\n" +
-	"\rservice_level\x18\x02 \x01(\tB\x03\xe0A\x03R\fserviceLevel\x12G\n" +
+	"\arenewal\x1a\xcf \n" +
+	"\x12SingleProductOffer\x12k\n" +
+	"\x15amended_private_offer\x18\x03 \x01(\tB5\xe2A\x01\x01\xfaA.\n" +
+	",commerceproducer.googleapis.com/PrivateOfferH\x00R\x13amendedPrivateOffer\x12n\n" +
+	"\x16amended_standard_offer\x18\x04 \x01(\tB6\xe2A\x01\x01\xfaA/\n" +
+	"-commerceproducer.googleapis.com/StandardOfferH\x00R\x14amendedStandardOffer\x12\x9b\x01\n" +
+	"\x17standard_interval_price\x18\x05 \x01(\v2[.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPriceB\x04\xe2A\x01\x01H\x01R\x15standardIntervalPrice\x12\x95\x01\n" +
+	"\x15custom_interval_price\x18\x06 \x01(\v2Y.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.CustomIntervalPriceB\x04\xe2A\x01\x01H\x01R\x13customIntervalPrice\x12f\n" +
+	"\x13base_standard_offer\x18\x01 \x01(\tB6\xe2A\x01\x01\xfaA/\n" +
+	"-commerceproducer.googleapis.com/StandardOfferR\x11baseStandardOffer\x12)\n" +
+	"\rservice_level\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fserviceLevel\x12H\n" +
 	"\x1ereseller_private_offer_plan_id\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x1aresellerPrivateOfferPlanId\x12n\n" +
-	"\bfeatures\x18\b \x03(\v2M.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.FeatureB\x03\xe0A\x01R\bfeatures\x12\x9c\x01\n" +
-	"\x1eeffective_installment_timeline\x18\a \x03(\v2Q.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.InstallmentB\x03\xe0A\x03R\x1ceffectiveInstallmentTimeline\x12\x7f\n" +
-	"\x0econtract_value\x18\v \x01(\v2S.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.ContractValueB\x03\xe0A\x03R\rcontractValue\x12|\n" +
-	"\rrevenue_share\x18\f \x01(\v2R.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.RevenueShareB\x03\xe0A\x03R\frevenueShare\x12\x9e\x01\n" +
-	"\x19additional_contract_value\x18\r \x01(\v2].google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.AdditionalContractValueB\x03\xe0A\x01R\x17additionalContractValue\x1aL\n" +
-	"\aFeature\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x1a\xd7\t\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x1aresellerPrivateOfferPlanId\x12o\n" +
+	"\bfeatures\x18\b \x03(\v2M.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.FeatureB\x04\xe2A\x01\x01R\bfeatures\x12\x9d\x01\n" +
+	"\x1eeffective_installment_timeline\x18\a \x03(\v2Q.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.InstallmentB\x04\xe2A\x01\x03R\x1ceffectiveInstallmentTimeline\x12\x80\x01\n" +
+	"\x0econtract_value\x18\v \x01(\v2S.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.ContractValueB\x04\xe2A\x01\x03R\rcontractValue\x12}\n" +
+	"\rrevenue_share\x18\f \x01(\v2R.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.RevenueShareB\x04\xe2A\x01\x03R\frevenueShare\x12\x9f\x01\n" +
+	"\x19additional_contract_value\x18\r \x01(\v2].google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.AdditionalContractValueB\x04\xe2A\x01\x01R\x17additionalContractValue\x1aN\n" +
+	"\aFeature\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05value\x1a\xe4\t\n" +
 	"\n" +
-	"PriceModel\x12z\n" +
-	"\bflat_fee\x18\x02 \x01(\v2X.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.FlatFeeB\x03\xe0A\x01H\x00R\aflatFee\x12\x82\x01\n" +
+	"PriceModel\x12{\n" +
+	"\bflat_fee\x18\x02 \x01(\v2X.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.FlatFeeB\x04\xe2A\x01\x01H\x00R\aflatFee\x12\x83\x01\n" +
 	"\n" +
-	"commitment\x18\x03 \x01(\v2[.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.CommitmentB\x03\xe0A\x01H\x00R\n" +
-	"commitment\x12q\n" +
-	"\x05usage\x18\x01 \x01(\v2V.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.UsageB\x03\xe0A\x01R\x05usage\x1a\xdf\x01\n" +
-	"\vSkuDiscount\x12?\n" +
-	"\x03sku\x18\x01 \x01(\tB+\xe0A\x01\xfaA%\n" +
-	"#commerceproducer.googleapis.com/SkuH\x00R\x03sku\x121\n" +
-	"\x11cloud_billing_sku\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x0fcloudBillingSku\x12F\n" +
-	"\x10discount_percent\x18\x02 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x01H\x01R\x0fdiscountPercentB\b\n" +
+	"commitment\x18\x03 \x01(\v2[.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.CommitmentB\x04\xe2A\x01\x01H\x00R\n" +
+	"commitment\x12r\n" +
+	"\x05usage\x18\x01 \x01(\v2V.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.UsageB\x04\xe2A\x01\x01R\x05usage\x1a\xe2\x01\n" +
+	"\vSkuDiscount\x12@\n" +
+	"\x03sku\x18\x01 \x01(\tB,\xe2A\x01\x01\xfaA%\n" +
+	"#commerceproducer.googleapis.com/SkuH\x00R\x03sku\x122\n" +
+	"\x11cloud_billing_sku\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x0fcloudBillingSku\x12G\n" +
+	"\x10discount_percent\x18\x02 \x01(\v2\x14.google.type.DecimalB\x04\xe2A\x01\x01H\x01R\x0fdiscountPercentB\b\n" +
 	"\x06targetB\n" +
 	"\n" +
-	"\bdiscount\x1a\xe5\x01\n" +
-	"\x05Usage\x12S\n" +
-	"\x18default_discount_percent\x18\x01 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x01R\x16defaultDiscountPercent\x12\x86\x01\n" +
-	"\rsku_discounts\x18\x02 \x03(\v2\\.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.SkuDiscountB\x03\xe0A\x01R\fskuDiscounts\x1aN\n" +
-	"\aFlatFee\x12C\n" +
-	"\x11flat_fee_override\x18\x01 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x01R\x0fflatFeeOverride\x1a\xaa\x02\n" +
+	"\bdiscount\x1a\xe7\x01\n" +
+	"\x05Usage\x12T\n" +
+	"\x18default_discount_percent\x18\x01 \x01(\v2\x14.google.type.DecimalB\x04\xe2A\x01\x01R\x16defaultDiscountPercent\x12\x87\x01\n" +
+	"\rsku_discounts\x18\x02 \x03(\v2\\.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.SkuDiscountB\x04\xe2A\x01\x01R\fskuDiscounts\x1aO\n" +
+	"\aFlatFee\x12D\n" +
+	"\x11flat_fee_override\x18\x01 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x01R\x0fflatFeeOverride\x1a\xae\x02\n" +
 	"\n" +
-	"Commitment\x12D\n" +
-	"\x11commitment_amount\x18\x01 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x01R\x10commitmentAmount\x12D\n" +
-	"\x10discount_percent\x18\x02 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x01R\x0fdiscountPercent\x12D\n" +
-	"\x11additional_credit\x18\x03 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x01R\x10additionalCredit\x12J\n" +
-	"\x1fdiscard_previous_credit_balance\x18\x04 \x01(\bB\x03\xe0A\x01R\x1cdiscardPreviousCreditBalanceB\x0e\n" +
-	"\fsubscription\x1a\xe6\x03\n" +
-	"\x15StandardIntervalPrice\x12\x9e\x01\n" +
-	"\x11standard_interval\x18\x01 \x01(\x0e2l.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice.StandardIntervalB\x03\xe0A\x01R\x10standardInterval\x12v\n" +
-	"\vprice_model\x18\x02 \x01(\v2P.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModelB\x03\xe0A\x01R\n" +
+	"Commitment\x12E\n" +
+	"\x11commitment_amount\x18\x01 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x01R\x10commitmentAmount\x12E\n" +
+	"\x10discount_percent\x18\x02 \x01(\v2\x14.google.type.DecimalB\x04\xe2A\x01\x01R\x0fdiscountPercent\x12E\n" +
+	"\x11additional_credit\x18\x03 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x01R\x10additionalCredit\x12K\n" +
+	"\x1fdiscard_previous_credit_balance\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x1cdiscardPreviousCreditBalanceB\x0e\n" +
+	"\fsubscription\x1a\xe8\x03\n" +
+	"\x15StandardIntervalPrice\x12\x9f\x01\n" +
+	"\x11standard_interval\x18\x01 \x01(\x0e2l.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice.StandardIntervalB\x04\xe2A\x01\x01R\x10standardInterval\x12w\n" +
+	"\vprice_model\x18\x02 \x01(\v2P.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModelB\x04\xe2A\x01\x01R\n" +
 	"priceModel\"\xb3\x01\n" +
 	"\x10StandardInterval\x12!\n" +
 	"\x1dSTANDARD_INTERVAL_UNSPECIFIED\x10\x00\x12\x17\n" +
@@ -2952,22 +2963,22 @@ const file_google_cloud_commerceproducer_v1beta_private_offer_proto_rawDesc = ""
 	"\x10MONTHLY_PRORATED\x10\x02\x12\x18\n" +
 	"\x14MONTHLY_NOT_PRORATED\x10\x03\x12\x1a\n" +
 	"\x16QUARTERLY_NOT_PRORATED\x10\x04\x12\x17\n" +
-	"\x13YEARLY_NOT_PRORATED\x10\x05\x1a\xc0\x01\n" +
-	"\vInstallment\x129\n" +
+	"\x13YEARLY_NOT_PRORATED\x10\x05\x1a\xc2\x01\n" +
+	"\vInstallment\x12:\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01R\tstartTime\x12v\n" +
-	"\vprice_model\x18\x02 \x01(\v2P.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModelB\x03\xe0A\x01R\n" +
-	"priceModel\x1a\x91\x01\n" +
-	"\x13CustomIntervalPrice\x12z\n" +
-	"\finstallments\x18\x01 \x03(\v2Q.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.InstallmentB\x03\xe0A\x01R\finstallments\x1aZ\n" +
-	"\rContractValue\x12I\n" +
-	"\x14total_contract_value\x18\x01 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x03R\x12totalContractValue\x1a\xee\x01\n" +
-	"\fRevenueShare\x12n\n" +
-	"'current_term_vendor_net_revenue_percent\x18\x01 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\"currentTermVendorNetRevenuePercent\x12n\n" +
-	"'renewal_term_vendor_net_revenue_percent\x18\x02 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\"renewalTermVendorNetRevenuePercent\x1a\xab\x01\n" +
-	"\x17AdditionalContractValue\x12>\n" +
-	"\x0econtract_value\x18\x01 \x01(\v2\x12.google.type.MoneyB\x03\xe0A\x01R\rcontractValue\x12P\n" +
-	"\religible_skus\x18\x02 \x03(\tB+\xe0A\x01\xfaA%\n" +
+	"start_time\x18\x01 \x01(\v2\x15.google.type.DateTimeB\x04\xe2A\x01\x01R\tstartTime\x12w\n" +
+	"\vprice_model\x18\x02 \x01(\v2P.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModelB\x04\xe2A\x01\x01R\n" +
+	"priceModel\x1a\x92\x01\n" +
+	"\x13CustomIntervalPrice\x12{\n" +
+	"\finstallments\x18\x01 \x03(\v2Q.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.InstallmentB\x04\xe2A\x01\x01R\finstallments\x1a[\n" +
+	"\rContractValue\x12J\n" +
+	"\x14total_contract_value\x18\x01 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x03R\x12totalContractValue\x1a\xf0\x01\n" +
+	"\fRevenueShare\x12o\n" +
+	"'current_term_vendor_net_revenue_percent\x18\x01 \x01(\v2\x14.google.type.DecimalB\x04\xe2A\x01\x03R\"currentTermVendorNetRevenuePercent\x12o\n" +
+	"'renewal_term_vendor_net_revenue_percent\x18\x02 \x01(\v2\x14.google.type.DecimalB\x04\xe2A\x01\x03R\"renewalTermVendorNetRevenuePercent\x1a\xad\x01\n" +
+	"\x17AdditionalContractValue\x12?\n" +
+	"\x0econtract_value\x18\x01 \x01(\v2\x12.google.type.MoneyB\x04\xe2A\x01\x01R\rcontractValue\x12Q\n" +
+	"\religible_skus\x18\x02 \x03(\tB,\xe2A\x01\x01\xfaA%\n" +
 	"#commerceproducer.googleapis.com/SkuR\feligibleSkusB\x0f\n" +
 	"\ramended_offerB\a\n" +
 	"\x05price\"}\n" +
@@ -2988,16 +2999,16 @@ const file_google_cloud_commerceproducer_v1beta_private_offer_proto_rawDesc = ""
 	"\x0eNATIVE_RENEWAL\x10\x03\x12\a\n" +
 	"\x03NEW\x10\x04:\x96\x01\xeaA\x92\x01\n" +
 	",commerceproducer.googleapis.com/PrivateOffer\x12Eprojects/{project}/locations/{location}/privateOffers/{private_offer}*\rprivateOffers2\fprivateOfferB\t\n" +
-	"\acontent\"\x8d\x06\n" +
-	"\x14PrivateOfferDocument\x12,\n" +
-	"\x0einline_content\x18\x06 \x01(\fB\x03\xe0A\x01H\x00R\rinlineContent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12q\n" +
-	"\rdocument_type\x18\x04 \x01(\x0e2G.google.cloud.commerceproducer.v1beta.PrivateOfferDocument.DocumentTypeB\x03\xe0A\x02R\fdocumentType\x12 \n" +
-	"\tmime_type\x18\x05 \x01(\tB\x03\xe0A\x01R\bmimeType\"\xc3\x01\n" +
+	"\acontent\"\x93\x06\n" +
+	"\x14PrivateOfferDocument\x12-\n" +
+	"\x0einline_content\x18\x06 \x01(\fB\x04\xe2A\x01\x01H\x00R\rinlineContent\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12r\n" +
+	"\rdocument_type\x18\x04 \x01(\x0e2G.google.cloud.commerceproducer.v1beta.PrivateOfferDocument.DocumentTypeB\x04\xe2A\x01\x02R\fdocumentType\x12!\n" +
+	"\tmime_type\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\bmimeType\"\xc3\x01\n" +
 	"\fDocumentType\x12\x1d\n" +
 	"\x19DOCUMENT_TYPE_UNSPECIFIED\x10\x00\x12%\n" +
 	"!CUSTOM_END_USER_LICENSE_AGREEMENT\x10\x01\x12\x15\n" +

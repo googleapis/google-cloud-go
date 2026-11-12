@@ -750,12 +750,12 @@ var File_google_chat_v1_availability_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_availability_proto_rawDesc = "" +
 	"\n" +
-	"!google/chat/v1/availability.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd8\x03\n" +
-	"\fAvailability\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12=\n" +
-	"\x05state\x18\x02 \x01(\x0e2\".google.chat.v1.Availability.StateB\x03\xe0A\x03R\x05state\x12b\n" +
-	"\x17do_not_disturb_metadata\x18\x03 \x01(\v2$.google.chat.v1.DoNotDisturbMetadataB\x03\xe0A\x03H\x00R\x14doNotDisturbMetadata\x12F\n" +
-	"\rcustom_status\x18\x04 \x01(\v2\x1c.google.chat.v1.CustomStatusB\x03\xe0A\x01R\fcustomStatus\"R\n" +
+	"!google/chat/v1/availability.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x03\n" +
+	"\fAvailability\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12>\n" +
+	"\x05state\x18\x02 \x01(\x0e2\".google.chat.v1.Availability.StateB\x04\xe2A\x01\x03R\x05state\x12c\n" +
+	"\x17do_not_disturb_metadata\x18\x03 \x01(\v2$.google.chat.v1.DoNotDisturbMetadataB\x04\xe2A\x01\x03H\x00R\x14doNotDisturbMetadata\x12G\n" +
+	"\rcustom_status\x18\x04 \x01(\v2\x1c.google.chat.v1.CustomStatusB\x04\xe2A\x01\x01R\fcustomStatus\"R\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -764,37 +764,37 @@ const file_google_chat_v1_availability_proto_rawDesc = "" +
 	"\x04AWAY\x10\x03\x12\x12\n" +
 	"\x0eDO_NOT_DISTURB\x10\x04:^\xeaA[\n" +
 	" chat.googleapis.com/Availability\x12\x19users/{user}/availability*\x0eavailabilities2\favailabilityB\x10\n" +
-	"\x0estate_metadata\"\xda\x01\n" +
-	"\fCustomStatus\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x120\n" +
-	"\x05emoji\x18\x02 \x01(\v2\x15.google.chat.v1.EmojiB\x03\xe0A\x02R\x05emoji\x12=\n" +
+	"\x0estate_metadata\"\xdd\x01\n" +
+	"\fCustomStatus\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\x121\n" +
+	"\x05emoji\x18\x02 \x01(\v2\x15.google.chat.v1.EmojiB\x04\xe2A\x01\x02R\x05emoji\x12=\n" +
 	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
-	"expireTime\x122\n" +
-	"\x03ttl\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04H\x00R\x03ttlB\f\n" +
+	"expireTime\x123\n" +
+	"\x03ttl\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04H\x00R\x03ttlB\f\n" +
 	"\n" +
-	"expiration\"`\n" +
-	"\x14DoNotDisturbMetadata\x12H\n" +
-	"\x0fexpiration_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0eexpirationTime\"V\n" +
-	"\x16GetAvailabilityRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" chat.googleapis.com/AvailabilityR\x04name\"\xa4\x01\n" +
-	"\x19UpdateAvailabilityRequest\x12E\n" +
-	"\favailability\x18\x01 \x01(\v2\x1c.google.chat.v1.AvailabilityB\x03\xe0A\x02R\favailability\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xcf\x01\n" +
-	"\x13MarkAsActiveRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"expiration\"a\n" +
+	"\x14DoNotDisturbMetadata\x12I\n" +
+	"\x0fexpiration_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0eexpirationTime\"W\n" +
+	"\x16GetAvailabilityRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" chat.googleapis.com/AvailabilityR\x04name\"\xa6\x01\n" +
+	"\x19UpdateAvailabilityRequest\x12F\n" +
+	"\favailability\x18\x01 \x01(\v2\x1c.google.chat.v1.AvailabilityB\x04\xe2A\x01\x02R\favailability\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xd0\x01\n" +
+	"\x13MarkAsActiveRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" chat.googleapis.com/AvailabilityR\x04name\x12=\n" +
 	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
 	"expireTime\x12-\n" +
 	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x00R\x03ttlB\f\n" +
 	"\n" +
-	"expiration\"Q\n" +
-	"\x11MarkAsAwayRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" chat.googleapis.com/AvailabilityR\x04name\"\xd5\x01\n" +
-	"\x19MarkAsDoNotDisturbRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"expiration\"R\n" +
+	"\x11MarkAsAwayRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" chat.googleapis.com/AvailabilityR\x04name\"\xd6\x01\n" +
+	"\x19MarkAsDoNotDisturbRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" chat.googleapis.com/AvailabilityR\x04name\x12=\n" +
 	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
 	"expireTime\x12-\n" +

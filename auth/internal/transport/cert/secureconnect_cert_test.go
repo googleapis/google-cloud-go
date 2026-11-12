@@ -16,7 +16,10 @@ package cert
 
 import (
 	"bytes"
+	"crypto/tls"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
@@ -77,13 +80,67 @@ func TestSecureConnectSource_GetClientCertificateSuccess(t *testing.T) {
 	}
 }
 
-func TestSecureConnectSource_GetClientCertificateFailure(t *testing.T) {
-	source, err := NewSecureConnectProvider("testdata/context_aware_metadata_invalid_pem.json")
-	if err != nil {
+func TestSecureConnectSource_InvalidPEM(t *testing.T) {
+	_, err := NewSecureConnectProvider("testdata/context_aware_metadata_invalid_pem.json")
+	if err == nil {
+		t.Fatal("got nil, want non-nil err")
+	}
+}
+
+func TestSecureConnectSource_CommandFailure(t *testing.T) {
+	td := t.TempDir()
+	configPath := filepath.Join(td, "bad_cmd.json")
+	if err := os.WriteFile(configPath, []byte(`{"cert_provider_command": ["nonexistent-command-that-fails"]}`), 0644); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := source(nil); err == nil {
-		t.Error("got nil, want non-nil err")
+	source, err := NewSecureConnectProvider(configPath)
+	if got, want := err, errSourceUnavailable; !errors.Is(err, errSourceUnavailable) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if source != nil {
+		t.Errorf("got %v, want nil source", source)
+	}
+}
+
+func TestSecureConnectSource_GetClientCertificateInvalidPEM(t *testing.T) {
+	source := secureConnectSource{metadata: secureConnectMetadata{Cmd: []string{"cat", "testdata/invalid.pem"}}}
+	_, err := source.getClientCertificate(nil)
+	if err == nil {
+		t.Fatal("got nil, want non-nil err")
+	}
+}
+
+func TestSecureConnectSource_GetClientCertificateCommandFailure(t *testing.T) {
+	source := secureConnectSource{metadata: secureConnectMetadata{Cmd: []string{"nonexistent-command-that-fails"}}}
+	cert, err := source.getClientCertificate(nil)
+	if !errors.Is(err, errSourceUnavailable) {
+		t.Fatalf("got %v, want %v", err, errSourceUnavailable)
+	}
+	if cert != nil {
+		t.Errorf("got %v, want nil cert", cert)
+	}
+}
+
+func TestSecureConnectSource_TLSHandshakeCommandFailure(t *testing.T) {
+	source := secureConnectSource{metadata: secureConnectMetadata{Cmd: []string{"nonexistent-command-that-fails"}}}
+
+	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	server.TLS = &tls.Config{
+		ClientAuth: tls.RequestClientCert,
+	}
+	server.StartTLS()
+	defer server.Close()
+
+	client := server.Client()
+	transport := client.Transport.(*http.Transport).Clone()
+	transport.TLSClientConfig.GetClientCertificate = source.getClientCertificate
+	client.Transport = transport
+
+	_, err := client.Get(server.URL)
+	if err == nil {
+		t.Fatal("expected TLS handshake to fail when helper fails, but it succeeded")
 	}
 }
 

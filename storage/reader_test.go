@@ -26,9 +26,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"runtime"
 	"strconv"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
+	"testing/synctest"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
@@ -270,7 +275,7 @@ func TestRangeReaderRetry(t *testing.T) {
 				t.Errorf("#%d: got %q, want %q", i, got, test.want)
 			}
 			if r.Attrs.Size != int64(len(readData)) {
-				t.Errorf("#%d: got Attrs.Size=%q, want %q", i, r.Attrs.Size, len(readData))
+				t.Errorf("#%d: got Attrs.Size=%d, want %d", i, r.Attrs.Size, len(readData))
 			}
 			wantOffset := test.offset
 			if wantOffset < 0 {
@@ -280,7 +285,7 @@ func TestRangeReaderRetry(t *testing.T) {
 				}
 			}
 			if got := r.Attrs.StartOffset; got != wantOffset {
-				t.Errorf("#%d: got Attrs.Offset=%q, want %q", i, got, wantOffset)
+				t.Errorf("#%d: got Attrs.Offset=%d, want %d", i, got, wantOffset)
 			}
 		}
 		r, err := obj.NewRangeReader(ctx, -100, 10)
@@ -364,7 +369,7 @@ func TestFakeReadCloser(t *testing.T) {
 		}
 		han := f.ReadHandle()
 		if len(han) != 0 {
-			t.Fatalf("i=%d: got len(ReadHandle) %q, want %q", i, han, 0)
+			t.Fatalf("i=%d: got len(ReadHandle) %d, want %d", i, len(han), 0)
 		}
 	}
 }
@@ -764,7 +769,7 @@ func TestHTTPReaderDisableChecksum(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected CRC error, got nil")
 		}
-		if !strings.Contains(err.Error(), "storage: bad CRC on read") {
+		if !strings.Contains(err.Error(), "storage: checksum mismatch: bad CRC on read") {
 			t.Fatalf("expected bad CRC error, got: %v", err)
 		}
 
@@ -851,4 +856,243 @@ func TestHTTPReaderMidStreamRetryCRC(t *testing.T) {
 			t.Errorf("got data %q, want %q", got, originalData)
 		}
 	}, option.WithHTTPClient(hc))
+}
+
+func TestMRDRunCallbackNilGuard(t *testing.T) {
+	m := &multiRangeDownloaderManager{}
+	// Calling runCallback with a nil callback should safely return without panicking.
+	m.runCallback(0, 100, nil, nil)
+	m.callbacks.wait()
+}
+
+// TestCallbackTrackerConcurrentAddWait stresses add() from zero concurrently
+// with wait(), the pattern sync.WaitGroup forbids. Run with -race.
+func TestCallbackTrackerConcurrentAddWait(t *testing.T) {
+	const (
+		adders       = 8
+		addsPerAdder = 500
+		waiters      = 4
+	)
+	var tr callbackTracker
+
+	var finished atomic.Int64
+	var addersWg sync.WaitGroup
+	for i := 0; i < adders; i++ {
+		addersWg.Add(1)
+		go func() {
+			defer addersWg.Done()
+			for j := 0; j < addsPerAdder; j++ {
+				tr.add()
+				go func() {
+					defer tr.done()
+					finished.Add(1)
+				}()
+			}
+		}()
+	}
+
+	stop := make(chan struct{})
+	var waitersWg sync.WaitGroup
+	for i := 0; i < waiters; i++ {
+		waitersWg.Add(1)
+		go func() {
+			defer waitersWg.Done()
+			for {
+				select {
+				case <-stop:
+					return
+				default:
+					tr.wait()
+					// Yield so idle waiters do not starve the adders.
+					runtime.Gosched()
+				}
+			}
+		}()
+	}
+
+	addersWg.Wait()
+	close(stop)
+	waitersWg.Wait()
+
+	// A final wait must observe all callbacks complete.
+	tr.wait()
+
+	if got, want := finished.Load(), int64(adders*addsPerAdder); got != want {
+		t.Errorf("finished callbacks = %d, want %d", got, want)
+	}
+	tr.mu.Lock()
+	n := tr.n
+	tr.mu.Unlock()
+	if n != 0 {
+		t.Errorf("tracker count = %d after all callbacks finished, want 0", n)
+	}
+}
+
+// TestCallbackTrackerWaitBlocksUntilDone checks that wait() blocks all waiters
+// while a callback is in flight and releases them on done().
+func TestCallbackTrackerWaitBlocksUntilDone(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		const waiters = 3
+		var tr callbackTracker
+		// Two cycles, so the second one checks that the tracker can be reused
+		// after its count has returned to zero.
+		for cycle := 0; cycle < 2; cycle++ {
+			tr.add()
+
+			returned := make(chan struct{}, waiters)
+			for i := 0; i < waiters; i++ {
+				go func() {
+					tr.wait()
+					returned <- struct{}{}
+				}()
+			}
+
+			// All waiters must be durably blocked while a callback is in flight.
+			synctest.Wait()
+			if n := len(returned); n != 0 {
+				t.Fatalf("cycle %d: %d waiters returned while a callback was still in flight", cycle, n)
+			}
+
+			tr.done()
+			synctest.Wait()
+			if got := len(returned); got != waiters {
+				t.Fatalf("cycle %d: only %d of %d waiters returned after done", cycle, got, waiters)
+			}
+
+			// Wait on an idle tracker must not block.
+			tr.wait()
+		}
+	})
+}
+
+// TestCallbackTrackerDoneWithoutAddPanics checks that an unbalanced done()
+// panics instead of driving the counter negative.
+func TestCallbackTrackerDoneWithoutAddPanics(t *testing.T) {
+	var tr callbackTracker
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatal("done() without a matching add() did not panic")
+		}
+	}()
+	tr.done()
+}
+
+func TestReaderUnfinalizedAttrs(t *testing.T) {
+	r := &Reader{
+		remain: 42,
+		Attrs:  ReaderObjectAttrs{Unfinalized: true},
+	}
+	if got := r.Remain(); got != -1 {
+		t.Errorf("Remain() with Unfinalized=true: got %d, want -1", got)
+	}
+	r.recordRead(10, nil)
+	r.Attrs.Unfinalized = false
+	if got := r.Remain(); got != 42 {
+		t.Errorf("Remain() with Unfinalized=false: got %d, want 42", got)
+	}
+
+	if attrs := readerAttrsFromObject(&ObjectAttrs{Size: 10}); !attrs.Unfinalized {
+		t.Errorf("readerAttrsFromObject with zero Finalized: got Unfinalized=false, want true")
+	}
+	if attrs := readerAttrsFromObject(&ObjectAttrs{Size: 10, Finalized: time.Now()}); attrs.Unfinalized {
+		t.Errorf("readerAttrsFromObject with non-zero Finalized: got Unfinalized=true, want false")
+	}
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func TestRangeReaderCompressedReopen(t *testing.T) {
+	internalErr := http2Error("INTERNAL_ERROR")
+	type step struct {
+		status        int
+		contentLength int64
+		contentRange  string
+		body          string
+		err           error
+	}
+	tests := []struct {
+		name           string
+		readCompressed bool
+		steps          []step
+		wantData       string
+		wantRanges     []string
+	}{
+		{
+			name:           "ReadCompressed 206 partial content reopen",
+			readCompressed: true,
+			steps: []step{
+				{status: http.StatusPartialContent, contentLength: 6, contentRange: "bytes 2-7/10", body: readData[2:4], err: internalErr},
+				{status: http.StatusPartialContent, contentRange: "bytes 4-7/10", body: readData[4:8], err: io.EOF},
+			},
+			wantData:   readData[2:8],
+			wantRanges: []string{"bytes=2-7", "bytes=4-7"},
+		},
+		{
+			name:           "Decompressive transcoding 200 full-object reopen discards seen bytes",
+			readCompressed: false,
+			steps: []step{
+				{status: http.StatusOK, contentLength: -1, body: readData[:4], err: internalErr},
+				{status: http.StatusOK, contentLength: -1, body: readData, err: io.EOF},
+			},
+			wantData:   readData,
+			wantRanges: []string{"bytes=2-7", "bytes=6-7"},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := t.Context()
+			var callIdx int
+			var gotRanges []string
+			rt := roundTripFunc(func(req *http.Request) (*http.Response, error) {
+				gotRanges = append(gotRanges, req.Header.Get("Range"))
+				if callIdx >= len(tc.steps) {
+					return nil, fmt.Errorf("unexpected HTTP request #%d (Range=%q)", callIdx+1, req.Header.Get("Range"))
+				}
+				s := tc.steps[callIdx]
+				callIdx++
+				h := make(http.Header)
+				h.Set("X-Goog-Stored-Content-Encoding", "gzip")
+				if tc.readCompressed {
+					h.Set("Content-Encoding", "gzip")
+				}
+				if s.contentRange != "" {
+					h.Set("Content-Range", s.contentRange)
+				}
+				return &http.Response{
+					StatusCode:    s.status,
+					ContentLength: s.contentLength,
+					Header:        h,
+					Body:          &fakeReadCloser{data: []byte(s.body), counts: []int{len(s.body)}, err: s.err},
+				}, nil
+			})
+
+			client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: rt}), option.WithoutAuthentication(), WithXMLReads())
+			if err != nil {
+				t.Fatalf("NewClient() err = %v, want nil", err)
+			}
+			defer client.Close()
+
+			r, err := client.Bucket("b").Object("o").ReadCompressed(tc.readCompressed).NewRangeReader(ctx, 2, 6)
+			if err != nil {
+				t.Fatalf("NewRangeReader(2, 6) err = %v, want nil", err)
+			}
+			defer r.Close()
+
+			gotBytes, err := io.ReadAll(r)
+			if err != nil {
+				t.Fatalf("io.ReadAll(r) err = %v, want nil", err)
+			}
+			if got := string(gotBytes); got != tc.wantData {
+				t.Errorf("io.ReadAll(r) = %q, want %q", got, tc.wantData)
+			}
+			if diff := cmp.Diff(tc.wantRanges, gotRanges); diff != "" {
+				t.Errorf("Range headers mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
 }

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -394,35 +394,35 @@ var File_google_cloud_apphub_v1_attributes_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apphub_v1_attributes_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/apphub/v1/attributes.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x9f\x03\n" +
+	"'google/cloud/apphub/v1/attributes.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xa4\x03\n" +
 	"\n" +
-	"Attributes\x12J\n" +
-	"\vcriticality\x18\x01 \x01(\v2#.google.cloud.apphub.v1.CriticalityB\x03\xe0A\x01R\vcriticality\x12J\n" +
-	"\venvironment\x18\x02 \x01(\v2#.google.cloud.apphub.v1.EnvironmentB\x03\xe0A\x01R\venvironment\x12S\n" +
-	"\x10developer_owners\x18\x03 \x03(\v2#.google.cloud.apphub.v1.ContactInfoB\x03\xe0A\x01R\x0fdeveloperOwners\x12Q\n" +
-	"\x0foperator_owners\x18\x04 \x03(\v2#.google.cloud.apphub.v1.ContactInfoB\x03\xe0A\x01R\x0eoperatorOwners\x12Q\n" +
-	"\x0fbusiness_owners\x18\x05 \x03(\v2#.google.cloud.apphub.v1.ContactInfoB\x03\xe0A\x01R\x0ebusinessOwners\"\xa3\x01\n" +
-	"\vCriticality\x12A\n" +
-	"\x04type\x18\x03 \x01(\x0e2(.google.cloud.apphub.v1.Criticality.TypeB\x03\xe0A\x02R\x04type\"Q\n" +
+	"Attributes\x12K\n" +
+	"\vcriticality\x18\x01 \x01(\v2#.google.cloud.apphub.v1.CriticalityB\x04\xe2A\x01\x01R\vcriticality\x12K\n" +
+	"\venvironment\x18\x02 \x01(\v2#.google.cloud.apphub.v1.EnvironmentB\x04\xe2A\x01\x01R\venvironment\x12T\n" +
+	"\x10developer_owners\x18\x03 \x03(\v2#.google.cloud.apphub.v1.ContactInfoB\x04\xe2A\x01\x01R\x0fdeveloperOwners\x12R\n" +
+	"\x0foperator_owners\x18\x04 \x03(\v2#.google.cloud.apphub.v1.ContactInfoB\x04\xe2A\x01\x01R\x0eoperatorOwners\x12R\n" +
+	"\x0fbusiness_owners\x18\x05 \x03(\v2#.google.cloud.apphub.v1.ContactInfoB\x04\xe2A\x01\x01R\x0ebusinessOwners\"\xa4\x01\n" +
+	"\vCriticality\x12B\n" +
+	"\x04type\x18\x03 \x01(\x0e2(.google.cloud.apphub.v1.Criticality.TypeB\x04\xe2A\x01\x02R\x04type\"Q\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10MISSION_CRITICAL\x10\x01\x12\b\n" +
 	"\x04HIGH\x10\x02\x12\n" +
 	"\n" +
 	"\x06MEDIUM\x10\x03\x12\a\n" +
-	"\x03LOW\x10\x04\"\xa6\x01\n" +
-	"\vEnvironment\x12A\n" +
-	"\x04type\x18\x02 \x01(\x0e2(.google.cloud.apphub.v1.Environment.TypeB\x03\xe0A\x02R\x04type\"T\n" +
+	"\x03LOW\x10\x04\"\xa7\x01\n" +
+	"\vEnvironment\x12B\n" +
+	"\x04type\x18\x02 \x01(\x0e2(.google.cloud.apphub.v1.Environment.TypeB\x04\xe2A\x01\x02R\x04type\"T\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"PRODUCTION\x10\x01\x12\v\n" +
 	"\aSTAGING\x10\x02\x12\b\n" +
 	"\x04TEST\x10\x03\x12\x0f\n" +
-	"\vDEVELOPMENT\x10\x04\"P\n" +
-	"\vContactInfo\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x19\n" +
-	"\x05email\x18\x02 \x01(\tB\x03\xe0A\x02R\x05emailB\xb1\x01\n" +
+	"\vDEVELOPMENT\x10\x04\"R\n" +
+	"\vContactInfo\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1a\n" +
+	"\x05email\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05emailB\xb1\x01\n" +
 	"\x1acom.google.cloud.apphub.v1B\x0fAttributesProtoP\x01Z2cloud.google.com/go/apphub/apiv1/apphubpb;apphubpb\xaa\x02\x16Google.Cloud.AppHub.V1\xca\x02\x16Google\\Cloud\\AppHub\\V1\xea\x02\x19Google::Cloud::AppHub::V1b\x06proto3"
 
 var (

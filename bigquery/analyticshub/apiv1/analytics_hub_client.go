@@ -1196,6 +1196,89 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.SubmitQueryTemplate = append(client.CallOptions.SubmitQueryTemplate, gax.WithClientMetrics(metrics))
 		client.CallOptions.ApproveQueryTemplate = append(client.CallOptions.ApproveQueryTemplate, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "analyticshub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/analyticshub/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "analyticshub.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListDataExchanges = append(client.CallOptions.ListDataExchanges, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOrgDataExchanges = append(client.CallOptions.ListOrgDataExchanges, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataExchange = append(client.CallOptions.GetDataExchange, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDataExchange = append(client.CallOptions.CreateDataExchange, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataExchange = append(client.CallOptions.UpdateDataExchange, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataExchange = append(client.CallOptions.DeleteDataExchange, gax.WithClientTracing(tracing))
+		client.CallOptions.ListListings = append(client.CallOptions.ListListings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetListing = append(client.CallOptions.GetListing, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateListing = append(client.CallOptions.CreateListing, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateListing = append(client.CallOptions.UpdateListing, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteListing = append(client.CallOptions.DeleteListing, gax.WithClientTracing(tracing))
+		client.CallOptions.SubscribeListing = append(client.CallOptions.SubscribeListing, gax.WithClientTracing(tracing))
+		client.CallOptions.SubscribeDataExchange = append(client.CallOptions.SubscribeDataExchange, gax.WithClientTracing(tracing))
+		client.CallOptions.RefreshSubscription = append(client.CallOptions.RefreshSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSubscription = append(client.CallOptions.GetSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSubscriptions = append(client.CallOptions.ListSubscriptions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSharedResourceSubscriptions = append(client.CallOptions.ListSharedResourceSubscriptions, gax.WithClientTracing(tracing))
+		client.CallOptions.RevokeSubscription = append(client.CallOptions.RevokeSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSubscription = append(client.CallOptions.DeleteSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateQueryTemplate = append(client.CallOptions.CreateQueryTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetQueryTemplate = append(client.CallOptions.GetQueryTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListQueryTemplates = append(client.CallOptions.ListQueryTemplates, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateQueryTemplate = append(client.CallOptions.UpdateQueryTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteQueryTemplate = append(client.CallOptions.DeleteQueryTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.SubmitQueryTemplate = append(client.CallOptions.SubmitQueryTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.ApproveQueryTemplate = append(client.CallOptions.ApproveQueryTemplate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "analyticshub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/analyticshub/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "analyticshub.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListDataExchanges = append(client.CallOptions.ListDataExchanges, gax.WithClientLogging(logging))
+		client.CallOptions.ListOrgDataExchanges = append(client.CallOptions.ListOrgDataExchanges, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataExchange = append(client.CallOptions.GetDataExchange, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDataExchange = append(client.CallOptions.CreateDataExchange, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataExchange = append(client.CallOptions.UpdateDataExchange, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataExchange = append(client.CallOptions.DeleteDataExchange, gax.WithClientLogging(logging))
+		client.CallOptions.ListListings = append(client.CallOptions.ListListings, gax.WithClientLogging(logging))
+		client.CallOptions.GetListing = append(client.CallOptions.GetListing, gax.WithClientLogging(logging))
+		client.CallOptions.CreateListing = append(client.CallOptions.CreateListing, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateListing = append(client.CallOptions.UpdateListing, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteListing = append(client.CallOptions.DeleteListing, gax.WithClientLogging(logging))
+		client.CallOptions.SubscribeListing = append(client.CallOptions.SubscribeListing, gax.WithClientLogging(logging))
+		client.CallOptions.SubscribeDataExchange = append(client.CallOptions.SubscribeDataExchange, gax.WithClientLogging(logging))
+		client.CallOptions.RefreshSubscription = append(client.CallOptions.RefreshSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.GetSubscription = append(client.CallOptions.GetSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.ListSubscriptions = append(client.CallOptions.ListSubscriptions, gax.WithClientLogging(logging))
+		client.CallOptions.ListSharedResourceSubscriptions = append(client.CallOptions.ListSharedResourceSubscriptions, gax.WithClientLogging(logging))
+		client.CallOptions.RevokeSubscription = append(client.CallOptions.RevokeSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSubscription = append(client.CallOptions.DeleteSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CreateQueryTemplate = append(client.CallOptions.CreateQueryTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.GetQueryTemplate = append(client.CallOptions.GetQueryTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.ListQueryTemplates = append(client.CallOptions.ListQueryTemplates, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateQueryTemplate = append(client.CallOptions.UpdateQueryTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteQueryTemplate = append(client.CallOptions.DeleteQueryTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.SubmitQueryTemplate = append(client.CallOptions.SubmitQueryTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.ApproveQueryTemplate = append(client.CallOptions.ApproveQueryTemplate, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1336,6 +1419,89 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.SubmitQueryTemplate = append(callOpts.SubmitQueryTemplate, gax.WithClientMetrics(metrics))
 		callOpts.ApproveQueryTemplate = append(callOpts.ApproveQueryTemplate, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "analyticshub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/analyticshub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "analyticshub.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDataExchanges = append(callOpts.ListDataExchanges, gax.WithClientTracing(tracing))
+		callOpts.ListOrgDataExchanges = append(callOpts.ListOrgDataExchanges, gax.WithClientTracing(tracing))
+		callOpts.GetDataExchange = append(callOpts.GetDataExchange, gax.WithClientTracing(tracing))
+		callOpts.CreateDataExchange = append(callOpts.CreateDataExchange, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataExchange = append(callOpts.UpdateDataExchange, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataExchange = append(callOpts.DeleteDataExchange, gax.WithClientTracing(tracing))
+		callOpts.ListListings = append(callOpts.ListListings, gax.WithClientTracing(tracing))
+		callOpts.GetListing = append(callOpts.GetListing, gax.WithClientTracing(tracing))
+		callOpts.CreateListing = append(callOpts.CreateListing, gax.WithClientTracing(tracing))
+		callOpts.UpdateListing = append(callOpts.UpdateListing, gax.WithClientTracing(tracing))
+		callOpts.DeleteListing = append(callOpts.DeleteListing, gax.WithClientTracing(tracing))
+		callOpts.SubscribeListing = append(callOpts.SubscribeListing, gax.WithClientTracing(tracing))
+		callOpts.SubscribeDataExchange = append(callOpts.SubscribeDataExchange, gax.WithClientTracing(tracing))
+		callOpts.RefreshSubscription = append(callOpts.RefreshSubscription, gax.WithClientTracing(tracing))
+		callOpts.GetSubscription = append(callOpts.GetSubscription, gax.WithClientTracing(tracing))
+		callOpts.ListSubscriptions = append(callOpts.ListSubscriptions, gax.WithClientTracing(tracing))
+		callOpts.ListSharedResourceSubscriptions = append(callOpts.ListSharedResourceSubscriptions, gax.WithClientTracing(tracing))
+		callOpts.RevokeSubscription = append(callOpts.RevokeSubscription, gax.WithClientTracing(tracing))
+		callOpts.DeleteSubscription = append(callOpts.DeleteSubscription, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CreateQueryTemplate = append(callOpts.CreateQueryTemplate, gax.WithClientTracing(tracing))
+		callOpts.GetQueryTemplate = append(callOpts.GetQueryTemplate, gax.WithClientTracing(tracing))
+		callOpts.ListQueryTemplates = append(callOpts.ListQueryTemplates, gax.WithClientTracing(tracing))
+		callOpts.UpdateQueryTemplate = append(callOpts.UpdateQueryTemplate, gax.WithClientTracing(tracing))
+		callOpts.DeleteQueryTemplate = append(callOpts.DeleteQueryTemplate, gax.WithClientTracing(tracing))
+		callOpts.SubmitQueryTemplate = append(callOpts.SubmitQueryTemplate, gax.WithClientTracing(tracing))
+		callOpts.ApproveQueryTemplate = append(callOpts.ApproveQueryTemplate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "analyticshub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/analyticshub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "analyticshub.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDataExchanges = append(callOpts.ListDataExchanges, gax.WithClientLogging(logging))
+		callOpts.ListOrgDataExchanges = append(callOpts.ListOrgDataExchanges, gax.WithClientLogging(logging))
+		callOpts.GetDataExchange = append(callOpts.GetDataExchange, gax.WithClientLogging(logging))
+		callOpts.CreateDataExchange = append(callOpts.CreateDataExchange, gax.WithClientLogging(logging))
+		callOpts.UpdateDataExchange = append(callOpts.UpdateDataExchange, gax.WithClientLogging(logging))
+		callOpts.DeleteDataExchange = append(callOpts.DeleteDataExchange, gax.WithClientLogging(logging))
+		callOpts.ListListings = append(callOpts.ListListings, gax.WithClientLogging(logging))
+		callOpts.GetListing = append(callOpts.GetListing, gax.WithClientLogging(logging))
+		callOpts.CreateListing = append(callOpts.CreateListing, gax.WithClientLogging(logging))
+		callOpts.UpdateListing = append(callOpts.UpdateListing, gax.WithClientLogging(logging))
+		callOpts.DeleteListing = append(callOpts.DeleteListing, gax.WithClientLogging(logging))
+		callOpts.SubscribeListing = append(callOpts.SubscribeListing, gax.WithClientLogging(logging))
+		callOpts.SubscribeDataExchange = append(callOpts.SubscribeDataExchange, gax.WithClientLogging(logging))
+		callOpts.RefreshSubscription = append(callOpts.RefreshSubscription, gax.WithClientLogging(logging))
+		callOpts.GetSubscription = append(callOpts.GetSubscription, gax.WithClientLogging(logging))
+		callOpts.ListSubscriptions = append(callOpts.ListSubscriptions, gax.WithClientLogging(logging))
+		callOpts.ListSharedResourceSubscriptions = append(callOpts.ListSharedResourceSubscriptions, gax.WithClientLogging(logging))
+		callOpts.RevokeSubscription = append(callOpts.RevokeSubscription, gax.WithClientLogging(logging))
+		callOpts.DeleteSubscription = append(callOpts.DeleteSubscription, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CreateQueryTemplate = append(callOpts.CreateQueryTemplate, gax.WithClientLogging(logging))
+		callOpts.GetQueryTemplate = append(callOpts.GetQueryTemplate, gax.WithClientLogging(logging))
+		callOpts.ListQueryTemplates = append(callOpts.ListQueryTemplates, gax.WithClientLogging(logging))
+		callOpts.UpdateQueryTemplate = append(callOpts.UpdateQueryTemplate, gax.WithClientLogging(logging))
+		callOpts.DeleteQueryTemplate = append(callOpts.DeleteQueryTemplate, gax.WithClientLogging(logging))
+		callOpts.SubmitQueryTemplate = append(callOpts.SubmitQueryTemplate, gax.WithClientLogging(logging))
+		callOpts.ApproveQueryTemplate = append(callOpts.ApproveQueryTemplate, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1392,9 +1558,6 @@ func (c *gRPCClient) ListDataExchanges(ctx context.Context, req *analyticshubpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/ListDataExchanges")
 	}
@@ -1444,9 +1607,6 @@ func (c *gRPCClient) ListOrgDataExchanges(ctx context.Context, req *analyticshub
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetOrganization()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/ListOrgDataExchanges")
 	}
@@ -1496,9 +1656,6 @@ func (c *gRPCClient) GetDataExchange(ctx context.Context, req *analyticshubpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetDataExchange")
 	}
@@ -1520,9 +1677,6 @@ func (c *gRPCClient) CreateDataExchange(ctx context.Context, req *analyticshubpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/CreateDataExchange")
 	}
@@ -1544,9 +1698,6 @@ func (c *gRPCClient) UpdateDataExchange(ctx context.Context, req *analyticshubpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetDataExchange().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/UpdateDataExchange")
 	}
@@ -1568,9 +1719,6 @@ func (c *gRPCClient) DeleteDataExchange(ctx context.Context, req *analyticshubpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/DeleteDataExchange")
 	}
@@ -1588,9 +1736,6 @@ func (c *gRPCClient) ListListings(ctx context.Context, req *analyticshubpb.ListL
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/ListListings")
 	}
@@ -1640,9 +1785,6 @@ func (c *gRPCClient) GetListing(ctx context.Context, req *analyticshubpb.GetList
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetListing")
 	}
@@ -1664,9 +1806,6 @@ func (c *gRPCClient) CreateListing(ctx context.Context, req *analyticshubpb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/CreateListing")
 	}
@@ -1688,9 +1827,6 @@ func (c *gRPCClient) UpdateListing(ctx context.Context, req *analyticshubpb.Upda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetListing().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/UpdateListing")
 	}
@@ -1712,9 +1848,6 @@ func (c *gRPCClient) DeleteListing(ctx context.Context, req *analyticshubpb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/DeleteListing")
 	}
@@ -1732,9 +1865,6 @@ func (c *gRPCClient) SubscribeListing(ctx context.Context, req *analyticshubpb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SubscribeListing")
 	}
@@ -1756,9 +1886,6 @@ func (c *gRPCClient) SubscribeDataExchange(ctx context.Context, req *analyticshu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SubscribeDataExchange")
 	}
@@ -1786,9 +1913,6 @@ func (c *gRPCClient) RefreshSubscription(ctx context.Context, req *analyticshubp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/RefreshSubscription")
 	}
@@ -1816,9 +1940,6 @@ func (c *gRPCClient) GetSubscription(ctx context.Context, req *analyticshubpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetSubscription")
 	}
@@ -1840,9 +1961,6 @@ func (c *gRPCClient) ListSubscriptions(ctx context.Context, req *analyticshubpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/ListSubscriptions")
 	}
@@ -1892,9 +2010,6 @@ func (c *gRPCClient) ListSharedResourceSubscriptions(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/ListSharedResourceSubscriptions")
 	}
@@ -1944,9 +2059,6 @@ func (c *gRPCClient) RevokeSubscription(ctx context.Context, req *analyticshubpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/RevokeSubscription")
 	}
@@ -1968,9 +2080,6 @@ func (c *gRPCClient) DeleteSubscription(ctx context.Context, req *analyticshubpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/DeleteSubscription")
 	}
@@ -1998,9 +2107,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetIamPolicy")
 	}
@@ -2022,9 +2128,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SetIamPolicy")
 	}
@@ -2046,9 +2149,6 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/TestIamPermissions")
 	}
@@ -2070,9 +2170,6 @@ func (c *gRPCClient) CreateQueryTemplate(ctx context.Context, req *analyticshubp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/CreateQueryTemplate")
 	}
@@ -2094,9 +2191,6 @@ func (c *gRPCClient) GetQueryTemplate(ctx context.Context, req *analyticshubpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetQueryTemplate")
 	}
@@ -2118,9 +2212,6 @@ func (c *gRPCClient) ListQueryTemplates(ctx context.Context, req *analyticshubpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/ListQueryTemplates")
 	}
@@ -2170,9 +2261,6 @@ func (c *gRPCClient) UpdateQueryTemplate(ctx context.Context, req *analyticshubp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetQueryTemplate().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/UpdateQueryTemplate")
 	}
@@ -2194,9 +2282,6 @@ func (c *gRPCClient) DeleteQueryTemplate(ctx context.Context, req *analyticshubp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/DeleteQueryTemplate")
 	}
@@ -2214,9 +2299,6 @@ func (c *gRPCClient) SubmitQueryTemplate(ctx context.Context, req *analyticshubp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SubmitQueryTemplate")
 	}
@@ -2238,9 +2320,6 @@ func (c *gRPCClient) ApproveQueryTemplate(ctx context.Context, req *analyticshub
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/ApproveQueryTemplate")
 	}
@@ -2274,6 +2353,11 @@ func (c *restClient) ListDataExchanges(ctx context.Context, req *analyticshubpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataExchanges", req.GetParent())
@@ -2354,6 +2438,11 @@ func (c *restClient) ListOrgDataExchanges(ctx context.Context, req *analyticshub
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetOrganization(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataExchanges", req.GetOrganization())
 
 		params := url.Values{}
@@ -2418,6 +2507,11 @@ func (c *restClient) GetDataExchange(ctx context.Context, req *analyticshubpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -2426,9 +2520,6 @@ func (c *restClient) GetDataExchange(ctx context.Context, req *analyticshubpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetDataExchange")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*}")
@@ -2477,6 +2568,11 @@ func (c *restClient) CreateDataExchange(ctx context.Context, req *analyticshubpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataExchanges", req.GetParent())
 
 	params := url.Values{}
@@ -2490,9 +2586,6 @@ func (c *restClient) CreateDataExchange(ctx context.Context, req *analyticshubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/CreateDataExchange")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/dataExchanges")
@@ -2541,6 +2634,11 @@ func (c *restClient) UpdateDataExchange(ctx context.Context, req *analyticshubpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataExchange().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataExchange().GetName())
 
 	params := url.Values{}
@@ -2560,9 +2658,6 @@ func (c *restClient) UpdateDataExchange(ctx context.Context, req *analyticshubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetDataExchange().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/UpdateDataExchange")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{data_exchange.name=projects/*/locations/*/dataExchanges/*}")
@@ -2604,6 +2699,11 @@ func (c *restClient) DeleteDataExchange(ctx context.Context, req *analyticshubpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -2612,9 +2712,6 @@ func (c *restClient) DeleteDataExchange(ctx context.Context, req *analyticshubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/DeleteDataExchange")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*}")
@@ -2652,6 +2749,11 @@ func (c *restClient) ListListings(ctx context.Context, req *analyticshubpb.ListL
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/listings", req.GetParent())
@@ -2718,6 +2820,11 @@ func (c *restClient) GetListing(ctx context.Context, req *analyticshubpb.GetList
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -2726,9 +2833,6 @@ func (c *restClient) GetListing(ctx context.Context, req *analyticshubpb.GetList
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetListing")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*/listings/*}")
@@ -2777,6 +2881,11 @@ func (c *restClient) CreateListing(ctx context.Context, req *analyticshubpb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/listings", req.GetParent())
 
 	params := url.Values{}
@@ -2790,9 +2899,6 @@ func (c *restClient) CreateListing(ctx context.Context, req *analyticshubpb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/CreateListing")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataExchanges/*}/listings")
@@ -2841,6 +2947,11 @@ func (c *restClient) UpdateListing(ctx context.Context, req *analyticshubpb.Upda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetListing().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetListing().GetName())
 
 	params := url.Values{}
@@ -2860,9 +2971,6 @@ func (c *restClient) UpdateListing(ctx context.Context, req *analyticshubpb.Upda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetListing().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/UpdateListing")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{listing.name=projects/*/locations/*/dataExchanges/*/listings/*}")
@@ -2904,6 +3012,11 @@ func (c *restClient) DeleteListing(ctx context.Context, req *analyticshubpb.Dele
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2919,9 +3032,6 @@ func (c *restClient) DeleteListing(ctx context.Context, req *analyticshubpb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/DeleteListing")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*/listings/*}")
@@ -2959,6 +3069,11 @@ func (c *restClient) SubscribeListing(ctx context.Context, req *analyticshubpb.S
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:subscribe", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -2967,9 +3082,6 @@ func (c *restClient) SubscribeListing(ctx context.Context, req *analyticshubpb.S
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SubscribeListing")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*/listings/*}:subscribe")
@@ -3020,6 +3132,11 @@ func (c *restClient) SubscribeDataExchange(ctx context.Context, req *analyticshu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:subscribe", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -3028,9 +3145,6 @@ func (c *restClient) SubscribeDataExchange(ctx context.Context, req *analyticshu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SubscribeDataExchange")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*}:subscribe")
@@ -3087,6 +3201,11 @@ func (c *restClient) RefreshSubscription(ctx context.Context, req *analyticshubp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:refresh", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -3095,9 +3214,6 @@ func (c *restClient) RefreshSubscription(ctx context.Context, req *analyticshubp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/RefreshSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/subscriptions/*}:refresh")
@@ -3146,6 +3262,11 @@ func (c *restClient) GetSubscription(ctx context.Context, req *analyticshubpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -3154,9 +3275,6 @@ func (c *restClient) GetSubscription(ctx context.Context, req *analyticshubpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/subscriptions/*}")
@@ -3209,6 +3327,11 @@ func (c *restClient) ListSubscriptions(ctx context.Context, req *analyticshubpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/subscriptions", req.GetParent())
@@ -3291,6 +3414,11 @@ func (c *restClient) ListSharedResourceSubscriptions(ctx context.Context, req *a
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetResource(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listSubscriptions", req.GetResource())
 
 		params := url.Values{}
@@ -3364,6 +3492,11 @@ func (c *restClient) RevokeSubscription(ctx context.Context, req *analyticshubpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:revoke", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -3372,9 +3505,6 @@ func (c *restClient) RevokeSubscription(ctx context.Context, req *analyticshubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/RevokeSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/subscriptions/*}:revoke")
@@ -3416,6 +3546,11 @@ func (c *restClient) DeleteSubscription(ctx context.Context, req *analyticshubpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -3424,9 +3559,6 @@ func (c *restClient) DeleteSubscription(ctx context.Context, req *analyticshubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/DeleteSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/subscriptions/*}")
@@ -3481,6 +3613,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -3489,9 +3626,6 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/dataExchanges/*}:getIamPolicy")
@@ -3539,6 +3673,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -3547,9 +3686,6 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/dataExchanges/*}:setIamPolicy")
@@ -3597,6 +3733,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -3605,9 +3746,6 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/dataExchanges/*}:testIamPermissions")
@@ -3656,6 +3794,11 @@ func (c *restClient) CreateQueryTemplate(ctx context.Context, req *analyticshubp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/queryTemplates", req.GetParent())
 
 	params := url.Values{}
@@ -3669,9 +3812,6 @@ func (c *restClient) CreateQueryTemplate(ctx context.Context, req *analyticshubp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/CreateQueryTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataExchanges/*}/queryTemplates")
@@ -3713,6 +3853,11 @@ func (c *restClient) GetQueryTemplate(ctx context.Context, req *analyticshubpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -3721,9 +3866,6 @@ func (c *restClient) GetQueryTemplate(ctx context.Context, req *analyticshubpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetQueryTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*/queryTemplates/*}")
@@ -3776,6 +3918,11 @@ func (c *restClient) ListQueryTemplates(ctx context.Context, req *analyticshubpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/queryTemplates", req.GetParent())
@@ -3849,6 +3996,11 @@ func (c *restClient) UpdateQueryTemplate(ctx context.Context, req *analyticshubp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetQueryTemplate().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetQueryTemplate().GetName())
 
 	params := url.Values{}
@@ -3868,9 +4020,6 @@ func (c *restClient) UpdateQueryTemplate(ctx context.Context, req *analyticshubp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetQueryTemplate().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/UpdateQueryTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{query_template.name=projects/*/locations/*/dataExchanges/*/queryTemplates/*}")
@@ -3912,6 +4061,11 @@ func (c *restClient) DeleteQueryTemplate(ctx context.Context, req *analyticshubp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -3920,9 +4074,6 @@ func (c *restClient) DeleteQueryTemplate(ctx context.Context, req *analyticshubp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/DeleteQueryTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*/queryTemplates/*}")
@@ -3955,6 +4106,11 @@ func (c *restClient) SubmitQueryTemplate(ctx context.Context, req *analyticshubp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:submit", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -3963,9 +4119,6 @@ func (c *restClient) SubmitQueryTemplate(ctx context.Context, req *analyticshubp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SubmitQueryTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*/queryTemplates/*}:submit")
@@ -4013,6 +4166,11 @@ func (c *restClient) ApproveQueryTemplate(ctx context.Context, req *analyticshub
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:approve", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -4021,9 +4179,6 @@ func (c *restClient) ApproveQueryTemplate(ctx context.Context, req *analyticshub
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticshub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/ApproveQueryTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataExchanges/*/queryTemplates/*}:approve")

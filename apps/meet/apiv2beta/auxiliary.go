@@ -291,6 +291,59 @@ func (it *RecordingIterator) takeBuf() interface{} {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *SmartNoteIterator) All() iter.Seq2[*meetpb.SmartNote, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// SmartNoteIterator manages a stream of *meetpb.SmartNote.
+type SmartNoteIterator struct {
+	items    []*meetpb.SmartNote
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*meetpb.SmartNote, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *SmartNoteIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SmartNoteIterator) Next() (*meetpb.SmartNote, error) {
+	var item *meetpb.SmartNote
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SmartNoteIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SmartNoteIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *TranscriptEntryIterator) All() iter.Seq2[*meetpb.TranscriptEntry, error] {
 	return gaxiter.RangeAdapter(it.Next)
 }

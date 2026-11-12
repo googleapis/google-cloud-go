@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/pubsub/v2/internal"
 	"cloud.google.com/go/pubsub/v2/pstest"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -185,6 +186,52 @@ func TestTrace_PublishSpan(t *testing.T) {
 		return sortSpanStub(a, b)
 	})
 	compareSpans(t, got, expectedSpans)
+}
+
+func TestTrace_PublishHedgedSpan(t *testing.T) {
+	ctx := context.Background()
+	var rpcAttempts atomic.Int64
+	c, srv := newFakeWithTracing(t, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(
+		func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+			if isPublish(method) && rpcAttempts.Add(1) == 1 {
+				time.Sleep(150 * time.Millisecond) // force hedge
+			}
+			return invoker(ctx, method, req, reply, cc, opts...)
+		},
+	)))
+	defer c.Close()
+	defer srv.Close()
+
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	topicName := fmt.Sprintf("projects/%s/topics/t", testutil.ProjID())
+	publisher := mustCreateTopic(t, c, topicName)
+	defer publisher.Stop()
+	publisher.PublishSettings.HedgingSettings = &HedgingSettings{Delay: minHedgingDelay}
+	publisher.hedgingTokenBucket.Store(tokenScaleFactor)
+
+	if _, err := publisher.Publish(ctx, &Message{Data: []byte("test")}).Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	wantEvents := []sdktrace.Event{
+		{Name: eventPublishStart, Attributes: []attribute.KeyValue{semconv.MessagingBatchMessageCount(1)}},
+		{Name: eventHedgedPublishStart, Attributes: []attribute.KeyValue{semconv.MessagingBatchMessageCount(1)}},
+		{Name: eventHedgedPublishEnd},
+		{Name: eventPublishEnd},
+	}
+	for _, span := range getSpans(e) {
+		if span.Name == "t "+createSpanName {
+			if diff := testutil.Diff(span.Events, wantEvents, cmpopts.IgnoreFields(sdktrace.Event{}, "Time"), cmpopts.EquateComparable(attribute.Value{})); diff != "" {
+				t.Errorf("publish span events (-got +want):\n%s", diff)
+			}
+			return
+		}
+	}
+	t.Fatalf("span %q not found", "t "+createSpanName)
 }
 
 func TestTrace_PublishSpanError(t *testing.T) {
@@ -707,15 +754,18 @@ func getFlowControlSpanStubs(err error) tracetest.SpanStubs {
 	}
 }
 
-func newFakeWithTracing(t *testing.T) (*Client, *pstest.Server) {
+func newFakeWithTracing(t *testing.T, opts ...option.ClientOption) (*Client, *pstest.Server) {
 	ctx := context.Background()
 	srv := pstest.NewServer()
-	client, err := NewClientWithConfig(ctx, projName,
-		&ClientConfig{EnableOpenTelemetryTracing: true},
+	baseOpts := []option.ClientOption{
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		option.WithTelemetryDisabled(),
+	}
+	client, err := NewClientWithConfig(ctx, projName,
+		&ClientConfig{EnableOpenTelemetryTracing: true},
+		append(baseOpts, opts...)...,
 	)
 	if err != nil {
 		t.Fatal(err)

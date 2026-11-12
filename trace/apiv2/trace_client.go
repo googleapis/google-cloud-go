@@ -260,6 +260,35 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.BatchWriteSpans = append(client.CallOptions.BatchWriteSpans, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateSpan = append(client.CallOptions.CreateSpan, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.BatchWriteSpans = append(client.CallOptions.BatchWriteSpans, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSpan = append(client.CallOptions.CreateSpan, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.BatchWriteSpans = append(client.CallOptions.BatchWriteSpans, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSpan = append(client.CallOptions.CreateSpan, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -358,6 +387,35 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.BatchWriteSpans = append(callOpts.BatchWriteSpans, gax.WithClientMetrics(metrics))
 		callOpts.CreateSpan = append(callOpts.CreateSpan, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		callOpts.BatchWriteSpans = append(callOpts.BatchWriteSpans, gax.WithClientTracing(tracing))
+		callOpts.CreateSpan = append(callOpts.CreateSpan, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		callOpts.BatchWriteSpans = append(callOpts.BatchWriteSpans, gax.WithClientLogging(logging))
+		callOpts.CreateSpan = append(callOpts.CreateSpan, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -404,9 +462,6 @@ func (c *gRPCClient) BatchWriteSpans(ctx context.Context, req *tracepb.BatchWrit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtrace.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudtrace.v2.TraceService/BatchWriteSpans")
 	}
@@ -453,6 +508,11 @@ func (c *restClient) BatchWriteSpans(ctx context.Context, req *tracepb.BatchWrit
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/traces:batchWrite", req.GetName())
 
 	params := url.Values{}
@@ -466,9 +526,6 @@ func (c *restClient) BatchWriteSpans(ctx context.Context, req *tracepb.BatchWrit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtrace.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudtrace.v2.TraceService/BatchWriteSpans")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*}/traces:batchWrite")
@@ -499,6 +556,11 @@ func (c *restClient) CreateSpan(ctx context.Context, req *tracepb.Span, opts ...
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

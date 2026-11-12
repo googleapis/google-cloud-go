@@ -855,6 +855,73 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDocument = append(client.CallOptions.UpdateDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDocument = append(client.CallOptions.DeleteDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchGetDocuments = append(client.CallOptions.BatchGetDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.BeginTransaction = append(client.CallOptions.BeginTransaction, gax.WithClientTracing(tracing))
+		client.CallOptions.Commit = append(client.CallOptions.Commit, gax.WithClientTracing(tracing))
+		client.CallOptions.Rollback = append(client.CallOptions.Rollback, gax.WithClientTracing(tracing))
+		client.CallOptions.RunQuery = append(client.CallOptions.RunQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecutePipeline = append(client.CallOptions.ExecutePipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.RunAggregationQuery = append(client.CallOptions.RunAggregationQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.PartitionQuery = append(client.CallOptions.PartitionQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.Write = append(client.CallOptions.Write, gax.WithClientTracing(tracing))
+		client.CallOptions.Listen = append(client.CallOptions.Listen, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCollectionIds = append(client.CallOptions.ListCollectionIds, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchWrite = append(client.CallOptions.BatchWrite, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDocument = append(client.CallOptions.CreateDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientLogging(logging))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDocument = append(client.CallOptions.UpdateDocument, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDocument = append(client.CallOptions.DeleteDocument, gax.WithClientLogging(logging))
+		client.CallOptions.BatchGetDocuments = append(client.CallOptions.BatchGetDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.BeginTransaction = append(client.CallOptions.BeginTransaction, gax.WithClientLogging(logging))
+		client.CallOptions.Commit = append(client.CallOptions.Commit, gax.WithClientLogging(logging))
+		client.CallOptions.Rollback = append(client.CallOptions.Rollback, gax.WithClientLogging(logging))
+		client.CallOptions.RunQuery = append(client.CallOptions.RunQuery, gax.WithClientLogging(logging))
+		client.CallOptions.ExecutePipeline = append(client.CallOptions.ExecutePipeline, gax.WithClientLogging(logging))
+		client.CallOptions.RunAggregationQuery = append(client.CallOptions.RunAggregationQuery, gax.WithClientLogging(logging))
+		client.CallOptions.PartitionQuery = append(client.CallOptions.PartitionQuery, gax.WithClientLogging(logging))
+		client.CallOptions.Write = append(client.CallOptions.Write, gax.WithClientLogging(logging))
+		client.CallOptions.Listen = append(client.CallOptions.Listen, gax.WithClientLogging(logging))
+		client.CallOptions.ListCollectionIds = append(client.CallOptions.ListCollectionIds, gax.WithClientLogging(logging))
+		client.CallOptions.BatchWrite = append(client.CallOptions.BatchWrite, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDocument = append(client.CallOptions.CreateDocument, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -972,6 +1039,73 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientTracing(tracing))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientTracing(tracing))
+		callOpts.UpdateDocument = append(callOpts.UpdateDocument, gax.WithClientTracing(tracing))
+		callOpts.DeleteDocument = append(callOpts.DeleteDocument, gax.WithClientTracing(tracing))
+		callOpts.BatchGetDocuments = append(callOpts.BatchGetDocuments, gax.WithClientTracing(tracing))
+		callOpts.BeginTransaction = append(callOpts.BeginTransaction, gax.WithClientTracing(tracing))
+		callOpts.Commit = append(callOpts.Commit, gax.WithClientTracing(tracing))
+		callOpts.Rollback = append(callOpts.Rollback, gax.WithClientTracing(tracing))
+		callOpts.RunQuery = append(callOpts.RunQuery, gax.WithClientTracing(tracing))
+		callOpts.ExecutePipeline = append(callOpts.ExecutePipeline, gax.WithClientTracing(tracing))
+		callOpts.RunAggregationQuery = append(callOpts.RunAggregationQuery, gax.WithClientTracing(tracing))
+		callOpts.PartitionQuery = append(callOpts.PartitionQuery, gax.WithClientTracing(tracing))
+		callOpts.Write = append(callOpts.Write, gax.WithClientTracing(tracing))
+		callOpts.Listen = append(callOpts.Listen, gax.WithClientTracing(tracing))
+		callOpts.ListCollectionIds = append(callOpts.ListCollectionIds, gax.WithClientTracing(tracing))
+		callOpts.BatchWrite = append(callOpts.BatchWrite, gax.WithClientTracing(tracing))
+		callOpts.CreateDocument = append(callOpts.CreateDocument, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientLogging(logging))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientLogging(logging))
+		callOpts.UpdateDocument = append(callOpts.UpdateDocument, gax.WithClientLogging(logging))
+		callOpts.DeleteDocument = append(callOpts.DeleteDocument, gax.WithClientLogging(logging))
+		callOpts.BatchGetDocuments = append(callOpts.BatchGetDocuments, gax.WithClientLogging(logging))
+		callOpts.BeginTransaction = append(callOpts.BeginTransaction, gax.WithClientLogging(logging))
+		callOpts.Commit = append(callOpts.Commit, gax.WithClientLogging(logging))
+		callOpts.Rollback = append(callOpts.Rollback, gax.WithClientLogging(logging))
+		callOpts.RunQuery = append(callOpts.RunQuery, gax.WithClientLogging(logging))
+		callOpts.ExecutePipeline = append(callOpts.ExecutePipeline, gax.WithClientLogging(logging))
+		callOpts.RunAggregationQuery = append(callOpts.RunAggregationQuery, gax.WithClientLogging(logging))
+		callOpts.PartitionQuery = append(callOpts.PartitionQuery, gax.WithClientLogging(logging))
+		callOpts.Write = append(callOpts.Write, gax.WithClientLogging(logging))
+		callOpts.Listen = append(callOpts.Listen, gax.WithClientLogging(logging))
+		callOpts.ListCollectionIds = append(callOpts.ListCollectionIds, gax.WithClientLogging(logging))
+		callOpts.BatchWrite = append(callOpts.BatchWrite, gax.WithClientLogging(logging))
+		callOpts.CreateDocument = append(callOpts.CreateDocument, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
@@ -1580,6 +1714,11 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1665,6 +1804,12 @@ func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+			req.GetCollectionId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/%v", req.GetParent(), req.GetCollectionId())
@@ -1765,6 +1910,11 @@ func (c *restClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDocument().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDocument().GetName())
 
 	params := url.Values{}
@@ -1844,6 +1994,11 @@ func (c *restClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1905,6 +2060,11 @@ func (c *restClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:batchGet", req.GetDatabase())
@@ -2013,6 +2173,11 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:beginTransaction", req.GetDatabase())
 
 	params := url.Values{}
@@ -2071,6 +2236,11 @@ func (c *restClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:commit", req.GetDatabase())
@@ -2133,6 +2303,11 @@ func (c *restClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequ
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:rollback", req.GetDatabase())
 
 	params := url.Values{}
@@ -2176,6 +2351,11 @@ func (c *restClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:runQuery", req.GetParent())
@@ -2282,6 +2462,11 @@ func (c *restClient) ExecutePipeline(ctx context.Context, req *firestorepb.Execu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:executePipeline", req.GetDatabase())
@@ -2414,6 +2599,11 @@ func (c *restClient) RunAggregationQuery(ctx context.Context, req *firestorepb.R
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:runAggregationQuery", req.GetParent())
 
 	params := url.Values{}
@@ -2535,6 +2725,11 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:partitionQuery", req.GetParent())
 
 		params := url.Values{}
@@ -2629,6 +2824,11 @@ func (c *restClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listCollectionIds", req.GetParent())
 
 		params := url.Values{}
@@ -2703,6 +2903,11 @@ func (c *restClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWrite
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:batchWrite", req.GetDatabase())
 
 	params := url.Values{}
@@ -2762,6 +2967,12 @@ func (c *restClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+		req.GetCollectionId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/%v", req.GetParent(), req.GetCollectionId())
@@ -2837,6 +3048,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2876,6 +3092,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2913,6 +3134,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2980,6 +3206,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

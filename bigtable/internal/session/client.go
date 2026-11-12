@@ -353,6 +353,10 @@ type sessionClient struct {
 	nextPoolID     atomic.Uint64
 }
 
+// newMetricsFactory is a package-level seam so unit tests can observe
+// Factory lifecycle (context binding and Shutdown on init failure).
+var newMetricsFactory = metrics.NewFactory
+
 // NewClient constructs a standalone session.Client. It owns the
 // underlying channel pool, gRPC stub, metrics factory, and background
 // goroutines end-to-end — Close() unwinds all four.
@@ -382,9 +386,29 @@ func NewClient(
 	featureFlagsProto *btpb.FeatureFlags,
 	opts ...option.ClientOption,
 ) (Client, error) {
-	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, clientName, metricsProvider)
+	if ctx != nil {
+		if err := ctx.Err(); err != nil {
+			return nil, fmt.Errorf("session.NewClient: %w", err)
+		}
+	}
+
+	backgroundCtx, cancel := context.WithCancel(context.Background())
+	var stopPropagation func() bool
+	if ctx != nil && ctx.Done() != nil {
+		stopPropagation = context.AfterFunc(ctx, cancel)
+		defer stopPropagation()
+	}
+
+	factory, err := newMetricsFactory(backgroundCtx, project, instance, appProfile, clientName, metricsProvider)
 	if err != nil {
+		cancel()
 		return nil, fmt.Errorf("session.NewClient: metrics.NewFactory: %w", err)
+	}
+	cleanupOnErr := func() {
+		if factory.Shutdown != nil {
+			factory.Shutdown()
+		}
+		cancel()
 	}
 
 	// featureFlagsProto comes pre-built from the classic client so
@@ -397,10 +421,7 @@ func NewClient(
 	// Instance-scoped headers for GetClientConfiguration — shared by the
 	// DirectAccessChecker's compat probe and ClientConfigurationManager's
 	// steady-state polls so both hit the same-shaped RPC.
-	configMD := metadata.Join(metadata.Pairs(
-		resourcePrefixHeader, fullInstance,
-		requestParamsHeader, fmt.Sprintf("name=%s", url.QueryEscape(fullInstance)),
-	), directAccessMD)
+	configMD := buildConfigMetadata(fullInstance, appProfile, directAccessMD)
 
 	// Session pool bypasses CreateAndStartManagedChannelPool so we can
 	// plug in the session-flavored primer + direct-access checker
@@ -413,7 +434,7 @@ func NewClient(
 	// mix a session pool serves.
 	poolSize := defaultSessionChannelPoolSize
 	dial := func() (*btransport.BigtableConn, error) {
-		grpcConn, dialErr := gtransport.Dial(ctx, opts...)
+		grpcConn, dialErr := gtransport.Dial(backgroundCtx, opts...)
 		if dialErr != nil {
 			return nil, dialErr
 		}
@@ -428,7 +449,7 @@ func NewClient(
 	// newer cloud.google.com/go/auth ADC path).
 	daDialOpts := append(append([]option.ClientOption{}, opts...), btopt.DirectAccessOptions()...)
 	daDial := func() (*btransport.BigtableConn, error) {
-		grpcConn, dialErr := gtransport.Dial(ctx, daDialOpts...)
+		grpcConn, dialErr := gtransport.Dial(backgroundCtx, daDialOpts...)
 		if dialErr != nil {
 			return nil, dialErr
 		}
@@ -436,10 +457,11 @@ func NewClient(
 	}
 
 	if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), poolSize); err != nil {
+		cleanupOnErr()
 		return nil, fmt.Errorf("session.NewClient: invalid DynamicChannelPoolConfig: %w", err)
 	}
 	pool, err := btransport.NewBigtableChannelPool(
-		ctx,
+		backgroundCtx,
 		poolSize,
 		btopt.BigtableLoadBalancingStrategy(),
 		dial,
@@ -453,16 +475,20 @@ func NewClient(
 		)),
 	)
 	if err != nil {
+		cleanupOnErr()
 		return nil, fmt.Errorf("session.NewClient: NewBigtableChannelPool: %w", err)
 	}
+	if stopPropagation != nil && !stopPropagation() {
+		_ = pool.Close()
+		cleanupOnErr()
+		return nil, fmt.Errorf("session.NewClient: %w", ctx.Err())
+	}
 	dsm := btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
-	dsm.Start(ctx)
+	dsm.Start(backgroundCtx)
 	connRecycler := btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), pool)
-	connRecycler.Start(ctx)
+	connRecycler.Start(backgroundCtx)
 	managed := btransport.NewManagedChannelPool(pool, dsm, connRecycler)
 	stub := btpb.NewBigtableClient(pool)
-
-	backgroundCtx, cancel := context.WithCancel(context.Background())
 
 	sc := newSessionClientFromParts(pool, stub, factory, Config{
 		Project:           project,
@@ -601,14 +627,15 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 // firing against half-dead pools:
 //  1. Stop config polling — no more UpdateConfig can fire after.
 //  2. Close every session pool (per-pool listeners already detached).
-//  3. Cancel the background ctx we constructed (unwinds the
-//     client-scoped loops parented on it).
-//  4. managed.Close() stops the DynamicScaleMonitor + ConnectionRecycler
+//  3. managed.Close() stops the DynamicScaleMonitor + ConnectionRecycler
 //     wired by btransport.CreateAndStartManagedChannelPool, then closes
 //     the underlying pool — in that order, so no scale-up / recycle tick
 //     races against pool teardown. Test-fake path (managed.Pool == nil)
 //     falls back to sc.channelPool.Close().
-//  5. Shut down the metrics factory (final flush).
+//  4. Shut down the metrics factory (final flush while backgroundCtx is
+//     still active).
+//  5. Cancel the background ctx we constructed (unwinds any remaining
+//     client-scoped loops parented on it).
 func (sc *sessionClient) Close() error {
 	// Snapshot everything owned under the lock, then release before
 	// running the actual Close/Shutdown/Cancel calls. Any of those can
@@ -648,9 +675,6 @@ func (sc *sessionClient) Close() error {
 		}
 		mp.pool.Close()
 	}
-	if cancel != nil {
-		cancel()
-	}
 	// Prefer managed.Close (stops DSM + Recycler in order then closes
 	// the pool). Test fakes bypass CreateAndStartManagedChannelPool so
 	// managed.Pool is nil — fall back to the fake's own Close.
@@ -662,6 +686,9 @@ func (sc *sessionClient) Close() error {
 	}
 	if factory != nil && factory.Shutdown != nil {
 		factory.Shutdown()
+	}
+	if cancel != nil {
+		cancel()
 	}
 	return err
 }
@@ -873,6 +900,20 @@ func (sc *sessionClient) perResourceMetadata(fullResourceName, paramKey, paramVa
 		resourcePrefixHeader, fullResourceName,
 		requestParamsHeader, fmt.Sprintf("%s=%s&app_profile_id=%s", paramKey, url.QueryEscape(paramVal), url.QueryEscape(sc.cfg.AppProfile)),
 	), sc.cfg.FeatureFlagsMD)
+}
+
+// buildConfigMetadata builds the metadata attached to every
+// GetClientConfiguration RPC — both the DirectAccessChecker's compat
+// probe and ClientConfigurationManager's steady-state polls. The proto
+// field is instance_name, and Java pairs it with app_profile_id in
+// x-goog-request-params so the RLS router can key on both
+// (Util.composeMetadata + ClientConfigurationManager ctor).
+func buildConfigMetadata(fullInstance, appProfile string, featureFlagsMD metadata.MD) metadata.MD {
+	return metadata.Join(metadata.Pairs(
+		resourcePrefixHeader, fullInstance,
+		requestParamsHeader, fmt.Sprintf("instance_name=%s&app_profile_id=%s",
+			url.QueryEscape(fullInstance), url.QueryEscape(appProfile)),
+	), featureFlagsMD)
 }
 
 // Resource-name composition — duplicated from bigtable.Client to

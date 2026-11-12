@@ -90,9 +90,9 @@ var File_google_cloud_dialogflow_cx_v3beta1_gcs_proto protoreflect.FileDescripto
 
 const file_google_cloud_dialogflow_cx_v3beta1_gcs_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/dialogflow/cx/v3beta1/gcs.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1fgoogle/api/field_behavior.proto\"'\n" +
-	"\x0eGcsDestination\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uriB\xbf\x01\n" +
+	",google/cloud/dialogflow/cx/v3beta1/gcs.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1fgoogle/api/field_behavior.proto\"(\n" +
+	"\x0eGcsDestination\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uriB\xbf\x01\n" +
 	"&com.google.cloud.dialogflow.cx.v3beta1B\bGcsProtoP\x01Z6cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\"Google.Cloud.Dialogflow.Cx.V3Beta1\xea\x02&Google::Cloud::Dialogflow::CX::V3beta1b\x06proto3"
 
 var (

@@ -256,10 +256,6 @@ func (c *Client) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOpe
 // The response field type is
 // OptimizeToursResponse,
 // if successful.
-//
-// Experimental: See
-// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
-// for more details.
 func (c *Client) OptimizeToursLongRunning(ctx context.Context, req *routeoptimizationpb.OptimizeToursRequest, opts ...gax.CallOption) (*OptimizeToursLongRunningOperation, error) {
 	return c.internalClient.OptimizeToursLongRunning(ctx, req, opts...)
 }
@@ -289,14 +285,10 @@ func (c *Client) OptimizeToursLongRunningOperation(name string) *OptimizeToursLo
 // <parent>/operations/<operation_id> and can be used to track
 // progress of the computation. The
 // metadata field type is
-// OptimizeToursLongRunningMetadata.
+// OptimizeToursUriMetadata.
 // The response field type is
 // OptimizeToursUriResponse,
 // if successful.
-//
-// Experimental: See
-// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
-// for more details.
 func (c *Client) OptimizeToursUri(ctx context.Context, req *routeoptimizationpb.OptimizeToursUriRequest, opts ...gax.CallOption) (*OptimizeToursUriOperation, error) {
 	return c.internalClient.OptimizeToursUri(ctx, req, opts...)
 }
@@ -419,6 +411,41 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.OptimizeToursLongRunning = append(client.CallOptions.OptimizeToursLongRunning, gax.WithClientMetrics(metrics))
 		client.CallOptions.OptimizeToursUri = append(client.CallOptions.OptimizeToursUri, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.OptimizeTours = append(client.CallOptions.OptimizeTours, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchOptimizeTours = append(client.CallOptions.BatchOptimizeTours, gax.WithClientTracing(tracing))
+		client.CallOptions.OptimizeToursLongRunning = append(client.CallOptions.OptimizeToursLongRunning, gax.WithClientTracing(tracing))
+		client.CallOptions.OptimizeToursUri = append(client.CallOptions.OptimizeToursUri, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.OptimizeTours = append(client.CallOptions.OptimizeTours, gax.WithClientLogging(logging))
+		client.CallOptions.BatchOptimizeTours = append(client.CallOptions.BatchOptimizeTours, gax.WithClientLogging(logging))
+		client.CallOptions.OptimizeToursLongRunning = append(client.CallOptions.OptimizeToursLongRunning, gax.WithClientLogging(logging))
+		client.CallOptions.OptimizeToursUri = append(client.CallOptions.OptimizeToursUri, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -556,6 +583,41 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.OptimizeToursLongRunning = append(callOpts.OptimizeToursLongRunning, gax.WithClientMetrics(metrics))
 		callOpts.OptimizeToursUri = append(callOpts.OptimizeToursUri, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		callOpts.OptimizeTours = append(callOpts.OptimizeTours, gax.WithClientTracing(tracing))
+		callOpts.BatchOptimizeTours = append(callOpts.BatchOptimizeTours, gax.WithClientTracing(tracing))
+		callOpts.OptimizeToursLongRunning = append(callOpts.OptimizeToursLongRunning, gax.WithClientTracing(tracing))
+		callOpts.OptimizeToursUri = append(callOpts.OptimizeToursUri, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		callOpts.OptimizeTours = append(callOpts.OptimizeTours, gax.WithClientLogging(logging))
+		callOpts.BatchOptimizeTours = append(callOpts.BatchOptimizeTours, gax.WithClientLogging(logging))
+		callOpts.OptimizeToursLongRunning = append(callOpts.OptimizeToursLongRunning, gax.WithClientLogging(logging))
+		callOpts.OptimizeToursUri = append(callOpts.OptimizeToursUri, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -756,6 +818,11 @@ func (c *restClient) OptimizeTours(ctx context.Context, req *routeoptimizationpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:optimizeTours", req.GetParent())
 
 	params := url.Values{}
@@ -837,6 +904,11 @@ func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:batchOptimizeTours", req.GetParent())
 
 	params := url.Values{}
@@ -908,10 +980,6 @@ func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 // The response field type is
 // OptimizeToursResponse,
 // if successful.
-//
-// Experimental: See
-// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
-// for more details.
 func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeoptimizationpb.OptimizeToursRequest, opts ...gax.CallOption) (*OptimizeToursLongRunningOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -921,6 +989,11 @@ func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:optimizeToursLongRunning", req.GetParent())
@@ -997,14 +1070,10 @@ func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 // <parent>/operations/<operation_id> and can be used to track
 // progress of the computation. The
 // metadata field type is
-// OptimizeToursLongRunningMetadata.
+// OptimizeToursUriMetadata.
 // The response field type is
 // OptimizeToursUriResponse,
 // if successful.
-//
-// Experimental: See
-// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
-// for more details.
 func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizationpb.OptimizeToursUriRequest, opts ...gax.CallOption) (*OptimizeToursUriOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1014,6 +1083,11 @@ func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:OptimizeToursUri", req.GetParent())
@@ -1075,6 +1149,11 @@ func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

@@ -1825,35 +1825,35 @@ var File_google_cloud_gkebackup_v1_restore_proto protoreflect.FileDescriptor
 
 const file_google_cloud_gkebackup_v1_restore_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/gkebackup/v1/restore.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa5\r\n" +
-	"\aRestore\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12B\n" +
-	"\x06backup\x18\x06 \x01(\tB*\xe0A\x05\xe0A\x02\xfaA!\n" +
-	"\x1fgkebackup.googleapis.com/BackupR\x06backup\x12B\n" +
-	"\acluster\x18\a \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" container.googleapis.com/ClusterR\acluster\x12T\n" +
-	"\x0erestore_config\x18\b \x01(\v2(.google.cloud.gkebackup.v1.RestoreConfigB\x03\xe0A\x03R\rrestoreConfig\x12F\n" +
-	"\x06labels\x18\t \x03(\v2..google.cloud.gkebackup.v1.Restore.LabelsEntryR\x06labels\x12C\n" +
+	"'google/cloud/gkebackup/v1/restore.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\r\n" +
+	"\aRestore\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\x06backup\x18\x06 \x01(\tB)\xe2A\x02\x05\x02\xfaA!\n" +
+	"\x1fgkebackup.googleapis.com/BackupR\x06backup\x12C\n" +
+	"\acluster\x18\a \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" container.googleapis.com/ClusterR\acluster\x12U\n" +
+	"\x0erestore_config\x18\b \x01(\v2(.google.cloud.gkebackup.v1.RestoreConfigB\x04\xe2A\x01\x03R\rrestoreConfig\x12F\n" +
+	"\x06labels\x18\t \x03(\v2..google.cloud.gkebackup.v1.Restore.LabelsEntryR\x06labels\x12D\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2(.google.cloud.gkebackup.v1.Restore.StateB\x03\xe0A\x03R\x05state\x12&\n" +
-	"\fstate_reason\x18\v \x01(\tB\x03\xe0A\x03R\vstateReason\x12D\n" +
-	"\rcomplete_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12=\n" +
-	"\x18resources_restored_count\x18\r \x01(\x05B\x03\xe0A\x03R\x16resourcesRestoredCount\x12=\n" +
-	"\x18resources_excluded_count\x18\x0e \x01(\x05B\x03\xe0A\x03R\x16resourcesExcludedCount\x129\n" +
-	"\x16resources_failed_count\x18\x0f \x01(\x05B\x03\xe0A\x03R\x14resourcesFailedCount\x129\n" +
-	"\x16volumes_restored_count\x18\x10 \x01(\x05B\x03\xe0A\x03R\x14volumesRestoredCount\x12\x17\n" +
-	"\x04etag\x18\x11 \x01(\tB\x03\xe0A\x03R\x04etag\x12I\n" +
-	"\x06filter\x18\x12 \x01(\v2).google.cloud.gkebackup.v1.Restore.FilterB\x06\xe0A\x05\xe0A\x01R\x06filter\x12\x92\x01\n" +
-	"$volume_data_restore_policy_overrides\x18\x13 \x03(\v2:.google.cloud.gkebackup.v1.VolumeDataRestorePolicyOverrideB\x06\xe0A\x05\xe0A\x01R volumeDataRestorePolicyOverrides\x1a\xc6\x01\n" +
-	"\x06Filter\x12]\n" +
-	"\x11inclusion_filters\x18\x01 \x03(\v2+.google.cloud.gkebackup.v1.ResourceSelectorB\x03\xe0A\x01R\x10inclusionFilters\x12]\n" +
-	"\x11exclusion_filters\x18\x02 \x03(\v2+.google.cloud.gkebackup.v1.ResourceSelectorB\x03\xe0A\x01R\x10exclusionFilters\x1a9\n" +
+	" \x01(\x0e2(.google.cloud.gkebackup.v1.Restore.StateB\x04\xe2A\x01\x03R\x05state\x12'\n" +
+	"\fstate_reason\x18\v \x01(\tB\x04\xe2A\x01\x03R\vstateReason\x12E\n" +
+	"\rcomplete_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12>\n" +
+	"\x18resources_restored_count\x18\r \x01(\x05B\x04\xe2A\x01\x03R\x16resourcesRestoredCount\x12>\n" +
+	"\x18resources_excluded_count\x18\x0e \x01(\x05B\x04\xe2A\x01\x03R\x16resourcesExcludedCount\x12:\n" +
+	"\x16resources_failed_count\x18\x0f \x01(\x05B\x04\xe2A\x01\x03R\x14resourcesFailedCount\x12:\n" +
+	"\x16volumes_restored_count\x18\x10 \x01(\x05B\x04\xe2A\x01\x03R\x14volumesRestoredCount\x12\x18\n" +
+	"\x04etag\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12H\n" +
+	"\x06filter\x18\x12 \x01(\v2).google.cloud.gkebackup.v1.Restore.FilterB\x05\xe2A\x02\x05\x01R\x06filter\x12\x91\x01\n" +
+	"$volume_data_restore_policy_overrides\x18\x13 \x03(\v2:.google.cloud.gkebackup.v1.VolumeDataRestorePolicyOverrideB\x05\xe2A\x02\x05\x01R volumeDataRestorePolicyOverrides\x1a\xc8\x01\n" +
+	"\x06Filter\x12^\n" +
+	"\x11inclusion_filters\x18\x01 \x03(\v2+.google.cloud.gkebackup.v1.ResourceSelectorB\x04\xe2A\x01\x01R\x10inclusionFilters\x12^\n" +
+	"\x11exclusion_filters\x18\x02 \x03(\v2+.google.cloud.gkebackup.v1.ResourceSelectorB\x04\xe2A\x01\x01R\x10exclusionFilters\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"v\n" +
@@ -1867,41 +1867,41 @@ const file_google_cloud_gkebackup_v1_restore_proto_rawDesc = "" +
 	"\bDELETING\x10\x05\x12\x0e\n" +
 	"\n" +
 	"VALIDATING\x10\x06:}\xeaAz\n" +
-	" gkebackup.googleapis.com/Restore\x12Vprojects/{project}/locations/{location}/restorePlans/{restore_plan}/restores/{restore}\"\xfb\x1f\n" +
-	"\rRestoreConfig\x12\x82\x01\n" +
-	"\x1avolume_data_restore_policy\x18\x01 \x01(\x0e2@.google.cloud.gkebackup.v1.RestoreConfig.VolumeDataRestorePolicyB\x03\xe0A\x01R\x17volumeDataRestorePolicy\x12\x94\x01\n" +
-	" cluster_resource_conflict_policy\x18\x02 \x01(\x0e2F.google.cloud.gkebackup.v1.RestoreConfig.ClusterResourceConflictPolicyB\x03\xe0A\x01R\x1dclusterResourceConflictPolicy\x12\x94\x01\n" +
-	" namespaced_resource_restore_mode\x18\x03 \x01(\x0e2F.google.cloud.gkebackup.v1.RestoreConfig.NamespacedResourceRestoreModeB\x03\xe0A\x01R\x1dnamespacedResourceRestoreMode\x12\x8e\x01\n" +
-	"\x1ecluster_resource_restore_scope\x18\x04 \x01(\v2D.google.cloud.gkebackup.v1.RestoreConfig.ClusterResourceRestoreScopeB\x03\xe0A\x01R\x1bclusterResourceRestoreScope\x12'\n" +
+	" gkebackup.googleapis.com/Restore\x12Vprojects/{project}/locations/{location}/restorePlans/{restore_plan}/restores/{restore}\"\x9c \n" +
+	"\rRestoreConfig\x12\x83\x01\n" +
+	"\x1avolume_data_restore_policy\x18\x01 \x01(\x0e2@.google.cloud.gkebackup.v1.RestoreConfig.VolumeDataRestorePolicyB\x04\xe2A\x01\x01R\x17volumeDataRestorePolicy\x12\x95\x01\n" +
+	" cluster_resource_conflict_policy\x18\x02 \x01(\x0e2F.google.cloud.gkebackup.v1.RestoreConfig.ClusterResourceConflictPolicyB\x04\xe2A\x01\x01R\x1dclusterResourceConflictPolicy\x12\x95\x01\n" +
+	" namespaced_resource_restore_mode\x18\x03 \x01(\x0e2F.google.cloud.gkebackup.v1.RestoreConfig.NamespacedResourceRestoreModeB\x04\xe2A\x01\x01R\x1dnamespacedResourceRestoreMode\x12\x8f\x01\n" +
+	"\x1ecluster_resource_restore_scope\x18\x04 \x01(\v2D.google.cloud.gkebackup.v1.RestoreConfig.ClusterResourceRestoreScopeB\x04\xe2A\x01\x01R\x1bclusterResourceRestoreScope\x12'\n" +
 	"\x0eall_namespaces\x18\x05 \x01(\bH\x00R\rallNamespaces\x12X\n" +
 	"\x13selected_namespaces\x18\x06 \x01(\v2%.google.cloud.gkebackup.v1.NamespacesH\x00R\x12selectedNamespaces\x12a\n" +
 	"\x15selected_applications\x18\a \x01(\v2*.google.cloud.gkebackup.v1.NamespacedNamesH\x00R\x14selectedApplications\x12%\n" +
 	"\rno_namespaces\x18\t \x01(\bH\x00R\fnoNamespaces\x12X\n" +
 	"\x13excluded_namespaces\x18\n" +
-	" \x01(\v2%.google.cloud.gkebackup.v1.NamespacesH\x00R\x12excludedNamespaces\x12m\n" +
-	"\x12substitution_rules\x18\b \x03(\v29.google.cloud.gkebackup.v1.RestoreConfig.SubstitutionRuleB\x03\xe0A\x01R\x11substitutionRules\x12s\n" +
-	"\x14transformation_rules\x18\v \x03(\v2;.google.cloud.gkebackup.v1.RestoreConfig.TransformationRuleB\x03\xe0A\x01R\x13transformationRules\x12\x9a\x01\n" +
-	"#volume_data_restore_policy_bindings\x18\f \x03(\v2G.google.cloud.gkebackup.v1.RestoreConfig.VolumeDataRestorePolicyBindingB\x03\xe0A\x01R\x1fvolumeDataRestorePolicyBindings\x12_\n" +
-	"\rrestore_order\x18\r \x01(\v25.google.cloud.gkebackup.v1.RestoreConfig.RestoreOrderB\x03\xe0A\x01R\frestoreOrder\x1aa\n" +
-	"\tGroupKind\x12*\n" +
-	"\x0eresource_group\x18\x01 \x01(\tB\x03\xe0A\x01R\rresourceGroup\x12(\n" +
-	"\rresource_kind\x18\x02 \x01(\tB\x03\xe0A\x01R\fresourceKind\x1a\xcb\x02\n" +
-	"\x1bClusterResourceRestoreScope\x12i\n" +
-	"\x14selected_group_kinds\x18\x01 \x03(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x03\xe0A\x01R\x12selectedGroupKinds\x12i\n" +
-	"\x14excluded_group_kinds\x18\x02 \x03(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x03\xe0A\x01R\x12excludedGroupKinds\x12+\n" +
-	"\x0fall_group_kinds\x18\x03 \x01(\bB\x03\xe0A\x01R\rallGroupKinds\x12)\n" +
-	"\x0eno_group_kinds\x18\x04 \x01(\bB\x03\xe0A\x01R\fnoGroupKinds\x1a\xb7\x02\n" +
-	"\x10SubstitutionRule\x120\n" +
-	"\x11target_namespaces\x18\x01 \x03(\tB\x03\xe0A\x01R\x10targetNamespaces\x12e\n" +
-	"\x12target_group_kinds\x18\x02 \x03(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x03\xe0A\x01R\x10targetGroupKinds\x12-\n" +
-	"\x10target_json_path\x18\x03 \x01(\tB\x03\xe0A\x02R\x0etargetJsonPath\x129\n" +
-	"\x16original_value_pattern\x18\x04 \x01(\tB\x03\xe0A\x01R\x14originalValuePattern\x12 \n" +
-	"\tnew_value\x18\x05 \x01(\tB\x03\xe0A\x01R\bnewValue\x1a\xa5\x02\n" +
-	"\x18TransformationRuleAction\x12Y\n" +
-	"\x02op\x18\x01 \x01(\x0e2D.google.cloud.gkebackup.v1.RestoreConfig.TransformationRuleAction.OpB\x03\xe0A\x02R\x02op\x12 \n" +
-	"\tfrom_path\x18\x02 \x01(\tB\x03\xe0A\x01R\bfromPath\x12\x17\n" +
-	"\x04path\x18\x03 \x01(\tB\x03\xe0A\x01R\x04path\x12\x19\n" +
-	"\x05value\x18\x04 \x01(\tB\x03\xe0A\x01R\x05value\"X\n" +
+	" \x01(\v2%.google.cloud.gkebackup.v1.NamespacesH\x00R\x12excludedNamespaces\x12n\n" +
+	"\x12substitution_rules\x18\b \x03(\v29.google.cloud.gkebackup.v1.RestoreConfig.SubstitutionRuleB\x04\xe2A\x01\x01R\x11substitutionRules\x12t\n" +
+	"\x14transformation_rules\x18\v \x03(\v2;.google.cloud.gkebackup.v1.RestoreConfig.TransformationRuleB\x04\xe2A\x01\x01R\x13transformationRules\x12\x9b\x01\n" +
+	"#volume_data_restore_policy_bindings\x18\f \x03(\v2G.google.cloud.gkebackup.v1.RestoreConfig.VolumeDataRestorePolicyBindingB\x04\xe2A\x01\x01R\x1fvolumeDataRestorePolicyBindings\x12`\n" +
+	"\rrestore_order\x18\r \x01(\v25.google.cloud.gkebackup.v1.RestoreConfig.RestoreOrderB\x04\xe2A\x01\x01R\frestoreOrder\x1ac\n" +
+	"\tGroupKind\x12+\n" +
+	"\x0eresource_group\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rresourceGroup\x12)\n" +
+	"\rresource_kind\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fresourceKind\x1a\xcf\x02\n" +
+	"\x1bClusterResourceRestoreScope\x12j\n" +
+	"\x14selected_group_kinds\x18\x01 \x03(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x04\xe2A\x01\x01R\x12selectedGroupKinds\x12j\n" +
+	"\x14excluded_group_kinds\x18\x02 \x03(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x04\xe2A\x01\x01R\x12excludedGroupKinds\x12,\n" +
+	"\x0fall_group_kinds\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\rallGroupKinds\x12*\n" +
+	"\x0eno_group_kinds\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fnoGroupKinds\x1a\xbc\x02\n" +
+	"\x10SubstitutionRule\x121\n" +
+	"\x11target_namespaces\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x10targetNamespaces\x12f\n" +
+	"\x12target_group_kinds\x18\x02 \x03(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x04\xe2A\x01\x01R\x10targetGroupKinds\x12.\n" +
+	"\x10target_json_path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0etargetJsonPath\x12:\n" +
+	"\x16original_value_pattern\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x14originalValuePattern\x12!\n" +
+	"\tnew_value\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\bnewValue\x1a\xa9\x02\n" +
+	"\x18TransformationRuleAction\x12Z\n" +
+	"\x02op\x18\x01 \x01(\x0e2D.google.cloud.gkebackup.v1.RestoreConfig.TransformationRuleAction.OpB\x04\xe2A\x01\x02R\x02op\x12!\n" +
+	"\tfrom_path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bfromPath\x12\x18\n" +
+	"\x04path\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12\x1a\n" +
+	"\x05value\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x05value\"X\n" +
 	"\x02Op\x12\x12\n" +
 	"\x0eOP_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -1910,30 +1910,30 @@ const file_google_cloud_gkebackup_v1_restore_proto_rawDesc = "" +
 	"\x04COPY\x10\x03\x12\a\n" +
 	"\x03ADD\x10\x04\x12\b\n" +
 	"\x04TEST\x10\x05\x12\v\n" +
-	"\aREPLACE\x10\x06\x1a\xb1\x01\n" +
-	"\x0eResourceFilter\x12#\n" +
+	"\aREPLACE\x10\x06\x1a\xb4\x01\n" +
+	"\x0eResourceFilter\x12$\n" +
 	"\n" +
-	"namespaces\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
-	"namespaces\x12X\n" +
-	"\vgroup_kinds\x18\x02 \x03(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x03\xe0A\x01R\n" +
-	"groupKinds\x12 \n" +
-	"\tjson_path\x18\x03 \x01(\tB\x03\xe0A\x01R\bjsonPath\x1a\x8f\x02\n" +
-	"\x12TransformationRule\x12k\n" +
-	"\rfield_actions\x18\x01 \x03(\v2A.google.cloud.gkebackup.v1.RestoreConfig.TransformationRuleActionB\x03\xe0A\x02R\ffieldActions\x12e\n" +
-	"\x0fresource_filter\x18\x02 \x01(\v27.google.cloud.gkebackup.v1.RestoreConfig.ResourceFilterB\x03\xe0A\x01R\x0eresourceFilter\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x1a\xe1\x01\n" +
-	"\x1eVolumeDataRestorePolicyBinding\x12]\n" +
-	"\x06policy\x18\x01 \x01(\x0e2@.google.cloud.gkebackup.v1.RestoreConfig.VolumeDataRestorePolicyB\x03\xe0A\x02R\x06policy\x12W\n" +
+	"namespaces\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"namespaces\x12Y\n" +
+	"\vgroup_kinds\x18\x02 \x03(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x04\xe2A\x01\x01R\n" +
+	"groupKinds\x12!\n" +
+	"\tjson_path\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bjsonPath\x1a\x92\x02\n" +
+	"\x12TransformationRule\x12l\n" +
+	"\rfield_actions\x18\x01 \x03(\v2A.google.cloud.gkebackup.v1.RestoreConfig.TransformationRuleActionB\x04\xe2A\x01\x02R\ffieldActions\x12f\n" +
+	"\x0fresource_filter\x18\x02 \x01(\v27.google.cloud.gkebackup.v1.RestoreConfig.ResourceFilterB\x04\xe2A\x01\x01R\x0eresourceFilter\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x1a\xe2\x01\n" +
+	"\x1eVolumeDataRestorePolicyBinding\x12^\n" +
+	"\x06policy\x18\x01 \x01(\x0e2@.google.cloud.gkebackup.v1.RestoreConfig.VolumeDataRestorePolicyB\x04\xe2A\x01\x02R\x06policy\x12W\n" +
 	"\vvolume_type\x18\x02 \x01(\x0e24.google.cloud.gkebackup.v1.VolumeTypeEnum.VolumeTypeH\x00R\n" +
 	"volumeTypeB\a\n" +
-	"\x05scope\x1a\xdf\x02\n" +
-	"\fRestoreOrder\x12\x86\x01\n" +
-	"\x17group_kind_dependencies\x18\x01 \x03(\v2I.google.cloud.gkebackup.v1.RestoreConfig.RestoreOrder.GroupKindDependencyB\x03\xe0A\x01R\x15groupKindDependencies\x1a\xc5\x01\n" +
-	"\x13GroupKindDependency\x12W\n" +
+	"\x05scope\x1a\xe2\x02\n" +
+	"\fRestoreOrder\x12\x87\x01\n" +
+	"\x17group_kind_dependencies\x18\x01 \x03(\v2I.google.cloud.gkebackup.v1.RestoreConfig.RestoreOrder.GroupKindDependencyB\x04\xe2A\x01\x01R\x15groupKindDependencies\x1a\xc7\x01\n" +
+	"\x13GroupKindDependency\x12X\n" +
 	"\n" +
-	"satisfying\x18\x01 \x01(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x03\xe0A\x02R\n" +
-	"satisfying\x12U\n" +
-	"\trequiring\x18\x02 \x01(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x03\xe0A\x02R\trequiring\"\xaf\x01\n" +
+	"satisfying\x18\x01 \x01(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x04\xe2A\x01\x02R\n" +
+	"satisfying\x12V\n" +
+	"\trequiring\x18\x02 \x01(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x04\xe2A\x01\x02R\trequiring\"\xaf\x01\n" +
 	"\x17VolumeDataRestorePolicy\x12*\n" +
 	"&VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED\x10\x00\x12#\n" +
 	"\x1fRESTORE_VOLUME_DATA_FROM_BACKUP\x10\x01\x12#\n" +
@@ -1950,18 +1950,18 @@ const file_google_cloud_gkebackup_v1_restore_proto_rawDesc = "" +
 	"\x16MERGE_SKIP_ON_CONFLICT\x10\x03\x12$\n" +
 	" MERGE_REPLACE_VOLUME_ON_CONFLICT\x10\x04\x12\x1d\n" +
 	"\x19MERGE_REPLACE_ON_CONFLICT\x10\x05B#\n" +
-	"!namespaced_resource_restore_scope\"\xb7\x02\n" +
-	"\x10ResourceSelector\x12V\n" +
+	"!namespaced_resource_restore_scope\"\xbb\x02\n" +
+	"\x10ResourceSelector\x12W\n" +
 	"\n" +
-	"group_kind\x18\x01 \x01(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x03\xe0A\x01R\tgroupKind\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x01R\x04name\x12!\n" +
-	"\tnamespace\x18\x03 \x01(\tB\x03\xe0A\x01R\tnamespace\x12T\n" +
-	"\x06labels\x18\x04 \x03(\v27.google.cloud.gkebackup.v1.ResourceSelector.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"group_kind\x18\x01 \x01(\v22.google.cloud.gkebackup.v1.RestoreConfig.GroupKindB\x04\xe2A\x01\x01R\tgroupKind\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12\"\n" +
+	"\tnamespace\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tnamespace\x12U\n" +
+	"\x06labels\x18\x04 \x03(\v27.google.cloud.gkebackup.v1.ResourceSelector.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xdc\x01\n" +
-	"\x1fVolumeDataRestorePolicyOverride\x12]\n" +
-	"\x06policy\x18\x01 \x01(\x0e2@.google.cloud.gkebackup.v1.RestoreConfig.VolumeDataRestorePolicyB\x03\xe0A\x02R\x06policy\x12Q\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xdd\x01\n" +
+	"\x1fVolumeDataRestorePolicyOverride\x12^\n" +
+	"\x06policy\x18\x01 \x01(\x0e2@.google.cloud.gkebackup.v1.RestoreConfig.VolumeDataRestorePolicyB\x04\xe2A\x01\x02R\x06policy\x12Q\n" +
 	"\rselected_pvcs\x18\x02 \x01(\v2*.google.cloud.gkebackup.v1.NamespacedNamesH\x00R\fselectedPvcsB\a\n" +
 	"\x05scopeB\xc3\x01\n" +
 	"\x1dcom.google.cloud.gkebackup.v1B\fRestoreProtoP\x01Z;cloud.google.com/go/gkebackup/apiv1/gkebackuppb;gkebackuppb\xaa\x02\x19Google.Cloud.GkeBackup.V1\xca\x02\x19Google\\Cloud\\GkeBackup\\V1\xea\x02\x1cGoogle::Cloud::GkeBackup::V1b\x06proto3"

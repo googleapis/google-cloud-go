@@ -649,3 +649,170 @@ func TestLoadSavePLS(t *testing.T) {
 		}
 	}
 }
+
+func TestFlattenDoesNotLeakToSibling(t *testing.T) {
+	type Reason struct {
+		Code string `datastore:"code"`
+	}
+	type TimeRange struct {
+		Reasons []*Reason `datastore:"reasons"`
+	}
+	type Retail struct {
+		ID string `datastore:"id"`
+	}
+	type Entity struct {
+		Retail     Retail       `datastore:"retail,flatten"`
+		TimeRanges []*TimeRange `datastore:"timeRanges"`
+	}
+
+	props, err := SaveStruct(&Entity{
+		Retail: Retail{ID: "example"},
+		TimeRanges: []*TimeRange{
+			{Reasons: []*Reason{{Code: "UNAVAILABLE"}}},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var sawID, sawRanges bool
+	for _, p := range props {
+		if p.Name == "retail.id" && p.Value == "example" {
+			sawID = true
+		}
+		if p.Name == "timeRanges" {
+			sawRanges = true
+		}
+	}
+	if !sawID || !sawRanges {
+		t.Fatalf("saved properties = %#v, want retail.id and timeRanges", props)
+	}
+}
+
+func TestValidateChildTypeSharedStruct(t *testing.T) {
+	type Item struct {
+		Tags []string `datastore:"tags"`
+	}
+	type Group struct {
+		Items []Item `datastore:"items"`
+	}
+	type FlattenedFirst struct {
+		Flattened   Group `datastore:"flattened,flatten"`
+		Unflattened Group `datastore:"unflattened"`
+	}
+	type UnflattenedFirst struct {
+		Unflattened Group `datastore:"unflattened"`
+		Flattened   Group `datastore:"flattened,flatten"`
+	}
+	type UnflattenedFirstPopulated struct {
+		Unflattened Group `datastore:"unflattened"`
+		Flattened   Group `datastore:"flattened,flatten"`
+	}
+	type SingleThenSliceFlatten struct {
+		Single   Item   `datastore:"single,flatten"`
+		Multiple []Item `datastore:"multiple,flatten"`
+	}
+	type RecursiveSliceFlatten struct {
+		Children []RecursiveSliceFlatten `datastore:"children,flatten"`
+	}
+
+	testCases := []struct {
+		desc    string
+		src     any
+		wantErr string
+	}{
+		{
+			desc:    "flattened field before unflattened field sharing type",
+			src:     &FlattenedFirst{},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Tags"`,
+		},
+		{
+			desc:    "unflattened field before flattened field sharing type",
+			src:     &UnflattenedFirst{},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Tags"`,
+		},
+		{
+			desc: "populated unflattened field before flattened field sharing type",
+			src: &UnflattenedFirstPopulated{
+				Flattened: Group{Items: []Item{{Tags: []string{"a", "b"}}}},
+			},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Tags"`,
+		},
+		{
+			desc:    "single flattened struct before slice of flattened struct sharing type",
+			src:     &SingleThenSliceFlatten{},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Tags"`,
+		},
+		{
+			desc:    "recursive slice of flattened struct",
+			src:     &RecursiveSliceFlatten{},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Children"`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			_, err := SaveStruct(tc.src)
+			if err == nil {
+				t.Fatalf("SaveStruct(%T) = nil, want error containing %q", tc.src, tc.wantErr)
+			}
+			if !strings.Contains(err.Error(), tc.wantErr) {
+				t.Errorf("SaveStruct(%T) error = %q, want error containing %q", tc.src, err.Error(), tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestValidateChildTypeUnflattenedSliceWithFlattenedSubfield(t *testing.T) {
+	type Item struct {
+		Tags []string `datastore:"tags"`
+	}
+	type ChildWithFlat struct {
+		Meta Item `datastore:"meta,flatten"`
+	}
+	type ParentWithSharedChild struct {
+		Primary  ChildWithFlat   `datastore:"primary"`
+		Children []ChildWithFlat `datastore:"children"`
+	}
+	type RecursiveNode struct {
+		Children []RecursiveNode `datastore:"children"`
+		Meta     Item            `datastore:"meta,flatten"`
+	}
+
+	testCases := []struct {
+		desc string
+		src  any
+		dst  any
+	}{
+		{
+			desc: "shared child across single and unflattened slice fields",
+			src: &ParentWithSharedChild{
+				Primary:  ChildWithFlat{Meta: Item{Tags: []string{"a", "b"}}},
+				Children: []ChildWithFlat{{Meta: Item{Tags: []string{"c", "d"}}}},
+			},
+			dst: &ParentWithSharedChild{},
+		},
+		{
+			desc: "recursive node with unflattened slice and flattened subfield",
+			src: &RecursiveNode{
+				Meta:     Item{Tags: []string{"root"}},
+				Children: []RecursiveNode{{Meta: Item{Tags: []string{"child"}}}},
+			},
+			dst: &RecursiveNode{},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			props, err := SaveStruct(tc.src)
+			if err != nil {
+				t.Fatalf("SaveStruct(%T) = %v, want nil", tc.src, err)
+			}
+			if err := LoadStruct(tc.dst, props); err != nil {
+				t.Fatalf("LoadStruct(%T) = %v, want nil", tc.dst, err)
+			}
+			if !testutil.Equal(tc.dst, tc.src) {
+				t.Errorf("LoadStruct(%T) = %+v, want %+v", tc.dst, tc.dst, tc.src)
+			}
+		})
+	}
+}

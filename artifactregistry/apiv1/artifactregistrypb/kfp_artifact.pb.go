@@ -100,9 +100,9 @@ var File_google_devtools_artifactregistry_v1_kfp_artifact_proto protoreflect.Fil
 
 const file_google_devtools_artifactregistry_v1_kfp_artifact_proto_rawDesc = "" +
 	"\n" +
-	"6google/devtools/artifactregistry/v1/kfp_artifact.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd3\x01\n" +
-	"\vKfpArtifact\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x18\n" +
+	"6google/devtools/artifactregistry/v1/kfp_artifact.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd4\x01\n" +
+	"\vKfpArtifact\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion:\x90\x01\xeaA\x8c\x01\n" +
 	"+artifactregistry.googleapis.com/KfpArtifact\x12]projects/{project}/locations/{location}/repositories/{repository}/kfpArtifacts/{kfp_artifact}B\xfb\x01\n" +
 	"'com.google.devtools.artifactregistry.v1B\x10KfpArtifactProtoP\x01ZPcloud.google.com/go/artifactregistry/apiv1/artifactregistrypb;artifactregistrypb\xaa\x02 Google.Cloud.ArtifactRegistry.V1\xca\x02 Google\\Cloud\\ArtifactRegistry\\V1\xea\x02#Google::Cloud::ArtifactRegistry::V1b\x06proto3"

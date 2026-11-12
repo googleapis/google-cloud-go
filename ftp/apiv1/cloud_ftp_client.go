@@ -454,6 +454,67 @@ func NewCloudFtpRESTClient(ctx context.Context, opts ...option.ClientOption) (*C
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "ftp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ftp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "ftp.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServers = append(callOpts.ListServers, gax.WithClientTracing(tracing))
+		callOpts.GetServer = append(callOpts.GetServer, gax.WithClientTracing(tracing))
+		callOpts.CreateServer = append(callOpts.CreateServer, gax.WithClientTracing(tracing))
+		callOpts.UpdateServer = append(callOpts.UpdateServer, gax.WithClientTracing(tracing))
+		callOpts.DeleteServer = append(callOpts.DeleteServer, gax.WithClientTracing(tracing))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientTracing(tracing))
+		callOpts.GetUser = append(callOpts.GetUser, gax.WithClientTracing(tracing))
+		callOpts.CreateUser = append(callOpts.CreateUser, gax.WithClientTracing(tracing))
+		callOpts.UpdateUser = append(callOpts.UpdateUser, gax.WithClientTracing(tracing))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientTracing(tracing))
+		callOpts.StartServer = append(callOpts.StartServer, gax.WithClientTracing(tracing))
+		callOpts.StopServer = append(callOpts.StopServer, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "ftp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ftp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "ftp.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServers = append(callOpts.ListServers, gax.WithClientLogging(logging))
+		callOpts.GetServer = append(callOpts.GetServer, gax.WithClientLogging(logging))
+		callOpts.CreateServer = append(callOpts.CreateServer, gax.WithClientLogging(logging))
+		callOpts.UpdateServer = append(callOpts.UpdateServer, gax.WithClientLogging(logging))
+		callOpts.DeleteServer = append(callOpts.DeleteServer, gax.WithClientLogging(logging))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientLogging(logging))
+		callOpts.GetUser = append(callOpts.GetUser, gax.WithClientLogging(logging))
+		callOpts.CreateUser = append(callOpts.CreateUser, gax.WithClientLogging(logging))
+		callOpts.UpdateUser = append(callOpts.UpdateUser, gax.WithClientLogging(logging))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientLogging(logging))
+		callOpts.StartServer = append(callOpts.StartServer, gax.WithClientLogging(logging))
+		callOpts.StopServer = append(callOpts.StopServer, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -523,6 +584,11 @@ func (c *cloudFtpRESTClient) ListServers(ctx context.Context, req *ftppb.ListSer
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/servers", req.GetParent())
@@ -599,6 +665,11 @@ func (c *cloudFtpRESTClient) GetServer(ctx context.Context, req *ftppb.GetServer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -615,9 +686,6 @@ func (c *cloudFtpRESTClient) GetServer(ctx context.Context, req *ftppb.GetServer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ftp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ftp.v1.CloudFtp/GetServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/servers/*}")
@@ -666,6 +734,11 @@ func (c *cloudFtpRESTClient) CreateServer(ctx context.Context, req *ftppb.Create
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/servers", req.GetParent())
 
 	params := url.Values{}
@@ -683,9 +756,6 @@ func (c *cloudFtpRESTClient) CreateServer(ctx context.Context, req *ftppb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ftp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ftp.v1.CloudFtp/CreateServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/servers")
@@ -739,6 +809,11 @@ func (c *cloudFtpRESTClient) UpdateServer(ctx context.Context, req *ftppb.Update
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServer().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetServer().GetName())
@@ -812,6 +887,11 @@ func (c *cloudFtpRESTClient) DeleteServer(ctx context.Context, req *ftppb.Delete
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -825,9 +905,6 @@ func (c *cloudFtpRESTClient) DeleteServer(ctx context.Context, req *ftppb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ftp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ftp.v1.CloudFtp/DeleteServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/servers/*}")
@@ -887,6 +964,11 @@ func (c *cloudFtpRESTClient) ListUsers(ctx context.Context, req *ftppb.ListUsers
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/users", req.GetParent())
@@ -963,6 +1045,11 @@ func (c *cloudFtpRESTClient) GetUser(ctx context.Context, req *ftppb.GetUserRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -979,9 +1066,6 @@ func (c *cloudFtpRESTClient) GetUser(ctx context.Context, req *ftppb.GetUserRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ftp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ftp.v1.CloudFtp/GetUser")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/servers/*/users/*}")
@@ -1030,6 +1114,11 @@ func (c *cloudFtpRESTClient) CreateUser(ctx context.Context, req *ftppb.CreateUs
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/users", req.GetParent())
 
 	params := url.Values{}
@@ -1047,9 +1136,6 @@ func (c *cloudFtpRESTClient) CreateUser(ctx context.Context, req *ftppb.CreateUs
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ftp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ftp.v1.CloudFtp/CreateUser")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/servers/*}/users")
@@ -1103,6 +1189,11 @@ func (c *cloudFtpRESTClient) UpdateUser(ctx context.Context, req *ftppb.UpdateUs
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUser().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUser().GetName())
@@ -1173,6 +1264,11 @@ func (c *cloudFtpRESTClient) DeleteUser(ctx context.Context, req *ftppb.DeleteUs
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1189,9 +1285,6 @@ func (c *cloudFtpRESTClient) DeleteUser(ctx context.Context, req *ftppb.DeleteUs
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ftp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ftp.v1.CloudFtp/DeleteUser")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/servers/*/users/*}")
@@ -1246,6 +1339,11 @@ func (c *cloudFtpRESTClient) StartServer(ctx context.Context, req *ftppb.StartSe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
 
 	params := url.Values{}
@@ -1259,9 +1357,6 @@ func (c *cloudFtpRESTClient) StartServer(ctx context.Context, req *ftppb.StartSe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ftp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ftp.v1.CloudFtp/StartServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/servers/*}:start")
@@ -1316,6 +1411,11 @@ func (c *cloudFtpRESTClient) StopServer(ctx context.Context, req *ftppb.StopServ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -1329,9 +1429,6 @@ func (c *cloudFtpRESTClient) StopServer(ctx context.Context, req *ftppb.StopServ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ftp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ftp.v1.CloudFtp/StopServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/servers/*}:stop")
@@ -1378,6 +1475,11 @@ func (c *cloudFtpRESTClient) StopServer(ctx context.Context, req *ftppb.StopServ
 func (c *cloudFtpRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1462,6 +1564,11 @@ func (c *cloudFtpRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1536,6 +1643,11 @@ func (c *cloudFtpRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1575,6 +1687,11 @@ func (c *cloudFtpRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1612,6 +1729,11 @@ func (c *cloudFtpRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 func (c *cloudFtpRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1679,6 +1801,11 @@ func (c *cloudFtpRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

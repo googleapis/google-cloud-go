@@ -211,7 +211,7 @@ var File_google_bigtable_v2_feature_flags_proto protoreflect.FileDescriptor
 
 const file_google_bigtable_v2_feature_flags_proto_rawDesc = "" +
 	"\n" +
-	"&google/bigtable/v2/feature_flags.proto\x12\x12google.bigtable.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x88\x05\n" +
+	"&google/bigtable/v2/feature_flags.proto\x12\x12google.bigtable.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x89\x05\n" +
 	"\fFeatureFlags\x12#\n" +
 	"\rreverse_scans\x18\x01 \x01(\bR\freverseScans\x123\n" +
 	"\x16mutate_rows_rate_limit\x18\x03 \x01(\bR\x13mutateRowsRateLimit\x125\n" +
@@ -226,8 +226,8 @@ const file_google_bigtable_v2_feature_flags_proto_rawDesc = "" +
 	" \x01(\bR\x15directAccessRequested\x12\x1b\n" +
 	"\tpeer_info\x18\v \x01(\bR\bpeerInfo\x12/\n" +
 	"\x13sessions_compatible\x18\f \x01(\bR\x12sessionsCompatible\x12+\n" +
-	"\x11sessions_required\x18\r \x01(\bR\x10sessionsRequired\x128\n" +
-	"\x15microsecond_timestamp\x18\x0e \x01(\bB\x03\xe0A\x01R\x14microsecondTimestampB\xbb\x01\n" +
+	"\x11sessions_required\x18\r \x01(\bR\x10sessionsRequired\x129\n" +
+	"\x15microsecond_timestamp\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\x14microsecondTimestampB\xbb\x01\n" +
 	"\x16com.google.bigtable.v2B\x11FeatureFlagsProtoP\x01Z8cloud.google.com/go/bigtable/apiv2/bigtablepb;bigtablepb\xaa\x02\x18Google.Cloud.Bigtable.V2\xca\x02\x18Google\\Cloud\\Bigtable\\V2\xea\x02\x1bGoogle::Cloud::Bigtable::V2b\x06proto3"
 
 var (

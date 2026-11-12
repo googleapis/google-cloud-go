@@ -566,12 +566,12 @@ var File_google_devtools_artifactregistry_v1_rule_proto protoreflect.FileDescrip
 
 const file_google_devtools_artifactregistry_v1_rule_proto_rawDesc = "" +
 	"\n" +
-	".google/devtools/artifactregistry/v1/rule.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x16google/type/expr.proto\"\xf4\x03\n" +
+	".google/devtools/artifactregistry/v1/rule.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x16google/type/expr.proto\"\xf5\x03\n" +
 	"\x04Rule\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12H\n" +
 	"\x06action\x18\x02 \x01(\x0e20.google.devtools.artifactregistry.v1.Rule.ActionR\x06action\x12Q\n" +
-	"\toperation\x18\x03 \x01(\x0e23.google.devtools.artifactregistry.v1.Rule.OperationR\toperation\x124\n" +
-	"\tcondition\x18\x04 \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\tcondition\x12\x1d\n" +
+	"\toperation\x18\x03 \x01(\x0e23.google.devtools.artifactregistry.v1.Rule.OperationR\toperation\x125\n" +
+	"\tcondition\x18\x04 \x01(\v2\x11.google.type.ExprB\x04\xe2A\x01\x01R\tcondition\x12\x1d\n" +
 	"\n" +
 	"package_id\x18\x05 \x01(\tR\tpackageId\"5\n" +
 	"\x06Action\x12\x16\n" +
@@ -581,28 +581,28 @@ const file_google_devtools_artifactregistry_v1_rule_proto_rawDesc = "" +
 	"\tOperation\x12\x19\n" +
 	"\x15OPERATION_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDOWNLOAD\x10\x01:y\xeaAv\n" +
-	"$artifactregistry.googleapis.com/Rule\x12Nprojects/{project}/locations/{location}/repositories/{repository}/rules/{rule}\"\x94\x01\n" +
-	"\x10ListRulesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$artifactregistry.googleapis.com/RuleR\x06parent\x12\x1b\n" +
+	"$artifactregistry.googleapis.com/Rule\x12Nprojects/{project}/locations/{location}/repositories/{repository}/rules/{rule}\"\x95\x01\n" +
+	"\x10ListRulesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$artifactregistry.googleapis.com/RuleR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"|\n" +
 	"\x11ListRulesResponse\x12?\n" +
 	"\x05rules\x18\x01 \x03(\v2).google.devtools.artifactregistry.v1.RuleR\x05rules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x0eGetRuleRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$artifactregistry.googleapis.com/RuleR\x04name\"\xb1\x01\n" +
-	"\x11CreateRuleRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$artifactregistry.googleapis.com/RuleR\x06parent\x12\x17\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x0eGetRuleRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$artifactregistry.googleapis.com/RuleR\x04name\"\xb2\x01\n" +
+	"\x11CreateRuleRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$artifactregistry.googleapis.com/RuleR\x06parent\x12\x17\n" +
 	"\arule_id\x18\x02 \x01(\tR\x06ruleId\x12=\n" +
 	"\x04rule\x18\x03 \x01(\v2).google.devtools.artifactregistry.v1.RuleR\x04rule\"\x8f\x01\n" +
 	"\x11UpdateRuleRequest\x12=\n" +
 	"\x04rule\x18\x01 \x01(\v2).google.devtools.artifactregistry.v1.RuleR\x04rule\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"U\n" +
-	"\x11DeleteRuleRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"updateMask\"V\n" +
+	"\x11DeleteRuleRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$artifactregistry.googleapis.com/RuleR\x04nameB\xf4\x01\n" +
 	"'com.google.devtools.artifactregistry.v1B\tRuleProtoP\x01ZPcloud.google.com/go/artifactregistry/apiv1/artifactregistrypb;artifactregistrypb\xaa\x02 Google.Cloud.ArtifactRegistry.V1\xca\x02 Google\\Cloud\\ArtifactRegistry\\V1\xea\x02#Google::Cloud::ArtifactRegistry::V1b\x06proto3"
 

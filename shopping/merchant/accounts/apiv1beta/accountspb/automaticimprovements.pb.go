@@ -617,22 +617,22 @@ var File_google_shopping_merchant_accounts_v1beta_automaticimprovements_proto pr
 
 const file_google_shopping_merchant_accounts_v1beta_automaticimprovements_proto_rawDesc = "" +
 	"\n" +
-	"Dgoogle/shopping/merchant/accounts/v1beta/automaticimprovements.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xe9\x04\n" +
-	"\x15AutomaticImprovements\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12f\n" +
+	"Dgoogle/shopping/merchant/accounts/v1beta/automaticimprovements.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xea\x04\n" +
+	"\x15AutomaticImprovements\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12f\n" +
 	"\fitem_updates\x18\x02 \x01(\v2>.google.shopping.merchant.accounts.v1beta.AutomaticItemUpdatesH\x00R\vitemUpdates\x88\x01\x01\x12x\n" +
 	"\x12image_improvements\x18\x03 \x01(\v2D.google.shopping.merchant.accounts.v1beta.AutomaticImageImprovementsH\x01R\x11imageImprovements\x88\x01\x01\x12\x81\x01\n" +
 	"\x15shipping_improvements\x18\x04 \x01(\v2G.google.shopping.merchant.accounts.v1beta.AutomaticShippingImprovementsH\x02R\x14shippingImprovements\x88\x01\x01:\x8e\x01\xeaA\x8a\x01\n" +
 	"0merchantapi.googleapis.com/AutomaticImprovements\x12(accounts/{account}/automaticImprovements*\x15automaticImprovements2\x15automaticImprovementsB\x0f\n" +
 	"\r_item_updatesB\x15\n" +
 	"\x13_image_improvementsB\x18\n" +
-	"\x16_shipping_improvements\"\xb2\a\n" +
-	"\x14AutomaticItemUpdates\x12\xa6\x01\n" +
-	"\x1daccount_item_updates_settings\x18\x01 \x01(\v2^.google.shopping.merchant.accounts.v1beta.AutomaticItemUpdates.ItemUpdatesAccountLevelSettingsB\x03\xe0A\x01R\x1aaccountItemUpdatesSettings\x12F\n" +
-	"\x1deffective_allow_price_updates\x18\x02 \x01(\bB\x03\xe0A\x03R\x1aeffectiveAllowPriceUpdates\x12T\n" +
-	"$effective_allow_availability_updates\x18\x03 \x01(\bB\x03\xe0A\x03R!effectiveAllowAvailabilityUpdates\x12a\n" +
-	"+effective_allow_strict_availability_updates\x18\x04 \x01(\bB\x03\xe0A\x03R'effectiveAllowStrictAvailabilityUpdates\x12N\n" +
-	"!effective_allow_condition_updates\x18\x05 \x01(\bB\x03\xe0A\x03R\x1eeffectiveAllowConditionUpdates\x1a\x9f\x03\n" +
+	"\x16_shipping_improvements\"\xb7\a\n" +
+	"\x14AutomaticItemUpdates\x12\xa7\x01\n" +
+	"\x1daccount_item_updates_settings\x18\x01 \x01(\v2^.google.shopping.merchant.accounts.v1beta.AutomaticItemUpdates.ItemUpdatesAccountLevelSettingsB\x04\xe2A\x01\x01R\x1aaccountItemUpdatesSettings\x12G\n" +
+	"\x1deffective_allow_price_updates\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x1aeffectiveAllowPriceUpdates\x12U\n" +
+	"$effective_allow_availability_updates\x18\x03 \x01(\bB\x04\xe2A\x01\x03R!effectiveAllowAvailabilityUpdates\x12b\n" +
+	"+effective_allow_strict_availability_updates\x18\x04 \x01(\bB\x04\xe2A\x01\x03R'effectiveAllowStrictAvailabilityUpdates\x12O\n" +
+	"!effective_allow_condition_updates\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x1eeffectiveAllowConditionUpdates\x1a\x9f\x03\n" +
 	"\x1fItemUpdatesAccountLevelSettings\x123\n" +
 	"\x13allow_price_updates\x18\x01 \x01(\bH\x00R\x11allowPriceUpdates\x88\x01\x01\x12A\n" +
 	"\x1aallow_availability_updates\x18\x02 \x01(\bH\x01R\x18allowAvailabilityUpdates\x88\x01\x01\x12N\n" +
@@ -641,23 +641,23 @@ const file_google_shopping_merchant_accounts_v1beta_automaticimprovements_proto_
 	"\x14_allow_price_updatesB\x1d\n" +
 	"\x1b_allow_availability_updatesB$\n" +
 	"\"_allow_strict_availability_updatesB\x1a\n" +
-	"\x18_allow_condition_updates\"\x92\x04\n" +
-	"\x1aAutomaticImageImprovements\x12\xc3\x01\n" +
-	"#account_image_improvements_settings\x18\x01 \x01(\v2j.google.shopping.merchant.accounts.v1beta.AutomaticImageImprovements.ImageImprovementsAccountLevelSettingsB\x03\xe0A\x01H\x00R accountImageImprovementsSettings\x88\x01\x01\x12c\n" +
-	",effective_allow_automatic_image_improvements\x18\x02 \x01(\bB\x03\xe0A\x03R(effectiveAllowAutomaticImageImprovements\x1a\xa0\x01\n" +
+	"\x18_allow_condition_updates\"\x94\x04\n" +
+	"\x1aAutomaticImageImprovements\x12\xc4\x01\n" +
+	"#account_image_improvements_settings\x18\x01 \x01(\v2j.google.shopping.merchant.accounts.v1beta.AutomaticImageImprovements.ImageImprovementsAccountLevelSettingsB\x04\xe2A\x01\x01H\x00R accountImageImprovementsSettings\x88\x01\x01\x12d\n" +
+	",effective_allow_automatic_image_improvements\x18\x02 \x01(\bB\x04\xe2A\x01\x03R(effectiveAllowAutomaticImageImprovements\x1a\xa0\x01\n" +
 	"%ImageImprovementsAccountLevelSettings\x12P\n" +
 	"\"allow_automatic_image_improvements\x18\x01 \x01(\bH\x00R\x1fallowAutomaticImageImprovements\x88\x01\x01B%\n" +
 	"#_allow_automatic_image_improvementsB&\n" +
 	"$_account_image_improvements_settings\"\x84\x01\n" +
 	"\x1dAutomaticShippingImprovements\x12C\n" +
 	"\x1ballow_shipping_improvements\x18\x01 \x01(\bH\x00R\x19allowShippingImprovements\x88\x01\x01B\x1e\n" +
-	"\x1c_allow_shipping_improvements\"o\n" +
-	"\x1fGetAutomaticImprovementsRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0merchantapi.googleapis.com/AutomaticImprovementsR\x04name\"\xe3\x01\n" +
-	"\"UpdateAutomaticImprovementsRequest\x12{\n" +
-	"\x16automatic_improvements\x18\x01 \x01(\v2?.google.shopping.merchant.accounts.v1beta.AutomaticImprovementsB\x03\xe0A\x02R\x15automaticImprovements\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x1c_allow_shipping_improvements\"p\n" +
+	"\x1fGetAutomaticImprovementsRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0merchantapi.googleapis.com/AutomaticImprovementsR\x04name\"\xe5\x01\n" +
+	"\"UpdateAutomaticImprovementsRequest\x12|\n" +
+	"\x16automatic_improvements\x18\x01 \x01(\v2?.google.shopping.merchant.accounts.v1beta.AutomaticImprovementsB\x04\xe2A\x01\x02R\x15automaticImprovements\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask2\x9f\x05\n" +
 	"\x1cAutomaticImprovementsService\x12\xef\x01\n" +
 	"\x18GetAutomaticImprovements\x12I.google.shopping.merchant.accounts.v1beta.GetAutomaticImprovementsRequest\x1a?.google.shopping.merchant.accounts.v1beta.AutomaticImprovements\"G\xdaA\x04name\x82\xd3\xe4\x93\x02:\x128/accounts/v1beta/{name=accounts/*/automaticImprovements}\x12\xc3\x02\n" +

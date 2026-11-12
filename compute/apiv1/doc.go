@@ -19,6 +19,14 @@
 //
 // Creates and runs virtual machines on Google Cloud Platform.
 //
+// # API Versions
+//
+// The versioned iterations of API service interfaces in this API client package.
+// Each client includes the API version identifier mentioned below in their API calls.
+// Navigate to the product documentation to learn more about the API versions used in this package.
+//
+// All clients in this package use version 2026-09-01 of their service interface.
+//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

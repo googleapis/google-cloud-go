@@ -276,6 +276,37 @@ func NewAccountRelationshipsClient(ctx context.Context, opts ...option.ClientOpt
 		client.CallOptions.UpdateAccountRelationship = append(client.CallOptions.UpdateAccountRelationship, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListAccountRelationships = append(client.CallOptions.ListAccountRelationships, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAccountRelationship = append(client.CallOptions.GetAccountRelationship, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAccountRelationship = append(client.CallOptions.UpdateAccountRelationship, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAccountRelationships = append(client.CallOptions.ListAccountRelationships, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAccountRelationship = append(client.CallOptions.GetAccountRelationship, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAccountRelationship = append(client.CallOptions.UpdateAccountRelationship, gax.WithClientLogging(logging))
+		client.CallOptions.ListAccountRelationships = append(client.CallOptions.ListAccountRelationships, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -369,6 +400,37 @@ func NewAccountRelationshipsRESTClient(ctx context.Context, opts ...option.Clien
 		callOpts.UpdateAccountRelationship = append(callOpts.UpdateAccountRelationship, gax.WithClientMetrics(metrics))
 		callOpts.ListAccountRelationships = append(callOpts.ListAccountRelationships, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAccountRelationship = append(callOpts.GetAccountRelationship, gax.WithClientTracing(tracing))
+		callOpts.UpdateAccountRelationship = append(callOpts.UpdateAccountRelationship, gax.WithClientTracing(tracing))
+		callOpts.ListAccountRelationships = append(callOpts.ListAccountRelationships, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAccountRelationship = append(callOpts.GetAccountRelationship, gax.WithClientLogging(logging))
+		callOpts.UpdateAccountRelationship = append(callOpts.UpdateAccountRelationship, gax.WithClientLogging(logging))
+		callOpts.ListAccountRelationships = append(callOpts.ListAccountRelationships, gax.WithClientLogging(logging))
+	}
 
 	return &AccountRelationshipsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -415,9 +477,6 @@ func (c *accountRelationshipsGRPCClient) GetAccountRelationship(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.AccountRelationshipsService/GetAccountRelationship")
 	}
@@ -460,9 +519,6 @@ func (c *accountRelationshipsGRPCClient) ListAccountRelationships(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.AccountRelationshipsService/ListAccountRelationships")
 	}
@@ -513,6 +569,11 @@ func (c *accountRelationshipsRESTClient) GetAccountRelationship(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -526,9 +587,6 @@ func (c *accountRelationshipsRESTClient) GetAccountRelationship(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.AccountRelationshipsService/GetAccountRelationship")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/relationships/*}")
@@ -576,6 +634,11 @@ func (c *accountRelationshipsRESTClient) UpdateAccountRelationship(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccountRelationship().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetAccountRelationship().GetName())
@@ -650,6 +713,11 @@ func (c *accountRelationshipsRESTClient) ListAccountRelationships(ctx context.Co
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/relationships", req.GetParent())

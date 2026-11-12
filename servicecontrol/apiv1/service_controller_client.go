@@ -263,6 +263,35 @@ func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.Check = append(client.CallOptions.Check, gax.WithClientMetrics(metrics))
 		client.CallOptions.Report = append(client.CallOptions.Report, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Check = append(client.CallOptions.Check, gax.WithClientTracing(tracing))
+		client.CallOptions.Report = append(client.CallOptions.Report, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Check = append(client.CallOptions.Check, gax.WithClientLogging(logging))
+		client.CallOptions.Report = append(client.CallOptions.Report, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -358,6 +387,35 @@ func NewServiceControllerRESTClient(ctx context.Context, opts ...option.ClientOp
 
 		callOpts.Check = append(callOpts.Check, gax.WithClientMetrics(metrics))
 		callOpts.Report = append(callOpts.Report, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		callOpts.Check = append(callOpts.Check, gax.WithClientTracing(tracing))
+		callOpts.Report = append(callOpts.Report, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		callOpts.Check = append(callOpts.Check, gax.WithClientLogging(logging))
+		callOpts.Report = append(callOpts.Report, gax.WithClientLogging(logging))
 	}
 
 	return &ServiceControllerClient{internalClient: c, CallOptions: callOpts}, nil
@@ -470,6 +528,11 @@ func (c *serviceControllerRESTClient) Check(ctx context.Context, req *servicecon
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v:check", req.GetServiceName())
 
 	params := url.Values{}
@@ -542,6 +605,11 @@ func (c *serviceControllerRESTClient) Report(ctx context.Context, req *serviceco
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v:report", req.GetServiceName())

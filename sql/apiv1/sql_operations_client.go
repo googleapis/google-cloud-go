@@ -223,6 +223,37 @@ func NewSqlOperationsClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientMetrics(metrics))
 		client.CallOptions.Cancel = append(client.CallOptions.Cancel, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Get = append(client.CallOptions.Get, gax.WithClientTracing(tracing))
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientTracing(tracing))
+		client.CallOptions.Cancel = append(client.CallOptions.Cancel, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Get = append(client.CallOptions.Get, gax.WithClientLogging(logging))
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientLogging(logging))
+		client.CallOptions.Cancel = append(client.CallOptions.Cancel, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -315,6 +346,37 @@ func NewSqlOperationsRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientLogging(logging))
 	}
 
 	return &SqlOperationsClient{internalClient: c, CallOptions: callOpts}, nil
@@ -450,6 +512,12 @@ func (c *sqlOperationsRESTClient) Get(ctx context.Context, req *sqlpb.SqlOperati
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetOperation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/operations/%v", req.GetProject(), req.GetOperation())
 
 	params := url.Values{}
@@ -521,6 +589,11 @@ func (c *sqlOperationsRESTClient) List(ctx context.Context, req *sqlpb.SqlOperat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/projects/%v/operations", req.GetProject())
 
 		params := url.Values{}
@@ -590,6 +663,12 @@ func (c *sqlOperationsRESTClient) List(ctx context.Context, req *sqlpb.SqlOperat
 func (c *sqlOperationsRESTClient) Cancel(ctx context.Context, req *sqlpb.SqlOperationsCancelRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetOperation(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/operations/%v/cancel", req.GetProject(), req.GetOperation())

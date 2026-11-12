@@ -841,20 +841,20 @@ const file_google_firestore_v1_document_proto_rawDesc = "" +
 	"\x06fields\x18\x01 \x03(\v2).google.firestore.v1.MapValue.FieldsEntryR\x06fields\x1aU\n" +
 	"\vFieldsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x120\n" +
-	"\x05value\x18\x02 \x01(\v2\x1a.google.firestore.v1.ValueR\x05value:\x028\x01\"\xfb\x01\n" +
-	"\bFunction\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x123\n" +
-	"\x04args\x18\x02 \x03(\v2\x1a.google.firestore.v1.ValueB\x03\xe0A\x01R\x04args\x12I\n" +
-	"\aoptions\x18\x03 \x03(\v2*.google.firestore.v1.Function.OptionsEntryB\x03\xe0A\x01R\aoptions\x1aV\n" +
+	"\x05value\x18\x02 \x01(\v2\x1a.google.firestore.v1.ValueR\x05value:\x028\x01\"\xfe\x01\n" +
+	"\bFunction\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x124\n" +
+	"\x04args\x18\x02 \x03(\v2\x1a.google.firestore.v1.ValueB\x04\xe2A\x01\x01R\x04args\x12J\n" +
+	"\aoptions\x18\x03 \x03(\v2*.google.firestore.v1.Function.OptionsEntryB\x04\xe2A\x01\x01R\aoptions\x1aV\n" +
 	"\fOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x120\n" +
-	"\x05value\x18\x02 \x01(\v2\x1a.google.firestore.v1.ValueR\x05value:\x028\x01\"\xcd\x02\n" +
-	"\bPipeline\x12@\n" +
-	"\x06stages\x18\x01 \x03(\v2#.google.firestore.v1.Pipeline.StageB\x03\xe0A\x02R\x06stages\x1a\xfe\x01\n" +
-	"\x05Stage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x123\n" +
-	"\x04args\x18\x02 \x03(\v2\x1a.google.firestore.v1.ValueB\x03\xe0A\x01R\x04args\x12O\n" +
-	"\aoptions\x18\x03 \x03(\v20.google.firestore.v1.Pipeline.Stage.OptionsEntryB\x03\xe0A\x01R\aoptions\x1aV\n" +
+	"\x05value\x18\x02 \x01(\v2\x1a.google.firestore.v1.ValueR\x05value:\x028\x01\"\xd1\x02\n" +
+	"\bPipeline\x12A\n" +
+	"\x06stages\x18\x01 \x03(\v2#.google.firestore.v1.Pipeline.StageB\x04\xe2A\x01\x02R\x06stages\x1a\x81\x02\n" +
+	"\x05Stage\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x124\n" +
+	"\x04args\x18\x02 \x03(\v2\x1a.google.firestore.v1.ValueB\x04\xe2A\x01\x01R\x04args\x12P\n" +
+	"\aoptions\x18\x03 \x03(\v20.google.firestore.v1.Pipeline.Stage.OptionsEntryB\x04\xe2A\x01\x01R\aoptions\x1aV\n" +
 	"\fOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x120\n" +
 	"\x05value\x18\x02 \x01(\v2\x1a.google.firestore.v1.ValueR\x05value:\x028\x01B\xc5\x01\n" +

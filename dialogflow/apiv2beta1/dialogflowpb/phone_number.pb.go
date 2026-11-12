@@ -579,20 +579,20 @@ var File_google_cloud_dialogflow_v2beta1_phone_number_proto protoreflect.FileDes
 
 const file_google_cloud_dialogflow_v2beta1_phone_number_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/dialogflow/v2beta1/phone_number.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\x06\n" +
-	"\vPhoneNumber\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12&\n" +
-	"\fphone_number\x18\x02 \x01(\tB\x03\xe0A\x03R\vphoneNumber\x126\n" +
-	"\x14conversation_profile\x18\x03 \x01(\tB\x03\xe0A\x01R\x13conversationProfile\x12i\n" +
-	"\x0flifecycle_state\x18\x04 \x01(\x0e2;.google.cloud.dialogflow.v2beta1.PhoneNumber.LifecycleStateB\x03\xe0A\x03R\x0elifecycleState\x12r\n" +
-	"\x12allowed_sip_trunks\x18\a \x01(\v2=.google.cloud.dialogflow.v2beta1.PhoneNumber.AllowedSipTrunksB\x03\xe0A\x01H\x00R\x10allowedSipTrunks\x12>\n" +
+	"2google/cloud/dialogflow/v2beta1/phone_number.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbe\x06\n" +
+	"\vPhoneNumber\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12'\n" +
+	"\fphone_number\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vphoneNumber\x127\n" +
+	"\x14conversation_profile\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x13conversationProfile\x12j\n" +
+	"\x0flifecycle_state\x18\x04 \x01(\x0e2;.google.cloud.dialogflow.v2beta1.PhoneNumber.LifecycleStateB\x04\xe2A\x01\x03R\x0elifecycleState\x12s\n" +
+	"\x12allowed_sip_trunks\x18\a \x01(\v2=.google.cloud.dialogflow.v2beta1.PhoneNumber.AllowedSipTrunksB\x04\xe2A\x01\x01H\x00R\x10allowedSipTrunks\x12?\n" +
 	"\n" +
-	"purge_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tpurgeTime\x1a\x80\x01\n" +
+	"purge_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tpurgeTime\x1a\x81\x01\n" +
 	"\x10AllowedSipTrunks\x12F\n" +
 	"\n" +
 	"sip_trunks\x18\x01 \x03(\tB'\xfaA$\n" +
-	"\"dialogflow.googleapis.com/SipTrunkR\tsipTrunks\x12$\n" +
-	"\vcarrier_ids\x18\x02 \x03(\tB\x03\xe0A\x01R\n" +
+	"\"dialogflow.googleapis.com/SipTrunkR\tsipTrunks\x12%\n" +
+	"\vcarrier_ids\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\n" +
 	"carrierIds\"S\n" +
 	"\x0eLifecycleState\x12\x1f\n" +
 	"\x1bLIFECYCLE_STATE_UNSPECIFIED\x10\x00\x12\n" +
@@ -600,25 +600,25 @@ const file_google_cloud_dialogflow_v2beta1_phone_number_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x01\x12\x14\n" +
 	"\x10DELETE_REQUESTED\x10\x02:\xa0\x01\xeaA\x9c\x01\n" +
 	"%dialogflow.googleapis.com/PhoneNumber\x12.projects/{project}/phoneNumbers/{phone_number}\x12Cprojects/{project}/locations/{location}/phoneNumbers/{phone_number}B\x15\n" +
-	"\x13inbound_restriction\"]\n" +
-	"\x18DeletePhoneNumberRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dialogflow.googleapis.com/PhoneNumberR\x04name\"_\n" +
-	"\x1aUndeletePhoneNumberRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dialogflow.googleapis.com/PhoneNumberR\x04name\"\xce\x01\n" +
-	"\x17ListPhoneNumbersRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%dialogflow.googleapis.com/PhoneNumberR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x13inbound_restriction\"^\n" +
+	"\x18DeletePhoneNumberRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dialogflow.googleapis.com/PhoneNumberR\x04name\"`\n" +
+	"\x1aUndeletePhoneNumberRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dialogflow.googleapis.com/PhoneNumberR\x04name\"\xd2\x01\n" +
+	"\x17ListPhoneNumbersRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%dialogflow.googleapis.com/PhoneNumberR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12&\n" +
-	"\fshow_deleted\x18\x04 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\x95\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12'\n" +
+	"\fshow_deleted\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\"\x95\x01\n" +
 	"\x18ListPhoneNumbersResponse\x12Q\n" +
 	"\rphone_numbers\x18\x01 \x03(\v2,.google.cloud.dialogflow.v2beta1.PhoneNumberR\fphoneNumbers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2\x01\n" +
-	"\x18UpdatePhoneNumberRequest\x12T\n" +
-	"\fphone_number\x18\x01 \x01(\v2,.google.cloud.dialogflow.v2beta1.PhoneNumberB\x03\xe0A\x02R\vphoneNumber\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb4\x01\n" +
+	"\x18UpdatePhoneNumberRequest\x12U\n" +
+	"\fphone_number\x18\x01 \x01(\v2,.google.cloud.dialogflow.v2beta1.PhoneNumberB\x04\xe2A\x01\x02R\vphoneNumber\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask2\xc6\t\n" +
 	"\fPhoneNumbers\x12\xfc\x01\n" +
 	"\x10ListPhoneNumbers\x128.google.cloud.dialogflow.v2beta1.ListPhoneNumbersRequest\x1a9.google.cloud.dialogflow.v2beta1.ListPhoneNumbersResponse\"s\xdaA\x06parent\x82\xd3\xe4\x93\x02dZ7\x125/v2beta1/{parent=projects/*/locations/*}/phoneNumbers\x12)/v2beta1/{parent=projects/*}/phoneNumbers\x12\xbb\x02\n" +

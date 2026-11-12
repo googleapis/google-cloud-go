@@ -431,6 +431,43 @@ func NewUsageClient(ctx context.Context, opts ...option.ClientOption) (*UsageCli
 		client.CallOptions.ExportForecasts = append(client.CallOptions.ExportForecasts, gax.WithClientMetrics(metrics))
 		client.CallOptions.ExportReservationsUsage = append(client.CallOptions.ExportReservationsUsage, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.QueryUsageHistories = append(client.CallOptions.QueryUsageHistories, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryForecasts = append(client.CallOptions.QueryForecasts, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryReservations = append(client.CallOptions.QueryReservations, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportUsageHistories = append(client.CallOptions.ExportUsageHistories, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportForecasts = append(client.CallOptions.ExportForecasts, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportReservationsUsage = append(client.CallOptions.ExportReservationsUsage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.QueryUsageHistories = append(client.CallOptions.QueryUsageHistories, gax.WithClientLogging(logging))
+		client.CallOptions.QueryForecasts = append(client.CallOptions.QueryForecasts, gax.WithClientLogging(logging))
+		client.CallOptions.QueryReservations = append(client.CallOptions.QueryReservations, gax.WithClientLogging(logging))
+		client.CallOptions.ExportUsageHistories = append(client.CallOptions.ExportUsageHistories, gax.WithClientLogging(logging))
+		client.CallOptions.ExportForecasts = append(client.CallOptions.ExportForecasts, gax.WithClientLogging(logging))
+		client.CallOptions.ExportReservationsUsage = append(client.CallOptions.ExportReservationsUsage, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -543,6 +580,43 @@ func NewUsageRESTClient(ctx context.Context, opts ...option.ClientOption) (*Usag
 		callOpts.ExportForecasts = append(callOpts.ExportForecasts, gax.WithClientMetrics(metrics))
 		callOpts.ExportReservationsUsage = append(callOpts.ExportReservationsUsage, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		callOpts.QueryUsageHistories = append(callOpts.QueryUsageHistories, gax.WithClientTracing(tracing))
+		callOpts.QueryForecasts = append(callOpts.QueryForecasts, gax.WithClientTracing(tracing))
+		callOpts.QueryReservations = append(callOpts.QueryReservations, gax.WithClientTracing(tracing))
+		callOpts.ExportUsageHistories = append(callOpts.ExportUsageHistories, gax.WithClientTracing(tracing))
+		callOpts.ExportForecasts = append(callOpts.ExportForecasts, gax.WithClientTracing(tracing))
+		callOpts.ExportReservationsUsage = append(callOpts.ExportReservationsUsage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		callOpts.QueryUsageHistories = append(callOpts.QueryUsageHistories, gax.WithClientLogging(logging))
+		callOpts.QueryForecasts = append(callOpts.QueryForecasts, gax.WithClientLogging(logging))
+		callOpts.QueryReservations = append(callOpts.QueryReservations, gax.WithClientLogging(logging))
+		callOpts.ExportUsageHistories = append(callOpts.ExportUsageHistories, gax.WithClientLogging(logging))
+		callOpts.ExportForecasts = append(callOpts.ExportForecasts, gax.WithClientLogging(logging))
+		callOpts.ExportReservationsUsage = append(callOpts.ExportReservationsUsage, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -599,9 +673,6 @@ func (c *usageGRPCClient) QueryUsageHistories(ctx context.Context, req *capacity
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryUsageHistories")
 	}
@@ -623,9 +694,6 @@ func (c *usageGRPCClient) QueryForecasts(ctx context.Context, req *capacityplann
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryForecasts")
 	}
@@ -647,9 +715,6 @@ func (c *usageGRPCClient) QueryReservations(ctx context.Context, req *capacitypl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryReservations")
 	}
@@ -671,9 +736,6 @@ func (c *usageGRPCClient) ExportUsageHistories(ctx context.Context, req *capacit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportUsageHistories")
 	}
@@ -701,9 +763,6 @@ func (c *usageGRPCClient) ExportForecasts(ctx context.Context, req *capacityplan
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportForecasts")
 	}
@@ -731,9 +790,6 @@ func (c *usageGRPCClient) ExportReservationsUsage(ctx context.Context, req *capa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportReservationsUsage")
 	}
@@ -769,6 +825,11 @@ func (c *usageRESTClient) QueryUsageHistories(ctx context.Context, req *capacity
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/usageHistories:query", req.GetParent())
 
 	params := url.Values{}
@@ -782,9 +843,6 @@ func (c *usageRESTClient) QueryUsageHistories(ctx context.Context, req *capacity
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryUsageHistories")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/usageHistories:query")
@@ -833,6 +891,11 @@ func (c *usageRESTClient) QueryForecasts(ctx context.Context, req *capacityplann
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/forecasts:query", req.GetParent())
 
 	params := url.Values{}
@@ -846,9 +909,6 @@ func (c *usageRESTClient) QueryForecasts(ctx context.Context, req *capacityplann
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryForecasts")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/forecasts:query")
@@ -889,6 +949,11 @@ func (c *usageRESTClient) QueryForecasts(ctx context.Context, req *capacityplann
 func (c *usageRESTClient) QueryReservations(ctx context.Context, req *capacityplannerpb.QueryReservationsRequest, opts ...gax.CallOption) (*capacityplannerpb.QueryReservationsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/reservations:query", req.GetParent())
@@ -982,9 +1047,6 @@ func (c *usageRESTClient) QueryReservations(ctx context.Context, req *capacitypl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryReservations")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/reservations:query")
@@ -1033,6 +1095,11 @@ func (c *usageRESTClient) ExportUsageHistories(ctx context.Context, req *capacit
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/usageHistories:export", req.GetParent())
 
 	params := url.Values{}
@@ -1046,9 +1113,6 @@ func (c *usageRESTClient) ExportUsageHistories(ctx context.Context, req *capacit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportUsageHistories")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/usageHistories:export")
@@ -1104,6 +1168,11 @@ func (c *usageRESTClient) ExportForecasts(ctx context.Context, req *capacityplan
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/forecasts:export", req.GetParent())
 
 	params := url.Values{}
@@ -1117,9 +1186,6 @@ func (c *usageRESTClient) ExportForecasts(ctx context.Context, req *capacityplan
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportForecasts")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/forecasts:export")
@@ -1175,6 +1241,11 @@ func (c *usageRESTClient) ExportReservationsUsage(ctx context.Context, req *capa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/reservationsUsage:export", req.GetParent())
 
 	params := url.Values{}
@@ -1188,9 +1259,6 @@ func (c *usageRESTClient) ExportReservationsUsage(ctx context.Context, req *capa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//capacityplanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportReservationsUsage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/reservationsUsage:export")

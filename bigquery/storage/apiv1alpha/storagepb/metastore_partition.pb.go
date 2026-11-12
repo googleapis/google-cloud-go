@@ -845,62 +845,62 @@ var File_google_cloud_bigquery_storage_v1alpha_metastore_partition_proto protore
 
 const file_google_cloud_bigquery_storage_v1alpha_metastore_partition_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/bigquery/storage/v1alpha/metastore_partition.proto\x12%google.cloud.bigquery.storage.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/bigquery/storage/v1alpha/partition.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xd1\x01\n" +
-	"\x1fCreateMetastorePartitionRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x06parent\x12o\n" +
-	"\x13metastore_partition\x18\x02 \x01(\v29.google.cloud.bigquery.storage.v1alpha.MetastorePartitionB\x03\xe0A\x02R\x12metastorePartition\"\xae\x02\n" +
-	"%BatchCreateMetastorePartitionsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x06parent\x12g\n" +
-	"\brequests\x18\x02 \x03(\v2F.google.cloud.bigquery.storage.v1alpha.CreateMetastorePartitionRequestB\x03\xe0A\x02R\brequests\x12=\n" +
-	"\x18skip_existing_partitions\x18\x03 \x01(\bB\x03\xe0A\x01R\x16skipExistingPartitions\x12\x1e\n" +
-	"\btrace_id\x18\x04 \x01(\tB\x03\xe0A\x01R\atraceId\"\x83\x01\n" +
+	"?google/cloud/bigquery/storage/v1alpha/metastore_partition.proto\x12%google.cloud.bigquery.storage.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/bigquery/storage/v1alpha/partition.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xd3\x01\n" +
+	"\x1fCreateMetastorePartitionRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x06parent\x12p\n" +
+	"\x13metastore_partition\x18\x02 \x01(\v29.google.cloud.bigquery.storage.v1alpha.MetastorePartitionB\x04\xe2A\x01\x02R\x12metastorePartition\"\xb2\x02\n" +
+	"%BatchCreateMetastorePartitionsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x06parent\x12h\n" +
+	"\brequests\x18\x02 \x03(\v2F.google.cloud.bigquery.storage.v1alpha.CreateMetastorePartitionRequestB\x04\xe2A\x01\x02R\brequests\x12>\n" +
+	"\x18skip_existing_partitions\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x16skipExistingPartitions\x12\x1f\n" +
+	"\btrace_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\atraceId\"\x83\x01\n" +
 	"&BatchCreateMetastorePartitionsResponse\x12Y\n" +
 	"\n" +
 	"partitions\x18\x01 \x03(\v29.google.cloud.bigquery.storage.v1alpha.MetastorePartitionR\n" +
-	"partitions\"\xf7\x01\n" +
-	"%BatchDeleteMetastorePartitionsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x06parent\x12o\n" +
-	"\x10partition_values\x18\x02 \x03(\v2?.google.cloud.bigquery.storage.v1alpha.MetastorePartitionValuesB\x03\xe0A\x02R\x0fpartitionValues\x12\x1e\n" +
-	"\btrace_id\x18\x04 \x01(\tB\x03\xe0A\x01R\atraceId\"\xd4\x01\n" +
-	"\x1fUpdateMetastorePartitionRequest\x12o\n" +
-	"\x13metastore_partition\x18\x01 \x01(\v29.google.cloud.bigquery.storage.v1alpha.MetastorePartitionB\x03\xe0A\x02R\x12metastorePartition\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xef\x01\n" +
-	"%BatchUpdateMetastorePartitionsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x06parent\x12g\n" +
-	"\brequests\x18\x02 \x03(\v2F.google.cloud.bigquery.storage.v1alpha.UpdateMetastorePartitionRequestB\x03\xe0A\x02R\brequests\x12\x1e\n" +
-	"\btrace_id\x18\x04 \x01(\tB\x03\xe0A\x01R\atraceId\"\x83\x01\n" +
+	"partitions\"\xfa\x01\n" +
+	"%BatchDeleteMetastorePartitionsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x06parent\x12p\n" +
+	"\x10partition_values\x18\x02 \x03(\v2?.google.cloud.bigquery.storage.v1alpha.MetastorePartitionValuesB\x04\xe2A\x01\x02R\x0fpartitionValues\x12\x1f\n" +
+	"\btrace_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\atraceId\"\xd6\x01\n" +
+	"\x1fUpdateMetastorePartitionRequest\x12p\n" +
+	"\x13metastore_partition\x18\x01 \x01(\v29.google.cloud.bigquery.storage.v1alpha.MetastorePartitionB\x04\xe2A\x01\x02R\x12metastorePartition\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xf2\x01\n" +
+	"%BatchUpdateMetastorePartitionsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x06parent\x12h\n" +
+	"\brequests\x18\x02 \x03(\v2F.google.cloud.bigquery.storage.v1alpha.UpdateMetastorePartitionRequestB\x04\xe2A\x01\x02R\brequests\x12\x1f\n" +
+	"\btrace_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\atraceId\"\x83\x01\n" +
 	"&BatchUpdateMetastorePartitionsResponse\x12Y\n" +
 	"\n" +
 	"partitions\x18\x01 \x03(\v29.google.cloud.bigquery.storage.v1alpha.MetastorePartitionR\n" +
-	"partitions\"\x9c\x01\n" +
-	"\x1eListMetastorePartitionsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\btrace_id\x18\x03 \x01(\tB\x03\xe0A\x01R\atraceId\"\xdd\x01\n" +
+	"partitions\"\x9f\x01\n" +
+	"\x1eListMetastorePartitionsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\btrace_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\atraceId\"\xdd\x01\n" +
 	"\x1fListMetastorePartitionsResponse\x12_\n" +
 	"\n" +
 	"partitions\x18\x01 \x01(\v2=.google.cloud.bigquery.storage.v1alpha.MetastorePartitionListH\x00R\n" +
 	"partitions\x12M\n" +
 	"\astreams\x18\x02 \x01(\v21.google.cloud.bigquery.storage.v1alpha.StreamListH\x00R\astreamsB\n" +
 	"\n" +
-	"\bresponse\"\x93\x02\n" +
-	" StreamMetastorePartitionsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x06parent\x12q\n" +
-	"\x14metastore_partitions\x18\x02 \x03(\v29.google.cloud.bigquery.storage.v1alpha.MetastorePartitionB\x03\xe0A\x01R\x13metastorePartitions\x12=\n" +
-	"\x18skip_existing_partitions\x18\x03 \x01(\bB\x03\xe0A\x01R\x16skipExistingPartitions\"\xb1\x01\n" +
+	"\bresponse\"\x96\x02\n" +
+	" StreamMetastorePartitionsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x06parent\x12r\n" +
+	"\x14metastore_partitions\x18\x02 \x03(\v29.google.cloud.bigquery.storage.v1alpha.MetastorePartitionB\x04\xe2A\x01\x01R\x13metastorePartitions\x12>\n" +
+	"\x18skip_existing_partitions\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x16skipExistingPartitions\"\xb1\x01\n" +
 	"!StreamMetastorePartitionsResponse\x12E\n" +
 	"\x1ftotal_partitions_streamed_count\x18\x02 \x01(\x03R\x1ctotalPartitionsStreamedCount\x12E\n" +
-	"\x1ftotal_partitions_inserted_count\x18\x03 \x01(\x03R\x1ctotalPartitionsInsertedCount\"h\n" +
+	"\x1ftotal_partitions_inserted_count\x18\x03 \x01(\x03R\x1ctotalPartitionsInsertedCount\"i\n" +
 	"\x16BatchSizeTooLargeError\x12$\n" +
-	"\x0emax_batch_size\x18\x01 \x01(\x03R\fmaxBatchSize\x12(\n" +
-	"\rerror_message\x18\x02 \x01(\tB\x03\xe0A\x01R\ferrorMessage2\xde\n" +
+	"\x0emax_batch_size\x18\x01 \x01(\x03R\fmaxBatchSize\x12)\n" +
+	"\rerror_message\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\ferrorMessage2\xde\n" +
 	"\n" +
 	"\x19MetastorePartitionService\x12\x91\x02\n" +
 	"\x1eBatchCreateMetastorePartitions\x12L.google.cloud.bigquery.storage.v1alpha.BatchCreateMetastorePartitionsRequest\x1aM.google.cloud.bigquery.storage.v1alpha.BatchCreateMetastorePartitionsResponse\"R\x82\xd3\xe4\x93\x02L:\x01*\"G/v1alpha/{parent=projects/*/datasets/*/tables/*}/partitions:batchCreate\x12\xda\x01\n" +

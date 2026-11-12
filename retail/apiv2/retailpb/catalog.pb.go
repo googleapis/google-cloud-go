@@ -1329,12 +1329,12 @@ const file_google_cloud_retail_v2_catalog_proto_rawDesc = "" +
 	"$google/cloud/retail/v2/catalog.proto\x12\x16google.cloud.retail.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\x1a*google/cloud/retail/v2/import_config.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x92\x01\n" +
 	"\x12ProductLevelConfig\x124\n" +
 	"\x16ingestion_product_type\x18\x01 \x01(\tR\x14ingestionProductType\x12F\n" +
-	" merchant_center_product_id_field\x18\x02 \x01(\tR\x1cmerchantCenterProductIdField\"\xa8\x12\n" +
-	"\x10CatalogAttribute\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12\x1a\n" +
-	"\x06in_use\x18\t \x01(\bB\x03\xe0A\x03R\x05inUse\x12O\n" +
+	" merchant_center_product_id_field\x18\x02 \x01(\tR\x1cmerchantCenterProductIdField\"\xab\x12\n" +
+	"\x10CatalogAttribute\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\x1b\n" +
+	"\x06in_use\x18\t \x01(\bB\x04\xe2A\x01\x03R\x05inUse\x12P\n" +
 	"\x04type\x18\n" +
-	" \x01(\x0e26.google.cloud.retail.v2.CatalogAttribute.AttributeTypeB\x03\xe0A\x03R\x04type\x12c\n" +
+	" \x01(\x0e26.google.cloud.retail.v2.CatalogAttribute.AttributeTypeB\x04\xe2A\x01\x03R\x04type\x12c\n" +
 	"\x10indexable_option\x18\x05 \x01(\x0e28.google.cloud.retail.v2.CatalogAttribute.IndexableOptionR\x0findexableOption\x12y\n" +
 	"\x18dynamic_facetable_option\x18\x06 \x01(\x0e2?.google.cloud.retail.v2.CatalogAttribute.DynamicFacetableOptionR\x16dynamicFacetableOption\x12f\n" +
 	"\x11searchable_option\x18\a \x01(\x0e29.google.cloud.retail.v2.CatalogAttribute.SearchableOptionR\x10searchableOption\x12v\n" +
@@ -1384,32 +1384,32 @@ const file_google_cloud_retail_v2_catalog_proto_rawDesc = "" +
 	"\x1eRETRIEVABLE_OPTION_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13RETRIEVABLE_ENABLED\x10\x01\x12\x18\n" +
 	"\x14RETRIEVABLE_DISABLED\x10\x02\"\xf1\x03\n" +
-	"\x10AttributesConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04name\x12n\n" +
-	"\x12catalog_attributes\x18\x02 \x03(\v2?.google.cloud.retail.v2.AttributesConfig.CatalogAttributesEntryR\x11catalogAttributes\x12g\n" +
-	"\x16attribute_config_level\x18\x03 \x01(\x0e2,.google.cloud.retail.v2.AttributeConfigLevelB\x03\xe0A\x03R\x14attributeConfigLevel\x1an\n" +
+	"\x10AttributesConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04name\x12n\n" +
+	"\x12catalog_attributes\x18\x02 \x03(\v2?.google.cloud.retail.v2.AttributesConfig.CatalogAttributesEntryR\x11catalogAttributes\x12h\n" +
+	"\x16attribute_config_level\x18\x03 \x01(\x0e2,.google.cloud.retail.v2.AttributeConfigLevelB\x04\xe2A\x01\x03R\x14attributeConfigLevel\x1an\n" +
 	"\x16CatalogAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12>\n" +
 	"\x05value\x18\x02 \x01(\v2(.google.cloud.retail.v2.CatalogAttributeR\x05value:\x028\x01:x\xeaAu\n" +
-	"&retail.googleapis.com/AttributesConfig\x12Kprojects/{project}/locations/{location}/catalogs/{catalog}/attributesConfig\"\xfb\x06\n" +
-	"\x10CompletionConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04name\x12%\n" +
+	"&retail.googleapis.com/AttributesConfig\x12Kprojects/{project}/locations/{location}/catalogs/{catalog}/attributesConfig\"\x80\a\n" +
+	"\x10CompletionConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04name\x12%\n" +
 	"\x0ematching_order\x18\x02 \x01(\tR\rmatchingOrder\x12'\n" +
 	"\x0fmax_suggestions\x18\x03 \x01(\x05R\x0emaxSuggestions\x12*\n" +
 	"\x11min_prefix_length\x18\x04 \x01(\x05R\x0fminPrefixLength\x12#\n" +
-	"\rauto_learning\x18\v \x01(\bR\fautoLearning\x12p\n" +
-	"\x18suggestions_input_config\x18\x05 \x01(\v21.google.cloud.retail.v2.CompletionDataInputConfigB\x03\xe0A\x03R\x16suggestionsInputConfig\x12N\n" +
-	"!last_suggestions_import_operation\x18\x06 \x01(\tB\x03\xe0A\x03R\x1elastSuggestionsImportOperation\x12j\n" +
-	"\x15denylist_input_config\x18\a \x01(\v21.google.cloud.retail.v2.CompletionDataInputConfigB\x03\xe0A\x03R\x13denylistInputConfig\x12H\n" +
-	"\x1elast_denylist_import_operation\x18\b \x01(\tB\x03\xe0A\x03R\x1blastDenylistImportOperation\x12l\n" +
-	"\x16allowlist_input_config\x18\t \x01(\v21.google.cloud.retail.v2.CompletionDataInputConfigB\x03\xe0A\x03R\x14allowlistInputConfig\x12J\n" +
+	"\rauto_learning\x18\v \x01(\bR\fautoLearning\x12q\n" +
+	"\x18suggestions_input_config\x18\x05 \x01(\v21.google.cloud.retail.v2.CompletionDataInputConfigB\x04\xe2A\x01\x03R\x16suggestionsInputConfig\x12O\n" +
+	"!last_suggestions_import_operation\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x1elastSuggestionsImportOperation\x12k\n" +
+	"\x15denylist_input_config\x18\a \x01(\v21.google.cloud.retail.v2.CompletionDataInputConfigB\x04\xe2A\x01\x03R\x13denylistInputConfig\x12I\n" +
+	"\x1elast_denylist_import_operation\x18\b \x01(\tB\x04\xe2A\x01\x03R\x1blastDenylistImportOperation\x12m\n" +
+	"\x16allowlist_input_config\x18\t \x01(\v21.google.cloud.retail.v2.CompletionDataInputConfigB\x04\xe2A\x01\x03R\x14allowlistInputConfig\x12K\n" +
 	"\x1flast_allowlist_import_operation\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x1clastAllowlistImportOperation:x\xeaAu\n" +
-	"&retail.googleapis.com/CompletionConfig\x12Kprojects/{project}/locations/{location}/catalogs/{catalog}/completionConfig\"\x93\x02\n" +
-	"\aCatalog\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04name\x12)\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\vdisplayName\x12a\n" +
-	"\x14product_level_config\x18\x04 \x01(\v2*.google.cloud.retail.v2.ProductLevelConfigB\x03\xe0A\x02R\x12productLevelConfig:^\xeaA[\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x1clastAllowlistImportOperation:x\xeaAu\n" +
+	"&retail.googleapis.com/CompletionConfig\x12Kprojects/{project}/locations/{location}/catalogs/{catalog}/completionConfig\"\x92\x02\n" +
+	"\aCatalog\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04name\x12(\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\vdisplayName\x12b\n" +
+	"\x14product_level_config\x18\x04 \x01(\v2*.google.cloud.retail.v2.ProductLevelConfigB\x04\xe2A\x01\x02R\x12productLevelConfig:^\xeaA[\n" +
 	"\x1dretail.googleapis.com/Catalog\x12:projects/{project}/locations/{location}/catalogs/{catalog}B\xb7\x01\n" +
 	"\x1acom.google.cloud.retail.v2B\fCatalogProtoP\x01Z2cloud.google.com/go/retail/apiv2/retailpb;retailpb\xa2\x02\x06RETAIL\xaa\x02\x16Google.Cloud.Retail.V2\xca\x02\x16Google\\Cloud\\Retail\\V2\xea\x02\x19Google::Cloud::Retail::V2b\x06proto3"
 

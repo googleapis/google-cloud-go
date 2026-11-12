@@ -759,21 +759,21 @@ var File_google_cloud_ids_v1_ids_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ids_v1_ids_proto_rawDesc = "" +
 	"\n" +
-	"\x1dgoogle/cloud/ids/v1/ids.proto\x12\x13google.cloud.ids.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x84\a\n" +
-	"\bEndpoint\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1dgoogle/cloud/ids/v1/ids.proto\x12\x13google.cloud.ids.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\a\n" +
+	"\bEndpoint\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12A\n" +
-	"\x06labels\x18\x04 \x03(\v2).google.cloud.ids.v1.Endpoint.LabelsEntryR\x06labels\x12\x1d\n" +
-	"\anetwork\x18\x05 \x01(\tB\x03\xe0A\x02R\anetwork\x12=\n" +
-	"\x18endpoint_forwarding_rule\x18\x06 \x01(\tB\x03\xe0A\x03R\x16endpointForwardingRule\x12$\n" +
-	"\vendpoint_ip\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"\x06labels\x18\x04 \x03(\v2).google.cloud.ids.v1.Endpoint.LabelsEntryR\x06labels\x12\x1e\n" +
+	"\anetwork\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12>\n" +
+	"\x18endpoint_forwarding_rule\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x16endpointForwardingRule\x12%\n" +
+	"\vendpoint_ip\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"endpointIp\x12 \n" +
-	"\vdescription\x18\b \x01(\tR\vdescription\x12G\n" +
-	"\bseverity\x18\t \x01(\x0e2&.google.cloud.ids.v1.Endpoint.SeverityB\x03\xe0A\x02R\bseverity\x12>\n" +
-	"\x05state\x18\f \x01(\x0e2#.google.cloud.ids.v1.Endpoint.StateB\x03\xe0A\x03R\x05state\x12!\n" +
+	"\vdescription\x18\b \x01(\tR\vdescription\x12H\n" +
+	"\bseverity\x18\t \x01(\x0e2&.google.cloud.ids.v1.Endpoint.SeverityB\x04\xe2A\x01\x02R\bseverity\x12?\n" +
+	"\x05state\x18\f \x01(\x0e2#.google.cloud.ids.v1.Endpoint.StateB\x04\xe2A\x01\x03R\x05state\x12!\n" +
 	"\ftraffic_logs\x18\r \x01(\bR\vtrafficLogs\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -791,42 +791,42 @@ const file_google_cloud_ids_v1_ids_proto_rawDesc = "" +
 	"\bCREATING\x10\x01\x12\t\n" +
 	"\x05READY\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:^\xeaA[\n" +
-	"\x1bids.googleapis.com/Endpoint\x12<projects/{project}/locations/{location}/endpoints/{endpoint}\"\xd6\x01\n" +
-	"\x14ListEndpointsRequest\x12;\n" +
-	"\x06parent\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\x12\x1bids.googleapis.com/EndpointR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1bids.googleapis.com/Endpoint\x12<projects/{project}/locations/{location}/endpoints/{endpoint}\"\xdb\x01\n" +
+	"\x14ListEndpointsRequest\x12<\n" +
+	"\x06parent\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\x12\x1bids.googleapis.com/EndpointR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9e\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x9e\x01\n" +
 	"\x15ListEndpointsResponse\x12;\n" +
 	"\tendpoints\x18\x01 \x03(\v2\x1d.google.cloud.ids.v1.EndpointR\tendpoints\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"M\n" +
-	"\x12GetEndpointRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bids.googleapis.com/EndpointR\x04name\"\xd9\x01\n" +
-	"\x15CreateEndpointRequest\x12;\n" +
-	"\x06parent\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\x12\x1bids.googleapis.com/EndpointR\x06parent\x12$\n" +
-	"\vendpoint_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"endpointId\x12>\n" +
-	"\bendpoint\x18\x03 \x01(\v2\x1d.google.cloud.ids.v1.EndpointB\x03\xe0A\x02R\bendpoint\x12\x1d\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"N\n" +
+	"\x12GetEndpointRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bids.googleapis.com/EndpointR\x04name\"\xdc\x01\n" +
+	"\x15CreateEndpointRequest\x12<\n" +
+	"\x06parent\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\x12\x1bids.googleapis.com/EndpointR\x06parent\x12%\n" +
+	"\vendpoint_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"endpointId\x12?\n" +
+	"\bendpoint\x18\x03 \x01(\v2\x1d.google.cloud.ids.v1.EndpointB\x04\xe2A\x01\x02R\bendpoint\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"o\n" +
-	"\x15DeleteEndpointRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"p\n" +
+	"\x15DeleteEndpointRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
 	"\x1bids.googleapis.com/EndpointR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\xb2\x06\n" +
 	"\x03IDS\x12\xa6\x01\n" +
 	"\rListEndpoints\x12).google.cloud.ids.v1.ListEndpointsRequest\x1a*.google.cloud.ids.v1.ListEndpointsResponse\">\xdaA\x06parent\x82\xd3\xe4\x93\x02/\x12-/v1/{parent=projects/*/locations/*}/endpoints\x12\x93\x01\n" +

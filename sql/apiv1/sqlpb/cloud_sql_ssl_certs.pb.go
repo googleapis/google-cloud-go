@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 const (
@@ -456,11 +457,276 @@ func (x *SslCertsListResponse) GetItems() []*SslCert {
 	return nil
 }
 
+// Request message for SqlSslCertsService.UpdateCustomerManagedCertificate.
+type UpdateCustomerManagedCertificateRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Cloud SQL instance ID. This does not include the project ID.
+	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Required. Project ID of the project that contains the instance.
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Required. The customer managed certificate bundle SSL configuration to
+	// update.
+	CustomerManagedCertificateConfig *CustomerManagedCertificateConfig `protobuf:"bytes,3,opt,name=customer_managed_certificate_config,json=customerManagedCertificateConfig,proto3" json:"customer_managed_certificate_config,omitempty"`
+	// Optional. The list of fields to be updated.
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,4,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Optional. If set to true, and the customer managed certificate bundle
+	// configuration is not found, a new customer managed certificate bundle
+	// configuration will be created. In this situation, `update_mask` is ignored.
+	AllowMissing bool `protobuf:"varint,5,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
+	// Required. Name tag of the customer managed certificate bundle to update. It
+	// must start with a letter, be alphanumeric, and have a maximum length of 10
+	// characters.
+	CertificateBundle string `protobuf:"bytes,6,opt,name=certificate_bundle,json=certificateBundle,proto3" json:"certificate_bundle,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *UpdateCustomerManagedCertificateRequest) Reset() {
+	*x = UpdateCustomerManagedCertificateRequest{}
+	mi := &file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCustomerManagedCertificateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCustomerManagedCertificateRequest) ProtoMessage() {}
+
+func (x *UpdateCustomerManagedCertificateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCustomerManagedCertificateRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCustomerManagedCertificateRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *UpdateCustomerManagedCertificateRequest) GetInstance() string {
+	if x != nil {
+		return x.Instance
+	}
+	return ""
+}
+
+func (x *UpdateCustomerManagedCertificateRequest) GetProject() string {
+	if x != nil {
+		return x.Project
+	}
+	return ""
+}
+
+func (x *UpdateCustomerManagedCertificateRequest) GetCustomerManagedCertificateConfig() *CustomerManagedCertificateConfig {
+	if x != nil {
+		return x.CustomerManagedCertificateConfig
+	}
+	return nil
+}
+
+func (x *UpdateCustomerManagedCertificateRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateCustomerManagedCertificateRequest) GetAllowMissing() bool {
+	if x != nil {
+		return x.AllowMissing
+	}
+	return false
+}
+
+func (x *UpdateCustomerManagedCertificateRequest) GetCertificateBundle() string {
+	if x != nil {
+		return x.CertificateBundle
+	}
+	return ""
+}
+
+// Request message for SqlSslCertsService.DeleteCustomerManagedCertificate.
+type DeleteCustomerManagedCertificateRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Cloud SQL instance ID. This does not include the project ID.
+	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Required. Project ID of the project that contains the instance.
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Required. Name tag of the customer managed certificate bundle to delete. It
+	// must start with a letter, be alphanumeric, and have a maximum length of 10
+	// characters.
+	CertificateBundle string `protobuf:"bytes,3,opt,name=certificate_bundle,json=certificateBundle,proto3" json:"certificate_bundle,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *DeleteCustomerManagedCertificateRequest) Reset() {
+	*x = DeleteCustomerManagedCertificateRequest{}
+	mi := &file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCustomerManagedCertificateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCustomerManagedCertificateRequest) ProtoMessage() {}
+
+func (x *DeleteCustomerManagedCertificateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCustomerManagedCertificateRequest.ProtoReflect.Descriptor instead.
+func (*DeleteCustomerManagedCertificateRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DeleteCustomerManagedCertificateRequest) GetInstance() string {
+	if x != nil {
+		return x.Instance
+	}
+	return ""
+}
+
+func (x *DeleteCustomerManagedCertificateRequest) GetProject() string {
+	if x != nil {
+		return x.Project
+	}
+	return ""
+}
+
+func (x *DeleteCustomerManagedCertificateRequest) GetCertificateBundle() string {
+	if x != nil {
+		return x.CertificateBundle
+	}
+	return ""
+}
+
+// Request message for SqlSslCertsService.ListCustomerManagedCertificates.
+type ListCustomerManagedCertificatesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Cloud SQL instance ID. This does not include the project ID.
+	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Required. Project ID of the project that contains the instance.
+	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCustomerManagedCertificatesRequest) Reset() {
+	*x = ListCustomerManagedCertificatesRequest{}
+	mi := &file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCustomerManagedCertificatesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCustomerManagedCertificatesRequest) ProtoMessage() {}
+
+func (x *ListCustomerManagedCertificatesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCustomerManagedCertificatesRequest.ProtoReflect.Descriptor instead.
+func (*ListCustomerManagedCertificatesRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListCustomerManagedCertificatesRequest) GetInstance() string {
+	if x != nil {
+		return x.Instance
+	}
+	return ""
+}
+
+func (x *ListCustomerManagedCertificatesRequest) GetProject() string {
+	if x != nil {
+		return x.Project
+	}
+	return ""
+}
+
+// Response message for SqlSslCertsService.ListCustomerManagedCertificates.
+type ListCustomerManagedCertificatesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. List of customer managed SSL configurations for the instance.
+	// Note: Sensitive private keys (e.g., PEER_CLIENT_KEY) are redacted in this
+	// response.
+	CustomerManagedCertificates []*CustomerManagedCertificateConfig `protobuf:"bytes,1,rep,name=customer_managed_certificates,json=customerManagedCertificates,proto3" json:"customer_managed_certificates,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *ListCustomerManagedCertificatesResponse) Reset() {
+	*x = ListCustomerManagedCertificatesResponse{}
+	mi := &file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCustomerManagedCertificatesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCustomerManagedCertificatesResponse) ProtoMessage() {}
+
+func (x *ListCustomerManagedCertificatesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCustomerManagedCertificatesResponse.ProtoReflect.Descriptor instead.
+func (*ListCustomerManagedCertificatesResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *ListCustomerManagedCertificatesResponse) GetCustomerManagedCertificates() []*CustomerManagedCertificateConfig {
+	if x != nil {
+		return x.CustomerManagedCertificates
+	}
+	return nil
+}
+
 var File_google_cloud_sql_v1_cloud_sql_ssl_certs_proto protoreflect.FileDescriptor
 
 const file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/sql/v1/cloud_sql_ssl_certs.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\"{\n" +
+	"-google/cloud/sql/v1/cloud_sql_ssl_certs.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\x1a google/protobuf/field_mask.proto\"{\n" +
 	"\x18SqlSslCertsDeleteRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12)\n" +
@@ -487,12 +753,32 @@ const file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDesc = "" +
 	"clientCert\"^\n" +
 	"\x14SslCertsListResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x122\n" +
-	"\x05items\x18\x02 \x03(\v2\x1c.google.cloud.sql.v1.SslCertR\x05items2\xaa\x06\n" +
+	"\x05items\x18\x02 \x03(\v2\x1c.google.cloud.sql.v1.SslCertR\x05items\"\x9b\x03\n" +
+	"'UpdateCustomerManagedCertificateRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x8a\x01\n" +
+	"#customer_managed_certificate_config\x18\x03 \x01(\v25.google.cloud.sql.v1.CustomerManagedCertificateConfigB\x04\xe2A\x01\x02R customerManagedCertificateConfig\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rallow_missing\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x123\n" +
+	"\x12certificate_bundle\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x11certificateBundle\"\xa0\x01\n" +
+	"'DeleteCustomerManagedCertificateRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x123\n" +
+	"\x12certificate_bundle\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x11certificateBundle\"j\n" +
+	"&ListCustomerManagedCertificatesRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\"\xaa\x01\n" +
+	"'ListCustomerManagedCertificatesResponse\x12\x7f\n" +
+	"\x1dcustomer_managed_certificates\x18\x01 \x03(\v25.google.cloud.sql.v1.CustomerManagedCertificateConfigB\x04\xe2A\x01\x02R\x1bcustomerManagedCertificates2\xef\v\n" +
 	"\x12SqlSslCertsService\x12\xa8\x01\n" +
 	"\x06Delete\x12-.google.cloud.sql.v1.SqlSslCertsDeleteRequest\x1a\x1e.google.cloud.sql.v1.Operation\"O\x82\xd3\xe4\x93\x02I*G/v1/projects/{project}/instances/{instance}/sslCerts/{sha1_fingerprint}\x12\xa0\x01\n" +
 	"\x03Get\x12*.google.cloud.sql.v1.SqlSslCertsGetRequest\x1a\x1c.google.cloud.sql.v1.SslCert\"O\x82\xd3\xe4\x93\x02I\x12G/v1/projects/{project}/instances/{instance}/sslCerts/{sha1_fingerprint}\x12\xa8\x01\n" +
 	"\x06Insert\x12-.google.cloud.sql.v1.SqlSslCertsInsertRequest\x1a+.google.cloud.sql.v1.SslCertsInsertResponse\"B\x82\xd3\xe4\x93\x02<:\x04body\"4/v1/projects/{project}/instances/{instance}/sslCerts\x12\x9c\x01\n" +
-	"\x04List\x12+.google.cloud.sql.v1.SqlSslCertsListRequest\x1a).google.cloud.sql.v1.SslCertsListResponse\"<\x82\xd3\xe4\x93\x026\x124/v1/projects/{project}/instances/{instance}/sslCerts\x1a|\xcaA\x17sqladmin.googleapis.com\xd2A_https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/sqlservice.adminB]\n" +
+	"\x04List\x12+.google.cloud.sql.v1.SqlSslCertsListRequest\x1a).google.cloud.sql.v1.SslCertsListResponse\"<\x82\xd3\xe4\x93\x026\x124/v1/projects/{project}/instances/{instance}/sslCerts\x12\xe9\x01\n" +
+	" UpdateCustomerManagedCertificate\x12<.google.cloud.sql.v1.UpdateCustomerManagedCertificateRequest\x1a\x1e.google.cloud.sql.v1.Operation\"g\x82\xd3\xe4\x93\x02a:\x01*2\\/v1/projects/{project}/instances/{instance}/customerManagedCertificates/{certificate_bundle}\x12\xe6\x01\n" +
+	" DeleteCustomerManagedCertificate\x12<.google.cloud.sql.v1.DeleteCustomerManagedCertificateRequest\x1a\x1e.google.cloud.sql.v1.Operation\"d\x82\xd3\xe4\x93\x02^*\\/v1/projects/{project}/instances/{instance}/customerManagedCertificates/{certificate_bundle}\x12\xed\x01\n" +
+	"\x1fListCustomerManagedCertificates\x12;.google.cloud.sql.v1.ListCustomerManagedCertificatesRequest\x1a<.google.cloud.sql.v1.ListCustomerManagedCertificatesResponse\"O\x82\xd3\xe4\x93\x02I\x12G/v1/projects/{project}/instances/{instance}/customerManagedCertificates\x1a|\xcaA\x17sqladmin.googleapis.com\xd2A_https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/sqlservice.adminB]\n" +
 	"\x17com.google.cloud.sql.v1B\x15CloudSqlSslCertsProtoP\x01Z)cloud.google.com/go/sql/apiv1/sqlpb;sqlpbb\x06proto3"
 
 var (
@@ -507,38 +793,53 @@ func file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDescGZIP() []byte {
 	return file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDescData
 }
 
-var file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_goTypes = []any{
-	(*SqlSslCertsDeleteRequest)(nil), // 0: google.cloud.sql.v1.SqlSslCertsDeleteRequest
-	(*SqlSslCertsGetRequest)(nil),    // 1: google.cloud.sql.v1.SqlSslCertsGetRequest
-	(*SqlSslCertsInsertRequest)(nil), // 2: google.cloud.sql.v1.SqlSslCertsInsertRequest
-	(*SqlSslCertsListRequest)(nil),   // 3: google.cloud.sql.v1.SqlSslCertsListRequest
-	(*SslCertsInsertRequest)(nil),    // 4: google.cloud.sql.v1.SslCertsInsertRequest
-	(*SslCertsInsertResponse)(nil),   // 5: google.cloud.sql.v1.SslCertsInsertResponse
-	(*SslCertsListResponse)(nil),     // 6: google.cloud.sql.v1.SslCertsListResponse
-	(*Operation)(nil),                // 7: google.cloud.sql.v1.Operation
-	(*SslCert)(nil),                  // 8: google.cloud.sql.v1.SslCert
-	(*SslCertDetail)(nil),            // 9: google.cloud.sql.v1.SslCertDetail
+	(*SqlSslCertsDeleteRequest)(nil),                // 0: google.cloud.sql.v1.SqlSslCertsDeleteRequest
+	(*SqlSslCertsGetRequest)(nil),                   // 1: google.cloud.sql.v1.SqlSslCertsGetRequest
+	(*SqlSslCertsInsertRequest)(nil),                // 2: google.cloud.sql.v1.SqlSslCertsInsertRequest
+	(*SqlSslCertsListRequest)(nil),                  // 3: google.cloud.sql.v1.SqlSslCertsListRequest
+	(*SslCertsInsertRequest)(nil),                   // 4: google.cloud.sql.v1.SslCertsInsertRequest
+	(*SslCertsInsertResponse)(nil),                  // 5: google.cloud.sql.v1.SslCertsInsertResponse
+	(*SslCertsListResponse)(nil),                    // 6: google.cloud.sql.v1.SslCertsListResponse
+	(*UpdateCustomerManagedCertificateRequest)(nil), // 7: google.cloud.sql.v1.UpdateCustomerManagedCertificateRequest
+	(*DeleteCustomerManagedCertificateRequest)(nil), // 8: google.cloud.sql.v1.DeleteCustomerManagedCertificateRequest
+	(*ListCustomerManagedCertificatesRequest)(nil),  // 9: google.cloud.sql.v1.ListCustomerManagedCertificatesRequest
+	(*ListCustomerManagedCertificatesResponse)(nil), // 10: google.cloud.sql.v1.ListCustomerManagedCertificatesResponse
+	(*Operation)(nil),                               // 11: google.cloud.sql.v1.Operation
+	(*SslCert)(nil),                                 // 12: google.cloud.sql.v1.SslCert
+	(*SslCertDetail)(nil),                           // 13: google.cloud.sql.v1.SslCertDetail
+	(*CustomerManagedCertificateConfig)(nil),        // 14: google.cloud.sql.v1.CustomerManagedCertificateConfig
+	(*fieldmaskpb.FieldMask)(nil),                   // 15: google.protobuf.FieldMask
 }
 var file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_depIdxs = []int32{
-	4, // 0: google.cloud.sql.v1.SqlSslCertsInsertRequest.body:type_name -> google.cloud.sql.v1.SslCertsInsertRequest
-	7, // 1: google.cloud.sql.v1.SslCertsInsertResponse.operation:type_name -> google.cloud.sql.v1.Operation
-	8, // 2: google.cloud.sql.v1.SslCertsInsertResponse.server_ca_cert:type_name -> google.cloud.sql.v1.SslCert
-	9, // 3: google.cloud.sql.v1.SslCertsInsertResponse.client_cert:type_name -> google.cloud.sql.v1.SslCertDetail
-	8, // 4: google.cloud.sql.v1.SslCertsListResponse.items:type_name -> google.cloud.sql.v1.SslCert
-	0, // 5: google.cloud.sql.v1.SqlSslCertsService.Delete:input_type -> google.cloud.sql.v1.SqlSslCertsDeleteRequest
-	1, // 6: google.cloud.sql.v1.SqlSslCertsService.Get:input_type -> google.cloud.sql.v1.SqlSslCertsGetRequest
-	2, // 7: google.cloud.sql.v1.SqlSslCertsService.Insert:input_type -> google.cloud.sql.v1.SqlSslCertsInsertRequest
-	3, // 8: google.cloud.sql.v1.SqlSslCertsService.List:input_type -> google.cloud.sql.v1.SqlSslCertsListRequest
-	7, // 9: google.cloud.sql.v1.SqlSslCertsService.Delete:output_type -> google.cloud.sql.v1.Operation
-	8, // 10: google.cloud.sql.v1.SqlSslCertsService.Get:output_type -> google.cloud.sql.v1.SslCert
-	5, // 11: google.cloud.sql.v1.SqlSslCertsService.Insert:output_type -> google.cloud.sql.v1.SslCertsInsertResponse
-	6, // 12: google.cloud.sql.v1.SqlSslCertsService.List:output_type -> google.cloud.sql.v1.SslCertsListResponse
-	9, // [9:13] is the sub-list for method output_type
-	5, // [5:9] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	4,  // 0: google.cloud.sql.v1.SqlSslCertsInsertRequest.body:type_name -> google.cloud.sql.v1.SslCertsInsertRequest
+	11, // 1: google.cloud.sql.v1.SslCertsInsertResponse.operation:type_name -> google.cloud.sql.v1.Operation
+	12, // 2: google.cloud.sql.v1.SslCertsInsertResponse.server_ca_cert:type_name -> google.cloud.sql.v1.SslCert
+	13, // 3: google.cloud.sql.v1.SslCertsInsertResponse.client_cert:type_name -> google.cloud.sql.v1.SslCertDetail
+	12, // 4: google.cloud.sql.v1.SslCertsListResponse.items:type_name -> google.cloud.sql.v1.SslCert
+	14, // 5: google.cloud.sql.v1.UpdateCustomerManagedCertificateRequest.customer_managed_certificate_config:type_name -> google.cloud.sql.v1.CustomerManagedCertificateConfig
+	15, // 6: google.cloud.sql.v1.UpdateCustomerManagedCertificateRequest.update_mask:type_name -> google.protobuf.FieldMask
+	14, // 7: google.cloud.sql.v1.ListCustomerManagedCertificatesResponse.customer_managed_certificates:type_name -> google.cloud.sql.v1.CustomerManagedCertificateConfig
+	0,  // 8: google.cloud.sql.v1.SqlSslCertsService.Delete:input_type -> google.cloud.sql.v1.SqlSslCertsDeleteRequest
+	1,  // 9: google.cloud.sql.v1.SqlSslCertsService.Get:input_type -> google.cloud.sql.v1.SqlSslCertsGetRequest
+	2,  // 10: google.cloud.sql.v1.SqlSslCertsService.Insert:input_type -> google.cloud.sql.v1.SqlSslCertsInsertRequest
+	3,  // 11: google.cloud.sql.v1.SqlSslCertsService.List:input_type -> google.cloud.sql.v1.SqlSslCertsListRequest
+	7,  // 12: google.cloud.sql.v1.SqlSslCertsService.UpdateCustomerManagedCertificate:input_type -> google.cloud.sql.v1.UpdateCustomerManagedCertificateRequest
+	8,  // 13: google.cloud.sql.v1.SqlSslCertsService.DeleteCustomerManagedCertificate:input_type -> google.cloud.sql.v1.DeleteCustomerManagedCertificateRequest
+	9,  // 14: google.cloud.sql.v1.SqlSslCertsService.ListCustomerManagedCertificates:input_type -> google.cloud.sql.v1.ListCustomerManagedCertificatesRequest
+	11, // 15: google.cloud.sql.v1.SqlSslCertsService.Delete:output_type -> google.cloud.sql.v1.Operation
+	12, // 16: google.cloud.sql.v1.SqlSslCertsService.Get:output_type -> google.cloud.sql.v1.SslCert
+	5,  // 17: google.cloud.sql.v1.SqlSslCertsService.Insert:output_type -> google.cloud.sql.v1.SslCertsInsertResponse
+	6,  // 18: google.cloud.sql.v1.SqlSslCertsService.List:output_type -> google.cloud.sql.v1.SslCertsListResponse
+	11, // 19: google.cloud.sql.v1.SqlSslCertsService.UpdateCustomerManagedCertificate:output_type -> google.cloud.sql.v1.Operation
+	11, // 20: google.cloud.sql.v1.SqlSslCertsService.DeleteCustomerManagedCertificate:output_type -> google.cloud.sql.v1.Operation
+	10, // 21: google.cloud.sql.v1.SqlSslCertsService.ListCustomerManagedCertificates:output_type -> google.cloud.sql.v1.ListCustomerManagedCertificatesResponse
+	15, // [15:22] is the sub-list for method output_type
+	8,  // [8:15] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_init() }
@@ -553,7 +854,7 @@ func file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDesc), len(file_google_cloud_sql_v1_cloud_sql_ssl_certs_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

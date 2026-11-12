@@ -448,6 +448,59 @@ func NewDataAccessControlClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataAccessLabel = append(client.CallOptions.CreateDataAccessLabel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataAccessLabel = append(client.CallOptions.GetDataAccessLabel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDataAccessLabels = append(client.CallOptions.ListDataAccessLabels, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataAccessLabel = append(client.CallOptions.UpdateDataAccessLabel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataAccessLabel = append(client.CallOptions.DeleteDataAccessLabel, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDataAccessScope = append(client.CallOptions.CreateDataAccessScope, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataAccessScope = append(client.CallOptions.GetDataAccessScope, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDataAccessScopes = append(client.CallOptions.ListDataAccessScopes, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataAccessScope = append(client.CallOptions.UpdateDataAccessScope, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataAccessScope = append(client.CallOptions.DeleteDataAccessScope, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataAccessLabel = append(client.CallOptions.CreateDataAccessLabel, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataAccessLabel = append(client.CallOptions.GetDataAccessLabel, gax.WithClientLogging(logging))
+		client.CallOptions.ListDataAccessLabels = append(client.CallOptions.ListDataAccessLabels, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataAccessLabel = append(client.CallOptions.UpdateDataAccessLabel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataAccessLabel = append(client.CallOptions.DeleteDataAccessLabel, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDataAccessScope = append(client.CallOptions.CreateDataAccessScope, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataAccessScope = append(client.CallOptions.GetDataAccessScope, gax.WithClientLogging(logging))
+		client.CallOptions.ListDataAccessScopes = append(client.CallOptions.ListDataAccessScopes, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataAccessScope = append(client.CallOptions.UpdateDataAccessScope, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataAccessScope = append(client.CallOptions.DeleteDataAccessScope, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -553,6 +606,59 @@ func NewDataAccessControlRESTClient(ctx context.Context, opts ...option.ClientOp
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataAccessLabel = append(callOpts.CreateDataAccessLabel, gax.WithClientTracing(tracing))
+		callOpts.GetDataAccessLabel = append(callOpts.GetDataAccessLabel, gax.WithClientTracing(tracing))
+		callOpts.ListDataAccessLabels = append(callOpts.ListDataAccessLabels, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataAccessLabel = append(callOpts.UpdateDataAccessLabel, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataAccessLabel = append(callOpts.DeleteDataAccessLabel, gax.WithClientTracing(tracing))
+		callOpts.CreateDataAccessScope = append(callOpts.CreateDataAccessScope, gax.WithClientTracing(tracing))
+		callOpts.GetDataAccessScope = append(callOpts.GetDataAccessScope, gax.WithClientTracing(tracing))
+		callOpts.ListDataAccessScopes = append(callOpts.ListDataAccessScopes, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataAccessScope = append(callOpts.UpdateDataAccessScope, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataAccessScope = append(callOpts.DeleteDataAccessScope, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataAccessLabel = append(callOpts.CreateDataAccessLabel, gax.WithClientLogging(logging))
+		callOpts.GetDataAccessLabel = append(callOpts.GetDataAccessLabel, gax.WithClientLogging(logging))
+		callOpts.ListDataAccessLabels = append(callOpts.ListDataAccessLabels, gax.WithClientLogging(logging))
+		callOpts.UpdateDataAccessLabel = append(callOpts.UpdateDataAccessLabel, gax.WithClientLogging(logging))
+		callOpts.DeleteDataAccessLabel = append(callOpts.DeleteDataAccessLabel, gax.WithClientLogging(logging))
+		callOpts.CreateDataAccessScope = append(callOpts.CreateDataAccessScope, gax.WithClientLogging(logging))
+		callOpts.GetDataAccessScope = append(callOpts.GetDataAccessScope, gax.WithClientLogging(logging))
+		callOpts.ListDataAccessScopes = append(callOpts.ListDataAccessScopes, gax.WithClientLogging(logging))
+		callOpts.UpdateDataAccessScope = append(callOpts.UpdateDataAccessScope, gax.WithClientLogging(logging))
+		callOpts.DeleteDataAccessScope = append(callOpts.DeleteDataAccessScope, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &DataAccessControlClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -599,9 +705,6 @@ func (c *dataAccessControlGRPCClient) CreateDataAccessLabel(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/CreateDataAccessLabel")
 	}
@@ -623,9 +726,6 @@ func (c *dataAccessControlGRPCClient) GetDataAccessLabel(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/GetDataAccessLabel")
 	}
@@ -647,9 +747,6 @@ func (c *dataAccessControlGRPCClient) ListDataAccessLabels(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/ListDataAccessLabels")
 	}
@@ -720,9 +817,6 @@ func (c *dataAccessControlGRPCClient) DeleteDataAccessLabel(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/DeleteDataAccessLabel")
 	}
@@ -740,9 +834,6 @@ func (c *dataAccessControlGRPCClient) CreateDataAccessScope(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/CreateDataAccessScope")
 	}
@@ -764,9 +855,6 @@ func (c *dataAccessControlGRPCClient) GetDataAccessScope(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/GetDataAccessScope")
 	}
@@ -788,9 +876,6 @@ func (c *dataAccessControlGRPCClient) ListDataAccessScopes(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/ListDataAccessScopes")
 	}
@@ -861,9 +946,6 @@ func (c *dataAccessControlGRPCClient) DeleteDataAccessScope(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/DeleteDataAccessScope")
 	}
@@ -998,6 +1080,11 @@ func (c *dataAccessControlRESTClient) CreateDataAccessLabel(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataAccessLabels", req.GetParent())
 
 	params := url.Values{}
@@ -1012,9 +1099,6 @@ func (c *dataAccessControlRESTClient) CreateDataAccessLabel(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/CreateDataAccessLabel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/dataAccessLabels")
@@ -1056,6 +1140,11 @@ func (c *dataAccessControlRESTClient) GetDataAccessLabel(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1069,9 +1158,6 @@ func (c *dataAccessControlRESTClient) GetDataAccessLabel(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/GetDataAccessLabel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/dataAccessLabels/*}")
@@ -1124,6 +1210,11 @@ func (c *dataAccessControlRESTClient) ListDataAccessLabels(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataAccessLabels", req.GetParent())
@@ -1201,6 +1292,11 @@ func (c *dataAccessControlRESTClient) UpdateDataAccessLabel(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataAccessLabel().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataAccessLabel().GetName())
 
 	params := url.Values{}
@@ -1264,6 +1360,11 @@ func (c *dataAccessControlRESTClient) DeleteDataAccessLabel(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1277,9 +1378,6 @@ func (c *dataAccessControlRESTClient) DeleteDataAccessLabel(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/DeleteDataAccessLabel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/dataAccessLabels/*}")
@@ -1318,6 +1416,11 @@ func (c *dataAccessControlRESTClient) CreateDataAccessScope(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataAccessScopes", req.GetParent())
 
 	params := url.Values{}
@@ -1332,9 +1435,6 @@ func (c *dataAccessControlRESTClient) CreateDataAccessScope(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/CreateDataAccessScope")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/dataAccessScopes")
@@ -1376,6 +1476,11 @@ func (c *dataAccessControlRESTClient) GetDataAccessScope(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1389,9 +1494,6 @@ func (c *dataAccessControlRESTClient) GetDataAccessScope(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/GetDataAccessScope")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/dataAccessScopes/*}")
@@ -1444,6 +1546,11 @@ func (c *dataAccessControlRESTClient) ListDataAccessScopes(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataAccessScopes", req.GetParent())
@@ -1521,6 +1628,11 @@ func (c *dataAccessControlRESTClient) UpdateDataAccessScope(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataAccessScope().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataAccessScope().GetName())
 
 	params := url.Values{}
@@ -1582,6 +1694,11 @@ func (c *dataAccessControlRESTClient) DeleteDataAccessScope(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1595,9 +1712,6 @@ func (c *dataAccessControlRESTClient) DeleteDataAccessScope(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataAccessControlService/DeleteDataAccessScope")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/dataAccessScopes/*}")
@@ -1628,6 +1742,11 @@ func (c *dataAccessControlRESTClient) CancelOperation(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
@@ -1669,6 +1788,11 @@ func (c *dataAccessControlRESTClient) DeleteOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1706,6 +1830,11 @@ func (c *dataAccessControlRESTClient) DeleteOperation(ctx context.Context, req *
 func (c *dataAccessControlRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1773,6 +1902,11 @@ func (c *dataAccessControlRESTClient) ListOperations(ctx context.Context, req *l
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

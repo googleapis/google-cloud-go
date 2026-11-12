@@ -99,11 +99,11 @@ var File_google_devtools_cloudtrace_v2_tracing_proto protoreflect.FileDescriptor
 
 const file_google_devtools_cloudtrace_v2_tracing_proto_rawDesc = "" +
 	"\n" +
-	"+google/devtools/cloudtrace/v2/tracing.proto\x12\x1dgoogle.devtools.cloudtrace.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/devtools/cloudtrace/v2/trace.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xa1\x01\n" +
-	"\x16BatchWriteSpansRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\x12>\n" +
-	"\x05spans\x18\x02 \x03(\v2#.google.devtools.cloudtrace.v2.SpanB\x03\xe0A\x02R\x05spans2\xba\x03\n" +
+	"+google/devtools/cloudtrace/v2/tracing.proto\x12\x1dgoogle.devtools.cloudtrace.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/devtools/cloudtrace/v2/trace.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xa3\x01\n" +
+	"\x16BatchWriteSpansRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\x12?\n" +
+	"\x05spans\x18\x02 \x03(\v2#.google.devtools.cloudtrace.v2.SpanB\x04\xe2A\x01\x02R\x05spans2\xba\x03\n" +
 	"\fTraceService\x12\xa1\x01\n" +
 	"\x0fBatchWriteSpans\x125.google.devtools.cloudtrace.v2.BatchWriteSpansRequest\x1a\x16.google.protobuf.Empty\"?\xdaA\n" +
 	"name,spans\x82\xd3\xe4\x93\x02,:\x01*\"'/v2/{name=projects/*}/traces:batchWrite\x12\x89\x01\n" +

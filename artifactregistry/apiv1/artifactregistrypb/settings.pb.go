@@ -293,9 +293,9 @@ const file_google_devtools_artifactregistry_v1_settings_proto_rawDesc = "" +
 	"!REDIRECTION_FROM_GCR_IO_FINALIZED\x10\x03\x1a\x02\b\x01\x12/\n" +
 	"+REDIRECTION_FROM_GCR_IO_ENABLED_AND_COPYING\x10\x05\x12/\n" +
 	"+REDIRECTION_FROM_GCR_IO_PARTIAL_AND_COPYING\x10\x06:X\xeaAU\n" +
-	"/artifactregistry.googleapis.com/ProjectSettings\x12\"projects/{project}/projectSettings\"h\n" +
-	"\x19GetProjectSettingsRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"/artifactregistry.googleapis.com/ProjectSettings\x12\"projects/{project}/projectSettings\"i\n" +
+	"\x19GetProjectSettingsRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/artifactregistry.googleapis.com/ProjectSettingsR\x04name\"\xbc\x01\n" +
 	"\x1cUpdateProjectSettingsRequest\x12_\n" +
 	"\x10project_settings\x18\x02 \x01(\v24.google.devtools.artifactregistry.v1.ProjectSettingsR\x0fprojectSettings\x12;\n" +

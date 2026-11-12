@@ -518,21 +518,21 @@ var File_google_cloud_discoveryengine_v1alpha_data_store_proto protoreflect.File
 
 const file_google_cloud_discoveryengine_v1alpha_data_store_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/discoveryengine/v1alpha/data_store.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1aEgoogle/cloud/discoveryengine/v1alpha/document_processing_config.proto\x1a1google/cloud/discoveryengine/v1alpha/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\n" +
+	"5google/cloud/discoveryengine/v1alpha/data_store.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1aEgoogle/cloud/discoveryengine/v1alpha/document_processing_config.proto\x1a1google/cloud/discoveryengine/v1alpha/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\n" +
 	"\n" +
-	"\tDataStore\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12h\n" +
-	"\x11industry_vertical\x18\x03 \x01(\x0e26.google.cloud.discoveryengine.v1alpha.IndustryVerticalB\x03\xe0A\x05R\x10industryVertical\x12Y\n" +
-	"\x0esolution_types\x18\x05 \x03(\x0e22.google.cloud.discoveryengine.v1alpha.SolutionTypeR\rsolutionTypes\x12/\n" +
-	"\x11default_schema_id\x18\a \x01(\tB\x03\xe0A\x03R\x0fdefaultSchemaId\x12i\n" +
-	"\x0econtent_config\x18\x06 \x01(\x0e2=.google.cloud.discoveryengine.v1alpha.DataStore.ContentConfigB\x03\xe0A\x05R\rcontentConfig\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\tDataStore\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12i\n" +
+	"\x11industry_vertical\x18\x03 \x01(\x0e26.google.cloud.discoveryengine.v1alpha.IndustryVerticalB\x04\xe2A\x01\x05R\x10industryVertical\x12Y\n" +
+	"\x0esolution_types\x18\x05 \x03(\x0e22.google.cloud.discoveryengine.v1alpha.SolutionTypeR\rsolutionTypes\x120\n" +
+	"\x11default_schema_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\x0fdefaultSchemaId\x12j\n" +
+	"\x0econtent_config\x18\x06 \x01(\x0e2=.google.cloud.discoveryengine.v1alpha.DataStore.ContentConfigB\x04\xe2A\x01\x05R\rcontentConfig\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12W\n" +
-	"\rlanguage_info\x18\x0e \x01(\v22.google.cloud.discoveryengine.v1alpha.LanguageInfoR\flanguageInfo\x12S\n" +
+	"\rlanguage_info\x18\x0e \x01(\v22.google.cloud.discoveryengine.v1alpha.LanguageInfoR\flanguageInfo\x12T\n" +
 	"\n" +
-	"idp_config\x18\x15 \x01(\v2/.google.cloud.discoveryengine.v1alpha.IdpConfigB\x03\xe0A\x03R\tidpConfig\x12$\n" +
-	"\vacl_enabled\x18\x18 \x01(\bB\x03\xe0A\x05R\n" +
+	"idp_config\x18\x15 \x01(\v2/.google.cloud.discoveryengine.v1alpha.IdpConfigB\x04\xe2A\x01\x03R\tidpConfig\x12%\n" +
+	"\vacl_enabled\x18\x18 \x01(\bB\x04\xe2A\x01\x05R\n" +
 	"aclEnabled\x12`\n" +
 	"\x10workspace_config\x18\x19 \x01(\v25.google.cloud.discoveryengine.v1alpha.WorkspaceConfigR\x0fworkspaceConfig\x12|\n" +
 	"\x1adocument_processing_config\x18\x1b \x01(\v2>.google.cloud.discoveryengine.v1alpha.DocumentProcessingConfigR\x18documentProcessingConfig\x12U\n" +
@@ -544,12 +544,12 @@ const file_google_cloud_discoveryengine_v1alpha_data_store_proto_rawDesc = "" +
 	"\x10CONTENT_REQUIRED\x10\x02\x12\x12\n" +
 	"\x0ePUBLIC_WEBSITE\x10\x03\x12\x14\n" +
 	"\x10GOOGLE_WORKSPACE\x10\x04:\xc9\x01\xeaA\xc5\x01\n" +
-	"(discoveryengine.googleapis.com/DataStore\x12?projects/{project}/locations/{location}/dataStores/{data_store}\x12Xprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}\"\xb0\x01\n" +
+	"(discoveryengine.googleapis.com/DataStore\x12?projects/{project}/locations/{location}/dataStores/{data_store}\x12Xprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}\"\xb3\x01\n" +
 	"\fLanguageInfo\x12#\n" +
-	"\rlanguage_code\x18\x01 \x01(\tR\flanguageCode\x12=\n" +
-	"\x18normalized_language_code\x18\x02 \x01(\tB\x03\xe0A\x03R\x16normalizedLanguageCode\x12\x1f\n" +
-	"\blanguage\x18\x03 \x01(\tB\x03\xe0A\x03R\blanguage\x12\x1b\n" +
-	"\x06region\x18\x04 \x01(\tB\x03\xe0A\x03R\x06region\"\xad\x02\n" +
+	"\rlanguage_code\x18\x01 \x01(\tR\flanguageCode\x12>\n" +
+	"\x18normalized_language_code\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x16normalizedLanguageCode\x12 \n" +
+	"\blanguage\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\blanguage\x12\x1c\n" +
+	"\x06region\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06region\"\xad\x02\n" +
 	"\x0fWorkspaceConfig\x12N\n" +
 	"\x04type\x18\x01 \x01(\x0e2:.google.cloud.discoveryengine.v1alpha.WorkspaceConfig.TypeR\x04type\x12,\n" +
 	"\x12dasher_customer_id\x18\x02 \x01(\tR\x10dasherCustomerId\"\x9b\x01\n" +

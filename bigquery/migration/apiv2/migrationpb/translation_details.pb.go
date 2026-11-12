@@ -755,26 +755,26 @@ const file_google_cloud_bigquery_migration_v2_translation_details_proto_rawDesc 
 	"\vsource_spec\x18\x01 \x01(\v2..google.cloud.bigquery.migration.v2.SourceSpecR\n" +
 	"sourceSpec\x12O\n" +
 	"\vtarget_spec\x18\x02 \x01(\v2..google.cloud.bigquery.migration.v2.TargetSpecR\n" +
-	"targetSpec\"\xc3\x01\n" +
+	"targetSpec\"\xc4\x01\n" +
 	"\n" +
 	"SourceSpec\x12\x1b\n" +
 	"\bbase_uri\x18\x01 \x01(\tH\x00R\abaseUri\x12G\n" +
 	"\aliteral\x18\x02 \x01(\v2+.google.cloud.bigquery.migration.v2.LiteralH\x00R\aliteral\x12$\n" +
-	"\rgcs_file_path\x18\x04 \x01(\tH\x00R\vgcsFilePath\x12\x1f\n" +
-	"\bencoding\x18\x03 \x01(\tB\x03\xe0A\x01R\bencodingB\b\n" +
+	"\rgcs_file_path\x18\x04 \x01(\tH\x00R\vgcsFilePath\x12 \n" +
+	"\bencoding\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bencodingB\b\n" +
 	"\x06source\"1\n" +
 	"\n" +
 	"TargetSpec\x12#\n" +
-	"\rrelative_path\x18\x01 \x01(\tR\frelativePath\"\x93\x01\n" +
+	"\rrelative_path\x18\x01 \x01(\tR\frelativePath\"\x94\x01\n" +
 	"\aLiteral\x12'\n" +
 	"\x0eliteral_string\x18\x02 \x01(\tH\x00R\rliteralString\x12%\n" +
-	"\rliteral_bytes\x18\x03 \x01(\fH\x00R\fliteralBytes\x12(\n" +
-	"\rrelative_path\x18\x01 \x01(\tB\x03\xe0A\x02R\frelativePathB\x0e\n" +
-	"\fliteral_data\"\xa7\x01\n" +
+	"\rliteral_bytes\x18\x03 \x01(\fH\x00R\fliteralBytes\x12)\n" +
+	"\rrelative_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\frelativePathB\x0e\n" +
+	"\fliteral_data\"\xa8\x01\n" +
 	"\x11SourceEnvironment\x12)\n" +
 	"\x10default_database\x18\x01 \x01(\tR\x0fdefaultDatabase\x12,\n" +
-	"\x12schema_search_path\x18\x02 \x03(\tR\x10schemaSearchPath\x129\n" +
-	"\x16metadata_store_dataset\x18\x03 \x01(\tB\x03\xe0A\x01R\x14metadataStoreDatasetB\xd3\x01\n" +
+	"\x12schema_search_path\x18\x02 \x03(\tR\x10schemaSearchPath\x12:\n" +
+	"\x16metadata_store_dataset\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x14metadataStoreDatasetB\xd3\x01\n" +
 	"&com.google.cloud.bigquery.migration.v2B\x17TranslationDetailsProtoP\x01ZDcloud.google.com/go/bigquery/migration/apiv2/migrationpb;migrationpb\xaa\x02\"Google.Cloud.BigQuery.Migration.V2\xca\x02\"Google\\Cloud\\BigQuery\\Migration\\V2b\x06proto3"
 
 var (

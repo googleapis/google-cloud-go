@@ -321,27 +321,27 @@ var File_google_ads_datamanager_v1_user_data_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_user_data_proto_rawDesc = "" +
 	"\n" +
-	")google/ads/datamanager/v1/user_data.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"e\n" +
-	"\bUserData\x12Y\n" +
-	"\x10user_identifiers\x18\x01 \x03(\v2).google.ads.datamanager.v1.UserIdentifierB\x03\xe0A\x02R\x0fuserIdentifiers\"\xae\x01\n" +
+	")google/ads/datamanager/v1/user_data.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"f\n" +
+	"\bUserData\x12Z\n" +
+	"\x10user_identifiers\x18\x01 \x03(\v2).google.ads.datamanager.v1.UserIdentifierB\x04\xe2A\x01\x02R\x0fuserIdentifiers\"\xae\x01\n" +
 	"\x0eUserIdentifier\x12%\n" +
 	"\remail_address\x18\x01 \x01(\tH\x00R\femailAddress\x12#\n" +
 	"\fphone_number\x18\x02 \x01(\tH\x00R\vphoneNumber\x12B\n" +
 	"\aaddress\x18\x03 \x01(\v2&.google.ads.datamanager.v1.AddressInfoH\x00R\aaddressB\f\n" +
 	"\n" +
-	"identifier\"\x9a\x02\n" +
-	"\vAddressInfo\x12\"\n" +
+	"identifier\"\xa1\x02\n" +
+	"\vAddressInfo\x12#\n" +
 	"\n" +
-	"given_name\x18\x01 \x01(\tB\x03\xe0A\x02R\tgivenName\x12$\n" +
-	"\vfamily_name\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"familyName\x12$\n" +
-	"\vregion_code\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"regionCode\x12$\n" +
-	"\vpostal_code\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"postalCode\x12&\n" +
-	"\faddress_line\x18\x05 \x01(\tB\x03\xe0A\x01R\vaddressLine\x12\x17\n" +
-	"\x04city\x18\x06 \x01(\tB\x03\xe0A\x01R\x04city\x124\n" +
-	"\x13administrative_area\x18\a \x01(\tB\x03\xe0A\x01R\x12administrativeAreaB\xca\x01\n" +
+	"given_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tgivenName\x12%\n" +
+	"\vfamily_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"familyName\x12%\n" +
+	"\vregion_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"regionCode\x12%\n" +
+	"\vpostal_code\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"postalCode\x12'\n" +
+	"\faddress_line\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vaddressLine\x12\x18\n" +
+	"\x04city\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x04city\x125\n" +
+	"\x13administrative_area\x18\a \x01(\tB\x04\xe2A\x01\x01R\x12administrativeAreaB\xca\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\rUserDataProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

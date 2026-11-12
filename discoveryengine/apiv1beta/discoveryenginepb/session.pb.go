@@ -415,37 +415,37 @@ var File_google_cloud_discoveryengine_v1beta_session_proto protoreflect.FileDesc
 
 const file_google_cloud_discoveryengine_v1beta_session_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/discoveryengine/v1beta/session.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/answer.proto\x1a7google/cloud/discoveryengine/v1beta/assist_answer.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe1\f\n" +
-	"\aSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\a \x01(\tB\x03\xe0A\x01R\vdisplayName\x12H\n" +
+	"1google/cloud/discoveryengine/v1beta/session.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/answer.proto\x1a7google/cloud/discoveryengine/v1beta/assist_answer.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\f\n" +
+	"\aSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12H\n" +
 	"\x05state\x18\x02 \x01(\x0e22.google.cloud.discoveryengine.v1beta.Session.StateR\x05state\x12$\n" +
 	"\x0euser_pseudo_id\x18\x03 \x01(\tR\fuserPseudoId\x12G\n" +
-	"\x05turns\x18\x04 \x03(\v21.google.cloud.discoveryengine.v1beta.Session.TurnR\x05turns\x12\x1b\n" +
-	"\x06labels\x18\t \x03(\tB\x03\xe0A\x01R\x06labels\x12>\n" +
+	"\x05turns\x18\x04 \x03(\v21.google.cloud.discoveryengine.v1beta.Session.TurnR\x05turns\x12\x1c\n" +
+	"\x06labels\x18\t \x03(\tB\x04\xe2A\x01\x01R\x06labels\x12?\n" +
 	"\n" +
-	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12 \n" +
-	"\tis_pinned\x18\b \x01(\bB\x03\xe0A\x01R\bisPinned\x12M\n" +
-	"!pending_async_assist_operation_id\x18\x16 \x01(\tB\x03\xe0A\x03R\x1dpendingAsyncAssistOperationId\x1a\xa2\x04\n" +
-	"\x04Turn\x12E\n" +
-	"\x05query\x18\x01 \x01(\v2*.google.cloud.discoveryengine.v1beta.QueryB\x03\xe0A\x01R\x05query\x12E\n" +
-	"\x06answer\x18\x02 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%discoveryengine.googleapis.com/AnswerR\x06answer\x12Y\n" +
-	"\x0fdetailed_answer\x18\a \x01(\v2+.google.cloud.discoveryengine.v1beta.AnswerB\x03\xe0A\x03R\x0edetailedAnswer\x12l\n" +
-	"\x16detailed_assist_answer\x18\b \x01(\v21.google.cloud.discoveryengine.v1beta.AssistAnswerB\x03\xe0A\x03R\x14detailedAssistAnswer\x12j\n" +
-	"\fquery_config\x18\x10 \x03(\v2B.google.cloud.discoveryengine.v1beta.Session.Turn.QueryConfigEntryB\x03\xe0A\x01R\vqueryConfig\x12\x17\n" +
-	"\x04live\x18\x14 \x01(\bB\x03\xe0A\x01R\x04live\x1a>\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12!\n" +
+	"\tis_pinned\x18\b \x01(\bB\x04\xe2A\x01\x01R\bisPinned\x12N\n" +
+	"!pending_async_assist_operation_id\x18\x16 \x01(\tB\x04\xe2A\x01\x03R\x1dpendingAsyncAssistOperationId\x1a\xa8\x04\n" +
+	"\x04Turn\x12F\n" +
+	"\x05query\x18\x01 \x01(\v2*.google.cloud.discoveryengine.v1beta.QueryB\x04\xe2A\x01\x01R\x05query\x12F\n" +
+	"\x06answer\x18\x02 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%discoveryengine.googleapis.com/AnswerR\x06answer\x12Z\n" +
+	"\x0fdetailed_answer\x18\a \x01(\v2+.google.cloud.discoveryengine.v1beta.AnswerB\x04\xe2A\x01\x03R\x0edetailedAnswer\x12m\n" +
+	"\x16detailed_assist_answer\x18\b \x01(\v21.google.cloud.discoveryengine.v1beta.AssistAnswerB\x04\xe2A\x01\x03R\x14detailedAssistAnswer\x12k\n" +
+	"\fquery_config\x18\x10 \x03(\v2B.google.cloud.discoveryengine.v1beta.Session.Turn.QueryConfigEntryB\x04\xe2A\x01\x01R\vqueryConfig\x12\x18\n" +
+	"\x04live\x18\x14 \x01(\bB\x04\xe2A\x01\x01R\x04live\x1a>\n" +
 	"\x10QueryConfigEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"/\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01:\xfb\x03\xeaA\xf7\x03\n" +
-	"&discoveryengine.googleapis.com/Session\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/sessions/{session}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/sessions/{session}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}\x12\x92\x01projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/collaborativeProjects/{collaborative_project}/sessions/{session}*\bsessions2\asession\"H\n" +
+	"&discoveryengine.googleapis.com/Session\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/sessions/{session}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/sessions/{session}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}\x12\x92\x01projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/collaborativeProjects/{collaborative_project}/sessions/{session}*\bsessions2\asession\"I\n" +
 	"\x05Query\x12\x14\n" +
-	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12\x1e\n" +
-	"\bquery_id\x18\x01 \x01(\tB\x03\xe0A\x03R\aqueryIdB\t\n" +
+	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12\x1f\n" +
+	"\bquery_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\aqueryIdB\t\n" +
 	"\acontentB\x93\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\fSessionProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 

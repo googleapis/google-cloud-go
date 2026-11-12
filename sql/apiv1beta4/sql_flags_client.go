@@ -84,6 +84,8 @@ type internalSqlFlagsClient interface {
 
 // SqlFlagsClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to manage database flags for Cloud SQL instances.
 type SqlFlagsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlFlagsClient
@@ -141,6 +143,8 @@ type sqlFlagsGRPCClient struct {
 
 // NewSqlFlagsClient creates a new sql flags service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service to manage database flags for Cloud SQL instances.
 func NewSqlFlagsClient(ctx context.Context, opts ...option.ClientOption) (*SqlFlagsClient, error) {
 	clientOpts := defaultSqlFlagsGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -187,6 +191,33 @@ func NewSqlFlagsClient(ctx context.Context, opts ...option.ClientOption) (*SqlFl
 		)
 
 		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -237,6 +268,8 @@ type sqlFlagsRESTClient struct {
 }
 
 // NewSqlFlagsRESTClient creates a new sql flags service rest client.
+//
+// Service to manage database flags for Cloud SQL instances.
 func NewSqlFlagsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlFlagsClient, error) {
 	clientOpts := append(defaultSqlFlagsRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -276,6 +309,33 @@ func NewSqlFlagsRESTClient(ctx context.Context, opts ...option.ClientOption) (*S
 		)
 
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
 	}
 
 	return &SqlFlagsClient{internalClient: c, CallOptions: callOpts}, nil

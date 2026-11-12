@@ -540,28 +540,28 @@ var File_google_cloud_apptopology_v1_query_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apptopology_v1_query_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/apptopology/v1/query.proto\x12\x1bgoogle.cloud.apptopology.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xb8\x01\n" +
-	"\fGraphPattern\x12R\n" +
-	"\rstarting_node\x18\x01 \x01(\v2(.google.cloud.apptopology.v1.NodePatternB\x03\xe0A\x02R\fstartingNode\x12T\n" +
-	"\tneighbors\x18\x02 \x03(\v21.google.cloud.apptopology.v1.ConnectedNodePatternB\x03\xe0A\x01R\tneighbors\"\x9c\x01\n" +
-	"\vNodePattern\x12\x19\n" +
-	"\x05alias\x18\x01 \x01(\tB\x03\xe0A\x01R\x05alias\x12r\n" +
-	"\x18label_properties_pattern\x18\x03 \x01(\v23.google.cloud.apptopology.v1.LabelPropertiesPatternB\x03\xe0A\x01R\x16labelPropertiesPattern\"\xb6\x02\n" +
-	"\vEdgePattern\x12U\n" +
-	"\tdirection\x18\x01 \x01(\x0e22.google.cloud.apptopology.v1.EdgePattern.DirectionB\x03\xe0A\x02R\tdirection\x12r\n" +
-	"\x18label_properties_pattern\x18\x02 \x01(\v23.google.cloud.apptopology.v1.LabelPropertiesPatternB\x03\xe0A\x02R\x16labelPropertiesPattern\x12\x19\n" +
-	"\x05alias\x18\x03 \x01(\tB\x03\xe0A\x01R\x05alias\"A\n" +
+	"'google/cloud/apptopology/v1/query.proto\x12\x1bgoogle.cloud.apptopology.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xba\x01\n" +
+	"\fGraphPattern\x12S\n" +
+	"\rstarting_node\x18\x01 \x01(\v2(.google.cloud.apptopology.v1.NodePatternB\x04\xe2A\x01\x02R\fstartingNode\x12U\n" +
+	"\tneighbors\x18\x02 \x03(\v21.google.cloud.apptopology.v1.ConnectedNodePatternB\x04\xe2A\x01\x01R\tneighbors\"\x9e\x01\n" +
+	"\vNodePattern\x12\x1a\n" +
+	"\x05alias\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05alias\x12s\n" +
+	"\x18label_properties_pattern\x18\x03 \x01(\v23.google.cloud.apptopology.v1.LabelPropertiesPatternB\x04\xe2A\x01\x01R\x16labelPropertiesPattern\"\xb9\x02\n" +
+	"\vEdgePattern\x12V\n" +
+	"\tdirection\x18\x01 \x01(\x0e22.google.cloud.apptopology.v1.EdgePattern.DirectionB\x04\xe2A\x01\x02R\tdirection\x12s\n" +
+	"\x18label_properties_pattern\x18\x02 \x01(\v23.google.cloud.apptopology.v1.LabelPropertiesPatternB\x04\xe2A\x01\x02R\x16labelPropertiesPattern\x12\x1a\n" +
+	"\x05alias\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05alias\"A\n" +
 	"\tDirection\x12\x19\n" +
 	"\x15DIRECTION_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ANY\x10\x01\x12\x06\n" +
 	"\x02TO\x10\x02\x12\b\n" +
-	"\x04FROM\x10\x03\"\x9f\x01\n" +
-	"\x14ConnectedNodePattern\x12A\n" +
-	"\x04edge\x18\x01 \x01(\v2(.google.cloud.apptopology.v1.EdgePatternB\x03\xe0A\x02R\x04edge\x12D\n" +
-	"\x05graph\x18\x02 \x01(\v2).google.cloud.apptopology.v1.GraphPatternB\x03\xe0A\x02R\x05graph\"\x84\x01\n" +
-	"\x16LabelPropertiesPattern\x121\n" +
-	"\x12label_matcher_expr\x18\x01 \x01(\tB\x03\xe0A\x02R\x10labelMatcherExpr\x127\n" +
-	"\x15property_matcher_expr\x18\x02 \x01(\tB\x03\xe0A\x01R\x13propertyMatcherExprB\xcf\x01\n" +
+	"\x04FROM\x10\x03\"\xa1\x01\n" +
+	"\x14ConnectedNodePattern\x12B\n" +
+	"\x04edge\x18\x01 \x01(\v2(.google.cloud.apptopology.v1.EdgePatternB\x04\xe2A\x01\x02R\x04edge\x12E\n" +
+	"\x05graph\x18\x02 \x01(\v2).google.cloud.apptopology.v1.GraphPatternB\x04\xe2A\x01\x02R\x05graph\"\x86\x01\n" +
+	"\x16LabelPropertiesPattern\x122\n" +
+	"\x12label_matcher_expr\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x10labelMatcherExpr\x128\n" +
+	"\x15property_matcher_expr\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13propertyMatcherExprB\xcf\x01\n" +
 	"\x1fcom.google.cloud.apptopology.v1B\n" +
 	"QueryProtoP\x01ZAcloud.google.com/go/apptopology/apiv1/apptopologypb;apptopologypb\xaa\x02\x1bGoogle.Cloud.AppTopology.V1\xca\x02\x1bGoogle\\Cloud\\AppTopology\\V1\xea\x02\x1eGoogle::Cloud::AppTopology::V1b\x06proto3"
 

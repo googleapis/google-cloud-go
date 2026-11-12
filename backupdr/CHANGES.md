@@ -3,6 +3,41 @@
 
 
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.19.1...backupdr/v1.20.0) (2026-11-05)
+
+
+### Features
+
+* Update API sources and regenerate ([#20848](https://github.com/googleapis/google-cloud-go/issues/20848)) ([7437b30](https://github.com/googleapis/google-cloud-go/commit/7437b30bc59a2f6a30b5f101c91b496512fb84a4))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.19.0...backupdr/v1.19.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.18.0...backupdr/v1.19.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.17.0...backupdr/v1.18.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.16.0...backupdr/v1.17.0) (2026-09-17)
+
+
+### Features
+
+* **google/cloud/backupdr/v1beta:** Add backupdr ([#20534](https://github.com/googleapis/google-cloud-go/issues/20534)) ([19651ea](https://github.com/googleapis/google-cloud-go/commit/19651eab31216a6decd2f543d9a186abe97e2ae1))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.15.0...backupdr/v1.16.0) (2026-07-23)
 
 

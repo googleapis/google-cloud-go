@@ -674,49 +674,49 @@ var File_google_cloud_apihub_v1_collect_service_proto protoreflect.FileDescripto
 
 const file_google_cloud_apihub_v1_collect_service_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/apihub/v1/collect_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/apihub/v1/common_fields.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\x02\n" +
-	"\x15CollectApiDataRequest\x12E\n" +
-	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\blocation\x12T\n" +
-	"\x0fcollection_type\x18\x02 \x01(\x0e2&.google.cloud.apihub.v1.CollectionTypeB\x03\xe0A\x02R\x0ecollectionType\x12U\n" +
-	"\x0fplugin_instance\x18\x03 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$apihub.googleapis.com/PluginInstanceR\x0epluginInstance\x12 \n" +
-	"\taction_id\x18\x04 \x01(\tB\x03\xe0A\x02R\bactionId\x12?\n" +
-	"\bapi_data\x18\x05 \x01(\v2\x1f.google.cloud.apihub.v1.ApiDataB\x03\xe0A\x02R\aapiData\"m\n" +
-	"\aApiData\x12Z\n" +
-	"\x11api_metadata_list\x18\x01 \x01(\v2'.google.cloud.apihub.v1.ApiMetadataListB\x03\xe0A\x01H\x00R\x0fapiMetadataListB\x06\n" +
-	"\x04Data\"^\n" +
-	"\x0fApiMetadataList\x12K\n" +
-	"\fapi_metadata\x18\x01 \x03(\v2#.google.cloud.apihub.v1.APIMetadataB\x03\xe0A\x02R\vapiMetadata\"\xd7\x02\n" +
-	"\vAPIMetadata\x122\n" +
-	"\x03api\x18\x01 \x01(\v2\x1b.google.cloud.apihub.v1.ApiB\x03\xe0A\x02R\x03api\x12H\n" +
-	"\bversions\x18\x02 \x03(\v2'.google.cloud.apihub.v1.VersionMetadataB\x03\xe0A\x01R\bversions\x12$\n" +
-	"\voriginal_id\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
-	"originalId\x12Q\n" +
-	"\x14original_create_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x12originalCreateTime\x12Q\n" +
-	"\x14original_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x12originalUpdateTime\"\xb1\x03\n" +
-	"\x0fVersionMetadata\x12>\n" +
-	"\aversion\x18\x01 \x01(\v2\x1f.google.cloud.apihub.v1.VersionB\x03\xe0A\x02R\aversion\x12?\n" +
-	"\x05specs\x18\x02 \x03(\v2$.google.cloud.apihub.v1.SpecMetadataB\x03\xe0A\x01R\x05specs\x12Q\n" +
-	"\vdeployments\x18\x04 \x03(\v2*.google.cloud.apihub.v1.DeploymentMetadataB\x03\xe0A\x01R\vdeployments\x12$\n" +
-	"\voriginal_id\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
-	"originalId\x12Q\n" +
-	"\x14original_create_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x12originalCreateTime\x12Q\n" +
-	"\x14original_update_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x12originalUpdateTime\"\x91\x02\n" +
-	"\fSpecMetadata\x125\n" +
-	"\x04spec\x18\x01 \x01(\v2\x1c.google.cloud.apihub.v1.SpecB\x03\xe0A\x02R\x04spec\x12$\n" +
-	"\voriginal_id\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"originalId\x12Q\n" +
-	"\x14original_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x12originalCreateTime\x12Q\n" +
-	"\x14original_update_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x12originalUpdateTime\"\xa9\x02\n" +
-	"\x12DeploymentMetadata\x12G\n" +
+	",google/cloud/apihub/v1/collect_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/apihub/v1/common_fields.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\x02\n" +
+	"\x15CollectApiDataRequest\x12F\n" +
+	"\blocation\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\blocation\x12U\n" +
+	"\x0fcollection_type\x18\x02 \x01(\x0e2&.google.cloud.apihub.v1.CollectionTypeB\x04\xe2A\x01\x02R\x0ecollectionType\x12V\n" +
+	"\x0fplugin_instance\x18\x03 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$apihub.googleapis.com/PluginInstanceR\x0epluginInstance\x12!\n" +
+	"\taction_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\bactionId\x12@\n" +
+	"\bapi_data\x18\x05 \x01(\v2\x1f.google.cloud.apihub.v1.ApiDataB\x04\xe2A\x01\x02R\aapiData\"n\n" +
+	"\aApiData\x12[\n" +
+	"\x11api_metadata_list\x18\x01 \x01(\v2'.google.cloud.apihub.v1.ApiMetadataListB\x04\xe2A\x01\x01H\x00R\x0fapiMetadataListB\x06\n" +
+	"\x04Data\"_\n" +
+	"\x0fApiMetadataList\x12L\n" +
+	"\fapi_metadata\x18\x01 \x03(\v2#.google.cloud.apihub.v1.APIMetadataB\x04\xe2A\x01\x02R\vapiMetadata\"\xdc\x02\n" +
+	"\vAPIMetadata\x123\n" +
+	"\x03api\x18\x01 \x01(\v2\x1b.google.cloud.apihub.v1.ApiB\x04\xe2A\x01\x02R\x03api\x12I\n" +
+	"\bversions\x18\x02 \x03(\v2'.google.cloud.apihub.v1.VersionMetadataB\x04\xe2A\x01\x01R\bversions\x12%\n" +
+	"\voriginal_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"originalId\x12R\n" +
+	"\x14original_create_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x12originalCreateTime\x12R\n" +
+	"\x14original_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x12originalUpdateTime\"\xb7\x03\n" +
+	"\x0fVersionMetadata\x12?\n" +
+	"\aversion\x18\x01 \x01(\v2\x1f.google.cloud.apihub.v1.VersionB\x04\xe2A\x01\x02R\aversion\x12@\n" +
+	"\x05specs\x18\x02 \x03(\v2$.google.cloud.apihub.v1.SpecMetadataB\x04\xe2A\x01\x01R\x05specs\x12R\n" +
+	"\vdeployments\x18\x04 \x03(\v2*.google.cloud.apihub.v1.DeploymentMetadataB\x04\xe2A\x01\x01R\vdeployments\x12%\n" +
+	"\voriginal_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"originalId\x12R\n" +
+	"\x14original_create_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x12originalCreateTime\x12R\n" +
+	"\x14original_update_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x12originalUpdateTime\"\x95\x02\n" +
+	"\fSpecMetadata\x126\n" +
+	"\x04spec\x18\x01 \x01(\v2\x1c.google.cloud.apihub.v1.SpecB\x04\xe2A\x01\x02R\x04spec\x12%\n" +
+	"\voriginal_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"originalId\x12R\n" +
+	"\x14original_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x12originalCreateTime\x12R\n" +
+	"\x14original_update_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x12originalUpdateTime\"\xad\x02\n" +
+	"\x12DeploymentMetadata\x12H\n" +
 	"\n" +
-	"deployment\x18\x01 \x01(\v2\".google.cloud.apihub.v1.DeploymentB\x03\xe0A\x02R\n" +
-	"deployment\x12$\n" +
-	"\voriginal_id\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"originalId\x12Q\n" +
-	"\x14original_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x12originalCreateTime\x12Q\n" +
-	"\x14original_update_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x12originalUpdateTime\"\x18\n" +
+	"deployment\x18\x01 \x01(\v2\".google.cloud.apihub.v1.DeploymentB\x04\xe2A\x01\x02R\n" +
+	"deployment\x12%\n" +
+	"\voriginal_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"originalId\x12R\n" +
+	"\x14original_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x12originalCreateTime\x12R\n" +
+	"\x14original_update_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x12originalUpdateTime\"\x18\n" +
 	"\x16CollectApiDataResponse*i\n" +
 	"\x0eCollectionType\x12\x1f\n" +
 	"\x1bCOLLECTION_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +

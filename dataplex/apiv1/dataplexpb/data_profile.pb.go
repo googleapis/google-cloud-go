@@ -1201,79 +1201,78 @@ var File_google_cloud_dataplex_v1_data_profile_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_data_profile_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/dataplex/v1/data_profile.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a/google/cloud/dataplex/v1/datascans_common.proto\x1a)google/cloud/dataplex/v1/processing.proto\"\xe6\x06\n" +
-	"\x0fDataProfileSpec\x12.\n" +
-	"\x10sampling_percent\x18\x02 \x01(\x02B\x03\xe0A\x01R\x0fsamplingPercent\x12\"\n" +
+	"+google/cloud/dataplex/v1/data_profile.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a/google/cloud/dataplex/v1/datascans_common.proto\x1a)google/cloud/dataplex/v1/processing.proto\"\xf0\x06\n" +
+	"\x0fDataProfileSpec\x12/\n" +
+	"\x10sampling_percent\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x0fsamplingPercent\x12#\n" +
 	"\n" +
-	"row_filter\x18\x03 \x01(\tB\x03\xe0A\x01R\trowFilter\x12j\n" +
-	"\x11post_scan_actions\x18\x04 \x01(\v29.google.cloud.dataplex.v1.DataProfileSpec.PostScanActionsB\x03\xe0A\x01R\x0fpostScanActions\x12d\n" +
-	"\x0einclude_fields\x18\x05 \x01(\v28.google.cloud.dataplex.v1.DataProfileSpec.SelectedFieldsB\x03\xe0A\x01R\rincludeFields\x12d\n" +
-	"\x0eexclude_fields\x18\x06 \x01(\v28.google.cloud.dataplex.v1.DataProfileSpec.SelectedFieldsB\x03\xe0A\x01R\rexcludeFields\x12A\n" +
-	"\x1acatalog_publishing_enabled\x18\b \x01(\bB\x03\xe0A\x01R\x18catalogPublishingEnabled\x12G\n" +
-	"\x04mode\x18\t \x01(\x0e2..google.cloud.dataplex.v1.DataProfileSpec.ModeB\x03\xe0A\x01R\x04mode\x1a\xc5\x01\n" +
-	"\x0fPostScanActions\x12v\n" +
-	"\x0fbigquery_export\x18\x01 \x01(\v2H.google.cloud.dataplex.v1.DataProfileSpec.PostScanActions.BigQueryExportB\x03\xe0A\x01R\x0ebigqueryExport\x1a:\n" +
-	"\x0eBigQueryExport\x12(\n" +
-	"\rresults_table\x18\x01 \x01(\tB\x03\xe0A\x01R\fresultsTable\x1a6\n" +
-	"\x0eSelectedFields\x12$\n" +
-	"\vfield_names\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
+	"row_filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trowFilter\x12k\n" +
+	"\x11post_scan_actions\x18\x04 \x01(\v29.google.cloud.dataplex.v1.DataProfileSpec.PostScanActionsB\x04\xe2A\x01\x01R\x0fpostScanActions\x12e\n" +
+	"\x0einclude_fields\x18\x05 \x01(\v28.google.cloud.dataplex.v1.DataProfileSpec.SelectedFieldsB\x04\xe2A\x01\x01R\rincludeFields\x12e\n" +
+	"\x0eexclude_fields\x18\x06 \x01(\v28.google.cloud.dataplex.v1.DataProfileSpec.SelectedFieldsB\x04\xe2A\x01\x01R\rexcludeFields\x12B\n" +
+	"\x1acatalog_publishing_enabled\x18\b \x01(\bB\x04\xe2A\x01\x01R\x18catalogPublishingEnabled\x12H\n" +
+	"\x04mode\x18\t \x01(\x0e2..google.cloud.dataplex.v1.DataProfileSpec.ModeB\x04\xe2A\x01\x01R\x04mode\x1a\xc7\x01\n" +
+	"\x0fPostScanActions\x12w\n" +
+	"\x0fbigquery_export\x18\x01 \x01(\v2H.google.cloud.dataplex.v1.DataProfileSpec.PostScanActions.BigQueryExportB\x04\xe2A\x01\x01R\x0ebigqueryExport\x1a;\n" +
+	"\x0eBigQueryExport\x12)\n" +
+	"\rresults_table\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fresultsTable\x1a7\n" +
+	"\x0eSelectedFields\x12%\n" +
+	"\vfield_names\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
 	"fieldNames\";\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\x0f\n" +
-	"\vLIGHTWEIGHT\x10\x02\"\xdc\x12\n" +
-	"\x11DataProfileResult\x12 \n" +
-	"\trow_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\browCount\x12R\n" +
-	"\aprofile\x18\x04 \x01(\v23.google.cloud.dataplex.v1.DataProfileResult.ProfileB\x03\xe0A\x03R\aprofile\x12M\n" +
-	"\fscanned_data\x18\x05 \x01(\v2%.google.cloud.dataplex.v1.ScannedDataB\x03\xe0A\x03R\vscannedData\x12\x7f\n" +
-	"\x18post_scan_actions_result\x18\x06 \x01(\v2A.google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResultB\x03\xe0A\x03R\x15postScanActionsResult\x12z\n" +
-	"\x19catalog_publishing_status\x18\a \x01(\v29.google.cloud.dataplex.v1.DataScanCatalogPublishingStatusB\x03\xe0A\x03R\x17catalogPublishingStatus\x1a\xdd\v\n" +
-	"\aProfile\x12V\n" +
-	"\x06fields\x18\x02 \x03(\v29.google.cloud.dataplex.v1.DataProfileResult.Profile.FieldB\x03\xe0A\x03R\x06fields\x1a\xf9\n" +
+	"\vLIGHTWEIGHT\x10\x02\"\xfd\x12\n" +
+	"\x11DataProfileResult\x12!\n" +
+	"\trow_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\browCount\x12S\n" +
+	"\aprofile\x18\x04 \x01(\v23.google.cloud.dataplex.v1.DataProfileResult.ProfileB\x04\xe2A\x01\x03R\aprofile\x12N\n" +
+	"\fscanned_data\x18\x05 \x01(\v2%.google.cloud.dataplex.v1.ScannedDataB\x04\xe2A\x01\x03R\vscannedData\x12\x80\x01\n" +
+	"\x18post_scan_actions_result\x18\x06 \x01(\v2A.google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResultB\x04\xe2A\x01\x03R\x15postScanActionsResult\x12{\n" +
+	"\x19catalog_publishing_status\x18\a \x01(\v29.google.cloud.dataplex.v1.DataScanCatalogPublishingStatusB\x04\xe2A\x01\x03R\x17catalogPublishingStatus\x1a\xf5\v\n" +
+	"\aProfile\x12W\n" +
+	"\x06fields\x18\x02 \x03(\v29.google.cloud.dataplex.v1.DataProfileResult.Profile.FieldB\x04\xe2A\x01\x03R\x06fields\x1a\x90\v\n" +
+	"\x05Field\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04type\x12\x18\n" +
+	"\x04mode\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04mode\x12e\n" +
+	"\aprofile\x18\x04 \x01(\v2E.google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfoB\x04\xe2A\x01\x03R\aprofile\x1a\xd1\t\n" +
+	"\vProfileInfo\x12#\n" +
 	"\n" +
-	"\x05Field\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x03R\x04type\x12\x17\n" +
-	"\x04mode\x18\x03 \x01(\tB\x03\xe0A\x03R\x04mode\x12d\n" +
-	"\aprofile\x18\x04 \x01(\v2E.google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfoB\x03\xe0A\x03R\aprofile\x1a\xbe\t\n" +
-	"\vProfileInfo\x12\"\n" +
-	"\n" +
-	"null_ratio\x18\x02 \x01(\x01B\x03\xe0A\x03R\tnullRatio\x12*\n" +
-	"\x0edistinct_ratio\x18\x03 \x01(\x01B\x03\xe0A\x03R\rdistinctRatio\x12v\n" +
-	"\ftop_n_values\x18\x04 \x03(\v2O.google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.TopNValueB\x03\xe0A\x03R\n" +
+	"null_ratio\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\tnullRatio\x12+\n" +
+	"\x0edistinct_ratio\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\rdistinctRatio\x12w\n" +
+	"\ftop_n_values\x18\x04 \x03(\v2O.google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.TopNValueB\x04\xe2A\x01\x03R\n" +
 	"topNValues\x12~\n" +
 	"\x0estring_profile\x18e \x01(\v2U.google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.StringFieldInfoH\x00R\rstringProfile\x12\x81\x01\n" +
 	"\x0finteger_profile\x18f \x01(\v2V.google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.IntegerFieldInfoH\x00R\x0eintegerProfile\x12~\n" +
-	"\x0edouble_profile\x18g \x01(\v2U.google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.DoubleFieldInfoH\x00R\rdoubleProfile\x1a\x85\x01\n" +
-	"\x0fStringFieldInfo\x12\"\n" +
+	"\x0edouble_profile\x18g \x01(\v2U.google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.DoubleFieldInfoH\x00R\rdoubleProfile\x1a\x88\x01\n" +
+	"\x0fStringFieldInfo\x12#\n" +
 	"\n" +
-	"min_length\x18\x01 \x01(\x03B\x03\xe0A\x03R\tminLength\x12\"\n" +
+	"min_length\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\tminLength\x12#\n" +
 	"\n" +
-	"max_length\x18\x02 \x01(\x03B\x03\xe0A\x03R\tmaxLength\x12*\n" +
-	"\x0eaverage_length\x18\x03 \x01(\x01B\x03\xe0A\x03R\raverageLength\x1a\xb6\x01\n" +
-	"\x10IntegerFieldInfo\x12\x1d\n" +
-	"\aaverage\x18\x01 \x01(\x01B\x03\xe0A\x03R\aaverage\x122\n" +
-	"\x12standard_deviation\x18\x03 \x01(\x01B\x03\xe0A\x03R\x11standardDeviation\x12\x15\n" +
-	"\x03min\x18\x04 \x01(\x03B\x03\xe0A\x03R\x03min\x12!\n" +
-	"\tquartiles\x18\x06 \x03(\x03B\x03\xe0A\x03R\tquartiles\x12\x15\n" +
-	"\x03max\x18\x05 \x01(\x03B\x03\xe0A\x03R\x03max\x1a\xb5\x01\n" +
-	"\x0fDoubleFieldInfo\x12\x1d\n" +
-	"\aaverage\x18\x01 \x01(\x01B\x03\xe0A\x03R\aaverage\x122\n" +
-	"\x12standard_deviation\x18\x03 \x01(\x01B\x03\xe0A\x03R\x11standardDeviation\x12\x15\n" +
-	"\x03min\x18\x04 \x01(\x01B\x03\xe0A\x03R\x03min\x12!\n" +
-	"\tquartiles\x18\x06 \x03(\x01B\x03\xe0A\x03R\tquartiles\x12\x15\n" +
-	"\x03max\x18\x05 \x01(\x01B\x03\xe0A\x03R\x03max\x1a\\\n" +
-	"\tTopNValue\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\tB\x03\xe0A\x03R\x05value\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x05count\x12\x19\n" +
-	"\x05ratio\x18\x03 \x01(\x01B\x03\xe0A\x03R\x05ratioB\f\n" +
+	"max_length\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\tmaxLength\x12+\n" +
+	"\x0eaverage_length\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\raverageLength\x1a\xbb\x01\n" +
+	"\x10IntegerFieldInfo\x12\x1e\n" +
+	"\aaverage\x18\x01 \x01(\x01B\x04\xe2A\x01\x03R\aaverage\x123\n" +
+	"\x12standard_deviation\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\x11standardDeviation\x12\x16\n" +
+	"\x03min\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\x03min\x12\"\n" +
+	"\tquartiles\x18\x06 \x03(\x03B\x04\xe2A\x01\x03R\tquartiles\x12\x16\n" +
+	"\x03max\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\x03max\x1a\xba\x01\n" +
+	"\x0fDoubleFieldInfo\x12\x1e\n" +
+	"\aaverage\x18\x01 \x01(\x01B\x04\xe2A\x01\x03R\aaverage\x123\n" +
+	"\x12standard_deviation\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\x11standardDeviation\x12\x16\n" +
+	"\x03min\x18\x04 \x01(\x01B\x04\xe2A\x01\x03R\x03min\x12\"\n" +
+	"\tquartiles\x18\x06 \x03(\x01B\x04\xe2A\x01\x03R\tquartiles\x12\x16\n" +
+	"\x03max\x18\x05 \x01(\x01B\x04\xe2A\x01\x03R\x03max\x1a_\n" +
+	"\tTopNValue\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05value\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x05count\x12\x1a\n" +
+	"\x05ratio\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\x05ratioB\f\n" +
 	"\n" +
-	"field_info\x1a\xa4\x03\n" +
-	"\x15PostScanActionsResult\x12\x91\x01\n" +
-	"\x16bigquery_export_result\x18\x01 \x01(\v2V.google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResultB\x03\xe0A\x03R\x14bigqueryExportResult\x1a\xf6\x01\n" +
-	"\x14BigQueryExportResult\x12w\n" +
-	"\x05state\x18\x01 \x01(\x0e2\\.google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult.StateB\x03\xe0A\x03R\x05state\x12\x1d\n" +
-	"\amessage\x18\x02 \x01(\tB\x03\xe0A\x03R\amessage\"F\n" +
+	"field_info\x1a\xa7\x03\n" +
+	"\x15PostScanActionsResult\x12\x92\x01\n" +
+	"\x16bigquery_export_result\x18\x01 \x01(\v2V.google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResultB\x04\xe2A\x01\x03R\x14bigqueryExportResult\x1a\xf8\x01\n" +
+	"\x14BigQueryExportResult\x12x\n" +
+	"\x05state\x18\x01 \x01(\x0e2\\.google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult.StateB\x04\xe2A\x01\x03R\x05state\x12\x1e\n" +
+	"\amessage\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\amessage\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSUCCEEDED\x10\x01\x12\n" +

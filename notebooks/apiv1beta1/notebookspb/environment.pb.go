@@ -336,28 +336,28 @@ var File_google_cloud_notebooks_v1beta1_environment_proto protoreflect.FileDescr
 
 const file_google_cloud_notebooks_v1beta1_environment_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/notebooks/v1beta1/environment.proto\x12\x1egoogle.cloud.notebooks.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe6\x03\n" +
-	"\vEnvironment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12!\n" +
+	"0google/cloud/notebooks/v1beta1/environment.proto\x12\x1egoogle.cloud.notebooks.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe8\x03\n" +
+	"\vEnvironment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12D\n" +
 	"\bvm_image\x18\x06 \x01(\v2'.google.cloud.notebooks.v1beta1.VmImageH\x00R\avmImage\x12Y\n" +
 	"\x0fcontainer_image\x18\a \x01(\v2..google.cloud.notebooks.v1beta1.ContainerImageH\x00R\x0econtainerImage\x12.\n" +
-	"\x13post_startup_script\x18\b \x01(\tR\x11postStartupScript\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x13post_startup_script\x18\b \x01(\tR\x11postStartupScript\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime:X\xeaAU\n" +
 	"$notebooks.googleapis.com/Environment\x12-projects/{project}/environments/{environment}B\f\n" +
 	"\n" +
-	"image_type\"w\n" +
-	"\aVmImage\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"image_type\"x\n" +
+	"\aVmImage\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
 	"\n" +
 	"image_name\x18\x02 \x01(\tH\x00R\timageName\x12#\n" +
 	"\fimage_family\x18\x03 \x01(\tH\x00R\vimageFamilyB\a\n" +
-	"\x05image\"G\n" +
-	"\x0eContainerImage\x12#\n" +
+	"\x05image\"H\n" +
+	"\x0eContainerImage\x12$\n" +
 	"\n" +
-	"repository\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"repository\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"repository\x12\x10\n" +
 	"\x03tag\x18\x02 \x01(\tR\x03tagB\xe0\x01\n" +
 	"\"com.google.cloud.notebooks.v1beta1B\x10EnvironmentProtoP\x01Z@cloud.google.com/go/notebooks/apiv1beta1/notebookspb;notebookspb\xaa\x02\x1eGoogle.Cloud.Notebooks.V1Beta1\xca\x02\x1eGoogle\\Cloud\\Notebooks\\V1beta1\xea\x02!Google::Cloud::Notebooks::V1beta1b\x06proto3"

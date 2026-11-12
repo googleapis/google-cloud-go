@@ -299,17 +299,17 @@ var File_google_devtools_containeranalysis_v1beta1_containeranalysis_proto proto
 
 const file_google_devtools_containeranalysis_v1beta1_containeranalysis_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/devtools/containeranalysis/v1beta1/containeranalysis.proto\x12)google.devtools.containeranalysis.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\"9\n" +
-	"\x1eGeneratePackagesSummaryRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\xfe\x01\n" +
+	"Agoogle/devtools/containeranalysis/v1beta1/containeranalysis.proto\x12)google.devtools.containeranalysis.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\":\n" +
+	"\x1eGeneratePackagesSummaryRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\xfe\x01\n" +
 	"\x17PackagesSummaryResponse\x12!\n" +
 	"\fresource_url\x18\x01 \x01(\tR\vresourceUrl\x12}\n" +
 	"\x10licenses_summary\x18\x02 \x03(\v2R.google.devtools.containeranalysis.v1beta1.PackagesSummaryResponse.LicensesSummaryR\x0flicensesSummary\x1aA\n" +
 	"\x0fLicensesSummary\x12\x18\n" +
 	"\alicense\x18\x01 \x01(\tR\alicense\x12\x14\n" +
-	"\x05count\x18\x02 \x01(\x03R\x05count\",\n" +
-	"\x11ExportSBOMRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"L\n" +
+	"\x05count\x18\x02 \x01(\x03R\x05count\"-\n" +
+	"\x11ExportSBOMRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"L\n" +
 	"\x12ExportSBOMResponse\x126\n" +
 	"\x17discovery_occurrence_id\x18\x01 \x01(\tR\x15discoveryOccurrenceId2\xd8\x0e\n" +
 	"\x18ContainerAnalysisV1Beta1\x12\xef\x02\n" +

@@ -64,12 +64,24 @@ type SetUpSpaceRequest struct {
 	// If a `DIRECT_MESSAGE` space already exists, that space is returned instead
 	// of creating a new space.
 	Space *Space `protobuf:"bytes,1,opt,name=space,proto3" json:"space,omitempty"`
-	// Optional. A unique identifier for this request.
-	// A random UUID is recommended.
-	// Specifying an existing request ID returns the space created with that ID
-	// instead of creating a new space.
-	// Specifying an existing request ID from the same Chat app with a different
-	// authenticated user returns an error.
+	// Optional. A unique ID for this request. A random UUID is recommended.
+	// Specifying a request ID makes the request idempotent, which ensures that
+	// multiple identical requests with the same request ID result in only a
+	// single space being created. Subsequent requests with the same request ID
+	// return the existing space and do not update the space, even if the
+	// requested details differ from the current state.
+	//
+	// To use this field effectively:
+	//
+	// - Ensure that subsequent requests are identical and use the same
+	// authentication credentials as the original request.
+	// - If a space was already created with the provided request ID, the request
+	// returns that space. Note that the returned space might not be fully
+	// populated; the API echoes the space in your request with the
+	// system-assigned resource name populated. To retrieve the latest metadata
+	// for the space, call `GetSpace`.
+	// - Reusing an existing request ID with a different authenticated user
+	// results in an error.
 	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	// Optional. The Google Chat users or groups to invite to join the space. Omit
 	// the calling user, as they are added automatically.
@@ -160,12 +172,12 @@ var File_google_chat_v1_space_setup_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_space_setup_proto_rawDesc = "" +
 	"\n" +
-	" google/chat/v1/space_setup.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/chat/v1/membership.proto\x1a\x1agoogle/chat/v1/space.proto\"\xac\x01\n" +
-	"\x11SetUpSpaceRequest\x120\n" +
-	"\x05space\x18\x01 \x01(\v2\x15.google.chat.v1.SpaceB\x03\xe0A\x02R\x05space\x12\"\n" +
+	" google/chat/v1/space_setup.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/chat/v1/membership.proto\x1a\x1agoogle/chat/v1/space.proto\"\xaf\x01\n" +
+	"\x11SetUpSpaceRequest\x121\n" +
+	"\x05space\x18\x01 \x01(\v2\x15.google.chat.v1.SpaceB\x04\xe2A\x01\x02R\x05space\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12A\n" +
-	"\vmemberships\x18\x04 \x03(\v2\x1a.google.chat.v1.MembershipB\x03\xe0A\x01R\vmembershipsB\xa8\x01\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12B\n" +
+	"\vmemberships\x18\x04 \x03(\v2\x1a.google.chat.v1.MembershipB\x04\xe2A\x01\x01R\vmembershipsB\xa8\x01\n" +
 	"\x12com.google.chat.v1B\x0fSpaceSetupProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 
 var (

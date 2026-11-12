@@ -540,6 +540,57 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListFindings = append(client.CallOptions.ListFindings, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListFindingTypeStats = append(client.CallOptions.ListFindingTypeStats, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "websecurityscanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/websecurityscanner/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "websecurityscanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateScanConfig = append(client.CallOptions.CreateScanConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteScanConfig = append(client.CallOptions.DeleteScanConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetScanConfig = append(client.CallOptions.GetScanConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListScanConfigs = append(client.CallOptions.ListScanConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateScanConfig = append(client.CallOptions.UpdateScanConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.StartScanRun = append(client.CallOptions.StartScanRun, gax.WithClientTracing(tracing))
+		client.CallOptions.GetScanRun = append(client.CallOptions.GetScanRun, gax.WithClientTracing(tracing))
+		client.CallOptions.ListScanRuns = append(client.CallOptions.ListScanRuns, gax.WithClientTracing(tracing))
+		client.CallOptions.StopScanRun = append(client.CallOptions.StopScanRun, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCrawledUrls = append(client.CallOptions.ListCrawledUrls, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFinding = append(client.CallOptions.GetFinding, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFindings = append(client.CallOptions.ListFindings, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFindingTypeStats = append(client.CallOptions.ListFindingTypeStats, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "websecurityscanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/websecurityscanner/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "websecurityscanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateScanConfig = append(client.CallOptions.CreateScanConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteScanConfig = append(client.CallOptions.DeleteScanConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetScanConfig = append(client.CallOptions.GetScanConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListScanConfigs = append(client.CallOptions.ListScanConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateScanConfig = append(client.CallOptions.UpdateScanConfig, gax.WithClientLogging(logging))
+		client.CallOptions.StartScanRun = append(client.CallOptions.StartScanRun, gax.WithClientLogging(logging))
+		client.CallOptions.GetScanRun = append(client.CallOptions.GetScanRun, gax.WithClientLogging(logging))
+		client.CallOptions.ListScanRuns = append(client.CallOptions.ListScanRuns, gax.WithClientLogging(logging))
+		client.CallOptions.StopScanRun = append(client.CallOptions.StopScanRun, gax.WithClientLogging(logging))
+		client.CallOptions.ListCrawledUrls = append(client.CallOptions.ListCrawledUrls, gax.WithClientLogging(logging))
+		client.CallOptions.GetFinding = append(client.CallOptions.GetFinding, gax.WithClientLogging(logging))
+		client.CallOptions.ListFindings = append(client.CallOptions.ListFindings, gax.WithClientLogging(logging))
+		client.CallOptions.ListFindingTypeStats = append(client.CallOptions.ListFindingTypeStats, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -644,6 +695,57 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetFinding = append(callOpts.GetFinding, gax.WithClientMetrics(metrics))
 		callOpts.ListFindings = append(callOpts.ListFindings, gax.WithClientMetrics(metrics))
 		callOpts.ListFindingTypeStats = append(callOpts.ListFindingTypeStats, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "websecurityscanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/websecurityscanner/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "websecurityscanner.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateScanConfig = append(callOpts.CreateScanConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteScanConfig = append(callOpts.DeleteScanConfig, gax.WithClientTracing(tracing))
+		callOpts.GetScanConfig = append(callOpts.GetScanConfig, gax.WithClientTracing(tracing))
+		callOpts.ListScanConfigs = append(callOpts.ListScanConfigs, gax.WithClientTracing(tracing))
+		callOpts.UpdateScanConfig = append(callOpts.UpdateScanConfig, gax.WithClientTracing(tracing))
+		callOpts.StartScanRun = append(callOpts.StartScanRun, gax.WithClientTracing(tracing))
+		callOpts.GetScanRun = append(callOpts.GetScanRun, gax.WithClientTracing(tracing))
+		callOpts.ListScanRuns = append(callOpts.ListScanRuns, gax.WithClientTracing(tracing))
+		callOpts.StopScanRun = append(callOpts.StopScanRun, gax.WithClientTracing(tracing))
+		callOpts.ListCrawledUrls = append(callOpts.ListCrawledUrls, gax.WithClientTracing(tracing))
+		callOpts.GetFinding = append(callOpts.GetFinding, gax.WithClientTracing(tracing))
+		callOpts.ListFindings = append(callOpts.ListFindings, gax.WithClientTracing(tracing))
+		callOpts.ListFindingTypeStats = append(callOpts.ListFindingTypeStats, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "websecurityscanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/websecurityscanner/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "websecurityscanner.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateScanConfig = append(callOpts.CreateScanConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteScanConfig = append(callOpts.DeleteScanConfig, gax.WithClientLogging(logging))
+		callOpts.GetScanConfig = append(callOpts.GetScanConfig, gax.WithClientLogging(logging))
+		callOpts.ListScanConfigs = append(callOpts.ListScanConfigs, gax.WithClientLogging(logging))
+		callOpts.UpdateScanConfig = append(callOpts.UpdateScanConfig, gax.WithClientLogging(logging))
+		callOpts.StartScanRun = append(callOpts.StartScanRun, gax.WithClientLogging(logging))
+		callOpts.GetScanRun = append(callOpts.GetScanRun, gax.WithClientLogging(logging))
+		callOpts.ListScanRuns = append(callOpts.ListScanRuns, gax.WithClientLogging(logging))
+		callOpts.StopScanRun = append(callOpts.StopScanRun, gax.WithClientLogging(logging))
+		callOpts.ListCrawledUrls = append(callOpts.ListCrawledUrls, gax.WithClientLogging(logging))
+		callOpts.GetFinding = append(callOpts.GetFinding, gax.WithClientLogging(logging))
+		callOpts.ListFindings = append(callOpts.ListFindings, gax.WithClientLogging(logging))
+		callOpts.ListFindingTypeStats = append(callOpts.ListFindingTypeStats, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
@@ -1080,6 +1182,11 @@ func (c *restClient) CreateScanConfig(ctx context.Context, req *websecurityscann
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/scanConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -1134,6 +1241,11 @@ func (c *restClient) DeleteScanConfig(ctx context.Context, req *websecurityscann
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1171,6 +1283,11 @@ func (c *restClient) DeleteScanConfig(ctx context.Context, req *websecurityscann
 func (c *restClient) GetScanConfig(ctx context.Context, req *websecurityscannerpb.GetScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1238,6 +1355,11 @@ func (c *restClient) ListScanConfigs(ctx context.Context, req *websecurityscanne
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/scanConfigs", req.GetParent())
@@ -1312,6 +1434,11 @@ func (c *restClient) UpdateScanConfig(ctx context.Context, req *websecurityscann
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetScanConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetScanConfig().GetName())
 
 	params := url.Values{}
@@ -1379,6 +1506,11 @@ func (c *restClient) StartScanRun(ctx context.Context, req *websecurityscannerpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
 
 	params := url.Values{}
@@ -1431,6 +1563,11 @@ func (c *restClient) StartScanRun(ctx context.Context, req *websecurityscannerpb
 func (c *restClient) GetScanRun(ctx context.Context, req *websecurityscannerpb.GetScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1499,6 +1636,11 @@ func (c *restClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/scanRuns", req.GetParent())
@@ -1572,6 +1714,11 @@ func (c *restClient) StopScanRun(ctx context.Context, req *websecurityscannerpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -1639,6 +1786,11 @@ func (c *restClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/crawledUrls", req.GetParent())
 
 		params := url.Values{}
@@ -1702,6 +1854,11 @@ func (c *restClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 func (c *restClient) GetFinding(ctx context.Context, req *websecurityscannerpb.GetFindingRequest, opts ...gax.CallOption) (*websecurityscannerpb.Finding, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1771,6 +1928,11 @@ func (c *restClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/findings", req.GetParent())
 
 		params := url.Values{}
@@ -1837,6 +1999,11 @@ func (c *restClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 func (c *restClient) ListFindingTypeStats(ctx context.Context, req *websecurityscannerpb.ListFindingTypeStatsRequest, opts ...gax.CallOption) (*websecurityscannerpb.ListFindingTypeStatsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/findingTypeStats", req.GetParent())

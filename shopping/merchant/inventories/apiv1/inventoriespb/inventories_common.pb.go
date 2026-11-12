@@ -696,22 +696,22 @@ var File_google_shopping_merchant_inventories_v1_inventories_common_proto protor
 
 const file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDesc = "" +
 	"\n" +
-	"@google/shopping/merchant/inventories/v1/inventories_common.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xe5\v\n" +
-	"\x18LocalInventoryAttributes\x126\n" +
-	"\x05price\x18\x01 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\x05price\x12?\n" +
+	"@google/shopping/merchant/inventories/v1/inventories_common.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xef\v\n" +
+	"\x18LocalInventoryAttributes\x127\n" +
+	"\x05price\x18\x01 \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01R\x05price\x12@\n" +
 	"\n" +
-	"sale_price\x18\x02 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\tsalePrice\x12U\n" +
-	"\x19sale_price_effective_date\x18\x03 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x01R\x16salePriceEffectiveDate\x12w\n" +
-	"\favailability\x18\x04 \x01(\x0e2N.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.AvailabilityH\x00R\favailability\x88\x01\x01\x12$\n" +
-	"\bquantity\x18\x05 \x01(\x03B\x03\xe0A\x01H\x01R\bquantity\x88\x01\x01\x12}\n" +
-	"\rpickup_method\x18\x06 \x01(\x0e2N.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupMethodB\x03\xe0A\x01H\x02R\fpickupMethod\x88\x01\x01\x12t\n" +
+	"sale_price\x18\x02 \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01R\tsalePrice\x12V\n" +
+	"\x19sale_price_effective_date\x18\x03 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x01R\x16salePriceEffectiveDate\x12w\n" +
+	"\favailability\x18\x04 \x01(\x0e2N.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.AvailabilityH\x00R\favailability\x88\x01\x01\x12%\n" +
+	"\bquantity\x18\x05 \x01(\x03B\x04\xe2A\x01\x01H\x01R\bquantity\x88\x01\x01\x12~\n" +
+	"\rpickup_method\x18\x06 \x01(\x0e2N.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupMethodB\x04\xe2A\x01\x01H\x02R\fpickupMethod\x88\x01\x01\x12u\n" +
 	"\n" +
-	"pickup_sla\x18\a \x01(\x0e2K.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupSlaB\x03\xe0A\x01H\x03R\tpickupSla\x88\x01\x01\x12B\n" +
-	"\x18instore_product_location\x18\b \x01(\tB\x03\xe0A\x01H\x04R\x16instoreProductLocation\x88\x01\x01\x12:\n" +
-	"\x14local_shipping_label\x18\t \x01(\tB\x03\xe0A\x01H\x05R\x12localShippingLabel\x88\x01\x01\x12p\n" +
+	"pickup_sla\x18\a \x01(\x0e2K.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupSlaB\x04\xe2A\x01\x01H\x03R\tpickupSla\x88\x01\x01\x12C\n" +
+	"\x18instore_product_location\x18\b \x01(\tB\x04\xe2A\x01\x01H\x04R\x16instoreProductLocation\x88\x01\x01\x12;\n" +
+	"\x14local_shipping_label\x18\t \x01(\tB\x04\xe2A\x01\x01H\x05R\x12localShippingLabel\x88\x01\x01\x12q\n" +
 	"\x10loyalty_programs\x18\n" +
-	" \x03(\v2@.google.shopping.merchant.inventories.v1.InventoryLoyaltyProgramB\x03\xe0A\x01R\x0floyaltyPrograms\x12W\n" +
-	"\x11custom_attributes\x18\v \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x01R\x10customAttributes\"\x8f\x01\n" +
+	" \x03(\v2@.google.shopping.merchant.inventories.v1.InventoryLoyaltyProgramB\x04\xe2A\x01\x01R\x0floyaltyPrograms\x12X\n" +
+	"\x11custom_attributes\x18\v \x03(\v2%.google.shopping.type.CustomAttributeB\x04\xe2A\x01\x01R\x10customAttributes\"\x8f\x01\n" +
 	"\fAvailability\x12,\n" +
 	"(LOCAL_INVENTORY_AVAILABILITY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bIN_STOCK\x10\x01\x12\x18\n" +
@@ -757,14 +757,14 @@ const file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawD
 	"\x18_cashback_for_future_useB\x11\n" +
 	"\x0f_loyalty_pointsB\"\n" +
 	" _member_price_effective_intervalB\x11\n" +
-	"\x0f_shipping_label\"\xd2\x04\n" +
-	"\x1bRegionalInventoryAttributes\x126\n" +
-	"\x05price\x18\x01 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\x05price\x12?\n" +
+	"\x0f_shipping_label\"\xd8\x04\n" +
+	"\x1bRegionalInventoryAttributes\x127\n" +
+	"\x05price\x18\x01 \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01R\x05price\x12@\n" +
 	"\n" +
-	"sale_price\x18\x02 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\tsalePrice\x12U\n" +
-	"\x19sale_price_effective_date\x18\x03 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x01R\x16salePriceEffectiveDate\x12\x7f\n" +
-	"\favailability\x18\x04 \x01(\x0e2Q.google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.AvailabilityB\x03\xe0A\x01H\x00R\favailability\x88\x01\x01\x12p\n" +
-	"\x10loyalty_programs\x18\x05 \x03(\v2@.google.shopping.merchant.inventories.v1.InventoryLoyaltyProgramB\x03\xe0A\x01R\x0floyaltyPrograms\"_\n" +
+	"sale_price\x18\x02 \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01R\tsalePrice\x12V\n" +
+	"\x19sale_price_effective_date\x18\x03 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x01R\x16salePriceEffectiveDate\x12\x80\x01\n" +
+	"\favailability\x18\x04 \x01(\x0e2Q.google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.AvailabilityB\x04\xe2A\x01\x01H\x00R\favailability\x88\x01\x01\x12q\n" +
+	"\x10loyalty_programs\x18\x05 \x03(\v2@.google.shopping.merchant.inventories.v1.InventoryLoyaltyProgramB\x04\xe2A\x01\x01R\x0floyaltyPrograms\"_\n" +
 	"\fAvailability\x12/\n" +
 	"+REGIONAL_INVENTORY_AVAILABILITY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bIN_STOCK\x10\x01\x12\x10\n" +

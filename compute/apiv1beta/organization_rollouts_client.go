@@ -247,6 +247,45 @@ func NewOrganizationRolloutsRESTClient(ctx context.Context, opts ...option.Clien
 		callOpts.Pause = append(callOpts.Pause, gax.WithClientMetrics(metrics))
 		callOpts.Resume = append(callOpts.Resume, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Advance = append(callOpts.Advance, gax.WithClientTracing(tracing))
+		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Pause = append(callOpts.Pause, gax.WithClientTracing(tracing))
+		callOpts.Resume = append(callOpts.Resume, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Advance = append(callOpts.Advance, gax.WithClientLogging(logging))
+		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Pause = append(callOpts.Pause, gax.WithClientLogging(logging))
+		callOpts.Resume = append(callOpts.Resume, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -308,6 +347,12 @@ func (c *organizationRolloutsRESTClient) Advance(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v/advance", req.GetOrganization(), req.GetRollout())
 
 	params := url.Values{}
@@ -326,9 +371,6 @@ func (c *organizationRolloutsRESTClient) Advance(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationRollouts/Advance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/{organization=organizations/*}/global/rollouts/{rollout}/advance")
@@ -376,6 +418,12 @@ func (c *organizationRolloutsRESTClient) Cancel(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout())
 
 	params := url.Values{}
@@ -394,9 +442,6 @@ func (c *organizationRolloutsRESTClient) Cancel(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationRollouts/Cancel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/{organization=organizations/*}/global/rollouts/{rollout}")
@@ -444,6 +489,12 @@ func (c *organizationRolloutsRESTClient) Delete(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout())
 
 	params := url.Values{}
@@ -459,9 +510,6 @@ func (c *organizationRolloutsRESTClient) Delete(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationRollouts/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/{organization=organizations/*}/global/rollouts/{rollout}")
@@ -509,6 +557,12 @@ func (c *organizationRolloutsRESTClient) Get(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout())
 
 	// Build HTTP headers from client and context metadata.
@@ -517,9 +571,6 @@ func (c *organizationRolloutsRESTClient) Get(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationRollouts/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/{organization=organizations/*}/global/rollouts/{rollout}")
@@ -572,6 +623,11 @@ func (c *organizationRolloutsRESTClient) List(ctx context.Context, req *computep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetOrganization(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts", req.GetOrganization())
@@ -647,6 +703,12 @@ func (c *organizationRolloutsRESTClient) Pause(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v/pause", req.GetOrganization(), req.GetRollout())
 
 	params := url.Values{}
@@ -665,9 +727,6 @@ func (c *organizationRolloutsRESTClient) Pause(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationRollouts/Pause")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/{organization=organizations/*}/global/rollouts/{rollout}/pause")
@@ -715,6 +774,12 @@ func (c *organizationRolloutsRESTClient) Resume(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/rollouts/%v/resume", req.GetOrganization(), req.GetRollout())
 
 	params := url.Values{}
@@ -733,9 +798,6 @@ func (c *organizationRolloutsRESTClient) Resume(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/%v/global/rollouts/%v", req.GetOrganization(), req.GetRollout()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationRollouts/Resume")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/{organization=organizations/*}/global/rollouts/{rollout}/resume")

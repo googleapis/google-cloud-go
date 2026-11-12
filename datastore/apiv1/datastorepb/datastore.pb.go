@@ -2619,26 +2619,26 @@ var File_google_datastore_v1_datastore_proto protoreflect.FileDescriptor
 
 const file_google_datastore_v1_datastore_proto_rawDesc = "" +
 	"\n" +
-	"#google/datastore/v1/datastore.proto\x12\x13google.datastore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x18google/api/routing.proto\x1a,google/datastore/v1/aggregation_result.proto\x1a google/datastore/v1/entity.proto\x1a\x1fgoogle/datastore/v1/query.proto\x1a'google/datastore/v1/query_profile.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe7\x02\n" +
-	"\rLookupRequest\x12\"\n" +
+	"#google/datastore/v1/datastore.proto\x12\x13google.datastore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x18google/api/routing.proto\x1a,google/datastore/v1/aggregation_result.proto\x1a google/datastore/v1/entity.proto\x1a\x1fgoogle/datastore/v1/query.proto\x1a'google/datastore/v1/query_profile.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xea\x02\n" +
+	"\rLookupRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\b \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
+	"project_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1f\n" +
 	"\vdatabase_id\x18\t \x01(\tR\n" +
 	"databaseId\x12C\n" +
-	"\fread_options\x18\x01 \x01(\v2 .google.datastore.v1.ReadOptionsR\vreadOptions\x121\n" +
-	"\x04keys\x18\x03 \x03(\v2\x18.google.datastore.v1.KeyB\x03\xe0A\x02R\x04keys\x12F\n" +
-	"\rproperty_mask\x18\x05 \x01(\v2!.google.datastore.v1.PropertyMaskR\fpropertyMask\x12Q\n" +
+	"\fread_options\x18\x01 \x01(\v2 .google.datastore.v1.ReadOptionsR\vreadOptions\x122\n" +
+	"\x04keys\x18\x03 \x03(\v2\x18.google.datastore.v1.KeyB\x04\xe2A\x01\x02R\x04keys\x12F\n" +
+	"\rproperty_mask\x18\x05 \x01(\v2!.google.datastore.v1.PropertyMaskR\fpropertyMask\x12R\n" +
 	"\x0frequest_options\x18\n" +
-	" \x01(\v2#.google.datastore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"\x97\x02\n" +
+	" \x01(\v2#.google.datastore.v1.RequestOptionsB\x04\xe2A\x01\x01R\x0erequestOptions\"\x97\x02\n" +
 	"\x0eLookupResponse\x127\n" +
 	"\x05found\x18\x01 \x03(\v2!.google.datastore.v1.EntityResultR\x05found\x12;\n" +
 	"\amissing\x18\x02 \x03(\v2!.google.datastore.v1.EntityResultR\amissing\x124\n" +
 	"\bdeferred\x18\x03 \x03(\v2\x18.google.datastore.v1.KeyR\bdeferred\x12 \n" +
 	"\vtransaction\x18\x05 \x01(\fR\vtransaction\x127\n" +
-	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\breadTime\"\xce\x04\n" +
-	"\x0fRunQueryRequest\x12\"\n" +
+	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\breadTime\"\xd1\x04\n" +
+	"\x0fRunQueryRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\b \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
+	"project_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1f\n" +
 	"\vdatabase_id\x18\t \x01(\tR\n" +
 	"databaseId\x12C\n" +
 	"\fpartition_id\x18\x02 \x01(\v2 .google.datastore.v1.PartitionIdR\vpartitionId\x12C\n" +
@@ -2646,64 +2646,64 @@ const file_google_datastore_v1_datastore_proto_rawDesc = "" +
 	"\x05query\x18\x03 \x01(\v2\x1a.google.datastore.v1.QueryH\x00R\x05query\x12<\n" +
 	"\tgql_query\x18\a \x01(\v2\x1d.google.datastore.v1.GqlQueryH\x00R\bgqlQuery\x12F\n" +
 	"\rproperty_mask\x18\n" +
-	" \x01(\v2!.google.datastore.v1.PropertyMaskR\fpropertyMask\x12Q\n" +
-	"\x0fexplain_options\x18\f \x01(\v2#.google.datastore.v1.ExplainOptionsB\x03\xe0A\x01R\x0eexplainOptions\x12Q\n" +
-	"\x0frequest_options\x18\r \x01(\v2#.google.datastore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\f\n" +
+	" \x01(\v2!.google.datastore.v1.PropertyMaskR\fpropertyMask\x12R\n" +
+	"\x0fexplain_options\x18\f \x01(\v2#.google.datastore.v1.ExplainOptionsB\x04\xe2A\x01\x01R\x0eexplainOptions\x12R\n" +
+	"\x0frequest_options\x18\r \x01(\v2#.google.datastore.v1.RequestOptionsB\x04\xe2A\x01\x01R\x0erequestOptionsB\f\n" +
 	"\n" +
 	"query_type\"\xf1\x01\n" +
 	"\x10RunQueryResponse\x12;\n" +
 	"\x05batch\x18\x01 \x01(\v2%.google.datastore.v1.QueryResultBatchR\x05batch\x120\n" +
 	"\x05query\x18\x02 \x01(\v2\x1a.google.datastore.v1.QueryR\x05query\x12 \n" +
 	"\vtransaction\x18\x05 \x01(\fR\vtransaction\x12L\n" +
-	"\x0fexplain_metrics\x18\t \x01(\v2#.google.datastore.v1.ExplainMetricsR\x0eexplainMetrics\"\xb3\x04\n" +
-	"\x1aRunAggregationQueryRequest\x12\"\n" +
+	"\x0fexplain_metrics\x18\t \x01(\v2#.google.datastore.v1.ExplainMetricsR\x0eexplainMetrics\"\xb6\x04\n" +
+	"\x1aRunAggregationQueryRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\b \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
+	"project_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1f\n" +
 	"\vdatabase_id\x18\t \x01(\tR\n" +
 	"databaseId\x12C\n" +
 	"\fpartition_id\x18\x02 \x01(\v2 .google.datastore.v1.PartitionIdR\vpartitionId\x12C\n" +
 	"\fread_options\x18\x01 \x01(\v2 .google.datastore.v1.ReadOptionsR\vreadOptions\x12T\n" +
 	"\x11aggregation_query\x18\x03 \x01(\v2%.google.datastore.v1.AggregationQueryH\x00R\x10aggregationQuery\x12<\n" +
-	"\tgql_query\x18\a \x01(\v2\x1d.google.datastore.v1.GqlQueryH\x00R\bgqlQuery\x12Q\n" +
-	"\x0fexplain_options\x18\v \x01(\v2#.google.datastore.v1.ExplainOptionsB\x03\xe0A\x01R\x0eexplainOptions\x12Q\n" +
-	"\x0frequest_options\x18\f \x01(\v2#.google.datastore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\f\n" +
+	"\tgql_query\x18\a \x01(\v2\x1d.google.datastore.v1.GqlQueryH\x00R\bgqlQuery\x12R\n" +
+	"\x0fexplain_options\x18\v \x01(\v2#.google.datastore.v1.ExplainOptionsB\x04\xe2A\x01\x01R\x0eexplainOptions\x12R\n" +
+	"\x0frequest_options\x18\f \x01(\v2#.google.datastore.v1.RequestOptionsB\x04\xe2A\x01\x01R\x0erequestOptionsB\f\n" +
 	"\n" +
 	"query_type\"\x8d\x02\n" +
 	"\x1bRunAggregationQueryResponse\x12A\n" +
 	"\x05batch\x18\x01 \x01(\v2+.google.datastore.v1.AggregationResultBatchR\x05batch\x12;\n" +
 	"\x05query\x18\x02 \x01(\v2%.google.datastore.v1.AggregationQueryR\x05query\x12 \n" +
 	"\vtransaction\x18\x05 \x01(\fR\vtransaction\x12L\n" +
-	"\x0fexplain_metrics\x18\t \x01(\v2#.google.datastore.v1.ExplainMetricsR\x0eexplainMetrics\"\x8b\x02\n" +
-	"\x17BeginTransactionRequest\x12\"\n" +
+	"\x0fexplain_metrics\x18\t \x01(\v2#.google.datastore.v1.ExplainMetricsR\x0eexplainMetrics\"\x8d\x02\n" +
+	"\x17BeginTransactionRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\b \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
+	"project_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1f\n" +
 	"\vdatabase_id\x18\t \x01(\tR\n" +
 	"databaseId\x12X\n" +
 	"\x13transaction_options\x18\n" +
-	" \x01(\v2'.google.datastore.v1.TransactionOptionsR\x12transactionOptions\x12Q\n" +
-	"\x0frequest_options\x18\v \x01(\v2#.google.datastore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"<\n" +
+	" \x01(\v2'.google.datastore.v1.TransactionOptionsR\x12transactionOptions\x12R\n" +
+	"\x0frequest_options\x18\v \x01(\v2#.google.datastore.v1.RequestOptionsB\x04\xe2A\x01\x01R\x0erequestOptions\"<\n" +
 	"\x18BeginTransactionResponse\x12 \n" +
-	"\vtransaction\x18\x01 \x01(\fR\vtransaction\"\xd0\x01\n" +
-	"\x0fRollbackRequest\x12\"\n" +
+	"\vtransaction\x18\x01 \x01(\fR\vtransaction\"\xd3\x01\n" +
+	"\x0fRollbackRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\b \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
+	"project_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1f\n" +
 	"\vdatabase_id\x18\t \x01(\tR\n" +
-	"databaseId\x12%\n" +
-	"\vtransaction\x18\x01 \x01(\fB\x03\xe0A\x02R\vtransaction\x12Q\n" +
+	"databaseId\x12&\n" +
+	"\vtransaction\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\vtransaction\x12R\n" +
 	"\x0frequest_options\x18\n" +
-	" \x01(\v2#.google.datastore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"\x12\n" +
-	"\x10RollbackResponse\"\x86\x04\n" +
-	"\rCommitRequest\x12\"\n" +
+	" \x01(\v2#.google.datastore.v1.RequestOptionsB\x04\xe2A\x01\x01R\x0erequestOptions\"\x12\n" +
+	"\x10RollbackResponse\"\x88\x04\n" +
+	"\rCommitRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\b \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
+	"project_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1f\n" +
 	"\vdatabase_id\x18\t \x01(\tR\n" +
 	"databaseId\x12;\n" +
 	"\x04mode\x18\x05 \x01(\x0e2'.google.datastore.v1.CommitRequest.ModeR\x04mode\x12\"\n" +
 	"\vtransaction\x18\x01 \x01(\fH\x00R\vtransaction\x12_\n" +
 	"\x16single_use_transaction\x18\n" +
 	" \x01(\v2'.google.datastore.v1.TransactionOptionsH\x00R\x14singleUseTransaction\x12;\n" +
-	"\tmutations\x18\x06 \x03(\v2\x1d.google.datastore.v1.MutationR\tmutations\x12Q\n" +
-	"\x0frequest_options\x18\v \x01(\v2#.google.datastore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"F\n" +
+	"\tmutations\x18\x06 \x03(\v2\x1d.google.datastore.v1.MutationR\tmutations\x12R\n" +
+	"\x0frequest_options\x18\v \x01(\v2#.google.datastore.v1.RequestOptionsB\x04\xe2A\x01\x01R\x0erequestOptions\"F\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rTRANSACTIONAL\x10\x01\x12\x15\n" +
@@ -2713,26 +2713,26 @@ const file_google_datastore_v1_datastore_proto_rawDesc = "" +
 	"\x10mutation_results\x18\x03 \x03(\v2#.google.datastore.v1.MutationResultR\x0fmutationResults\x12#\n" +
 	"\rindex_updates\x18\x04 \x01(\x05R\findexUpdates\x12;\n" +
 	"\vcommit_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"commitTime\"\xdf\x01\n" +
-	"\x12AllocateIdsRequest\x12\"\n" +
+	"commitTime\"\xe2\x01\n" +
+	"\x12AllocateIdsRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\b \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
+	"project_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1f\n" +
 	"\vdatabase_id\x18\t \x01(\tR\n" +
-	"databaseId\x121\n" +
-	"\x04keys\x18\x01 \x03(\v2\x18.google.datastore.v1.KeyB\x03\xe0A\x02R\x04keys\x12Q\n" +
+	"databaseId\x122\n" +
+	"\x04keys\x18\x01 \x03(\v2\x18.google.datastore.v1.KeyB\x04\xe2A\x01\x02R\x04keys\x12R\n" +
 	"\x0frequest_options\x18\n" +
-	" \x01(\v2#.google.datastore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"C\n" +
+	" \x01(\v2#.google.datastore.v1.RequestOptionsB\x04\xe2A\x01\x01R\x0erequestOptions\"C\n" +
 	"\x13AllocateIdsResponse\x12,\n" +
-	"\x04keys\x18\x01 \x03(\v2\x18.google.datastore.v1.KeyR\x04keys\"\xde\x01\n" +
-	"\x11ReserveIdsRequest\x12\"\n" +
+	"\x04keys\x18\x01 \x03(\v2\x18.google.datastore.v1.KeyR\x04keys\"\xe1\x01\n" +
+	"\x11ReserveIdsRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\b \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
+	"project_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1f\n" +
 	"\vdatabase_id\x18\t \x01(\tR\n" +
-	"databaseId\x121\n" +
-	"\x04keys\x18\x01 \x03(\v2\x18.google.datastore.v1.KeyB\x03\xe0A\x02R\x04keys\x12Q\n" +
+	"databaseId\x122\n" +
+	"\x04keys\x18\x01 \x03(\v2\x18.google.datastore.v1.KeyB\x04\xe2A\x01\x02R\x04keys\x12R\n" +
 	"\x0frequest_options\x18\n" +
-	" \x01(\v2#.google.datastore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"\x14\n" +
-	"\x12ReserveIdsResponse\"\xe9\x05\n" +
+	" \x01(\v2#.google.datastore.v1.RequestOptionsB\x04\xe2A\x01\x01R\x0erequestOptions\"\x14\n" +
+	"\x12ReserveIdsResponse\"\xea\x05\n" +
 	"\bMutation\x125\n" +
 	"\x06insert\x18\x04 \x01(\v2\x1b.google.datastore.v1.EntityH\x00R\x06insert\x125\n" +
 	"\x06update\x18\x05 \x01(\v2\x1b.google.datastore.v1.EntityH\x00R\x06update\x125\n" +
@@ -2743,16 +2743,16 @@ const file_google_datastore_v1_datastore_proto_rawDesc = "" +
 	"updateTime\x12z\n" +
 	"\x1cconflict_resolution_strategy\x18\n" +
 	" \x01(\x0e28.google.datastore.v1.Mutation.ConflictResolutionStrategyR\x1aconflictResolutionStrategy\x12F\n" +
-	"\rproperty_mask\x18\t \x01(\v2!.google.datastore.v1.PropertyMaskR\fpropertyMask\x12\\\n" +
-	"\x13property_transforms\x18\f \x03(\v2&.google.datastore.v1.PropertyTransformB\x03\xe0A\x01R\x12propertyTransforms\"R\n" +
+	"\rproperty_mask\x18\t \x01(\v2!.google.datastore.v1.PropertyMaskR\fpropertyMask\x12]\n" +
+	"\x13property_transforms\x18\f \x03(\v2&.google.datastore.v1.PropertyTransformB\x04\xe2A\x01\x01R\x12propertyTransforms\"R\n" +
 	"\x1aConflictResolutionStrategy\x12\x18\n" +
 	"\x14STRATEGY_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fSERVER_VALUE\x10\x01\x12\b\n" +
 	"\x04FAIL\x10\x03B\v\n" +
 	"\toperationB\x1d\n" +
-	"\x1bconflict_detection_strategy\"\xc7\x04\n" +
-	"\x11PropertyTransform\x12\x1f\n" +
-	"\bproperty\x18\x01 \x01(\tB\x03\xe0A\x01R\bproperty\x12c\n" +
+	"\x1bconflict_detection_strategy\"\xc8\x04\n" +
+	"\x11PropertyTransform\x12 \n" +
+	"\bproperty\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bproperty\x12c\n" +
 	"\x13set_to_server_value\x18\x02 \x01(\x0e22.google.datastore.v1.PropertyTransform.ServerValueH\x00R\x10setToServerValue\x12:\n" +
 	"\tincrement\x18\x03 \x01(\v2\x1a.google.datastore.v1.ValueH\x00R\tincrement\x126\n" +
 	"\amaximum\x18\x04 \x01(\v2\x1a.google.datastore.v1.ValueH\x00R\amaximum\x126\n" +
@@ -2793,9 +2793,9 @@ const file_google_datastore_v1_datastore_proto_rawDesc = "" +
 	"\x14previous_transaction\x18\x01 \x01(\fR\x13previousTransaction\x1aC\n" +
 	"\bReadOnly\x127\n" +
 	"\tread_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\breadTimeB\x06\n" +
-	"\x04mode\"8\n" +
-	"\x0eRequestOptions\x12&\n" +
-	"\frequest_tags\x18\x03 \x03(\tB\x03\xe0A\x01R\vrequestTags2\xe1\r\n" +
+	"\x04mode\"9\n" +
+	"\x0eRequestOptions\x12'\n" +
+	"\frequest_tags\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\vrequestTags2\xe1\r\n" +
 	"\tDatastore\x12\xc0\x01\n" +
 	"\x06Lookup\x12\".google.datastore.v1.LookupRequest\x1a#.google.datastore.v1.LookupResponse\"m\xdaA\x1cproject_id,read_options,keys\x82\xd3\xe4\x93\x02%:\x01*\" /v1/projects/{project_id}:lookup\x8a\xd3\xe4\x93\x02\x1d\x12\f\n" +
 	"\n" +

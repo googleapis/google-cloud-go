@@ -128,3 +128,29 @@ func ExampleBigtableInstanceAdminClient_ListMaterializedViews_all() {
 		_ = resp
 	}
 }
+
+func ExampleBigtableInstanceAdminClient_ListMemoryLayers_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewBigtableInstanceAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListMemoryLayersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigtable/admin/apiv2/adminpb#ListMemoryLayersRequest.
+	}
+	for resp, err := range c.ListMemoryLayers(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}

@@ -388,6 +388,61 @@ func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		callOpts.SetManagedProtectionTier = append(callOpts.SetManagedProtectionTier, gax.WithClientMetrics(metrics))
 		callOpts.SetUsageExportBucket = append(callOpts.SetUsageExportBucket, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.DisableXpnHost = append(callOpts.DisableXpnHost, gax.WithClientTracing(tracing))
+		callOpts.DisableXpnResource = append(callOpts.DisableXpnResource, gax.WithClientTracing(tracing))
+		callOpts.EnableXpnHost = append(callOpts.EnableXpnHost, gax.WithClientTracing(tracing))
+		callOpts.EnableXpnResource = append(callOpts.EnableXpnResource, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetXpnHost = append(callOpts.GetXpnHost, gax.WithClientTracing(tracing))
+		callOpts.GetXpnResources = append(callOpts.GetXpnResources, gax.WithClientTracing(tracing))
+		callOpts.ListXpnHosts = append(callOpts.ListXpnHosts, gax.WithClientTracing(tracing))
+		callOpts.MoveDisk = append(callOpts.MoveDisk, gax.WithClientTracing(tracing))
+		callOpts.MoveInstance = append(callOpts.MoveInstance, gax.WithClientTracing(tracing))
+		callOpts.SetCloudArmorTier = append(callOpts.SetCloudArmorTier, gax.WithClientTracing(tracing))
+		callOpts.SetCommonInstanceMetadata = append(callOpts.SetCommonInstanceMetadata, gax.WithClientTracing(tracing))
+		callOpts.SetDefaultNetworkTier = append(callOpts.SetDefaultNetworkTier, gax.WithClientTracing(tracing))
+		callOpts.SetManagedProtectionTier = append(callOpts.SetManagedProtectionTier, gax.WithClientTracing(tracing))
+		callOpts.SetUsageExportBucket = append(callOpts.SetUsageExportBucket, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.DisableXpnHost = append(callOpts.DisableXpnHost, gax.WithClientLogging(logging))
+		callOpts.DisableXpnResource = append(callOpts.DisableXpnResource, gax.WithClientLogging(logging))
+		callOpts.EnableXpnHost = append(callOpts.EnableXpnHost, gax.WithClientLogging(logging))
+		callOpts.EnableXpnResource = append(callOpts.EnableXpnResource, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetXpnHost = append(callOpts.GetXpnHost, gax.WithClientLogging(logging))
+		callOpts.GetXpnResources = append(callOpts.GetXpnResources, gax.WithClientLogging(logging))
+		callOpts.ListXpnHosts = append(callOpts.ListXpnHosts, gax.WithClientLogging(logging))
+		callOpts.MoveDisk = append(callOpts.MoveDisk, gax.WithClientLogging(logging))
+		callOpts.MoveInstance = append(callOpts.MoveInstance, gax.WithClientLogging(logging))
+		callOpts.SetCloudArmorTier = append(callOpts.SetCloudArmorTier, gax.WithClientLogging(logging))
+		callOpts.SetCommonInstanceMetadata = append(callOpts.SetCommonInstanceMetadata, gax.WithClientLogging(logging))
+		callOpts.SetDefaultNetworkTier = append(callOpts.SetDefaultNetworkTier, gax.WithClientLogging(logging))
+		callOpts.SetManagedProtectionTier = append(callOpts.SetManagedProtectionTier, gax.WithClientLogging(logging))
+		callOpts.SetUsageExportBucket = append(callOpts.SetUsageExportBucket, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -449,6 +504,11 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/disableXpnHost", req.GetProject())
 
 	params := url.Values{}
@@ -464,9 +524,6 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/DisableXpnHost")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/disableXpnHost")
@@ -523,6 +580,11 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/disableXpnResource", req.GetProject())
 
 	params := url.Values{}
@@ -538,9 +600,6 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/DisableXpnResource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/disableXpnResource")
@@ -589,6 +648,11 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/enableXpnHost", req.GetProject())
 
 	params := url.Values{}
@@ -604,9 +668,6 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/EnableXpnHost")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/enableXpnHost")
@@ -664,6 +725,11 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/enableXpnResource", req.GetProject())
 
 	params := url.Values{}
@@ -679,9 +745,6 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/EnableXpnResource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/enableXpnResource")
@@ -738,6 +801,11 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v", req.GetProject())
 
 	// Build HTTP headers from client and context metadata.
@@ -746,9 +814,6 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}")
@@ -791,6 +856,11 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/getXpnHost", req.GetProject())
 
 	// Build HTTP headers from client and context metadata.
@@ -799,9 +869,6 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/GetXpnHost")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/getXpnHost")
@@ -855,6 +922,11 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/getXpnResources", req.GetProject())
@@ -947,6 +1019,11 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/listXpnHosts", req.GetProject())
@@ -1042,6 +1119,11 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/moveDisk", req.GetProject())
 
 	params := url.Values{}
@@ -1057,9 +1139,6 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/MoveDisk")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/moveDisk")
@@ -1121,6 +1200,11 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/moveInstance", req.GetProject())
 
 	params := url.Values{}
@@ -1136,9 +1220,6 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/MoveInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/moveInstance")
@@ -1197,6 +1278,11 @@ func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/setCloudArmorTier", req.GetProject())
 
 	params := url.Values{}
@@ -1212,9 +1298,6 @@ func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/SetCloudArmorTier")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/setCloudArmorTier")
@@ -1271,6 +1354,11 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/setCommonInstanceMetadata", req.GetProject())
 
 	params := url.Values{}
@@ -1286,9 +1374,6 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/SetCommonInstanceMetadata")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/setCommonInstanceMetadata")
@@ -1346,6 +1431,11 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/setDefaultNetworkTier", req.GetProject())
 
 	params := url.Values{}
@@ -1361,9 +1451,6 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/SetDefaultNetworkTier")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/setDefaultNetworkTier")
@@ -1422,6 +1509,11 @@ func (c *projectsRESTClient) SetManagedProtectionTier(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/setManagedProtectionTier", req.GetProject())
 
 	params := url.Values{}
@@ -1437,9 +1529,6 @@ func (c *projectsRESTClient) SetManagedProtectionTier(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/SetManagedProtectionTier")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/setManagedProtectionTier")
@@ -1497,6 +1586,11 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/setUsageExportBucket", req.GetProject())
 
 	params := url.Values{}
@@ -1512,9 +1606,6 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Projects/SetUsageExportBucket")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/setUsageExportBucket")

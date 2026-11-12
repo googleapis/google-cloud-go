@@ -166,6 +166,27 @@ const (
 	// Client configuration polling.
 	tagClientConfigPollFailed     = "client_config_poll_failed"
 	tagClientConfigPollCtxExpired = "client_config_poll_ctx_expired"
+	// tagClientConfigSessionConfigurationNull fires when a successful
+	// GetClientConfiguration response arrives with SessionConfiguration
+	// unset. That leaves session_load, channel/session pool sizing, and
+	// LB options at zero — the manager falls back to the default config,
+	// but the missed signal is worth surfacing so ops can spot instances
+	// whose control-plane config never landed. Distinct from a poll
+	// error (that path emits tagClientConfigPollFailed).
+	tagClientConfigSessionConfigurationNull = "client_config_session_configuration_null"
+	// tagClientConfigSessionLoadZero fires when a successful poll returns
+	// a populated SessionClientConfiguration whose session_load is 0
+	// (explicit "route 0% through session, 100% through classic"). A
+	// legitimate operating point, but worth surfacing so ops can spot
+	// instances/app-profiles effectively opted out of the session data
+	// path. Distinct from the null-config case, which emits
+	// tagClientConfigSessionConfigurationNull.
+	tagClientConfigSessionLoadZero = "client_config_session_load_zero"
+
+	// TagAcceleratorSessionDiverterError fires when the accelerator cannot
+	// resolve a session client or diverter for an incoming RPC (e.g. dial
+	// failure or inconsistent internal map state) and falls back to classic.
+	TagAcceleratorSessionDiverterError = "accelerator_session_diverter_error"
 )
 
 var (
@@ -230,6 +251,12 @@ func registerDebugTagCounter(meter metric.Meter) error {
 // wiring from TelemetryConfiguration.debug_tag_level.
 func setDebugTagLevelFloor(l debugLevel) {
 	debugTagLevelFloor.Store(int32(l))
+}
+
+// RecordDebugTag increments the debug_tags counter for `name` at Warn.
+// Exported for sibling internal packages (e.g. internal/accelerator).
+func RecordDebugTag(name string) {
+	recordDebugTag(name)
 }
 
 // recordDebugTag increments the debug_tags counter for `name` at Warn.

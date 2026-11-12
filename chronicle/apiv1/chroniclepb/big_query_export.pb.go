@@ -498,33 +498,33 @@ var File_google_cloud_chronicle_v1_big_query_export_proto protoreflect.FileDescr
 
 const file_google_cloud_chronicle_v1_big_query_export_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/chronicle/v1/big_query_export.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x94\a\n" +
-	"\x0eBigQueryExport\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vprovisioned\x18\x02 \x01(\bB\x03\xe0A\x03R\vprovisioned\x12n\n" +
-	"\x18big_query_export_package\x18\x03 \x01(\x0e20.google.cloud.chronicle.v1.BigQueryExportPackageB\x03\xe0A\x03R\x15bigQueryExportPackage\x12l\n" +
-	"\x15entity_graph_settings\x18\x04 \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x03\xe0A\x01R\x13entityGraphSettings\x12j\n" +
-	"\x14ioc_matches_settings\x18\x05 \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x03\xe0A\x01R\x12iocMatchesSettings\x12r\n" +
-	"\x18rule_detections_settings\x18\x06 \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x03\xe0A\x01R\x16ruleDetectionsSettings\x12}\n" +
-	"\x1eudm_events_aggregates_settings\x18\a \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x03\xe0A\x01R\x1budmEventsAggregatesSettings\x12h\n" +
-	"\x13udm_events_settings\x18\b \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x03\xe0A\x01R\x11udmEventsSettings:\x9a\x01\xeaA\x96\x01\n" +
-	"'chronicle.googleapis.com/BigQueryExport\x12Kprojects/{project}/locations/{location}/instances/{instance}/bigQueryExport*\x0ebigQueryExport2\x0ebigQueryExport\"\xc9\x02\n" +
-	"\x18DataSourceExportSettings\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x02R\aenabled\x12*\n" +
-	"\x0eretention_days\x18\x02 \x01(\x05B\x03\xe0A\x02R\rretentionDays\x12k\n" +
-	"\x17latest_export_job_state\x18\x03 \x01(\x0e2/.google.cloud.chronicle.v1.LatestExportJobStateB\x03\xe0A\x03R\x14latestExportJobState\x12O\n" +
-	"\x13data_freshness_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11dataFreshnessTime\x12$\n" +
-	"\vdata_volume\x18\x05 \x01(\x03B\x03\xe0A\x03R\n" +
-	"dataVolume\"_\n" +
-	"\x18GetBigQueryExportRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'chronicle.googleapis.com/BigQueryExportR\x04name\"\xb9\x01\n" +
-	"\x1bUpdateBigQueryExportRequest\x12X\n" +
-	"\x10big_query_export\x18\x01 \x01(\v2).google.cloud.chronicle.v1.BigQueryExportB\x03\xe0A\x02R\x0ebigQueryExport\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"i\n" +
-	"\x1eProvisionBigQueryExportRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'chronicle.googleapis.com/BigQueryExportR\x06parent*\x8c\x01\n" +
+	"0google/cloud/chronicle/v1/big_query_export.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9c\a\n" +
+	"\x0eBigQueryExport\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vprovisioned\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\vprovisioned\x12o\n" +
+	"\x18big_query_export_package\x18\x03 \x01(\x0e20.google.cloud.chronicle.v1.BigQueryExportPackageB\x04\xe2A\x01\x03R\x15bigQueryExportPackage\x12m\n" +
+	"\x15entity_graph_settings\x18\x04 \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x04\xe2A\x01\x01R\x13entityGraphSettings\x12k\n" +
+	"\x14ioc_matches_settings\x18\x05 \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x04\xe2A\x01\x01R\x12iocMatchesSettings\x12s\n" +
+	"\x18rule_detections_settings\x18\x06 \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x04\xe2A\x01\x01R\x16ruleDetectionsSettings\x12~\n" +
+	"\x1eudm_events_aggregates_settings\x18\a \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x04\xe2A\x01\x01R\x1budmEventsAggregatesSettings\x12i\n" +
+	"\x13udm_events_settings\x18\b \x01(\v23.google.cloud.chronicle.v1.DataSourceExportSettingsB\x04\xe2A\x01\x01R\x11udmEventsSettings:\x9a\x01\xeaA\x96\x01\n" +
+	"'chronicle.googleapis.com/BigQueryExport\x12Kprojects/{project}/locations/{location}/instances/{instance}/bigQueryExport*\x0ebigQueryExport2\x0ebigQueryExport\"\xce\x02\n" +
+	"\x18DataSourceExportSettings\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\aenabled\x12+\n" +
+	"\x0eretention_days\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\rretentionDays\x12l\n" +
+	"\x17latest_export_job_state\x18\x03 \x01(\x0e2/.google.cloud.chronicle.v1.LatestExportJobStateB\x04\xe2A\x01\x03R\x14latestExportJobState\x12P\n" +
+	"\x13data_freshness_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11dataFreshnessTime\x12%\n" +
+	"\vdata_volume\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"dataVolume\"`\n" +
+	"\x18GetBigQueryExportRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'chronicle.googleapis.com/BigQueryExportR\x04name\"\xbb\x01\n" +
+	"\x1bUpdateBigQueryExportRequest\x12Y\n" +
+	"\x10big_query_export\x18\x01 \x01(\v2).google.cloud.chronicle.v1.BigQueryExportB\x04\xe2A\x01\x02R\x0ebigQueryExport\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"j\n" +
+	"\x1eProvisionBigQueryExportRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'chronicle.googleapis.com/BigQueryExportR\x06parent*\x8c\x01\n" +
 	"\x15BigQueryExportPackage\x12(\n" +
 	"$BIG_QUERY_EXPORT_PACKAGE_UNSPECIFIED\x10\x00\x12\"\n" +
 	"\x1eBIG_QUERY_EXPORT_PACKAGE_BYOBQ\x10\x01\x12%\n" +

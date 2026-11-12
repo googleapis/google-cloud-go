@@ -906,11 +906,11 @@ var File_google_cloud_pubsublite_v1_subscriber_proto protoreflect.FileDescriptor
 
 const file_google_cloud_pubsublite_v1_subscriber_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/pubsublite/v1/subscriber.proto\x12\x1agoogle.cloud.pubsublite.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a'google/cloud/pubsublite/v1/common.proto\"\xb4\x01\n" +
+	"+google/cloud/pubsublite/v1/subscriber.proto\x12\x1agoogle.cloud.pubsublite.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a'google/cloud/pubsublite/v1/common.proto\"\xb5\x01\n" +
 	"\x17InitialSubscribeRequest\x12\"\n" +
 	"\fsubscription\x18\x01 \x01(\tR\fsubscription\x12\x1c\n" +
-	"\tpartition\x18\x02 \x01(\x03R\tpartition\x12W\n" +
-	"\x10initial_location\x18\x04 \x01(\v2'.google.cloud.pubsublite.v1.SeekRequestB\x03\xe0A\x01R\x0finitialLocation\"V\n" +
+	"\tpartition\x18\x02 \x01(\x03R\tpartition\x12X\n" +
+	"\x10initial_location\x18\x04 \x01(\v2'.google.cloud.pubsublite.v1.SeekRequestB\x04\xe2A\x01\x01R\x0finitialLocation\"V\n" +
 	"\x18InitialSubscribeResponse\x12:\n" +
 	"\x06cursor\x18\x01 \x01(\v2\".google.cloud.pubsublite.v1.CursorR\x06cursor\"\xfc\x01\n" +
 	"\vSeekRequest\x12X\n" +

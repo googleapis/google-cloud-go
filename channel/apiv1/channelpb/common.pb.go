@@ -619,16 +619,16 @@ const file_google_cloud_channel_v1_common_proto_rawDesc = "" +
 	"\x0eSIZE_1001_2000\x10\x04\x12\x12\n" +
 	"\x0eSIZE_2001_5000\x10\x05\x12\x13\n" +
 	"\x0fSIZE_5001_10000\x10\x06\x12\x16\n" +
-	"\x12SIZE_10001_OR_MORE\x10\a\"\xf4\x03\n" +
+	"\x12SIZE_10001_OR_MORE\x10\a\"\xf7\x03\n" +
 	"\x11CloudIdentityInfo\x12\\\n" +
-	"\rcustomer_type\x18\x01 \x01(\x0e27.google.cloud.channel.v1.CloudIdentityInfo.CustomerTypeR\fcustomerType\x12*\n" +
-	"\x0eprimary_domain\x18\t \x01(\tB\x03\xe0A\x03R\rprimaryDomain\x121\n" +
-	"\x12is_domain_verified\x18\x04 \x01(\bB\x03\xe0A\x03R\x10isDomainVerified\x12'\n" +
+	"\rcustomer_type\x18\x01 \x01(\x0e27.google.cloud.channel.v1.CloudIdentityInfo.CustomerTypeR\fcustomerType\x12+\n" +
+	"\x0eprimary_domain\x18\t \x01(\tB\x04\xe2A\x01\x03R\rprimaryDomain\x122\n" +
+	"\x12is_domain_verified\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x10isDomainVerified\x12'\n" +
 	"\x0falternate_email\x18\x06 \x01(\tR\x0ealternateEmail\x12!\n" +
 	"\fphone_number\x18\a \x01(\tR\vphoneNumber\x12#\n" +
-	"\rlanguage_code\x18\b \x01(\tR\flanguageCode\x12/\n" +
+	"\rlanguage_code\x18\b \x01(\tR\flanguageCode\x120\n" +
 	"\x11admin_console_uri\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x0fadminConsoleUri\x12;\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x0fadminConsoleUri\x12;\n" +
 	"\bedu_data\x18\x16 \x01(\v2 .google.cloud.channel.v1.EduDataR\aeduData\"C\n" +
 	"\fCustomerType\x12\x1d\n" +
 	"\x19CUSTOMER_TYPE_UNSPECIFIED\x10\x00\x12\n" +

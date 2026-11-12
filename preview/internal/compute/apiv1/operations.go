@@ -71,41 +71,6 @@ type operationHandle interface {
 	Proto() *computepb.Operation
 }
 
-// Implements the operationHandle interface for RegionOperations.
-type regionOperationsHandle struct {
-	c       *RegionOperationsClient
-	proto   *computepb.Operation
-	project string
-	region  string
-}
-
-// Poll retrieves the latest data for the long-running operation.
-func (h *regionOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	resp, err := h.c.Get(ctx, &computepb.GetRegionOperationRequest{
-		Operation: h.proto.GetName(),
-		Project:   h.project,
-		Region:    h.region,
-	}, opts...)
-	if err != nil {
-		return err
-	}
-	h.proto = resp
-	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
-		aErr := &googleapi.Error{
-			Code:    int(resp.GetHttpErrorStatusCode()),
-			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
-		}
-		err, _ := apierror.FromError(aErr)
-		return err
-	}
-	return nil
-}
-
-// Proto returns the raw type this wraps.
-func (h *regionOperationsHandle) Proto() *computepb.Operation {
-	return h.proto
-}
-
 // Implements the operationHandle interface for ZoneOperations.
 type zoneOperationsHandle struct {
 	c       *ZoneOperationsClient
@@ -138,6 +103,41 @@ func (h *zoneOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption)
 
 // Proto returns the raw type this wraps.
 func (h *zoneOperationsHandle) Proto() *computepb.Operation {
+	return h.proto
+}
+
+// Implements the operationHandle interface for RegionOperations.
+type regionOperationsHandle struct {
+	c       *RegionOperationsClient
+	proto   *computepb.Operation
+	project string
+	region  string
+}
+
+// Poll retrieves the latest data for the long-running operation.
+func (h *regionOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	resp, err := h.c.Get(ctx, &computepb.GetRegionOperationRequest{
+		Operation: h.proto.GetName(),
+		Project:   h.project,
+		Region:    h.region,
+	}, opts...)
+	if err != nil {
+		return err
+	}
+	h.proto = resp
+	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
+		aErr := &googleapi.Error{
+			Code:    int(resp.GetHttpErrorStatusCode()),
+			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
+		}
+		err, _ := apierror.FromError(aErr)
+		return err
+	}
+	return nil
+}
+
+// Proto returns the raw type this wraps.
+func (h *regionOperationsHandle) Proto() *computepb.Operation {
 	return h.proto
 }
 
@@ -202,5 +202,108 @@ func (h *globalOrganizationOperationsHandle) Poll(ctx context.Context, opts ...g
 
 // Proto returns the raw type this wraps.
 func (h *globalOrganizationOperationsHandle) Proto() *computepb.Operation {
+	return h.proto
+}
+
+// Implements the operationHandle interface for GlobalFolderOperations.
+type globalFolderOperationsHandle struct {
+	c      *GlobalFolderOperationsClient
+	proto  *computepb.Operation
+	folder string
+}
+
+// Poll retrieves the latest data for the long-running operation.
+func (h *globalFolderOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	resp, err := h.c.Get(ctx, &computepb.GetGlobalFolderOperationRequest{
+		Operation: h.proto.GetName(),
+		Folder:    h.folder,
+	}, opts...)
+	if err != nil {
+		return err
+	}
+	h.proto = resp
+	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
+		aErr := &googleapi.Error{
+			Code:    int(resp.GetHttpErrorStatusCode()),
+			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
+		}
+		err, _ := apierror.FromError(aErr)
+		return err
+	}
+	return nil
+}
+
+// Proto returns the raw type this wraps.
+func (h *globalFolderOperationsHandle) Proto() *computepb.Operation {
+	return h.proto
+}
+
+// Implements the operationHandle interface for ZoneFolderOperations.
+type zoneFolderOperationsHandle struct {
+	c      *ZoneFolderOperationsClient
+	proto  *computepb.Operation
+	folder string
+	zone   string
+}
+
+// Poll retrieves the latest data for the long-running operation.
+func (h *zoneFolderOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	resp, err := h.c.Get(ctx, &computepb.GetZoneFolderOperationRequest{
+		Operation: h.proto.GetName(),
+		Folder:    h.folder,
+		Zone:      h.zone,
+	}, opts...)
+	if err != nil {
+		return err
+	}
+	h.proto = resp
+	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
+		aErr := &googleapi.Error{
+			Code:    int(resp.GetHttpErrorStatusCode()),
+			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
+		}
+		err, _ := apierror.FromError(aErr)
+		return err
+	}
+	return nil
+}
+
+// Proto returns the raw type this wraps.
+func (h *zoneFolderOperationsHandle) Proto() *computepb.Operation {
+	return h.proto
+}
+
+// Implements the operationHandle interface for ZoneOrganizationOperations.
+type zoneOrganizationOperationsHandle struct {
+	c            *ZoneOrganizationOperationsClient
+	proto        *computepb.Operation
+	organization string
+	zone         string
+}
+
+// Poll retrieves the latest data for the long-running operation.
+func (h *zoneOrganizationOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	resp, err := h.c.Get(ctx, &computepb.GetZoneOrganizationOperationRequest{
+		Operation:    h.proto.GetName(),
+		Organization: h.organization,
+		Zone:         h.zone,
+	}, opts...)
+	if err != nil {
+		return err
+	}
+	h.proto = resp
+	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
+		aErr := &googleapi.Error{
+			Code:    int(resp.GetHttpErrorStatusCode()),
+			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
+		}
+		err, _ := apierror.FromError(aErr)
+		return err
+	}
+	return nil
+}
+
+// Proto returns the raw type this wraps.
+func (h *zoneOrganizationOperationsHandle) Proto() *computepb.Operation {
 	return h.proto
 }

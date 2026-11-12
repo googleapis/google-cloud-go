@@ -132,6 +132,31 @@ func ExampleIngestionClient_IngestEvents() {
 	_ = resp
 }
 
+func ExampleIngestionClient_IngestUsers() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datamanager.NewIngestionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datamanagerpb.IngestUsersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datamanager/apiv1/datamanagerpb#IngestUsersRequest.
+	}
+	resp, err := c.IngestUsers(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleIngestionClient_RemoveAllAudienceMembers() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -175,6 +200,31 @@ func ExampleIngestionClient_RemoveAudienceMembers() {
 		// See https://pkg.go.dev/cloud.google.com/go/datamanager/apiv1/datamanagerpb#RemoveAudienceMembersRequest.
 	}
 	resp, err := c.RemoveAudienceMembers(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIngestionClient_RemoveUsers() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datamanager.NewIngestionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datamanagerpb.RemoveUsersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datamanager/apiv1/datamanagerpb#RemoveUsersRequest.
+	}
+	resp, err := c.RemoveUsers(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -116,14 +116,14 @@ var File_google_cloud_ces_v1_connector_toolset_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_connector_toolset_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/ces/v1/connector_toolset.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/cloud/ces/v1/auth.proto\x1a(google/cloud/ces/v1/connector_tool.proto\"\xd4\x01\n" +
-	"\x10ConnectorToolset\x12#\n" +
+	"+google/cloud/ces/v1/connector_toolset.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/cloud/ces/v1/auth.proto\x1a(google/cloud/ces/v1/connector_tool.proto\"\xd7\x01\n" +
+	"\x10ConnectorToolset\x12$\n" +
 	"\n" +
-	"connection\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"connection\x12L\n" +
-	"\vauth_config\x18\x02 \x01(\v2&.google.cloud.ces.v1.EndUserAuthConfigB\x03\xe0A\x01R\n" +
-	"authConfig\x12M\n" +
-	"\x11connector_actions\x18\x03 \x03(\v2\x1b.google.cloud.ces.v1.ActionB\x03\xe0A\x02R\x10connectorActionsB]\n" +
+	"connection\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"connection\x12M\n" +
+	"\vauth_config\x18\x02 \x01(\v2&.google.cloud.ces.v1.EndUserAuthConfigB\x04\xe2A\x01\x01R\n" +
+	"authConfig\x12N\n" +
+	"\x11connector_actions\x18\x03 \x03(\v2\x1b.google.cloud.ces.v1.ActionB\x04\xe2A\x01\x02R\x10connectorActionsB]\n" +
 	"\x17com.google.cloud.ces.v1B\x15ConnectorToolsetProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (

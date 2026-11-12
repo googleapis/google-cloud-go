@@ -392,28 +392,28 @@ var File_google_cloud_billing_budgets_v1beta1_budget_service_proto protoreflect.
 
 const file_google_cloud_billing_budgets_v1beta1_budget_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/billing/budgets/v1beta1/budget_service.proto\x12$google.cloud.billing.budgets.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/billing/budgets/v1beta1/budget_model.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa6\x01\n" +
-	"\x13CreateBudgetRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$billingbudgets.googleapis.com/BudgetR\x06parent\x12I\n" +
-	"\x06budget\x18\x02 \x01(\v2,.google.cloud.billing.budgets.v1beta1.BudgetB\x03\xe0A\x02R\x06budget\"\xa2\x01\n" +
-	"\x13UpdateBudgetRequest\x12I\n" +
-	"\x06budget\x18\x01 \x01(\v2,.google.cloud.billing.budgets.v1beta1.BudgetB\x03\xe0A\x02R\x06budget\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"T\n" +
-	"\x10GetBudgetRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$billingbudgets.googleapis.com/BudgetR\x04name\"\xbb\x01\n" +
-	"\x12ListBudgetsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$billingbudgets.googleapis.com/BudgetR\x06parent\x12\x19\n" +
-	"\x05scope\x18\x04 \x01(\tB\x03\xe0A\x01R\x05scope\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"9google/cloud/billing/budgets/v1beta1/budget_service.proto\x12$google.cloud.billing.budgets.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/billing/budgets/v1beta1/budget_model.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa8\x01\n" +
+	"\x13CreateBudgetRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$billingbudgets.googleapis.com/BudgetR\x06parent\x12J\n" +
+	"\x06budget\x18\x02 \x01(\v2,.google.cloud.billing.budgets.v1beta1.BudgetB\x04\xe2A\x01\x02R\x06budget\"\xa4\x01\n" +
+	"\x13UpdateBudgetRequest\x12J\n" +
+	"\x06budget\x18\x01 \x01(\v2,.google.cloud.billing.budgets.v1beta1.BudgetB\x04\xe2A\x01\x02R\x06budget\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"U\n" +
+	"\x10GetBudgetRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$billingbudgets.googleapis.com/BudgetR\x04name\"\xbf\x01\n" +
+	"\x12ListBudgetsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$billingbudgets.googleapis.com/BudgetR\x06parent\x12\x1a\n" +
+	"\x05scope\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x05scope\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x85\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x85\x01\n" +
 	"\x13ListBudgetsResponse\x12F\n" +
 	"\abudgets\x18\x01 \x03(\v2,.google.cloud.billing.budgets.v1beta1.BudgetR\abudgets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
-	"\x13DeleteBudgetRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
+	"\x13DeleteBudgetRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$billingbudgets.googleapis.com/BudgetR\x04name2\xf7\a\n" +
 	"\rBudgetService\x12\xaf\x01\n" +
 	"\fCreateBudget\x129.google.cloud.billing.budgets.v1beta1.CreateBudgetRequest\x1a,.google.cloud.billing.budgets.v1beta1.Budget\"6\x82\xd3\xe4\x93\x020:\x01*\"+/v1beta1/{parent=billingAccounts/*}/budgets\x12\xb6\x01\n" +

@@ -151,13 +151,13 @@ var File_google_devtools_clouderrorreporting_v1beta1_error_group_service_proto p
 
 const file_google_devtools_clouderrorreporting_v1beta1_error_group_service_proto_rawDesc = "" +
 	"\n" +
-	"Egoogle/devtools/clouderrorreporting/v1beta1/error_group_service.proto\x12+google.devtools.clouderrorreporting.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/devtools/clouderrorreporting/v1beta1/common.proto\"g\n" +
-	"\x0fGetGroupRequest\x12T\n" +
+	"Egoogle/devtools/clouderrorreporting/v1beta1/error_group_service.proto\x12+google.devtools.clouderrorreporting.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/devtools/clouderrorreporting/v1beta1/common.proto\"h\n" +
+	"\x0fGetGroupRequest\x12U\n" +
 	"\n" +
-	"group_name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-clouderrorreporting.googleapis.com/ErrorGroupR\tgroupName\"h\n" +
-	"\x12UpdateGroupRequest\x12R\n" +
-	"\x05group\x18\x01 \x01(\v27.google.devtools.clouderrorreporting.v1beta1.ErrorGroupB\x03\xe0A\x02R\x05group2\xf5\x04\n" +
+	"group_name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-clouderrorreporting.googleapis.com/ErrorGroupR\tgroupName\"i\n" +
+	"\x12UpdateGroupRequest\x12S\n" +
+	"\x05group\x18\x01 \x01(\v27.google.devtools.clouderrorreporting.v1beta1.ErrorGroupB\x04\xe2A\x01\x02R\x05group2\xf5\x04\n" +
 	"\x11ErrorGroupService\x12\xfa\x01\n" +
 	"\bGetGroup\x12<.google.devtools.clouderrorreporting.v1beta1.GetGroupRequest\x1a7.google.devtools.clouderrorreporting.v1beta1.ErrorGroup\"w\xdaA\n" +
 	"group_name\x82\xd3\xe4\x93\x02dZ7\x125/v1beta1/{group_name=projects/*/locations/*/groups/*}\x12)/v1beta1/{group_name=projects/*/groups/*}\x12\x8a\x02\n" +

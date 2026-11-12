@@ -176,11 +176,9 @@ func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Cont
 // Use RowFilter to limit the cells returned.
 //
 // When t.divertible is set (populated by Open on Clients with a
-// Diverter), the call routes through the shim so single-row shapes
-// (RowList of length 1, closed range [k,k], or a one-element
-// RowRangeList wrapping such a range) can be diverted to the session
-// data path. Multi-row shapes still land on the classic body.
-// Otherwise it runs the classic body directly.
+// Diverter), the call routes through the shim, which decides whether
+// this request can go over the session data path. Otherwise it runs
+// the classic body directly.
 func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
 	if t.divertible != nil {
 		return t.divertible.ReadRows(ctx, arg, f, opts...)
@@ -380,7 +378,11 @@ func (t *Table) readRowClassic(ctx context.Context, row string, opts ...ReadOpti
 	var r Row
 
 	opts = append([]ReadOption{LimitRows(1)}, opts...)
-	err := t.ReadRows(ctx, SingleRow(row), func(rr Row) bool {
+	// readRowsClassic, not ReadRows: SingleRow(row) is exactly the shape
+	// TableShim.ReadRows diverts, so the gated entry point would bounce
+	// this classic read back into the shim and on into TableShim.ReadRow,
+	// which re-enters here. Classic has to stay classic all the way down.
+	err := t.readRowsClassic(ctx, SingleRow(row), func(rr Row) bool {
 		r = rr
 		return true
 	}, opts...)
@@ -1022,6 +1024,20 @@ func NewMutation() *Mutation {
 	return new(Mutation)
 }
 
+// InternalNewMutationFromProto constructs a Mutation from a slice of proto Mutation ops.
+// Intended for use by the accelerator's classic fallback, which already holds
+// []*btpb.Mutation from the incoming MutateRowRequest and wraps them directly
+// rather than re-encoding through the Go Mutation API.
+//
+// This function must live in the bigtable package because Mutation.ops is an
+// unexported field; it cannot be moved to an internal package without a
+// circular dependency.
+func InternalNewMutationFromProto(ops []*btpb.Mutation) *Mutation {
+	m := NewMutation()
+	m.ops = ops
+	return m
+}
+
 // NewCondMutation returns a conditional mutation.
 // The given row filter determines which mutation is applied:
 // If the filter matches any cell in the row, mtrue is applied;
@@ -1144,11 +1160,12 @@ func (ts Timestamp) TruncateToMilliseconds() Timestamp {
 func gaxInvokeWithRecorder(ctx context.Context, method string,
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
 	mt := metrics.FromContext(ctx)
-	attemptHeaderMD := metadata.New(nil)
-	attempTrailerMD := metadata.New(nil)
 	mt.SetMethod(method)
 
 	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
+		attemptHeaderMD := metadata.New(nil)
+		attemptTrailerMD := metadata.New(nil)
+
 		// Inject cookie and attempt information from prior attempts.
 		md := metadata.New(nil)
 		for k, v := range mt.Cookies() {
@@ -1162,10 +1179,10 @@ func gaxInvokeWithRecorder(ctx context.Context, method string,
 		// Per-attempt metric setup (RecordAttemptStart, blockingLatencyTracker)
 		// is owned by StatsHandler.TagRPC. f's headerMD / trailerMD are still
 		// needed for routing-cookie extraction below.
-		err := f(newCtx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+		err := f(newCtx, &attemptHeaderMD, &attemptTrailerMD, callSettings)
 
 		mt.ExtractCookiesFromMD(attemptHeaderMD, cookiePrefix)
-		mt.ExtractCookiesFromMD(attempTrailerMD, cookiePrefix)
+		mt.ExtractCookiesFromMD(attemptTrailerMD, cookiePrefix)
 		return err
 	}
 

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,6 +39,12 @@ const (
 	SpacesService_GetSpace_FullMethodName            = "/google.apps.meet.v2.SpacesService/GetSpace"
 	SpacesService_UpdateSpace_FullMethodName         = "/google.apps.meet.v2.SpacesService/UpdateSpace"
 	SpacesService_EndActiveConference_FullMethodName = "/google.apps.meet.v2.SpacesService/EndActiveConference"
+	SpacesService_CreateMember_FullMethodName        = "/google.apps.meet.v2.SpacesService/CreateMember"
+	SpacesService_GetMember_FullMethodName           = "/google.apps.meet.v2.SpacesService/GetMember"
+	SpacesService_ListMembers_FullMethodName         = "/google.apps.meet.v2.SpacesService/ListMembers"
+	SpacesService_DeleteMember_FullMethodName        = "/google.apps.meet.v2.SpacesService/DeleteMember"
+	SpacesService_UpdateMember_FullMethodName        = "/google.apps.meet.v2.SpacesService/UpdateMember"
+	SpacesService_BatchUpdateMembers_FullMethodName  = "/google.apps.meet.v2.SpacesService/BatchUpdateMembers"
 )
 
 // SpacesServiceClient is the client API for SpacesService service.
@@ -50,18 +56,45 @@ type SpacesServiceClient interface {
 	// Gets details about a meeting space.
 	//
 	// For an example, see [Get a meeting
-	// space](https://developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).
+	// space](https://developers.google.com/workspace/meet/api/guides/meeting-spaces#get-meeting-space).
 	GetSpace(ctx context.Context, in *GetSpaceRequest, opts ...grpc.CallOption) (*Space, error)
 	// Updates details about a meeting space.
 	//
 	// For an example, see [Update a meeting
-	// space](https://developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).
+	// space](https://developers.google.com/workspace/meet/api/guides/meeting-spaces#update-meeting-space).
 	UpdateSpace(ctx context.Context, in *UpdateSpaceRequest, opts ...grpc.CallOption) (*Space, error)
 	// Ends an active conference (if there's one).
 	//
 	// For an example, see [End active
-	// conference](https://developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).
+	// conference](https://developers.google.com/workspace/meet/api/guides/meeting-spaces#end-active-conference).
 	EndActiveConference(ctx context.Context, in *EndActiveConferenceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Creates a member.
+	//
+	// This API supports the `fields` parameter in
+	// [SystemParameterContext](https://cloud.google.com/apis/docs/system-parameters).
+	// When the `fields` parameter is omitted, this API response will default to
+	// "name,email,role".
+	CreateMember(ctx context.Context, in *CreateMemberRequest, opts ...grpc.CallOption) (*Member, error)
+	// Gets a member.
+	//
+	// This API supports the `fields` parameter in
+	// [SystemParameterContext](https://cloud.google.com/apis/docs/system-parameters).
+	// When the `fields` parameter is omitted, this API response will default to
+	// "name,email,role".
+	GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*Member, error)
+	// Lists members.
+	//
+	// This API supports the `fields` parameter in
+	// [SystemParameterContext](https://cloud.google.com/apis/docs/system-parameters).
+	// When the `fields` parameter is omitted this API response will default to
+	// "name,email,role".
+	ListMembers(ctx context.Context, in *ListMembersRequest, opts ...grpc.CallOption) (*ListMembersResponse, error)
+	// Deletes the member who was previously assigned roles in the space.
+	DeleteMember(ctx context.Context, in *DeleteMemberRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Updates a member.
+	UpdateMember(ctx context.Context, in *UpdateMemberRequest, opts ...grpc.CallOption) (*Member, error)
+	// Updates members of one space within a batch.
+	BatchUpdateMembers(ctx context.Context, in *BatchUpdateMembersRequest, opts ...grpc.CallOption) (*BatchUpdateMembersResponse, error)
 }
 
 type spacesServiceClient struct {
@@ -108,6 +141,60 @@ func (c *spacesServiceClient) EndActiveConference(ctx context.Context, in *EndAc
 	return out, nil
 }
 
+func (c *spacesServiceClient) CreateMember(ctx context.Context, in *CreateMemberRequest, opts ...grpc.CallOption) (*Member, error) {
+	out := new(Member)
+	err := c.cc.Invoke(ctx, SpacesService_CreateMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spacesServiceClient) GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*Member, error) {
+	out := new(Member)
+	err := c.cc.Invoke(ctx, SpacesService_GetMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spacesServiceClient) ListMembers(ctx context.Context, in *ListMembersRequest, opts ...grpc.CallOption) (*ListMembersResponse, error) {
+	out := new(ListMembersResponse)
+	err := c.cc.Invoke(ctx, SpacesService_ListMembers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spacesServiceClient) DeleteMember(ctx context.Context, in *DeleteMemberRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, SpacesService_DeleteMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spacesServiceClient) UpdateMember(ctx context.Context, in *UpdateMemberRequest, opts ...grpc.CallOption) (*Member, error) {
+	out := new(Member)
+	err := c.cc.Invoke(ctx, SpacesService_UpdateMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spacesServiceClient) BatchUpdateMembers(ctx context.Context, in *BatchUpdateMembersRequest, opts ...grpc.CallOption) (*BatchUpdateMembersResponse, error) {
+	out := new(BatchUpdateMembersResponse)
+	err := c.cc.Invoke(ctx, SpacesService_BatchUpdateMembers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SpacesServiceServer is the server API for SpacesService service.
 // All implementations should embed UnimplementedSpacesServiceServer
 // for forward compatibility
@@ -117,18 +204,45 @@ type SpacesServiceServer interface {
 	// Gets details about a meeting space.
 	//
 	// For an example, see [Get a meeting
-	// space](https://developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).
+	// space](https://developers.google.com/workspace/meet/api/guides/meeting-spaces#get-meeting-space).
 	GetSpace(context.Context, *GetSpaceRequest) (*Space, error)
 	// Updates details about a meeting space.
 	//
 	// For an example, see [Update a meeting
-	// space](https://developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).
+	// space](https://developers.google.com/workspace/meet/api/guides/meeting-spaces#update-meeting-space).
 	UpdateSpace(context.Context, *UpdateSpaceRequest) (*Space, error)
 	// Ends an active conference (if there's one).
 	//
 	// For an example, see [End active
-	// conference](https://developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).
+	// conference](https://developers.google.com/workspace/meet/api/guides/meeting-spaces#end-active-conference).
 	EndActiveConference(context.Context, *EndActiveConferenceRequest) (*emptypb.Empty, error)
+	// Creates a member.
+	//
+	// This API supports the `fields` parameter in
+	// [SystemParameterContext](https://cloud.google.com/apis/docs/system-parameters).
+	// When the `fields` parameter is omitted, this API response will default to
+	// "name,email,role".
+	CreateMember(context.Context, *CreateMemberRequest) (*Member, error)
+	// Gets a member.
+	//
+	// This API supports the `fields` parameter in
+	// [SystemParameterContext](https://cloud.google.com/apis/docs/system-parameters).
+	// When the `fields` parameter is omitted, this API response will default to
+	// "name,email,role".
+	GetMember(context.Context, *GetMemberRequest) (*Member, error)
+	// Lists members.
+	//
+	// This API supports the `fields` parameter in
+	// [SystemParameterContext](https://cloud.google.com/apis/docs/system-parameters).
+	// When the `fields` parameter is omitted this API response will default to
+	// "name,email,role".
+	ListMembers(context.Context, *ListMembersRequest) (*ListMembersResponse, error)
+	// Deletes the member who was previously assigned roles in the space.
+	DeleteMember(context.Context, *DeleteMemberRequest) (*emptypb.Empty, error)
+	// Updates a member.
+	UpdateMember(context.Context, *UpdateMemberRequest) (*Member, error)
+	// Updates members of one space within a batch.
+	BatchUpdateMembers(context.Context, *BatchUpdateMembersRequest) (*BatchUpdateMembersResponse, error)
 }
 
 // UnimplementedSpacesServiceServer should be embedded to have forward compatible implementations.
@@ -146,6 +260,24 @@ func (UnimplementedSpacesServiceServer) UpdateSpace(context.Context, *UpdateSpac
 }
 func (UnimplementedSpacesServiceServer) EndActiveConference(context.Context, *EndActiveConferenceRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EndActiveConference not implemented")
+}
+func (UnimplementedSpacesServiceServer) CreateMember(context.Context, *CreateMemberRequest) (*Member, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMember not implemented")
+}
+func (UnimplementedSpacesServiceServer) GetMember(context.Context, *GetMemberRequest) (*Member, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMember not implemented")
+}
+func (UnimplementedSpacesServiceServer) ListMembers(context.Context, *ListMembersRequest) (*ListMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMembers not implemented")
+}
+func (UnimplementedSpacesServiceServer) DeleteMember(context.Context, *DeleteMemberRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMember not implemented")
+}
+func (UnimplementedSpacesServiceServer) UpdateMember(context.Context, *UpdateMemberRequest) (*Member, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMember not implemented")
+}
+func (UnimplementedSpacesServiceServer) BatchUpdateMembers(context.Context, *BatchUpdateMembersRequest) (*BatchUpdateMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchUpdateMembers not implemented")
 }
 
 // UnsafeSpacesServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -231,6 +363,114 @@ func _SpacesService_EndActiveConference_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SpacesService_CreateMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpacesServiceServer).CreateMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpacesService_CreateMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpacesServiceServer).CreateMember(ctx, req.(*CreateMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpacesService_GetMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpacesServiceServer).GetMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpacesService_GetMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpacesServiceServer).GetMember(ctx, req.(*GetMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpacesService_ListMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMembersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpacesServiceServer).ListMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpacesService_ListMembers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpacesServiceServer).ListMembers(ctx, req.(*ListMembersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpacesService_DeleteMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpacesServiceServer).DeleteMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpacesService_DeleteMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpacesServiceServer).DeleteMember(ctx, req.(*DeleteMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpacesService_UpdateMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpacesServiceServer).UpdateMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpacesService_UpdateMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpacesServiceServer).UpdateMember(ctx, req.(*UpdateMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpacesService_BatchUpdateMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchUpdateMembersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpacesServiceServer).BatchUpdateMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpacesService_BatchUpdateMembers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpacesServiceServer).BatchUpdateMembers(ctx, req.(*BatchUpdateMembersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SpacesService_ServiceDesc is the grpc.ServiceDesc for SpacesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -254,6 +494,30 @@ var SpacesService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "EndActiveConference",
 			Handler:    _SpacesService_EndActiveConference_Handler,
 		},
+		{
+			MethodName: "CreateMember",
+			Handler:    _SpacesService_CreateMember_Handler,
+		},
+		{
+			MethodName: "GetMember",
+			Handler:    _SpacesService_GetMember_Handler,
+		},
+		{
+			MethodName: "ListMembers",
+			Handler:    _SpacesService_ListMembers_Handler,
+		},
+		{
+			MethodName: "DeleteMember",
+			Handler:    _SpacesService_DeleteMember_Handler,
+		},
+		{
+			MethodName: "UpdateMember",
+			Handler:    _SpacesService_UpdateMember_Handler,
+		},
+		{
+			MethodName: "BatchUpdateMembers",
+			Handler:    _SpacesService_BatchUpdateMembers_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "google/apps/meet/v2/service.proto",
@@ -272,6 +536,8 @@ const (
 	ConferenceRecordsService_ListTranscripts_FullMethodName         = "/google.apps.meet.v2.ConferenceRecordsService/ListTranscripts"
 	ConferenceRecordsService_GetTranscriptEntry_FullMethodName      = "/google.apps.meet.v2.ConferenceRecordsService/GetTranscriptEntry"
 	ConferenceRecordsService_ListTranscriptEntries_FullMethodName   = "/google.apps.meet.v2.ConferenceRecordsService/ListTranscriptEntries"
+	ConferenceRecordsService_GetSmartNote_FullMethodName            = "/google.apps.meet.v2.ConferenceRecordsService/GetSmartNote"
+	ConferenceRecordsService_ListSmartNotes_FullMethodName          = "/google.apps.meet.v2.ConferenceRecordsService/ListSmartNotes"
 )
 
 // ConferenceRecordsServiceClient is the client API for ConferenceRecordsService service.
@@ -313,15 +579,22 @@ type ConferenceRecordsServiceClient interface {
 	//
 	// Note: The transcript entries returned by the Google Meet API might not
 	// match the transcription found in the Google Docs transcript file. This can
-	// occur when the Google Docs transcript file is modified after generation.
+	// occur when 1) we have interleaved speakers within milliseconds, or
+	// 2) the Google Docs transcript file is modified after generation.
 	GetTranscriptEntry(ctx context.Context, in *GetTranscriptEntryRequest, opts ...grpc.CallOption) (*TranscriptEntry, error)
 	// Lists the structured transcript entries per transcript. By default, ordered
 	// by start time and in ascending order.
 	//
 	// Note: The transcript entries returned by the Google Meet API might not
 	// match the transcription found in the Google Docs transcript file. This can
-	// occur when the Google Docs transcript file is modified after generation.
+	// occur when 1) we have interleaved speakers within milliseconds, or
+	// 2) the Google Docs transcript file is modified after generation.
 	ListTranscriptEntries(ctx context.Context, in *ListTranscriptEntriesRequest, opts ...grpc.CallOption) (*ListTranscriptEntriesResponse, error)
+	// Gets smart notes by smart note ID.
+	GetSmartNote(ctx context.Context, in *GetSmartNoteRequest, opts ...grpc.CallOption) (*SmartNote, error)
+	// Lists the set of smart notes from the conference record. By default,
+	// ordered by start time and in ascending order.
+	ListSmartNotes(ctx context.Context, in *ListSmartNotesRequest, opts ...grpc.CallOption) (*ListSmartNotesResponse, error)
 }
 
 type conferenceRecordsServiceClient struct {
@@ -440,6 +713,24 @@ func (c *conferenceRecordsServiceClient) ListTranscriptEntries(ctx context.Conte
 	return out, nil
 }
 
+func (c *conferenceRecordsServiceClient) GetSmartNote(ctx context.Context, in *GetSmartNoteRequest, opts ...grpc.CallOption) (*SmartNote, error) {
+	out := new(SmartNote)
+	err := c.cc.Invoke(ctx, ConferenceRecordsService_GetSmartNote_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceRecordsServiceClient) ListSmartNotes(ctx context.Context, in *ListSmartNotesRequest, opts ...grpc.CallOption) (*ListSmartNotesResponse, error) {
+	out := new(ListSmartNotesResponse)
+	err := c.cc.Invoke(ctx, ConferenceRecordsService_ListSmartNotes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConferenceRecordsServiceServer is the server API for ConferenceRecordsService service.
 // All implementations should embed UnimplementedConferenceRecordsServiceServer
 // for forward compatibility
@@ -479,15 +770,22 @@ type ConferenceRecordsServiceServer interface {
 	//
 	// Note: The transcript entries returned by the Google Meet API might not
 	// match the transcription found in the Google Docs transcript file. This can
-	// occur when the Google Docs transcript file is modified after generation.
+	// occur when 1) we have interleaved speakers within milliseconds, or
+	// 2) the Google Docs transcript file is modified after generation.
 	GetTranscriptEntry(context.Context, *GetTranscriptEntryRequest) (*TranscriptEntry, error)
 	// Lists the structured transcript entries per transcript. By default, ordered
 	// by start time and in ascending order.
 	//
 	// Note: The transcript entries returned by the Google Meet API might not
 	// match the transcription found in the Google Docs transcript file. This can
-	// occur when the Google Docs transcript file is modified after generation.
+	// occur when 1) we have interleaved speakers within milliseconds, or
+	// 2) the Google Docs transcript file is modified after generation.
 	ListTranscriptEntries(context.Context, *ListTranscriptEntriesRequest) (*ListTranscriptEntriesResponse, error)
+	// Gets smart notes by smart note ID.
+	GetSmartNote(context.Context, *GetSmartNoteRequest) (*SmartNote, error)
+	// Lists the set of smart notes from the conference record. By default,
+	// ordered by start time and in ascending order.
+	ListSmartNotes(context.Context, *ListSmartNotesRequest) (*ListSmartNotesResponse, error)
 }
 
 // UnimplementedConferenceRecordsServiceServer should be embedded to have forward compatible implementations.
@@ -529,6 +827,12 @@ func (UnimplementedConferenceRecordsServiceServer) GetTranscriptEntry(context.Co
 }
 func (UnimplementedConferenceRecordsServiceServer) ListTranscriptEntries(context.Context, *ListTranscriptEntriesRequest) (*ListTranscriptEntriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTranscriptEntries not implemented")
+}
+func (UnimplementedConferenceRecordsServiceServer) GetSmartNote(context.Context, *GetSmartNoteRequest) (*SmartNote, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSmartNote not implemented")
+}
+func (UnimplementedConferenceRecordsServiceServer) ListSmartNotes(context.Context, *ListSmartNotesRequest) (*ListSmartNotesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSmartNotes not implemented")
 }
 
 // UnsafeConferenceRecordsServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -758,6 +1062,42 @@ func _ConferenceRecordsService_ListTranscriptEntries_Handler(srv interface{}, ct
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ConferenceRecordsService_GetSmartNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSmartNoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceRecordsServiceServer).GetSmartNote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConferenceRecordsService_GetSmartNote_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceRecordsServiceServer).GetSmartNote(ctx, req.(*GetSmartNoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConferenceRecordsService_ListSmartNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSmartNotesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceRecordsServiceServer).ListSmartNotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConferenceRecordsService_ListSmartNotes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceRecordsServiceServer).ListSmartNotes(ctx, req.(*ListSmartNotesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ConferenceRecordsService_ServiceDesc is the grpc.ServiceDesc for ConferenceRecordsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -812,6 +1152,14 @@ var ConferenceRecordsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListTranscriptEntries",
 			Handler:    _ConferenceRecordsService_ListTranscriptEntries_Handler,
+		},
+		{
+			MethodName: "GetSmartNote",
+			Handler:    _ConferenceRecordsService_GetSmartNote_Handler,
+		},
+		{
+			MethodName: "ListSmartNotes",
+			Handler:    _ConferenceRecordsService_ListSmartNotes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

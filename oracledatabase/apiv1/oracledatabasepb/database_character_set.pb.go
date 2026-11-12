@@ -302,22 +302,22 @@ var File_google_cloud_oracledatabase_v1_database_character_set_proto protoreflec
 
 const file_google_cloud_oracledatabase_v1_database_character_set_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/oracledatabase/v1/database_character_set.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe7\x03\n" +
-	"\x14DatabaseCharacterSet\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12x\n" +
-	"\x12character_set_type\x18\x02 \x01(\x0e2E.google.cloud.oracledatabase.v1.DatabaseCharacterSet.CharacterSetTypeB\x03\xe0A\x03R\x10characterSetType\x12(\n" +
-	"\rcharacter_set\x18\x03 \x01(\tB\x03\xe0A\x03R\fcharacterSet\"R\n" +
+	";google/cloud/oracledatabase/v1/database_character_set.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xea\x03\n" +
+	"\x14DatabaseCharacterSet\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12y\n" +
+	"\x12character_set_type\x18\x02 \x01(\x0e2E.google.cloud.oracledatabase.v1.DatabaseCharacterSet.CharacterSetTypeB\x04\xe2A\x01\x03R\x10characterSetType\x12)\n" +
+	"\rcharacter_set\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fcharacterSet\"R\n" +
 	"\x10CharacterSetType\x12\"\n" +
 	"\x1eCHARACTER_SET_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\f\n" +
 	"\bNATIONAL\x10\x02:\xbd\x01\xeaA\xb9\x01\n" +
-	"2oracledatabase.googleapis.com/DatabaseCharacterSet\x12Vprojects/{project}/locations/{location}/databaseCharacterSets/{database_character_set}*\x15databaseCharacterSets2\x14databaseCharacterSet\"\xd9\x01\n" +
-	" ListDatabaseCharacterSetsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122oracledatabase.googleapis.com/DatabaseCharacterSetR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"2oracledatabase.googleapis.com/DatabaseCharacterSet\x12Vprojects/{project}/locations/{location}/databaseCharacterSets/{database_character_set}*\x15databaseCharacterSets2\x14databaseCharacterSet\"\xdd\x01\n" +
+	" ListDatabaseCharacterSetsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122oracledatabase.googleapis.com/DatabaseCharacterSetR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xb9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xb9\x01\n" +
 	"!ListDatabaseCharacterSetsResponse\x12l\n" +
 	"\x17database_character_sets\x18\x01 \x03(\v24.google.cloud.oracledatabase.v1.DatabaseCharacterSetR\x15databaseCharacterSets\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenB\xf3\x01\n" +

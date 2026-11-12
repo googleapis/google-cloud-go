@@ -1706,72 +1706,72 @@ var File_google_cloud_pubsublite_v1_admin_proto protoreflect.FileDescriptor
 
 const file_google_cloud_pubsublite_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/pubsublite/v1/admin.proto\x12\x1agoogle.cloud.pubsublite.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/pubsublite/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb5\x01\n" +
-	"\x12CreateTopicRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12<\n" +
-	"\x05topic\x18\x02 \x01(\v2!.google.cloud.pubsublite.v1.TopicB\x03\xe0A\x02R\x05topic\x12\x1e\n" +
-	"\btopic_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atopicId\"N\n" +
-	"\x0fGetTopicRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fpubsublite.googleapis.com/TopicR\x04name\"X\n" +
-	"\x19GetTopicPartitionsRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"&google/cloud/pubsublite/v1/admin.proto\x12\x1agoogle.cloud.pubsublite.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/pubsublite/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb8\x01\n" +
+	"\x12CreateTopicRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12=\n" +
+	"\x05topic\x18\x02 \x01(\v2!.google.cloud.pubsublite.v1.TopicB\x04\xe2A\x01\x02R\x05topic\x12\x1f\n" +
+	"\btopic_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atopicId\"O\n" +
+	"\x0fGetTopicRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fpubsublite.googleapis.com/TopicR\x04name\"Y\n" +
+	"\x19GetTopicPartitionsRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fpubsublite.googleapis.com/TopicR\x04name\":\n" +
 	"\x0fTopicPartitions\x12'\n" +
-	"\x0fpartition_count\x18\x01 \x01(\x03R\x0epartitionCount\"\x92\x01\n" +
-	"\x11ListTopicsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fpartition_count\x18\x01 \x01(\x03R\x0epartitionCount\"\x93\x01\n" +
+	"\x11ListTopicsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"w\n" +
 	"\x12ListTopicsResponse\x129\n" +
 	"\x06topics\x18\x01 \x03(\v2!.google.cloud.pubsublite.v1.TopicR\x06topics\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x94\x01\n" +
-	"\x12UpdateTopicRequest\x12<\n" +
-	"\x05topic\x18\x01 \x01(\v2!.google.cloud.pubsublite.v1.TopicB\x03\xe0A\x02R\x05topic\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"Q\n" +
-	"\x12DeleteTopicRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fpubsublite.googleapis.com/TopicR\x04name\"\x98\x01\n" +
-	"\x1dListTopicSubscriptionsRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x96\x01\n" +
+	"\x12UpdateTopicRequest\x12=\n" +
+	"\x05topic\x18\x01 \x01(\v2!.google.cloud.pubsublite.v1.TopicB\x04\xe2A\x01\x02R\x05topic\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"R\n" +
+	"\x12DeleteTopicRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fpubsublite.googleapis.com/TopicR\x04name\"\x99\x01\n" +
+	"\x1dListTopicSubscriptionsRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fpubsublite.googleapis.com/TopicR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"n\n" +
 	"\x1eListTopicSubscriptionsResponse\x12$\n" +
 	"\rsubscriptions\x18\x01 \x03(\tR\rsubscriptions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x82\x02\n" +
-	"\x19CreateSubscriptionRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12Q\n" +
-	"\fsubscription\x18\x02 \x01(\v2(.google.cloud.pubsublite.v1.SubscriptionB\x03\xe0A\x02R\fsubscription\x12,\n" +
-	"\x0fsubscription_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0esubscriptionId\x12!\n" +
-	"\fskip_backlog\x18\x04 \x01(\bR\vskipBacklog\"\\\n" +
-	"\x16GetSubscriptionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&pubsublite.googleapis.com/SubscriptionR\x04name\"\x99\x01\n" +
-	"\x18ListSubscriptionsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x85\x02\n" +
+	"\x19CreateSubscriptionRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12R\n" +
+	"\fsubscription\x18\x02 \x01(\v2(.google.cloud.pubsublite.v1.SubscriptionB\x04\xe2A\x01\x02R\fsubscription\x12-\n" +
+	"\x0fsubscription_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0esubscriptionId\x12!\n" +
+	"\fskip_backlog\x18\x04 \x01(\bR\vskipBacklog\"]\n" +
+	"\x16GetSubscriptionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&pubsublite.googleapis.com/SubscriptionR\x04name\"\x9a\x01\n" +
+	"\x18ListSubscriptionsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x93\x01\n" +
 	"\x19ListSubscriptionsResponse\x12N\n" +
 	"\rsubscriptions\x18\x01 \x03(\v2(.google.cloud.pubsublite.v1.SubscriptionR\rsubscriptions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb0\x01\n" +
-	"\x19UpdateSubscriptionRequest\x12Q\n" +
-	"\fsubscription\x18\x01 \x01(\v2(.google.cloud.pubsublite.v1.SubscriptionB\x03\xe0A\x02R\fsubscription\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"_\n" +
-	"\x19DeleteSubscriptionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&pubsublite.googleapis.com/SubscriptionR\x04name\"\xd9\x02\n" +
-	"\x17SeekSubscriptionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2\x01\n" +
+	"\x19UpdateSubscriptionRequest\x12R\n" +
+	"\fsubscription\x18\x01 \x01(\v2(.google.cloud.pubsublite.v1.SubscriptionB\x04\xe2A\x01\x02R\fsubscription\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"`\n" +
+	"\x19DeleteSubscriptionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&pubsublite.googleapis.com/SubscriptionR\x04name\"\xda\x02\n" +
+	"\x17SeekSubscriptionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&pubsublite.googleapis.com/SubscriptionR\x04name\x12d\n" +
 	"\fnamed_target\x18\x02 \x01(\x0e2?.google.cloud.pubsublite.v1.SeekSubscriptionRequest.NamedTargetH\x00R\vnamedTarget\x12I\n" +
 	"\vtime_target\x18\x03 \x01(\v2&.google.cloud.pubsublite.v1.TimeTargetH\x00R\n" +
@@ -1787,33 +1787,33 @@ const file_google_cloud_pubsublite_v1_admin_proto_rawDesc = "" +
 	"createTime\x125\n" +
 	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12\x16\n" +
 	"\x06target\x18\x03 \x01(\tR\x06target\x12\x12\n" +
-	"\x04verb\x18\x04 \x01(\tR\x04verb\"\xd9\x01\n" +
-	"\x18CreateReservationRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12N\n" +
-	"\vreservation\x18\x02 \x01(\v2'.google.cloud.pubsublite.v1.ReservationB\x03\xe0A\x02R\vreservation\x12*\n" +
-	"\x0ereservation_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rreservationId\"Z\n" +
-	"\x15GetReservationRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%pubsublite.googleapis.com/ReservationR\x04name\"\x98\x01\n" +
-	"\x17ListReservationsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x04verb\x18\x04 \x01(\tR\x04verb\"\xdc\x01\n" +
+	"\x18CreateReservationRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12O\n" +
+	"\vreservation\x18\x02 \x01(\v2'.google.cloud.pubsublite.v1.ReservationB\x04\xe2A\x01\x02R\vreservation\x12+\n" +
+	"\x0ereservation_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rreservationId\"[\n" +
+	"\x15GetReservationRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%pubsublite.googleapis.com/ReservationR\x04name\"\x99\x01\n" +
+	"\x17ListReservationsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8f\x01\n" +
 	"\x18ListReservationsResponse\x12K\n" +
 	"\freservations\x18\x01 \x03(\v2'.google.cloud.pubsublite.v1.ReservationR\freservations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xac\x01\n" +
-	"\x18UpdateReservationRequest\x12N\n" +
-	"\vreservation\x18\x01 \x01(\v2'.google.cloud.pubsublite.v1.ReservationB\x03\xe0A\x02R\vreservation\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"]\n" +
-	"\x18DeleteReservationRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%pubsublite.googleapis.com/ReservationR\x04name\"\x9d\x01\n" +
-	"\x1cListReservationTopicsRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xae\x01\n" +
+	"\x18UpdateReservationRequest\x12O\n" +
+	"\vreservation\x18\x01 \x01(\v2'.google.cloud.pubsublite.v1.ReservationB\x04\xe2A\x01\x02R\vreservation\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"^\n" +
+	"\x18DeleteReservationRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%pubsublite.googleapis.com/ReservationR\x04name\"\x9e\x01\n" +
+	"\x1cListReservationTopicsRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%pubsublite.googleapis.com/ReservationR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

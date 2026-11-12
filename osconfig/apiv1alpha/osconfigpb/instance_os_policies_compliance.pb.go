@@ -462,16 +462,16 @@ var File_google_cloud_osconfig_v1alpha_instance_os_policies_compliance_proto pro
 
 const file_google_cloud_osconfig_v1alpha_instance_os_policies_compliance_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/cloud/osconfig/v1alpha/instance_os_policies_compliance.proto\x12\x1dgoogle.cloud.osconfig.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/osconfig/v1alpha/config_common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb1\b\n" +
-	"\x1cInstanceOSPoliciesCompliance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
-	"\binstance\x18\x02 \x01(\tB\x03\xe0A\x03R\binstance\x12Q\n" +
-	"\x05state\x18\x03 \x01(\x0e26.google.cloud.osconfig.v1alpha.OSPolicyComplianceStateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0edetailed_state\x18\x04 \x01(\tB\x03\xe0A\x03R\rdetailedState\x127\n" +
-	"\x15detailed_state_reason\x18\x05 \x01(\tB\x03\xe0A\x03R\x13detailedStateReason\x12\x87\x01\n" +
-	"\x15os_policy_compliances\x18\x06 \x03(\v2N.google.cloud.osconfig.v1alpha.InstanceOSPoliciesCompliance.OSPolicyComplianceB\x03\xe0A\x03R\x13osPolicyCompliances\x12\\\n" +
-	"\x1alast_compliance_check_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x17lastComplianceCheckTime\x128\n" +
-	"\x16last_compliance_run_id\x18\b \x01(\tB\x03\xe0A\x03R\x13lastComplianceRunId\x1a\xeb\x02\n" +
+	"Cgoogle/cloud/osconfig/v1alpha/instance_os_policies_compliance.proto\x12\x1dgoogle.cloud.osconfig.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/osconfig/v1alpha/config_common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb9\b\n" +
+	"\x1cInstanceOSPoliciesCompliance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12 \n" +
+	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\binstance\x12R\n" +
+	"\x05state\x18\x03 \x01(\x0e26.google.cloud.osconfig.v1alpha.OSPolicyComplianceStateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0edetailed_state\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\rdetailedState\x128\n" +
+	"\x15detailed_state_reason\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x13detailedStateReason\x12\x88\x01\n" +
+	"\x15os_policy_compliances\x18\x06 \x03(\v2N.google.cloud.osconfig.v1alpha.InstanceOSPoliciesCompliance.OSPolicyComplianceB\x04\xe2A\x01\x03R\x13osPolicyCompliances\x12]\n" +
+	"\x1alast_compliance_check_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x17lastComplianceCheckTime\x129\n" +
+	"\x16last_compliance_run_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\x13lastComplianceRunId\x1a\xeb\x02\n" +
 	"\x12OSPolicyCompliance\x12 \n" +
 	"\fos_policy_id\x18\x01 \x01(\tR\n" +
 	"osPolicyId\x12a\n" +
@@ -479,12 +479,12 @@ const file_google_cloud_osconfig_v1alpha_instance_os_policies_compliance_proto_r
 	"*osconfig.googleapis.com/OSPolicyAssignmentR\x12osPolicyAssignment\x12L\n" +
 	"\x05state\x18\x04 \x01(\x0e26.google.cloud.osconfig.v1alpha.OSPolicyComplianceStateR\x05state\x12~\n" +
 	"\x1eos_policy_resource_compliances\x18\x05 \x03(\v29.google.cloud.osconfig.v1alpha.OSPolicyResourceComplianceR\x1bosPolicyResourceCompliances:\x02\x18\x01:\x8e\x01\xeaA\x88\x01\n" +
-	"4osconfig.googleapis.com/InstanceOSPoliciesCompliance\x12Pprojects/{project}/locations/{location}/instanceOSPoliciesCompliances/{instance}\x18\x01\"~\n" +
-	"&GetInstanceOSPoliciesComplianceRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4osconfig.googleapis.com/InstanceOSPoliciesComplianceR\x04name:\x02\x18\x01\"\xc5\x01\n" +
-	"(ListInstanceOSPoliciesCompliancesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"4osconfig.googleapis.com/InstanceOSPoliciesCompliance\x12Pprojects/{project}/locations/{location}/instanceOSPoliciesCompliances/{instance}\x18\x01\"\x7f\n" +
+	"&GetInstanceOSPoliciesComplianceRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4osconfig.googleapis.com/InstanceOSPoliciesComplianceR\x04name:\x02\x18\x01\"\xc6\x01\n" +
+	"(ListInstanceOSPoliciesCompliancesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

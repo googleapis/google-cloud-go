@@ -607,30 +607,30 @@ const file_google_cloud_dialogflow_v2beta1_context_proto_rawDesc = "" +
 	"\n" +
 	"parameters\x18\x03 \x01(\v2\x17.google.protobuf.StructR\n" +
 	"parameters:\xa1\x03\xeaA\x9d\x03\n" +
-	"!dialogflow.googleapis.com/Context\x12>projects/{project}/agent/sessions/{session}/contexts/{context}\x12fprojects/{project}/agent/environments/{environment}/users/{user}/sessions/{session}/contexts/{context}\x12Sprojects/{project}/locations/{location}/agent/sessions/{session}/contexts/{context}\x12{projects/{project}/locations/{location}/agent/environments/{environment}/users/{user}/sessions/{session}/contexts/{context}\"\x94\x01\n" +
-	"\x13ListContextsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/ContextR\x06parent\x12\x1b\n" +
+	"!dialogflow.googleapis.com/Context\x12>projects/{project}/agent/sessions/{session}/contexts/{context}\x12fprojects/{project}/agent/environments/{environment}/users/{user}/sessions/{session}/contexts/{context}\x12Sprojects/{project}/locations/{location}/agent/sessions/{session}/contexts/{context}\x12{projects/{project}/locations/{location}/agent/environments/{environment}/users/{user}/sessions/{session}/contexts/{context}\"\x95\x01\n" +
+	"\x13ListContextsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/ContextR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x84\x01\n" +
 	"\x14ListContextsResponse\x12D\n" +
 	"\bcontexts\x18\x01 \x03(\v2(.google.cloud.dialogflow.v2beta1.ContextR\bcontexts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x11GetContextRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/ContextR\x04name\"\xa2\x01\n" +
-	"\x14CreateContextRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/ContextR\x06parent\x12G\n" +
-	"\acontext\x18\x02 \x01(\v2(.google.cloud.dialogflow.v2beta1.ContextB\x03\xe0A\x02R\acontext\"\xa1\x01\n" +
-	"\x14UpdateContextRequest\x12G\n" +
-	"\acontext\x18\x01 \x01(\v2(.google.cloud.dialogflow.v2beta1.ContextB\x03\xe0A\x02R\acontext\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"U\n" +
-	"\x14DeleteContextRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/ContextR\x04name\"]\n" +
-	"\x18DeleteAllContextsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/ContextR\x06parent2\x9c\x16\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x11GetContextRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/ContextR\x04name\"\xa4\x01\n" +
+	"\x14CreateContextRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/ContextR\x06parent\x12H\n" +
+	"\acontext\x18\x02 \x01(\v2(.google.cloud.dialogflow.v2beta1.ContextB\x04\xe2A\x01\x02R\acontext\"\xa3\x01\n" +
+	"\x14UpdateContextRequest\x12H\n" +
+	"\acontext\x18\x01 \x01(\v2(.google.cloud.dialogflow.v2beta1.ContextB\x04\xe2A\x01\x02R\acontext\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"V\n" +
+	"\x14DeleteContextRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/ContextR\x04name\"^\n" +
+	"\x18DeleteAllContextsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/ContextR\x06parent2\x9c\x16\n" +
 	"\bContexts\x12\xba\x03\n" +
 	"\fListContexts\x124.google.cloud.dialogflow.v2beta1.ListContextsRequest\x1a5.google.cloud.dialogflow.v2beta1.ListContextsResponse\"\xbc\x02\xdaA\x06parent\x82\xd3\xe4\x93\x02\xac\x02ZO\x12M/v2beta1/{parent=projects/*/agent/environments/*/users/*/sessions/*}/contextsZD\x12B/v2beta1/{parent=projects/*/locations/*/agent/sessions/*}/contextsZ[\x12Y/v2beta1/{parent=projects/*/locations/*/agent/environments/*/users/*/sessions/*}/contexts\x126/v2beta1/{parent=projects/*/agent/sessions/*}/contexts\x12\xa7\x03\n" +
 	"\n" +

@@ -120,6 +120,15 @@ func (s *Session) Invoke(ctx context.Context, desc VRpcDescriptor, req interface
 		resultChan: make(chan vrpcResult, 1),
 	}
 
+	// Reset the heartbeat deadline BEFORE publishing activeRPC via
+	// claimSlot. While a session is idle (activeVRPC() == nil),
+	// heartbeatLoop leaves nextHeartbeatDeadlineNano untouched as it
+	// expires; if claimSlot published activeRPC first, a heartbeatLoop
+	// timer firing in the window between claimSlot and
+	// resetHeartbeatDeadline would see activeVRPC() != nil alongside the
+	// expired idle deadline and false-positive ForceClose the session.
+	s.resetHeartbeatDeadline()
+
 	// Claim the single in-flight slot. A losing claim means a prior vRPC
 	// on this session has not drained on the wire yet — return Uncommitted
 	// so the retryer picks another session.
@@ -128,10 +137,6 @@ func (s *Session) Invoke(ctx context.Context, desc VRpcDescriptor, req interface
 			unavailable(ErrSessionNotActive,
 				"session %q busy: prior vRPC has not drained on the wire", s.logName))
 	}
-
-	// Reset the heartbeat deadline whenever we send an outbound frame: the
-	// server's keepalive clock is implicitly reset by our activity.
-	s.resetHeartbeatDeadline()
 
 	attempt := currentAttempt(ctx)
 	if attempt > 1 {
@@ -162,6 +167,10 @@ func (s *Session) Invoke(ctx context.Context, desc VRpcDescriptor, req interface
 		}
 		return result, tagErr(StateTransportFailure, fmt.Errorf("send vRPC request: %w", sendErr))
 	}
+	// Re-anchor the heartbeat deadline to the completed outbound Send so
+	// encode/send-lock time isn't charged against the server's keepalive
+	// window (SESSION_SPEC.md #7).
+	s.resetHeartbeatDeadline()
 
 	err = s.awaitInvokeResult(ctx, rpc, desc, &result)
 	return result, err

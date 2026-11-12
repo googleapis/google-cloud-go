@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -301,7 +301,18 @@ type ServiceProperties struct {
 	Location string `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
 	// Output only. The location that the underlying resource resides in if it is
 	// zonal, for example, us-west1-a).
-	Zone          string `protobuf:"bytes,3,opt,name=zone,proto3" json:"zone,omitempty"`
+	Zone string `protobuf:"bytes,3,opt,name=zone,proto3" json:"zone,omitempty"`
+	// Output only. The type of the service.
+	FunctionalType *FunctionalType `protobuf:"bytes,4,opt,name=functional_type,json=functionalType,proto3" json:"functional_type,omitempty"`
+	// Output only. The registration type of the service.
+	RegistrationType *RegistrationType `protobuf:"bytes,5,opt,name=registration_type,json=registrationType,proto3" json:"registration_type,omitempty"`
+	// Output only. Additional metadata specific to the resource type.
+	// The key is a string that identifies the type of metadata and the value is
+	// the metadata contents specific to that type.
+	// Key format: `apphub.googleapis.com/{metadataType}`
+	ExtendedMetadata map[string]*ExtendedMetadata `protobuf:"bytes,6,rep,name=extended_metadata,json=extendedMetadata,proto3" json:"extended_metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Output only. The identity associated with the service.
+	Identity      *Identity `protobuf:"bytes,7,opt,name=identity,proto3" json:"identity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -355,6 +366,34 @@ func (x *ServiceProperties) GetZone() string {
 		return x.Zone
 	}
 	return ""
+}
+
+func (x *ServiceProperties) GetFunctionalType() *FunctionalType {
+	if x != nil {
+		return x.FunctionalType
+	}
+	return nil
+}
+
+func (x *ServiceProperties) GetRegistrationType() *RegistrationType {
+	if x != nil {
+		return x.RegistrationType
+	}
+	return nil
+}
+
+func (x *ServiceProperties) GetExtendedMetadata() map[string]*ExtendedMetadata {
+	if x != nil {
+		return x.ExtendedMetadata
+	}
+	return nil
+}
+
+func (x *ServiceProperties) GetIdentity() *Identity {
+	if x != nil {
+		return x.Identity
+	}
+	return nil
 }
 
 // DiscoveredService is a network or API interface that exposes some
@@ -430,24 +469,24 @@ var File_google_cloud_apphub_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apphub_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/apphub/v1/service.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa3\a\n" +
-	"\aService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12Z\n" +
-	"\x11service_reference\x18\x04 \x01(\v2(.google.cloud.apphub.v1.ServiceReferenceB\x03\xe0A\x03R\x10serviceReference\x12]\n" +
-	"\x12service_properties\x18\x05 \x01(\v2).google.cloud.apphub.v1.ServicePropertiesB\x03\xe0A\x03R\x11serviceProperties\x12G\n" +
+	"$google/cloud/apphub/v1/service.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a'google/cloud/apphub/v1/properties.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\a\n" +
+	"\aService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12[\n" +
+	"\x11service_reference\x18\x04 \x01(\v2(.google.cloud.apphub.v1.ServiceReferenceB\x04\xe2A\x01\x03R\x10serviceReference\x12^\n" +
+	"\x12service_properties\x18\x05 \x01(\v2).google.cloud.apphub.v1.ServicePropertiesB\x04\xe2A\x01\x03R\x11serviceProperties\x12H\n" +
 	"\n" +
-	"attributes\x18\x06 \x01(\v2\".google.cloud.apphub.v1.AttributesB\x03\xe0A\x01R\n" +
-	"attributes\x12a\n" +
-	"\x12discovered_service\x18\a \x01(\tB2\xe0A\x02\xe0A\x05\xfaA)\x12'apphub.googleapis.com/DiscoveredServiceR\x11discoveredService\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1d\n" +
+	"attributes\x18\x06 \x01(\v2\".google.cloud.apphub.v1.AttributesB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12`\n" +
+	"\x12discovered_service\x18\a \x01(\tB1\xe2A\x02\x02\x05\xfaA)\x12'apphub.googleapis.com/DiscoveredServiceR\x11discoveredService\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1e\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\x05state\x18\v \x01(\x0e2%.google.cloud.apphub.v1.Service.StateB\x03\xe0A\x03R\x05state\"T\n" +
+	" \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\x05state\x18\v \x01(\x0e2%.google.cloud.apphub.v1.Service.StateB\x04\xe2A\x01\x03R\x05state\"T\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -455,18 +494,25 @@ const file_google_cloud_apphub_v1_service_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03\x12\f\n" +
 	"\bDETACHED\x10\x04:\x8d\x01\xeaA\x89\x01\n" +
-	"\x1dapphub.googleapis.com/Service\x12Uprojects/{project}/locations/{location}/applications/{application}/services/{service}*\bservices2\aservice\")\n" +
-	"\x10ServiceReference\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\"s\n" +
-	"\x11ServiceProperties\x12$\n" +
-	"\vgcp_project\x18\x01 \x01(\tB\x03\xe0A\x03R\n" +
-	"gcpProject\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x03R\blocation\x12\x17\n" +
-	"\x04zone\x18\x03 \x01(\tB\x03\xe0A\x03R\x04zone\"\x8f\x03\n" +
-	"\x11DiscoveredService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12Z\n" +
-	"\x11service_reference\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ServiceReferenceB\x03\xe0A\x03R\x10serviceReference\x12]\n" +
-	"\x12service_properties\x18\x03 \x01(\v2).google.cloud.apphub.v1.ServicePropertiesB\x03\xe0A\x03R\x11serviceProperties:\xa5\x01\xeaA\xa1\x01\n" +
+	"\x1dapphub.googleapis.com/Service\x12Uprojects/{project}/locations/{location}/applications/{application}/services/{service}*\bservices2\aservice\"*\n" +
+	"\x10ServiceReference\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03uri\"\xd1\x04\n" +
+	"\x11ServiceProperties\x12%\n" +
+	"\vgcp_project\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"gcpProject\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12\x18\n" +
+	"\x04zone\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04zone\x12U\n" +
+	"\x0ffunctional_type\x18\x04 \x01(\v2&.google.cloud.apphub.v1.FunctionalTypeB\x04\xe2A\x01\x03R\x0efunctionalType\x12[\n" +
+	"\x11registration_type\x18\x05 \x01(\v2(.google.cloud.apphub.v1.RegistrationTypeB\x04\xe2A\x01\x03R\x10registrationType\x12r\n" +
+	"\x11extended_metadata\x18\x06 \x03(\v2?.google.cloud.apphub.v1.ServiceProperties.ExtendedMetadataEntryB\x04\xe2A\x01\x03R\x10extendedMetadata\x12B\n" +
+	"\bidentity\x18\a \x01(\v2 .google.cloud.apphub.v1.IdentityB\x04\xe2A\x01\x03R\bidentity\x1am\n" +
+	"\x15ExtendedMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12>\n" +
+	"\x05value\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ExtendedMetadataR\x05value:\x028\x01\"\x92\x03\n" +
+	"\x11DiscoveredService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12[\n" +
+	"\x11service_reference\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ServiceReferenceB\x04\xe2A\x01\x03R\x10serviceReference\x12^\n" +
+	"\x12service_properties\x18\x03 \x01(\v2).google.cloud.apphub.v1.ServicePropertiesB\x04\xe2A\x01\x03R\x11serviceProperties:\xa5\x01\xeaA\xa1\x01\n" +
 	"'apphub.googleapis.com/DiscoveredService\x12Oprojects/{project}/locations/{location}/discoveredServices/{discovered_service}*\x12discoveredServices2\x11discoveredServiceB\xae\x01\n" +
 	"\x1acom.google.cloud.apphub.v1B\fServiceProtoP\x01Z2cloud.google.com/go/apphub/apiv1/apphubpb;apphubpb\xaa\x02\x16Google.Cloud.AppHub.V1\xca\x02\x16Google\\Cloud\\AppHub\\V1\xea\x02\x19Google::Cloud::AppHub::V1b\x06proto3"
 
@@ -483,30 +529,40 @@ func file_google_cloud_apphub_v1_service_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_apphub_v1_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_apphub_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_cloud_apphub_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_cloud_apphub_v1_service_proto_goTypes = []any{
 	(Service_State)(0),            // 0: google.cloud.apphub.v1.Service.State
 	(*Service)(nil),               // 1: google.cloud.apphub.v1.Service
 	(*ServiceReference)(nil),      // 2: google.cloud.apphub.v1.ServiceReference
 	(*ServiceProperties)(nil),     // 3: google.cloud.apphub.v1.ServiceProperties
 	(*DiscoveredService)(nil),     // 4: google.cloud.apphub.v1.DiscoveredService
-	(*Attributes)(nil),            // 5: google.cloud.apphub.v1.Attributes
-	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
+	nil,                           // 5: google.cloud.apphub.v1.ServiceProperties.ExtendedMetadataEntry
+	(*Attributes)(nil),            // 6: google.cloud.apphub.v1.Attributes
+	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(*FunctionalType)(nil),        // 8: google.cloud.apphub.v1.FunctionalType
+	(*RegistrationType)(nil),      // 9: google.cloud.apphub.v1.RegistrationType
+	(*Identity)(nil),              // 10: google.cloud.apphub.v1.Identity
+	(*ExtendedMetadata)(nil),      // 11: google.cloud.apphub.v1.ExtendedMetadata
 }
 var file_google_cloud_apphub_v1_service_proto_depIdxs = []int32{
-	2, // 0: google.cloud.apphub.v1.Service.service_reference:type_name -> google.cloud.apphub.v1.ServiceReference
-	3, // 1: google.cloud.apphub.v1.Service.service_properties:type_name -> google.cloud.apphub.v1.ServiceProperties
-	5, // 2: google.cloud.apphub.v1.Service.attributes:type_name -> google.cloud.apphub.v1.Attributes
-	6, // 3: google.cloud.apphub.v1.Service.create_time:type_name -> google.protobuf.Timestamp
-	6, // 4: google.cloud.apphub.v1.Service.update_time:type_name -> google.protobuf.Timestamp
-	0, // 5: google.cloud.apphub.v1.Service.state:type_name -> google.cloud.apphub.v1.Service.State
-	2, // 6: google.cloud.apphub.v1.DiscoveredService.service_reference:type_name -> google.cloud.apphub.v1.ServiceReference
-	3, // 7: google.cloud.apphub.v1.DiscoveredService.service_properties:type_name -> google.cloud.apphub.v1.ServiceProperties
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	2,  // 0: google.cloud.apphub.v1.Service.service_reference:type_name -> google.cloud.apphub.v1.ServiceReference
+	3,  // 1: google.cloud.apphub.v1.Service.service_properties:type_name -> google.cloud.apphub.v1.ServiceProperties
+	6,  // 2: google.cloud.apphub.v1.Service.attributes:type_name -> google.cloud.apphub.v1.Attributes
+	7,  // 3: google.cloud.apphub.v1.Service.create_time:type_name -> google.protobuf.Timestamp
+	7,  // 4: google.cloud.apphub.v1.Service.update_time:type_name -> google.protobuf.Timestamp
+	0,  // 5: google.cloud.apphub.v1.Service.state:type_name -> google.cloud.apphub.v1.Service.State
+	8,  // 6: google.cloud.apphub.v1.ServiceProperties.functional_type:type_name -> google.cloud.apphub.v1.FunctionalType
+	9,  // 7: google.cloud.apphub.v1.ServiceProperties.registration_type:type_name -> google.cloud.apphub.v1.RegistrationType
+	5,  // 8: google.cloud.apphub.v1.ServiceProperties.extended_metadata:type_name -> google.cloud.apphub.v1.ServiceProperties.ExtendedMetadataEntry
+	10, // 9: google.cloud.apphub.v1.ServiceProperties.identity:type_name -> google.cloud.apphub.v1.Identity
+	2,  // 10: google.cloud.apphub.v1.DiscoveredService.service_reference:type_name -> google.cloud.apphub.v1.ServiceReference
+	3,  // 11: google.cloud.apphub.v1.DiscoveredService.service_properties:type_name -> google.cloud.apphub.v1.ServiceProperties
+	11, // 12: google.cloud.apphub.v1.ServiceProperties.ExtendedMetadataEntry.value:type_name -> google.cloud.apphub.v1.ExtendedMetadata
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_apphub_v1_service_proto_init() }
@@ -515,13 +571,14 @@ func file_google_cloud_apphub_v1_service_proto_init() {
 		return
 	}
 	file_google_cloud_apphub_v1_attributes_proto_init()
+	file_google_cloud_apphub_v1_properties_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_apphub_v1_service_proto_rawDesc), len(file_google_cloud_apphub_v1_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

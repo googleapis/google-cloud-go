@@ -144,16 +144,16 @@ var File_google_cloud_support_v2beta_email_message_proto protoreflect.FileDescri
 
 const file_google_cloud_support_v2beta_email_message_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/support/v2beta/email_message.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/support/v2beta/actor.proto\x1a)google/cloud/support/v2beta/content.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe3\x04\n" +
-	"\fEmailMessage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12=\n" +
-	"\x05actor\x18\x03 \x01(\v2\".google.cloud.support.v2beta.ActorB\x03\xe0A\x03R\x05actor\x12\x1d\n" +
-	"\asubject\x18\x04 \x01(\tB\x03\xe0A\x03R\asubject\x12?\n" +
-	"\x19recipient_email_addresses\x18\x05 \x03(\tB\x03\xe0A\x03R\x17recipientEmailAddresses\x121\n" +
-	"\x12cc_email_addresses\x18\x06 \x03(\tB\x03\xe0A\x03R\x10ccEmailAddresses\x12P\n" +
-	"\fbody_content\x18\b \x01(\v2(.google.cloud.support.v2beta.TextContentB\x03\xe0A\x03R\vbodyContent:\xd3\x01\xeaA\xcf\x01\n" +
+	"/google/cloud/support/v2beta/email_message.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/support/v2beta/actor.proto\x1a)google/cloud/support/v2beta/content.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xea\x04\n" +
+	"\fEmailMessage\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12>\n" +
+	"\x05actor\x18\x03 \x01(\v2\".google.cloud.support.v2beta.ActorB\x04\xe2A\x01\x03R\x05actor\x12\x1e\n" +
+	"\asubject\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\asubject\x12@\n" +
+	"\x19recipient_email_addresses\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\x17recipientEmailAddresses\x122\n" +
+	"\x12cc_email_addresses\x18\x06 \x03(\tB\x04\xe2A\x01\x03R\x10ccEmailAddresses\x12Q\n" +
+	"\fbody_content\x18\b \x01(\v2(.google.cloud.support.v2beta.TextContentB\x04\xe2A\x01\x03R\vbodyContent:\xd3\x01\xeaA\xcf\x01\n" +
 	"(cloudsupport.googleapis.com/EmailMessage\x12=projects/{project}/cases/{case}/emailMessages/{email_message}\x12Gorganizations/{organization}/cases/{case}/emailMessages/{email_message}*\remailMessages2\femailMessageB\xce\x01\n" +
 	"\x1fcom.google.cloud.support.v2betaB\x11EmailMessageProtoP\x01Z9cloud.google.com/go/support/apiv2beta/supportpb;supportpb\xaa\x02\x1bGoogle.Cloud.Support.V2Beta\xca\x02\x1bGoogle\\Cloud\\Support\\V2beta\xea\x02\x1eGoogle::Cloud::Support::V2betab\x06proto3"
 

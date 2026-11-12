@@ -693,33 +693,33 @@ var File_google_cloud_sql_v1beta4_cloud_sql_data_proto protoreflect.FileDescript
 
 const file_google_cloud_sql_v1beta4_cloud_sql_data_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/sql/v1beta4/cloud_sql_data.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x17google/rpc/status.proto\"\xe0\x03\n" +
-	"\x14StreamSqlDataRequest\x124\n" +
-	"\x03ack\x18\x04 \x01(\v2\x1d.google.cloud.sql.v1beta4.AckB\x03\xe0A\x01R\x03ack\x12M\n" +
+	"-google/cloud/sql/v1beta4/cloud_sql_data.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x17google/rpc/status.proto\"\xe2\x03\n" +
+	"\x14StreamSqlDataRequest\x125\n" +
+	"\x03ack\x18\x04 \x01(\v2\x1d.google.cloud.sql.v1beta4.AckB\x04\xe2A\x01\x01R\x03ack\x12M\n" +
 	"\rstart_session\x18\x05 \x01(\v2&.google.cloud.sql.v1beta4.StartSessionH\x00R\fstartSession\x12V\n" +
 	"\x10continue_session\x18\x06 \x01(\v2).google.cloud.sql.v1beta4.ContinueSessionH\x00R\x0fcontinueSession\x12:\n" +
 	"\x04data\x18\a \x01(\v2$.google.cloud.sql.v1beta4.DataPacketH\x00R\x04data\x12Y\n" +
-	"\x11terminate_session\x18\b \x01(\v2*.google.cloud.sql.v1beta4.TerminateSessionH\x00R\x10terminateSession\x12I\n" +
-	"\vinstance_id\x18\t \x01(\tB(\xe0A\x01\xfaA\"\n" +
+	"\x11terminate_session\x18\b \x01(\v2*.google.cloud.sql.v1beta4.TerminateSessionH\x00R\x10terminateSession\x12J\n" +
+	"\vinstance_id\x18\t \x01(\tB)\xe2A\x01\x01\xfaA\"\n" +
 	" cloudsql.googleapis.com/InstanceR\n" +
 	"instanceIdB\t\n" +
-	"\amessage\"\xa3\x01\n" +
-	"\fStartSession\x12$\n" +
-	"\vlocation_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"locationId\x12I\n" +
-	"\vinstance_id\x18\x02 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\amessage\"\xa6\x01\n" +
+	"\fStartSession\x12%\n" +
+	"\vlocation_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"locationId\x12J\n" +
+	"\vinstance_id\x18\x02 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" cloudsql.googleapis.com/InstanceR\n" +
-	"instanceId\x12\"\n" +
+	"instanceId\x12#\n" +
 	"\n" +
-	"session_id\x18\x03 \x01(\tB\x03\xe0A\x01R\tsessionId\"\xa6\x01\n" +
-	"\x0fContinueSession\x12$\n" +
-	"\vlocation_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"locationId\x12I\n" +
-	"\vinstance_id\x18\x02 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"session_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tsessionId\"\xa9\x01\n" +
+	"\x0fContinueSession\x12%\n" +
+	"\vlocation_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"locationId\x12J\n" +
+	"\vinstance_id\x18\x02 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" cloudsql.googleapis.com/InstanceR\n" +
-	"instanceId\x12\"\n" +
+	"instanceId\x12#\n" +
 	"\n" +
-	"session_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tsessionId\"\xc2\x02\n" +
+	"session_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tsessionId\"\xc2\x02\n" +
 	"\x15StreamSqlDataResponse\x12/\n" +
 	"\x03ack\x18\x02 \x01(\v2\x1d.google.cloud.sql.v1beta4.AckR\x03ack\x12V\n" +
 	"\x10session_metadata\x18\x03 \x01(\v2).google.cloud.sql.v1beta4.SessionMetadataH\x00R\x0fsessionMetadata\x12:\n" +
@@ -727,15 +727,15 @@ const file_google_cloud_sql_v1beta4_cloud_sql_data_proto_rawDesc = "" +
 	"\x11terminate_session\x18\x05 \x01(\v2*.google.cloud.sql.v1beta4.TerminateSessionH\x00R\x10terminateSessionB\t\n" +
 	"\amessage\"j\n" +
 	"\x0fSessionMetadata\x12W\n" +
-	"\x12supported_features\x18\x01 \x03(\x0e2(.google.cloud.sql.v1beta4.SqlDataFeatureR\x11supportedFeatures\"V\n" +
+	"\x12supported_features\x18\x01 \x03(\x0e2(.google.cloud.sql.v1beta4.SqlDataFeatureR\x11supportedFeatures\"X\n" +
 	"\n" +
-	"DataPacket\x12/\n" +
-	"\x11first_byte_offset\x18\x01 \x01(\x03B\x03\xe0A\x01R\x0ffirstByteOffset\x12\x17\n" +
-	"\x04data\x18\x02 \x01(\fB\x03\xe0A\x02R\x04data\"3\n" +
-	"\x03Ack\x12,\n" +
-	"\x0freceived_offset\x18\x01 \x01(\x03B\x03\xe0A\x02R\x0ereceivedOffset\"C\n" +
-	"\x10TerminateSession\x12/\n" +
-	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x02R\x06status*R\n" +
+	"DataPacket\x120\n" +
+	"\x11first_byte_offset\x18\x01 \x01(\x03B\x04\xe2A\x01\x01R\x0ffirstByteOffset\x12\x18\n" +
+	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\"4\n" +
+	"\x03Ack\x12-\n" +
+	"\x0freceived_offset\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x0ereceivedOffset\"D\n" +
+	"\x10TerminateSession\x120\n" +
+	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x02R\x06status*R\n" +
 	"\x0eSqlDataFeature\x12 \n" +
 	"\x1cSQL_DATA_FEATURE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aSQL_DATA_FEATURE_RECONNECT\x10\x012\x86\x02\n" +

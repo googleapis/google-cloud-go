@@ -805,67 +805,67 @@ var File_google_cloud_networkservices_v1_tcp_route_proto protoreflect.FileDescri
 
 const file_google_cloud_networkservices_v1_tcp_route_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/networkservices/v1/tcp_route.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbe\n" +
+	"/google/cloud/networkservices/v1/tcp_route.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd0\n" +
 	"\n" +
-	"\bTcpRoute\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\tself_link\x18\v \x01(\tB\x03\xe0A\x03R\bselfLink\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12N\n" +
-	"\x05rules\x18\x05 \x03(\v23.google.cloud.networkservices.v1.TcpRoute.RouteRuleB\x03\xe0A\x02R\x05rules\x12C\n" +
-	"\x06meshes\x18\b \x03(\tB+\xe0A\x01\xfaA%\n" +
-	"#networkservices.googleapis.com/MeshR\x06meshes\x12J\n" +
-	"\bgateways\x18\t \x03(\tB.\xe0A\x01\xfaA(\n" +
-	"&networkservices.googleapis.com/GatewayR\bgateways\x12R\n" +
+	"\bTcpRoute\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\tself_link\x18\v \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12O\n" +
+	"\x05rules\x18\x05 \x03(\v23.google.cloud.networkservices.v1.TcpRoute.RouteRuleB\x04\xe2A\x01\x02R\x05rules\x12D\n" +
+	"\x06meshes\x18\b \x03(\tB,\xe2A\x01\x01\xfaA%\n" +
+	"#networkservices.googleapis.com/MeshR\x06meshes\x12K\n" +
+	"\bgateways\x18\t \x03(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&networkservices.googleapis.com/GatewayR\bgateways\x12S\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v25.google.cloud.networkservices.v1.TcpRoute.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a\xb4\x01\n" +
-	"\tRouteRule\x12S\n" +
-	"\amatches\x18\x01 \x03(\v24.google.cloud.networkservices.v1.TcpRoute.RouteMatchB\x03\xe0A\x01R\amatches\x12R\n" +
-	"\x06action\x18\x02 \x01(\v25.google.cloud.networkservices.v1.TcpRoute.RouteActionB\x03\xe0A\x02R\x06action\x1aD\n" +
+	" \x03(\v25.google.cloud.networkservices.v1.TcpRoute.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a\xb6\x01\n" +
+	"\tRouteRule\x12T\n" +
+	"\amatches\x18\x01 \x03(\v24.google.cloud.networkservices.v1.TcpRoute.RouteMatchB\x04\xe2A\x01\x01R\amatches\x12S\n" +
+	"\x06action\x18\x02 \x01(\v25.google.cloud.networkservices.v1.TcpRoute.RouteActionB\x04\xe2A\x01\x02R\x06action\x1aF\n" +
 	"\n" +
-	"RouteMatch\x12\x1d\n" +
-	"\aaddress\x18\x01 \x01(\tB\x03\xe0A\x02R\aaddress\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\tB\x03\xe0A\x02R\x04port\x1a\xed\x01\n" +
-	"\vRouteAction\x12c\n" +
-	"\fdestinations\x18\x01 \x03(\v2:.google.cloud.networkservices.v1.TcpRoute.RouteDestinationB\x03\xe0A\x01R\fdestinations\x126\n" +
-	"\x14original_destination\x18\x03 \x01(\bB\x03\xe0A\x01R\x13originalDestination\x12A\n" +
-	"\fidle_timeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\vidleTimeout\x1a\x81\x01\n" +
-	"\x10RouteDestination\x12P\n" +
-	"\fservice_name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%compute.googleapis.com/BackendServiceR\vserviceName\x12\x1b\n" +
-	"\x06weight\x18\x02 \x01(\x05B\x03\xe0A\x01R\x06weight\x1a9\n" +
+	"RouteMatch\x12\x1e\n" +
+	"\aaddress\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aaddress\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04port\x1a\xf0\x01\n" +
+	"\vRouteAction\x12d\n" +
+	"\fdestinations\x18\x01 \x03(\v2:.google.cloud.networkservices.v1.TcpRoute.RouteDestinationB\x04\xe2A\x01\x01R\fdestinations\x127\n" +
+	"\x14original_destination\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x13originalDestination\x12B\n" +
+	"\fidle_timeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\vidleTimeout\x1a\x83\x01\n" +
+	"\x10RouteDestination\x12Q\n" +
+	"\fservice_name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%compute.googleapis.com/BackendServiceR\vserviceName\x12\x1c\n" +
+	"\x06weight\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x06weight\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:k\xeaAh\n" +
-	"'networkservices.googleapis.com/TcpRoute\x12=projects/{project}/locations/{location}/tcpRoutes/{tcp_route}\"\xd6\x01\n" +
-	"\x14ListTcpRoutesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'networkservices.googleapis.com/TcpRouteR\x06parent\x12\x1b\n" +
+	"'networkservices.googleapis.com/TcpRoute\x12=projects/{project}/locations/{location}/tcpRoutes/{tcp_route}\"\xd8\x01\n" +
+	"\x14ListTcpRoutesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'networkservices.googleapis.com/TcpRouteR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x129\n" +
-	"\x16return_partial_success\x18\x04 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\"\xab\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12:\n" +
+	"\x16return_partial_success\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\"\xab\x01\n" +
 	"\x15ListTcpRoutesResponse\x12H\n" +
 	"\n" +
 	"tcp_routes\x18\x01 \x03(\v2).google.cloud.networkservices.v1.TcpRouteR\ttcpRoutes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Y\n" +
-	"\x12GetTcpRouteRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'networkservices.googleapis.com/TcpRouteR\x04name\"\xd4\x01\n" +
-	"\x15CreateTcpRouteRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'networkservices.googleapis.com/TcpRouteR\x06parent\x12%\n" +
-	"\ftcp_route_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"tcpRouteId\x12K\n" +
-	"\ttcp_route\x18\x03 \x01(\v2).google.cloud.networkservices.v1.TcpRouteB\x03\xe0A\x02R\btcpRoute\"\xa6\x01\n" +
-	"\x15UpdateTcpRouteRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12K\n" +
-	"\ttcp_route\x18\x02 \x01(\v2).google.cloud.networkservices.v1.TcpRouteB\x03\xe0A\x02R\btcpRoute\"\\\n" +
-	"\x15DeleteTcpRouteRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Z\n" +
+	"\x12GetTcpRouteRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'networkservices.googleapis.com/TcpRouteR\x04name\"\xd7\x01\n" +
+	"\x15CreateTcpRouteRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'networkservices.googleapis.com/TcpRouteR\x06parent\x12&\n" +
+	"\ftcp_route_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"tcpRouteId\x12L\n" +
+	"\ttcp_route\x18\x03 \x01(\v2).google.cloud.networkservices.v1.TcpRouteB\x04\xe2A\x01\x02R\btcpRoute\"\xa8\x01\n" +
+	"\x15UpdateTcpRouteRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12L\n" +
+	"\ttcp_route\x18\x02 \x01(\v2).google.cloud.networkservices.v1.TcpRouteB\x04\xe2A\x01\x02R\btcpRoute\"]\n" +
+	"\x15DeleteTcpRouteRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'networkservices.googleapis.com/TcpRouteR\x04nameB\xee\x01\n" +
 	"#com.google.cloud.networkservices.v1B\rTcpRouteProtoP\x01ZMcloud.google.com/go/networkservices/apiv1/networkservicespb;networkservicespb\xaa\x02\x1fGoogle.Cloud.NetworkServices.V1\xca\x02\x1fGoogle\\Cloud\\NetworkServices\\V1\xea\x02\"Google::Cloud::NetworkServices::V1b\x06proto3"
 

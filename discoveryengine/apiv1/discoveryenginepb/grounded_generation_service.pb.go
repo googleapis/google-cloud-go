@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	date "google.golang.org/genproto/googleapis/type/date"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -36,6 +37,62 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// Setting for provisioned throughput.
+type GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting int32
+
+const (
+	// Default value. If the user has remaining provisioned throughput,
+	// provisioned throughput will be used. Otherwise, pay as you go will be
+	// used.
+	GenerateGroundedContentRequest_GenerationSpec_PROVISIONED_THROUGHPUT_SETTING_UNSPECIFIED GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting = 0
+	// Only use provisioned throughput. If the user has no remaining
+	// provisioned throughput, an error will be returned.
+	GenerateGroundedContentRequest_GenerationSpec_PROVISIONED_THROUGHPUT_ONLY GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting = 1
+	// Disables provisioned throughput.
+	GenerateGroundedContentRequest_GenerationSpec_PAY_AS_YOU_GO_ONLY GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting = 2
+)
+
+// Enum value maps for GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting.
+var (
+	GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting_name = map[int32]string{
+		0: "PROVISIONED_THROUGHPUT_SETTING_UNSPECIFIED",
+		1: "PROVISIONED_THROUGHPUT_ONLY",
+		2: "PAY_AS_YOU_GO_ONLY",
+	}
+	GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting_value = map[string]int32{
+		"PROVISIONED_THROUGHPUT_SETTING_UNSPECIFIED": 0,
+		"PROVISIONED_THROUGHPUT_ONLY":                1,
+		"PAY_AS_YOU_GO_ONLY":                         2,
+	}
+)
+
+func (x GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting) Enum() *GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting {
+	p := new(GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting)
+	*p = x
+	return p
+}
+
+func (x GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[0].Descriptor()
+}
+
+func (GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[0]
+}
+
+func (x GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting.Descriptor instead.
+func (GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDescGZIP(), []int{1, 0, 0}
+}
 
 // The version of the predictor to be used in dynamic retrieval.
 type GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor_Version int32
@@ -70,11 +127,11 @@ func (x GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetr
 }
 
 func (GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor_Version) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[1].Descriptor()
 }
 
 func (GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor_Version) Type() protoreflect.EnumType {
-	return &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[0]
+	return &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[1]
 }
 
 func (x GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor_Version) Number() protoreflect.EnumNumber {
@@ -131,11 +188,11 @@ func (x GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMet
 }
 
 func (GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata_Source) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[2].Descriptor()
 }
 
 func (GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata_Source) Type() protoreflect.EnumType {
-	return &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[1]
+	return &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[2]
 }
 
 func (x GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata_Source) Number() protoreflect.EnumNumber {
@@ -180,11 +237,11 @@ func (x GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetri
 }
 
 func (GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata_Version) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[3].Descriptor()
 }
 
 func (GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata_Version) Type() protoreflect.EnumType {
-	return &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[2]
+	return &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[3]
 }
 
 func (x GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata_Version) Number() protoreflect.EnumNumber {
@@ -194,6 +251,78 @@ func (x GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetri
 // Deprecated: Use GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata_Version.Descriptor instead.
 func (GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata_Version) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDescGZIP(), []int{2, 0, 0, 2, 0}
+}
+
+// These are available confidence level user can set to block malicious urls
+// with chosen confidence and above. For understanding different confidence of
+// webrisk, please refer to
+// https://cloud.google.com/web-risk/docs/reference/rpc/google.cloud.webrisk.v1eap1#confidencelevel
+type Citation_PhishBlockThreshold int32
+
+const (
+	// Defaults to unspecified.
+	Citation_PHISH_BLOCK_THRESHOLD_UNSPECIFIED Citation_PhishBlockThreshold = 0
+	// Blocks Low and above confidence URL that is risky.
+	Citation_BLOCK_LOW_AND_ABOVE Citation_PhishBlockThreshold = 30
+	// Blocks Medium and above confidence URL that is risky.
+	Citation_BLOCK_MEDIUM_AND_ABOVE Citation_PhishBlockThreshold = 40
+	// Blocks High and above confidence URL that is risky.
+	Citation_BLOCK_HIGH_AND_ABOVE Citation_PhishBlockThreshold = 50
+	// Blocks Higher and above confidence URL that is risky.
+	Citation_BLOCK_HIGHER_AND_ABOVE Citation_PhishBlockThreshold = 55
+	// Blocks Very high and above confidence URL that is risky.
+	Citation_BLOCK_VERY_HIGH_AND_ABOVE Citation_PhishBlockThreshold = 60
+	// Blocks Extremely high confidence URL that is risky.
+	Citation_BLOCK_ONLY_EXTREMELY_HIGH Citation_PhishBlockThreshold = 100
+)
+
+// Enum value maps for Citation_PhishBlockThreshold.
+var (
+	Citation_PhishBlockThreshold_name = map[int32]string{
+		0:   "PHISH_BLOCK_THRESHOLD_UNSPECIFIED",
+		30:  "BLOCK_LOW_AND_ABOVE",
+		40:  "BLOCK_MEDIUM_AND_ABOVE",
+		50:  "BLOCK_HIGH_AND_ABOVE",
+		55:  "BLOCK_HIGHER_AND_ABOVE",
+		60:  "BLOCK_VERY_HIGH_AND_ABOVE",
+		100: "BLOCK_ONLY_EXTREMELY_HIGH",
+	}
+	Citation_PhishBlockThreshold_value = map[string]int32{
+		"PHISH_BLOCK_THRESHOLD_UNSPECIFIED": 0,
+		"BLOCK_LOW_AND_ABOVE":               30,
+		"BLOCK_MEDIUM_AND_ABOVE":            40,
+		"BLOCK_HIGH_AND_ABOVE":              50,
+		"BLOCK_HIGHER_AND_ABOVE":            55,
+		"BLOCK_VERY_HIGH_AND_ABOVE":         60,
+		"BLOCK_ONLY_EXTREMELY_HIGH":         100,
+	}
+)
+
+func (x Citation_PhishBlockThreshold) Enum() *Citation_PhishBlockThreshold {
+	p := new(Citation_PhishBlockThreshold)
+	*p = x
+	return p
+}
+
+func (x Citation_PhishBlockThreshold) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Citation_PhishBlockThreshold) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[4].Descriptor()
+}
+
+func (Citation_PhishBlockThreshold) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes[4]
+}
+
+func (x Citation_PhishBlockThreshold) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Citation_PhishBlockThreshold.Descriptor instead.
+func (Citation_PhishBlockThreshold) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDescGZIP(), []int{7, 0}
 }
 
 // Base structured datatype containing multi-part content of a message.
@@ -657,6 +786,143 @@ func (x *CheckGroundingResponse) GetClaims() []*CheckGroundingResponse_Claim {
 	return nil
 }
 
+// A collection of source attributions for a piece of content.
+type CitationMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. List of citations.
+	Citations     []*Citation `protobuf:"bytes,1,rep,name=citations,proto3" json:"citations,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CitationMetadata) Reset() {
+	*x = CitationMetadata{}
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CitationMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CitationMetadata) ProtoMessage() {}
+
+func (x *CitationMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CitationMetadata.ProtoReflect.Descriptor instead.
+func (*CitationMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *CitationMetadata) GetCitations() []*Citation {
+	if x != nil {
+		return x.Citations
+	}
+	return nil
+}
+
+// Source attributions for content.
+type Citation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Start index into the content.
+	StartIndex int32 `protobuf:"varint,1,opt,name=start_index,json=startIndex,proto3" json:"start_index,omitempty"`
+	// Output only. End index into the content.
+	EndIndex int32 `protobuf:"varint,2,opt,name=end_index,json=endIndex,proto3" json:"end_index,omitempty"`
+	// Output only. Url reference of the attribution.
+	Uri string `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
+	// Output only. Title of the attribution.
+	Title string `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	// Output only. License of the attribution.
+	License string `protobuf:"bytes,5,opt,name=license,proto3" json:"license,omitempty"`
+	// Output only. Publication date of the attribution.
+	PublicationDate *date.Date `protobuf:"bytes,6,opt,name=publication_date,json=publicationDate,proto3" json:"publication_date,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *Citation) Reset() {
+	*x = Citation{}
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Citation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Citation) ProtoMessage() {}
+
+func (x *Citation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Citation.ProtoReflect.Descriptor instead.
+func (*Citation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *Citation) GetStartIndex() int32 {
+	if x != nil {
+		return x.StartIndex
+	}
+	return 0
+}
+
+func (x *Citation) GetEndIndex() int32 {
+	if x != nil {
+		return x.EndIndex
+	}
+	return 0
+}
+
+func (x *Citation) GetUri() string {
+	if x != nil {
+		return x.Uri
+	}
+	return ""
+}
+
+func (x *Citation) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *Citation) GetLicense() string {
+	if x != nil {
+		return x.License
+	}
+	return ""
+}
+
+func (x *Citation) GetPublicationDate() *date.Date {
+	if x != nil {
+		return x.PublicationDate
+	}
+	return nil
+}
+
 // Single part of content.
 type GroundedGenerationContent_Part struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -672,7 +938,7 @@ type GroundedGenerationContent_Part struct {
 
 func (x *GroundedGenerationContent_Part) Reset() {
 	*x = GroundedGenerationContent_Part{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[6]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -684,7 +950,7 @@ func (x *GroundedGenerationContent_Part) String() string {
 func (*GroundedGenerationContent_Part) ProtoMessage() {}
 
 func (x *GroundedGenerationContent_Part) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[6]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -749,13 +1015,15 @@ type GenerateGroundedContentRequest_GenerationSpec struct {
 	PresencePenalty *float32 `protobuf:"fixed32,9,opt,name=presence_penalty,json=presencePenalty,proto3,oneof" json:"presence_penalty,omitempty"`
 	// If specified, custom value for max output tokens will be used.
 	MaxOutputTokens *int32 `protobuf:"varint,10,opt,name=max_output_tokens,json=maxOutputTokens,proto3,oneof" json:"max_output_tokens,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. Setting for provisioned throughput.
+	ProvisionedThroughputSetting GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting `protobuf:"varint,13,opt,name=provisioned_throughput_setting,json=provisionedThroughputSetting,proto3,enum=google.cloud.discoveryengine.v1.GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting" json:"provisioned_throughput_setting,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *GenerateGroundedContentRequest_GenerationSpec) Reset() {
 	*x = GenerateGroundedContentRequest_GenerationSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[7]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -767,7 +1035,7 @@ func (x *GenerateGroundedContentRequest_GenerationSpec) String() string {
 func (*GenerateGroundedContentRequest_GenerationSpec) ProtoMessage() {}
 
 func (x *GenerateGroundedContentRequest_GenerationSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[7]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -846,6 +1114,13 @@ func (x *GenerateGroundedContentRequest_GenerationSpec) GetMaxOutputTokens() int
 	return 0
 }
 
+func (x *GenerateGroundedContentRequest_GenerationSpec) GetProvisionedThroughputSetting() GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting {
+	if x != nil {
+		return x.ProvisionedThroughputSetting
+	}
+	return GenerateGroundedContentRequest_GenerationSpec_PROVISIONED_THROUGHPUT_SETTING_UNSPECIFIED
+}
+
 // Describes the options to customize dynamic retrieval.
 type GenerateGroundedContentRequest_DynamicRetrievalConfiguration struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -857,7 +1132,7 @@ type GenerateGroundedContentRequest_DynamicRetrievalConfiguration struct {
 
 func (x *GenerateGroundedContentRequest_DynamicRetrievalConfiguration) Reset() {
 	*x = GenerateGroundedContentRequest_DynamicRetrievalConfiguration{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[8]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -869,7 +1144,7 @@ func (x *GenerateGroundedContentRequest_DynamicRetrievalConfiguration) String() 
 func (*GenerateGroundedContentRequest_DynamicRetrievalConfiguration) ProtoMessage() {}
 
 func (x *GenerateGroundedContentRequest_DynamicRetrievalConfiguration) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[8]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -910,7 +1185,7 @@ type GenerateGroundedContentRequest_GroundingSource struct {
 
 func (x *GenerateGroundedContentRequest_GroundingSource) Reset() {
 	*x = GenerateGroundedContentRequest_GroundingSource{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[9]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -922,7 +1197,7 @@ func (x *GenerateGroundedContentRequest_GroundingSource) String() string {
 func (*GenerateGroundedContentRequest_GroundingSource) ProtoMessage() {}
 
 func (x *GenerateGroundedContentRequest_GroundingSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[9]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1028,7 +1303,7 @@ type GenerateGroundedContentRequest_GroundingSpec struct {
 
 func (x *GenerateGroundedContentRequest_GroundingSpec) Reset() {
 	*x = GenerateGroundedContentRequest_GroundingSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[10]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1040,7 +1315,7 @@ func (x *GenerateGroundedContentRequest_GroundingSpec) String() string {
 func (*GenerateGroundedContentRequest_GroundingSpec) ProtoMessage() {}
 
 func (x *GenerateGroundedContentRequest_GroundingSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[10]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1077,7 +1352,7 @@ type GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetriev
 
 func (x *GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor) Reset() {
 	*x = GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[12]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1090,7 +1365,7 @@ func (*GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetri
 }
 
 func (x *GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[12]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1136,7 +1411,7 @@ type GenerateGroundedContentRequest_GroundingSource_InlineSource struct {
 
 func (x *GenerateGroundedContentRequest_GroundingSource_InlineSource) Reset() {
 	*x = GenerateGroundedContentRequest_GroundingSource_InlineSource{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[13]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1148,7 +1423,7 @@ func (x *GenerateGroundedContentRequest_GroundingSource_InlineSource) String() s
 func (*GenerateGroundedContentRequest_GroundingSource_InlineSource) ProtoMessage() {}
 
 func (x *GenerateGroundedContentRequest_GroundingSource_InlineSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[13]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1203,7 +1478,7 @@ type GenerateGroundedContentRequest_GroundingSource_SearchSource struct {
 
 func (x *GenerateGroundedContentRequest_GroundingSource_SearchSource) Reset() {
 	*x = GenerateGroundedContentRequest_GroundingSource_SearchSource{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[14]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1215,7 +1490,7 @@ func (x *GenerateGroundedContentRequest_GroundingSource_SearchSource) String() s
 func (*GenerateGroundedContentRequest_GroundingSource_SearchSource) ProtoMessage() {}
 
 func (x *GenerateGroundedContentRequest_GroundingSource_SearchSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[14]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1265,13 +1540,18 @@ type GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource struct {
 	// Optional. Specifies the dynamic retrieval configuration for the given
 	// source.
 	DynamicRetrievalConfig *GenerateGroundedContentRequest_DynamicRetrievalConfiguration `protobuf:"bytes,2,opt,name=dynamic_retrieval_config,json=dynamicRetrievalConfig,proto3" json:"dynamic_retrieval_config,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Optional. List of domains to be excluded from the search results.
+	ExcludeDomains []string `protobuf:"bytes,5,rep,name=exclude_domains,json=excludeDomains,proto3" json:"exclude_domains,omitempty"`
+	// Optional. Sites with confidence level chosen & above this value will be
+	// blocked from the search results.
+	BlockingConfidence Citation_PhishBlockThreshold `protobuf:"varint,6,opt,name=blocking_confidence,json=blockingConfidence,proto3,enum=google.cloud.discoveryengine.v1.Citation_PhishBlockThreshold" json:"blocking_confidence,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource) Reset() {
 	*x = GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[15]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1283,7 +1563,7 @@ func (x *GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource) Stri
 func (*GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource) ProtoMessage() {}
 
 func (x *GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[15]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1306,16 +1586,35 @@ func (x *GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource) GetD
 	return nil
 }
 
+func (x *GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource) GetExcludeDomains() []string {
+	if x != nil {
+		return x.ExcludeDomains
+	}
+	return nil
+}
+
+func (x *GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource) GetBlockingConfidence() Citation_PhishBlockThreshold {
+	if x != nil {
+		return x.BlockingConfidence
+	}
+	return Citation_PHISH_BLOCK_THRESHOLD_UNSPECIFIED
+}
+
 // Params for using enterprise web retrieval as grounding source.
 type GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. List of domains to be excluded from the search results.
+	ExcludeDomains []string `protobuf:"bytes,1,rep,name=exclude_domains,json=excludeDomains,proto3" json:"exclude_domains,omitempty"`
+	// Optional. Sites with confidence level chosen & above this value will be
+	// blocked from the search results.
+	BlockingConfidence Citation_PhishBlockThreshold `protobuf:"varint,2,opt,name=blocking_confidence,json=blockingConfidence,proto3,enum=google.cloud.discoveryengine.v1.Citation_PhishBlockThreshold" json:"blocking_confidence,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource) Reset() {
 	*x = GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[16]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1327,7 +1626,7 @@ func (x *GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSo
 func (*GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource) ProtoMessage() {}
 
 func (x *GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[16]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1341,6 +1640,20 @@ func (x *GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSo
 // Deprecated: Use GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource.ProtoReflect.Descriptor instead.
 func (*GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource) Descriptor() ([]byte, []int) {
 	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDescGZIP(), []int{1, 2, 3}
+}
+
+func (x *GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource) GetExcludeDomains() []string {
+	if x != nil {
+		return x.ExcludeDomains
+	}
+	return nil
+}
+
+func (x *GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource) GetBlockingConfidence() Citation_PhishBlockThreshold {
+	if x != nil {
+		return x.BlockingConfidence
+	}
+	return Citation_PHISH_BLOCK_THRESHOLD_UNSPECIFIED
 }
 
 // A response candidate generated from the model.
@@ -1360,7 +1673,7 @@ type GenerateGroundedContentResponse_Candidate struct {
 
 func (x *GenerateGroundedContentResponse_Candidate) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[18]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1372,7 +1685,7 @@ func (x *GenerateGroundedContentResponse_Candidate) String() string {
 func (*GenerateGroundedContentResponse_Candidate) ProtoMessage() {}
 
 func (x *GenerateGroundedContentResponse_Candidate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[18]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1436,14 +1749,16 @@ type GenerateGroundedContentResponse_Candidate_GroundingMetadata struct {
 	// the fact.
 	GroundingSupport []*GenerateGroundedContentResponse_Candidate_GroundingMetadata_GroundingSupport `protobuf:"bytes,2,rep,name=grounding_support,json=groundingSupport,proto3" json:"grounding_support,omitempty"`
 	// Images from the web search.
-	Images        []*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata `protobuf:"bytes,9,rep,name=images,proto3" json:"images,omitempty"`
+	Images []*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata `protobuf:"bytes,9,rep,name=images,proto3" json:"images,omitempty"`
+	// Videos from the web search.
+	Videos        []*GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata `protobuf:"bytes,11,rep,name=videos,proto3" json:"videos,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[19]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1455,7 +1770,7 @@ func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata) String() s
 func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata) ProtoMessage() {}
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[19]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1513,6 +1828,13 @@ func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata) GetImages(
 	return nil
 }
 
+func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata) GetVideos() []*GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata {
+	if x != nil {
+		return x.Videos
+	}
+	return nil
+}
+
 // Describes the metadata associated with a retrieval step.
 type GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1526,7 +1848,7 @@ type GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetada
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[20]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1539,7 +1861,7 @@ func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMeta
 }
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[20]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1580,7 +1902,7 @@ type GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrieva
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalMetadata) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[21]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1593,7 +1915,7 @@ func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrie
 }
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[21]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1633,7 +1955,7 @@ type GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrieva
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[22]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1646,7 +1968,7 @@ func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrie
 }
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[22]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1691,7 +2013,7 @@ type GenerateGroundedContentResponse_Candidate_GroundingMetadata_SearchEntryPoin
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_SearchEntryPoint) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata_SearchEntryPoint{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[23]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1703,7 +2025,7 @@ func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_SearchEntry
 func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_SearchEntryPoint) ProtoMessage() {}
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_SearchEntryPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[23]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1754,7 +2076,7 @@ type GenerateGroundedContentResponse_Candidate_GroundingMetadata_GroundingSuppor
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_GroundingSupport) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata_GroundingSupport{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[24]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1766,7 +2088,7 @@ func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_GroundingSu
 func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_GroundingSupport) ProtoMessage() {}
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_GroundingSupport) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[24]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1818,7 +2140,7 @@ type GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata s
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[25]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1830,7 +2152,7 @@ func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetada
 func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata) ProtoMessage() {}
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[25]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1867,20 +2189,68 @@ func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetada
 	return nil
 }
 
+// Metadata about a video from the web search.
+type GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The external id of the video.
+	YoutubeExternalId string `protobuf:"bytes,1,opt,name=youtube_external_id,json=youtubeExternalId,proto3" json:"youtube_external_id,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata) Reset() {
+	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata{}
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata) ProtoMessage() {}
+
+func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata.ProtoReflect.Descriptor instead.
+func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDescGZIP(), []int{2, 0, 0, 6}
+}
+
+func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata) GetYoutubeExternalId() string {
+	if x != nil {
+		return x.YoutubeExternalId
+	}
+	return ""
+}
+
 // Metadata about the website that the image is from.
 type GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_WebsiteInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The url of the website.
 	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
 	// The title of the website.
-	Title         string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// The display name of the website.
+	SiteDisplayName string `protobuf:"bytes,3,opt,name=site_display_name,json=siteDisplayName,proto3" json:"site_display_name,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_WebsiteInfo) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_WebsiteInfo{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[26]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1893,7 +2263,7 @@ func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata
 }
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_WebsiteInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[26]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1923,6 +2293,13 @@ func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetada
 	return ""
 }
 
+func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_WebsiteInfo) GetSiteDisplayName() string {
+	if x != nil {
+		return x.SiteDisplayName
+	}
+	return ""
+}
+
 // Metadata about the image.
 type GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_Image struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1938,7 +2315,7 @@ type GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_I
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_Image) Reset() {
 	*x = GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_Image{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[27]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1951,7 +2328,7 @@ func (*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata
 }
 
 func (x *GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_Image) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[27]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1999,7 +2376,7 @@ type CheckGroundingResponse_CheckGroundingFactChunk struct {
 
 func (x *CheckGroundingResponse_CheckGroundingFactChunk) Reset() {
 	*x = CheckGroundingResponse_CheckGroundingFactChunk{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[29]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2011,7 +2388,7 @@ func (x *CheckGroundingResponse_CheckGroundingFactChunk) String() string {
 func (*CheckGroundingResponse_CheckGroundingFactChunk) ProtoMessage() {}
 
 func (x *CheckGroundingResponse_CheckGroundingFactChunk) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[29]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2079,7 +2456,7 @@ type CheckGroundingResponse_Claim struct {
 
 func (x *CheckGroundingResponse_Claim) Reset() {
 	*x = CheckGroundingResponse_Claim{}
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[30]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2091,7 +2468,7 @@ func (x *CheckGroundingResponse_Claim) String() string {
 func (*CheckGroundingResponse_Claim) ProtoMessage() {}
 
 func (x *CheckGroundingResponse_Claim) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[30]
+	mi := &file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2153,22 +2530,22 @@ var File_google_cloud_discoveryengine_v1_grounded_generation_service_proto proto
 
 const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/discoveryengine/v1/grounded_generation_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/discoveryengine/v1/grounding.proto\"\xac\x01\n" +
+	"Agoogle/cloud/discoveryengine/v1/grounded_generation_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/discoveryengine/v1/grounding.proto\x1a\x16google/type/date.proto\"\xac\x01\n" +
 	"\x19GroundedGenerationContent\x12\x12\n" +
 	"\x04role\x18\x01 \x01(\tR\x04role\x12U\n" +
 	"\x05parts\x18\x02 \x03(\v2?.google.cloud.discoveryengine.v1.GroundedGenerationContent.PartR\x05parts\x1a$\n" +
 	"\x04Part\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04textB\x06\n" +
-	"\x04data\"\xdc\x18\n" +
-	"\x1eGenerateGroundedContentRequest\x12K\n" +
-	"\blocation\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x04data\"\xed\x1d\n" +
+	"\x1eGenerateGroundedContentRequest\x12L\n" +
+	"\blocation\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/LocationR\blocation\x12i\n" +
 	"\x12system_instruction\x18\x05 \x01(\v2:.google.cloud.discoveryengine.v1.GroundedGenerationContentR\x11systemInstruction\x12V\n" +
 	"\bcontents\x18\x02 \x03(\v2:.google.cloud.discoveryengine.v1.GroundedGenerationContentR\bcontents\x12w\n" +
 	"\x0fgeneration_spec\x18\x03 \x01(\v2N.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GenerationSpecR\x0egenerationSpec\x12t\n" +
 	"\x0egrounding_spec\x18\x04 \x01(\v2M.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSpecR\rgroundingSpec\x12p\n" +
 	"\vuser_labels\x18\x06 \x03(\v2O.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.UserLabelsEntryR\n" +
-	"userLabels\x1a\xc5\x03\n" +
+	"userLabels\x1a\x89\x06\n" +
 	"\x0eGenerationSpec\x12\x19\n" +
 	"\bmodel_id\x18\x03 \x01(\tR\amodelId\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\x12%\n" +
@@ -2179,7 +2556,12 @@ const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_raw
 	"\x04seed\x18\f \x01(\x05H\x04R\x04seed\x88\x01\x01\x12.\n" +
 	"\x10presence_penalty\x18\t \x01(\x02H\x05R\x0fpresencePenalty\x88\x01\x01\x12/\n" +
 	"\x11max_output_tokens\x18\n" +
-	" \x01(\x05H\x06R\x0fmaxOutputTokens\x88\x01\x01B\x0e\n" +
+	" \x01(\x05H\x06R\x0fmaxOutputTokens\x88\x01\x01\x12\xb7\x01\n" +
+	"\x1eprovisioned_throughput_setting\x18\r \x01(\x0e2k.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GenerationSpec.ProvisionedThroughputSettingB\x04\xe2A\x01\x01R\x1cprovisionedThroughputSetting\"\x87\x01\n" +
+	"\x1cProvisionedThroughputSetting\x12.\n" +
+	"*PROVISIONED_THROUGHPUT_SETTING_UNSPECIFIED\x10\x00\x12\x1f\n" +
+	"\x1bPROVISIONED_THROUGHPUT_ONLY\x10\x01\x12\x16\n" +
+	"\x12PAY_AS_YOU_GO_ONLY\x10\x02B\x0e\n" +
 	"\f_temperatureB\b\n" +
 	"\x06_top_pB\b\n" +
 	"\x06_top_kB\x14\n" +
@@ -2196,8 +2578,7 @@ const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_raw
 	"\x13VERSION_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eV1_INDEPENDENT\x10\x01B\f\n" +
 	"\n" +
-	"_threshold\x1a\xd4\n" +
-	"\n" +
+	"_threshold\x1a\xa0\r\n" +
 	"\x0fGroundingSource\x12\x83\x01\n" +
 	"\rinline_source\x18\x01 \x01(\v2\\.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSourceH\x00R\finlineSource\x12\x83\x01\n" +
 	"\rsearch_source\x18\x02 \x01(\v2\\.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.SearchSourceH\x00R\fsearchSource\x12\x96\x01\n" +
@@ -2217,32 +2598,37 @@ const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_raw
 	"\x10max_result_count\x18\x02 \x01(\x05R\x0emaxResultCount\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x1f\n" +
 	"\vsafe_search\x18\x05 \x01(\bR\n" +
-	"safeSearch\x1a\xb3\x01\n" +
-	"\x12GoogleSearchSource\x12\x9c\x01\n" +
-	"\x18dynamic_retrieval_config\x18\x02 \x01(\v2].google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfigurationB\x03\xe0A\x01R\x16dynamicRetrievalConfig\x1a\x1e\n" +
-	"\x1cEnterpriseWebRetrievalSourceB\b\n" +
+	"safeSearch\x1a\xd9\x02\n" +
+	"\x12GoogleSearchSource\x12\x9d\x01\n" +
+	"\x18dynamic_retrieval_config\x18\x02 \x01(\v2].google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfigurationB\x04\xe2A\x01\x01R\x16dynamicRetrievalConfig\x12-\n" +
+	"\x0fexclude_domains\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x0eexcludeDomains\x12t\n" +
+	"\x13blocking_confidence\x18\x06 \x01(\x0e2=.google.cloud.discoveryengine.v1.Citation.PhishBlockThresholdB\x04\xe2A\x01\x01R\x12blockingConfidence\x1a\xc3\x01\n" +
+	"\x1cEnterpriseWebRetrievalSource\x12-\n" +
+	"\x0fexclude_domains\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0eexcludeDomains\x12t\n" +
+	"\x13blocking_confidence\x18\x02 \x01(\x0e2=.google.cloud.discoveryengine.v1.Citation.PhishBlockThresholdB\x04\xe2A\x01\x01R\x12blockingConfidenceB\b\n" +
 	"\x06source\x1a\x8d\x01\n" +
 	"\rGroundingSpec\x12|\n" +
 	"\x11grounding_sources\x18\x01 \x03(\v2O.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSourceR\x10groundingSources\x1a=\n" +
 	"\x0fUserLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd8\x17\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xca\x19\n" +
 	"\x1fGenerateGroundedContentResponse\x12j\n" +
 	"\n" +
 	"candidates\x18\x01 \x03(\v2J.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.CandidateR\n" +
-	"candidates\x1a\xc8\x16\n" +
+	"candidates\x1a\xba\x18\n" +
 	"\tCandidate\x12\x14\n" +
 	"\x05index\x18\x01 \x01(\x05R\x05index\x12T\n" +
 	"\acontent\x18\x02 \x01(\v2:.google.cloud.discoveryengine.v1.GroundedGenerationContentR\acontent\x12,\n" +
 	"\x0fgrounding_score\x18\x03 \x01(\x02H\x00R\x0egroundingScore\x88\x01\x01\x12\x8b\x01\n" +
-	"\x12grounding_metadata\x18\x04 \x01(\v2\\.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadataR\x11groundingMetadata\x1a\xfe\x13\n" +
+	"\x12grounding_metadata\x18\x04 \x01(\v2\\.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadataR\x11groundingMetadata\x1a\xf0\x15\n" +
 	"\x11GroundingMetadata\x12\x9d\x01\n" +
 	"\x12retrieval_metadata\x18\x05 \x03(\v2n.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadataR\x11retrievalMetadata\x12Q\n" +
 	"\x0esupport_chunks\x18\x01 \x03(\v2*.google.cloud.discoveryengine.v1.FactChunkR\rsupportChunks\x12,\n" +
 	"\x12web_search_queries\x18\x03 \x03(\tR\x10webSearchQueries\x12\x9b\x01\n" +
 	"\x12search_entry_point\x18\x04 \x01(\v2m.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.SearchEntryPointR\x10searchEntryPoint\x12\x9a\x01\n" +
 	"\x11grounding_support\x18\x02 \x03(\v2m.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.GroundingSupportR\x10groundingSupport\x12\x82\x01\n" +
-	"\x06images\x18\t \x03(\v2j.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadataR\x06images\x1a\xc9\x03\n" +
+	"\x06images\x18\t \x03(\v2j.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadataR\x06images\x12\x82\x01\n" +
+	"\x06videos\x18\v \x03(\v2j.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.VideoMetadataR\x06videos\x1a\xc9\x03\n" +
 	"\x11RetrievalMetadata\x12\x8d\x01\n" +
 	"\x06source\x18\x01 \x01(\x0e2u.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata.SourceR\x06source\x12\xb3\x01\n" +
 	"\x1adynamic_retrieval_metadata\x18\x02 \x01(\v2u.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalMetadataR\x18dynamicRetrievalMetadata\"n\n" +
@@ -2271,26 +2657,29 @@ const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_raw
 	"claim_text\x18\x01 \x01(\tR\tclaimText\x122\n" +
 	"\x15support_chunk_indices\x18\x03 \x03(\x05R\x13supportChunkIndices\x12(\n" +
 	"\rsupport_score\x18\x02 \x01(\x02H\x00R\fsupportScore\x88\x01\x01B\x10\n" +
-	"\x0e_support_score\x1a\xba\x04\n" +
+	"\x0e_support_score\x1a\xe6\x04\n" +
 	"\rImageMetadata\x12\x86\x01\n" +
 	"\x05image\x18\x01 \x01(\v2p.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.ImageR\x05image\x12\x8e\x01\n" +
 	"\tthumbnail\x18\x02 \x01(\v2p.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.ImageR\tthumbnail\x12\x8e\x01\n" +
-	"\x06source\x18\x03 \x01(\v2v.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.WebsiteInfoR\x06source\x1a5\n" +
+	"\x06source\x18\x03 \x01(\v2v.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.WebsiteInfoR\x06source\x1aa\n" +
 	"\vWebsiteInfo\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x1aG\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12*\n" +
+	"\x11site_display_name\x18\x03 \x01(\tR\x0fsiteDisplayName\x1aG\n" +
 	"\x05Image\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x14\n" +
 	"\x05width\x18\x02 \x01(\x05R\x05width\x12\x16\n" +
-	"\x06height\x18\x03 \x01(\x05R\x06heightB\x12\n" +
+	"\x06height\x18\x03 \x01(\x05R\x06height\x1a?\n" +
+	"\rVideoMetadata\x12.\n" +
+	"\x13youtube_external_id\x18\x01 \x01(\tR\x11youtubeExternalIdB\x12\n" +
 	"\x10_grounding_score\"\xba\x01\n" +
 	"\x12CheckGroundingSpec\x122\n" +
 	"\x12citation_threshold\x18\x01 \x01(\x01H\x00R\x11citationThreshold\x88\x01\x01\x12<\n" +
 	"\x18enable_claim_level_score\x18\x04 \x01(\bH\x01R\x15enableClaimLevelScore\x88\x01\x01B\x15\n" +
 	"\x13_citation_thresholdB\x1b\n" +
-	"\x19_enable_claim_level_score\"\xef\x03\n" +
-	"\x15CheckGroundingRequest\x12a\n" +
-	"\x10grounding_config\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\x19_enable_claim_level_score\"\xf0\x03\n" +
+	"\x15CheckGroundingRequest\x12b\n" +
+	"\x10grounding_config\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".discoveryengine.googleapis.com/GroundingConfigR\x0fgroundingConfig\x12)\n" +
 	"\x10answer_candidate\x18\x02 \x01(\tR\x0fanswerCandidate\x12D\n" +
 	"\x05facts\x18\x03 \x03(\v2..google.cloud.discoveryengine.v1.GroundingFactR\x05facts\x12Z\n" +
@@ -2323,11 +2712,29 @@ const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_raw
 	"\b_end_posB\x1b\n" +
 	"\x19_grounding_check_requiredB\b\n" +
 	"\x06_scoreB\x10\n" +
-	"\x0e_support_score2\xa8\x06\n" +
+	"\x0e_support_score\"a\n" +
+	"\x10CitationMetadata\x12M\n" +
+	"\tcitations\x18\x01 \x03(\v2).google.cloud.discoveryengine.v1.CitationB\x04\xe2A\x01\x03R\tcitations\"\xd4\x03\n" +
+	"\bCitation\x12%\n" +
+	"\vstart_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"startIndex\x12!\n" +
+	"\tend_index\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\bendIndex\x12\x16\n" +
+	"\x03uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12\x1a\n" +
+	"\x05title\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12\x1e\n" +
+	"\alicense\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\alicense\x12B\n" +
+	"\x10publication_date\x18\x06 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x03R\x0fpublicationDate\"\xe5\x01\n" +
+	"\x13PhishBlockThreshold\x12%\n" +
+	"!PHISH_BLOCK_THRESHOLD_UNSPECIFIED\x10\x00\x12\x17\n" +
+	"\x13BLOCK_LOW_AND_ABOVE\x10\x1e\x12\x1a\n" +
+	"\x16BLOCK_MEDIUM_AND_ABOVE\x10(\x12\x18\n" +
+	"\x14BLOCK_HIGH_AND_ABOVE\x102\x12\x1a\n" +
+	"\x16BLOCK_HIGHER_AND_ABOVE\x107\x12\x1d\n" +
+	"\x19BLOCK_VERY_HIGH_AND_ABOVE\x10<\x12\x1d\n" +
+	"\x19BLOCK_ONLY_EXTREMELY_HIGH\x10d2\xa6\a\n" +
 	"\x19GroundedGenerationService\x12\xf6\x01\n" +
 	"\x1dStreamGenerateGroundedContent\x12?.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest\x1a@.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse\"N\x82\xd3\xe4\x93\x02H:\x01*\"C/v1/{location=projects/*/locations/*}:streamGenerateGroundedContent(\x010\x01\x12\xe6\x01\n" +
 	"\x17GenerateGroundedContent\x12?.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest\x1a@.google.cloud.discoveryengine.v1.GenerateGroundedContentResponse\"H\x82\xd3\xe4\x93\x02B:\x01*\"=/v1/{location=projects/*/locations/*}:generateGroundedContent\x12\xd4\x01\n" +
-	"\x0eCheckGrounding\x126.google.cloud.discoveryengine.v1.CheckGroundingRequest\x1a7.google.cloud.discoveryengine.v1.CheckGroundingResponse\"Q\x82\xd3\xe4\x93\x02K:\x01*\"F/v1/{grounding_config=projects/*/locations/*/groundingConfigs/*}:check\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x91\x02\n" +
+	"\x0eCheckGrounding\x126.google.cloud.discoveryengine.v1.CheckGroundingRequest\x1a7.google.cloud.discoveryengine.v1.CheckGroundingResponse\"Q\x82\xd3\xe4\x93\x02K:\x01*\"F/v1/{grounding_config=projects/*/locations/*/groundingConfigs/*}:check\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x91\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x1eGroundedGenerationServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (
@@ -2342,95 +2749,107 @@ func file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawD
 	return file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
+var file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
 var file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_goTypes = []any{
-	(GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor_Version)(0),        // 0: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor.Version
-	(GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata_Source)(0),                  // 1: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata.Source
-	(GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata_Version)(0), // 2: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata.Version
-	(*GroundedGenerationContent)(nil),                                    // 3: google.cloud.discoveryengine.v1.GroundedGenerationContent
-	(*GenerateGroundedContentRequest)(nil),                               // 4: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest
-	(*GenerateGroundedContentResponse)(nil),                              // 5: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse
-	(*CheckGroundingSpec)(nil),                                           // 6: google.cloud.discoveryengine.v1.CheckGroundingSpec
-	(*CheckGroundingRequest)(nil),                                        // 7: google.cloud.discoveryengine.v1.CheckGroundingRequest
-	(*CheckGroundingResponse)(nil),                                       // 8: google.cloud.discoveryengine.v1.CheckGroundingResponse
-	(*GroundedGenerationContent_Part)(nil),                               // 9: google.cloud.discoveryengine.v1.GroundedGenerationContent.Part
-	(*GenerateGroundedContentRequest_GenerationSpec)(nil),                // 10: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GenerationSpec
-	(*GenerateGroundedContentRequest_DynamicRetrievalConfiguration)(nil), // 11: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration
-	(*GenerateGroundedContentRequest_GroundingSource)(nil),               // 12: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource
-	(*GenerateGroundedContentRequest_GroundingSpec)(nil),                 // 13: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSpec
-	nil, // 14: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.UserLabelsEntry
-	(*GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor)(nil), // 15: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor
-	(*GenerateGroundedContentRequest_GroundingSource_InlineSource)(nil),                            // 16: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource
-	(*GenerateGroundedContentRequest_GroundingSource_SearchSource)(nil),                            // 17: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.SearchSource
-	(*GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource)(nil),                      // 18: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.GoogleSearchSource
-	(*GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource)(nil),            // 19: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.EnterpriseWebRetrievalSource
-	nil, // 20: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource.AttributesEntry
-	(*GenerateGroundedContentResponse_Candidate)(nil),                                                     // 21: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate
-	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata)(nil),                                   // 22: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata
-	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata)(nil),                 // 23: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata
-	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalMetadata)(nil),          // 24: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalMetadata
-	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata)(nil), // 25: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata
-	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_SearchEntryPoint)(nil),                  // 26: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.SearchEntryPoint
-	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_GroundingSupport)(nil),                  // 27: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.GroundingSupport
-	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata)(nil),                     // 28: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata
-	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_WebsiteInfo)(nil),         // 29: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.WebsiteInfo
-	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_Image)(nil),               // 30: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.Image
-	nil, // 31: google.cloud.discoveryengine.v1.CheckGroundingRequest.UserLabelsEntry
-	(*CheckGroundingResponse_CheckGroundingFactChunk)(nil), // 32: google.cloud.discoveryengine.v1.CheckGroundingResponse.CheckGroundingFactChunk
-	(*CheckGroundingResponse_Claim)(nil),                   // 33: google.cloud.discoveryengine.v1.CheckGroundingResponse.Claim
-	(*GroundingFact)(nil),                                  // 34: google.cloud.discoveryengine.v1.GroundingFact
-	(*FactChunk)(nil),                                      // 35: google.cloud.discoveryengine.v1.FactChunk
+	(GenerateGroundedContentRequest_GenerationSpec_ProvisionedThroughputSetting)(0),                            // 0: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GenerationSpec.ProvisionedThroughputSetting
+	(GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor_Version)(0),        // 1: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor.Version
+	(GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata_Source)(0),                  // 2: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata.Source
+	(GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata_Version)(0), // 3: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata.Version
+	(Citation_PhishBlockThreshold)(0),                                    // 4: google.cloud.discoveryengine.v1.Citation.PhishBlockThreshold
+	(*GroundedGenerationContent)(nil),                                    // 5: google.cloud.discoveryengine.v1.GroundedGenerationContent
+	(*GenerateGroundedContentRequest)(nil),                               // 6: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest
+	(*GenerateGroundedContentResponse)(nil),                              // 7: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse
+	(*CheckGroundingSpec)(nil),                                           // 8: google.cloud.discoveryengine.v1.CheckGroundingSpec
+	(*CheckGroundingRequest)(nil),                                        // 9: google.cloud.discoveryengine.v1.CheckGroundingRequest
+	(*CheckGroundingResponse)(nil),                                       // 10: google.cloud.discoveryengine.v1.CheckGroundingResponse
+	(*CitationMetadata)(nil),                                             // 11: google.cloud.discoveryengine.v1.CitationMetadata
+	(*Citation)(nil),                                                     // 12: google.cloud.discoveryengine.v1.Citation
+	(*GroundedGenerationContent_Part)(nil),                               // 13: google.cloud.discoveryengine.v1.GroundedGenerationContent.Part
+	(*GenerateGroundedContentRequest_GenerationSpec)(nil),                // 14: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GenerationSpec
+	(*GenerateGroundedContentRequest_DynamicRetrievalConfiguration)(nil), // 15: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration
+	(*GenerateGroundedContentRequest_GroundingSource)(nil),               // 16: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource
+	(*GenerateGroundedContentRequest_GroundingSpec)(nil),                 // 17: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSpec
+	nil, // 18: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.UserLabelsEntry
+	(*GenerateGroundedContentRequest_DynamicRetrievalConfiguration_DynamicRetrievalPredictor)(nil), // 19: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor
+	(*GenerateGroundedContentRequest_GroundingSource_InlineSource)(nil),                            // 20: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource
+	(*GenerateGroundedContentRequest_GroundingSource_SearchSource)(nil),                            // 21: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.SearchSource
+	(*GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource)(nil),                      // 22: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.GoogleSearchSource
+	(*GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource)(nil),            // 23: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.EnterpriseWebRetrievalSource
+	nil, // 24: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource.AttributesEntry
+	(*GenerateGroundedContentResponse_Candidate)(nil),                                                     // 25: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata)(nil),                                   // 26: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_RetrievalMetadata)(nil),                 // 27: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalMetadata)(nil),          // 28: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalMetadata
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_DynamicRetrievalPredictorMetadata)(nil), // 29: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_SearchEntryPoint)(nil),                  // 30: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.SearchEntryPoint
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_GroundingSupport)(nil),                  // 31: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.GroundingSupport
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata)(nil),                     // 32: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_VideoMetadata)(nil),                     // 33: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.VideoMetadata
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_WebsiteInfo)(nil),         // 34: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.WebsiteInfo
+	(*GenerateGroundedContentResponse_Candidate_GroundingMetadata_ImageMetadata_Image)(nil),               // 35: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.Image
+	nil, // 36: google.cloud.discoveryengine.v1.CheckGroundingRequest.UserLabelsEntry
+	(*CheckGroundingResponse_CheckGroundingFactChunk)(nil), // 37: google.cloud.discoveryengine.v1.CheckGroundingResponse.CheckGroundingFactChunk
+	(*CheckGroundingResponse_Claim)(nil),                   // 38: google.cloud.discoveryengine.v1.CheckGroundingResponse.Claim
+	(*GroundingFact)(nil),                                  // 39: google.cloud.discoveryengine.v1.GroundingFact
+	(*FactChunk)(nil),                                      // 40: google.cloud.discoveryengine.v1.FactChunk
+	(*date.Date)(nil),                                      // 41: google.type.Date
 }
 var file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_depIdxs = []int32{
-	9,  // 0: google.cloud.discoveryengine.v1.GroundedGenerationContent.parts:type_name -> google.cloud.discoveryengine.v1.GroundedGenerationContent.Part
-	3,  // 1: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.system_instruction:type_name -> google.cloud.discoveryengine.v1.GroundedGenerationContent
-	3,  // 2: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.contents:type_name -> google.cloud.discoveryengine.v1.GroundedGenerationContent
-	10, // 3: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.generation_spec:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GenerationSpec
-	13, // 4: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.grounding_spec:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSpec
-	14, // 5: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.user_labels:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.UserLabelsEntry
-	21, // 6: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.candidates:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate
-	34, // 7: google.cloud.discoveryengine.v1.CheckGroundingRequest.facts:type_name -> google.cloud.discoveryengine.v1.GroundingFact
-	6,  // 8: google.cloud.discoveryengine.v1.CheckGroundingRequest.grounding_spec:type_name -> google.cloud.discoveryengine.v1.CheckGroundingSpec
-	31, // 9: google.cloud.discoveryengine.v1.CheckGroundingRequest.user_labels:type_name -> google.cloud.discoveryengine.v1.CheckGroundingRequest.UserLabelsEntry
-	35, // 10: google.cloud.discoveryengine.v1.CheckGroundingResponse.cited_chunks:type_name -> google.cloud.discoveryengine.v1.FactChunk
-	32, // 11: google.cloud.discoveryengine.v1.CheckGroundingResponse.cited_facts:type_name -> google.cloud.discoveryengine.v1.CheckGroundingResponse.CheckGroundingFactChunk
-	33, // 12: google.cloud.discoveryengine.v1.CheckGroundingResponse.claims:type_name -> google.cloud.discoveryengine.v1.CheckGroundingResponse.Claim
-	15, // 13: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.predictor:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor
-	16, // 14: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.inline_source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource
-	17, // 15: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.search_source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.SearchSource
-	18, // 16: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.google_search_source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.GoogleSearchSource
-	19, // 17: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.enterprise_web_retrieval_source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.EnterpriseWebRetrievalSource
-	12, // 18: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSpec.grounding_sources:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource
-	0,  // 19: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor.version:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor.Version
-	34, // 20: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource.grounding_facts:type_name -> google.cloud.discoveryengine.v1.GroundingFact
-	20, // 21: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource.attributes:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource.AttributesEntry
-	11, // 22: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.GoogleSearchSource.dynamic_retrieval_config:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration
-	3,  // 23: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.content:type_name -> google.cloud.discoveryengine.v1.GroundedGenerationContent
-	22, // 24: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.grounding_metadata:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata
-	23, // 25: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.retrieval_metadata:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata
-	35, // 26: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.support_chunks:type_name -> google.cloud.discoveryengine.v1.FactChunk
-	26, // 27: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.search_entry_point:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.SearchEntryPoint
-	27, // 28: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.grounding_support:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.GroundingSupport
-	28, // 29: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.images:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata
-	1,  // 30: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata.source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata.Source
-	24, // 31: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata.dynamic_retrieval_metadata:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalMetadata
-	25, // 32: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalMetadata.predictor_metadata:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata
-	2,  // 33: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata.version:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata.Version
-	30, // 34: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.image:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.Image
-	30, // 35: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.thumbnail:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.Image
-	29, // 36: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.WebsiteInfo
-	4,  // 37: google.cloud.discoveryengine.v1.GroundedGenerationService.StreamGenerateGroundedContent:input_type -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest
-	4,  // 38: google.cloud.discoveryengine.v1.GroundedGenerationService.GenerateGroundedContent:input_type -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest
-	7,  // 39: google.cloud.discoveryengine.v1.GroundedGenerationService.CheckGrounding:input_type -> google.cloud.discoveryengine.v1.CheckGroundingRequest
-	5,  // 40: google.cloud.discoveryengine.v1.GroundedGenerationService.StreamGenerateGroundedContent:output_type -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse
-	5,  // 41: google.cloud.discoveryengine.v1.GroundedGenerationService.GenerateGroundedContent:output_type -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse
-	8,  // 42: google.cloud.discoveryengine.v1.GroundedGenerationService.CheckGrounding:output_type -> google.cloud.discoveryengine.v1.CheckGroundingResponse
-	40, // [40:43] is the sub-list for method output_type
-	37, // [37:40] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	13, // 0: google.cloud.discoveryengine.v1.GroundedGenerationContent.parts:type_name -> google.cloud.discoveryengine.v1.GroundedGenerationContent.Part
+	5,  // 1: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.system_instruction:type_name -> google.cloud.discoveryengine.v1.GroundedGenerationContent
+	5,  // 2: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.contents:type_name -> google.cloud.discoveryengine.v1.GroundedGenerationContent
+	14, // 3: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.generation_spec:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GenerationSpec
+	17, // 4: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.grounding_spec:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSpec
+	18, // 5: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.user_labels:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.UserLabelsEntry
+	25, // 6: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.candidates:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate
+	39, // 7: google.cloud.discoveryengine.v1.CheckGroundingRequest.facts:type_name -> google.cloud.discoveryengine.v1.GroundingFact
+	8,  // 8: google.cloud.discoveryengine.v1.CheckGroundingRequest.grounding_spec:type_name -> google.cloud.discoveryengine.v1.CheckGroundingSpec
+	36, // 9: google.cloud.discoveryengine.v1.CheckGroundingRequest.user_labels:type_name -> google.cloud.discoveryengine.v1.CheckGroundingRequest.UserLabelsEntry
+	40, // 10: google.cloud.discoveryengine.v1.CheckGroundingResponse.cited_chunks:type_name -> google.cloud.discoveryengine.v1.FactChunk
+	37, // 11: google.cloud.discoveryengine.v1.CheckGroundingResponse.cited_facts:type_name -> google.cloud.discoveryengine.v1.CheckGroundingResponse.CheckGroundingFactChunk
+	38, // 12: google.cloud.discoveryengine.v1.CheckGroundingResponse.claims:type_name -> google.cloud.discoveryengine.v1.CheckGroundingResponse.Claim
+	12, // 13: google.cloud.discoveryengine.v1.CitationMetadata.citations:type_name -> google.cloud.discoveryengine.v1.Citation
+	41, // 14: google.cloud.discoveryengine.v1.Citation.publication_date:type_name -> google.type.Date
+	0,  // 15: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GenerationSpec.provisioned_throughput_setting:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GenerationSpec.ProvisionedThroughputSetting
+	19, // 16: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.predictor:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor
+	20, // 17: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.inline_source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource
+	21, // 18: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.search_source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.SearchSource
+	22, // 19: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.google_search_source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.GoogleSearchSource
+	23, // 20: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.enterprise_web_retrieval_source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.EnterpriseWebRetrievalSource
+	16, // 21: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSpec.grounding_sources:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource
+	1,  // 22: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor.version:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration.DynamicRetrievalPredictor.Version
+	39, // 23: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource.grounding_facts:type_name -> google.cloud.discoveryengine.v1.GroundingFact
+	24, // 24: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource.attributes:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSource.AttributesEntry
+	15, // 25: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.GoogleSearchSource.dynamic_retrieval_config:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfiguration
+	4,  // 26: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.GoogleSearchSource.blocking_confidence:type_name -> google.cloud.discoveryengine.v1.Citation.PhishBlockThreshold
+	4,  // 27: google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.EnterpriseWebRetrievalSource.blocking_confidence:type_name -> google.cloud.discoveryengine.v1.Citation.PhishBlockThreshold
+	5,  // 28: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.content:type_name -> google.cloud.discoveryengine.v1.GroundedGenerationContent
+	26, // 29: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.grounding_metadata:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata
+	27, // 30: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.retrieval_metadata:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata
+	40, // 31: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.support_chunks:type_name -> google.cloud.discoveryengine.v1.FactChunk
+	30, // 32: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.search_entry_point:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.SearchEntryPoint
+	31, // 33: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.grounding_support:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.GroundingSupport
+	32, // 34: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.images:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata
+	33, // 35: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.videos:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.VideoMetadata
+	2,  // 36: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata.source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata.Source
+	28, // 37: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.RetrievalMetadata.dynamic_retrieval_metadata:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalMetadata
+	29, // 38: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalMetadata.predictor_metadata:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata
+	3,  // 39: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata.version:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.DynamicRetrievalPredictorMetadata.Version
+	35, // 40: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.image:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.Image
+	35, // 41: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.thumbnail:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.Image
+	34, // 42: google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.source:type_name -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse.Candidate.GroundingMetadata.ImageMetadata.WebsiteInfo
+	6,  // 43: google.cloud.discoveryengine.v1.GroundedGenerationService.StreamGenerateGroundedContent:input_type -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest
+	6,  // 44: google.cloud.discoveryengine.v1.GroundedGenerationService.GenerateGroundedContent:input_type -> google.cloud.discoveryengine.v1.GenerateGroundedContentRequest
+	9,  // 45: google.cloud.discoveryengine.v1.GroundedGenerationService.CheckGrounding:input_type -> google.cloud.discoveryengine.v1.CheckGroundingRequest
+	7,  // 46: google.cloud.discoveryengine.v1.GroundedGenerationService.StreamGenerateGroundedContent:output_type -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse
+	7,  // 47: google.cloud.discoveryengine.v1.GroundedGenerationService.GenerateGroundedContent:output_type -> google.cloud.discoveryengine.v1.GenerateGroundedContentResponse
+	10, // 48: google.cloud.discoveryengine.v1.GroundedGenerationService.CheckGrounding:output_type -> google.cloud.discoveryengine.v1.CheckGroundingResponse
+	46, // [46:49] is the sub-list for method output_type
+	43, // [43:46] is the sub-list for method input_type
+	43, // [43:43] is the sub-list for extension type_name
+	43, // [43:43] is the sub-list for extension extendee
+	0,  // [0:43] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_init() }
@@ -2441,28 +2860,28 @@ func file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_init
 	file_google_cloud_discoveryengine_v1_grounding_proto_init()
 	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[3].OneofWrappers = []any{}
 	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[5].OneofWrappers = []any{}
-	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[6].OneofWrappers = []any{
+	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[8].OneofWrappers = []any{
 		(*GroundedGenerationContent_Part_Text)(nil),
 	}
-	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[7].OneofWrappers = []any{}
-	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[9].OneofWrappers = []any{
+	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[9].OneofWrappers = []any{}
+	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[11].OneofWrappers = []any{
 		(*GenerateGroundedContentRequest_GroundingSource_InlineSource_)(nil),
 		(*GenerateGroundedContentRequest_GroundingSource_SearchSource_)(nil),
 		(*GenerateGroundedContentRequest_GroundingSource_GoogleSearchSource_)(nil),
 		(*GenerateGroundedContentRequest_GroundingSource_EnterpriseWebRetrievalSource_)(nil),
 	}
-	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[12].OneofWrappers = []any{}
-	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[18].OneofWrappers = []any{}
-	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[22].OneofWrappers = []any{}
+	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[14].OneofWrappers = []any{}
+	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[20].OneofWrappers = []any{}
 	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[24].OneofWrappers = []any{}
-	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[30].OneofWrappers = []any{}
+	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[26].OneofWrappers = []any{}
+	file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_msgTypes[33].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   31,
+			NumEnums:      5,
+			NumMessages:   34,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

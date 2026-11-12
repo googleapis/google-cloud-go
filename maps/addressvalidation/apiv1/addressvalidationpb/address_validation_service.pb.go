@@ -703,21 +703,21 @@ var File_google_maps_addressvalidation_v1_address_validation_service_proto proto
 
 const file_google_maps_addressvalidation_v1_address_validation_service_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/maps/addressvalidation/v1/address_validation_service.proto\x12 google.maps.addressvalidation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/maps/addressvalidation/v1/address.proto\x1a.google/maps/addressvalidation/v1/geocode.proto\x1a/google/maps/addressvalidation/v1/metadata.proto\x1a0google/maps/addressvalidation/v1/usps_data.proto\x1a google/type/postal_address.proto\"\xd9\x01\n" +
-	"\x16ValidateAddressRequest\x129\n" +
-	"\aaddress\x18\x01 \x01(\v2\x1a.google.type.PostalAddressB\x03\xe0A\x02R\aaddress\x120\n" +
+	"Agoogle/maps/addressvalidation/v1/address_validation_service.proto\x12 google.maps.addressvalidation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/maps/addressvalidation/v1/address.proto\x1a.google/maps/addressvalidation/v1/geocode.proto\x1a/google/maps/addressvalidation/v1/metadata.proto\x1a0google/maps/addressvalidation/v1/usps_data.proto\x1a google/type/postal_address.proto\"\xdb\x01\n" +
+	"\x16ValidateAddressRequest\x12:\n" +
+	"\aaddress\x18\x01 \x01(\v2\x1a.google.type.PostalAddressB\x04\xe2A\x01\x02R\aaddress\x120\n" +
 	"\x14previous_response_id\x18\x02 \x01(\tR\x12previousResponseId\x12(\n" +
-	"\x10enable_usps_cass\x18\x03 \x01(\bR\x0eenableUspsCass\x12(\n" +
-	"\rsession_token\x18\x05 \x01(\tB\x03\xe0A\x01R\fsessionToken\"\x86\x01\n" +
+	"\x10enable_usps_cass\x18\x03 \x01(\bR\x0eenableUspsCass\x12)\n" +
+	"\rsession_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\fsessionToken\"\x86\x01\n" +
 	"\x17ValidateAddressResponse\x12J\n" +
 	"\x06result\x18\x01 \x01(\v22.google.maps.addressvalidation.v1.ValidationResultR\x06result\x12\x1f\n" +
 	"\vresponse_id\x18\x02 \x01(\tR\n" +
-	"responseId\"\xe3\x02\n" +
-	" ProvideValidationFeedbackRequest\x12|\n" +
+	"responseId\"\xe5\x02\n" +
+	" ProvideValidationFeedbackRequest\x12}\n" +
 	"\n" +
-	"conclusion\x18\x01 \x01(\x0e2W.google.maps.addressvalidation.v1.ProvideValidationFeedbackRequest.ValidationConclusionB\x03\xe0A\x02R\n" +
-	"conclusion\x12$\n" +
-	"\vresponse_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"conclusion\x18\x01 \x01(\x0e2W.google.maps.addressvalidation.v1.ProvideValidationFeedbackRequest.ValidationConclusionB\x04\xe2A\x01\x02R\n" +
+	"conclusion\x12%\n" +
+	"\vresponse_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"responseId\"\x9a\x01\n" +
 	"\x14ValidationConclusion\x12%\n" +
 	"!VALIDATION_CONCLUSION_UNSPECIFIED\x10\x00\x12\x1a\n" +

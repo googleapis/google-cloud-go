@@ -151,6 +151,30 @@ func DirectAccessOptions() []option.ClientOption {
 	}
 }
 
+// MaxMessageSize is the largest gRPC message a Bigtable data-plane dial will
+// send or accept, chosen to correspond to server-side limits. gRPC's own
+// default receive limit is 4 MiB, which is well under what the service can
+// return for a single ReadRows response, so every data-plane dial has to raise
+// it explicitly or large rows fail with RESOURCE_EXHAUSTED on the client side.
+const MaxMessageSize = 1 << 28 // 256 MiB
+
+// MessageSizeOptions returns the dial options that lift gRPC's default message
+// size limits to MaxMessageSize.
+//
+// Centralized here for the same reason as DirectAccessOptions: the classic
+// client and the accelerator daemon build their dial options independently
+// (the daemon goes through session.NewClient rather than bigtable.NewClient),
+// and a dial that silently keeps the 4 MiB default is strictly more
+// restrictive than the client it stands in for.
+func MessageSizeOptions() []option.ClientOption {
+	return []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallSendMsgSize(MaxMessageSize),
+			grpc.MaxCallRecvMsgSize(MaxMessageSize),
+		)),
+	}
+}
+
 // ClientInterceptorOptions returns client options to use for the client's gRPC
 // connection, using the given streaming and unary RPC interceptors.
 //

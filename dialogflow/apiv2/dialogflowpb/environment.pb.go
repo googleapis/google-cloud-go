@@ -901,64 +901,64 @@ var File_google_cloud_dialogflow_v2_environment_proto protoreflect.FileDescripto
 
 const file_google_cloud_dialogflow_v2_environment_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/dialogflow/v2/environment.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/v2/audio_config.proto\x1a,google/cloud/dialogflow/v2/fulfillment.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x05\n" +
-	"\vEnvironment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12N\n" +
-	"\ragent_version\x18\x03 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!dialogflow.googleapis.com/VersionR\fagentVersion\x12H\n" +
-	"\x05state\x18\x04 \x01(\x0e2-.google.cloud.dialogflow.v2.Environment.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12l\n" +
-	"\x17text_to_speech_settings\x18\a \x01(\v20.google.cloud.dialogflow.v2.TextToSpeechSettingsB\x03\xe0A\x01R\x14textToSpeechSettings\x12N\n" +
-	"\vfulfillment\x18\b \x01(\v2'.google.cloud.dialogflow.v2.FulfillmentB\x03\xe0A\x01R\vfulfillment\"E\n" +
+	",google/cloud/dialogflow/v2/environment.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/v2/audio_config.proto\x1a,google/cloud/dialogflow/v2/fulfillment.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe2\x05\n" +
+	"\vEnvironment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12O\n" +
+	"\ragent_version\x18\x03 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!dialogflow.googleapis.com/VersionR\fagentVersion\x12I\n" +
+	"\x05state\x18\x04 \x01(\x0e2-.google.cloud.dialogflow.v2.Environment.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12m\n" +
+	"\x17text_to_speech_settings\x18\a \x01(\v20.google.cloud.dialogflow.v2.TextToSpeechSettingsB\x04\xe2A\x01\x01R\x14textToSpeechSettings\x12O\n" +
+	"\vfulfillment\x18\b \x01(\v2'.google.cloud.dialogflow.v2.FulfillmentB\x04\xe2A\x01\x01R\vfulfillment\"E\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSTOPPED\x10\x01\x12\v\n" +
 	"\aLOADING\x10\x02\x12\v\n" +
 	"\aRUNNING\x10\x03:\xaa\x01\xeaA\xa6\x01\n" +
-	"%dialogflow.googleapis.com/Environment\x123projects/{project}/agent/environments/{environment}\x12Hprojects/{project}/locations/{location}/agent/environments/{environment}\"\xfa\x03\n" +
-	"\x14TextToSpeechSettings\x126\n" +
-	"\x15enable_text_to_speech\x18\x01 \x01(\bB\x03\xe0A\x01R\x12enableTextToSpeech\x12h\n" +
-	"\x15output_audio_encoding\x18\x02 \x01(\x0e2/.google.cloud.dialogflow.v2.OutputAudioEncodingB\x03\xe0A\x02R\x13outputAudioEncoding\x12/\n" +
-	"\x11sample_rate_hertz\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0fsampleRateHertz\x12\x8e\x01\n" +
-	"\x19synthesize_speech_configs\x18\x04 \x03(\v2M.google.cloud.dialogflow.v2.TextToSpeechSettings.SynthesizeSpeechConfigsEntryB\x03\xe0A\x01R\x17synthesizeSpeechConfigs\x1a~\n" +
+	"%dialogflow.googleapis.com/Environment\x123projects/{project}/agent/environments/{environment}\x12Hprojects/{project}/locations/{location}/agent/environments/{environment}\"\xfe\x03\n" +
+	"\x14TextToSpeechSettings\x127\n" +
+	"\x15enable_text_to_speech\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x12enableTextToSpeech\x12i\n" +
+	"\x15output_audio_encoding\x18\x02 \x01(\x0e2/.google.cloud.dialogflow.v2.OutputAudioEncodingB\x04\xe2A\x01\x02R\x13outputAudioEncoding\x120\n" +
+	"\x11sample_rate_hertz\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x0fsampleRateHertz\x12\x8f\x01\n" +
+	"\x19synthesize_speech_configs\x18\x04 \x03(\v2M.google.cloud.dialogflow.v2.TextToSpeechSettings.SynthesizeSpeechConfigsEntryB\x04\xe2A\x01\x01R\x17synthesizeSpeechConfigs\x1a~\n" +
 	"\x1cSynthesizeSpeechConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12H\n" +
-	"\x05value\x18\x02 \x01(\v22.google.cloud.dialogflow.v2.SynthesizeSpeechConfigR\x05value:\x028\x01\"\xa6\x01\n" +
-	"\x17ListEnvironmentsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%dialogflow.googleapis.com/EnvironmentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05value\x18\x02 \x01(\v22.google.cloud.dialogflow.v2.SynthesizeSpeechConfigR\x05value:\x028\x01\"\xa9\x01\n" +
+	"\x17ListEnvironmentsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%dialogflow.googleapis.com/EnvironmentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8f\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8f\x01\n" +
 	"\x18ListEnvironmentsResponse\x12K\n" +
 	"\fenvironments\x18\x01 \x03(\v2'.google.cloud.dialogflow.v2.EnvironmentR\fenvironments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
-	"\x15GetEnvironmentRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dialogflow.googleapis.com/EnvironmentR\x04name\"\xdd\x01\n" +
-	"\x18CreateEnvironmentRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%dialogflow.googleapis.com/EnvironmentR\x06parent\x12N\n" +
-	"\venvironment\x18\x02 \x01(\v2'.google.cloud.dialogflow.v2.EnvironmentB\x03\xe0A\x02R\venvironment\x12*\n" +
-	"\x0eenvironment_id\x18\x03 \x01(\tB\x03\xe0A\x02R\renvironmentId\"\x85\x02\n" +
-	"\x18UpdateEnvironmentRequest\x12N\n" +
-	"\venvironment\x18\x01 \x01(\v2'.google.cloud.dialogflow.v2.EnvironmentB\x03\xe0A\x02R\venvironment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12W\n" +
-	"'allow_load_to_draft_and_discard_changes\x18\x03 \x01(\bB\x03\xe0A\x01R!allowLoadToDraftAndDiscardChanges\"]\n" +
-	"\x18DeleteEnvironmentRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dialogflow.googleapis.com/EnvironmentR\x04name\"\xab\x01\n" +
-	"\x1cGetEnvironmentHistoryRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dialogflow.googleapis.com/EnvironmentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"[\n" +
+	"\x15GetEnvironmentRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dialogflow.googleapis.com/EnvironmentR\x04name\"\xe0\x01\n" +
+	"\x18CreateEnvironmentRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%dialogflow.googleapis.com/EnvironmentR\x06parent\x12O\n" +
+	"\venvironment\x18\x02 \x01(\v2'.google.cloud.dialogflow.v2.EnvironmentB\x04\xe2A\x01\x02R\venvironment\x12+\n" +
+	"\x0eenvironment_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\renvironmentId\"\x88\x02\n" +
+	"\x18UpdateEnvironmentRequest\x12O\n" +
+	"\venvironment\x18\x01 \x01(\v2'.google.cloud.dialogflow.v2.EnvironmentB\x04\xe2A\x01\x02R\venvironment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12X\n" +
+	"'allow_load_to_draft_and_discard_changes\x18\x03 \x01(\bB\x04\xe2A\x01\x01R!allowLoadToDraftAndDiscardChanges\"^\n" +
+	"\x18DeleteEnvironmentRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dialogflow.googleapis.com/EnvironmentR\x04name\"\xae\x01\n" +
+	"\x1cGetEnvironmentHistoryRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dialogflow.googleapis.com/EnvironmentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc1\x02\n" +
-	"\x12EnvironmentHistory\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x03R\x06parent\x12S\n" +
-	"\aentries\x18\x02 \x03(\v24.google.cloud.dialogflow.v2.EnvironmentHistory.EntryB\x03\xe0A\x03R\aentries\x12+\n" +
-	"\x0fnext_page_token\x18\x03 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x1a\x8b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc4\x02\n" +
+	"\x12EnvironmentHistory\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06parent\x12T\n" +
+	"\aentries\x18\x02 \x03(\v24.google.cloud.dialogflow.v2.EnvironmentHistory.EntryB\x04\xe2A\x01\x03R\aentries\x12,\n" +
+	"\x0fnext_page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x1a\x8b\x01\n" +
 	"\x05Entry\x12#\n" +
 	"\ragent_version\x18\x01 \x01(\tR\fagentVersion\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12;\n" +

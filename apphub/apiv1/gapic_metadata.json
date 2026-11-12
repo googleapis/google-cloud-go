@@ -70,6 +70,11 @@
                 "GetApplication"
               ]
             },
+            "GetBoundary": {
+              "methods": [
+                "GetBoundary"
+              ]
+            },
             "GetDiscoveredService": {
               "methods": [
                 "GetDiscoveredService"
@@ -78,6 +83,11 @@
             "GetDiscoveredWorkload": {
               "methods": [
                 "GetDiscoveredWorkload"
+              ]
+            },
+            "GetExtendedMetadataSchema": {
+              "methods": [
+                "GetExtendedMetadataSchema"
               ]
             },
             "GetIamPolicy": {
@@ -123,6 +133,11 @@
             "ListDiscoveredWorkloads": {
               "methods": [
                 "ListDiscoveredWorkloads"
+              ]
+            },
+            "ListExtendedMetadataSchemas": {
+              "methods": [
+                "ListExtendedMetadataSchemas"
               ]
             },
             "ListLocations": {
@@ -178,6 +193,11 @@
             "UpdateApplication": {
               "methods": [
                 "UpdateApplication"
+              ]
+            },
+            "UpdateBoundary": {
+              "methods": [
+                "UpdateBoundary"
               ]
             },
             "UpdateService": {
@@ -255,6 +275,11 @@
                 "GetApplication"
               ]
             },
+            "GetBoundary": {
+              "methods": [
+                "GetBoundary"
+              ]
+            },
             "GetDiscoveredService": {
               "methods": [
                 "GetDiscoveredService"
@@ -263,6 +288,11 @@
             "GetDiscoveredWorkload": {
               "methods": [
                 "GetDiscoveredWorkload"
+              ]
+            },
+            "GetExtendedMetadataSchema": {
+              "methods": [
+                "GetExtendedMetadataSchema"
               ]
             },
             "GetIamPolicy": {
@@ -308,6 +338,11 @@
             "ListDiscoveredWorkloads": {
               "methods": [
                 "ListDiscoveredWorkloads"
+              ]
+            },
+            "ListExtendedMetadataSchemas": {
+              "methods": [
+                "ListExtendedMetadataSchemas"
               ]
             },
             "ListLocations": {
@@ -363,6 +398,11 @@
             "UpdateApplication": {
               "methods": [
                 "UpdateApplication"
+              ]
+            },
+            "UpdateBoundary": {
+              "methods": [
+                "UpdateBoundary"
               ]
             },
             "UpdateService": {

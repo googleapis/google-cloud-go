@@ -1556,26 +1556,26 @@ var File_google_cloud_retail_v2_product_service_proto protoreflect.FileDescripto
 
 const file_google_cloud_retail_v2_product_service_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/retail/v2/product_service.proto\x12\x16google.cloud.retail.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\x1a*google/cloud/retail/v2/import_config.proto\x1a$google/cloud/retail/v2/product.proto\x1a)google/cloud/retail/v2/purge_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb8\x01\n" +
-	"\x14CreateProductRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cretail.googleapis.com/BranchR\x06parent\x12>\n" +
-	"\aproduct\x18\x02 \x01(\v2\x1f.google.cloud.retail.v2.ProductB\x03\xe0A\x02R\aproduct\x12\"\n" +
+	",google/cloud/retail/v2/product_service.proto\x12\x16google.cloud.retail.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\x1a*google/cloud/retail/v2/import_config.proto\x1a$google/cloud/retail/v2/product.proto\x1a)google/cloud/retail/v2/purge_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbb\x01\n" +
+	"\x14CreateProductRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cretail.googleapis.com/BranchR\x06parent\x12?\n" +
+	"\aproduct\x18\x02 \x01(\v2\x1f.google.cloud.retail.v2.ProductB\x04\xe2A\x01\x02R\aproduct\x12#\n" +
 	"\n" +
-	"product_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tproductId\"N\n" +
-	"\x11GetProductRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/ProductR\x04name\"\xb8\x01\n" +
-	"\x14UpdateProductRequest\x12>\n" +
-	"\aproduct\x18\x01 \x01(\v2\x1f.google.cloud.retail.v2.ProductB\x03\xe0A\x02R\aproduct\x12;\n" +
+	"product_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tproductId\"O\n" +
+	"\x11GetProductRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/ProductR\x04name\"\xb9\x01\n" +
+	"\x14UpdateProductRequest\x12?\n" +
+	"\aproduct\x18\x01 \x01(\v2\x1f.google.cloud.retail.v2.ProductB\x04\xe2A\x01\x02R\aproduct\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12#\n" +
-	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\"Q\n" +
-	"\x14DeleteProductRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/ProductR\x04name\"\xe0\x01\n" +
-	"\x13ListProductsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\"R\n" +
+	"\x14DeleteProductRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/ProductR\x04name\"\xe1\x01\n" +
+	"\x13ListProductsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1cretail.googleapis.com/BranchR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1584,46 +1584,46 @@ const file_google_cloud_retail_v2_product_service_proto_rawDesc = "" +
 	"\tread_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskR\breadMask\"{\n" +
 	"\x14ListProductsResponse\x12;\n" +
 	"\bproducts\x18\x01 \x03(\v2\x1f.google.cloud.retail.v2.ProductR\bproducts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xec\x01\n" +
-	"\x13SetInventoryRequest\x12B\n" +
-	"\tinventory\x18\x01 \x01(\v2\x1f.google.cloud.retail.v2.ProductB\x03\xe0A\x02R\tinventory\x125\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xed\x01\n" +
+	"\x13SetInventoryRequest\x12C\n" +
+	"\tinventory\x18\x01 \x01(\v2\x1f.google.cloud.retail.v2.ProductB\x04\xe2A\x01\x02R\tinventory\x125\n" +
 	"\bset_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\asetMask\x125\n" +
 	"\bset_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\asetTime\x12#\n" +
 	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\"\x16\n" +
 	"\x14SetInventoryMetadata\"\x16\n" +
-	"\x14SetInventoryResponse\"\xf5\x01\n" +
-	"\x1bAddFulfillmentPlacesRequest\x12?\n" +
-	"\aproduct\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/ProductR\aproduct\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x02R\x04type\x12 \n" +
-	"\tplace_ids\x18\x03 \x03(\tB\x03\xe0A\x02R\bplaceIds\x125\n" +
+	"\x14SetInventoryResponse\"\xf8\x01\n" +
+	"\x1bAddFulfillmentPlacesRequest\x12@\n" +
+	"\aproduct\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/ProductR\aproduct\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12!\n" +
+	"\tplace_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\bplaceIds\x125\n" +
 	"\badd_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\aaddTime\x12#\n" +
 	"\rallow_missing\x18\x05 \x01(\bR\fallowMissing\"\x1e\n" +
 	"\x1cAddFulfillmentPlacesMetadata\"\x1e\n" +
-	"\x1cAddFulfillmentPlacesResponse\"\xca\x02\n" +
-	"\x1aAddLocalInventoriesRequest\x12?\n" +
-	"\aproduct\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/ProductR\aproduct\x12X\n" +
-	"\x11local_inventories\x18\x02 \x03(\v2&.google.cloud.retail.v2.LocalInventoryB\x03\xe0A\x02R\x10localInventories\x125\n" +
+	"\x1cAddFulfillmentPlacesResponse\"\xcc\x02\n" +
+	"\x1aAddLocalInventoriesRequest\x12@\n" +
+	"\aproduct\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/ProductR\aproduct\x12Y\n" +
+	"\x11local_inventories\x18\x02 \x03(\v2&.google.cloud.retail.v2.LocalInventoryB\x04\xe2A\x01\x02R\x10localInventories\x125\n" +
 	"\badd_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskR\aaddMask\x125\n" +
 	"\badd_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aaddTime\x12#\n" +
 	"\rallow_missing\x18\x06 \x01(\bR\fallowMissing\"\x1d\n" +
 	"\x1bAddLocalInventoriesMetadata\"\x1d\n" +
-	"\x1bAddLocalInventoriesResponse\"\xe4\x01\n" +
-	"\x1dRemoveLocalInventoriesRequest\x12?\n" +
-	"\aproduct\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/ProductR\aproduct\x12 \n" +
-	"\tplace_ids\x18\x02 \x03(\tB\x03\xe0A\x02R\bplaceIds\x12;\n" +
+	"\x1bAddLocalInventoriesResponse\"\xe6\x01\n" +
+	"\x1dRemoveLocalInventoriesRequest\x12@\n" +
+	"\aproduct\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/ProductR\aproduct\x12!\n" +
+	"\tplace_ids\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\bplaceIds\x12;\n" +
 	"\vremove_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"removeTime\x12#\n" +
 	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\" \n" +
 	"\x1eRemoveLocalInventoriesMetadata\" \n" +
-	"\x1eRemoveLocalInventoriesResponse\"\xfe\x01\n" +
-	"\x1eRemoveFulfillmentPlacesRequest\x12?\n" +
-	"\aproduct\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/ProductR\aproduct\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x02R\x04type\x12 \n" +
-	"\tplace_ids\x18\x03 \x03(\tB\x03\xe0A\x02R\bplaceIds\x12;\n" +
+	"\x1eRemoveLocalInventoriesResponse\"\x81\x02\n" +
+	"\x1eRemoveFulfillmentPlacesRequest\x12@\n" +
+	"\aproduct\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/ProductR\aproduct\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12!\n" +
+	"\tplace_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\bplaceIds\x12;\n" +
 	"\vremove_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"removeTime\x12#\n" +
 	"\rallow_missing\x18\x05 \x01(\bR\fallowMissing\"!\n" +

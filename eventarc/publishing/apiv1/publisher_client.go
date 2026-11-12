@@ -273,6 +273,37 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		client.CallOptions.PublishEvents = append(client.CallOptions.PublishEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.Publish = append(client.CallOptions.Publish, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.PublishChannelConnectionEvents = append(client.CallOptions.PublishChannelConnectionEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.PublishEvents = append(client.CallOptions.PublishEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.Publish = append(client.CallOptions.Publish, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.PublishChannelConnectionEvents = append(client.CallOptions.PublishChannelConnectionEvents, gax.WithClientLogging(logging))
+		client.CallOptions.PublishEvents = append(client.CallOptions.PublishEvents, gax.WithClientLogging(logging))
+		client.CallOptions.Publish = append(client.CallOptions.Publish, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -394,6 +425,37 @@ func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.PublishEvents = append(callOpts.PublishEvents, gax.WithClientMetrics(metrics))
 		callOpts.Publish = append(callOpts.Publish, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		callOpts.PublishChannelConnectionEvents = append(callOpts.PublishChannelConnectionEvents, gax.WithClientTracing(tracing))
+		callOpts.PublishEvents = append(callOpts.PublishEvents, gax.WithClientTracing(tracing))
+		callOpts.Publish = append(callOpts.Publish, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		callOpts.PublishChannelConnectionEvents = append(callOpts.PublishChannelConnectionEvents, gax.WithClientLogging(logging))
+		callOpts.PublishEvents = append(callOpts.PublishEvents, gax.WithClientLogging(logging))
+		callOpts.Publish = append(callOpts.Publish, gax.WithClientLogging(logging))
+	}
 
 	return &PublisherClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -510,6 +572,11 @@ func (c *publisherRESTClient) PublishChannelConnectionEvents(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChannelConnection(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:publishEvents", req.GetChannelConnection())
 
 	params := url.Values{}
@@ -570,6 +637,11 @@ func (c *publisherRESTClient) PublishEvents(ctx context.Context, req *publishing
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChannel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:publishEvents", req.GetChannel())
 
 	params := url.Values{}
@@ -628,6 +700,11 @@ func (c *publisherRESTClient) Publish(ctx context.Context, req *publishingpb.Pub
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMessageBus(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:publish", req.GetMessageBus())

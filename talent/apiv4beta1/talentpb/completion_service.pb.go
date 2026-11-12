@@ -417,12 +417,12 @@ var File_google_cloud_talent_v4beta1_completion_service_proto protoreflect.FileD
 
 const file_google_cloud_talent_v4beta1_completion_service_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/talent/v4beta1/completion_service.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/talent/v4beta1/common.proto\"\xd1\x04\n" +
-	"\x14CompleteQueryRequest\x12;\n" +
-	"\x06parent\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\x12\x1bjobs.googleapis.com/CompanyR\x06parent\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12%\n" +
-	"\x0elanguage_codes\x18\x03 \x03(\tR\rlanguageCodes\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x02R\bpageSize\x12:\n" +
+	"4google/cloud/talent/v4beta1/completion_service.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/talent/v4beta1/common.proto\"\xd4\x04\n" +
+	"\x14CompleteQueryRequest\x12<\n" +
+	"\x06parent\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\x12\x1bjobs.googleapis.com/CompanyR\x06parent\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12%\n" +
+	"\x0elanguage_codes\x18\x03 \x03(\tR\rlanguageCodes\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x02R\bpageSize\x12:\n" +
 	"\acompany\x18\x05 \x01(\tB \xfaA\x1d\n" +
 	"\x1bjobs.googleapis.com/CompanyR\acompany\x12W\n" +
 	"\x05scope\x18\x06 \x01(\x0e2A.google.cloud.talent.v4beta1.CompleteQueryRequest.CompletionScopeR\x05scope\x12T\n" +

@@ -15,6 +15,7 @@
 package firestore
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"math"
@@ -26,6 +27,7 @@ import (
 	"cloud.google.com/go/internal/pretty"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
@@ -1854,7 +1856,6 @@ func TestQuery_Pipeline(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			p := tc.query.Pipeline()
@@ -1877,12 +1878,14 @@ func TestQuery_Pipeline(t *testing.T) {
 	}
 }
 
+//go:fix inline
 func intptr(i int) *int {
-	return &i
+	return new(i)
 }
 
+//go:fix inline
 func stringptr(s string) *string {
-	return &s
+	return new(s)
 }
 
 func TestAggregationQuery_Pipeline(t *testing.T) {
@@ -1926,7 +1929,6 @@ func TestAggregationQuery_Pipeline(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			p := tc.query.Pipeline()
@@ -1944,6 +1946,66 @@ func TestAggregationQuery_Pipeline(t *testing.T) {
 
 			if diff := cmp.Diff(expProto, gotProto, protocmp.Transform()); diff != "" {
 				t.Errorf("mismatch (-want, +got)\n: %s", diff)
+			}
+		})
+	}
+}
+
+func TestAggregationQuery_Pipeline_Transaction(t *testing.T) {
+	t.Parallel()
+	client, _, cleanup := newMock(t)
+	defer cleanup()
+
+	coll := client.Collection("C")
+	tx := &Transaction{id: []byte("tx-123")}
+
+	testCases := []struct {
+		name string
+		pipe *Pipeline
+	}{
+		{
+			name: "with aggregations",
+			pipe: coll.NewAggregationQuery().WithCount("total").Transaction(tx).Pipeline(),
+		},
+		{
+			name: "without aggregations",
+			pipe: coll.NewAggregationQuery().Transaction(tx).Pipeline(),
+		},
+		{
+			name: "with chained stage after Pipeline",
+			pipe: coll.NewAggregationQuery().WithCount("total").Transaction(tx).Pipeline().Limit(1),
+		},
+		{
+			name: "via CreateFromAggregationQuery",
+			pipe: client.Pipeline().CreateFromAggregationQuery(coll.NewAggregationQuery().WithCount("total").Transaction(tx)),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			if tc.pipe.err != nil {
+				t.Fatalf("Pipeline() got error: %v", tc.pipe.err)
+			}
+			if tc.pipe.tx != tx {
+				t.Fatalf("Pipeline().tx = %v, want %v", tc.pipe.tx, tx)
+			}
+			req, err := tc.pipe.toExecutePipelineRequest()
+			if err != nil {
+				t.Fatalf("toExecutePipelineRequest() got error: %v", err)
+			}
+			if got := req.GetTransaction(); !bytes.Equal(got, tx.id) {
+				t.Errorf("req.GetTransaction() = %q, want %q", got, tx.id)
+			}
+
+			snap := tc.pipe.Execute(context.Background())
+			streamIter, ok := snap.iter.iter.(*streamPipelineResultIterator)
+			if !ok {
+				t.Fatalf("expected *streamPipelineResultIterator, got %T (err: %v)", snap.iter.iter, snap.iter.err)
+			}
+			md, _ := metadata.FromOutgoingContext(streamIter.ctx)
+			if got := md.Get(isTransactionHeader); len(got) != 1 || got[0] != "true" {
+				t.Errorf("%s header: got %v, want [true]", isTransactionHeader, got)
 			}
 		})
 	}
@@ -2075,7 +2137,7 @@ func TestFindNearest(t *testing.T) {
 			desc: "Valid path with valid vector type WithDistanceResultField and WithDistanceThreshold ",
 			vQuery: c.Collection(collName).
 				FindNearest("path", []float32{5, 6, 7}, limit, DistanceMeasureEuclidean, &FindNearestOptions{
-					DistanceThreshold:   Ptr[float64](threshold),
+					DistanceThreshold:   new(threshold),
 					DistanceResultField: resultField,
 				}),
 			wantReq: &wantReqThresholdField,

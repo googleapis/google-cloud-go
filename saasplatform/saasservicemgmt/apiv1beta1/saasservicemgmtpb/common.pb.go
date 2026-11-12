@@ -991,15 +991,15 @@ var File_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto protoref
 
 const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/saasplatform/saasservicemgmt/v1beta1/common.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"i\n" +
-	"\tBlueprint\x12 \n" +
-	"\apackage\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\x05R\apackage\x12\x1b\n" +
-	"\x06engine\x18\x02 \x01(\tB\x03\xe0A\x03R\x06engine\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x03R\aversion\"\x82\x02\n" +
-	"\fUnitVariable\x12\"\n" +
-	"\bvariable\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\bvariable\x12`\n" +
-	"\x04type\x18\x02 \x01(\x0e2D.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariable.TypeB\x06\xe0A\x01\xe0A\x05R\x04type\x12\x19\n" +
-	"\x05value\x18\x03 \x01(\tB\x03\xe0A\x01R\x05value\"Q\n" +
+	">google/cloud/saasplatform/saasservicemgmt/v1beta1/common.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"j\n" +
+	"\tBlueprint\x12\x1f\n" +
+	"\apackage\x18\x01 \x01(\tB\x05\xe2A\x02\x01\x05R\apackage\x12\x1c\n" +
+	"\x06engine\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06engine\x12\x1e\n" +
+	"\aversion\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\aversion\"\x81\x02\n" +
+	"\fUnitVariable\x12!\n" +
+	"\bvariable\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\bvariable\x12_\n" +
+	"\x04type\x18\x02 \x01(\x0e2D.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariable.TypeB\x05\xe2A\x02\x01\x05R\x04type\x12\x1a\n" +
+	"\x05value\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05value\"Q\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -1008,13 +1008,13 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDes
 	"\x04BOOL\x10\x03\x12\n" +
 	"\n" +
 	"\x06STRUCT\x10\x04\x12\b\n" +
-	"\x04LIST\x10\x05\"\xfb\x04\n" +
-	"\rUnitCondition\x12d\n" +
-	"\x06status\x18\x01 \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.StatusB\x03\xe0A\x02R\x06status\x12^\n" +
-	"\x04type\x18\x02 \x01(\x0e2E.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.TypeB\x03\xe0A\x02R\x04type\x12Q\n" +
-	"\x14last_transition_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x12lastTransitionTime\x12\x1d\n" +
-	"\amessage\x18\x04 \x01(\tB\x03\xe0A\x02R\amessage\x12\x1b\n" +
-	"\x06reason\x18\x05 \x01(\tB\x03\xe0A\x02R\x06reason\"W\n" +
+	"\x04LIST\x10\x05\"\x80\x05\n" +
+	"\rUnitCondition\x12e\n" +
+	"\x06status\x18\x01 \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.StatusB\x04\xe2A\x01\x02R\x06status\x12_\n" +
+	"\x04type\x18\x02 \x01(\x0e2E.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.TypeB\x04\xe2A\x01\x02R\x04type\x12R\n" +
+	"\x14last_transition_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x12lastTransitionTime\x12\x1e\n" +
+	"\amessage\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\amessage\x12\x1c\n" +
+	"\x06reason\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x06reason\"W\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSTATUS_UNKNOWN\x10\x01\x12\x0f\n" +
@@ -1028,13 +1028,13 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDes
 	"\x10TYPE_PROVISIONED\x10\x03\x12\x18\n" +
 	"\x14TYPE_OPERATION_ERROR\x10\x04\x12&\n" +
 	"\"TYPE_APP_CREATED_OR_ALREADY_EXISTS\x10\x06\x12\"\n" +
-	"\x1eTYPE_APP_COMPONENTS_REGISTERED\x10\a\"\x9c\x05\n" +
-	"\x16UnitOperationCondition\x12m\n" +
-	"\x06status\x18\x01 \x01(\x0e2P.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.StatusB\x03\xe0A\x02R\x06status\x12g\n" +
-	"\x04type\x18\x02 \x01(\x0e2N.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.TypeB\x03\xe0A\x02R\x04type\x12Q\n" +
-	"\x14last_transition_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x12lastTransitionTime\x12\x1d\n" +
-	"\amessage\x18\x04 \x01(\tB\x03\xe0A\x02R\amessage\x12\x1b\n" +
-	"\x06reason\x18\x05 \x01(\tB\x03\xe0A\x02R\x06reason\"W\n" +
+	"\x1eTYPE_APP_COMPONENTS_REGISTERED\x10\a\"\xa1\x05\n" +
+	"\x16UnitOperationCondition\x12n\n" +
+	"\x06status\x18\x01 \x01(\x0e2P.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.StatusB\x04\xe2A\x01\x02R\x06status\x12h\n" +
+	"\x04type\x18\x02 \x01(\x0e2N.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.TypeB\x04\xe2A\x01\x02R\x04type\x12R\n" +
+	"\x14last_transition_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x12lastTransitionTime\x12\x1e\n" +
+	"\amessage\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\amessage\x12\x1c\n" +
+	"\x06reason\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x06reason\"W\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSTATUS_UNKNOWN\x10\x01\x12\x0f\n" +
@@ -1048,13 +1048,13 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDes
 	"\x0eTYPE_CANCELLED\x10\x05\x12\x14\n" +
 	"\x10TYPE_APP_CREATED\x10\x06\x12\"\n" +
 	"\x1eTYPE_APP_COMPONENTS_REGISTERED\x10\a\x12\x1b\n" +
-	"\x17TYPE_WORKLOAD_SUCCEEDED\x10\b\"\x82\x04\n" +
-	"\rSaasCondition\x12d\n" +
-	"\x06status\x18\x01 \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.StatusB\x03\xe0A\x02R\x06status\x12^\n" +
-	"\x04type\x18\x06 \x01(\x0e2E.google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.TypeB\x03\xe0A\x02R\x04type\x12Q\n" +
-	"\x14last_transition_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x12lastTransitionTime\x12\x1d\n" +
-	"\amessage\x18\x04 \x01(\tB\x03\xe0A\x02R\amessage\x12\x1b\n" +
-	"\x06reason\x18\x05 \x01(\tB\x03\xe0A\x02R\x06reason\"W\n" +
+	"\x17TYPE_WORKLOAD_SUCCEEDED\x10\b\"\x87\x04\n" +
+	"\rSaasCondition\x12e\n" +
+	"\x06status\x18\x01 \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.StatusB\x04\xe2A\x01\x02R\x06status\x12_\n" +
+	"\x04type\x18\x06 \x01(\x0e2E.google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.TypeB\x04\xe2A\x01\x02R\x04type\x12R\n" +
+	"\x14last_transition_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x12lastTransitionTime\x12\x1e\n" +
+	"\amessage\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\amessage\x12\x1c\n" +
+	"\x06reason\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x06reason\"W\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSTATUS_UNKNOWN\x10\x01\x12\x0f\n" +
@@ -1064,10 +1064,10 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDes
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"TYPE_READY\x10\x01\x12\x15\n" +
-	"\x11TYPE_SYNCHRONIZED\x10\x02\"A\n" +
-	"\tAggregate\x12\x19\n" +
-	"\x05group\x18\x01 \x01(\tB\x03\xe0A\x02R\x05group\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x05B\x03\xe0A\x02R\x05count*\x96\x01\n" +
+	"\x11TYPE_SYNCHRONIZED\x10\x02\"C\n" +
+	"\tAggregate\x12\x1a\n" +
+	"\x05group\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05group\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x05count*\x96\x01\n" +
 	"\x1aUnitOperationErrorCategory\x12-\n" +
 	")UNIT_OPERATION_ERROR_CATEGORY_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eNOT_APPLICABLE\x10\x01\x12\t\n" +

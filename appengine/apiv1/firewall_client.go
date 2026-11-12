@@ -287,6 +287,43 @@ func NewFirewallClient(ctx context.Context, opts ...option.ClientOption) (*Firew
 		client.CallOptions.UpdateIngressRule = append(client.CallOptions.UpdateIngressRule, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteIngressRule = append(client.CallOptions.DeleteIngressRule, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListIngressRules = append(client.CallOptions.ListIngressRules, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchUpdateIngressRules = append(client.CallOptions.BatchUpdateIngressRules, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIngressRule = append(client.CallOptions.CreateIngressRule, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIngressRule = append(client.CallOptions.GetIngressRule, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIngressRule = append(client.CallOptions.UpdateIngressRule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIngressRule = append(client.CallOptions.DeleteIngressRule, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListIngressRules = append(client.CallOptions.ListIngressRules, gax.WithClientLogging(logging))
+		client.CallOptions.BatchUpdateIngressRules = append(client.CallOptions.BatchUpdateIngressRules, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIngressRule = append(client.CallOptions.CreateIngressRule, gax.WithClientLogging(logging))
+		client.CallOptions.GetIngressRule = append(client.CallOptions.GetIngressRule, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIngressRule = append(client.CallOptions.UpdateIngressRule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIngressRule = append(client.CallOptions.DeleteIngressRule, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -391,6 +428,43 @@ func NewFirewallRESTClient(ctx context.Context, opts ...option.ClientOption) (*F
 		callOpts.GetIngressRule = append(callOpts.GetIngressRule, gax.WithClientMetrics(metrics))
 		callOpts.UpdateIngressRule = append(callOpts.UpdateIngressRule, gax.WithClientMetrics(metrics))
 		callOpts.DeleteIngressRule = append(callOpts.DeleteIngressRule, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListIngressRules = append(callOpts.ListIngressRules, gax.WithClientTracing(tracing))
+		callOpts.BatchUpdateIngressRules = append(callOpts.BatchUpdateIngressRules, gax.WithClientTracing(tracing))
+		callOpts.CreateIngressRule = append(callOpts.CreateIngressRule, gax.WithClientTracing(tracing))
+		callOpts.GetIngressRule = append(callOpts.GetIngressRule, gax.WithClientTracing(tracing))
+		callOpts.UpdateIngressRule = append(callOpts.UpdateIngressRule, gax.WithClientTracing(tracing))
+		callOpts.DeleteIngressRule = append(callOpts.DeleteIngressRule, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListIngressRules = append(callOpts.ListIngressRules, gax.WithClientLogging(logging))
+		callOpts.BatchUpdateIngressRules = append(callOpts.BatchUpdateIngressRules, gax.WithClientLogging(logging))
+		callOpts.CreateIngressRule = append(callOpts.CreateIngressRule, gax.WithClientLogging(logging))
+		callOpts.GetIngressRule = append(callOpts.GetIngressRule, gax.WithClientLogging(logging))
+		callOpts.UpdateIngressRule = append(callOpts.UpdateIngressRule, gax.WithClientLogging(logging))
+		callOpts.DeleteIngressRule = append(callOpts.DeleteIngressRule, gax.WithClientLogging(logging))
 	}
 
 	return &FirewallClient{internalClient: c, CallOptions: callOpts}, nil
@@ -602,6 +676,11 @@ func (c *firewallRESTClient) ListIngressRules(ctx context.Context, req *appengin
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/firewall/ingressRules", req.GetParent())
 
 		params := url.Values{}
@@ -680,6 +759,11 @@ func (c *firewallRESTClient) BatchUpdateIngressRules(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:batchUpdate", req.GetName())
 
 	params := url.Values{}
@@ -741,6 +825,11 @@ func (c *firewallRESTClient) CreateIngressRule(ctx context.Context, req *appengi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/firewall/ingressRules", req.GetParent())
 
 	params := url.Values{}
@@ -793,6 +882,11 @@ func (c *firewallRESTClient) CreateIngressRule(ctx context.Context, req *appengi
 func (c *firewallRESTClient) GetIngressRule(ctx context.Context, req *appenginepb.GetIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -856,6 +950,11 @@ func (c *firewallRESTClient) UpdateIngressRule(ctx context.Context, req *appengi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -915,6 +1014,11 @@ func (c *firewallRESTClient) UpdateIngressRule(ctx context.Context, req *appengi
 func (c *firewallRESTClient) DeleteIngressRule(ctx context.Context, req *appenginepb.DeleteIngressRuleRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

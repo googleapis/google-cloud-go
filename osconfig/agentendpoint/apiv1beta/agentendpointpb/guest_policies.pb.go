@@ -2335,9 +2335,9 @@ const file_google_cloud_osconfig_agentendpoint_v1beta_guest_policies_proto_rawDe
 	"\x05SHELL\x10\x01\x12\x0e\n" +
 	"\n" +
 	"POWERSHELL\x10\x03B\x06\n" +
-	"\x04step\"\xc0\x01\n" +
-	"!LookupEffectiveGuestPolicyRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x12\"\n" +
+	"\x04step\"\xc1\x01\n" +
+	"!LookupEffectiveGuestPolicyRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x12\"\n" +
 	"\ros_short_name\x18\x02 \x01(\tR\vosShortName\x12\x1d\n" +
 	"\n" +
 	"os_version\x18\x03 \x01(\tR\tosVersion\x12'\n" +

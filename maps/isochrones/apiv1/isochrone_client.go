@@ -213,6 +213,33 @@ func NewIsochroneClient(ctx context.Context, opts ...option.ClientOption) (*Isoc
 
 		client.CallOptions.GenerateIsochrone = append(client.CallOptions.GenerateIsochrone, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "isochrones",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/isochrones/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "isochrones.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateIsochrone = append(client.CallOptions.GenerateIsochrone, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "isochrones",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/isochrones/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "isochrones.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateIsochrone = append(client.CallOptions.GenerateIsochrone, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -304,6 +331,33 @@ func NewIsochroneRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		)
 
 		callOpts.GenerateIsochrone = append(callOpts.GenerateIsochrone, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "isochrones",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/isochrones/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "isochrones.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateIsochrone = append(callOpts.GenerateIsochrone, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "isochrones",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/isochrones/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "isochrones.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateIsochrone = append(callOpts.GenerateIsochrone, gax.WithClientLogging(logging))
 	}
 
 	return &IsochroneClient{internalClient: c, CallOptions: callOpts}, nil

@@ -272,10 +272,7 @@ func computeLoadThresholds(fc *flowController) (countLimit, byteLimit int) {
 		}
 		if fc.maxInsertCount > 0 {
 			// MIN(1, 20% of insert limit)
-			countLimit = int(float64(fc.maxInsertCount) * 0.2)
-			if countLimit < 1 {
-				countLimit = 1
-			}
+			countLimit = max(int(float64(fc.maxInsertCount)*0.2), 1)
 		}
 	}
 	return
@@ -341,6 +338,17 @@ func (co *connection) close() {
 	// signal pending channel close.
 	if co.pending != nil {
 		close(co.pending)
+	}
+}
+
+// markStreamFailed forces the next append to reconnect when arc is still the connection's
+// current stream. A stream the connection already replaced is left alone, so a late failure on
+// an old stream never tears down its healthy successor.
+func (co *connection) markStreamFailed(arc storagepb.BigQueryWrite_AppendRowsClient) {
+	co.mu.Lock()
+	defer co.mu.Unlock()
+	if co.arc != nil && *co.arc == arc {
+		co.reconnect = true
 	}
 }
 
@@ -519,6 +527,11 @@ var errConnectionCanceled = grpcstatus.Error(codes.Canceled, "client connection 
 // It runs as a goroutine.  A connection object allows for reconnection, and each reconnection establishes a new
 // context, processing goroutine and backing channel.
 func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
+	// Once this stream has failed, every write still queued on it fails for the same reason.
+	// Back off once for the connection, then retry the rest without a pause each: this goroutine
+	// handles the queue one write at a time, so a pause per write would delay the last one by the
+	// sum of all of them.
+	streamFailed := false
 	for {
 		select {
 		case <-ctx.Done():
@@ -545,7 +558,8 @@ func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQue
 				// TODO:  Determine if/how we should report this case, as we have no viable context for propagating.
 
 				// Because we can't tell locally if this write is done, we pass it back to the retrier for possible re-enqueue.
-				pw.writer.processRetry(pw, nil, doneErr)
+				pw.writer.processRetry(pw, nil, doneErr, !streamFailed)
+				streamFailed = true
 			}
 		case nextWrite, ok := <-ch:
 			if !ok {
@@ -565,7 +579,14 @@ func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQue
 				}
 				recordStat(metricCtx, AppendResponseErrors, 1)
 
-				nextWrite.writer.processRetry(nextWrite, nil, err)
+				firstFailure := !streamFailed
+				if firstFailure {
+					streamFailed = true
+					// A failed stream accepts no more sends, so the retry reconnects instead of
+					// sending into this stream first.
+					co.markStreamFailed(arc)
+				}
+				nextWrite.writer.processRetry(nextWrite, nil, err, firstFailure)
 				continue
 			}
 			// Record that we did in fact get a response from the backend.
@@ -581,7 +602,7 @@ func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQue
 				recordStat(metricCtx, AppendResponseErrors, 1)
 				respErr := grpcstatus.ErrorProto(status)
 
-				nextWrite.writer.processRetry(nextWrite, resp, respErr)
+				nextWrite.writer.processRetry(nextWrite, resp, respErr, true)
 
 				continue
 			}

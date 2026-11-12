@@ -850,34 +850,34 @@ var File_google_cloud_networksecurity_v1beta1_authorization_policy_proto protore
 
 const file_google_cloud_networksecurity_v1beta1_authorization_policy_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/networksecurity/v1beta1/authorization_policy.proto\x12$google.cloud.networksecurity.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\v\n" +
-	"\x13AuthorizationPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12b\n" +
-	"\x06labels\x18\x05 \x03(\v2E.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.LabelsEntryB\x03\xe0A\x01R\x06labels\x12]\n" +
-	"\x06action\x18\x06 \x01(\x0e2@.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.ActionB\x03\xe0A\x02R\x06action\x12Y\n" +
-	"\x05rules\x18\a \x03(\v2>.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.RuleB\x03\xe0A\x01R\x05rules\x1a\x8e\x05\n" +
-	"\x04Rule\x12d\n" +
-	"\asources\x18\x01 \x03(\v2E.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.Rule.SourceB\x03\xe0A\x01R\asources\x12s\n" +
-	"\fdestinations\x18\x02 \x03(\v2J.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.Rule.DestinationB\x03\xe0A\x01R\fdestinations\x1aO\n" +
-	"\x06Source\x12#\n" +
+	"?google/cloud/networksecurity/v1beta1/authorization_policy.proto\x12$google.cloud.networksecurity.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9c\v\n" +
+	"\x13AuthorizationPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12c\n" +
+	"\x06labels\x18\x05 \x03(\v2E.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12^\n" +
+	"\x06action\x18\x06 \x01(\x0e2@.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.ActionB\x04\xe2A\x01\x02R\x06action\x12Z\n" +
+	"\x05rules\x18\a \x03(\v2>.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.RuleB\x04\xe2A\x01\x01R\x05rules\x1a\x98\x05\n" +
+	"\x04Rule\x12e\n" +
+	"\asources\x18\x01 \x03(\v2E.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.Rule.SourceB\x04\xe2A\x01\x01R\asources\x12t\n" +
+	"\fdestinations\x18\x02 \x03(\v2J.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.Rule.DestinationB\x04\xe2A\x01\x01R\fdestinations\x1aQ\n" +
+	"\x06Source\x12$\n" +
 	"\n" +
-	"principals\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
-	"principals\x12 \n" +
-	"\tip_blocks\x18\x02 \x03(\tB\x03\xe0A\x01R\bipBlocks\x1a\xd9\x02\n" +
-	"\vDestination\x12\x19\n" +
-	"\x05hosts\x18\x01 \x03(\tB\x03\xe0A\x02R\x05hosts\x12\x19\n" +
-	"\x05ports\x18\x02 \x03(\rB\x03\xe0A\x02R\x05ports\x12\x1d\n" +
-	"\amethods\x18\x04 \x03(\tB\x03\xe0A\x01R\amethods\x12\x8b\x01\n" +
-	"\x11http_header_match\x18\x05 \x01(\v2Z.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.Rule.Destination.HttpHeaderMatchB\x03\xe0A\x01R\x0fhttpHeaderMatch\x1ag\n" +
-	"\x0fHttpHeaderMatch\x12&\n" +
-	"\vregex_match\x18\x02 \x01(\tB\x03\xe0A\x02H\x00R\n" +
-	"regexMatch\x12$\n" +
-	"\vheader_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"principals\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"principals\x12!\n" +
+	"\tip_blocks\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\bipBlocks\x1a\xdf\x02\n" +
+	"\vDestination\x12\x1a\n" +
+	"\x05hosts\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x05hosts\x12\x1a\n" +
+	"\x05ports\x18\x02 \x03(\rB\x04\xe2A\x01\x02R\x05ports\x12\x1e\n" +
+	"\amethods\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\amethods\x12\x8c\x01\n" +
+	"\x11http_header_match\x18\x05 \x01(\v2Z.google.cloud.networksecurity.v1beta1.AuthorizationPolicy.Rule.Destination.HttpHeaderMatchB\x04\xe2A\x01\x01R\x0fhttpHeaderMatch\x1ai\n" +
+	"\x0fHttpHeaderMatch\x12'\n" +
+	"\vregex_match\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x00R\n" +
+	"regexMatch\x12%\n" +
+	"\vheader_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"headerNameB\x06\n" +
 	"\x04type\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
@@ -887,29 +887,29 @@ const file_google_cloud_networksecurity_v1beta1_authorization_policy_proto_rawDe
 	"\x12ACTION_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ALLOW\x10\x01\x12\b\n" +
 	"\x04DENY\x10\x02:\x8e\x01\xeaA\x8a\x01\n" +
-	"2networksecurity.googleapis.com/AuthorizationPolicy\x12Tprojects/{project}/locations/{location}/authorizationPolicies/{authorization_policy}\"\xa1\x01\n" +
-	" ListAuthorizationPoliciesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"2networksecurity.googleapis.com/AuthorizationPolicy\x12Tprojects/{project}/locations/{location}/authorizationPolicies/{authorization_policy}\"\xa2\x01\n" +
+	" ListAuthorizationPoliciesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xbd\x01\n" +
 	"!ListAuthorizationPoliciesResponse\x12p\n" +
 	"\x16authorization_policies\x18\x01 \x03(\v29.google.cloud.networksecurity.v1beta1.AuthorizationPolicyR\x15authorizationPolicies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"o\n" +
-	"\x1dGetAuthorizationPolicyRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2networksecurity.googleapis.com/AuthorizationPolicyR\x04name\"\xa6\x02\n" +
-	" CreateAuthorizationPolicyRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networksecurity.googleapis.com/AuthorizationPolicyR\x06parent\x12;\n" +
-	"\x17authorization_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15authorizationPolicyId\x12q\n" +
-	"\x14authorization_policy\x18\x03 \x01(\v29.google.cloud.networksecurity.v1beta1.AuthorizationPolicyB\x03\xe0A\x02R\x13authorizationPolicy\"\xd7\x01\n" +
-	" UpdateAuthorizationPolicyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12q\n" +
-	"\x14authorization_policy\x18\x02 \x01(\v29.google.cloud.networksecurity.v1beta1.AuthorizationPolicyB\x03\xe0A\x02R\x13authorizationPolicy\"r\n" +
-	" DeleteAuthorizationPolicyRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"p\n" +
+	"\x1dGetAuthorizationPolicyRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2networksecurity.googleapis.com/AuthorizationPolicyR\x04name\"\xa9\x02\n" +
+	" CreateAuthorizationPolicyRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networksecurity.googleapis.com/AuthorizationPolicyR\x06parent\x12<\n" +
+	"\x17authorization_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15authorizationPolicyId\x12r\n" +
+	"\x14authorization_policy\x18\x03 \x01(\v29.google.cloud.networksecurity.v1beta1.AuthorizationPolicyB\x04\xe2A\x01\x02R\x13authorizationPolicy\"\xd9\x01\n" +
+	" UpdateAuthorizationPolicyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12r\n" +
+	"\x14authorization_policy\x18\x02 \x01(\v29.google.cloud.networksecurity.v1beta1.AuthorizationPolicyB\x04\xe2A\x01\x02R\x13authorizationPolicy\"s\n" +
+	" DeleteAuthorizationPolicyRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
 	"2networksecurity.googleapis.com/AuthorizationPolicyR\x04nameB\x92\x02\n" +
 	"(com.google.cloud.networksecurity.v1beta1B\x18AuthorizationPolicyProtoP\x01ZRcloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb;networksecuritypb\xaa\x02$Google.Cloud.NetworkSecurity.V1Beta1\xca\x02$Google\\Cloud\\NetworkSecurity\\V1beta1\xea\x02'Google::Cloud::NetworkSecurity::V1beta1b\x06proto3"
 

@@ -21,7 +21,6 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
@@ -121,14 +120,18 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 		Selector: &sppb.TransactionSelector_Id{Id: res.Id},
 	}
 
-	resultSet, err := sh.getClient().ExecuteSql(ctx, req, gax.WithGRPCOptions(grpc.Header(&md)))
+	var otConfig *openTelemetryConfig
+	if sh.session.sm != nil {
+		otConfig = sh.session.sm.otConfig
+	}
+	resultSet, err := sh.getClient().ExecuteSql(ctx, req, gfeLatencyHeaderOptions(&md, sh.session.sm != nil, otConfig)...)
 	if getGFELatencyMetricsFlag() && md != nil && sh.session.sm != nil {
 		err := captureGFELatencyStats(tag.NewContext(ctx, sh.session.sm.tagMap), md, "executePdml_ExecuteSql")
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
 	}
-	if metricErr := recordGFELatencyMetricsOT(ctx, md, "executePdml_ExecuteSql", sh.session.sm.otConfig); metricErr != nil {
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "executePdml_ExecuteSql", otConfig); metricErr != nil {
 		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
 	if err != nil {

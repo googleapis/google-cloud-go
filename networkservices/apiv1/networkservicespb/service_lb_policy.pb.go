@@ -856,27 +856,27 @@ var File_google_cloud_networkservices_v1_service_lb_policy_proto protoreflect.Fi
 
 const file_google_cloud_networkservices_v1_service_lb_policy_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/networkservices/v1/service_lb_policy.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\r\n" +
-	"\x0fServiceLbPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Y\n" +
-	"\x06labels\x18\x04 \x03(\v2<.google.cloud.networkservices.v1.ServiceLbPolicy.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x86\x01\n" +
-	"\x18load_balancing_algorithm\x18\x06 \x01(\x0e2G.google.cloud.networkservices.v1.ServiceLbPolicy.LoadBalancingAlgorithmB\x03\xe0A\x01R\x16loadBalancingAlgorithm\x12w\n" +
-	"\x13auto_capacity_drain\x18\b \x01(\v2B.google.cloud.networkservices.v1.ServiceLbPolicy.AutoCapacityDrainB\x03\xe0A\x01R\x11autoCapacityDrain\x12m\n" +
+	"7google/cloud/networkservices/v1/service_lb_policy.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9a\r\n" +
+	"\x0fServiceLbPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12Z\n" +
+	"\x06labels\x18\x04 \x03(\v2<.google.cloud.networkservices.v1.ServiceLbPolicy.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x87\x01\n" +
+	"\x18load_balancing_algorithm\x18\x06 \x01(\x0e2G.google.cloud.networkservices.v1.ServiceLbPolicy.LoadBalancingAlgorithmB\x04\xe2A\x01\x01R\x16loadBalancingAlgorithm\x12x\n" +
+	"\x13auto_capacity_drain\x18\b \x01(\v2B.google.cloud.networkservices.v1.ServiceLbPolicy.AutoCapacityDrainB\x04\xe2A\x01\x01R\x11autoCapacityDrain\x12n\n" +
 	"\x0ffailover_config\x18\n" +
-	" \x01(\v2?.google.cloud.networkservices.v1.ServiceLbPolicy.FailoverConfigB\x03\xe0A\x01R\x0efailoverConfig\x12p\n" +
-	"\x10isolation_config\x18\v \x01(\v2@.google.cloud.networkservices.v1.ServiceLbPolicy.IsolationConfigB\x03\xe0A\x01R\x0fisolationConfig\x1a0\n" +
-	"\x11AutoCapacityDrain\x12\x1b\n" +
-	"\x06enable\x18\x01 \x01(\bB\x03\xe0A\x01R\x06enable\x1aQ\n" +
-	"\x0eFailoverConfig\x12?\n" +
-	"\x19failover_health_threshold\x18\x01 \x01(\x05B\x03\xe0A\x01R\x17failoverHealthThreshold\x1a\xfe\x01\n" +
-	"\x0fIsolationConfig\x12\x7f\n" +
-	"\x15isolation_granularity\x18\x01 \x01(\x0e2E.google.cloud.networkservices.v1.ServiceLbPolicy.IsolationGranularityB\x03\xe0A\x01R\x14isolationGranularity\x12j\n" +
-	"\x0eisolation_mode\x18\x02 \x01(\x0e2>.google.cloud.networkservices.v1.ServiceLbPolicy.IsolationModeB\x03\xe0A\x01R\risolationMode\x1a9\n" +
+	" \x01(\v2?.google.cloud.networkservices.v1.ServiceLbPolicy.FailoverConfigB\x04\xe2A\x01\x01R\x0efailoverConfig\x12q\n" +
+	"\x10isolation_config\x18\v \x01(\v2@.google.cloud.networkservices.v1.ServiceLbPolicy.IsolationConfigB\x04\xe2A\x01\x01R\x0fisolationConfig\x1a1\n" +
+	"\x11AutoCapacityDrain\x12\x1c\n" +
+	"\x06enable\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x06enable\x1aR\n" +
+	"\x0eFailoverConfig\x12@\n" +
+	"\x19failover_health_threshold\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x17failoverHealthThreshold\x1a\x81\x02\n" +
+	"\x0fIsolationConfig\x12\x80\x01\n" +
+	"\x15isolation_granularity\x18\x01 \x01(\x0e2E.google.cloud.networkservices.v1.ServiceLbPolicy.IsolationGranularityB\x04\xe2A\x01\x01R\x14isolationGranularity\x12k\n" +
+	"\x0eisolation_mode\x18\x02 \x01(\x0e2>.google.cloud.networkservices.v1.ServiceLbPolicy.IsolationModeB\x04\xe2A\x01\x01R\risolationMode\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9b\x01\n" +
@@ -895,29 +895,29 @@ const file_google_cloud_networkservices_v1_service_lb_policy_proto_rawDesc = "" 
 	"\aNEAREST\x10\x01\x12\n" +
 	"\n" +
 	"\x06STRICT\x10\x02:\x82\x01\xeaA\x7f\n" +
-	".networkservices.googleapis.com/ServiceLbPolicy\x12Mprojects/{project}/locations/{location}/serviceLbPolicies/{service_lb_policy}\"\xaa\x01\n" +
-	"\x1cListServiceLbPoliciesRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.networkservices.googleapis.com/ServiceLbPolicyR\x06parent\x12\x1b\n" +
+	".networkservices.googleapis.com/ServiceLbPolicy\x12Mprojects/{project}/locations/{location}/serviceLbPolicies/{service_lb_policy}\"\xab\x01\n" +
+	"\x1cListServiceLbPoliciesRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.networkservices.googleapis.com/ServiceLbPolicyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xcb\x01\n" +
 	"\x1dListServiceLbPoliciesResponse\x12`\n" +
 	"\x13service_lb_policies\x18\x01 \x03(\v20.google.cloud.networkservices.v1.ServiceLbPolicyR\x11serviceLbPolicies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"g\n" +
-	"\x19GetServiceLbPolicyRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".networkservices.googleapis.com/ServiceLbPolicyR\x04name\"\x87\x02\n" +
-	"\x1cCreateServiceLbPolicyRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.networkservices.googleapis.com/ServiceLbPolicyR\x06parent\x124\n" +
-	"\x14service_lb_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11serviceLbPolicyId\x12a\n" +
-	"\x11service_lb_policy\x18\x03 \x01(\v20.google.cloud.networkservices.v1.ServiceLbPolicyB\x03\xe0A\x02R\x0fserviceLbPolicy\"\xc3\x01\n" +
-	"\x1cUpdateServiceLbPolicyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12a\n" +
-	"\x11service_lb_policy\x18\x02 \x01(\v20.google.cloud.networkservices.v1.ServiceLbPolicyB\x03\xe0A\x02R\x0fserviceLbPolicy\"j\n" +
-	"\x1cDeleteServiceLbPolicyRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"h\n" +
+	"\x19GetServiceLbPolicyRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".networkservices.googleapis.com/ServiceLbPolicyR\x04name\"\x8a\x02\n" +
+	"\x1cCreateServiceLbPolicyRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.networkservices.googleapis.com/ServiceLbPolicyR\x06parent\x125\n" +
+	"\x14service_lb_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11serviceLbPolicyId\x12b\n" +
+	"\x11service_lb_policy\x18\x03 \x01(\v20.google.cloud.networkservices.v1.ServiceLbPolicyB\x04\xe2A\x01\x02R\x0fserviceLbPolicy\"\xc5\x01\n" +
+	"\x1cUpdateServiceLbPolicyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12b\n" +
+	"\x11service_lb_policy\x18\x02 \x01(\v20.google.cloud.networkservices.v1.ServiceLbPolicyB\x04\xe2A\x01\x02R\x0fserviceLbPolicy\"k\n" +
+	"\x1cDeleteServiceLbPolicyRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".networkservices.googleapis.com/ServiceLbPolicyR\x04nameB\xf5\x01\n" +
 	"#com.google.cloud.networkservices.v1B\x14ServiceLbPolicyProtoP\x01ZMcloud.google.com/go/networkservices/apiv1/networkservicespb;networkservicespb\xaa\x02\x1fGoogle.Cloud.NetworkServices.V1\xca\x02\x1fGoogle\\Cloud\\NetworkServices\\V1\xea\x02\"Google::Cloud::NetworkServices::V1b\x06proto3"
 

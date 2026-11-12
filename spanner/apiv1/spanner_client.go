@@ -821,6 +821,65 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.BatchWrite = append(client.CallOptions.BatchWrite, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchCacheUpdate = append(client.CallOptions.FetchCacheUpdate, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSession = append(client.CallOptions.CreateSession, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateSessions = append(client.CallOptions.BatchCreateSessions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSession = append(client.CallOptions.GetSession, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSessions = append(client.CallOptions.ListSessions, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSession = append(client.CallOptions.DeleteSession, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteSql = append(client.CallOptions.ExecuteSql, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteStreamingSql = append(client.CallOptions.ExecuteStreamingSql, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteBatchDml = append(client.CallOptions.ExecuteBatchDml, gax.WithClientTracing(tracing))
+		client.CallOptions.Read = append(client.CallOptions.Read, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamingRead = append(client.CallOptions.StreamingRead, gax.WithClientTracing(tracing))
+		client.CallOptions.BeginTransaction = append(client.CallOptions.BeginTransaction, gax.WithClientTracing(tracing))
+		client.CallOptions.Commit = append(client.CallOptions.Commit, gax.WithClientTracing(tracing))
+		client.CallOptions.Rollback = append(client.CallOptions.Rollback, gax.WithClientTracing(tracing))
+		client.CallOptions.PartitionQuery = append(client.CallOptions.PartitionQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.PartitionRead = append(client.CallOptions.PartitionRead, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchWrite = append(client.CallOptions.BatchWrite, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchCacheUpdate = append(client.CallOptions.FetchCacheUpdate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSession = append(client.CallOptions.CreateSession, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateSessions = append(client.CallOptions.BatchCreateSessions, gax.WithClientLogging(logging))
+		client.CallOptions.GetSession = append(client.CallOptions.GetSession, gax.WithClientLogging(logging))
+		client.CallOptions.ListSessions = append(client.CallOptions.ListSessions, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSession = append(client.CallOptions.DeleteSession, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteSql = append(client.CallOptions.ExecuteSql, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteStreamingSql = append(client.CallOptions.ExecuteStreamingSql, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteBatchDml = append(client.CallOptions.ExecuteBatchDml, gax.WithClientLogging(logging))
+		client.CallOptions.Read = append(client.CallOptions.Read, gax.WithClientLogging(logging))
+		client.CallOptions.StreamingRead = append(client.CallOptions.StreamingRead, gax.WithClientLogging(logging))
+		client.CallOptions.BeginTransaction = append(client.CallOptions.BeginTransaction, gax.WithClientLogging(logging))
+		client.CallOptions.Commit = append(client.CallOptions.Commit, gax.WithClientLogging(logging))
+		client.CallOptions.Rollback = append(client.CallOptions.Rollback, gax.WithClientLogging(logging))
+		client.CallOptions.PartitionQuery = append(client.CallOptions.PartitionQuery, gax.WithClientLogging(logging))
+		client.CallOptions.PartitionRead = append(client.CallOptions.PartitionRead, gax.WithClientLogging(logging))
+		client.CallOptions.BatchWrite = append(client.CallOptions.BatchWrite, gax.WithClientLogging(logging))
+		client.CallOptions.FetchCacheUpdate = append(client.CallOptions.FetchCacheUpdate, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -931,6 +990,65 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.BatchWrite = append(callOpts.BatchWrite, gax.WithClientMetrics(metrics))
 		callOpts.FetchCacheUpdate = append(callOpts.FetchCacheUpdate, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSession = append(callOpts.CreateSession, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateSessions = append(callOpts.BatchCreateSessions, gax.WithClientTracing(tracing))
+		callOpts.GetSession = append(callOpts.GetSession, gax.WithClientTracing(tracing))
+		callOpts.ListSessions = append(callOpts.ListSessions, gax.WithClientTracing(tracing))
+		callOpts.DeleteSession = append(callOpts.DeleteSession, gax.WithClientTracing(tracing))
+		callOpts.ExecuteSql = append(callOpts.ExecuteSql, gax.WithClientTracing(tracing))
+		callOpts.ExecuteStreamingSql = append(callOpts.ExecuteStreamingSql, gax.WithClientTracing(tracing))
+		callOpts.ExecuteBatchDml = append(callOpts.ExecuteBatchDml, gax.WithClientTracing(tracing))
+		callOpts.Read = append(callOpts.Read, gax.WithClientTracing(tracing))
+		callOpts.StreamingRead = append(callOpts.StreamingRead, gax.WithClientTracing(tracing))
+		callOpts.BeginTransaction = append(callOpts.BeginTransaction, gax.WithClientTracing(tracing))
+		callOpts.Commit = append(callOpts.Commit, gax.WithClientTracing(tracing))
+		callOpts.Rollback = append(callOpts.Rollback, gax.WithClientTracing(tracing))
+		callOpts.PartitionQuery = append(callOpts.PartitionQuery, gax.WithClientTracing(tracing))
+		callOpts.PartitionRead = append(callOpts.PartitionRead, gax.WithClientTracing(tracing))
+		callOpts.BatchWrite = append(callOpts.BatchWrite, gax.WithClientTracing(tracing))
+		callOpts.FetchCacheUpdate = append(callOpts.FetchCacheUpdate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSession = append(callOpts.CreateSession, gax.WithClientLogging(logging))
+		callOpts.BatchCreateSessions = append(callOpts.BatchCreateSessions, gax.WithClientLogging(logging))
+		callOpts.GetSession = append(callOpts.GetSession, gax.WithClientLogging(logging))
+		callOpts.ListSessions = append(callOpts.ListSessions, gax.WithClientLogging(logging))
+		callOpts.DeleteSession = append(callOpts.DeleteSession, gax.WithClientLogging(logging))
+		callOpts.ExecuteSql = append(callOpts.ExecuteSql, gax.WithClientLogging(logging))
+		callOpts.ExecuteStreamingSql = append(callOpts.ExecuteStreamingSql, gax.WithClientLogging(logging))
+		callOpts.ExecuteBatchDml = append(callOpts.ExecuteBatchDml, gax.WithClientLogging(logging))
+		callOpts.Read = append(callOpts.Read, gax.WithClientLogging(logging))
+		callOpts.StreamingRead = append(callOpts.StreamingRead, gax.WithClientLogging(logging))
+		callOpts.BeginTransaction = append(callOpts.BeginTransaction, gax.WithClientLogging(logging))
+		callOpts.Commit = append(callOpts.Commit, gax.WithClientLogging(logging))
+		callOpts.Rollback = append(callOpts.Rollback, gax.WithClientLogging(logging))
+		callOpts.PartitionQuery = append(callOpts.PartitionQuery, gax.WithClientLogging(logging))
+		callOpts.PartitionRead = append(callOpts.PartitionRead, gax.WithClientLogging(logging))
+		callOpts.BatchWrite = append(callOpts.BatchWrite, gax.WithClientLogging(logging))
+		callOpts.FetchCacheUpdate = append(callOpts.FetchCacheUpdate, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -977,9 +1095,6 @@ func (c *gRPCClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetDatabase()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/CreateSession")
 	}
@@ -1001,9 +1116,6 @@ func (c *gRPCClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetDatabase()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/BatchCreateSessions")
 	}
@@ -1025,9 +1137,6 @@ func (c *gRPCClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/GetSession")
 	}
@@ -1049,9 +1158,6 @@ func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetDatabase()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/ListSessions")
 	}
@@ -1101,9 +1207,6 @@ func (c *gRPCClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/DeleteSession")
 	}
@@ -1121,9 +1224,6 @@ func (c *gRPCClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/ExecuteSql")
 	}
@@ -1145,9 +1245,6 @@ func (c *gRPCClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/ExecuteStreamingSql")
 	}
@@ -1171,9 +1268,6 @@ func (c *gRPCClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/ExecuteBatchDml")
 	}
@@ -1195,9 +1289,6 @@ func (c *gRPCClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/Read")
 	}
@@ -1219,9 +1310,6 @@ func (c *gRPCClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/StreamingRead")
 	}
@@ -1245,9 +1333,6 @@ func (c *gRPCClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/BeginTransaction")
 	}
@@ -1269,9 +1354,6 @@ func (c *gRPCClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/Commit")
 	}
@@ -1293,9 +1375,6 @@ func (c *gRPCClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/Rollback")
 	}
@@ -1313,9 +1392,6 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/PartitionQuery")
 	}
@@ -1337,9 +1413,6 @@ func (c *gRPCClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/PartitionRead")
 	}
@@ -1361,9 +1434,6 @@ func (c *gRPCClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/BatchWrite")
 	}
@@ -1387,9 +1457,6 @@ func (c *gRPCClient) FetchCacheUpdate(ctx context.Context, req *spannerpb.FetchC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetDatabase()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/FetchCacheUpdate")
 	}
@@ -1438,6 +1505,11 @@ func (c *restClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/sessions", req.GetDatabase())
 
 	params := url.Values{}
@@ -1451,9 +1523,6 @@ func (c *restClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetDatabase()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/CreateSession")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/instances/*/databases/*}/sessions")
@@ -1504,6 +1573,11 @@ func (c *restClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/sessions:batchCreate", req.GetDatabase())
 
 	params := url.Values{}
@@ -1517,9 +1591,6 @@ func (c *restClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetDatabase()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/BatchCreateSessions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/instances/*/databases/*}/sessions:batchCreate")
@@ -1563,6 +1634,11 @@ func (c *restClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1576,9 +1652,6 @@ func (c *restClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/GetSession")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*/databases/*/sessions/*}")
@@ -1631,6 +1704,11 @@ func (c *restClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetDatabase(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/sessions", req.GetDatabase())
@@ -1703,6 +1781,11 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1716,9 +1799,6 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/DeleteSession")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*/databases/*/sessions/*}")
@@ -1766,6 +1846,11 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:executeSql", req.GetSession())
 
 	params := url.Values{}
@@ -1779,9 +1864,6 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/ExecuteSql")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:executeSql")
@@ -1836,6 +1918,11 @@ func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:executeStreamingSql", req.GetSession())
 
 	params := url.Values{}
@@ -1849,9 +1936,6 @@ func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/ExecuteStreamingSql")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:executeStreamingSql")
@@ -1956,6 +2040,11 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:executeBatchDml", req.GetSession())
 
 	params := url.Values{}
@@ -1969,9 +2058,6 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/ExecuteBatchDml")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:executeBatchDml")
@@ -2032,6 +2118,11 @@ func (c *restClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:read", req.GetSession())
 
 	params := url.Values{}
@@ -2045,9 +2136,6 @@ func (c *restClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/Read")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:read")
@@ -2099,6 +2187,11 @@ func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:streamingRead", req.GetSession())
 
 	params := url.Values{}
@@ -2112,9 +2205,6 @@ func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/StreamingRead")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:streamingRead")
@@ -2212,6 +2302,11 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:beginTransaction", req.GetSession())
 
 	params := url.Values{}
@@ -2225,9 +2320,6 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/BeginTransaction")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:beginTransaction")
@@ -2288,6 +2380,11 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:commit", req.GetSession())
 
 	params := url.Values{}
@@ -2301,9 +2398,6 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/Commit")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:commit")
@@ -2359,6 +2453,11 @@ func (c *restClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rollback", req.GetSession())
 
 	params := url.Values{}
@@ -2372,9 +2471,6 @@ func (c *restClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/Rollback")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:rollback")
@@ -2418,6 +2514,11 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:partitionQuery", req.GetSession())
 
 	params := url.Values{}
@@ -2431,9 +2532,6 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/PartitionQuery")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:partitionQuery")
@@ -2494,6 +2592,11 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:partitionRead", req.GetSession())
 
 	params := url.Values{}
@@ -2507,9 +2610,6 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/PartitionRead")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:partitionRead")
@@ -2571,6 +2671,11 @@ func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:batchWrite", req.GetSession())
 
 	params := url.Values{}
@@ -2584,9 +2689,6 @@ func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetSession()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/BatchWrite")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{session=projects/*/instances/*/databases/*/sessions/*}:batchWrite")
@@ -2688,6 +2790,11 @@ func (c *restClient) FetchCacheUpdate(ctx context.Context, req *spannerpb.FetchC
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cacheUpdate", req.GetDatabase())
 
 	params := url.Values{}
@@ -2701,9 +2808,6 @@ func (c *restClient) FetchCacheUpdate(ctx context.Context, req *spannerpb.FetchC
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetDatabase()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/FetchCacheUpdate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/instances/*/databases/*}:cacheUpdate")

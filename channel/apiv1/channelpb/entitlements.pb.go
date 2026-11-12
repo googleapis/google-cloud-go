@@ -928,28 +928,28 @@ var File_google_cloud_channel_v1_entitlements_proto protoreflect.FileDescriptor
 
 const file_google_cloud_channel_v1_entitlements_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/channel/v1/entitlements.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/channel/v1/common.proto\x1a$google/cloud/channel/v1/offers.proto\x1a&google/cloud/channel/v1/products.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\n" +
+	"*google/cloud/channel/v1/entitlements.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/channel/v1/common.proto\x1a$google/cloud/channel/v1/offers.proto\x1a&google/cloud/channel/v1/products.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\n" +
 	"\n" +
-	"\vEntitlement\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12?\n" +
-	"\x05offer\x18\b \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\vEntitlement\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12@\n" +
+	"\x05offer\x18\b \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!cloudchannel.googleapis.com/OfferR\x05offer\x12\\\n" +
-	"\x13commitment_settings\x18\f \x01(\v2+.google.cloud.channel.v1.CommitmentSettingsR\x12commitmentSettings\x12j\n" +
-	"\x12provisioning_state\x18\r \x01(\x0e26.google.cloud.channel.v1.Entitlement.ProvisioningStateB\x03\xe0A\x03R\x11provisioningState\x12a\n" +
-	"\x13provisioned_service\x18\x10 \x01(\v2+.google.cloud.channel.v1.ProvisionedServiceB\x03\xe0A\x03R\x12provisionedService\x12i\n" +
-	"\x12suspension_reasons\x18\x12 \x03(\x0e25.google.cloud.channel.v1.Entitlement.SuspensionReasonB\x03\xe0A\x03R\x11suspensionReasons\x12/\n" +
-	"\x11purchase_order_id\x18\x13 \x01(\tB\x03\xe0A\x01R\x0fpurchaseOrderId\x12R\n" +
-	"\x0etrial_settings\x18\x15 \x01(\v2&.google.cloud.channel.v1.TrialSettingsB\x03\xe0A\x03R\rtrialSettings\x12S\n" +
+	"\x13commitment_settings\x18\f \x01(\v2+.google.cloud.channel.v1.CommitmentSettingsR\x12commitmentSettings\x12k\n" +
+	"\x12provisioning_state\x18\r \x01(\x0e26.google.cloud.channel.v1.Entitlement.ProvisioningStateB\x04\xe2A\x01\x03R\x11provisioningState\x12b\n" +
+	"\x13provisioned_service\x18\x10 \x01(\v2+.google.cloud.channel.v1.ProvisionedServiceB\x04\xe2A\x01\x03R\x12provisionedService\x12j\n" +
+	"\x12suspension_reasons\x18\x12 \x03(\x0e25.google.cloud.channel.v1.Entitlement.SuspensionReasonB\x04\xe2A\x01\x03R\x11suspensionReasons\x120\n" +
+	"\x11purchase_order_id\x18\x13 \x01(\tB\x04\xe2A\x01\x01R\x0fpurchaseOrderId\x12S\n" +
+	"\x0etrial_settings\x18\x15 \x01(\v2&.google.cloud.channel.v1.TrialSettingsB\x04\xe2A\x01\x03R\rtrialSettings\x12S\n" +
 	"\x10association_info\x18\x17 \x01(\v2(.google.cloud.channel.v1.AssociationInfoR\x0fassociationInfo\x12B\n" +
 	"\n" +
 	"parameters\x18\x1a \x03(\v2\".google.cloud.channel.v1.ParameterR\n" +
-	"parameters\x12,\n" +
-	"\x0fbilling_account\x18\x1c \x01(\tB\x03\xe0A\x01R\x0ebillingAccount\x121\n" +
-	"\x12price_reference_id\x18\x1d \x01(\tB\x03\xe0A\x01R\x10priceReferenceId\"R\n" +
+	"parameters\x12-\n" +
+	"\x0fbilling_account\x18\x1c \x01(\tB\x04\xe2A\x01\x01R\x0ebillingAccount\x122\n" +
+	"\x12price_reference_id\x18\x1d \x01(\tB\x04\xe2A\x01\x01R\x10priceReferenceId\"R\n" +
 	"\x11ProvisioningState\x12\"\n" +
 	"\x1ePROVISIONING_STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -962,24 +962,24 @@ const file_google_cloud_channel_v1_entitlements_proto_rawDesc = "" +
 	"\x18RENEWAL_WITH_TYPE_CANCEL\x10\x03\x12\x1a\n" +
 	"\x16PENDING_TOS_ACCEPTANCE\x10\x04\x12\t\n" +
 	"\x05OTHER\x10d:p\xeaAm\n" +
-	"'cloudchannel.googleapis.com/Entitlement\x12Baccounts/{account}/customers/{customer}/entitlements/{entitlement}\"v\n" +
+	"'cloudchannel.googleapis.com/Entitlement\x12Baccounts/{account}/customers/{customer}/entitlements/{entitlement}\"w\n" +
 	"\tParameter\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x124\n" +
-	"\x05value\x18\x02 \x01(\v2\x1e.google.cloud.channel.v1.ValueR\x05value\x12\x1f\n" +
-	"\beditable\x18\x03 \x01(\bB\x03\xe0A\x03R\beditable\"j\n" +
+	"\x05value\x18\x02 \x01(\v2\x1e.google.cloud.channel.v1.ValueR\x05value\x12 \n" +
+	"\beditable\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\beditable\"j\n" +
 	"\x0fAssociationInfo\x12W\n" +
 	"\x10base_entitlement\x18\x01 \x01(\tB,\xfaA)\n" +
-	"'cloudchannel.googleapis.com/EntitlementR\x0fbaseEntitlement\"\x82\x01\n" +
-	"\x12ProvisionedService\x12,\n" +
-	"\x0fprovisioning_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x0eprovisioningId\x12\"\n" +
+	"'cloudchannel.googleapis.com/EntitlementR\x0fbaseEntitlement\"\x85\x01\n" +
+	"\x12ProvisionedService\x12-\n" +
+	"\x0fprovisioning_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0eprovisioningId\x12#\n" +
 	"\n" +
-	"product_id\x18\x02 \x01(\tB\x03\xe0A\x03R\tproductId\x12\x1a\n" +
-	"\x06sku_id\x18\x03 \x01(\tB\x03\xe0A\x03R\x05skuId\"\xea\x01\n" +
-	"\x12CommitmentSettings\x12>\n" +
+	"product_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tproductId\x12\x1b\n" +
+	"\x06sku_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x05skuId\"\xed\x01\n" +
+	"\x12CommitmentSettings\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12X\n" +
-	"\x10renewal_settings\x18\x04 \x01(\v2(.google.cloud.channel.v1.RenewalSettingsB\x03\xe0A\x01R\x0frenewalSettings\"\xf3\x01\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12Y\n" +
+	"\x10renewal_settings\x18\x04 \x01(\v2(.google.cloud.channel.v1.RenewalSettingsB\x04\xe2A\x01\x01R\x0frenewalSettings\"\xf3\x01\n" +
 	"\x0fRenewalSettings\x12%\n" +
 	"\x0eenable_renewal\x18\x01 \x01(\bR\renableRenewal\x12*\n" +
 	"\x11resize_unit_count\x18\x02 \x01(\bR\x0fresizeUnitCount\x12G\n" +
@@ -987,12 +987,12 @@ const file_google_cloud_channel_v1_entitlements_proto_rawDesc = "" +
 	"\rpayment_cycle\x18\x06 \x01(\v2\x1f.google.cloud.channel.v1.PeriodR\fpaymentCycle\"\\\n" +
 	"\rTrialSettings\x12\x14\n" +
 	"\x05trial\x18\x01 \x01(\bR\x05trial\x125\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xe4\x01\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xe5\x01\n" +
 	"\x0fTransferableSku\x12_\n" +
 	"\x14transfer_eligibility\x18\t \x01(\v2,.google.cloud.channel.v1.TransferEligibilityR\x13transferEligibility\x12.\n" +
-	"\x03sku\x18\v \x01(\v2\x1c.google.cloud.channel.v1.SkuR\x03sku\x12@\n" +
+	"\x03sku\x18\v \x01(\v2\x1c.google.cloud.channel.v1.SkuR\x03sku\x12A\n" +
 	"\n" +
-	"legacy_sku\x18\f \x01(\v2\x1c.google.cloud.channel.v1.SkuB\x03\xe0A\x01R\tlegacySku\"\xd4\x02\n" +
+	"legacy_sku\x18\f \x01(\v2\x1c.google.cloud.channel.v1.SkuB\x04\xe2A\x01\x01R\tlegacySku\"\xd4\x02\n" +
 	"\x13TransferEligibility\x12\x1f\n" +
 	"\vis_eligible\x18\x01 \x01(\bR\n" +
 	"isEligible\x12 \n" +

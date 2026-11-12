@@ -90,6 +90,11 @@ const (
 	DlpService_SearchConnections_FullMethodName          = "/google.privacy.dlp.v2.DlpService/SearchConnections"
 	DlpService_DeleteConnection_FullMethodName           = "/google.privacy.dlp.v2.DlpService/DeleteConnection"
 	DlpService_UpdateConnection_FullMethodName           = "/google.privacy.dlp.v2.DlpService/UpdateConnection"
+	DlpService_CreateContentPolicy_FullMethodName        = "/google.privacy.dlp.v2.DlpService/CreateContentPolicy"
+	DlpService_UpdateContentPolicy_FullMethodName        = "/google.privacy.dlp.v2.DlpService/UpdateContentPolicy"
+	DlpService_GetContentPolicy_FullMethodName           = "/google.privacy.dlp.v2.DlpService/GetContentPolicy"
+	DlpService_ListContentPolicies_FullMethodName        = "/google.privacy.dlp.v2.DlpService/ListContentPolicies"
+	DlpService_DeleteContentPolicy_FullMethodName        = "/google.privacy.dlp.v2.DlpService/DeleteContentPolicy"
 )
 
 // DlpServiceClient is the client API for DlpService service.
@@ -104,14 +109,14 @@ type DlpServiceClient interface {
 	// be all types, but may change over time as detectors are updated.
 	//
 	// For how to guides, see
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-images
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-images
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-text,
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-text,
 	InspectContent(ctx context.Context, in *InspectContentRequest, opts ...grpc.CallOption) (*InspectContentResponse, error)
 	// Redacts potentially sensitive info from an image.
 	// This method has limits on input size, processing time, and output size.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images
 	// to learn more.
 	//
 	// When no InfoTypes or CustomInfoTypes are specified in this request, the
@@ -124,7 +129,7 @@ type DlpServiceClient interface {
 	// De-identifies potentially sensitive info from a ContentItem.
 	// This method has limits on input size and output size.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data
 	// to learn more.
 	//
 	// When no InfoTypes or CustomInfoTypes are specified in this request, the
@@ -133,75 +138,75 @@ type DlpServiceClient interface {
 	DeidentifyContent(ctx context.Context, in *DeidentifyContentRequest, opts ...grpc.CallOption) (*DeidentifyContentResponse, error)
 	// Re-identifies content that has been de-identified.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example
 	// to learn more.
 	ReidentifyContent(ctx context.Context, in *ReidentifyContentRequest, opts ...grpc.CallOption) (*ReidentifyContentResponse, error)
 	// Returns a list of the sensitive information types that the DLP API
 	// supports. See
-	// https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/infotypes-reference
 	// to learn more.
 	ListInfoTypes(ctx context.Context, in *ListInfoTypesRequest, opts ...grpc.CallOption) (*ListInfoTypesResponse, error)
 	// Creates an InspectTemplate for reusing frequently used configuration
 	// for inspecting content, images, and storage.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	CreateInspectTemplate(ctx context.Context, in *CreateInspectTemplateRequest, opts ...grpc.CallOption) (*InspectTemplate, error)
 	// Updates the InspectTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	UpdateInspectTemplate(ctx context.Context, in *UpdateInspectTemplateRequest, opts ...grpc.CallOption) (*InspectTemplate, error)
 	// Gets an InspectTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	GetInspectTemplate(ctx context.Context, in *GetInspectTemplateRequest, opts ...grpc.CallOption) (*InspectTemplate, error)
 	// Lists InspectTemplates.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	ListInspectTemplates(ctx context.Context, in *ListInspectTemplatesRequest, opts ...grpc.CallOption) (*ListInspectTemplatesResponse, error)
 	// Deletes an InspectTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	DeleteInspectTemplate(ctx context.Context, in *DeleteInspectTemplateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a DeidentifyTemplate for reusing frequently used configuration
 	// for de-identifying content, images, and storage.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	CreateDeidentifyTemplate(ctx context.Context, in *CreateDeidentifyTemplateRequest, opts ...grpc.CallOption) (*DeidentifyTemplate, error)
 	// Updates the DeidentifyTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	UpdateDeidentifyTemplate(ctx context.Context, in *UpdateDeidentifyTemplateRequest, opts ...grpc.CallOption) (*DeidentifyTemplate, error)
 	// Gets a DeidentifyTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	GetDeidentifyTemplate(ctx context.Context, in *GetDeidentifyTemplateRequest, opts ...grpc.CallOption) (*DeidentifyTemplate, error)
 	// Lists DeidentifyTemplates.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	ListDeidentifyTemplates(ctx context.Context, in *ListDeidentifyTemplatesRequest, opts ...grpc.CallOption) (*ListDeidentifyTemplatesResponse, error)
 	// Deletes a DeidentifyTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	DeleteDeidentifyTemplate(ctx context.Context, in *DeleteDeidentifyTemplateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a job trigger to run DLP actions such as scanning storage for
 	// sensitive information on a set schedule.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	CreateJobTrigger(ctx context.Context, in *CreateJobTriggerRequest, opts ...grpc.CallOption) (*JobTrigger, error)
 	// Updates a job trigger.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	UpdateJobTrigger(ctx context.Context, in *UpdateJobTriggerRequest, opts ...grpc.CallOption) (*JobTrigger, error)
 	// Inspect hybrid content and store findings to a trigger. The inspection
@@ -210,17 +215,17 @@ type DlpServiceClient interface {
 	HybridInspectJobTrigger(ctx context.Context, in *HybridInspectJobTriggerRequest, opts ...grpc.CallOption) (*HybridInspectResponse, error)
 	// Gets a job trigger.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	GetJobTrigger(ctx context.Context, in *GetJobTriggerRequest, opts ...grpc.CallOption) (*JobTrigger, error)
 	// Lists job triggers.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	ListJobTriggers(ctx context.Context, in *ListJobTriggersRequest, opts ...grpc.CallOption) (*ListJobTriggersResponse, error)
 	// Deletes a job trigger.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	DeleteJobTrigger(ctx context.Context, in *DeleteJobTriggerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Activate a job trigger. Causes the immediate execute of a trigger
@@ -238,9 +243,9 @@ type DlpServiceClient interface {
 	DeleteDiscoveryConfig(ctx context.Context, in *DeleteDiscoveryConfigRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a new job to inspect storage or calculate risk metrics.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	//
 	// When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
@@ -249,60 +254,60 @@ type DlpServiceClient interface {
 	CreateDlpJob(ctx context.Context, in *CreateDlpJobRequest, opts ...grpc.CallOption) (*DlpJob, error)
 	// Lists DlpJobs that match the specified filter in the request.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	ListDlpJobs(ctx context.Context, in *ListDlpJobsRequest, opts ...grpc.CallOption) (*ListDlpJobsResponse, error)
 	// Gets the latest state of a long-running DlpJob.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	GetDlpJob(ctx context.Context, in *GetDlpJobRequest, opts ...grpc.CallOption) (*DlpJob, error)
 	// Deletes a long-running DlpJob. This method indicates that the client is
 	// no longer interested in the DlpJob result. The job will be canceled if
 	// possible.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	DeleteDlpJob(ctx context.Context, in *DeleteDlpJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Starts asynchronous cancellation on a long-running DlpJob. The server
 	// makes a best effort to cancel the DlpJob, but success is not
 	// guaranteed.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	CancelDlpJob(ctx context.Context, in *CancelDlpJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a pre-built stored infoType to be used for inspection.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	CreateStoredInfoType(ctx context.Context, in *CreateStoredInfoTypeRequest, opts ...grpc.CallOption) (*StoredInfoType, error)
 	// Updates the stored infoType by creating a new version. The existing version
 	// will continue to be used until the new version is ready.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	UpdateStoredInfoType(ctx context.Context, in *UpdateStoredInfoTypeRequest, opts ...grpc.CallOption) (*StoredInfoType, error)
 	// Gets a stored infoType.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	GetStoredInfoType(ctx context.Context, in *GetStoredInfoTypeRequest, opts ...grpc.CallOption) (*StoredInfoType, error)
 	// Lists stored infoTypes.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	ListStoredInfoTypes(ctx context.Context, in *ListStoredInfoTypesRequest, opts ...grpc.CallOption) (*ListStoredInfoTypesResponse, error)
 	// Deletes a stored infoType.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	DeleteStoredInfoType(ctx context.Context, in *DeleteStoredInfoTypeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Lists project data profiles for an organization.
@@ -347,6 +352,16 @@ type DlpServiceClient interface {
 	DeleteConnection(ctx context.Context, in *DeleteConnectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Update a Connection.
 	UpdateConnection(ctx context.Context, in *UpdateConnectionRequest, opts ...grpc.CallOption) (*Connection, error)
+	// Create a ContentPolicy.
+	CreateContentPolicy(ctx context.Context, in *CreateContentPolicyRequest, opts ...grpc.CallOption) (*ContentPolicy, error)
+	// Update a ContentPolicy.
+	UpdateContentPolicy(ctx context.Context, in *UpdateContentPolicyRequest, opts ...grpc.CallOption) (*ContentPolicy, error)
+	// Get a ContentPolicy.
+	GetContentPolicy(ctx context.Context, in *GetContentPolicyRequest, opts ...grpc.CallOption) (*ContentPolicy, error)
+	// Lists ContentPolicies in a parent.
+	ListContentPolicies(ctx context.Context, in *ListContentPoliciesRequest, opts ...grpc.CallOption) (*ListContentPoliciesResponse, error)
+	// Delete a ContentPolicy.
+	DeleteContentPolicy(ctx context.Context, in *DeleteContentPolicyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type dlpServiceClient struct {
@@ -852,6 +867,51 @@ func (c *dlpServiceClient) UpdateConnection(ctx context.Context, in *UpdateConne
 	return out, nil
 }
 
+func (c *dlpServiceClient) CreateContentPolicy(ctx context.Context, in *CreateContentPolicyRequest, opts ...grpc.CallOption) (*ContentPolicy, error) {
+	out := new(ContentPolicy)
+	err := c.cc.Invoke(ctx, DlpService_CreateContentPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dlpServiceClient) UpdateContentPolicy(ctx context.Context, in *UpdateContentPolicyRequest, opts ...grpc.CallOption) (*ContentPolicy, error) {
+	out := new(ContentPolicy)
+	err := c.cc.Invoke(ctx, DlpService_UpdateContentPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dlpServiceClient) GetContentPolicy(ctx context.Context, in *GetContentPolicyRequest, opts ...grpc.CallOption) (*ContentPolicy, error) {
+	out := new(ContentPolicy)
+	err := c.cc.Invoke(ctx, DlpService_GetContentPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dlpServiceClient) ListContentPolicies(ctx context.Context, in *ListContentPoliciesRequest, opts ...grpc.CallOption) (*ListContentPoliciesResponse, error) {
+	out := new(ListContentPoliciesResponse)
+	err := c.cc.Invoke(ctx, DlpService_ListContentPolicies_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dlpServiceClient) DeleteContentPolicy(ctx context.Context, in *DeleteContentPolicyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, DlpService_DeleteContentPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DlpServiceServer is the server API for DlpService service.
 // All implementations should embed UnimplementedDlpServiceServer
 // for forward compatibility
@@ -864,14 +924,14 @@ type DlpServiceServer interface {
 	// be all types, but may change over time as detectors are updated.
 	//
 	// For how to guides, see
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-images
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-images
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-text,
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-text,
 	InspectContent(context.Context, *InspectContentRequest) (*InspectContentResponse, error)
 	// Redacts potentially sensitive info from an image.
 	// This method has limits on input size, processing time, and output size.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images
 	// to learn more.
 	//
 	// When no InfoTypes or CustomInfoTypes are specified in this request, the
@@ -884,7 +944,7 @@ type DlpServiceServer interface {
 	// De-identifies potentially sensitive info from a ContentItem.
 	// This method has limits on input size and output size.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data
 	// to learn more.
 	//
 	// When no InfoTypes or CustomInfoTypes are specified in this request, the
@@ -893,75 +953,75 @@ type DlpServiceServer interface {
 	DeidentifyContent(context.Context, *DeidentifyContentRequest) (*DeidentifyContentResponse, error)
 	// Re-identifies content that has been de-identified.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example
 	// to learn more.
 	ReidentifyContent(context.Context, *ReidentifyContentRequest) (*ReidentifyContentResponse, error)
 	// Returns a list of the sensitive information types that the DLP API
 	// supports. See
-	// https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/infotypes-reference
 	// to learn more.
 	ListInfoTypes(context.Context, *ListInfoTypesRequest) (*ListInfoTypesResponse, error)
 	// Creates an InspectTemplate for reusing frequently used configuration
 	// for inspecting content, images, and storage.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	CreateInspectTemplate(context.Context, *CreateInspectTemplateRequest) (*InspectTemplate, error)
 	// Updates the InspectTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	UpdateInspectTemplate(context.Context, *UpdateInspectTemplateRequest) (*InspectTemplate, error)
 	// Gets an InspectTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	GetInspectTemplate(context.Context, *GetInspectTemplateRequest) (*InspectTemplate, error)
 	// Lists InspectTemplates.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	ListInspectTemplates(context.Context, *ListInspectTemplatesRequest) (*ListInspectTemplatesResponse, error)
 	// Deletes an InspectTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates
 	// to learn more.
 	DeleteInspectTemplate(context.Context, *DeleteInspectTemplateRequest) (*emptypb.Empty, error)
 	// Creates a DeidentifyTemplate for reusing frequently used configuration
 	// for de-identifying content, images, and storage.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	CreateDeidentifyTemplate(context.Context, *CreateDeidentifyTemplateRequest) (*DeidentifyTemplate, error)
 	// Updates the DeidentifyTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	UpdateDeidentifyTemplate(context.Context, *UpdateDeidentifyTemplateRequest) (*DeidentifyTemplate, error)
 	// Gets a DeidentifyTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	GetDeidentifyTemplate(context.Context, *GetDeidentifyTemplateRequest) (*DeidentifyTemplate, error)
 	// Lists DeidentifyTemplates.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	ListDeidentifyTemplates(context.Context, *ListDeidentifyTemplatesRequest) (*ListDeidentifyTemplatesResponse, error)
 	// Deletes a DeidentifyTemplate.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
 	// to learn more.
 	DeleteDeidentifyTemplate(context.Context, *DeleteDeidentifyTemplateRequest) (*emptypb.Empty, error)
 	// Creates a job trigger to run DLP actions such as scanning storage for
 	// sensitive information on a set schedule.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	CreateJobTrigger(context.Context, *CreateJobTriggerRequest) (*JobTrigger, error)
 	// Updates a job trigger.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	UpdateJobTrigger(context.Context, *UpdateJobTriggerRequest) (*JobTrigger, error)
 	// Inspect hybrid content and store findings to a trigger. The inspection
@@ -970,17 +1030,17 @@ type DlpServiceServer interface {
 	HybridInspectJobTrigger(context.Context, *HybridInspectJobTriggerRequest) (*HybridInspectResponse, error)
 	// Gets a job trigger.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	GetJobTrigger(context.Context, *GetJobTriggerRequest) (*JobTrigger, error)
 	// Lists job triggers.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	ListJobTriggers(context.Context, *ListJobTriggersRequest) (*ListJobTriggersResponse, error)
 	// Deletes a job trigger.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
 	// to learn more.
 	DeleteJobTrigger(context.Context, *DeleteJobTriggerRequest) (*emptypb.Empty, error)
 	// Activate a job trigger. Causes the immediate execute of a trigger
@@ -998,9 +1058,9 @@ type DlpServiceServer interface {
 	DeleteDiscoveryConfig(context.Context, *DeleteDiscoveryConfigRequest) (*emptypb.Empty, error)
 	// Creates a new job to inspect storage or calculate risk metrics.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	//
 	// When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
@@ -1009,60 +1069,60 @@ type DlpServiceServer interface {
 	CreateDlpJob(context.Context, *CreateDlpJobRequest) (*DlpJob, error)
 	// Lists DlpJobs that match the specified filter in the request.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	ListDlpJobs(context.Context, *ListDlpJobsRequest) (*ListDlpJobsResponse, error)
 	// Gets the latest state of a long-running DlpJob.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	GetDlpJob(context.Context, *GetDlpJobRequest) (*DlpJob, error)
 	// Deletes a long-running DlpJob. This method indicates that the client is
 	// no longer interested in the DlpJob result. The job will be canceled if
 	// possible.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	DeleteDlpJob(context.Context, *DeleteDlpJobRequest) (*emptypb.Empty, error)
 	// Starts asynchronous cancellation on a long-running DlpJob. The server
 	// makes a best effort to cancel the DlpJob, but success is not
 	// guaranteed.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/inspecting-storage
 	// and
-	// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
 	// to learn more.
 	CancelDlpJob(context.Context, *CancelDlpJobRequest) (*emptypb.Empty, error)
 	// Creates a pre-built stored infoType to be used for inspection.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	CreateStoredInfoType(context.Context, *CreateStoredInfoTypeRequest) (*StoredInfoType, error)
 	// Updates the stored infoType by creating a new version. The existing version
 	// will continue to be used until the new version is ready.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	UpdateStoredInfoType(context.Context, *UpdateStoredInfoTypeRequest) (*StoredInfoType, error)
 	// Gets a stored infoType.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	GetStoredInfoType(context.Context, *GetStoredInfoTypeRequest) (*StoredInfoType, error)
 	// Lists stored infoTypes.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	ListStoredInfoTypes(context.Context, *ListStoredInfoTypesRequest) (*ListStoredInfoTypesResponse, error)
 	// Deletes a stored infoType.
 	// See
-	// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
 	// to learn more.
 	DeleteStoredInfoType(context.Context, *DeleteStoredInfoTypeRequest) (*emptypb.Empty, error)
 	// Lists project data profiles for an organization.
@@ -1107,6 +1167,16 @@ type DlpServiceServer interface {
 	DeleteConnection(context.Context, *DeleteConnectionRequest) (*emptypb.Empty, error)
 	// Update a Connection.
 	UpdateConnection(context.Context, *UpdateConnectionRequest) (*Connection, error)
+	// Create a ContentPolicy.
+	CreateContentPolicy(context.Context, *CreateContentPolicyRequest) (*ContentPolicy, error)
+	// Update a ContentPolicy.
+	UpdateContentPolicy(context.Context, *UpdateContentPolicyRequest) (*ContentPolicy, error)
+	// Get a ContentPolicy.
+	GetContentPolicy(context.Context, *GetContentPolicyRequest) (*ContentPolicy, error)
+	// Lists ContentPolicies in a parent.
+	ListContentPolicies(context.Context, *ListContentPoliciesRequest) (*ListContentPoliciesResponse, error)
+	// Delete a ContentPolicy.
+	DeleteContentPolicy(context.Context, *DeleteContentPolicyRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedDlpServiceServer should be embedded to have forward compatible implementations.
@@ -1277,6 +1347,21 @@ func (UnimplementedDlpServiceServer) DeleteConnection(context.Context, *DeleteCo
 }
 func (UnimplementedDlpServiceServer) UpdateConnection(context.Context, *UpdateConnectionRequest) (*Connection, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateConnection not implemented")
+}
+func (UnimplementedDlpServiceServer) CreateContentPolicy(context.Context, *CreateContentPolicyRequest) (*ContentPolicy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateContentPolicy not implemented")
+}
+func (UnimplementedDlpServiceServer) UpdateContentPolicy(context.Context, *UpdateContentPolicyRequest) (*ContentPolicy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateContentPolicy not implemented")
+}
+func (UnimplementedDlpServiceServer) GetContentPolicy(context.Context, *GetContentPolicyRequest) (*ContentPolicy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetContentPolicy not implemented")
+}
+func (UnimplementedDlpServiceServer) ListContentPolicies(context.Context, *ListContentPoliciesRequest) (*ListContentPoliciesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListContentPolicies not implemented")
+}
+func (UnimplementedDlpServiceServer) DeleteContentPolicy(context.Context, *DeleteContentPolicyRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteContentPolicy not implemented")
 }
 
 // UnsafeDlpServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -2280,6 +2365,96 @@ func _DlpService_UpdateConnection_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DlpService_CreateContentPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateContentPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DlpServiceServer).CreateContentPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DlpService_CreateContentPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DlpServiceServer).CreateContentPolicy(ctx, req.(*CreateContentPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DlpService_UpdateContentPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateContentPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DlpServiceServer).UpdateContentPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DlpService_UpdateContentPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DlpServiceServer).UpdateContentPolicy(ctx, req.(*UpdateContentPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DlpService_GetContentPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetContentPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DlpServiceServer).GetContentPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DlpService_GetContentPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DlpServiceServer).GetContentPolicy(ctx, req.(*GetContentPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DlpService_ListContentPolicies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListContentPoliciesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DlpServiceServer).ListContentPolicies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DlpService_ListContentPolicies_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DlpServiceServer).ListContentPolicies(ctx, req.(*ListContentPoliciesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DlpService_DeleteContentPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteContentPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DlpServiceServer).DeleteContentPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DlpService_DeleteContentPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DlpServiceServer).DeleteContentPolicy(ctx, req.(*DeleteContentPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DlpService_ServiceDesc is the grpc.ServiceDesc for DlpService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2506,6 +2681,26 @@ var DlpService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateConnection",
 			Handler:    _DlpService_UpdateConnection_Handler,
+		},
+		{
+			MethodName: "CreateContentPolicy",
+			Handler:    _DlpService_CreateContentPolicy_Handler,
+		},
+		{
+			MethodName: "UpdateContentPolicy",
+			Handler:    _DlpService_UpdateContentPolicy_Handler,
+		},
+		{
+			MethodName: "GetContentPolicy",
+			Handler:    _DlpService_GetContentPolicy_Handler,
+		},
+		{
+			MethodName: "ListContentPolicies",
+			Handler:    _DlpService_ListContentPolicies_Handler,
+		},
+		{
+			MethodName: "DeleteContentPolicy",
+			Handler:    _DlpService_DeleteContentPolicy_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

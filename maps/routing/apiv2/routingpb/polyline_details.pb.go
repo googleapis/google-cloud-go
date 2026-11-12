@@ -515,7 +515,7 @@ var File_google_maps_routing_v2_polyline_details_proto protoreflect.FileDescript
 
 const file_google_maps_routing_v2_polyline_details_proto_rawDesc = "" +
 	"\n" +
-	"-google/maps/routing/v2/polyline_details.proto\x12\x16google.maps.routing.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x98\x0e\n" +
+	"-google/maps/routing/v2/polyline_details.proto\x12\x16google.maps.routing.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x9a\x0e\n" +
 	"\x0fPolylineDetails\x12S\n" +
 	"\vtunnel_info\x18\b \x03(\v22.google.maps.routing.v2.PolylineDetails.TunnelInfoR\n" +
 	"tunnelInfo\x12V\n" +
@@ -543,12 +543,12 @@ const file_google_maps_routing_v2_polyline_details_proto_rawDesc = "" +
 	"\n" +
 	"SkywayInfo\x12a\n" +
 	"\x0fskyway_presence\x18\x01 \x01(\x0e28.google.maps.routing.v2.PolylineDetails.RoadFeatureStateR\x0eskywayPresence\x12l\n" +
-	"\x14polyline_point_index\x18\x02 \x01(\v2:.google.maps.routing.v2.PolylineDetails.PolylinePointIndexR\x12polylinePointIndex\x1a\xe5\x01\n" +
-	"\vFlyoverInfo\x12h\n" +
-	"\x10flyover_presence\x18\x01 \x01(\x0e28.google.maps.routing.v2.PolylineDetails.RoadFeatureStateB\x03\xe0A\x03R\x0fflyoverPresence\x12l\n" +
-	"\x14polyline_point_index\x18\x02 \x01(\v2:.google.maps.routing.v2.PolylineDetails.PolylinePointIndexR\x12polylinePointIndex\x1a\xef\x01\n" +
-	"\x0eNarrowRoadInfo\x12o\n" +
-	"\x14narrow_road_presence\x18\x01 \x01(\x0e28.google.maps.routing.v2.PolylineDetails.RoadFeatureStateB\x03\xe0A\x03R\x12narrowRoadPresence\x12l\n" +
+	"\x14polyline_point_index\x18\x02 \x01(\v2:.google.maps.routing.v2.PolylineDetails.PolylinePointIndexR\x12polylinePointIndex\x1a\xe6\x01\n" +
+	"\vFlyoverInfo\x12i\n" +
+	"\x10flyover_presence\x18\x01 \x01(\x0e28.google.maps.routing.v2.PolylineDetails.RoadFeatureStateB\x04\xe2A\x01\x03R\x0fflyoverPresence\x12l\n" +
+	"\x14polyline_point_index\x18\x02 \x01(\v2:.google.maps.routing.v2.PolylineDetails.PolylinePointIndexR\x12polylinePointIndex\x1a\xf0\x01\n" +
+	"\x0eNarrowRoadInfo\x12p\n" +
+	"\x14narrow_road_presence\x18\x01 \x01(\x0e28.google.maps.routing.v2.PolylineDetails.RoadFeatureStateB\x04\xe2A\x01\x03R\x12narrowRoadPresence\x12l\n" +
 	"\x14polyline_point_index\x18\x02 \x01(\v2:.google.maps.routing.v2.PolylineDetails.PolylinePointIndexR\x12polylinePointIndex\"V\n" +
 	"\x10RoadFeatureState\x12\"\n" +
 	"\x1eROAD_FEATURE_STATE_UNSPECIFIED\x10\x00\x12\n" +

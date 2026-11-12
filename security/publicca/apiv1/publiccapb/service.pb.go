@@ -103,10 +103,10 @@ var File_google_cloud_security_publicca_v1_service_proto protoreflect.FileDescri
 
 const file_google_cloud_security_publicca_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/security/publicca/v1/service.proto\x12!google.cloud.security.publicca.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/security/publicca/v1/resources.proto\"\xdb\x01\n" +
-	"\x1fCreateExternalAccountKeyRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*publicca.googleapis.com/ExternalAccountKeyR\x06parent\x12l\n" +
-	"\x14external_account_key\x18\x02 \x01(\v25.google.cloud.security.publicca.v1.ExternalAccountKeyB\x03\xe0A\x02R\x12externalAccountKey2\xfd\x02\n" +
+	"/google/cloud/security/publicca/v1/service.proto\x12!google.cloud.security.publicca.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/security/publicca/v1/resources.proto\"\xdd\x01\n" +
+	"\x1fCreateExternalAccountKeyRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*publicca.googleapis.com/ExternalAccountKeyR\x06parent\x12m\n" +
+	"\x14external_account_key\x18\x02 \x01(\v25.google.cloud.security.publicca.v1.ExternalAccountKeyB\x04\xe2A\x01\x02R\x12externalAccountKey2\xfd\x02\n" +
 	"!PublicCertificateAuthorityService\x12\x8a\x02\n" +
 	"\x18CreateExternalAccountKey\x12B.google.cloud.security.publicca.v1.CreateExternalAccountKeyRequest\x1a5.google.cloud.security.publicca.v1.ExternalAccountKey\"s\xdaA\x1bparent,external_account_key\x82\xd3\xe4\x93\x02O:\x14external_account_key\"7/v1/{parent=projects/*/locations/*}/externalAccountKeys\x1aK\xcaA\x17publicca.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xea\x01\n" +
 	"%com.google.cloud.security.publicca.v1B\fServiceProtoP\x01ZAcloud.google.com/go/security/publicca/apiv1/publiccapb;publiccapb\xaa\x02!Google.Cloud.Security.PublicCA.V1\xca\x02!Google\\Cloud\\Security\\PublicCA\\V1\xea\x02%Google::Cloud::Security::PublicCA::V1b\x06proto3"

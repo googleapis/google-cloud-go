@@ -276,6 +276,43 @@ func NewTripClient(ctx context.Context, opts ...option.ClientOption) (*TripClien
 		client.CallOptions.SearchTrips = append(client.CallOptions.SearchTrips, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateTrip = append(client.CallOptions.UpdateTrip, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "fleetengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/fleetengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "fleetengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTrip = append(client.CallOptions.CreateTrip, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTrip = append(client.CallOptions.GetTrip, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTrip = append(client.CallOptions.DeleteTrip, gax.WithClientTracing(tracing))
+		client.CallOptions.ReportBillableTrip = append(client.CallOptions.ReportBillableTrip, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchTrips = append(client.CallOptions.SearchTrips, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTrip = append(client.CallOptions.UpdateTrip, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "fleetengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/fleetengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "fleetengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTrip = append(client.CallOptions.CreateTrip, gax.WithClientLogging(logging))
+		client.CallOptions.GetTrip = append(client.CallOptions.GetTrip, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTrip = append(client.CallOptions.DeleteTrip, gax.WithClientLogging(logging))
+		client.CallOptions.ReportBillableTrip = append(client.CallOptions.ReportBillableTrip, gax.WithClientLogging(logging))
+		client.CallOptions.SearchTrips = append(client.CallOptions.SearchTrips, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTrip = append(client.CallOptions.UpdateTrip, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -321,9 +358,6 @@ func (c *tripGRPCClient) CreateTrip(ctx context.Context, req *fleetenginepb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.TripService/CreateTrip")
 	}
@@ -354,9 +388,6 @@ func (c *tripGRPCClient) GetTrip(ctx context.Context, req *fleetenginepb.GetTrip
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.TripService/GetTrip")
 	}
@@ -387,9 +418,6 @@ func (c *tripGRPCClient) DeleteTrip(ctx context.Context, req *fleetenginepb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.TripService/DeleteTrip")
 	}

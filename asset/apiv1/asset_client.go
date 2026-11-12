@@ -974,6 +974,79 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.AnalyzeOrgPolicyGovernedAssets = append(client.CallOptions.AnalyzeOrgPolicyGovernedAssets, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExportAssets = append(client.CallOptions.ExportAssets, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchGetAssetsHistory = append(client.CallOptions.BatchGetAssetsHistory, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFeed = append(client.CallOptions.CreateFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFeed = append(client.CallOptions.GetFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFeeds = append(client.CallOptions.ListFeeds, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFeed = append(client.CallOptions.UpdateFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFeed = append(client.CallOptions.DeleteFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchAllResources = append(client.CallOptions.SearchAllResources, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchAllIamPolicies = append(client.CallOptions.SearchAllIamPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.AnalyzeIamPolicy = append(client.CallOptions.AnalyzeIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.AnalyzeIamPolicyLongrunning = append(client.CallOptions.AnalyzeIamPolicyLongrunning, gax.WithClientTracing(tracing))
+		client.CallOptions.AnalyzeMove = append(client.CallOptions.AnalyzeMove, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryAssets = append(client.CallOptions.QueryAssets, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSavedQuery = append(client.CallOptions.CreateSavedQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSavedQuery = append(client.CallOptions.GetSavedQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSavedQueries = append(client.CallOptions.ListSavedQueries, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSavedQuery = append(client.CallOptions.UpdateSavedQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSavedQuery = append(client.CallOptions.DeleteSavedQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchGetEffectiveIamPolicies = append(client.CallOptions.BatchGetEffectiveIamPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.AnalyzeOrgPolicies = append(client.CallOptions.AnalyzeOrgPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.AnalyzeOrgPolicyGovernedContainers = append(client.CallOptions.AnalyzeOrgPolicyGovernedContainers, gax.WithClientTracing(tracing))
+		client.CallOptions.AnalyzeOrgPolicyGovernedAssets = append(client.CallOptions.AnalyzeOrgPolicyGovernedAssets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExportAssets = append(client.CallOptions.ExportAssets, gax.WithClientLogging(logging))
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientLogging(logging))
+		client.CallOptions.BatchGetAssetsHistory = append(client.CallOptions.BatchGetAssetsHistory, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFeed = append(client.CallOptions.CreateFeed, gax.WithClientLogging(logging))
+		client.CallOptions.GetFeed = append(client.CallOptions.GetFeed, gax.WithClientLogging(logging))
+		client.CallOptions.ListFeeds = append(client.CallOptions.ListFeeds, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFeed = append(client.CallOptions.UpdateFeed, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFeed = append(client.CallOptions.DeleteFeed, gax.WithClientLogging(logging))
+		client.CallOptions.SearchAllResources = append(client.CallOptions.SearchAllResources, gax.WithClientLogging(logging))
+		client.CallOptions.SearchAllIamPolicies = append(client.CallOptions.SearchAllIamPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.AnalyzeIamPolicy = append(client.CallOptions.AnalyzeIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.AnalyzeIamPolicyLongrunning = append(client.CallOptions.AnalyzeIamPolicyLongrunning, gax.WithClientLogging(logging))
+		client.CallOptions.AnalyzeMove = append(client.CallOptions.AnalyzeMove, gax.WithClientLogging(logging))
+		client.CallOptions.QueryAssets = append(client.CallOptions.QueryAssets, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSavedQuery = append(client.CallOptions.CreateSavedQuery, gax.WithClientLogging(logging))
+		client.CallOptions.GetSavedQuery = append(client.CallOptions.GetSavedQuery, gax.WithClientLogging(logging))
+		client.CallOptions.ListSavedQueries = append(client.CallOptions.ListSavedQueries, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSavedQuery = append(client.CallOptions.UpdateSavedQuery, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSavedQuery = append(client.CallOptions.DeleteSavedQuery, gax.WithClientLogging(logging))
+		client.CallOptions.BatchGetEffectiveIamPolicies = append(client.CallOptions.BatchGetEffectiveIamPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.AnalyzeOrgPolicies = append(client.CallOptions.AnalyzeOrgPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.AnalyzeOrgPolicyGovernedContainers = append(client.CallOptions.AnalyzeOrgPolicyGovernedContainers, gax.WithClientLogging(logging))
+		client.CallOptions.AnalyzeOrgPolicyGovernedAssets = append(client.CallOptions.AnalyzeOrgPolicyGovernedAssets, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1104,6 +1177,79 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.AnalyzeOrgPolicyGovernedAssets = append(callOpts.AnalyzeOrgPolicyGovernedAssets, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		callOpts.ExportAssets = append(callOpts.ExportAssets, gax.WithClientTracing(tracing))
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientTracing(tracing))
+		callOpts.BatchGetAssetsHistory = append(callOpts.BatchGetAssetsHistory, gax.WithClientTracing(tracing))
+		callOpts.CreateFeed = append(callOpts.CreateFeed, gax.WithClientTracing(tracing))
+		callOpts.GetFeed = append(callOpts.GetFeed, gax.WithClientTracing(tracing))
+		callOpts.ListFeeds = append(callOpts.ListFeeds, gax.WithClientTracing(tracing))
+		callOpts.UpdateFeed = append(callOpts.UpdateFeed, gax.WithClientTracing(tracing))
+		callOpts.DeleteFeed = append(callOpts.DeleteFeed, gax.WithClientTracing(tracing))
+		callOpts.SearchAllResources = append(callOpts.SearchAllResources, gax.WithClientTracing(tracing))
+		callOpts.SearchAllIamPolicies = append(callOpts.SearchAllIamPolicies, gax.WithClientTracing(tracing))
+		callOpts.AnalyzeIamPolicy = append(callOpts.AnalyzeIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.AnalyzeIamPolicyLongrunning = append(callOpts.AnalyzeIamPolicyLongrunning, gax.WithClientTracing(tracing))
+		callOpts.AnalyzeMove = append(callOpts.AnalyzeMove, gax.WithClientTracing(tracing))
+		callOpts.QueryAssets = append(callOpts.QueryAssets, gax.WithClientTracing(tracing))
+		callOpts.CreateSavedQuery = append(callOpts.CreateSavedQuery, gax.WithClientTracing(tracing))
+		callOpts.GetSavedQuery = append(callOpts.GetSavedQuery, gax.WithClientTracing(tracing))
+		callOpts.ListSavedQueries = append(callOpts.ListSavedQueries, gax.WithClientTracing(tracing))
+		callOpts.UpdateSavedQuery = append(callOpts.UpdateSavedQuery, gax.WithClientTracing(tracing))
+		callOpts.DeleteSavedQuery = append(callOpts.DeleteSavedQuery, gax.WithClientTracing(tracing))
+		callOpts.BatchGetEffectiveIamPolicies = append(callOpts.BatchGetEffectiveIamPolicies, gax.WithClientTracing(tracing))
+		callOpts.AnalyzeOrgPolicies = append(callOpts.AnalyzeOrgPolicies, gax.WithClientTracing(tracing))
+		callOpts.AnalyzeOrgPolicyGovernedContainers = append(callOpts.AnalyzeOrgPolicyGovernedContainers, gax.WithClientTracing(tracing))
+		callOpts.AnalyzeOrgPolicyGovernedAssets = append(callOpts.AnalyzeOrgPolicyGovernedAssets, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		callOpts.ExportAssets = append(callOpts.ExportAssets, gax.WithClientLogging(logging))
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientLogging(logging))
+		callOpts.BatchGetAssetsHistory = append(callOpts.BatchGetAssetsHistory, gax.WithClientLogging(logging))
+		callOpts.CreateFeed = append(callOpts.CreateFeed, gax.WithClientLogging(logging))
+		callOpts.GetFeed = append(callOpts.GetFeed, gax.WithClientLogging(logging))
+		callOpts.ListFeeds = append(callOpts.ListFeeds, gax.WithClientLogging(logging))
+		callOpts.UpdateFeed = append(callOpts.UpdateFeed, gax.WithClientLogging(logging))
+		callOpts.DeleteFeed = append(callOpts.DeleteFeed, gax.WithClientLogging(logging))
+		callOpts.SearchAllResources = append(callOpts.SearchAllResources, gax.WithClientLogging(logging))
+		callOpts.SearchAllIamPolicies = append(callOpts.SearchAllIamPolicies, gax.WithClientLogging(logging))
+		callOpts.AnalyzeIamPolicy = append(callOpts.AnalyzeIamPolicy, gax.WithClientLogging(logging))
+		callOpts.AnalyzeIamPolicyLongrunning = append(callOpts.AnalyzeIamPolicyLongrunning, gax.WithClientLogging(logging))
+		callOpts.AnalyzeMove = append(callOpts.AnalyzeMove, gax.WithClientLogging(logging))
+		callOpts.QueryAssets = append(callOpts.QueryAssets, gax.WithClientLogging(logging))
+		callOpts.CreateSavedQuery = append(callOpts.CreateSavedQuery, gax.WithClientLogging(logging))
+		callOpts.GetSavedQuery = append(callOpts.GetSavedQuery, gax.WithClientLogging(logging))
+		callOpts.ListSavedQueries = append(callOpts.ListSavedQueries, gax.WithClientLogging(logging))
+		callOpts.UpdateSavedQuery = append(callOpts.UpdateSavedQuery, gax.WithClientLogging(logging))
+		callOpts.DeleteSavedQuery = append(callOpts.DeleteSavedQuery, gax.WithClientLogging(logging))
+		callOpts.BatchGetEffectiveIamPolicies = append(callOpts.BatchGetEffectiveIamPolicies, gax.WithClientLogging(logging))
+		callOpts.AnalyzeOrgPolicies = append(callOpts.AnalyzeOrgPolicies, gax.WithClientLogging(logging))
+		callOpts.AnalyzeOrgPolicyGovernedContainers = append(callOpts.AnalyzeOrgPolicyGovernedContainers, gax.WithClientLogging(logging))
+		callOpts.AnalyzeOrgPolicyGovernedAssets = append(callOpts.AnalyzeOrgPolicyGovernedAssets, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1160,9 +1306,6 @@ func (c *gRPCClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/ExportAssets")
 	}
@@ -1190,9 +1333,6 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/ListAssets")
 	}
@@ -1242,9 +1382,6 @@ func (c *gRPCClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/BatchGetAssetsHistory")
 	}
@@ -1287,9 +1424,6 @@ func (c *gRPCClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/GetFeed")
 	}
@@ -1353,9 +1487,6 @@ func (c *gRPCClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/DeleteFeed")
 	}
@@ -1519,9 +1650,6 @@ func (c *gRPCClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/AnalyzeMove")
 	}
@@ -1543,9 +1671,6 @@ func (c *gRPCClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/QueryAssets")
 	}
@@ -1567,9 +1692,6 @@ func (c *gRPCClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/CreateSavedQuery")
 	}
@@ -1591,9 +1713,6 @@ func (c *gRPCClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQue
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/GetSavedQuery")
 	}
@@ -1615,9 +1734,6 @@ func (c *gRPCClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/ListSavedQueries")
 	}
@@ -1688,9 +1804,6 @@ func (c *gRPCClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/DeleteSavedQuery")
 	}
@@ -1708,9 +1821,6 @@ func (c *gRPCClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetScope()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/BatchGetEffectiveIamPolicies")
 	}
@@ -1917,6 +2027,11 @@ func (c *restClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportAssets", req.GetParent())
 
 	params := url.Values{}
@@ -1930,9 +2045,6 @@ func (c *restClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/ExportAssets")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=*/*}:exportAssets")
@@ -1993,6 +2105,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/assets", req.GetParent())
@@ -2086,6 +2203,11 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:batchGetAssetsHistory", req.GetParent())
 
 	params := url.Values{}
@@ -2126,9 +2248,6 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/BatchGetAssetsHistory")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=*/*}:batchGetAssetsHistory")
@@ -2175,6 +2294,11 @@ func (c *restClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/feeds", req.GetParent())
@@ -2231,6 +2355,11 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2244,9 +2373,6 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/GetFeed")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=*/*/feeds/*}")
@@ -2286,6 +2412,11 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 func (c *restClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsRequest, opts ...gax.CallOption) (*assetpb.ListFeedsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/feeds", req.GetParent())
@@ -2348,6 +2479,11 @@ func (c *restClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFeed().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFeed().GetName())
 
 	params := url.Values{}
@@ -2402,6 +2538,11 @@ func (c *restClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2415,9 +2556,6 @@ func (c *restClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/DeleteFeed")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=*/*/feeds/*}")
@@ -2458,6 +2596,11 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchAllResources", req.GetScope())
@@ -2559,6 +2702,11 @@ func (c *restClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchAllIamPolicies", req.GetScope())
 
 		params := url.Values{}
@@ -2634,6 +2782,11 @@ func (c *restClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPolicyRequest, opts ...gax.CallOption) (*assetpb.AnalyzeIamPolicyResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAnalysisQuery().GetScope(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeIamPolicy", req.GetAnalysisQuery().GetScope())
@@ -2752,6 +2905,11 @@ func (c *restClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAnalysisQuery().GetScope(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeIamPolicyLongrunning", req.GetAnalysisQuery().GetScope())
 
 	params := url.Values{}
@@ -2817,6 +2975,11 @@ func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeMove", req.GetResource())
 
 	params := url.Values{}
@@ -2834,9 +2997,6 @@ func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/AnalyzeMove")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=*/*}:analyzeMove")
@@ -2895,6 +3055,11 @@ func (c *restClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:queryAssets", req.GetParent())
 
 	params := url.Values{}
@@ -2908,9 +3073,6 @@ func (c *restClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/QueryAssets")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=*/*}:queryAssets")
@@ -2959,6 +3121,11 @@ func (c *restClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/savedQueries", req.GetParent())
 
 	params := url.Values{}
@@ -2973,9 +3140,6 @@ func (c *restClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/CreateSavedQuery")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=*/*}/savedQueries")
@@ -3017,6 +3181,11 @@ func (c *restClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQue
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3030,9 +3199,6 @@ func (c *restClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQue
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/GetSavedQuery")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=*/*/savedQueries/*}")
@@ -3085,6 +3251,11 @@ func (c *restClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/savedQueries", req.GetParent())
@@ -3162,6 +3333,11 @@ func (c *restClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSavedQuery().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSavedQuery().GetName())
 
 	params := url.Values{}
@@ -3223,6 +3399,11 @@ func (c *restClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3236,9 +3417,6 @@ func (c *restClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/DeleteSavedQuery")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=*/*/savedQueries/*}")
@@ -3265,6 +3443,11 @@ func (c *restClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetScope(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/effectiveIamPolicies:batchGet", req.GetScope())
 
 	params := url.Values{}
@@ -3283,9 +3466,6 @@ func (c *restClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetScope()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1.AssetService/BatchGetEffectiveIamPolicies")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{scope=*/*}/effectiveIamPolicies:batchGet")
@@ -3338,6 +3518,11 @@ func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeOrgPolicies", req.GetScope())
@@ -3421,6 +3606,11 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeOrgPolicyGovernedContainers", req.GetScope())
@@ -3593,6 +3783,11 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeOrgPolicyGovernedAssets", req.GetScope())
 
 		params := url.Values{}
@@ -3660,6 +3855,11 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

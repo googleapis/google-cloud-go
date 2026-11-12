@@ -56,16 +56,28 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &apptopologypb.GenerateDiscoveredResourcesTopologyRequest{
+//	req := &apptopologypb.ExploreSchemaRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/apptopology/apiv1/apptopologypb#GenerateDiscoveredResourcesTopologyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/apptopology/apiv1/apptopologypb#ExploreSchemaRequest.
 //	}
-//	resp, err := c.GenerateDiscoveredResourcesTopology(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
+//	it := c.ExploreSchema(ctx, req)
+//	for {
+//		resp, err := it.Next()
+//		if err == iterator.Done {
+//			break
+//		}
+//		if err != nil {
+//			// TODO: Handle error.
+//		}
+//		// TODO: Use resp.
+//		_ = resp
+//
+//		// If you need to access the underlying RPC response,
+//		// you can do so by casting the `Response` as below.
+//		// Otherwise, remove this line. Only populated after
+//		// first call to Next(). Not safe for concurrent access.
+//		_ = it.Response.(*apptopologypb.ExploreSchemaResponse)
 //	}
-//	// TODO: Use resp.
-//	_ = resp
 //
 // # Use of Context
 //

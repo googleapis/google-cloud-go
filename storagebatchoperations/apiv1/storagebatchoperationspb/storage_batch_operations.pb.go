@@ -778,63 +778,63 @@ var File_google_cloud_storagebatchoperations_v1_storage_batch_operations_proto p
 
 const file_google_cloud_storagebatchoperations_v1_storage_batch_operations_proto_rawDesc = "" +
 	"\n" +
-	"Egoogle/cloud/storagebatchoperations/v1/storage_batch_operations.proto\x12&google.cloud.storagebatchoperations.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1aKgoogle/cloud/storagebatchoperations/v1/storage_batch_operations_types.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x01\n" +
-	"\x0fListJobsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)storagebatchoperations.googleapis.com/JobR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Egoogle/cloud/storagebatchoperations/v1/storage_batch_operations.proto\x12&google.cloud.storagebatchoperations.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1aKgoogle/cloud/storagebatchoperations/v1/storage_batch_operations_types.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe4\x01\n" +
+	"\x0fListJobsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)storagebatchoperations.googleapis.com/JobR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9d\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x9d\x01\n" +
 	"\x10ListJobsResponse\x12?\n" +
 	"\x04jobs\x18\x01 \x03(\v2+.google.cloud.storagebatchoperations.v1.JobR\x04jobs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"V\n" +
-	"\rGetJobRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")storagebatchoperations.googleapis.com/JobR\x04name\"\xe9\x01\n" +
-	"\x10CreateJobRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)storagebatchoperations.googleapis.com/JobR\x06parent\x12\x1a\n" +
-	"\x06job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05jobId\x12B\n" +
-	"\x03job\x18\x03 \x01(\v2+.google.cloud.storagebatchoperations.v1.JobB\x03\xe0A\x02R\x03job\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
+	"\rGetJobRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")storagebatchoperations.googleapis.com/JobR\x04name\"\xed\x01\n" +
+	"\x10CreateJobRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)storagebatchoperations.googleapis.com/JobR\x06parent\x12\x1b\n" +
+	"\x06job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\x12C\n" +
+	"\x03job\x18\x03 \x01(\v2+.google.cloud.storagebatchoperations.v1.JobB\x04\xe2A\x01\x02R\x03job\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x85\x01\n" +
-	"\x10CancelJobRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")storagebatchoperations.googleapis.com/JobR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x87\x01\n" +
+	"\x10CancelJobRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")storagebatchoperations.googleapis.com/JobR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa0\x01\n" +
-	"\x10DeleteJobRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")storagebatchoperations.googleapis.com/JobR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa3\x01\n" +
+	"\x10DeleteJobRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")storagebatchoperations.googleapis.com/JobR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\x13\n" +
-	"\x11CancelJobResponse\"\xf7\x01\n" +
-	"\x1bListBucketOperationsRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125storagebatchoperations.googleapis.com/BucketOperationR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\x13\n" +
+	"\x11CancelJobResponse\"\xfc\x01\n" +
+	"\x1bListBucketOperationsRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125storagebatchoperations.googleapis.com/BucketOperationR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xce\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xce\x01\n" +
 	"\x1cListBucketOperationsResponse\x12d\n" +
 	"\x11bucket_operations\x18\x01 \x03(\v27.google.cloud.storagebatchoperations.v1.BucketOperationR\x10bucketOperations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"n\n" +
-	"\x19GetBucketOperationRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5storagebatchoperations.googleapis.com/BucketOperationR\x04name\"\xda\x02\n" +
-	"\x11OperationMetadata\x12!\n" +
-	"\toperation\x18\x01 \x01(\tB\x03\xe0A\x03R\toperation\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12:\n" +
-	"\x16requested_cancellation\x18\a \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\b \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\x12B\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"o\n" +
+	"\x19GetBucketOperationRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5storagebatchoperations.googleapis.com/BucketOperationR\x04name\"\xe0\x02\n" +
+	"\x11OperationMetadata\x12\"\n" +
+	"\toperation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\toperation\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12;\n" +
+	"\x16requested_cancellation\x18\a \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\x12C\n" +
 	"\x03job\x18\n" +
-	" \x01(\v2+.google.cloud.storagebatchoperations.v1.JobB\x03\xe0A\x03R\x03job2\xd3\v\n" +
+	" \x01(\v2+.google.cloud.storagebatchoperations.v1.JobB\x04\xe2A\x01\x03R\x03job2\xd3\v\n" +
 	"\x16StorageBatchOperations\x12\xb8\x01\n" +
 	"\bListJobs\x127.google.cloud.storagebatchoperations.v1.ListJobsRequest\x1a8.google.cloud.storagebatchoperations.v1.ListJobsResponse\"9\xdaA\x06parent\x82\xd3\xe4\x93\x02*\x12(/v1/{parent=projects/*/locations/*}/jobs\x12\xa5\x01\n" +
 	"\x06GetJob\x125.google.cloud.storagebatchoperations.v1.GetJobRequest\x1a+.google.cloud.storagebatchoperations.v1.Job\"7\xdaA\x04name\x82\xd3\xe4\x93\x02*\x12(/v1/{name=projects/*/locations/*/jobs/*}\x12\xca\x01\n" +

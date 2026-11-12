@@ -8,9 +8,238 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.33.0"
+    "version": "1.38.0"
   },
   "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AclConfigClient",
+          "shortName": "AclConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.AclConfigClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "AclConfigClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AclConfigService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AclConfigClient",
+          "shortName": "AclConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.AclConfigClient.GetAclConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.AclConfigService.GetAclConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.AclConfigService",
+            "shortName": "AclConfigService"
+          },
+          "shortName": "GetAclConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.GetAclConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.AclConfig",
+        "shortName": "GetAclConfig"
+      },
+      "description": "GetAclConfig gets the [AclConfig][google.cloud.discoveryengine.v1.AclConfig].",
+      "file": "AclConfigClient/GetAclConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AclConfigService_GetAclConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetAclConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AclConfigClient",
+          "shortName": "AclConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.AclConfigClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AclConfigClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AclConfigService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AclConfigClient",
+          "shortName": "AclConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.AclConfigClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AclConfigClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AclConfigService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AclConfigClient",
+          "shortName": "AclConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.AclConfigClient.UpdateAclConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.AclConfigService.UpdateAclConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.AclConfigService",
+            "shortName": "AclConfigService"
+          },
+          "shortName": "UpdateAclConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.UpdateAclConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.AclConfig",
+        "shortName": "UpdateAclConfig"
+      },
+      "description": "UpdateAclConfig default ACL configuration for use in a location of a customer's project.\nUpdates will only reflect to new data stores. Existing data stores will\nstill use the old value.",
+      "file": "AclConfigClient/UpdateAclConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AclConfigService_UpdateAclConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine UpdateAclConfig Sample"
+    },
     {
       "clientMethod": {
         "client": {
@@ -55,6 +284,143 @@
         }
       ],
       "title": "discoveryengine CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.AssistantClient.CreateAssistant",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantService.CreateAssistant",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "CreateAssistant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.CreateAssistantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Assistant",
+        "shortName": "CreateAssistant"
+      },
+      "description": "CreateAssistant creates an [Assistant][google.cloud.discoveryengine.v1.Assistant].",
+      "file": "AssistantClient/CreateAssistant/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AssistantService_CreateAssistant_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine CreateAssistant Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.AssistantClient.DeleteAssistant",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantService.DeleteAssistant",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "DeleteAssistant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.DeleteAssistantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteAssistant"
+      },
+      "description": "DeleteAssistant deletes an [Assistant][google.cloud.discoveryengine.v1.Assistant].",
+      "file": "AssistantClient/DeleteAssistant/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AssistantService_DeleteAssistant_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine DeleteAssistant Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.AssistantClient.GetAssistant",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantService.GetAssistant",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "GetAssistant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.GetAssistantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Assistant",
+        "shortName": "GetAssistant"
+      },
+      "description": "GetAssistant gets an [Assistant][google.cloud.discoveryengine.v1.Assistant].",
+      "file": "AssistantClient/GetAssistant/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AssistantService_GetAssistant_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetAssistant Sample"
     },
     {
       "clientMethod": {
@@ -108,6 +474,52 @@
           "fullName": "google.cloud.discoveryengine.v1.AssistantClient",
           "shortName": "AssistantClient"
         },
+        "fullName": "google.cloud.discoveryengine.v1.AssistantClient.ListAssistants",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantService.ListAssistants",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "ListAssistants"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.ListAssistantsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AssistantIterator",
+        "shortName": "ListAssistants"
+      },
+      "description": "ListAssistants lists all [Assistant][google.cloud.discoveryengine.v1.Assistant]s under an\n[Engine][google.cloud.discoveryengine.v1.Engine].",
+      "file": "AssistantClient/ListAssistants/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AssistantService_ListAssistants_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListAssistants Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantClient",
+          "shortName": "AssistantClient"
+        },
         "fullName": "google.cloud.discoveryengine.v1.AssistantClient.ListOperations",
         "method": {
           "fullName": "google.longrunning.Operations.ListOperations",
@@ -147,6 +559,52 @@
         }
       ],
       "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.AssistantClient.UpdateAssistant",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.AssistantService.UpdateAssistant",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "UpdateAssistant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.UpdateAssistantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Assistant",
+        "shortName": "UpdateAssistant"
+      },
+      "description": "UpdateAssistant updates an [Assistant][google.cloud.discoveryengine.v1.Assistant]",
+      "file": "AssistantClient/UpdateAssistant/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_AssistantService_UpdateAssistant_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine UpdateAssistant Sample"
     },
     {
       "clientMethod": {
@@ -468,6 +926,327 @@
         }
       ],
       "title": "discoveryengine UpdateCmekConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.CollectionClient",
+          "shortName": "CollectionClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.CollectionClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CollectionClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_CollectionService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.CollectionClient",
+          "shortName": "CollectionClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.CollectionClient.DeleteCollection",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.CollectionService.DeleteCollection",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.CollectionService",
+            "shortName": "CollectionService"
+          },
+          "shortName": "DeleteCollection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.DeleteCollectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteCollectionOperation",
+        "shortName": "DeleteCollection"
+      },
+      "description": "DeleteCollection deletes a [Collection][google.cloud.discoveryengine.v1.Collection].",
+      "file": "CollectionClient/DeleteCollection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_CollectionService_DeleteCollection_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine DeleteCollection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.CollectionClient",
+          "shortName": "CollectionClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.CollectionClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.CollectionService.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.CollectionService",
+            "shortName": "CollectionService"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the IAM access control policy for a\n[Collection][google.cloud.discoveryengine.v1.Collection]. A `NOT_FOUND`\nerror is returned if the resource does not exist. An empty policy is\nreturned if the resource exists but does not have a policy set on it.",
+      "file": "CollectionClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_CollectionService_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.CollectionClient",
+          "shortName": "CollectionClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.CollectionClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CollectionClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_CollectionService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.CollectionClient",
+          "shortName": "CollectionClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.CollectionClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CollectionClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_CollectionService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.CollectionClient",
+          "shortName": "CollectionClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.CollectionClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.CollectionService.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.CollectionService",
+            "shortName": "CollectionService"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the IAM access control policy for a\n[Collection][google.cloud.discoveryengine.v1.Collection]. A `NOT_FOUND`\nerror is returned if the resource does not exist.\n\n**Important: ** When setting a policy directly on a Collection resource,\nthe only recommended roles in the bindings are: \n`roles/discoveryengine.admin`\n`roles/discoveryengine.agentspaceAdmin`\n`roles/discoveryengine.viewer`\n`roles/discoveryengine.agentspaceViewer`\n`roles/discoveryengine.user`\n`roles/discoveryengine.agentspaceUser`\nAttempting to grant any other role will result in a warning in logging.",
+      "file": "CollectionClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_CollectionService_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.CompletionClient",
+          "shortName": "CompletionClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.CompletionClient.AdvancedCompleteQuery",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.CompletionService.AdvancedCompleteQuery",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.CompletionService",
+            "shortName": "CompletionService"
+          },
+          "shortName": "AdvancedCompleteQuery"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.AdvancedCompleteQueryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.AdvancedCompleteQueryResponse",
+        "shortName": "AdvancedCompleteQuery"
+      },
+      "description": "AdvancedCompleteQuery completes the user input with advanced keyword suggestions.",
+      "file": "CompletionClient/AdvancedCompleteQuery/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_CompletionService_AdvancedCompleteQuery_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine AdvancedCompleteQuery Sample"
     },
     {
       "clientMethod": {
@@ -1938,6 +2717,281 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient",
+          "shortName": "DataConnectorClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataConnectorClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_DataConnectorService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient",
+          "shortName": "DataConnectorClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient.GetDataConnector",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.DataConnectorService.GetDataConnector",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.DataConnectorService",
+            "shortName": "DataConnectorService"
+          },
+          "shortName": "GetDataConnector"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.GetDataConnectorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.DataConnector",
+        "shortName": "GetDataConnector"
+      },
+      "description": "GetDataConnector gets the [DataConnector][google.cloud.discoveryengine.v1.DataConnector].\n[DataConnector][google.cloud.discoveryengine.v1.DataConnector] is a\nsingleton resource for each\n[Collection][google.cloud.discoveryengine.v1.Collection].",
+      "file": "DataConnectorClient/GetDataConnector/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_DataConnectorService_GetDataConnector_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetDataConnector Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient",
+          "shortName": "DataConnectorClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataConnectorClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_DataConnectorService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient",
+          "shortName": "DataConnectorClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataConnectorClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_DataConnectorService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient",
+          "shortName": "DataConnectorClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient.SetUpDataConnector",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.DataConnectorService.SetUpDataConnector",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.DataConnectorService",
+            "shortName": "DataConnectorService"
+          },
+          "shortName": "SetUpDataConnector"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.SetUpDataConnectorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SetUpDataConnectorOperation",
+        "shortName": "SetUpDataConnector"
+      },
+      "description": "SetUpDataConnector creates a [Collection][google.cloud.discoveryengine.v1.Collection] and sets\nup the [DataConnector][google.cloud.discoveryengine.v1.DataConnector] for\nit. To stop a\n[DataConnector][google.cloud.discoveryengine.v1.DataConnector] after setup,\nuse the\n[CollectionService.DeleteCollection][google.cloud.discoveryengine.v1.CollectionService.DeleteCollection]\nmethod.",
+      "file": "DataConnectorClient/SetUpDataConnector/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_DataConnectorService_SetUpDataConnector_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine SetUpDataConnector Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient",
+          "shortName": "DataConnectorClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.DataConnectorClient.UpdateDataConnector",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.DataConnectorService.UpdateDataConnector",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.DataConnectorService",
+            "shortName": "DataConnectorService"
+          },
+          "shortName": "UpdateDataConnector"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.UpdateDataConnectorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.DataConnector",
+        "shortName": "UpdateDataConnector"
+      },
+      "description": "UpdateDataConnector updates a [DataConnector][google.cloud.discoveryengine.v1.DataConnector].",
+      "file": "DataConnectorClient/UpdateDataConnector/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_DataConnectorService_UpdateDataConnector_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine UpdateDataConnector Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.discoveryengine.v1.DataStoreClient",
           "shortName": "DataStoreClient"
         },
@@ -2124,6 +3178,52 @@
           "fullName": "google.cloud.discoveryengine.v1.DataStoreClient",
           "shortName": "DataStoreClient"
         },
+        "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreService.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.DataStoreService",
+            "shortName": "DataStoreService"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the IAM access control policy for a\n[DataStore][google.cloud.discoveryengine.v1.DataStore]. A `NOT_FOUND` error\nis returned if the resource does not exist. An empty policy is returned if\nthe resource exists but does not have a policy set on it.",
+      "file": "DataStoreClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_DataStoreService_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreClient",
+          "shortName": "DataStoreClient"
+        },
         "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.GetOperation",
         "method": {
           "fullName": "google.longrunning.Operations.GetOperation",
@@ -2255,6 +3355,52 @@
         }
       ],
       "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreClient",
+          "shortName": "DataStoreClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreService.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.DataStoreService",
+            "shortName": "DataStoreService"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the IAM access control policy for a\n[DataStore][google.cloud.discoveryengine.v1.DataStore]. A `NOT_FOUND` error\nis returned if the resource does not exist.\n\n**Important: ** When setting a policy directly on a DataStore resource,\nthe only recommended roles in the bindings are: \n`roles/discoveryengine.admin`\n`roles/discoveryengine.agentspaceAdmin`\n`roles/discoveryengine.viewer`\n`roles/discoveryengine.agentspaceViewer`\n`roles/discoveryengine.user`\n`roles/discoveryengine.agentspaceUser`\nAttempting to grant any other role will result in a warning in logging.",
+      "file": "DataStoreClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_DataStoreService_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine SetIamPolicy Sample"
     },
     {
       "clientMethod": {
@@ -2883,7 +4029,7 @@
         "resultType": "CreateEngineOperation",
         "shortName": "CreateEngine"
       },
-      "description": "CreateEngine creates a [Engine][google.cloud.discoveryengine.v1.Engine].",
+      "description": "CreateEngine creates an [Engine][google.cloud.discoveryengine.v1.Engine].",
       "file": "EngineClient/CreateEngine/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -2929,7 +4075,7 @@
         "resultType": "DeleteEngineOperation",
         "shortName": "DeleteEngine"
       },
-      "description": "DeleteEngine deletes a [Engine][google.cloud.discoveryengine.v1.Engine].",
+      "description": "DeleteEngine deletes an [Engine][google.cloud.discoveryengine.v1.Engine].",
       "file": "EngineClient/DeleteEngine/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -2975,7 +4121,7 @@
         "resultType": "*discoveryenginepb.Engine",
         "shortName": "GetEngine"
       },
-      "description": "GetEngine gets a [Engine][google.cloud.discoveryengine.v1.Engine].",
+      "description": "GetEngine gets an [Engine][google.cloud.discoveryengine.v1.Engine].",
       "file": "EngineClient/GetEngine/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -2988,6 +4134,52 @@
         }
       ],
       "title": "discoveryengine GetEngine Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.EngineClient",
+          "shortName": "EngineClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.EngineClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.EngineService.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.EngineService",
+            "shortName": "EngineService"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the IAM access control policy for an\n[Engine][google.cloud.discoveryengine.v1.Engine]. A `NOT_FOUND` error is\nreturned if the resource does not exist. An empty policy is returned if the\nresource exists but does not have a policy set on it.",
+      "file": "EngineClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_EngineService_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetIamPolicy Sample"
     },
     {
       "clientMethod": {
@@ -3126,6 +4318,52 @@
         }
       ],
       "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.EngineClient",
+          "shortName": "EngineClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.EngineClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.EngineService.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.EngineService",
+            "shortName": "EngineService"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the IAM access control policy for an\n[Engine][google.cloud.discoveryengine.v1.Engine]. A `NOT_FOUND` error is\nreturned if the resource does not exist.\n\n**Important: ** When setting a policy directly on an Engine resource,\nthe only recommended roles in the bindings are: \n`roles/discoveryengine.admin`,\n`roles/discoveryengine.agentspaceAdmin`,\n`roles/discoveryengine.user`,\n`roles/discoveryengine.agentspaceUser`,\n`roles/discoveryengine.viewer`,\n`roles/discoveryengine.agentspaceViewer`.\nAttempting to grant any other role will result in a warning in logging.",
+      "file": "EngineClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_EngineService_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine SetIamPolicy Sample"
     },
     {
       "clientMethod": {
@@ -3902,6 +5140,419 @@
         }
       ],
       "title": "discoveryengine PurgeIdentityMappings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient",
+          "shortName": "LicenseConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "LicenseConfigClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_LicenseConfigService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient",
+          "shortName": "LicenseConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient.CreateLicenseConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService.CreateLicenseConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService",
+            "shortName": "LicenseConfigService"
+          },
+          "shortName": "CreateLicenseConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.CreateLicenseConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.LicenseConfig",
+        "shortName": "CreateLicenseConfig"
+      },
+      "description": "CreateLicenseConfig creates a [LicenseConfig][google.cloud.discoveryengine.v1.LicenseConfig]\nThis method should only be used for creating NotebookLm licenses or Gemini\nEnterprise free trial licenses.",
+      "file": "LicenseConfigClient/CreateLicenseConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_LicenseConfigService_CreateLicenseConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine CreateLicenseConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient",
+          "shortName": "LicenseConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient.DistributeLicenseConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService.DistributeLicenseConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService",
+            "shortName": "LicenseConfigService"
+          },
+          "shortName": "DistributeLicenseConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.DistributeLicenseConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.DistributeLicenseConfigResponse",
+        "shortName": "DistributeLicenseConfig"
+      },
+      "description": "DistributeLicenseConfig distributes a\n[LicenseConfig][google.cloud.discoveryengine.v1.LicenseConfig] from billing\naccount level to project level.",
+      "file": "LicenseConfigClient/DistributeLicenseConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_LicenseConfigService_DistributeLicenseConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine DistributeLicenseConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient",
+          "shortName": "LicenseConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient.GetLicenseConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService.GetLicenseConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService",
+            "shortName": "LicenseConfigService"
+          },
+          "shortName": "GetLicenseConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.GetLicenseConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.LicenseConfig",
+        "shortName": "GetLicenseConfig"
+      },
+      "description": "GetLicenseConfig gets a [LicenseConfig][google.cloud.discoveryengine.v1.LicenseConfig].",
+      "file": "LicenseConfigClient/GetLicenseConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_LicenseConfigService_GetLicenseConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetLicenseConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient",
+          "shortName": "LicenseConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "LicenseConfigClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_LicenseConfigService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient",
+          "shortName": "LicenseConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient.ListLicenseConfigs",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService.ListLicenseConfigs",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService",
+            "shortName": "LicenseConfigService"
+          },
+          "shortName": "ListLicenseConfigs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.ListLicenseConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LicenseConfigIterator",
+        "shortName": "ListLicenseConfigs"
+      },
+      "description": "ListLicenseConfigs lists all the\n[LicenseConfig][google.cloud.discoveryengine.v1.LicenseConfig]s associated\nwith the project.",
+      "file": "LicenseConfigClient/ListLicenseConfigs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_LicenseConfigService_ListLicenseConfigs_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListLicenseConfigs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient",
+          "shortName": "LicenseConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "LicenseConfigClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_LicenseConfigService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient",
+          "shortName": "LicenseConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient.RetractLicenseConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService.RetractLicenseConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService",
+            "shortName": "LicenseConfigService"
+          },
+          "shortName": "RetractLicenseConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.RetractLicenseConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.RetractLicenseConfigResponse",
+        "shortName": "RetractLicenseConfig"
+      },
+      "description": "RetractLicenseConfig this method is called from the billing account side to retract the\n[LicenseConfig][google.cloud.discoveryengine.v1.LicenseConfig] from the\ngiven project back to the billing account.",
+      "file": "LicenseConfigClient/RetractLicenseConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_LicenseConfigService_RetractLicenseConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine RetractLicenseConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient",
+          "shortName": "LicenseConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.LicenseConfigClient.UpdateLicenseConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService.UpdateLicenseConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.LicenseConfigService",
+            "shortName": "LicenseConfigService"
+          },
+          "shortName": "UpdateLicenseConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.UpdateLicenseConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.LicenseConfig",
+        "shortName": "UpdateLicenseConfig"
+      },
+      "description": "UpdateLicenseConfig updates the [LicenseConfig][google.cloud.discoveryengine.v1.LicenseConfig]",
+      "file": "LicenseConfigClient/UpdateLicenseConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_LicenseConfigService_UpdateLicenseConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine UpdateLicenseConfig Sample"
     },
     {
       "clientMethod": {
@@ -5328,6 +6979,97 @@
           "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient",
           "shortName": "ServingConfigClient"
         },
+        "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.CreateServingConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigService.CreateServingConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.ServingConfigService",
+            "shortName": "ServingConfigService"
+          },
+          "shortName": "CreateServingConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.CreateServingConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.ServingConfig",
+        "shortName": "CreateServingConfig"
+      },
+      "description": "CreateServingConfig creates a ServingConfig.\n\nNote: The Google Cloud console works only with the default serving config.\nAdditional ServingConfigs can be created and managed only via the API.\n\nA maximum of 100\n[ServingConfig][google.cloud.discoveryengine.v1.ServingConfig]s are allowed\nin an [Engine][google.cloud.discoveryengine.v1.Engine], otherwise a\nRESOURCE_EXHAUSTED error is returned.",
+      "file": "ServingConfigClient/CreateServingConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_ServingConfigService_CreateServingConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine CreateServingConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient",
+          "shortName": "ServingConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.DeleteServingConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigService.DeleteServingConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.ServingConfigService",
+            "shortName": "ServingConfigService"
+          },
+          "shortName": "DeleteServingConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.DeleteServingConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteServingConfig"
+      },
+      "description": "DeleteServingConfig deletes a ServingConfig.\n\nReturns a NOT_FOUND error if the ServingConfig does not exist.",
+      "file": "ServingConfigClient/DeleteServingConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_ServingConfigService_DeleteServingConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine DeleteServingConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient",
+          "shortName": "ServingConfigClient"
+        },
         "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.GetOperation",
         "method": {
           "fullName": "google.longrunning.Operations.GetOperation",
@@ -5374,6 +7116,52 @@
           "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient",
           "shortName": "ServingConfigClient"
         },
+        "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.GetServingConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigService.GetServingConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.ServingConfigService",
+            "shortName": "ServingConfigService"
+          },
+          "shortName": "GetServingConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.GetServingConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.ServingConfig",
+        "shortName": "GetServingConfig"
+      },
+      "description": "GetServingConfig gets a ServingConfig.\n\nReturns a NotFound error if the ServingConfig does not exist.",
+      "file": "ServingConfigClient/GetServingConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_ServingConfigService_GetServingConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetServingConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient",
+          "shortName": "ServingConfigClient"
+        },
         "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.ListOperations",
         "method": {
           "fullName": "google.longrunning.Operations.ListOperations",
@@ -5413,6 +7201,52 @@
         }
       ],
       "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient",
+          "shortName": "ServingConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.ServingConfigClient.ListServingConfigs",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.ServingConfigService.ListServingConfigs",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.ServingConfigService",
+            "shortName": "ServingConfigService"
+          },
+          "shortName": "ListServingConfigs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.ListServingConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ServingConfigIterator",
+        "shortName": "ListServingConfigs"
+      },
+      "description": "ListServingConfigs lists all ServingConfigs linked to this dataStore.",
+      "file": "ServingConfigClient/ListServingConfigs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_ServingConfigService_ListServingConfigs_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListServingConfigs Sample"
     },
     {
       "clientMethod": {
@@ -7117,6 +8951,52 @@
           "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient",
           "shortName": "UserLicenseClient"
         },
+        "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient.ListLicenseConfigsUsageStats",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.UserLicenseService.ListLicenseConfigsUsageStats",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.UserLicenseService",
+            "shortName": "UserLicenseService"
+          },
+          "shortName": "ListLicenseConfigsUsageStats"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.ListLicenseConfigsUsageStatsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.ListLicenseConfigsUsageStatsResponse",
+        "shortName": "ListLicenseConfigsUsageStats"
+      },
+      "description": "ListLicenseConfigsUsageStats lists all the\n[LicenseConfigUsageStats][google.cloud.discoveryengine.v1.LicenseConfigUsageStats]s\nassociated with the project.",
+      "file": "UserLicenseClient/ListLicenseConfigsUsageStats/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_UserLicenseService_ListLicenseConfigsUsageStats_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListLicenseConfigsUsageStats Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient",
+          "shortName": "UserLicenseClient"
+        },
         "fullName": "google.cloud.discoveryengine.v1.UserLicenseClient.ListOperations",
         "method": {
           "fullName": "google.longrunning.Operations.ListOperations",
@@ -7202,6 +9082,464 @@
         }
       ],
       "title": "discoveryengine ListUserLicenses Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.UserStoreClient",
+          "shortName": "UserStoreClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.UserStoreClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "UserStoreClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_UserStoreService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.UserStoreClient",
+          "shortName": "UserStoreClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.UserStoreClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "UserStoreClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_UserStoreService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.UserStoreClient",
+          "shortName": "UserStoreClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.UserStoreClient.GetUserStore",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.UserStoreService.GetUserStore",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.UserStoreService",
+            "shortName": "UserStoreService"
+          },
+          "shortName": "GetUserStore"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.GetUserStoreRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.UserStore",
+        "shortName": "GetUserStore"
+      },
+      "description": "GetUserStore gets the User Store.",
+      "file": "UserStoreClient/GetUserStore/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_UserStoreService_GetUserStore_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetUserStore Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.UserStoreClient",
+          "shortName": "UserStoreClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.UserStoreClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "UserStoreClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_UserStoreService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.UserStoreClient",
+          "shortName": "UserStoreClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.UserStoreClient.UpdateUserStore",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.UserStoreService.UpdateUserStore",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.UserStoreService",
+            "shortName": "UserStoreService"
+          },
+          "shortName": "UpdateUserStore"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.UpdateUserStoreRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.UserStore",
+        "shortName": "UpdateUserStore"
+      },
+      "description": "UpdateUserStore updates the User Store.",
+      "file": "UserStoreClient/UpdateUserStore/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_UserStoreService_UpdateUserStore_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine UpdateUserStore Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient",
+          "shortName": "WidgetConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "WidgetConfigClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_WidgetConfigService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient",
+          "shortName": "WidgetConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "WidgetConfigClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_WidgetConfigService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient",
+          "shortName": "WidgetConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient.GetWidgetConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.WidgetConfigService.GetWidgetConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.WidgetConfigService",
+            "shortName": "WidgetConfigService"
+          },
+          "shortName": "GetWidgetConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.GetWidgetConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.WidgetConfig",
+        "shortName": "GetWidgetConfig"
+      },
+      "description": "GetWidgetConfig gets a [WidgetConfig][google.cloud.discoveryengine.v1.WidgetConfig].",
+      "file": "WidgetConfigClient/GetWidgetConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_WidgetConfigService_GetWidgetConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine GetWidgetConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient",
+          "shortName": "WidgetConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "WidgetConfigClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_WidgetConfigService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient",
+          "shortName": "WidgetConfigClient"
+        },
+        "fullName": "google.cloud.discoveryengine.v1.WidgetConfigClient.UpdateWidgetConfig",
+        "method": {
+          "fullName": "google.cloud.discoveryengine.v1.WidgetConfigService.UpdateWidgetConfig",
+          "service": {
+            "fullName": "google.cloud.discoveryengine.v1.WidgetConfigService",
+            "shortName": "WidgetConfigService"
+          },
+          "shortName": "UpdateWidgetConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "discoveryenginepb.UpdateWidgetConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*discoveryenginepb.WidgetConfig",
+        "shortName": "UpdateWidgetConfig"
+      },
+      "description": "UpdateWidgetConfig update a WidgetConfig.",
+      "file": "WidgetConfigClient/UpdateWidgetConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "discoveryengine_v1_generated_WidgetConfigService_UpdateWidgetConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "discoveryengine UpdateWidgetConfig Sample"
     }
   ]
 }

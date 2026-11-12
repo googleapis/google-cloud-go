@@ -700,50 +700,51 @@ var File_google_cloud_resourcemanager_v3_tag_values_proto protoreflect.FileDescr
 
 const file_google_cloud_resourcemanager_v3_tag_values_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/resourcemanager/v3/tag_values.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa6\x03\n" +
-	"\bTagValue\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x1b\n" +
-	"\x06parent\x18\x02 \x01(\tB\x03\xe0A\x05R\x06parent\x12%\n" +
+	"0google/cloud/resourcemanager/v3/tag_values.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x03\n" +
+	"\bTagValue\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x1c\n" +
+	"\x06parent\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x06parent\x12$\n" +
 	"\n" +
-	"short_name\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tshortName\x12,\n" +
-	"\x0fnamespaced_name\x18\x04 \x01(\tB\x03\xe0A\x03R\x0enamespacedName\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag:K\xeaAH\n" +
-	",cloudresourcemanager.googleapis.com/TagValue\x12\x15tagValues/{tag_value}R\x01\x01\"\x7f\n" +
-	"\x14ListTagValuesRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\x12\x01*R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"short_name\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\tshortName\x12-\n" +
+	"\x0fnamespaced_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0enamespacedName\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag:K\xeaAH\n" +
+	",cloudresourcemanager.googleapis.com/TagValue\x12\x15tagValues/{tag_value}R\x01\x01\"\x82\x01\n" +
+	"\x14ListTagValuesRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\x12\x01*R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x89\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x89\x01\n" +
 	"\x15ListTagValuesResponse\x12H\n" +
 	"\n" +
 	"tag_values\x18\x01 \x03(\v2).google.cloud.resourcemanager.v3.TagValueR\ttagValues\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x12GetTagValueRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",cloudresourcemanager.googleapis.com/TagValueR\x04name\"h\n" +
-	"\x1cGetNamespacedTagValueRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",cloudresourcemanager.googleapis.com/TagValueR\x04name\"\x8e\x01\n" +
-	"\x15CreateTagValueRequest\x12K\n" +
-	"\ttag_value\x18\x01 \x01(\v2).google.cloud.resourcemanager.v3.TagValueB\x03\xe0A\x02R\btagValue\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x18\n" +
-	"\x16CreateTagValueMetadata\"\xd0\x01\n" +
-	"\x15UpdateTagValueRequest\x12K\n" +
-	"\ttag_value\x18\x01 \x01(\v2).google.cloud.resourcemanager.v3.TagValueB\x03\xe0A\x02R\btagValue\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x18\n" +
-	"\x16UpdateTagValueMetadata\"\xa4\x01\n" +
-	"\x15DeleteTagValueRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",cloudresourcemanager.googleapis.com/TagValueR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\x18\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x12GetTagValueRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",cloudresourcemanager.googleapis.com/TagValueR\x04name\"i\n" +
+	"\x1cGetNamespacedTagValueRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",cloudresourcemanager.googleapis.com/TagValueR\x04name\"\x90\x01\n" +
+	"\x15CreateTagValueRequest\x12L\n" +
+	"\ttag_value\x18\x01 \x01(\v2).google.cloud.resourcemanager.v3.TagValueB\x04\xe2A\x01\x02R\btagValue\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x18\n" +
+	"\x16CreateTagValueMetadata\"\xd3\x01\n" +
+	"\x15UpdateTagValueRequest\x12L\n" +
+	"\ttag_value\x18\x01 \x01(\v2).google.cloud.resourcemanager.v3.TagValueB\x04\xe2A\x01\x02R\btagValue\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x18\n" +
+	"\x16UpdateTagValueMetadata\"\xa7\x01\n" +
+	"\x15DeleteTagValueRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",cloudresourcemanager.googleapis.com/TagValueR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x18\n" +
 	"\x16DeleteTagValueMetadata2\xac\r\n" +
 	"\tTagValues\x12\x9e\x01\n" +
 	"\rListTagValues\x125.google.cloud.resourcemanager.v3.ListTagValuesRequest\x1a6.google.cloud.resourcemanager.v3.ListTagValuesResponse\"\x1e\xdaA\x06parent\x82\xd3\xe4\x93\x02\x0f\x12\r/v3/tagValues\x12\x94\x01\n" +

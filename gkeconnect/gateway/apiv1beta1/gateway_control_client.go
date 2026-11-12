@@ -166,6 +166,33 @@ func NewGatewayControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 
 		callOpts.GenerateCredentials = append(callOpts.GenerateCredentials, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "connectgateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "connectgateway.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateCredentials = append(callOpts.GenerateCredentials, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "connectgateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "connectgateway.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateCredentials = append(callOpts.GenerateCredentials, gax.WithClientLogging(logging))
+	}
 
 	return &GatewayControlClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -213,6 +240,11 @@ func (c *gatewayControlRESTClient) Connection() *grpc.ClientConn {
 func (c *gatewayControlRESTClient) GenerateCredentials(ctx context.Context, req *gatewaypb.GenerateCredentialsRequest, opts ...gax.CallOption) (*gatewaypb.GenerateCredentialsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generateCredentials", req.GetName())

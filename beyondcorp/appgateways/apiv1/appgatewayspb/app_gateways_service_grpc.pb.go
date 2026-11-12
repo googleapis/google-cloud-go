@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,13 +44,19 @@ const (
 // AppGatewaysServiceClient is the client API for AppGatewaysService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Deprecated: Do not use.
 type AppGatewaysServiceClient interface {
+	// Deprecated: Do not use.
 	// Lists AppGateways in a given project and location.
 	ListAppGateways(ctx context.Context, in *ListAppGatewaysRequest, opts ...grpc.CallOption) (*ListAppGatewaysResponse, error)
+	// Deprecated: Do not use.
 	// Gets details of a single AppGateway.
 	GetAppGateway(ctx context.Context, in *GetAppGatewayRequest, opts ...grpc.CallOption) (*AppGateway, error)
+	// Deprecated: Do not use.
 	// Creates a new AppGateway in a given project and location.
 	CreateAppGateway(ctx context.Context, in *CreateAppGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Deletes a single AppGateway.
 	DeleteAppGateway(ctx context.Context, in *DeleteAppGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
@@ -59,10 +65,12 @@ type appGatewaysServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
+// Deprecated: Do not use.
 func NewAppGatewaysServiceClient(cc grpc.ClientConnInterface) AppGatewaysServiceClient {
 	return &appGatewaysServiceClient{cc}
 }
 
+// Deprecated: Do not use.
 func (c *appGatewaysServiceClient) ListAppGateways(ctx context.Context, in *ListAppGatewaysRequest, opts ...grpc.CallOption) (*ListAppGatewaysResponse, error) {
 	out := new(ListAppGatewaysResponse)
 	err := c.cc.Invoke(ctx, AppGatewaysService_ListAppGateways_FullMethodName, in, out, opts...)
@@ -72,6 +80,7 @@ func (c *appGatewaysServiceClient) ListAppGateways(ctx context.Context, in *List
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appGatewaysServiceClient) GetAppGateway(ctx context.Context, in *GetAppGatewayRequest, opts ...grpc.CallOption) (*AppGateway, error) {
 	out := new(AppGateway)
 	err := c.cc.Invoke(ctx, AppGatewaysService_GetAppGateway_FullMethodName, in, out, opts...)
@@ -81,6 +90,7 @@ func (c *appGatewaysServiceClient) GetAppGateway(ctx context.Context, in *GetApp
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appGatewaysServiceClient) CreateAppGateway(ctx context.Context, in *CreateAppGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AppGatewaysService_CreateAppGateway_FullMethodName, in, out, opts...)
@@ -90,6 +100,7 @@ func (c *appGatewaysServiceClient) CreateAppGateway(ctx context.Context, in *Cre
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appGatewaysServiceClient) DeleteAppGateway(ctx context.Context, in *DeleteAppGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AppGatewaysService_DeleteAppGateway_FullMethodName, in, out, opts...)
@@ -102,13 +113,19 @@ func (c *appGatewaysServiceClient) DeleteAppGateway(ctx context.Context, in *Del
 // AppGatewaysServiceServer is the server API for AppGatewaysService service.
 // All implementations should embed UnimplementedAppGatewaysServiceServer
 // for forward compatibility
+//
+// Deprecated: Do not use.
 type AppGatewaysServiceServer interface {
+	// Deprecated: Do not use.
 	// Lists AppGateways in a given project and location.
 	ListAppGateways(context.Context, *ListAppGatewaysRequest) (*ListAppGatewaysResponse, error)
+	// Deprecated: Do not use.
 	// Gets details of a single AppGateway.
 	GetAppGateway(context.Context, *GetAppGatewayRequest) (*AppGateway, error)
+	// Deprecated: Do not use.
 	// Creates a new AppGateway in a given project and location.
 	CreateAppGateway(context.Context, *CreateAppGatewayRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Deletes a single AppGateway.
 	DeleteAppGateway(context.Context, *DeleteAppGatewayRequest) (*longrunningpb.Operation, error)
 }
@@ -137,6 +154,7 @@ type UnsafeAppGatewaysServiceServer interface {
 	mustEmbedUnimplementedAppGatewaysServiceServer()
 }
 
+// Deprecated: Do not use.
 func RegisterAppGatewaysServiceServer(s grpc.ServiceRegistrar, srv AppGatewaysServiceServer) {
 	s.RegisterService(&AppGatewaysService_ServiceDesc, srv)
 }

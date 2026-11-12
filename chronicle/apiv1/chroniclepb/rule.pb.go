@@ -2383,31 +2383,31 @@ var File_google_cloud_chronicle_v1_rule_proto protoreflect.FileDescriptor
 
 const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/chronicle/v1/rule.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\x8c\v\n" +
-	"\x04Rule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"revisionId\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12\x12\n" +
-	"\x04text\x18\x04 \x01(\tR\x04text\x12\x1b\n" +
-	"\x06author\x18\x05 \x01(\tB\x03\xe0A\x03R\x06author\x12D\n" +
-	"\bseverity\x18\x06 \x01(\v2#.google.cloud.chronicle.v1.SeverityB\x03\xe0A\x03R\bseverity\x12N\n" +
-	"\bmetadata\x18\a \x03(\v2-.google.cloud.chronicle.v1.Rule.MetadataEntryB\x03\xe0A\x03R\bmetadata\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12Q\n" +
-	"\x14revision_create_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12revisionCreateTime\x12b\n" +
+	"$google/cloud/chronicle/v1/rule.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\x9b\v\n" +
+	"\x04Rule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12%\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"revisionId\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12\x12\n" +
+	"\x04text\x18\x04 \x01(\tR\x04text\x12\x1c\n" +
+	"\x06author\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x06author\x12E\n" +
+	"\bseverity\x18\x06 \x01(\v2#.google.cloud.chronicle.v1.SeverityB\x04\xe2A\x01\x03R\bseverity\x12O\n" +
+	"\bmetadata\x18\a \x03(\v2-.google.cloud.chronicle.v1.Rule.MetadataEntryB\x04\xe2A\x01\x03R\bmetadata\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12R\n" +
+	"\x14revision_create_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12revisionCreateTime\x12c\n" +
 	"\x11compilation_state\x18\n" +
-	" \x01(\x0e20.google.cloud.chronicle.v1.Rule.CompilationStateB\x03\xe0A\x03R\x10compilationState\x12<\n" +
-	"\x04type\x18\f \x01(\x0e2#.google.cloud.chronicle.v1.RuleTypeB\x03\xe0A\x03R\x04type\x12W\n" +
-	"\x0freference_lists\x18\r \x03(\tB.\xe0A\x03\xfaA(\n" +
-	"&chronicle.googleapis.com/ReferenceListR\x0ereferenceLists\x12d\n" +
-	"\x17allowed_run_frequencies\x18\x0e \x03(\x0e2'.google.cloud.chronicle.v1.RunFrequencyB\x03\xe0A\x03R\x15allowedRunFrequencies\x12\x12\n" +
+	" \x01(\x0e20.google.cloud.chronicle.v1.Rule.CompilationStateB\x04\xe2A\x01\x03R\x10compilationState\x12=\n" +
+	"\x04type\x18\f \x01(\x0e2#.google.cloud.chronicle.v1.RuleTypeB\x04\xe2A\x01\x03R\x04type\x12X\n" +
+	"\x0freference_lists\x18\r \x03(\tB/\xe2A\x01\x03\xfaA(\n" +
+	"&chronicle.googleapis.com/ReferenceListR\x0ereferenceLists\x12e\n" +
+	"\x17allowed_run_frequencies\x18\x0e \x03(\x0e2'.google.cloud.chronicle.v1.RunFrequencyB\x04\xe2A\x01\x03R\x15allowedRunFrequencies\x12\x12\n" +
 	"\x04etag\x18\x0f \x01(\tR\x04etag\x12C\n" +
 	"\x05scope\x18\x10 \x01(\tB-\xfaA*\n" +
-	"(chronicle.googleapis.com/DataAccessScopeR\x05scope\x12n\n" +
-	"\x17compilation_diagnostics\x18\x11 \x03(\v20.google.cloud.chronicle.v1.CompilationDiagnosticB\x03\xe0A\x03R\x16compilationDiagnostics\x12L\n" +
-	"!near_real_time_live_rule_eligible\x18\x12 \x01(\bB\x03\xe0A\x03R\x1cnearRealTimeLiveRuleEligible\x12K\n" +
-	"\vinputs_used\x18\x14 \x01(\v2%.google.cloud.chronicle.v1.InputsUsedB\x03\xe0A\x03R\n" +
+	"(chronicle.googleapis.com/DataAccessScopeR\x05scope\x12o\n" +
+	"\x17compilation_diagnostics\x18\x11 \x03(\v20.google.cloud.chronicle.v1.CompilationDiagnosticB\x04\xe2A\x01\x03R\x16compilationDiagnostics\x12M\n" +
+	"!near_real_time_live_rule_eligible\x18\x12 \x01(\bB\x04\xe2A\x01\x03R\x1cnearRealTimeLiveRuleEligible\x12L\n" +
+	"\vinputs_used\x18\x14 \x01(\v2%.google.cloud.chronicle.v1.InputsUsedB\x04\xe2A\x01\x03R\n" +
 	"inputsUsed\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2417,32 +2417,32 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\tSUCCEEDED\x10\x01\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x02:m\xeaAj\n" +
-	"\x1dchronicle.googleapis.com/Rule\x12Iprojects/{project}/locations/{location}/instances/{instance}/rules/{rule}\"\xd2\x06\n" +
-	"\x0eRuleDeployment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x18\n" +
+	"\x1dchronicle.googleapis.com/Rule\x12Iprojects/{project}/locations/{location}/instances/{instance}/rules/{rule}\"\xd8\x06\n" +
+	"\x0eRuleDeployment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
 	"\aenabled\x18\x02 \x01(\bR\aenabled\x12\x1a\n" +
 	"\balerting\x18\x03 \x01(\bR\balerting\x12\x1a\n" +
-	"\barchived\x18\x04 \x01(\bR\barchived\x12B\n" +
-	"\farchive_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\varchiveTime\x12L\n" +
-	"\rrun_frequency\x18\x06 \x01(\x0e2'.google.cloud.chronicle.v1.RunFrequencyR\frunFrequency\x12f\n" +
-	"\x0fexecution_state\x18\a \x01(\x0e28.google.cloud.chronicle.v1.RuleDeployment.ExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12L\n" +
-	"\x0eproducer_rules\x18\b \x03(\tB%\xe0A\x03\xfaA\x1f\x12\x1dchronicle.googleapis.com/RuleR\rproducerRules\x12L\n" +
-	"\x0econsumer_rules\x18\t \x03(\tB%\xe0A\x03\xfaA\x1f\x12\x1dchronicle.googleapis.com/RuleR\rconsumerRules\x12a\n" +
+	"\barchived\x18\x04 \x01(\bR\barchived\x12C\n" +
+	"\farchive_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\varchiveTime\x12L\n" +
+	"\rrun_frequency\x18\x06 \x01(\x0e2'.google.cloud.chronicle.v1.RunFrequencyR\frunFrequency\x12g\n" +
+	"\x0fexecution_state\x18\a \x01(\x0e28.google.cloud.chronicle.v1.RuleDeployment.ExecutionStateB\x04\xe2A\x01\x03R\x0eexecutionState\x12M\n" +
+	"\x0eproducer_rules\x18\b \x03(\tB&\xe2A\x01\x03\xfaA\x1f\x12\x1dchronicle.googleapis.com/RuleR\rproducerRules\x12M\n" +
+	"\x0econsumer_rules\x18\t \x03(\tB&\xe2A\x01\x03\xfaA\x1f\x12\x1dchronicle.googleapis.com/RuleR\rconsumerRules\x12b\n" +
 	"\x1dlast_alert_status_change_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x19lastAlertStatusChangeTime\"W\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x19lastAlertStatusChangeTime\"W\n" +
 	"\x0eExecutionState\x12\x1f\n" +
 	"\x1bEXECUTION_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aDEFAULT\x10\x01\x12\v\n" +
 	"\aLIMITED\x10\x02\x12\n" +
 	"\n" +
 	"\x06PAUSED\x10\x03:\x82\x01\xeaA\x7f\n" +
-	"'chronicle.googleapis.com/RuleDeployment\x12Tprojects/{project}/locations/{location}/instances/{instance}/rules/{rule}/deployment\"\x8d\x04\n" +
+	"'chronicle.googleapis.com/RuleDeployment\x12Tprojects/{project}/locations/{location}/instances/{instance}/rules/{rule}/deployment\"\x91\x04\n" +
 	"\tRetrohunt\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12E\n" +
-	"\x10process_interval\x18\x02 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x02R\x0fprocessInterval\x12I\n" +
-	"\x12execution_interval\x18\x03 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x03R\x11executionInterval\x12E\n" +
-	"\x05state\x18\x04 \x01(\x0e2*.google.cloud.chronicle.v1.Retrohunt.StateB\x03\xe0A\x03R\x05state\x124\n" +
-	"\x13progress_percentage\x18\x05 \x01(\x02B\x03\xe0A\x03R\x12progressPercentage\"P\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12F\n" +
+	"\x10process_interval\x18\x02 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x02R\x0fprocessInterval\x12J\n" +
+	"\x12execution_interval\x18\x03 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x03R\x11executionInterval\x12F\n" +
+	"\x05state\x18\x04 \x01(\x0e2*.google.cloud.chronicle.v1.Retrohunt.StateB\x04\xe2A\x01\x03R\x05state\x125\n" +
+	"\x13progress_percentage\x18\x05 \x01(\x02B\x04\xe2A\x01\x03R\x12progressPercentage\"P\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\b\n" +
@@ -2450,16 +2450,16 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\tCANCELLED\x10\x03\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x04:\x8a\x01\xeaA\x86\x01\n" +
-	"\"chronicle.googleapis.com/Retrohunt\x12`projects/{project}/locations/{location}/instances/{instance}/rules/{rule}/retrohunts/{retrohunt}\"\x8c\x01\n" +
-	"\x11CreateRuleRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dchronicle.googleapis.com/RuleR\x06parent\x128\n" +
-	"\x04rule\x18\x02 \x01(\v2\x1f.google.cloud.chronicle.v1.RuleB\x03\xe0A\x02R\x04rule\"\x84\x01\n" +
-	"\x0eGetRuleRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\"chronicle.googleapis.com/Retrohunt\x12`projects/{project}/locations/{location}/instances/{instance}/rules/{rule}/retrohunts/{retrohunt}\"\x8e\x01\n" +
+	"\x11CreateRuleRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dchronicle.googleapis.com/RuleR\x06parent\x129\n" +
+	"\x04rule\x18\x02 \x01(\v2\x1f.google.cloud.chronicle.v1.RuleB\x04\xe2A\x01\x02R\x04rule\"\x85\x01\n" +
+	"\x0eGetRuleRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dchronicle.googleapis.com/RuleR\x04name\x127\n" +
-	"\x04view\x18\x02 \x01(\x0e2#.google.cloud.chronicle.v1.RuleViewR\x04view\"\xde\x01\n" +
-	"\x10ListRulesRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dchronicle.googleapis.com/RuleR\x06parent\x12\x1b\n" +
+	"\x04view\x18\x02 \x01(\x0e2#.google.cloud.chronicle.v1.RuleViewR\x04view\"\xdf\x01\n" +
+	"\x10ListRulesRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dchronicle.googleapis.com/RuleR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x127\n" +
@@ -2467,24 +2467,24 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\x06filter\x18\x05 \x01(\tR\x06filter\"r\n" +
 	"\x11ListRulesResponse\x125\n" +
 	"\x05rules\x18\x01 \x03(\v2\x1f.google.cloud.chronicle.v1.RuleR\x05rules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8a\x01\n" +
-	"\x11UpdateRuleRequest\x128\n" +
-	"\x04rule\x18\x01 \x01(\v2\x1f.google.cloud.chronicle.v1.RuleB\x03\xe0A\x02R\x04rule\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8b\x01\n" +
+	"\x11UpdateRuleRequest\x129\n" +
+	"\x04rule\x18\x01 \x01(\v2\x1f.google.cloud.chronicle.v1.RuleB\x04\xe2A\x01\x02R\x04rule\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"i\n" +
-	"\x11DeleteRuleRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dchronicle.googleapis.com/RuleR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\x80\x01\n" +
-	"\x15VerifyRuleTextRequest\x12E\n" +
-	"\binstance\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!chronicle.googleapis.com/InstanceR\binstance\x12 \n" +
-	"\trule_text\x18\x02 \x01(\tB\x03\xe0A\x02R\bruleText\"\x9d\x01\n" +
+	"updateMask\"k\n" +
+	"\x11DeleteRuleRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dchronicle.googleapis.com/RuleR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\x82\x01\n" +
+	"\x15VerifyRuleTextRequest\x12F\n" +
+	"\binstance\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!chronicle.googleapis.com/InstanceR\binstance\x12!\n" +
+	"\trule_text\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bruleText\"\x9d\x01\n" +
 	"\x16VerifyRuleTextResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12i\n" +
-	"\x17compilation_diagnostics\x18\x03 \x03(\v20.google.cloud.chronicle.v1.CompilationDiagnosticR\x16compilationDiagnostics\"\xca\x01\n" +
-	"\x18ListRuleRevisionsRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x17compilation_diagnostics\x18\x03 \x03(\v20.google.cloud.chronicle.v1.CompilationDiagnosticR\x16compilationDiagnostics\"\xcb\x01\n" +
+	"\x18ListRuleRevisionsRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dchronicle.googleapis.com/RuleR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2492,15 +2492,15 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\x04view\x18\x04 \x01(\x0e2#.google.cloud.chronicle.v1.RuleViewR\x04view\"z\n" +
 	"\x19ListRuleRevisionsResponse\x125\n" +
 	"\x05rules\x18\x01 \x03(\v2\x1f.google.cloud.chronicle.v1.RuleR\x05rules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa5\x01\n" +
-	"\x16CreateRetrohuntRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"chronicle.googleapis.com/RetrohuntR\x06parent\x12G\n" +
-	"\tretrohunt\x18\x02 \x01(\v2$.google.cloud.chronicle.v1.RetrohuntB\x03\xe0A\x02R\tretrohunt\"U\n" +
-	"\x13GetRetrohuntRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"chronicle.googleapis.com/RetrohuntR\x04name\"\xaf\x01\n" +
-	"\x15ListRetrohuntsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"chronicle.googleapis.com/RetrohuntR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa7\x01\n" +
+	"\x16CreateRetrohuntRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"chronicle.googleapis.com/RetrohuntR\x06parent\x12H\n" +
+	"\tretrohunt\x18\x02 \x01(\v2$.google.cloud.chronicle.v1.RetrohuntB\x04\xe2A\x01\x02R\tretrohunt\"V\n" +
+	"\x13GetRetrohuntRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"chronicle.googleapis.com/RetrohuntR\x04name\"\xb0\x01\n" +
+	"\x15ListRetrohuntsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"chronicle.googleapis.com/RetrohuntR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2509,35 +2509,35 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\n" +
 	"retrohunts\x18\x01 \x03(\v2$.google.cloud.chronicle.v1.RetrohuntR\n" +
 	"retrohunts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
-	"\x18GetRuleDeploymentRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'chronicle.googleapis.com/RuleDeploymentR\x04name\"\xb9\x01\n" +
-	"\x1aListRuleDeploymentsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'chronicle.googleapis.com/RuleDeploymentR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
+	"\x18GetRuleDeploymentRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'chronicle.googleapis.com/RuleDeploymentR\x04name\"\xba\x01\n" +
+	"\x1aListRuleDeploymentsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'chronicle.googleapis.com/RuleDeploymentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x9b\x01\n" +
 	"\x1bListRuleDeploymentsResponse\x12T\n" +
 	"\x10rule_deployments\x18\x01 \x03(\v2).google.cloud.chronicle.v1.RuleDeploymentR\x0fruleDeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb8\x01\n" +
-	"\x1bUpdateRuleDeploymentRequest\x12W\n" +
-	"\x0frule_deployment\x18\x01 \x01(\v2).google.cloud.chronicle.v1.RuleDeploymentB\x03\xe0A\x02R\x0eruleDeployment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xa5\x01\n" +
-	"\x13CompilationPosition\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xba\x01\n" +
+	"\x1bUpdateRuleDeploymentRequest\x12X\n" +
+	"\x0frule_deployment\x18\x01 \x01(\v2).google.cloud.chronicle.v1.RuleDeploymentB\x04\xe2A\x01\x02R\x0eruleDeployment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa9\x01\n" +
+	"\x13CompilationPosition\x12#\n" +
 	"\n" +
-	"start_line\x18\x01 \x01(\x05B\x03\xe0A\x03R\tstartLine\x12&\n" +
-	"\fstart_column\x18\x02 \x01(\x05B\x03\xe0A\x03R\vstartColumn\x12\x1e\n" +
-	"\bend_line\x18\x03 \x01(\x05B\x03\xe0A\x03R\aendLine\x12\"\n" +
+	"start_line\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\tstartLine\x12'\n" +
+	"\fstart_column\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\vstartColumn\x12\x1f\n" +
+	"\bend_line\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\aendLine\x12#\n" +
 	"\n" +
-	"end_column\x18\x04 \x01(\x05B\x03\xe0A\x03R\tendColumn\"\xb8\x02\n" +
-	"\x15CompilationDiagnostic\x12\x1d\n" +
-	"\amessage\x18\x01 \x01(\tB\x03\xe0A\x03R\amessage\x12O\n" +
-	"\bposition\x18\x02 \x01(\v2..google.cloud.chronicle.v1.CompilationPositionB\x03\xe0A\x03R\bposition\x12Z\n" +
-	"\bseverity\x18\x03 \x01(\x0e29.google.cloud.chronicle.v1.CompilationDiagnostic.SeverityB\x03\xe0A\x03R\bseverity\x12\x15\n" +
-	"\x03uri\x18\x05 \x01(\tB\x03\xe0A\x03R\x03uri\"<\n" +
+	"end_column\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\tendColumn\"\xbc\x02\n" +
+	"\x15CompilationDiagnostic\x12\x1e\n" +
+	"\amessage\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\amessage\x12P\n" +
+	"\bposition\x18\x02 \x01(\v2..google.cloud.chronicle.v1.CompilationPositionB\x04\xe2A\x01\x03R\bposition\x12[\n" +
+	"\bseverity\x18\x03 \x01(\x0e29.google.cloud.chronicle.v1.CompilationDiagnostic.SeverityB\x04\xe2A\x01\x03R\bseverity\x12\x16\n" +
+	"\x03uri\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x03uri\"<\n" +
 	"\bSeverity\x12\x18\n" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aWARNING\x10\x01\x12\t\n" +
@@ -2548,13 +2548,13 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\tretrohunt\x18\x01 \x01(\tB\"\xfaA\x1f\n" +
 	"\x1dchronicle.googleapis.com/RuleR\tretrohunt\x12D\n" +
 	"\x12execution_interval\x18\x02 \x01(\v2\x15.google.type.IntervalR\x11executionInterval\x12/\n" +
-	"\x13progress_percentage\x18\x03 \x01(\x02R\x12progressPercentage\"~\n" +
+	"\x13progress_percentage\x18\x03 \x01(\x02R\x12progressPercentage\"\x81\x01\n" +
 	"\n" +
-	"InputsUsed\x12\x1e\n" +
-	"\buses_udm\x18\x01 \x01(\bB\x03\xe0A\x01R\ausesUdm\x12$\n" +
-	"\vuses_entity\x18\x02 \x01(\bB\x03\xe0A\x01R\n" +
-	"usesEntity\x12*\n" +
-	"\x0euses_detection\x18\x03 \x01(\bB\x03\xe0A\x01R\rusesDetection*N\n" +
+	"InputsUsed\x12\x1f\n" +
+	"\buses_udm\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\ausesUdm\x12%\n" +
+	"\vuses_entity\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"usesEntity\x12+\n" +
+	"\x0euses_detection\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\rusesDetection*N\n" +
 	"\fRunFrequency\x12\x1d\n" +
 	"\x19RUN_FREQUENCY_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04LIVE\x10\x01\x12\n" +

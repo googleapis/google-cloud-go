@@ -55,6 +55,11 @@
                 "ListLocations"
               ]
             },
+            "ListNodes": {
+              "methods": [
+                "ListNodes"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
@@ -113,6 +118,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListNodes": {
+              "methods": [
+                "ListNodes"
               ]
             },
             "ListOperations": {

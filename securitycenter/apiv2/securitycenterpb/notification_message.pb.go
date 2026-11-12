@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,9 +48,11 @@ type NotificationMessage struct {
 	//	*NotificationMessage_Finding
 	Event isNotificationMessage_Event `protobuf_oneof:"event"`
 	// The Cloud resource tied to this notification's Finding.
-	Resource      *Resource `protobuf:"bytes,3,opt,name=resource,proto3" json:"resource,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Resource *Resource `protobuf:"bytes,3,opt,name=resource,proto3" json:"resource,omitempty"`
+	// Indicates whether the finding is deleted.
+	DeletedFinding bool `protobuf:"varint,5,opt,name=deleted_finding,json=deletedFinding,proto3" json:"deleted_finding,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *NotificationMessage) Reset() {
@@ -113,6 +115,13 @@ func (x *NotificationMessage) GetResource() *Resource {
 	return nil
 }
 
+func (x *NotificationMessage) GetDeletedFinding() bool {
+	if x != nil {
+		return x.DeletedFinding
+	}
+	return false
+}
+
 type isNotificationMessage_Event interface {
 	isNotificationMessage_Event()
 }
@@ -129,11 +138,12 @@ var File_google_cloud_securitycenter_v2_notification_message_proto protoreflect.
 
 const file_google_cloud_securitycenter_v2_notification_message_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/securitycenter/v2/notification_message.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a,google/cloud/securitycenter/v2/finding.proto\x1a-google/cloud/securitycenter/v2/resource.proto\"\xe3\x01\n" +
+	"9google/cloud/securitycenter/v2/notification_message.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a,google/cloud/securitycenter/v2/finding.proto\x1a-google/cloud/securitycenter/v2/resource.proto\"\x8c\x02\n" +
 	"\x13NotificationMessage\x128\n" +
 	"\x18notification_config_name\x18\x01 \x01(\tR\x16notificationConfigName\x12C\n" +
 	"\afinding\x18\x02 \x01(\v2'.google.cloud.securitycenter.v2.FindingH\x00R\afinding\x12D\n" +
-	"\bresource\x18\x03 \x01(\v2(.google.cloud.securitycenter.v2.ResourceR\bresourceB\a\n" +
+	"\bresource\x18\x03 \x01(\v2(.google.cloud.securitycenter.v2.ResourceR\bresource\x12'\n" +
+	"\x0fdeleted_finding\x18\x05 \x01(\bR\x0edeletedFindingB\a\n" +
 	"\x05eventB\xf2\x01\n" +
 	"\"com.google.cloud.securitycenter.v2B\x18NotificationMessageProtoP\x01ZJcloud.google.com/go/securitycenter/apiv2/securitycenterpb;securitycenterpb\xaa\x02\x1eGoogle.Cloud.SecurityCenter.V2\xca\x02\x1eGoogle\\Cloud\\SecurityCenter\\V2\xea\x02!Google::Cloud::SecurityCenter::V2b\x06proto3"
 

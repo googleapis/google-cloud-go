@@ -79,6 +79,10 @@ type Fulfillment struct {
 	// fulfillment is being called, but it could be used for other purposes.
 	// This field is required if `webhook` is specified.
 	Tag string `protobuf:"bytes,3,opt,name=tag,proto3" json:"tag,omitempty"`
+	// Optional. The name of the code block function to execute, if this is a code
+	// block fulfillment. The code block itself is implied by the fulfillment's
+	// parent, e.g. a playbook.
+	CodeBlockFunction string `protobuf:"bytes,17,opt,name=code_block_function,json=codeBlockFunction,proto3" json:"code_block_function,omitempty"`
 	// Set parameter values before executing the webhook.
 	SetParameterActions []*Fulfillment_SetParameterAction `protobuf:"bytes,4,rep,name=set_parameter_actions,json=setParameterActions,proto3" json:"set_parameter_actions,omitempty"`
 	// Conditional cases for this fulfillment.
@@ -152,6 +156,13 @@ func (x *Fulfillment) GetReturnPartialResponses() bool {
 func (x *Fulfillment) GetTag() string {
 	if x != nil {
 		return x.Tag
+	}
+	return ""
+}
+
+func (x *Fulfillment) GetCodeBlockFunction() string {
+	if x != nil {
+		return x.CodeBlockFunction
 	}
 	return ""
 }
@@ -523,13 +534,14 @@ var File_google_cloud_dialogflow_cx_v3_fulfillment_proto protoreflect.FileDescri
 
 const file_google_cloud_dialogflow_cx_v3_fulfillment_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/dialogflow/cx/v3/fulfillment.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/dialogflow/cx/v3/advanced_settings.proto\x1a4google/cloud/dialogflow/cx/v3/response_message.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd2\f\n" +
+	"/google/cloud/dialogflow/cx/v3/fulfillment.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/dialogflow/cx/v3/advanced_settings.proto\x1a4google/cloud/dialogflow/cx/v3/response_message.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x8a\r\n" +
 	"\vFulfillment\x12J\n" +
 	"\bmessages\x18\x01 \x03(\v2..google.cloud.dialogflow.cx.v3.ResponseMessageR\bmessages\x12@\n" +
 	"\awebhook\x18\x02 \x01(\tB&\xfaA#\n" +
 	"!dialogflow.googleapis.com/WebhookR\awebhook\x128\n" +
 	"\x18return_partial_responses\x18\b \x01(\bR\x16returnPartialResponses\x12\x10\n" +
-	"\x03tag\x18\x03 \x01(\tR\x03tag\x12q\n" +
+	"\x03tag\x18\x03 \x01(\tR\x03tag\x124\n" +
+	"\x13code_block_function\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\x11codeBlockFunction\x12q\n" +
 	"\x15set_parameter_actions\x18\x04 \x03(\v2=.google.cloud.dialogflow.cx.v3.Fulfillment.SetParameterActionR\x13setParameterActions\x12h\n" +
 	"\x11conditional_cases\x18\x05 \x03(\v2;.google.cloud.dialogflow.cx.v3.Fulfillment.ConditionalCasesR\x10conditionalCases\x12\\\n" +
 	"\x11advanced_settings\x18\a \x01(\v2/.google.cloud.dialogflow.cx.v3.AdvancedSettingsR\x10advancedSettings\x12<\n" +
@@ -548,12 +560,12 @@ const file_google_cloud_dialogflow_cx_v3_fulfillment_proto_rawDesc = "" +
 	"\vCaseContent\x12J\n" +
 	"\amessage\x18\x01 \x01(\v2..google.cloud.dialogflow.cx.v3.ResponseMessageH\x00R\amessage\x12h\n" +
 	"\x10additional_cases\x18\x02 \x01(\v2;.google.cloud.dialogflow.cx.v3.Fulfillment.ConditionalCasesH\x00R\x0fadditionalCasesB\x12\n" +
-	"\x10cases_or_message\x1a\xd0\x02\n" +
-	"\x11GeneratorSettings\x12I\n" +
-	"\tgenerator\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x10cases_or_message\x1a\xd2\x02\n" +
+	"\x11GeneratorSettings\x12J\n" +
+	"\tgenerator\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#dialogflow.googleapis.com/GeneratorR\tgenerator\x12|\n" +
-	"\x10input_parameters\x18\x02 \x03(\v2Q.google.cloud.dialogflow.cx.v3.Fulfillment.GeneratorSettings.InputParametersEntryR\x0finputParameters\x12.\n" +
-	"\x10output_parameter\x18\x03 \x01(\tB\x03\xe0A\x02R\x0foutputParameter\x1aB\n" +
+	"\x10input_parameters\x18\x02 \x03(\v2Q.google.cloud.dialogflow.cx.v3.Fulfillment.GeneratorSettings.InputParametersEntryR\x0finputParameters\x12/\n" +
+	"\x10output_parameter\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0foutputParameter\x1aB\n" +
 	"\x14InputParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\xb3\x01\n" +

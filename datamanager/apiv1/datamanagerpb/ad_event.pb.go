@@ -712,6 +712,10 @@ type AdEvent struct {
 	// Required. Information gathered about the device being used when the ad
 	// event happened.
 	DeviceInfo *DeviceInfo `protobuf:"bytes,8,opt,name=device_info,json=deviceInfo,proto3" json:"device_info,omitempty"`
+	// Optional. IP address used for measurement. This must be same value as
+	// [DeviceInfo.ip_address][google.ads.datamanager.v1.DeviceInfo.ip_address].
+	// Keep it blank if you do not want to share IP for measurement.
+	IpAddress string `protobuf:"bytes,34,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
 	// Optional. The device ID of the device that the ad was served to.
 	MobileDeviceId string `protobuf:"bytes,9,opt,name=mobile_device_id,json=mobileDeviceId,proto3" json:"mobile_device_id,omitempty"`
 	// Required. The ID of the associated campaign.
@@ -903,6 +907,13 @@ func (x *AdEvent) GetDeviceInfo() *DeviceInfo {
 		return x.DeviceInfo
 	}
 	return nil
+}
+
+func (x *AdEvent) GetIpAddress() string {
+	if x != nil {
+		return x.IpAddress
+	}
+	return ""
 }
 
 func (x *AdEvent) GetMobileDeviceId() string {
@@ -1276,46 +1287,48 @@ var File_google_ads_datamanager_v1_ad_event_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_ad_event_proto_rawDesc = "" +
 	"\n" +
-	"(google/ads/datamanager/v1/ad_event.proto\x12\x19google.ads.datamanager.v1\x1a+google/ads/datamanager/v1/device_info.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a0google/ads/datamanager/v1/viewability_info.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x11\n" +
-	"\aAdEvent\x12(\n" +
-	"\radvertiser_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fadvertiserId\x12P\n" +
+	"(google/ads/datamanager/v1/ad_event.proto\x12\x19google.ads.datamanager.v1\x1a+google/ads/datamanager/v1/device_info.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a0google/ads/datamanager/v1/viewability_info.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\x12\n" +
+	"\aAdEvent\x12)\n" +
+	"\radvertiser_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fadvertiserId\x12Q\n" +
 	"\n" +
-	"event_type\x18\x02 \x01(\x0e2,.google.ads.datamanager.v1.AdEvent.EventTypeB\x03\xe0A\x02R\teventType\x12V\n" +
+	"event_type\x18\x02 \x01(\x0e2,.google.ads.datamanager.v1.AdEvent.EventTypeB\x04\xe2A\x01\x02R\teventType\x12V\n" +
 	"\revent_subtype\x18\x03 \x01(\x0e2/.google.ads.datamanager.v1.AdEvent.EventSubtypeH\x00R\feventSubtype\x122\n" +
-	"\x14event_subtype_string\x18\x04 \x01(\tH\x00R\x12eventSubtypeString\x12=\n" +
-	"\ttimestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\ttimestamp\x12\x1e\n" +
-	"\bevent_id\x18\x06 \x01(\tB\x03\xe0A\x01R\aeventId\x12E\n" +
-	"\tuser_data\x18\a \x01(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x01R\buserData\x12K\n" +
-	"\vdevice_info\x18\b \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x03\xe0A\x02R\n" +
-	"deviceInfo\x12-\n" +
-	"\x10mobile_device_id\x18\t \x01(\tB\x03\xe0A\x01R\x0emobileDeviceId\x12$\n" +
+	"\x14event_subtype_string\x18\x04 \x01(\tH\x00R\x12eventSubtypeString\x12>\n" +
+	"\ttimestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\ttimestamp\x12\x1f\n" +
+	"\bevent_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\aeventId\x12F\n" +
+	"\tuser_data\x18\a \x01(\v2#.google.ads.datamanager.v1.UserDataB\x04\xe2A\x01\x01R\buserData\x12L\n" +
+	"\vdevice_info\x18\b \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x04\xe2A\x01\x02R\n" +
+	"deviceInfo\x12+\n" +
+	"\n" +
+	"ip_address\x18\" \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12.\n" +
+	"\x10mobile_device_id\x18\t \x01(\tB\x04\xe2A\x01\x01R\x0emobileDeviceId\x12%\n" +
 	"\vcampaign_id\x18\n" +
-	" \x01(\tB\x03\xe0A\x02R\n" +
-	"campaignId\x12(\n" +
-	"\rcampaign_name\x18\v \x01(\tB\x03\xe0A\x02R\fcampaignName\x12#\n" +
-	"\vad_group_id\x18\f \x01(\tB\x03\xe0A\x01R\tadGroupId\x12\x18\n" +
-	"\x05ad_id\x18\r \x01(\tB\x03\xe0A\x01R\x04adId\x12<\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"campaignId\x12)\n" +
+	"\rcampaign_name\x18\v \x01(\tB\x04\xe2A\x01\x02R\fcampaignName\x12$\n" +
+	"\vad_group_id\x18\f \x01(\tB\x04\xe2A\x01\x01R\tadGroupId\x12\x19\n" +
+	"\x05ad_id\x18\r \x01(\tB\x04\xe2A\x01\x01R\x04adId\x12<\n" +
 	"\aad_type\x18\x0e \x01(\x0e2!.google.ads.datamanager.v1.AdTypeH\x01R\x06adType\x12&\n" +
 	"\x0ead_type_string\x18\x0f \x01(\tH\x01R\fadTypeString\x12B\n" +
 	"\tad_format\x18\x10 \x01(\x0e2#.google.ads.datamanager.v1.AdFormatH\x02R\badFormat\x12*\n" +
 	"\x10ad_format_string\x18\x11 \x01(\tH\x02R\x0eadFormatString\x12K\n" +
 	"\fad_placement\x18\x12 \x01(\x0e2&.google.ads.datamanager.v1.AdPlacementH\x03R\vadPlacement\x120\n" +
-	"\x13ad_placement_string\x18\x13 \x01(\tH\x03R\x11adPlacementString\x12 \n" +
-	"\tad_height\x18\x14 \x01(\x05B\x03\xe0A\x01R\badHeight\x12\x1e\n" +
-	"\bad_width\x18\x15 \x01(\x05B\x03\xe0A\x01R\aadWidth\x12$\n" +
-	"\vregion_code\x18\x16 \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x12\x1b\n" +
-	"\x06source\x18\x17 \x01(\tB\x03\xe0A\x02R\x06source\x12\x1b\n" +
-	"\x06medium\x18\x18 \x01(\tB\x03\xe0A\x02R\x06medium\x12Q\n" +
+	"\x13ad_placement_string\x18\x13 \x01(\tH\x03R\x11adPlacementString\x12!\n" +
+	"\tad_height\x18\x14 \x01(\x05B\x04\xe2A\x01\x01R\badHeight\x12\x1f\n" +
+	"\bad_width\x18\x15 \x01(\x05B\x04\xe2A\x01\x01R\aadWidth\x12%\n" +
+	"\vregion_code\x18\x16 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x12\x1c\n" +
+	"\x06source\x18\x17 \x01(\tB\x04\xe2A\x01\x02R\x06source\x12\x1c\n" +
+	"\x06medium\x18\x18 \x01(\tB\x04\xe2A\x01\x02R\x06medium\x12Q\n" +
 	"\x0etargeting_type\x18\x19 \x01(\x0e2(.google.ads.datamanager.v1.TargetingTypeH\x04R\rtargetingType\x124\n" +
 	"\x15targeting_type_string\x18\x1a \x01(\tH\x04R\x13targetingTypeString\x12N\n" +
 	"\rplatform_type\x18\x1b \x01(\x0e2'.google.ads.datamanager.v1.PlatformTypeH\x05R\fplatformType\x122\n" +
 	"\x14platform_type_string\x18\x1c \x01(\tH\x05R\x12platformTypeString\x12A\n" +
 	"\bplatform\x18\x1d \x01(\x0e2#.google.ads.datamanager.v1.PlatformH\x06R\bplatform\x12)\n" +
-	"\x0fplatform_string\x18\x1e \x01(\tH\x06R\x0eplatformString\x12Z\n" +
-	"\x10attribution_hint\x18\x1f \x01(\x0e2*.google.ads.datamanager.v1.AttributionHintB\x03\xe0A\x01R\x0fattributionHint\x12Z\n" +
-	"\x10viewability_info\x18  \x01(\v2*.google.ads.datamanager.v1.ViewabilityInfoB\x03\xe0A\x02R\x0fviewabilityInfo\x129\n" +
-	"\x13measurement_allowed\x18! \x01(\bB\x03\xe0A\x01H\aR\x12measurementAllowed\x88\x01\x01\"R\n" +
+	"\x0fplatform_string\x18\x1e \x01(\tH\x06R\x0eplatformString\x12[\n" +
+	"\x10attribution_hint\x18\x1f \x01(\x0e2*.google.ads.datamanager.v1.AttributionHintB\x04\xe2A\x01\x01R\x0fattributionHint\x12[\n" +
+	"\x10viewability_info\x18  \x01(\v2*.google.ads.datamanager.v1.ViewabilityInfoB\x04\xe2A\x01\x02R\x0fviewabilityInfo\x12:\n" +
+	"\x13measurement_allowed\x18! \x01(\bB\x04\xe2A\x01\x01H\aR\x12measurementAllowed\x88\x01\x01\"R\n" +
 	"\tEventType\x12\x1a\n" +
 	"\x16EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fEVENT_TYPE_VIEW\x10\x01\x12\x14\n" +

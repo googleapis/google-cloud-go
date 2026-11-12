@@ -985,61 +985,61 @@ var File_google_chat_v1_reaction_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_reaction_proto_rawDesc = "" +
 	"\n" +
-	"\x1dgoogle/chat/v1/reaction.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x19google/chat/v1/user.proto\"\xdf\x01\n" +
-	"\bReaction\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12-\n" +
-	"\x04user\x18\x02 \x01(\v2\x14.google.chat.v1.UserB\x03\xe0A\x03R\x04user\x120\n" +
-	"\x05emoji\x18\x03 \x01(\v2\x15.google.chat.v1.EmojiB\x03\xe0A\x02R\x05emoji:Y\xeaAV\n" +
-	"\x1cchat.googleapis.com/Reaction\x126spaces/{space}/messages/{message}/reactions/{reaction}\"u\n" +
-	"\x05Emoji\x12\x1f\n" +
-	"\aunicode\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\aunicode\x12@\n" +
+	"\x1dgoogle/chat/v1/reaction.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x19google/chat/v1/user.proto\"\xe2\x01\n" +
+	"\bReaction\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12.\n" +
+	"\x04user\x18\x02 \x01(\v2\x14.google.chat.v1.UserB\x04\xe2A\x01\x03R\x04user\x121\n" +
+	"\x05emoji\x18\x03 \x01(\v2\x15.google.chat.v1.EmojiB\x04\xe2A\x01\x02R\x05emoji:Y\xeaAV\n" +
+	"\x1cchat.googleapis.com/Reaction\x126spaces/{space}/messages/{message}/reactions/{reaction}\"v\n" +
+	"\x05Emoji\x12 \n" +
+	"\aunicode\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\aunicode\x12@\n" +
 	"\fcustom_emoji\x18\x02 \x01(\v2\x1b.google.chat.v1.CustomEmojiH\x00R\vcustomEmojiB\t\n" +
-	"\acontent\"\xb6\x03\n" +
-	"\vCustomEmoji\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x01 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12%\n" +
+	"\acontent\"\xb5\x03\n" +
+	"\vCustomEmoji\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x01 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12$\n" +
 	"\n" +
-	"emoji_name\x18\x03 \x01(\tB\x06\xe0A\x01\xe0A\x05R\temojiName\x123\n" +
-	"\x13temporary_image_uri\x18\x04 \x01(\tB\x03\xe0A\x03R\x11temporaryImageUri\x12P\n" +
-	"\apayload\x18\x05 \x01(\v2..google.chat.v1.CustomEmoji.CustomEmojiPayloadB\x06\xe0A\x04\xe0A\x01R\apayload\x1ac\n" +
-	"\x12CustomEmojiPayload\x12)\n" +
-	"\ffile_content\x18\x01 \x01(\fB\x06\xe0A\x04\xe0A\x02R\vfileContent\x12\"\n" +
-	"\bfilename\x18\x02 \x01(\tB\x06\xe0A\x04\xe0A\x02R\bfilename:\\\xeaAY\n" +
-	"\x1fchat.googleapis.com/CustomEmoji\x12\x1bcustomEmojis/{custom_emoji}*\fcustomEmojis2\vcustomEmoji\"\x8c\x01\n" +
-	"\x14EmojiReactionSummary\x120\n" +
-	"\x05emoji\x18\x01 \x01(\v2\x15.google.chat.v1.EmojiB\x03\xe0A\x03R\x05emoji\x12/\n" +
-	"\x0ereaction_count\x18\x02 \x01(\x05B\x03\xe0A\x03H\x00R\rreactionCount\x88\x01\x01B\x11\n" +
-	"\x0f_reaction_count\"\x90\x01\n" +
-	"\x15CreateReactionRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cchat.googleapis.com/ReactionR\x06parent\x129\n" +
-	"\breaction\x18\x02 \x01(\v2\x18.google.chat.v1.ReactionB\x03\xe0A\x02R\breaction\"\xb7\x01\n" +
-	"\x14ListReactionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cchat.googleapis.com/ReactionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"emoji_name\x18\x03 \x01(\tB\x05\xe2A\x02\x01\x05R\temojiName\x124\n" +
+	"\x13temporary_image_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x11temporaryImageUri\x12O\n" +
+	"\apayload\x18\x05 \x01(\v2..google.chat.v1.CustomEmoji.CustomEmojiPayloadB\x05\xe2A\x02\x04\x01R\apayload\x1aa\n" +
+	"\x12CustomEmojiPayload\x12(\n" +
+	"\ffile_content\x18\x01 \x01(\fB\x05\xe2A\x02\x04\x02R\vfileContent\x12!\n" +
+	"\bfilename\x18\x02 \x01(\tB\x05\xe2A\x02\x04\x02R\bfilename:\\\xeaAY\n" +
+	"\x1fchat.googleapis.com/CustomEmoji\x12\x1bcustomEmojis/{custom_emoji}*\fcustomEmojis2\vcustomEmoji\"\x8e\x01\n" +
+	"\x14EmojiReactionSummary\x121\n" +
+	"\x05emoji\x18\x01 \x01(\v2\x15.google.chat.v1.EmojiB\x04\xe2A\x01\x03R\x05emoji\x120\n" +
+	"\x0ereaction_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03H\x00R\rreactionCount\x88\x01\x01B\x11\n" +
+	"\x0f_reaction_count\"\x92\x01\n" +
+	"\x15CreateReactionRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cchat.googleapis.com/ReactionR\x06parent\x12:\n" +
+	"\breaction\x18\x02 \x01(\v2\x18.google.chat.v1.ReactionB\x04\xe2A\x01\x02R\breaction\"\xbb\x01\n" +
+	"\x14ListReactionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cchat.googleapis.com/ReactionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"w\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"w\n" +
 	"\x15ListReactionsResponse\x126\n" +
 	"\treactions\x18\x01 \x03(\v2\x18.google.chat.v1.ReactionR\treactions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
-	"\x15DeleteReactionRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cchat.googleapis.com/ReactionR\x04name\"_\n" +
-	"\x18CreateCustomEmojiRequest\x12C\n" +
-	"\fcustom_emoji\x18\x01 \x01(\v2\x1b.google.chat.v1.CustomEmojiB\x03\xe0A\x02R\vcustomEmoji\"T\n" +
-	"\x15GetCustomEmojiRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fchat.googleapis.com/CustomEmojiR\x04name\"|\n" +
-	"\x17ListCustomEmojisRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
+	"\x15DeleteReactionRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cchat.googleapis.com/ReactionR\x04name\"`\n" +
+	"\x18CreateCustomEmojiRequest\x12D\n" +
+	"\fcustom_emoji\x18\x01 \x01(\v2\x1b.google.chat.v1.CustomEmojiB\x04\xe2A\x01\x02R\vcustomEmoji\"U\n" +
+	"\x15GetCustomEmojiRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fchat.googleapis.com/CustomEmojiR\x04name\"\x7f\n" +
+	"\x17ListCustomEmojisRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"\x89\x01\n" +
-	"\x18ListCustomEmojisResponse\x12E\n" +
-	"\rcustom_emojis\x18\x01 \x03(\v2\x1b.google.chat.v1.CustomEmojiB\x03\xe0A\x06R\fcustomEmojis\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
-	"\x18DeleteCustomEmojiRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x8a\x01\n" +
+	"\x18ListCustomEmojisResponse\x12F\n" +
+	"\rcustom_emojis\x18\x01 \x03(\v2\x1b.google.chat.v1.CustomEmojiB\x04\xe2A\x01\x06R\fcustomEmojis\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
+	"\x18DeleteCustomEmojiRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fchat.googleapis.com/CustomEmojiR\x04nameB\xa6\x01\n" +
 	"\x12com.google.chat.v1B\rReactionProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 

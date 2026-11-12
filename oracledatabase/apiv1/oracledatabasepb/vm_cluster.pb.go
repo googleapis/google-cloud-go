@@ -421,6 +421,10 @@ type CloudVmCluster struct {
 	// Format:
 	// projects/{project}/locations/{location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
 	BackupOdbSubnet string `protobuf:"bytes,15,opt,name=backup_odb_subnet,json=backupOdbSubnet,proto3" json:"backup_odb_subnet,omitempty"`
+	// Optional. Immutable. The name of the OdbDnsZone for using custom domain
+	// name for the VM Cluster. Format:
+	// projects/{project}/locations/{location}/odbNetworks/{odb_network}/odbDnsZones/{odb_dns_zone}
+	OdbDnsZone string `protobuf:"bytes,18,opt,name=odb_dns_zone,json=odbDnsZone,proto3" json:"odb_dns_zone,omitempty"`
 	// Output only. The identity connector details which will allow OCI to
 	// securely access the resources in the customer project.
 	IdentityConnector *IdentityConnector `protobuf:"bytes,16,opt,name=identity_connector,json=identityConnector,proto3" json:"identity_connector,omitempty"`
@@ -549,6 +553,13 @@ func (x *CloudVmCluster) GetOdbSubnet() string {
 func (x *CloudVmCluster) GetBackupOdbSubnet() string {
 	if x != nil {
 		return x.BackupOdbSubnet
+	}
+	return ""
+}
+
+func (x *CloudVmCluster) GetOdbDnsZone() string {
+	if x != nil {
+		return x.OdbDnsZone
 	}
 	return ""
 }
@@ -1004,81 +1015,83 @@ var File_google_cloud_oracledatabase_v1_vm_cluster_proto protoreflect.FileDescri
 
 const file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/oracledatabase/v1/vm_cluster.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xbc\n" +
+	"/google/cloud/oracledatabase/v1/vm_cluster.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xa1\v\n" +
+	"\x0eCloudVmCluster\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12x\n" +
+	"\x16exadata_infrastructure\x18\x02 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8oracledatabase.googleapis.com/CloudExadataInfrastructureR\x15exadataInfrastructure\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12^\n" +
 	"\n" +
-	"\x0eCloudVmCluster\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12w\n" +
-	"\x16exadata_infrastructure\x18\x02 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8oracledatabase.googleapis.com/CloudExadataInfrastructureR\x15exadataInfrastructure\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12]\n" +
-	"\n" +
-	"properties\x18\x06 \x01(\v28.google.cloud.oracledatabase.v1.CloudVmClusterPropertiesB\x03\xe0A\x01R\n" +
-	"properties\x12W\n" +
-	"\x06labels\x18\a \x03(\v2:.google.cloud.oracledatabase.v1.CloudVmCluster.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x17\n" +
-	"\x04cidr\x18\t \x01(\tB\x03\xe0A\x01R\x04cidr\x121\n" +
+	"properties\x18\x06 \x01(\v28.google.cloud.oracledatabase.v1.CloudVmClusterPropertiesB\x04\xe2A\x01\x01R\n" +
+	"properties\x12X\n" +
+	"\x06labels\x18\a \x03(\v2:.google.cloud.oracledatabase.v1.CloudVmCluster.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\x18\n" +
+	"\x04cidr\x18\t \x01(\tB\x04\xe2A\x01\x01R\x04cidr\x122\n" +
 	"\x12backup_subnet_cidr\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x10backupSubnetCidr\x12@\n" +
-	"\anetwork\x18\v \x01(\tB&\xe0A\x01\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12+\n" +
-	"\x0fgcp_oracle_zone\x18\f \x01(\tB\x03\xe0A\x03R\rgcpOracleZone\x12Q\n" +
-	"\vodb_network\x18\r \x01(\tB0\xe0A\x01\xfaA*\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x10backupSubnetCidr\x12A\n" +
+	"\anetwork\x18\v \x01(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12,\n" +
+	"\x0fgcp_oracle_zone\x18\f \x01(\tB\x04\xe2A\x01\x03R\rgcpOracleZone\x12R\n" +
+	"\vodb_network\x18\r \x01(\tB1\xe2A\x01\x01\xfaA*\n" +
 	"(oracledatabase.googleapis.com/OdbNetworkR\n" +
-	"odbNetwork\x12N\n" +
+	"odbNetwork\x12O\n" +
 	"\n" +
-	"odb_subnet\x18\x0e \x01(\tB/\xe0A\x01\xfaA)\n" +
-	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12[\n" +
-	"\x11backup_odb_subnet\x18\x0f \x01(\tB/\xe0A\x01\xfaA)\n" +
-	"'oracledatabase.googleapis.com/OdbSubnetR\x0fbackupOdbSubnet\x12e\n" +
-	"\x12identity_connector\x18\x10 \x01(\v21.google.cloud.oracledatabase.v1.IdentityConnectorB\x03\xe0A\x03R\x11identityConnector\x12w\n" +
-	"\x19exascale_db_storage_vault\x18\x11 \x01(\tB<\xe0A\x01\xfaA6\n" +
+	"odb_subnet\x18\x0e \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12\\\n" +
+	"\x11backup_odb_subnet\x18\x0f \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'oracledatabase.googleapis.com/OdbSubnetR\x0fbackupOdbSubnet\x12T\n" +
+	"\fodb_dns_zone\x18\x12 \x01(\tB2\xe2A\x02\x01\x05\xfaA*\n" +
+	"(oracledatabase.googleapis.com/OdbDnsZoneR\n" +
+	"odbDnsZone\x12f\n" +
+	"\x12identity_connector\x18\x10 \x01(\v21.google.cloud.oracledatabase.v1.IdentityConnectorB\x04\xe2A\x01\x03R\x11identityConnector\x12x\n" +
+	"\x19exascale_db_storage_vault\x18\x11 \x01(\tB=\xe2A\x01\x01\xfaA6\n" +
 	"4oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x16exascaleDbStorageVault\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9f\x01\xeaA\x9b\x01\n" +
-	",oracledatabase.googleapis.com/CloudVmCluster\x12Jprojects/{project}/locations/{location}/cloudVmClusters/{cloud_vm_cluster}*\x0fcloudVmClusters2\x0ecloudVmCluster\"\xed\x16\n" +
-	"\x18CloudVmClusterProperties\x12\x17\n" +
-	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12l\n" +
-	"\flicense_type\x18\x02 \x01(\x0e2D.google.cloud.oracledatabase.v1.CloudVmClusterProperties.LicenseTypeB\x03\xe0A\x02R\vlicenseType\x12\"\n" +
+	",oracledatabase.googleapis.com/CloudVmCluster\x12Jprojects/{project}/locations/{location}/cloudVmClusters/{cloud_vm_cluster}*\x0fcloudVmClusters2\x0ecloudVmCluster\"\x91\x17\n" +
+	"\x18CloudVmClusterProperties\x12\x18\n" +
+	"\x04ocid\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12m\n" +
+	"\flicense_type\x18\x02 \x01(\x0e2D.google.cloud.oracledatabase.v1.CloudVmClusterProperties.LicenseTypeB\x04\xe2A\x01\x02R\vlicenseType\x12#\n" +
 	"\n" +
-	"gi_version\x18\x03 \x01(\tB\x03\xe0A\x01R\tgiVersion\x127\n" +
-	"\ttime_zone\x18\x04 \x01(\v2\x15.google.type.TimeZoneB\x03\xe0A\x01R\btimeZone\x12+\n" +
-	"\x0fssh_public_keys\x18\x05 \x03(\tB\x03\xe0A\x01R\rsshPublicKeys\x12\"\n" +
+	"gi_version\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tgiVersion\x128\n" +
+	"\ttime_zone\x18\x04 \x01(\v2\x15.google.type.TimeZoneB\x04\xe2A\x01\x01R\btimeZone\x12,\n" +
+	"\x0fssh_public_keys\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\rsshPublicKeys\x12#\n" +
 	"\n" +
-	"node_count\x18\x06 \x01(\x05B\x03\xe0A\x01R\tnodeCount\x12\x19\n" +
-	"\x05shape\x18\a \x01(\tB\x03\xe0A\x03R\x05shape\x12\"\n" +
+	"node_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\tnodeCount\x12\x1a\n" +
+	"\x05shape\x18\a \x01(\tB\x04\xe2A\x01\x03R\x05shape\x12#\n" +
 	"\n" +
-	"ocpu_count\x18\b \x01(\x02B\x03\xe0A\x01R\tocpuCount\x12)\n" +
-	"\x0ememory_size_gb\x18\t \x01(\x05B\x03\xe0A\x01R\fmemorySizeGb\x129\n" +
+	"ocpu_count\x18\b \x01(\x02B\x04\xe2A\x01\x01R\tocpuCount\x12*\n" +
+	"\x0ememory_size_gb\x18\t \x01(\x05B\x04\xe2A\x01\x01R\fmemorySizeGb\x12:\n" +
 	"\x17db_node_storage_size_gb\x18\n" +
-	" \x01(\x05B\x03\xe0A\x01R\x13dbNodeStorageSizeGb\x12+\n" +
-	"\x0fstorage_size_gb\x18\v \x01(\x05B\x03\xe0A\x03R\rstorageSizeGb\x124\n" +
-	"\x14data_storage_size_tb\x18\f \x01(\x01B\x03\xe0A\x01R\x11dataStorageSizeTb\x12u\n" +
-	"\x0fdisk_redundancy\x18\r \x01(\x0e2G.google.cloud.oracledatabase.v1.CloudVmClusterProperties.DiskRedundancyB\x03\xe0A\x01R\x0ediskRedundancy\x12=\n" +
-	"\x18sparse_diskgroup_enabled\x18\x0e \x01(\bB\x03\xe0A\x01R\x16sparseDiskgroupEnabled\x125\n" +
-	"\x14local_backup_enabled\x18\x0f \x01(\bB\x03\xe0A\x01R\x12localBackupEnabled\x12,\n" +
-	"\x0fhostname_prefix\x18\x10 \x01(\tB\x03\xe0A\x01R\x0ehostnamePrefix\x12\x89\x01\n" +
-	"#diagnostics_data_collection_options\x18\x13 \x01(\v25.google.cloud.oracledatabase.v1.DataCollectionOptionsB\x03\xe0A\x01R diagnosticsDataCollectionOptions\x12Y\n" +
-	"\x05state\x18\x14 \x01(\x0e2>.google.cloud.oracledatabase.v1.CloudVmClusterProperties.StateB\x03\xe0A\x03R\x05state\x128\n" +
-	"\x16scan_listener_port_tcp\x18\x15 \x01(\x05B\x03\xe0A\x01R\x13scanListenerPortTcp\x12?\n" +
-	"\x1ascan_listener_port_tcp_ssl\x18\x16 \x01(\x05B\x03\xe0A\x01R\x16scanListenerPortTcpSsl\x12\x1b\n" +
-	"\x06domain\x18\x17 \x01(\tB\x03\xe0A\x03R\x06domain\x12\x1e\n" +
-	"\bscan_dns\x18\x18 \x01(\tB\x03\xe0A\x03R\ascanDns\x12\x1f\n" +
-	"\bhostname\x18\x19 \x01(\tB\x03\xe0A\x03R\bhostname\x12)\n" +
-	"\x0ecpu_core_count\x18\x1a \x01(\x05B\x03\xe0A\x02R\fcpuCoreCount\x12*\n" +
-	"\x0esystem_version\x18\x1b \x01(\tB\x03\xe0A\x01R\rsystemVersion\x12#\n" +
-	"\vscan_ip_ids\x18\x1c \x03(\tB\x03\xe0A\x03R\tscanIpIds\x120\n" +
-	"\x12scan_dns_record_id\x18\x1d \x01(\tB\x03\xe0A\x03R\x0fscanDnsRecordId\x12\x1c\n" +
-	"\aoci_url\x18\x1e \x01(\tB\x03\xe0A\x03R\x06ociUrl\x12+\n" +
-	"\x0fdb_server_ocids\x18\x1f \x03(\tB\x03\xe0A\x01R\rdbServerOcids\x12*\n" +
-	"\x0ecompartment_id\x18  \x01(\tB\x03\xe0A\x03R\rcompartmentId\x12+\n" +
-	"\x0fdns_listener_ip\x18# \x01(\tB\x03\xe0A\x03R\rdnsListenerIp\x12&\n" +
-	"\fcluster_name\x18$ \x01(\tB\x03\xe0A\x01R\vclusterName\x12V\n" +
-	"\rcompute_model\x18% \x01(\x0e2,.google.cloud.oracledatabase.v1.ComputeModelB\x03\xe0A\x03R\fcomputeModel\x12\x8b\x01\n" +
-	"\x17storage_management_type\x18& \x01(\x0e2N.google.cloud.oracledatabase.v1.CloudVmClusterProperties.StorageManagementTypeB\x03\xe0A\x03R\x15storageManagementType\x12\x93\x01\n" +
-	"\x1bvm_file_system_storage_type\x18' \x01(\x0e2P.google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmFileSystemStorageTypeB\x03\xe0A\x01R\x17vmFileSystemStorageType\x12\x86\x01\n" +
-	"\x16vm_backup_storage_type\x18( \x01(\x0e2L.google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmBackupStorageTypeB\x03\xe0A\x01R\x13vmBackupStorageType\"]\n" +
+	" \x01(\x05B\x04\xe2A\x01\x01R\x13dbNodeStorageSizeGb\x12,\n" +
+	"\x0fstorage_size_gb\x18\v \x01(\x05B\x04\xe2A\x01\x03R\rstorageSizeGb\x125\n" +
+	"\x14data_storage_size_tb\x18\f \x01(\x01B\x04\xe2A\x01\x01R\x11dataStorageSizeTb\x12v\n" +
+	"\x0fdisk_redundancy\x18\r \x01(\x0e2G.google.cloud.oracledatabase.v1.CloudVmClusterProperties.DiskRedundancyB\x04\xe2A\x01\x01R\x0ediskRedundancy\x12>\n" +
+	"\x18sparse_diskgroup_enabled\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\x16sparseDiskgroupEnabled\x126\n" +
+	"\x14local_backup_enabled\x18\x0f \x01(\bB\x04\xe2A\x01\x01R\x12localBackupEnabled\x12-\n" +
+	"\x0fhostname_prefix\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\x0ehostnamePrefix\x12\x8a\x01\n" +
+	"#diagnostics_data_collection_options\x18\x13 \x01(\v25.google.cloud.oracledatabase.v1.DataCollectionOptionsB\x04\xe2A\x01\x01R diagnosticsDataCollectionOptions\x12Z\n" +
+	"\x05state\x18\x14 \x01(\x0e2>.google.cloud.oracledatabase.v1.CloudVmClusterProperties.StateB\x04\xe2A\x01\x03R\x05state\x129\n" +
+	"\x16scan_listener_port_tcp\x18\x15 \x01(\x05B\x04\xe2A\x01\x01R\x13scanListenerPortTcp\x12@\n" +
+	"\x1ascan_listener_port_tcp_ssl\x18\x16 \x01(\x05B\x04\xe2A\x01\x01R\x16scanListenerPortTcpSsl\x12\x1c\n" +
+	"\x06domain\x18\x17 \x01(\tB\x04\xe2A\x01\x03R\x06domain\x12\x1f\n" +
+	"\bscan_dns\x18\x18 \x01(\tB\x04\xe2A\x01\x03R\ascanDns\x12 \n" +
+	"\bhostname\x18\x19 \x01(\tB\x04\xe2A\x01\x03R\bhostname\x12*\n" +
+	"\x0ecpu_core_count\x18\x1a \x01(\x05B\x04\xe2A\x01\x02R\fcpuCoreCount\x12+\n" +
+	"\x0esystem_version\x18\x1b \x01(\tB\x04\xe2A\x01\x01R\rsystemVersion\x12$\n" +
+	"\vscan_ip_ids\x18\x1c \x03(\tB\x04\xe2A\x01\x03R\tscanIpIds\x121\n" +
+	"\x12scan_dns_record_id\x18\x1d \x01(\tB\x04\xe2A\x01\x03R\x0fscanDnsRecordId\x12\x1d\n" +
+	"\aoci_url\x18\x1e \x01(\tB\x04\xe2A\x01\x03R\x06ociUrl\x12,\n" +
+	"\x0fdb_server_ocids\x18\x1f \x03(\tB\x04\xe2A\x01\x01R\rdbServerOcids\x12+\n" +
+	"\x0ecompartment_id\x18  \x01(\tB\x04\xe2A\x01\x03R\rcompartmentId\x12,\n" +
+	"\x0fdns_listener_ip\x18# \x01(\tB\x04\xe2A\x01\x03R\rdnsListenerIp\x12'\n" +
+	"\fcluster_name\x18$ \x01(\tB\x04\xe2A\x01\x01R\vclusterName\x12W\n" +
+	"\rcompute_model\x18% \x01(\x0e2,.google.cloud.oracledatabase.v1.ComputeModelB\x04\xe2A\x01\x03R\fcomputeModel\x12\x8c\x01\n" +
+	"\x17storage_management_type\x18& \x01(\x0e2N.google.cloud.oracledatabase.v1.CloudVmClusterProperties.StorageManagementTypeB\x04\xe2A\x01\x03R\x15storageManagementType\x12\x94\x01\n" +
+	"\x1bvm_file_system_storage_type\x18' \x01(\x0e2P.google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmFileSystemStorageTypeB\x04\xe2A\x01\x01R\x17vmFileSystemStorageType\x12\x87\x01\n" +
+	"\x16vm_backup_storage_type\x18( \x01(\x0e2L.google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmBackupStorageTypeB\x04\xe2A\x01\x01R\x13vmBackupStorageType\"]\n" +
 	"\vLicenseType\x12\x1c\n" +
 	"\x18LICENSE_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10LICENSE_INCLUDED\x10\x01\x12\x1a\n" +
@@ -1110,11 +1123,11 @@ const file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc = "" +
 	"\x13VmBackupStorageType\x12&\n" +
 	"\"VM_BACKUP_STORAGE_TYPE_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cVM_BACKUP_STORAGE_TYPE_LOCAL\x10\x01\x12#\n" +
-	"\x1fVM_BACKUP_STORAGE_TYPE_EXASCALE\x10\x02\"\xd4\x01\n" +
-	"\x15DataCollectionOptions\x12A\n" +
-	"\x1adiagnostics_events_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x18diagnosticsEventsEnabled\x12?\n" +
-	"\x19health_monitoring_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x17healthMonitoringEnabled\x127\n" +
-	"\x15incident_logs_enabled\x18\x03 \x01(\bB\x03\xe0A\x01R\x13incidentLogsEnabledB\xed\x01\n" +
+	"\x1fVM_BACKUP_STORAGE_TYPE_EXASCALE\x10\x02\"\xd7\x01\n" +
+	"\x15DataCollectionOptions\x12B\n" +
+	"\x1adiagnostics_events_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x18diagnosticsEventsEnabled\x12@\n" +
+	"\x19health_monitoring_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x17healthMonitoringEnabled\x128\n" +
+	"\x15incident_logs_enabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x13incidentLogsEnabledB\xed\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x13CloudVmClusterProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

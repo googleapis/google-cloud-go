@@ -5303,60 +5303,60 @@ var File_google_cloud_networkconnectivity_v1_hub_proto protoreflect.FileDescript
 
 const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/networkconnectivity/v1/hub.proto\x12#google.cloud.networkconnectivity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/networkconnectivity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe3\a\n" +
-	"\x03Hub\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"-google/cloud/networkconnectivity/v1/hub.proto\x12#google.cloud.networkconnectivity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/networkconnectivity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\a\n" +
+	"\x03Hub\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12L\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.networkconnectivity.v1.Hub.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12 \n" +
-	"\tunique_id\x18\b \x01(\tB\x03\xe0A\x03R\buniqueId\x12E\n" +
-	"\x05state\x18\t \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x03\xe0A\x03R\x05state\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.networkconnectivity.v1.Hub.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12!\n" +
+	"\tunique_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\buniqueId\x12F\n" +
+	"\x05state\x18\t \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x04\xe2A\x01\x03R\x05state\x12R\n" +
 	"\frouting_vpcs\x18\n" +
-	" \x03(\v2/.google.cloud.networkconnectivity.v1.RoutingVPCR\vroutingVpcs\x12&\n" +
-	"\froute_tables\x18\v \x03(\tB\x03\xe0A\x03R\vrouteTables\x12[\n" +
-	"\rspoke_summary\x18\f \x01(\v21.google.cloud.networkconnectivity.v1.SpokeSummaryB\x03\xe0A\x03R\fspokeSummary\x12U\n" +
-	"\vpolicy_mode\x18\r \x01(\x0e2/.google.cloud.networkconnectivity.v1.PolicyModeB\x03\xe0A\x01R\n" +
-	"policyMode\x12a\n" +
-	"\x0fpreset_topology\x18\x0e \x01(\x0e23.google.cloud.networkconnectivity.v1.PresetTopologyB\x03\xe0A\x01R\x0epresetTopology\x12'\n" +
+	" \x03(\v2/.google.cloud.networkconnectivity.v1.RoutingVPCR\vroutingVpcs\x12'\n" +
+	"\froute_tables\x18\v \x03(\tB\x04\xe2A\x01\x03R\vrouteTables\x12\\\n" +
+	"\rspoke_summary\x18\f \x01(\v21.google.cloud.networkconnectivity.v1.SpokeSummaryB\x04\xe2A\x01\x03R\fspokeSummary\x12V\n" +
+	"\vpolicy_mode\x18\r \x01(\x0e2/.google.cloud.networkconnectivity.v1.PolicyModeB\x04\xe2A\x01\x01R\n" +
+	"policyMode\x12b\n" +
+	"\x0fpreset_topology\x18\x0e \x01(\x0e23.google.cloud.networkconnectivity.v1.PresetTopologyB\x04\xe2A\x01\x01R\x0epresetTopology\x12(\n" +
 	"\n" +
-	"export_psc\x18\x0f \x01(\bB\x03\xe0A\x01H\x00R\texportPsc\x88\x01\x01\x1a9\n" +
+	"export_psc\x18\x0f \x01(\bB\x04\xe2A\x01\x01H\x00R\texportPsc\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:[\xeaAX\n" +
 	"&networkconnectivity.googleapis.com/Hub\x12.projects/{project}/locations/global/hubs/{hub}B\r\n" +
-	"\v_export_psc\"\xb0\x01\n" +
+	"\v_export_psc\"\xb1\x01\n" +
 	"\n" +
 	"RoutingVPC\x125\n" +
 	"\x03uri\x18\x01 \x01(\tB#\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\x03uri\x12k\n" +
-	"2required_for_new_site_to_site_data_transfer_spokes\x18\x02 \x01(\bB\x03\xe0A\x03R*requiredForNewSiteToSiteDataTransferSpokes\"\xf0\x0e\n" +
-	"\x05Spoke\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1ecompute.googleapis.com/NetworkR\x03uri\x12l\n" +
+	"2required_for_new_site_to_site_data_transfer_spokes\x18\x02 \x01(\bB\x04\xe2A\x01\x03R*requiredForNewSiteToSiteDataTransferSpokes\"\x81\x0f\n" +
+	"\x05Spoke\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12N\n" +
-	"\x06labels\x18\x04 \x03(\v26.google.cloud.networkconnectivity.v1.Spoke.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\x03hub\x18\x06 \x01(\tB.\xe0A\x05\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x03hub\x12F\n" +
-	"\x05group\x18\x17 \x01(\tB0\xe0A\x01\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/GroupR\x05group\x12h\n" +
-	"\x12linked_vpn_tunnels\x18\x11 \x01(\v25.google.cloud.networkconnectivity.v1.LinkedVpnTunnelsB\x03\xe0A\x01R\x10linkedVpnTunnels\x12\x8f\x01\n" +
-	"\x1flinked_interconnect_attachments\x18\x12 \x01(\v2B.google.cloud.networkconnectivity.v1.LinkedInterconnectAttachmentsB\x03\xe0A\x01R\x1dlinkedInterconnectAttachments\x12\x93\x01\n" +
-	"!linked_router_appliance_instances\x18\x13 \x01(\v2C.google.cloud.networkconnectivity.v1.LinkedRouterApplianceInstancesB\x03\xe0A\x01R\x1elinkedRouterApplianceInstances\x12h\n" +
-	"\x12linked_vpc_network\x18\x14 \x01(\v25.google.cloud.networkconnectivity.v1.LinkedVpcNetworkB\x03\xe0A\x01R\x10linkedVpcNetwork\x12\x81\x01\n" +
-	"\x1blinked_producer_vpc_network\x18\x1a \x01(\v2=.google.cloud.networkconnectivity.v1.LinkedProducerVpcNetworkB\x03\xe0A\x01R\x18linkedProducerVpcNetwork\x12 \n" +
-	"\tunique_id\x18\v \x01(\tB\x03\xe0A\x03R\buniqueId\x12E\n" +
-	"\x05state\x18\x0f \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x03\xe0A\x03R\x05state\x12U\n" +
-	"\areasons\x18\x15 \x03(\v26.google.cloud.networkconnectivity.v1.Spoke.StateReasonB\x03\xe0A\x03R\areasons\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v26.google.cloud.networkconnectivity.v1.Spoke.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\x03hub\x18\x06 \x01(\tB/\xe2A\x01\x05\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x03hub\x12G\n" +
+	"\x05group\x18\x17 \x01(\tB1\xe2A\x01\x01\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/GroupR\x05group\x12i\n" +
+	"\x12linked_vpn_tunnels\x18\x11 \x01(\v25.google.cloud.networkconnectivity.v1.LinkedVpnTunnelsB\x04\xe2A\x01\x01R\x10linkedVpnTunnels\x12\x90\x01\n" +
+	"\x1flinked_interconnect_attachments\x18\x12 \x01(\v2B.google.cloud.networkconnectivity.v1.LinkedInterconnectAttachmentsB\x04\xe2A\x01\x01R\x1dlinkedInterconnectAttachments\x12\x94\x01\n" +
+	"!linked_router_appliance_instances\x18\x13 \x01(\v2C.google.cloud.networkconnectivity.v1.LinkedRouterApplianceInstancesB\x04\xe2A\x01\x01R\x1elinkedRouterApplianceInstances\x12i\n" +
+	"\x12linked_vpc_network\x18\x14 \x01(\v25.google.cloud.networkconnectivity.v1.LinkedVpcNetworkB\x04\xe2A\x01\x01R\x10linkedVpcNetwork\x12\x82\x01\n" +
+	"\x1blinked_producer_vpc_network\x18\x1a \x01(\v2=.google.cloud.networkconnectivity.v1.LinkedProducerVpcNetworkB\x04\xe2A\x01\x01R\x18linkedProducerVpcNetwork\x12!\n" +
+	"\tunique_id\x18\v \x01(\tB\x04\xe2A\x01\x03R\buniqueId\x12F\n" +
+	"\x05state\x18\x0f \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x04\xe2A\x01\x03R\x05state\x12V\n" +
+	"\areasons\x18\x15 \x03(\v26.google.cloud.networkconnectivity.v1.Spoke.StateReasonB\x04\xe2A\x01\x03R\areasons\x12S\n" +
 	"\n" +
-	"spoke_type\x18\x16 \x01(\x0e2..google.cloud.networkconnectivity.v1.SpokeTypeB\x03\xe0A\x03R\tspokeType\x12\x17\n" +
-	"\x04etag\x18\x1b \x01(\tB\x03\xe0A\x01R\x04etag\x12@\n" +
-	"\x1afield_paths_pending_update\x18\x1c \x03(\tB\x03\xe0A\x01R\x17fieldPathsPendingUpdate\x1a\xb7\x02\n" +
+	"spoke_type\x18\x16 \x01(\x0e2..google.cloud.networkconnectivity.v1.SpokeTypeB\x04\xe2A\x01\x03R\tspokeType\x12\x18\n" +
+	"\x04etag\x18\x1b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12A\n" +
+	"\x1afield_paths_pending_update\x18\x1c \x03(\tB\x04\xe2A\x01\x01R\x17fieldPathsPendingUpdate\x1a\xb7\x02\n" +
 	"\vStateReason\x12O\n" +
 	"\x04code\x18\x01 \x01(\x0e2;.google.cloud.networkconnectivity.v1.Spoke.StateReason.CodeR\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12!\n" +
@@ -5375,71 +5375,71 @@ const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:e\xeaAb\n" +
-	"(networkconnectivity.googleapis.com/Spoke\x126projects/{project}/locations/{location}/spokes/{spoke}\"\xb7\x04\n" +
+	"(networkconnectivity.googleapis.com/Spoke\x126projects/{project}/locations/{location}/spokes/{spoke}\"\xbc\x04\n" +
 	"\n" +
-	"RouteTable\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"RouteTable\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12S\n" +
 	"\x06labels\x18\x04 \x03(\v2;.google.cloud.networkconnectivity.v1.RouteTable.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x15\n" +
-	"\x03uid\x18\x06 \x01(\tB\x03\xe0A\x03R\x03uid\x12E\n" +
-	"\x05state\x18\a \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x16\n" +
+	"\x03uid\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12F\n" +
+	"\x05state\x18\a \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:|\xeaAy\n" +
-	"-networkconnectivity.googleapis.com/RouteTable\x12Hprojects/{project}/locations/global/hubs/{hub}/routeTables/{route_table}\"\xb6\n" +
+	"-networkconnectivity.googleapis.com/RouteTable\x12Hprojects/{project}/locations/global/hubs/{hub}/routeTables/{route_table}\"\xc3\n" +
 	"\n" +
-	"\x05Route\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x05Route\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\"\n" +
-	"\rip_cidr_range\x18\x01 \x01(\tR\vipCidrRange\x12G\n" +
+	"\rip_cidr_range\x18\x01 \x01(\tR\vipCidrRange\x12H\n" +
 	"\x04type\x18\n" +
-	" \x01(\x0e2..google.cloud.networkconnectivity.v1.RouteTypeB\x03\xe0A\x03R\x04type\x12l\n" +
-	"\x14next_hop_vpc_network\x18\x02 \x01(\v26.google.cloud.networkconnectivity.v1.NextHopVpcNetworkB\x03\xe0A\x05R\x11nextHopVpcNetwork\x12N\n" +
+	" \x01(\x0e2..google.cloud.networkconnectivity.v1.RouteTypeB\x04\xe2A\x01\x03R\x04type\x12m\n" +
+	"\x14next_hop_vpc_network\x18\x02 \x01(\v26.google.cloud.networkconnectivity.v1.NextHopVpcNetworkB\x04\xe2A\x01\x05R\x11nextHopVpcNetwork\x12N\n" +
 	"\x06labels\x18\x06 \x03(\v26.google.cloud.networkconnectivity.v1.Route.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\a \x01(\tR\vdescription\x12\x15\n" +
-	"\x03uid\x18\b \x01(\tB\x03\xe0A\x03R\x03uid\x12E\n" +
-	"\x05state\x18\t \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x03\xe0A\x03R\x05state\x12F\n" +
-	"\x05spoke\x18\v \x01(\tB0\xe0A\x05\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x05spoke\x12\x1f\n" +
-	"\blocation\x18\f \x01(\tB\x03\xe0A\x03R\blocation\x12\x1f\n" +
-	"\bpriority\x18\r \x01(\x03B\x03\xe0A\x03R\bpriority\x12i\n" +
-	"\x13next_hop_vpn_tunnel\x18\x0e \x01(\v25.google.cloud.networkconnectivity.v1.NextHopVPNTunnelB\x03\xe0A\x05R\x10nextHopVpnTunnel\x12\x94\x01\n" +
-	"\"next_hop_router_appliance_instance\x18\x0f \x01(\v2C.google.cloud.networkconnectivity.v1.NextHopRouterApplianceInstanceB\x03\xe0A\x05R\x1enextHopRouterApplianceInstance\x12\x90\x01\n" +
-	" next_hop_interconnect_attachment\x18\x10 \x01(\v2B.google.cloud.networkconnectivity.v1.NextHopInterconnectAttachmentB\x03\xe0A\x05R\x1dnextHopInterconnectAttachment\x1a9\n" +
+	"\vdescription\x18\a \x01(\tR\vdescription\x12\x16\n" +
+	"\x03uid\x18\b \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12F\n" +
+	"\x05state\x18\t \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x04\xe2A\x01\x03R\x05state\x12G\n" +
+	"\x05spoke\x18\v \x01(\tB1\xe2A\x01\x05\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x05spoke\x12 \n" +
+	"\blocation\x18\f \x01(\tB\x04\xe2A\x01\x03R\blocation\x12 \n" +
+	"\bpriority\x18\r \x01(\x03B\x04\xe2A\x01\x03R\bpriority\x12j\n" +
+	"\x13next_hop_vpn_tunnel\x18\x0e \x01(\v25.google.cloud.networkconnectivity.v1.NextHopVPNTunnelB\x04\xe2A\x01\x05R\x10nextHopVpnTunnel\x12\x95\x01\n" +
+	"\"next_hop_router_appliance_instance\x18\x0f \x01(\v2C.google.cloud.networkconnectivity.v1.NextHopRouterApplianceInstanceB\x04\xe2A\x01\x05R\x1enextHopRouterApplianceInstance\x12\x91\x01\n" +
+	" next_hop_interconnect_attachment\x18\x10 \x01(\v2B.google.cloud.networkconnectivity.v1.NextHopInterconnectAttachmentB\x04\xe2A\x01\x05R\x1dnextHopInterconnectAttachment\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8a\x01\xeaA\x86\x01\n" +
-	"+networkconnectivity.googleapis.com/HubRoute\x12Wprojects/{project}/locations/global/hubs/{hub}/routeTables/{route_table}/routes/{route}\"\xa4\x05\n" +
-	"\x05Group\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12S\n" +
-	"\x06labels\x18\x04 \x03(\v26.google.cloud.networkconnectivity.v1.Group.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x15\n" +
-	"\x03uid\x18\x06 \x01(\tB\x03\xe0A\x03R\x03uid\x12E\n" +
-	"\x05state\x18\a \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x03\xe0A\x03R\x05state\x12U\n" +
-	"\vauto_accept\x18\b \x01(\v2/.google.cloud.networkconnectivity.v1.AutoAcceptB\x03\xe0A\x01R\n" +
-	"autoAccept\x12$\n" +
-	"\vroute_table\x18\t \x01(\tB\x03\xe0A\x03R\n" +
+	"+networkconnectivity.googleapis.com/HubRoute\x12Wprojects/{project}/locations/global/hubs/{hub}/routeTables/{route_table}/routes/{route}\"\xad\x05\n" +
+	"\x05Group\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12T\n" +
+	"\x06labels\x18\x04 \x03(\v26.google.cloud.networkconnectivity.v1.Group.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x16\n" +
+	"\x03uid\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12F\n" +
+	"\x05state\x18\a \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x04\xe2A\x01\x03R\x05state\x12V\n" +
+	"\vauto_accept\x18\b \x01(\v2/.google.cloud.networkconnectivity.v1.AutoAcceptB\x04\xe2A\x01\x01R\n" +
+	"autoAccept\x12%\n" +
+	"\vroute_table\x18\t \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"routeTable\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:l\xeaAi\n" +
-	"(networkconnectivity.googleapis.com/Group\x12=projects/{project}/locations/global/hubs/{hub}/groups/{group}\"C\n" +
+	"(networkconnectivity.googleapis.com/Group\x12=projects/{project}/locations/global/hubs/{hub}/groups/{group}\"D\n" +
 	"\n" +
-	"AutoAccept\x125\n" +
-	"\x14auto_accept_projects\x18\x01 \x03(\tB\x03\xe0A\x01R\x12autoAcceptProjects\"\xc3\x01\n" +
-	"\x0fListHubsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"AutoAccept\x126\n" +
+	"\x14auto_accept_projects\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x12autoAcceptProjects\"\xc4\x01\n" +
+	"\x0fListHubsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -5449,30 +5449,30 @@ const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"\x10ListHubsResponse\x12<\n" +
 	"\x04hubs\x18\x01 \x03(\v2(.google.cloud.networkconnectivity.v1.HubR\x04hubs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\rGetHubRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\"\xd6\x01\n" +
-	"\x10CreateHubRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1a\n" +
-	"\x06hub_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05hubId\x12?\n" +
-	"\x03hub\x18\x03 \x01(\v2(.google.cloud.networkconnectivity.v1.HubB\x03\xe0A\x02R\x03hub\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\rGetHubRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\"\xda\x01\n" +
+	"\x10CreateHubRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
+	"\x06hub_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05hubId\x12@\n" +
+	"\x03hub\x18\x03 \x01(\v2(.google.cloud.networkconnectivity.v1.HubB\x04\xe2A\x01\x02R\x03hub\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xb9\x01\n" +
-	"\x10UpdateHubRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12?\n" +
-	"\x03hub\x18\x02 \x01(\v2(.google.cloud.networkconnectivity.v1.HubB\x03\xe0A\x02R\x03hub\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xbc\x01\n" +
+	"\x10UpdateHubRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12@\n" +
+	"\x03hub\x18\x02 \x01(\v2(.google.cloud.networkconnectivity.v1.HubB\x04\xe2A\x01\x02R\x03hub\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"z\n" +
-	"\x10DeleteHubRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"|\n" +
+	"\x10DeleteHubRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8d\x03\n" +
-	"\x14ListHubSpokesRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8e\x03\n" +
+	"\x14ListHubSpokesRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&networkconnectivity.googleapis.com/HubR\x04name\x12'\n" +
 	"\x0fspoke_locations\x18\x02 \x03(\tR\x0espokeLocations\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -5488,16 +5488,16 @@ const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"\x15ListHubSpokesResponse\x12B\n" +
 	"\x06spokes\x18\x01 \x03(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x06spokes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xfe\x01\n" +
-	"\x15QueryHubStatusRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x84\x02\n" +
+	"\x15QueryHubStatusRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1e\n" +
-	"\bgroup_by\x18\x06 \x01(\tB\x03\xe0A\x01R\agroupBy\"\xa3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1f\n" +
+	"\bgroup_by\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\agroupBy\"\xa3\x01\n" +
 	"\x16QueryHubStatusResponse\x12a\n" +
 	"\x12hub_status_entries\x18\x01 \x03(\v23.google.cloud.networkconnectivity.v1.HubStatusEntryR\x10hubStatusEntries\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2\x01\n" +
@@ -5520,9 +5520,9 @@ const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"3ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED\x10\x03\x12)\n" +
 	"%ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED\x10\x04\x12!\n" +
 	"\x1dERROR_PRODUCER_QUOTA_EXCEEDED\x10\x05\x12!\n" +
-	"\x1dERROR_CONSUMER_QUOTA_EXCEEDED\x10\x06\"\xc5\x01\n" +
-	"\x11ListSpokesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x1dERROR_CONSUMER_QUOTA_EXCEEDED\x10\x06\"\xc6\x01\n" +
+	"\x11ListSpokesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -5532,78 +5532,78 @@ const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"\x12ListSpokesResponse\x12B\n" +
 	"\x06spokes\x18\x01 \x03(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x06spokes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x0fGetSpokeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x04name\"\xe2\x01\n" +
-	"\x12CreateSpokeRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1e\n" +
-	"\bspoke_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aspokeId\x12E\n" +
-	"\x05spoke\x18\x03 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeB\x03\xe0A\x02R\x05spoke\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x0fGetSpokeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x04name\"\xe6\x01\n" +
+	"\x12CreateSpokeRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1f\n" +
+	"\bspoke_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aspokeId\x12F\n" +
+	"\x05spoke\x18\x03 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeB\x04\xe2A\x01\x02R\x05spoke\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc1\x01\n" +
-	"\x12UpdateSpokeRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12E\n" +
-	"\x05spoke\x18\x02 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeB\x03\xe0A\x02R\x05spoke\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc4\x01\n" +
+	"\x12UpdateSpokeRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12F\n" +
+	"\x05spoke\x18\x02 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeB\x04\xe2A\x01\x02R\x05spoke\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"~\n" +
-	"\x12DeleteSpokeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x80\x01\n" +
+	"\x12DeleteSpokeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xce\x01\n" +
-	"\x15AcceptHubSpokeRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12M\n" +
-	"\tspoke_uri\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd1\x01\n" +
+	"\x15AcceptHubSpokeRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12N\n" +
+	"\tspoke_uri\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"Z\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"Z\n" +
 	"\x16AcceptHubSpokeResponse\x12@\n" +
-	"\x05spoke\x18\x01 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x05spoke\"\xed\x01\n" +
-	"\x15RejectHubSpokeRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12M\n" +
-	"\tspoke_uri\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12\"\n" +
+	"\x05spoke\x18\x01 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x05spoke\"\xf1\x01\n" +
+	"\x15RejectHubSpokeRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12N\n" +
+	"\tspoke_uri\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x1d\n" +
-	"\adetails\x18\x04 \x01(\tB\x03\xe0A\x01R\adetails\"Z\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1e\n" +
+	"\adetails\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\adetails\"Z\n" +
 	"\x16RejectHubSpokeResponse\x12@\n" +
-	"\x05spoke\x18\x01 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x05spoke\"\xfd\x01\n" +
-	"\x18AcceptSpokeUpdateRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12M\n" +
-	"\tspoke_uri\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12\"\n" +
+	"\x05spoke\x18\x01 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x05spoke\"\x81\x02\n" +
+	"\x18AcceptSpokeUpdateRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12N\n" +
+	"\tspoke_uri\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12#\n" +
 	"\n" +
-	"spoke_etag\x18\x03 \x01(\tB\x03\xe0A\x02R\tspokeEtag\x12*\n" +
+	"spoke_etag\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tspokeEtag\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"]\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"]\n" +
 	"\x19AcceptSpokeUpdateResponse\x12@\n" +
-	"\x05spoke\x18\x01 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x05spoke\"\x9c\x02\n" +
-	"\x18RejectSpokeUpdateRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12M\n" +
-	"\tspoke_uri\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12\"\n" +
+	"\x05spoke\x18\x01 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x05spoke\"\xa1\x02\n" +
+	"\x18RejectSpokeUpdateRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12N\n" +
+	"\tspoke_uri\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12#\n" +
 	"\n" +
-	"spoke_etag\x18\x03 \x01(\tB\x03\xe0A\x02R\tspokeEtag\x12\x1d\n" +
-	"\adetails\x18\x04 \x01(\tB\x03\xe0A\x01R\adetails\x12*\n" +
+	"spoke_etag\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tspokeEtag\x12\x1e\n" +
+	"\adetails\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\adetails\x12+\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"]\n" +
+	"request_id\x18\x05 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"]\n" +
 	"\x19RejectSpokeUpdateResponse\x12@\n" +
-	"\x05spoke\x18\x01 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x05spoke\"a\n" +
-	"\x14GetRouteTableRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-networkconnectivity.googleapis.com/RouteTableR\x04name\"Z\n" +
-	"\x0fGetRouteRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networkconnectivity.googleapis.com/HubRouteR\x04name\"\xd1\x01\n" +
-	"\x11ListRoutesRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\x05spoke\x18\x01 \x01(\v2*.google.cloud.networkconnectivity.v1.SpokeR\x05spoke\"b\n" +
+	"\x14GetRouteTableRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-networkconnectivity.googleapis.com/RouteTableR\x04name\"[\n" +
+	"\x0fGetRouteRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networkconnectivity.googleapis.com/HubRouteR\x04name\"\xd2\x01\n" +
+	"\x11ListRoutesRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-networkconnectivity.googleapis.com/RouteTableR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -5613,9 +5613,9 @@ const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"\x12ListRoutesResponse\x12B\n" +
 	"\x06routes\x18\x01 \x03(\v2*.google.cloud.networkconnectivity.v1.RouteR\x06routes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xcf\x01\n" +
-	"\x16ListRouteTablesRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xd0\x01\n" +
+	"\x16ListRouteTablesRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&networkconnectivity.googleapis.com/HubR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -5625,9 +5625,9 @@ const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"\x17ListRouteTablesResponse\x12R\n" +
 	"\froute_tables\x18\x01 \x03(\v2/.google.cloud.networkconnectivity.v1.RouteTableR\vrouteTables\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xca\x01\n" +
-	"\x11ListGroupsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xcb\x01\n" +
+	"\x11ListGroupsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&networkconnectivity.googleapis.com/HubR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -5637,51 +5637,51 @@ const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"\x12ListGroupsResponse\x12B\n" +
 	"\x06groups\x18\x01 \x03(\v2*.google.cloud.networkconnectivity.v1.GroupR\x06groups\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x8b\x02\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x8d\x02\n" +
 	"\x10LinkedVpnTunnels\x129\n" +
 	"\x04uris\x18\x01 \x03(\tB%\xfaA\"\n" +
 	" compute.googleapis.com/VpnTunnelR\x04uris\x12:\n" +
-	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12G\n" +
-	"\vvpc_network\x18\x03 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12H\n" +
+	"\vvpc_network\x18\x03 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\n" +
-	"vpcNetwork\x127\n" +
-	"\x15include_import_ranges\x18\x05 \x03(\tB\x03\xe0A\x01R\x13includeImportRanges\"\xa5\x02\n" +
+	"vpcNetwork\x128\n" +
+	"\x15include_import_ranges\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x13includeImportRanges\"\xa7\x02\n" +
 	"\x1dLinkedInterconnectAttachments\x12F\n" +
 	"\x04uris\x18\x01 \x03(\tB2\xfaA/\n" +
 	"-compute.googleapis.com/InterconnectAttachmentR\x04uris\x12:\n" +
-	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12G\n" +
-	"\vvpc_network\x18\x03 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12H\n" +
+	"\vvpc_network\x18\x03 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\n" +
-	"vpcNetwork\x127\n" +
-	"\x15include_import_ranges\x18\x05 \x03(\tB\x03\xe0A\x01R\x13includeImportRanges\"\xba\x02\n" +
+	"vpcNetwork\x128\n" +
+	"\x15include_import_ranges\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x13includeImportRanges\"\xbc\x02\n" +
 	"\x1eLinkedRouterApplianceInstances\x12Z\n" +
 	"\tinstances\x18\x01 \x03(\v2<.google.cloud.networkconnectivity.v1.RouterApplianceInstanceR\tinstances\x12:\n" +
-	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12G\n" +
-	"\vvpc_network\x18\x03 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12H\n" +
+	"\vvpc_network\x18\x03 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\n" +
-	"vpcNetwork\x127\n" +
-	"\x15include_import_ranges\x18\x05 \x03(\tB\x03\xe0A\x01R\x13includeImportRanges\"\xb4\x03\n" +
-	"\x10LinkedVpcNetwork\x128\n" +
-	"\x03uri\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\x03uri\x127\n" +
-	"\x15exclude_export_ranges\x18\x02 \x03(\tB\x03\xe0A\x01R\x13excludeExportRanges\x127\n" +
-	"\x15include_export_ranges\x18\x03 \x03(\tB\x03\xe0A\x01R\x13includeExportRanges\x12H\n" +
-	"\x1eproposed_include_export_ranges\x18\x05 \x03(\tB\x03\xe0A\x01R\x1bproposedIncludeExportRanges\x12H\n" +
-	"\x1eproposed_exclude_export_ranges\x18\x06 \x03(\tB\x03\xe0A\x03R\x1bproposedExcludeExportRanges\x12`\n" +
-	"\x13producer_vpc_spokes\x18\x04 \x03(\tB0\xe0A\x03\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x11producerVpcSpokes\"\xc3\x04\n" +
-	"\x18LinkedProducerVpcNetwork\x12@\n" +
-	"\anetwork\x18\x01 \x01(\tB&\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12m\n" +
-	"\x1aservice_consumer_vpc_spoke\x18\x06 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x17serviceConsumerVpcSpoke\x12\x1d\n" +
-	"\apeering\x18\x02 \x01(\tB\x03\xe0A\x05R\apeering\x12Q\n" +
-	"\x10producer_network\x18\x05 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\x0fproducerNetwork\x127\n" +
-	"\x15exclude_export_ranges\x18\x03 \x03(\tB\x03\xe0A\x01R\x13excludeExportRanges\x127\n" +
-	"\x15include_export_ranges\x18\x04 \x03(\tB\x03\xe0A\x01R\x13includeExportRanges\x12H\n" +
-	"\x1eproposed_include_export_ranges\x18\a \x03(\tB\x03\xe0A\x01R\x1bproposedIncludeExportRanges\x12H\n" +
-	"\x1eproposed_exclude_export_ranges\x18\b \x03(\tB\x03\xe0A\x03R\x1bproposedExcludeExportRanges\"\x87\x01\n" +
+	"vpcNetwork\x128\n" +
+	"\x15include_import_ranges\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x13includeImportRanges\"\xba\x03\n" +
+	"\x10LinkedVpcNetwork\x129\n" +
+	"\x03uri\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\x03uri\x128\n" +
+	"\x15exclude_export_ranges\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x13excludeExportRanges\x128\n" +
+	"\x15include_export_ranges\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x13includeExportRanges\x12I\n" +
+	"\x1eproposed_include_export_ranges\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x1bproposedIncludeExportRanges\x12I\n" +
+	"\x1eproposed_exclude_export_ranges\x18\x06 \x03(\tB\x04\xe2A\x01\x03R\x1bproposedExcludeExportRanges\x12a\n" +
+	"\x13producer_vpc_spokes\x18\x04 \x03(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x11producerVpcSpokes\"\xcb\x04\n" +
+	"\x18LinkedProducerVpcNetwork\x12A\n" +
+	"\anetwork\x18\x01 \x01(\tB'\xe2A\x01\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12n\n" +
+	"\x1aservice_consumer_vpc_spoke\x18\x06 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x17serviceConsumerVpcSpoke\x12\x1e\n" +
+	"\apeering\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\apeering\x12R\n" +
+	"\x10producer_network\x18\x05 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\x0fproducerNetwork\x128\n" +
+	"\x15exclude_export_ranges\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x13excludeExportRanges\x128\n" +
+	"\x15include_export_ranges\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x13includeExportRanges\x12I\n" +
+	"\x1eproposed_include_export_ranges\x18\a \x03(\tB\x04\xe2A\x01\x01R\x1bproposedIncludeExportRanges\x12I\n" +
+	"\x1eproposed_exclude_export_ranges\x18\b \x03(\tB\x04\xe2A\x01\x03R\x1bproposedExcludeExportRanges\"\x87\x01\n" +
 	"\x17RouterApplianceInstance\x12M\n" +
 	"\x0fvirtual_machine\x18\x01 \x01(\tB$\xfaA!\n" +
 	"\x1fcompute.googleapis.com/InstanceR\x0evirtualMachine\x12\x1d\n" +
@@ -5712,30 +5712,30 @@ const file_google_cloud_networkconnectivity_v1_hub_proto_rawDesc = "" +
 	"\vvpc_network\x18\x02 \x01(\tB#\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\n" +
 	"vpcNetwork\x12:\n" +
-	"\x1asite_to_site_data_transfer\x18\x03 \x01(\bR\x16siteToSiteDataTransfer\"\x9a\x06\n" +
-	"\fSpokeSummary\x12q\n" +
-	"\x11spoke_type_counts\x18\x01 \x03(\v2@.google.cloud.networkconnectivity.v1.SpokeSummary.SpokeTypeCountB\x03\xe0A\x03R\x0fspokeTypeCounts\x12t\n" +
-	"\x12spoke_state_counts\x18\x02 \x03(\v2A.google.cloud.networkconnectivity.v1.SpokeSummary.SpokeStateCountB\x03\xe0A\x03R\x10spokeStateCounts\x12\x87\x01\n" +
-	"\x19spoke_state_reason_counts\x18\x03 \x03(\v2G.google.cloud.networkconnectivity.v1.SpokeSummary.SpokeStateReasonCountB\x03\xe0A\x03R\x16spokeStateReasonCounts\x1a\x7f\n" +
-	"\x0eSpokeTypeCount\x12R\n" +
+	"\x1asite_to_site_data_transfer\x18\x03 \x01(\bR\x16siteToSiteDataTransfer\"\xa4\x06\n" +
+	"\fSpokeSummary\x12r\n" +
+	"\x11spoke_type_counts\x18\x01 \x03(\v2@.google.cloud.networkconnectivity.v1.SpokeSummary.SpokeTypeCountB\x04\xe2A\x01\x03R\x0fspokeTypeCounts\x12u\n" +
+	"\x12spoke_state_counts\x18\x02 \x03(\v2A.google.cloud.networkconnectivity.v1.SpokeSummary.SpokeStateCountB\x04\xe2A\x01\x03R\x10spokeStateCounts\x12\x88\x01\n" +
+	"\x19spoke_state_reason_counts\x18\x03 \x03(\v2G.google.cloud.networkconnectivity.v1.SpokeSummary.SpokeStateReasonCountB\x04\xe2A\x01\x03R\x16spokeStateReasonCounts\x1a\x81\x01\n" +
+	"\x0eSpokeTypeCount\x12S\n" +
 	"\n" +
-	"spoke_type\x18\x01 \x01(\x0e2..google.cloud.networkconnectivity.v1.SpokeTypeB\x03\xe0A\x03R\tspokeType\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x05count\x1as\n" +
-	"\x0fSpokeStateCount\x12E\n" +
-	"\x05state\x18\x01 \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x03\xe0A\x03R\x05state\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x05count\x1a\xa0\x01\n" +
-	"\x15SpokeStateReasonCount\x12l\n" +
-	"\x11state_reason_code\x18\x01 \x01(\x0e2;.google.cloud.networkconnectivity.v1.Spoke.StateReason.CodeB\x03\xe0A\x03R\x0fstateReasonCode\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x05count\"W\n" +
-	"\x0fGetGroupRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/GroupR\x04name\"\xc1\x01\n" +
-	"\x12UpdateGroupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12E\n" +
-	"\x05group\x18\x02 \x01(\v2*.google.cloud.networkconnectivity.v1.GroupB\x03\xe0A\x02R\x05group\x12\"\n" +
+	"spoke_type\x18\x01 \x01(\x0e2..google.cloud.networkconnectivity.v1.SpokeTypeB\x04\xe2A\x01\x03R\tspokeType\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x05count\x1au\n" +
+	"\x0fSpokeStateCount\x12F\n" +
+	"\x05state\x18\x01 \x01(\x0e2*.google.cloud.networkconnectivity.v1.StateB\x04\xe2A\x01\x03R\x05state\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x05count\x1a\xa2\x01\n" +
+	"\x15SpokeStateReasonCount\x12m\n" +
+	"\x11state_reason_code\x18\x01 \x01(\x0e2;.google.cloud.networkconnectivity.v1.Spoke.StateReason.CodeB\x04\xe2A\x01\x03R\x0fstateReasonCode\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x05count\"X\n" +
+	"\x0fGetGroupRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/GroupR\x04name\"\xc4\x01\n" +
+	"\x12UpdateGroupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12F\n" +
+	"\x05group\x18\x02 \x01(\v2*.google.cloud.networkconnectivity.v1.GroupB\x04\xe2A\x01\x02R\x05group\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId*f\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId*f\n" +
 	"\x0fLocationFeature\x12 \n" +
 	"\x1cLOCATION_FEATURE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14SITE_TO_CLOUD_SPOKES\x10\x01\x12\x17\n" +

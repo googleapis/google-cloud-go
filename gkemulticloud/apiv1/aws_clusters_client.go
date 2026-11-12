@@ -610,6 +610,71 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "gkemulticloud",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkemulticloud/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkemulticloud.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAwsCluster = append(client.CallOptions.CreateAwsCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAwsCluster = append(client.CallOptions.UpdateAwsCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAwsCluster = append(client.CallOptions.GetAwsCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAwsClusters = append(client.CallOptions.ListAwsClusters, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAwsCluster = append(client.CallOptions.DeleteAwsCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateAwsClusterAgentToken = append(client.CallOptions.GenerateAwsClusterAgentToken, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateAwsAccessToken = append(client.CallOptions.GenerateAwsAccessToken, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAwsNodePool = append(client.CallOptions.CreateAwsNodePool, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAwsNodePool = append(client.CallOptions.UpdateAwsNodePool, gax.WithClientTracing(tracing))
+		client.CallOptions.RollbackAwsNodePoolUpdate = append(client.CallOptions.RollbackAwsNodePoolUpdate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAwsNodePool = append(client.CallOptions.GetAwsNodePool, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAwsNodePools = append(client.CallOptions.ListAwsNodePools, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAwsNodePool = append(client.CallOptions.DeleteAwsNodePool, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAwsOpenIdConfig = append(client.CallOptions.GetAwsOpenIdConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAwsJsonWebKeys = append(client.CallOptions.GetAwsJsonWebKeys, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAwsServerConfig = append(client.CallOptions.GetAwsServerConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "gkemulticloud",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkemulticloud/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkemulticloud.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAwsCluster = append(client.CallOptions.CreateAwsCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAwsCluster = append(client.CallOptions.UpdateAwsCluster, gax.WithClientLogging(logging))
+		client.CallOptions.GetAwsCluster = append(client.CallOptions.GetAwsCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ListAwsClusters = append(client.CallOptions.ListAwsClusters, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAwsCluster = append(client.CallOptions.DeleteAwsCluster, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateAwsClusterAgentToken = append(client.CallOptions.GenerateAwsClusterAgentToken, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateAwsAccessToken = append(client.CallOptions.GenerateAwsAccessToken, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAwsNodePool = append(client.CallOptions.CreateAwsNodePool, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAwsNodePool = append(client.CallOptions.UpdateAwsNodePool, gax.WithClientLogging(logging))
+		client.CallOptions.RollbackAwsNodePoolUpdate = append(client.CallOptions.RollbackAwsNodePoolUpdate, gax.WithClientLogging(logging))
+		client.CallOptions.GetAwsNodePool = append(client.CallOptions.GetAwsNodePool, gax.WithClientLogging(logging))
+		client.CallOptions.ListAwsNodePools = append(client.CallOptions.ListAwsNodePools, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAwsNodePool = append(client.CallOptions.DeleteAwsNodePool, gax.WithClientLogging(logging))
+		client.CallOptions.GetAwsOpenIdConfig = append(client.CallOptions.GetAwsOpenIdConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetAwsJsonWebKeys = append(client.CallOptions.GetAwsJsonWebKeys, gax.WithClientLogging(logging))
+		client.CallOptions.GetAwsServerConfig = append(client.CallOptions.GetAwsServerConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -657,9 +722,6 @@ func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/CreateAwsCluster")
 	}
@@ -714,9 +776,6 @@ func (c *awsClustersGRPCClient) GetAwsCluster(ctx context.Context, req *gkemulti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsCluster")
 	}
@@ -738,9 +797,6 @@ func (c *awsClustersGRPCClient) ListAwsClusters(ctx context.Context, req *gkemul
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/ListAwsClusters")
 	}
@@ -790,9 +846,6 @@ func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/DeleteAwsCluster")
 	}
@@ -820,9 +873,6 @@ func (c *awsClustersGRPCClient) GenerateAwsClusterAgentToken(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAwsCluster()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GenerateAwsClusterAgentToken")
 	}
@@ -844,9 +894,6 @@ func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAwsCluster()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GenerateAwsAccessToken")
 	}
@@ -868,9 +915,6 @@ func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/CreateAwsNodePool")
 	}
@@ -925,9 +969,6 @@ func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdate(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/RollbackAwsNodePoolUpdate")
 	}
@@ -955,9 +996,6 @@ func (c *awsClustersGRPCClient) GetAwsNodePool(ctx context.Context, req *gkemult
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsNodePool")
 	}
@@ -979,9 +1017,6 @@ func (c *awsClustersGRPCClient) ListAwsNodePools(ctx context.Context, req *gkemu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/ListAwsNodePools")
 	}
@@ -1031,9 +1066,6 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/DeleteAwsNodePool")
 	}
@@ -1061,9 +1093,6 @@ func (c *awsClustersGRPCClient) GetAwsOpenIdConfig(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAwsCluster()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsOpenIdConfig")
 	}
@@ -1085,9 +1114,6 @@ func (c *awsClustersGRPCClient) GetAwsJsonWebKeys(ctx context.Context, req *gkem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAwsCluster()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsJsonWebKeys")
 	}
@@ -1109,9 +1135,6 @@ func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsServerConfig")
 	}

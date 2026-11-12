@@ -3426,9 +3426,9 @@ const file_google_bigtable_v2_data_proto_rawDesc = "" +
 	"\x10end_value_closed\x18\x03 \x01(\fH\x01R\x0eendValueClosed\x12&\n" +
 	"\x0eend_value_open\x18\x04 \x01(\fH\x01R\fendValueOpenB\r\n" +
 	"\vstart_valueB\v\n" +
-	"\tend_value\"'\n" +
-	"\fValueBitmask\x12\x17\n" +
-	"\x04mask\x18\x01 \x01(\fB\x03\xe0A\x02R\x04mask\"\xd2\f\n" +
+	"\tend_value\"(\n" +
+	"\fValueBitmask\x12\x18\n" +
+	"\x04mask\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\x04mask\"\xd2\f\n" +
 	"\tRowFilter\x12;\n" +
 	"\x05chain\x18\x01 \x01(\v2#.google.bigtable.v2.RowFilter.ChainH\x00R\x05chain\x12J\n" +
 	"\n" +
@@ -3463,15 +3463,15 @@ const file_google_bigtable_v2_data_proto_rawDesc = "" +
 	"\vtrue_filter\x18\x02 \x01(\v2\x1d.google.bigtable.v2.RowFilterR\n" +
 	"trueFilter\x12@\n" +
 	"\ffalse_filter\x18\x03 \x01(\v2\x1d.google.bigtable.v2.RowFilterR\vfalseFilterB\b\n" +
-	"\x06filter\"\x8c\f\n" +
+	"\x06filter\"\x8d\f\n" +
 	"\bMutation\x12A\n" +
 	"\bset_cell\x18\x01 \x01(\v2$.google.bigtable.v2.Mutation.SetCellH\x00R\asetCell\x12H\n" +
 	"\vadd_to_cell\x18\x05 \x01(\v2&.google.bigtable.v2.Mutation.AddToCellH\x00R\taddToCell\x12N\n" +
 	"\rmerge_to_cell\x18\x06 \x01(\v2(.google.bigtable.v2.Mutation.MergeToCellH\x00R\vmergeToCell\x12]\n" +
 	"\x12delete_from_column\x18\x02 \x01(\v2-.google.bigtable.v2.Mutation.DeleteFromColumnH\x00R\x10deleteFromColumn\x12]\n" +
 	"\x12delete_from_family\x18\x03 \x01(\v2-.google.bigtable.v2.Mutation.DeleteFromFamilyH\x00R\x10deleteFromFamily\x12T\n" +
-	"\x0fdelete_from_row\x18\x04 \x01(\v2*.google.bigtable.v2.Mutation.DeleteFromRowH\x00R\rdeleteFromRow\x12\\\n" +
-	"\x10timestamp_origin\x18\a \x01(\x0e2,.google.bigtable.v2.Mutation.TimestampOriginB\x03\xe0A\x01R\x0ftimestampOrigin\x1a\x96\x01\n" +
+	"\x0fdelete_from_row\x18\x04 \x01(\v2*.google.bigtable.v2.Mutation.DeleteFromRowH\x00R\rdeleteFromRow\x12]\n" +
+	"\x10timestamp_origin\x18\a \x01(\x0e2,.google.bigtable.v2.Mutation.TimestampOriginB\x04\xe2A\x01\x01R\x0ftimestampOrigin\x1a\x96\x01\n" +
 	"\aSetCell\x12\x1f\n" +
 	"\vfamily_name\x18\x01 \x01(\tR\n" +
 	"familyName\x12)\n" +

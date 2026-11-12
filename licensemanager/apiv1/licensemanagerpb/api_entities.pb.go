@@ -940,22 +940,22 @@ var File_google_cloud_licensemanager_v1_api_entities_proto protoreflect.FileDesc
 
 const file_google_cloud_licensemanager_v1_api_entities_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/licensemanager/v1/api_entities.proto\x12\x1egoogle.cloud.licensemanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\b\n" +
-	"\rConfiguration\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12G\n" +
-	"\aproduct\x18\x06 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%licensemanager.googleapis.com/ProductR\aproduct\x12S\n" +
-	"\flicense_type\x18\a \x01(\x0e2+.google.cloud.licensemanager.v1.LicenseTypeB\x03\xe0A\x02R\vlicenseType\x12b\n" +
-	"\x14current_billing_info\x18\b \x01(\v2+.google.cloud.licensemanager.v1.BillingInfoB\x03\xe0A\x02R\x12currentBillingInfo\x12\\\n" +
-	"\x11next_billing_info\x18\t \x01(\v2+.google.cloud.licensemanager.v1.BillingInfoB\x03\xe0A\x02R\x0fnextBillingInfo\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12V\n" +
-	"\x06labels\x18\x04 \x03(\v29.google.cloud.licensemanager.v1.Configuration.LabelsEntryB\x03\xe0A\x01R\x06labels\x12N\n" +
+	"1google/cloud/licensemanager/v1/api_entities.proto\x12\x1egoogle.cloud.licensemanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96\b\n" +
+	"\rConfiguration\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12H\n" +
+	"\aproduct\x18\x06 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%licensemanager.googleapis.com/ProductR\aproduct\x12T\n" +
+	"\flicense_type\x18\a \x01(\x0e2+.google.cloud.licensemanager.v1.LicenseTypeB\x04\xe2A\x01\x02R\vlicenseType\x12c\n" +
+	"\x14current_billing_info\x18\b \x01(\v2+.google.cloud.licensemanager.v1.BillingInfoB\x04\xe2A\x01\x02R\x12currentBillingInfo\x12]\n" +
+	"\x11next_billing_info\x18\t \x01(\v2+.google.cloud.licensemanager.v1.BillingInfoB\x04\xe2A\x01\x02R\x0fnextBillingInfo\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12W\n" +
+	"\x06labels\x18\x04 \x03(\v29.google.cloud.licensemanager.v1.Configuration.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12O\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e23.google.cloud.licensemanager.v1.Configuration.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	" \x01(\x0e23.google.cloud.licensemanager.v1.Configuration.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"X\n" +
@@ -964,45 +964,45 @@ const file_google_cloud_licensemanager_v1_api_entities_proto_rawDesc = "" +
 	"\fSTATE_ACTIVE\x10\x01\x12\x13\n" +
 	"\x0fSTATE_SUSPENDED\x10\x02\x12\x11\n" +
 	"\rSTATE_DELETED\x10\x03:\x98\x01\xeaA\x94\x01\n" +
-	"+licensemanager.googleapis.com/Configuration\x12Fprojects/{project}/locations/{location}/configurations/{configuration}*\x0econfigurations2\rconfiguration\"\x8c\x02\n" +
-	"\vBillingInfo\x12i\n" +
-	"\x12user_count_billing\x18\x01 \x01(\v24.google.cloud.licensemanager.v1.UserCountBillingInfoB\x03\xe0A\x02H\x00R\x10userCountBilling\x12>\n" +
+	"+licensemanager.googleapis.com/Configuration\x12Fprojects/{project}/locations/{location}/configurations/{configuration}*\x0econfigurations2\rconfiguration\"\x8f\x02\n" +
+	"\vBillingInfo\x12j\n" +
+	"\x12user_count_billing\x18\x01 \x01(\v24.google.cloud.licensemanager.v1.UserCountBillingInfoB\x04\xe2A\x01\x02H\x00R\x10userCountBilling\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTimeB\x16\n" +
-	"\x14current_billing_info\":\n" +
-	"\x14UserCountBillingInfo\x12\"\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTimeB\x16\n" +
+	"\x14current_billing_info\";\n" +
+	"\x14UserCountBillingInfo\x12#\n" +
 	"\n" +
-	"user_count\x18\x01 \x01(\x05B\x03\xe0A\x02R\tuserCount\"A\n" +
-	"\x0eUserCountUsage\x12/\n" +
-	"\x11unique_user_count\x18\x01 \x01(\x05B\x03\xe0A\x02R\x0funiqueUserCount\"\x92\x04\n" +
-	"\aProduct\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x02R\aversion\x12,\n" +
-	"\x0fproduct_company\x18\x03 \x01(\tB\x03\xe0A\x02R\x0eproductCompany\x12H\n" +
-	"\x05state\x18\x04 \x01(\x0e2-.google.cloud.licensemanager.v1.Product.StateB\x03\xe0A\x03R\x05state\x12\x15\n" +
-	"\x03sku\x18\x05 \x01(\tB\x03\xe0A\x02R\x03sku\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x02R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\a \x01(\tB\x03\xe0A\x02R\vdisplayName\"v\n" +
+	"user_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\tuserCount\"B\n" +
+	"\x0eUserCountUsage\x120\n" +
+	"\x11unique_user_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\x0funiqueUserCount\"\x99\x04\n" +
+	"\aProduct\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12-\n" +
+	"\x0fproduct_company\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0eproductCompany\x12I\n" +
+	"\x05state\x18\x04 \x01(\x0e2-.google.cloud.licensemanager.v1.Product.StateB\x04\xe2A\x01\x03R\x05state\x12\x16\n" +
+	"\x03sku\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x03sku\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12'\n" +
+	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\"v\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12STATE_PROVISIONING\x10\x01\x12\x11\n" +
 	"\rSTATE_RUNNING\x10\x02\x12\x15\n" +
 	"\x11STATE_TERMINATING\x10\x03\x12\x14\n" +
 	"\x10STATE_TERMINATED\x10\x04:y\xeaAv\n" +
-	"%licensemanager.googleapis.com/Product\x12:projects/{project}/locations/{location}/products/{product}*\bproducts2\aproduct\"\x9e\b\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.licensemanager.v1.Instance.LabelsEntryB\x03\xe0A\x01R\x06labels\x12I\n" +
-	"\x05state\x18\x05 \x01(\x0e2..google.cloud.licensemanager.v1.Instance.StateB\x03\xe0A\x03R\x05state\x12\x1b\n" +
-	"\x06region\x18\x06 \x01(\tB\x03\xe0A\x03R\x06region\x12s\n" +
-	"\x12product_activation\x18\a \x03(\v2?.google.cloud.licensemanager.v1.Instance.ProductActivationEntryB\x03\xe0A\x03R\x11productActivation\x121\n" +
-	"\x12license_version_id\x18\b \x01(\tB\x03\xe0A\x03R\x10licenseVersionId\x12Y\n" +
-	"\x10compute_instance\x18\t \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"%licensemanager.googleapis.com/Product\x12:projects/{project}/locations/{location}/products/{product}*\bproducts2\aproduct\"\xa7\b\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.licensemanager.v1.Instance.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12J\n" +
+	"\x05state\x18\x05 \x01(\x0e2..google.cloud.licensemanager.v1.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12\x1c\n" +
+	"\x06region\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x06region\x12t\n" +
+	"\x12product_activation\x18\a \x03(\v2?.google.cloud.licensemanager.v1.Instance.ProductActivationEntryB\x04\xe2A\x01\x03R\x11productActivation\x122\n" +
+	"\x12license_version_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\x10licenseVersionId\x12Z\n" +
+	"\x10compute_instance\x18\t \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&compute.googleapis.com/ComputeInstanceR\x0fcomputeInstance\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

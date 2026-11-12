@@ -845,6 +845,77 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudtasks",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudtasks/apiv2beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudtasks.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListQueues = append(client.CallOptions.ListQueues, gax.WithClientTracing(tracing))
+		client.CallOptions.GetQueue = append(client.CallOptions.GetQueue, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateQueue = append(client.CallOptions.CreateQueue, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateQueue = append(client.CallOptions.UpdateQueue, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteQueue = append(client.CallOptions.DeleteQueue, gax.WithClientTracing(tracing))
+		client.CallOptions.PurgeQueue = append(client.CallOptions.PurgeQueue, gax.WithClientTracing(tracing))
+		client.CallOptions.PauseQueue = append(client.CallOptions.PauseQueue, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumeQueue = append(client.CallOptions.ResumeQueue, gax.WithClientTracing(tracing))
+		client.CallOptions.UploadQueueYaml = append(client.CallOptions.UploadQueueYaml, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTasks = append(client.CallOptions.ListTasks, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTask = append(client.CallOptions.GetTask, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTask = append(client.CallOptions.CreateTask, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTask = append(client.CallOptions.DeleteTask, gax.WithClientTracing(tracing))
+		client.CallOptions.LeaseTasks = append(client.CallOptions.LeaseTasks, gax.WithClientTracing(tracing))
+		client.CallOptions.AcknowledgeTask = append(client.CallOptions.AcknowledgeTask, gax.WithClientTracing(tracing))
+		client.CallOptions.RenewLease = append(client.CallOptions.RenewLease, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelLease = append(client.CallOptions.CancelLease, gax.WithClientTracing(tracing))
+		client.CallOptions.RunTask = append(client.CallOptions.RunTask, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudtasks",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudtasks/apiv2beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudtasks.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListQueues = append(client.CallOptions.ListQueues, gax.WithClientLogging(logging))
+		client.CallOptions.GetQueue = append(client.CallOptions.GetQueue, gax.WithClientLogging(logging))
+		client.CallOptions.CreateQueue = append(client.CallOptions.CreateQueue, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateQueue = append(client.CallOptions.UpdateQueue, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteQueue = append(client.CallOptions.DeleteQueue, gax.WithClientLogging(logging))
+		client.CallOptions.PurgeQueue = append(client.CallOptions.PurgeQueue, gax.WithClientLogging(logging))
+		client.CallOptions.PauseQueue = append(client.CallOptions.PauseQueue, gax.WithClientLogging(logging))
+		client.CallOptions.ResumeQueue = append(client.CallOptions.ResumeQueue, gax.WithClientLogging(logging))
+		client.CallOptions.UploadQueueYaml = append(client.CallOptions.UploadQueueYaml, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.ListTasks = append(client.CallOptions.ListTasks, gax.WithClientLogging(logging))
+		client.CallOptions.GetTask = append(client.CallOptions.GetTask, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTask = append(client.CallOptions.CreateTask, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTask = append(client.CallOptions.DeleteTask, gax.WithClientLogging(logging))
+		client.CallOptions.LeaseTasks = append(client.CallOptions.LeaseTasks, gax.WithClientLogging(logging))
+		client.CallOptions.AcknowledgeTask = append(client.CallOptions.AcknowledgeTask, gax.WithClientLogging(logging))
+		client.CallOptions.RenewLease = append(client.CallOptions.RenewLease, gax.WithClientLogging(logging))
+		client.CallOptions.CancelLease = append(client.CallOptions.CancelLease, gax.WithClientLogging(logging))
+		client.CallOptions.RunTask = append(client.CallOptions.RunTask, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -959,6 +1030,77 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudtasks",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudtasks/apiv2beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudtasks.googleapis.com",
+			}),
+		)
+
+		callOpts.ListQueues = append(callOpts.ListQueues, gax.WithClientTracing(tracing))
+		callOpts.GetQueue = append(callOpts.GetQueue, gax.WithClientTracing(tracing))
+		callOpts.CreateQueue = append(callOpts.CreateQueue, gax.WithClientTracing(tracing))
+		callOpts.UpdateQueue = append(callOpts.UpdateQueue, gax.WithClientTracing(tracing))
+		callOpts.DeleteQueue = append(callOpts.DeleteQueue, gax.WithClientTracing(tracing))
+		callOpts.PurgeQueue = append(callOpts.PurgeQueue, gax.WithClientTracing(tracing))
+		callOpts.PauseQueue = append(callOpts.PauseQueue, gax.WithClientTracing(tracing))
+		callOpts.ResumeQueue = append(callOpts.ResumeQueue, gax.WithClientTracing(tracing))
+		callOpts.UploadQueueYaml = append(callOpts.UploadQueueYaml, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.ListTasks = append(callOpts.ListTasks, gax.WithClientTracing(tracing))
+		callOpts.GetTask = append(callOpts.GetTask, gax.WithClientTracing(tracing))
+		callOpts.CreateTask = append(callOpts.CreateTask, gax.WithClientTracing(tracing))
+		callOpts.DeleteTask = append(callOpts.DeleteTask, gax.WithClientTracing(tracing))
+		callOpts.LeaseTasks = append(callOpts.LeaseTasks, gax.WithClientTracing(tracing))
+		callOpts.AcknowledgeTask = append(callOpts.AcknowledgeTask, gax.WithClientTracing(tracing))
+		callOpts.RenewLease = append(callOpts.RenewLease, gax.WithClientTracing(tracing))
+		callOpts.CancelLease = append(callOpts.CancelLease, gax.WithClientTracing(tracing))
+		callOpts.RunTask = append(callOpts.RunTask, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudtasks",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudtasks/apiv2beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudtasks.googleapis.com",
+			}),
+		)
+
+		callOpts.ListQueues = append(callOpts.ListQueues, gax.WithClientLogging(logging))
+		callOpts.GetQueue = append(callOpts.GetQueue, gax.WithClientLogging(logging))
+		callOpts.CreateQueue = append(callOpts.CreateQueue, gax.WithClientLogging(logging))
+		callOpts.UpdateQueue = append(callOpts.UpdateQueue, gax.WithClientLogging(logging))
+		callOpts.DeleteQueue = append(callOpts.DeleteQueue, gax.WithClientLogging(logging))
+		callOpts.PurgeQueue = append(callOpts.PurgeQueue, gax.WithClientLogging(logging))
+		callOpts.PauseQueue = append(callOpts.PauseQueue, gax.WithClientLogging(logging))
+		callOpts.ResumeQueue = append(callOpts.ResumeQueue, gax.WithClientLogging(logging))
+		callOpts.UploadQueueYaml = append(callOpts.UploadQueueYaml, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.ListTasks = append(callOpts.ListTasks, gax.WithClientLogging(logging))
+		callOpts.GetTask = append(callOpts.GetTask, gax.WithClientLogging(logging))
+		callOpts.CreateTask = append(callOpts.CreateTask, gax.WithClientLogging(logging))
+		callOpts.DeleteTask = append(callOpts.DeleteTask, gax.WithClientLogging(logging))
+		callOpts.LeaseTasks = append(callOpts.LeaseTasks, gax.WithClientLogging(logging))
+		callOpts.AcknowledgeTask = append(callOpts.AcknowledgeTask, gax.WithClientLogging(logging))
+		callOpts.RenewLease = append(callOpts.RenewLease, gax.WithClientLogging(logging))
+		callOpts.CancelLease = append(callOpts.CancelLease, gax.WithClientLogging(logging))
+		callOpts.RunTask = append(callOpts.RunTask, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -1005,9 +1147,6 @@ func (c *gRPCClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueue
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/ListQueues")
 	}
@@ -1057,9 +1196,6 @@ func (c *gRPCClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/GetQueue")
 	}
@@ -1081,9 +1217,6 @@ func (c *gRPCClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/CreateQueue")
 	}
@@ -1126,9 +1259,6 @@ func (c *gRPCClient) DeleteQueue(ctx context.Context, req *cloudtaskspb.DeleteQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/DeleteQueue")
 	}
@@ -1146,9 +1276,6 @@ func (c *gRPCClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/PurgeQueue")
 	}
@@ -1170,9 +1297,6 @@ func (c *gRPCClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/PauseQueue")
 	}
@@ -1194,9 +1318,6 @@ func (c *gRPCClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/ResumeQueue")
 	}
@@ -1232,9 +1353,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/GetIamPolicy")
 	}
@@ -1256,9 +1374,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/SetIamPolicy")
 	}
@@ -1280,9 +1395,6 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/TestIamPermissions")
 	}
@@ -1304,9 +1416,6 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/ListTasks")
 	}
@@ -1356,9 +1465,6 @@ func (c *gRPCClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/GetTask")
 	}
@@ -1380,9 +1486,6 @@ func (c *gRPCClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/CreateTask")
 	}
@@ -1404,9 +1507,6 @@ func (c *gRPCClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/DeleteTask")
 	}
@@ -1424,9 +1524,6 @@ func (c *gRPCClient) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTask
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/LeaseTasks")
 	}
@@ -1448,9 +1545,6 @@ func (c *gRPCClient) AcknowledgeTask(ctx context.Context, req *cloudtaskspb.Ackn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/AcknowledgeTask")
 	}
@@ -1468,9 +1562,6 @@ func (c *gRPCClient) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/RenewLease")
 	}
@@ -1492,9 +1583,6 @@ func (c *gRPCClient) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/CancelLease")
 	}
@@ -1516,9 +1604,6 @@ func (c *gRPCClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/RunTask")
 	}
@@ -1626,6 +1711,11 @@ func (c *restClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueue
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta2/%v/queues", req.GetParent())
 
 		params := url.Values{}
@@ -1701,6 +1791,11 @@ func (c *restClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1721,9 +1816,6 @@ func (c *restClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/GetQueue")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*}")
@@ -1783,6 +1875,11 @@ func (c *restClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v/queues", req.GetParent())
 
 	params := url.Values{}
@@ -1796,9 +1893,6 @@ func (c *restClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/CreateQueue")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{parent=projects/*/locations/*}/queues")
@@ -1859,6 +1953,11 @@ func (c *restClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetQueue().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetQueue().GetName())
@@ -1934,6 +2033,11 @@ func (c *restClient) DeleteQueue(ctx context.Context, req *cloudtaskspb.DeleteQu
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1947,9 +2051,6 @@ func (c *restClient) DeleteQueue(ctx context.Context, req *cloudtaskspb.DeleteQu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/DeleteQueue")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*}")
@@ -1987,6 +2088,11 @@ func (c *restClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:purge", req.GetName())
 
 	params := url.Values{}
@@ -2000,9 +2106,6 @@ func (c *restClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/PurgeQueue")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*}:purge")
@@ -2057,6 +2160,11 @@ func (c *restClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:pause", req.GetName())
 
 	params := url.Values{}
@@ -2070,9 +2178,6 @@ func (c *restClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/PauseQueue")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*}:pause")
@@ -2134,6 +2239,11 @@ func (c *restClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:resume", req.GetName())
 
 	params := url.Values{}
@@ -2147,9 +2257,6 @@ func (c *restClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/ResumeQueue")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*}:resume")
@@ -2251,6 +2358,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2264,9 +2376,6 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{resource=projects/*/locations/*/queues/*}:getIamPolicy")
@@ -2324,6 +2433,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2337,9 +2451,6 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{resource=projects/*/locations/*/queues/*}:setIamPolicy")
@@ -2394,6 +2505,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2407,9 +2523,6 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{resource=projects/*/locations/*/queues/*}:testIamPermissions")
@@ -2470,6 +2583,11 @@ func (c *restClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksR
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta2/%v/tasks", req.GetParent())
@@ -2540,6 +2658,11 @@ func (c *restClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
 
 	params := url.Values{}
@@ -2556,9 +2679,6 @@ func (c *restClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/GetTask")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*/tasks/*}")
@@ -2615,6 +2735,11 @@ func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTas
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v/tasks", req.GetParent())
 
 	params := url.Values{}
@@ -2628,9 +2753,6 @@ func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/CreateTask")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{parent=projects/*/locations/*/queues/*}/tasks")
@@ -2676,6 +2798,11 @@ func (c *restClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
 
 	params := url.Values{}
@@ -2689,9 +2816,6 @@ func (c *restClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/DeleteTask")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*/tasks/*}")
@@ -2746,6 +2870,11 @@ func (c *restClient) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTask
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v/tasks:lease", req.GetParent())
 
 	params := url.Values{}
@@ -2759,9 +2888,6 @@ func (c *restClient) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTask
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/LeaseTasks")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{parent=projects/*/locations/*/queues/*}/tasks:lease")
@@ -2822,6 +2948,11 @@ func (c *restClient) AcknowledgeTask(ctx context.Context, req *cloudtaskspb.Ackn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:acknowledge", req.GetName())
 
 	params := url.Values{}
@@ -2835,9 +2966,6 @@ func (c *restClient) AcknowledgeTask(ctx context.Context, req *cloudtaskspb.Ackn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/AcknowledgeTask")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*/tasks/*}:acknowledge")
@@ -2875,6 +3003,11 @@ func (c *restClient) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeas
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:renewLease", req.GetName())
 
 	params := url.Values{}
@@ -2888,9 +3021,6 @@ func (c *restClient) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/RenewLease")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*/tasks/*}:renewLease")
@@ -2943,6 +3073,11 @@ func (c *restClient) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:cancelLease", req.GetName())
 
 	params := url.Values{}
@@ -2956,9 +3091,6 @@ func (c *restClient) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/CancelLease")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*/tasks/*}:cancelLease")
@@ -3035,6 +3167,11 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:run", req.GetName())
 
 	params := url.Values{}
@@ -3048,9 +3185,6 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta2.CloudTasks/RunTask")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta2/{name=projects/*/locations/*/queues/*/tasks/*}:run")
@@ -3090,6 +3224,11 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
@@ -3157,6 +3296,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta2/%v/locations", req.GetName())

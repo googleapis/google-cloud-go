@@ -1045,15 +1045,15 @@ var File_google_cloud_datacatalog_v1beta1_policytagmanager_proto protoreflect.Fi
 
 const file_google_cloud_datacatalog_v1beta1_policytagmanager_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/datacatalog/v1beta1/policytagmanager.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/datacatalog/v1beta1/common.proto\x1a1google/cloud/datacatalog/v1beta1/timestamps.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xf2\x05\n" +
-	"\bTaxonomy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12-\n" +
-	"\x10policy_tag_count\x18\x04 \x01(\x05B\x03\xe0A\x03R\x0epolicyTagCount\x12h\n" +
-	"\x13taxonomy_timestamps\x18\x05 \x01(\v22.google.cloud.datacatalog.v1beta1.SystemTimestampsB\x03\xe0A\x03R\x12taxonomyTimestamps\x12p\n" +
-	"\x16activated_policy_types\x18\x06 \x03(\x0e25.google.cloud.datacatalog.v1beta1.Taxonomy.PolicyTypeB\x03\xe0A\x01R\x14activatedPolicyTypes\x12Q\n" +
-	"\aservice\x18\a \x01(\v22.google.cloud.datacatalog.v1beta1.Taxonomy.ServiceB\x03\xe0A\x03R\aservice\x1ak\n" +
+	"7google/cloud/datacatalog/v1beta1/policytagmanager.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/datacatalog/v1beta1/common.proto\x1a1google/cloud/datacatalog/v1beta1/timestamps.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xf9\x05\n" +
+	"\bTaxonomy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12.\n" +
+	"\x10policy_tag_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\x0epolicyTagCount\x12i\n" +
+	"\x13taxonomy_timestamps\x18\x05 \x01(\v22.google.cloud.datacatalog.v1beta1.SystemTimestampsB\x04\xe2A\x01\x03R\x12taxonomyTimestamps\x12q\n" +
+	"\x16activated_policy_types\x18\x06 \x03(\x0e25.google.cloud.datacatalog.v1beta1.Taxonomy.PolicyTypeB\x04\xe2A\x01\x01R\x14activatedPolicyTypes\x12R\n" +
+	"\aservice\x18\a \x01(\v22.google.cloud.datacatalog.v1beta1.Taxonomy.ServiceB\x04\xe2A\x01\x03R\aservice\x1ak\n" +
 	"\aService\x12D\n" +
 	"\x04name\x18\x01 \x01(\x0e20.google.cloud.datacatalog.v1beta1.ManagingSystemR\x04name\x12\x1a\n" +
 	"\bidentity\x18\x02 \x01(\tR\bidentity\"J\n" +
@@ -1061,26 +1061,26 @@ const file_google_cloud_datacatalog_v1beta1_policytagmanager_proto_rawDesc = "" 
 	"PolicyType\x12\x1b\n" +
 	"\x17POLICY_TYPE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bFINE_GRAINED_ACCESS_CONTROL\x10\x01:g\xeaAd\n" +
-	"#datacatalog.googleapis.com/Taxonomy\x12=projects/{project}/locations/{location}/taxonomies/{taxonomy}\"\xce\x02\n" +
-	"\tPolicyTag\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"#datacatalog.googleapis.com/Taxonomy\x12=projects/{project}/locations/{location}/taxonomies/{taxonomy}\"\xd1\x02\n" +
+	"\tPolicyTag\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12*\n" +
-	"\x11parent_policy_tag\x18\x04 \x01(\tR\x0fparentPolicyTag\x12/\n" +
-	"\x11child_policy_tags\x18\x05 \x03(\tB\x03\xe0A\x03R\x0fchildPolicyTags:\x80\x01\xeaA}\n" +
-	"$datacatalog.googleapis.com/PolicyTag\x12Uprojects/{project}/locations/{location}/taxonomies/{taxonomy}/policyTags/{policy_tag}\"\xa4\x01\n" +
-	"\x15CreateTaxonomyRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#datacatalog.googleapis.com/TaxonomyR\x06parent\x12F\n" +
-	"\btaxonomy\x18\x02 \x01(\v2*.google.cloud.datacatalog.v1beta1.TaxonomyR\btaxonomy\"X\n" +
-	"\x15DeleteTaxonomyRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x11parent_policy_tag\x18\x04 \x01(\tR\x0fparentPolicyTag\x120\n" +
+	"\x11child_policy_tags\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\x0fchildPolicyTags:\x80\x01\xeaA}\n" +
+	"$datacatalog.googleapis.com/PolicyTag\x12Uprojects/{project}/locations/{location}/taxonomies/{taxonomy}/policyTags/{policy_tag}\"\xa5\x01\n" +
+	"\x15CreateTaxonomyRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#datacatalog.googleapis.com/TaxonomyR\x06parent\x12F\n" +
+	"\btaxonomy\x18\x02 \x01(\v2*.google.cloud.datacatalog.v1beta1.TaxonomyR\btaxonomy\"Y\n" +
+	"\x15DeleteTaxonomyRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#datacatalog.googleapis.com/TaxonomyR\x04name\"\x9c\x01\n" +
 	"\x15UpdateTaxonomyRequest\x12F\n" +
 	"\btaxonomy\x18\x01 \x01(\v2*.google.cloud.datacatalog.v1beta1.TaxonomyR\btaxonomy\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xb0\x01\n" +
-	"\x15ListTaxonomiesRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#datacatalog.googleapis.com/TaxonomyR\x06parent\x12\x1b\n" +
+	"updateMask\"\xb1\x01\n" +
+	"\x15ListTaxonomiesRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#datacatalog.googleapis.com/TaxonomyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -1089,33 +1089,33 @@ const file_google_cloud_datacatalog_v1beta1_policytagmanager_proto_rawDesc = "" 
 	"\n" +
 	"taxonomies\x18\x01 \x03(\v2*.google.cloud.datacatalog.v1beta1.TaxonomyR\n" +
 	"taxonomies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
-	"\x12GetTaxonomyRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#datacatalog.googleapis.com/TaxonomyR\x04name\"\xaa\x01\n" +
-	"\x16CreatePolicyTagRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$datacatalog.googleapis.com/PolicyTagR\x06parent\x12J\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
+	"\x12GetTaxonomyRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#datacatalog.googleapis.com/TaxonomyR\x04name\"\xab\x01\n" +
+	"\x16CreatePolicyTagRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$datacatalog.googleapis.com/PolicyTagR\x06parent\x12J\n" +
 	"\n" +
-	"policy_tag\x18\x02 \x01(\v2+.google.cloud.datacatalog.v1beta1.PolicyTagR\tpolicyTag\"Z\n" +
-	"\x16DeletePolicyTagRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"policy_tag\x18\x02 \x01(\v2+.google.cloud.datacatalog.v1beta1.PolicyTagR\tpolicyTag\"[\n" +
+	"\x16DeletePolicyTagRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$datacatalog.googleapis.com/PolicyTagR\x04name\"\xa1\x01\n" +
 	"\x16UpdatePolicyTagRequest\x12J\n" +
 	"\n" +
 	"policy_tag\x18\x01 \x01(\v2+.google.cloud.datacatalog.v1beta1.PolicyTagR\tpolicyTag\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x99\x01\n" +
-	"\x15ListPolicyTagsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$datacatalog.googleapis.com/PolicyTagR\x06parent\x12\x1b\n" +
+	"updateMask\"\x9a\x01\n" +
+	"\x15ListPolicyTagsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$datacatalog.googleapis.com/PolicyTagR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8e\x01\n" +
 	"\x16ListPolicyTagsResponse\x12L\n" +
 	"\vpolicy_tags\x18\x01 \x03(\v2+.google.cloud.datacatalog.v1beta1.PolicyTagR\n" +
 	"policyTags\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
-	"\x13GetPolicyTagRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
+	"\x13GetPolicyTagRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$datacatalog.googleapis.com/PolicyTagR\x04name2\xe5\x16\n" +
 	"\x10PolicyTagManager\x12\xce\x01\n" +
 	"\x0eCreateTaxonomy\x127.google.cloud.datacatalog.v1beta1.CreateTaxonomyRequest\x1a*.google.cloud.datacatalog.v1beta1.Taxonomy\"W\xdaA\x0fparent,taxonomy\x82\xd3\xe4\x93\x02?:\btaxonomy\"3/v1beta1/{parent=projects/*/locations/*}/taxonomies\x12\xa5\x01\n" +

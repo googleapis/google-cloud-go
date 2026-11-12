@@ -143,14 +143,14 @@ var File_google_cloud_discoveryengine_v1beta_user_store_proto protoreflect.FileD
 
 const file_google_cloud_discoveryengine_v1beta_user_store_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/discoveryengine/v1beta/user_store.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xba\x03\n" +
-	"\tUserStore\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12j\n" +
-	"\x16default_license_config\x18\x05 \x01(\tB4\xe0A\x01\xfaA.\n" +
-	",discoveryengine.googleapis.com/LicenseConfigR\x14defaultLicenseConfig\x12D\n" +
-	"\x1cenable_license_auto_register\x18\x06 \x01(\bB\x03\xe0A\x01R\x19enableLicenseAutoRegister\x12O\n" +
-	"\"enable_expired_license_auto_update\x18\a \x01(\bB\x03\xe0A\x01R\x1eenableExpiredLicenseAutoUpdate:n\xeaAk\n" +
+	"4google/cloud/discoveryengine/v1beta/user_store.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbe\x03\n" +
+	"\tUserStore\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12k\n" +
+	"\x16default_license_config\x18\x05 \x01(\tB5\xe2A\x01\x01\xfaA.\n" +
+	",discoveryengine.googleapis.com/LicenseConfigR\x14defaultLicenseConfig\x12E\n" +
+	"\x1cenable_license_auto_register\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x19enableLicenseAutoRegister\x12P\n" +
+	"\"enable_expired_license_auto_update\x18\a \x01(\bB\x04\xe2A\x01\x01R\x1eenableExpiredLicenseAutoUpdate:n\xeaAk\n" +
 	"(discoveryengine.googleapis.com/UserStore\x12?projects/{project}/locations/{location}/userStores/{user_store}B\x95\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x0eUserStoreProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 

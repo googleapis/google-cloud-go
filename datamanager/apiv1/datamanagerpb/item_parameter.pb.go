@@ -38,7 +38,7 @@ const (
 )
 
 // A bucket of any [event parameters related to an
-// item](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference/events)
+// item](https://developers.google.com/data-manager/api/reference/analytics/recommended-events)
 // to be included within the event that were not already specified using other
 // structured fields.
 type ItemParameter struct {
@@ -99,10 +99,10 @@ var File_google_ads_datamanager_v1_item_parameter_proto protoreflect.FileDescrip
 
 const file_google_ads_datamanager_v1_item_parameter_proto_rawDesc = "" +
 	"\n" +
-	".google/ads/datamanager/v1/item_parameter.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"V\n" +
-	"\rItemParameter\x12*\n" +
-	"\x0eparameter_name\x18\x01 \x01(\tB\x03\xe0A\x02R\rparameterName\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05valueB\xcf\x01\n" +
+	".google/ads/datamanager/v1/item_parameter.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"X\n" +
+	"\rItemParameter\x12+\n" +
+	"\x0eparameter_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rparameterName\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05valueB\xcf\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x12ItemParameterProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

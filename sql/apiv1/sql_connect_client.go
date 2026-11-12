@@ -212,6 +212,37 @@ func NewSqlConnectClient(ctx context.Context, opts ...option.ClientOption) (*Sql
 		client.CallOptions.ResolveConnectSettings = append(client.CallOptions.ResolveConnectSettings, gax.WithClientMetrics(metrics))
 		client.CallOptions.GenerateEphemeralCert = append(client.CallOptions.GenerateEphemeralCert, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetConnectSettings = append(client.CallOptions.GetConnectSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.ResolveConnectSettings = append(client.CallOptions.ResolveConnectSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateEphemeralCert = append(client.CallOptions.GenerateEphemeralCert, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetConnectSettings = append(client.CallOptions.GetConnectSettings, gax.WithClientLogging(logging))
+		client.CallOptions.ResolveConnectSettings = append(client.CallOptions.ResolveConnectSettings, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateEphemeralCert = append(client.CallOptions.GenerateEphemeralCert, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -304,6 +335,37 @@ func NewSqlConnectRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.GetConnectSettings = append(callOpts.GetConnectSettings, gax.WithClientMetrics(metrics))
 		callOpts.ResolveConnectSettings = append(callOpts.ResolveConnectSettings, gax.WithClientMetrics(metrics))
 		callOpts.GenerateEphemeralCert = append(callOpts.GenerateEphemeralCert, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.GetConnectSettings = append(callOpts.GetConnectSettings, gax.WithClientTracing(tracing))
+		callOpts.ResolveConnectSettings = append(callOpts.ResolveConnectSettings, gax.WithClientTracing(tracing))
+		callOpts.GenerateEphemeralCert = append(callOpts.GenerateEphemeralCert, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.GetConnectSettings = append(callOpts.GetConnectSettings, gax.WithClientLogging(logging))
+		callOpts.ResolveConnectSettings = append(callOpts.ResolveConnectSettings, gax.WithClientLogging(logging))
+		callOpts.GenerateEphemeralCert = append(callOpts.GenerateEphemeralCert, gax.WithClientLogging(logging))
 	}
 
 	return &SqlConnectClient{internalClient: c, CallOptions: callOpts}, nil
@@ -415,6 +477,12 @@ func (c *sqlConnectRESTClient) GetConnectSettings(ctx context.Context, req *sqlp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/connectSettings", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -475,6 +543,12 @@ func (c *sqlConnectRESTClient) GetConnectSettings(ctx context.Context, req *sqlp
 func (c *sqlConnectRESTClient) ResolveConnectSettings(ctx context.Context, req *sqlpb.ResolveConnectSettingsRequest, opts ...gax.CallOption) (*sqlpb.ConnectSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLocation(),
+		req.GetDnsName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/locations/%v/dns/%v:resolveConnectSettings", req.GetLocation(), req.GetDnsName())
@@ -538,6 +612,12 @@ func (c *sqlConnectRESTClient) GenerateEphemeralCert(ctx context.Context, req *s
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v:generateEphemeralCert", req.GetProject(), req.GetInstance())

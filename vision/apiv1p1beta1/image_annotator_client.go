@@ -217,6 +217,33 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 
 		client.CallOptions.BatchAnnotateImages = append(client.CallOptions.BatchAnnotateImages, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1p1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.BatchAnnotateImages = append(client.CallOptions.BatchAnnotateImages, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1p1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.BatchAnnotateImages = append(client.CallOptions.BatchAnnotateImages, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -309,6 +336,33 @@ func NewImageAnnotatorRESTClient(ctx context.Context, opts ...option.ClientOptio
 		)
 
 		callOpts.BatchAnnotateImages = append(callOpts.BatchAnnotateImages, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1p1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		callOpts.BatchAnnotateImages = append(callOpts.BatchAnnotateImages, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1p1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		callOpts.BatchAnnotateImages = append(callOpts.BatchAnnotateImages, gax.WithClientLogging(logging))
 	}
 
 	return &ImageAnnotatorClient{internalClient: c, CallOptions: callOpts}, nil

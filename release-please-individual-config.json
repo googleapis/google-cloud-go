@@ -7,6 +7,16 @@
     "bigtable": {
       "component": "bigtable"
     },
+    "chronicle": {
+      "component": "chronicle",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "pubsub": {
       "component": "pubsub",
       "exclude-paths": [

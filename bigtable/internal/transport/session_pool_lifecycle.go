@@ -280,7 +280,16 @@ func (p *SessionPoolImpl) onActive(sh *SessionHandle) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
+	// The delete is the single-fire gate shared with onClose's starting
+	// branch: both paths delete sh from startingSessions under p.mu, so
+	// exactly one executes. Release the budget only when we win the delete,
+	// so onClose's penalty path can't also fire (it would find sh gone and
+	// take the non-starting branch).
+	_, wasStarting := p.startingSessions[sh]
 	delete(p.startingSessions, sh)
+	if wasStarting {
+		p.budget.Release(true)
+	}
 
 	if p.closed {
 		// Dispatch async so we release p.mu before the onClose chain
@@ -356,6 +365,12 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 	if _, starting := p.startingSessions[sh]; starting {
 		delete(p.startingSessions, sh)
 		p.mu.Unlock()
+		// Session died before reaching Ready. Apply the failure penalty so
+		// repeated fast rejections throttle the retry loop. The
+		// startingSessions delete above (under p.mu) is the single-fire
+		// gate: onActive also deletes under p.mu and releases only when
+		// it wins, so at most one side releases.
+		p.budget.Release(false)
 		p.bumpStartingClose(sh.session)
 		p.noteAbnormalCloseIfAny(sh)
 		// Re-drive creation after a session died before ever reaching
@@ -548,22 +563,41 @@ func (p *SessionPoolImpl) startSlowMetricsLoop() {
 	})
 }
 
-// tickOnce runs one Tick with panic recovery + a debounce gate. The
-// tickPending CAS coalesces concurrent invocations to at most one
-// active Tick body so bursts of empty-pool kicks don't repeatedly
-// enter the sizer decision path before scalingInProgress rejects
-// them.
+// tickOnce runs Tick with panic recovery + a 3-state debounce gate
+// (0 = idle, 1 = running, 2 = running + rerun requested). Concurrent
+// invocations coalesce to at most one active Tick goroutine, while any
+// kick that arrives after an in-flight Tick has already sampled Stats()
+// marks state=2 so the active runner executes one trailing Tick pass
+// before exiting.
 func (p *SessionPoolImpl) tickOnce(ctx context.Context) {
-	if !p.tickPending.CompareAndSwap(false, true) {
-		return
+	for {
+		state := p.tickPending.Load()
+		if state == 2 {
+			return
+		}
+		if state == 1 {
+			if p.tickPending.CompareAndSwap(1, 2) {
+				return
+			}
+			continue
+		}
+		if p.tickPending.CompareAndSwap(0, 1) {
+			break
+		}
 	}
-	defer p.tickPending.Store(false)
 	defer func() {
 		if r := recover(); r != nil {
+			p.tickPending.Store(0)
 			btopt.Debugf(nil, "POOL %s Tick panic recovered: %v\n%s", p.poolName, r, debug.Stack())
 		}
 	}()
-	p.Tick(ctx)
+	for {
+		p.Tick(ctx)
+		if p.tickPending.CompareAndSwap(1, 0) {
+			return
+		}
+		p.tickPending.Store(1)
+	}
 }
 
 // spawnTickOnce is the guarded `go p.tickOnce(ctx)` used at every kick

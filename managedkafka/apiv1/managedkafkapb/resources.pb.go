@@ -1936,24 +1936,24 @@ var File_google_cloud_managedkafka_v1_resources_proto protoreflect.FileDescripto
 
 const file_google_cloud_managedkafka_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/managedkafka/v1/resources.proto\x12\x1cgoogle.cloud.managedkafka.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa6\b\n" +
-	"\aCluster\x12M\n" +
+	",google/cloud/managedkafka/v1/resources.proto\x12\x1cgoogle.cloud.managedkafka.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb1\b\n" +
+	"\aCluster\x12N\n" +
 	"\n" +
-	"gcp_config\x18\t \x01(\v2'.google.cloud.managedkafka.v1.GcpConfigB\x03\xe0A\x02H\x00R\tgcpConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12N\n" +
-	"\x06labels\x18\x04 \x03(\v21.google.cloud.managedkafka.v1.Cluster.LabelsEntryB\x03\xe0A\x01R\x06labels\x12Z\n" +
-	"\x0fcapacity_config\x18\x05 \x01(\v2,.google.cloud.managedkafka.v1.CapacityConfigB\x03\xe0A\x02R\x0ecapacityConfig\x12]\n" +
-	"\x10rebalance_config\x18\b \x01(\v2-.google.cloud.managedkafka.v1.RebalanceConfigB\x03\xe0A\x01R\x0frebalanceConfig\x12F\n" +
+	"gcp_config\x18\t \x01(\v2'.google.cloud.managedkafka.v1.GcpConfigB\x04\xe2A\x01\x02H\x00R\tgcpConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12O\n" +
+	"\x06labels\x18\x04 \x03(\v21.google.cloud.managedkafka.v1.Cluster.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12[\n" +
+	"\x0fcapacity_config\x18\x05 \x01(\v2,.google.cloud.managedkafka.v1.CapacityConfigB\x04\xe2A\x01\x02R\x0ecapacityConfig\x12^\n" +
+	"\x10rebalance_config\x18\b \x01(\v2-.google.cloud.managedkafka.v1.RebalanceConfigB\x04\xe2A\x01\x01R\x0frebalanceConfig\x12G\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2+.google.cloud.managedkafka.v1.Cluster.StateB\x03\xe0A\x03R\x05state\x12-\n" +
-	"\rsatisfies_pzi\x18\v \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzs\x18\f \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzs\x88\x01\x01\x12K\n" +
+	" \x01(\x0e2+.google.cloud.managedkafka.v1.Cluster.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\rsatisfies_pzi\x18\v \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzs\x18\f \x01(\bB\x04\xe2A\x01\x03H\x02R\fsatisfiesPzs\x88\x01\x01\x12L\n" +
 	"\n" +
-	"tls_config\x18\r \x01(\v2'.google.cloud.managedkafka.v1.TlsConfigB\x03\xe0A\x01R\ttlsConfig\x1a9\n" +
+	"tls_config\x18\r \x01(\v2'.google.cloud.managedkafka.v1.TlsConfigB\x04\xe2A\x01\x01R\ttlsConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"F\n" +
@@ -1966,83 +1966,83 @@ const file_google_cloud_managedkafka_v1_resources_proto_rawDesc = "" +
 	"#managedkafka.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}*\bclusters2\aclusterB\x11\n" +
 	"\x0fplatform_configB\x10\n" +
 	"\x0e_satisfies_pziB\x10\n" +
-	"\x0e_satisfies_pzs\"\\\n" +
-	"\x0eCapacityConfig\x12\"\n" +
+	"\x0e_satisfies_pzs\"^\n" +
+	"\x0eCapacityConfig\x12#\n" +
 	"\n" +
-	"vcpu_count\x18\x01 \x01(\x03B\x03\xe0A\x02R\tvcpuCount\x12&\n" +
-	"\fmemory_bytes\x18\x02 \x01(\x03B\x03\xe0A\x02R\vmemoryBytes\"\xae\x01\n" +
-	"\x0fRebalanceConfig\x12K\n" +
-	"\x04mode\x18\x01 \x01(\x0e22.google.cloud.managedkafka.v1.RebalanceConfig.ModeB\x03\xe0A\x01R\x04mode\"N\n" +
+	"vcpu_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\tvcpuCount\x12'\n" +
+	"\fmemory_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\vmemoryBytes\"\xaf\x01\n" +
+	"\x0fRebalanceConfig\x12L\n" +
+	"\x04mode\x18\x01 \x01(\x0e22.google.cloud.managedkafka.v1.RebalanceConfig.ModeB\x04\xe2A\x01\x01R\x04mode\"N\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fNO_REBALANCE\x10\x01\x12\x1e\n" +
-	"\x1aAUTO_REBALANCE_ON_SCALE_UP\x10\x02\",\n" +
-	"\rNetworkConfig\x12\x1b\n" +
-	"\x06subnet\x18\x02 \x01(\tB\x03\xe0A\x02R\x06subnet\"i\n" +
-	"\fAccessConfig\x12Y\n" +
-	"\x0fnetwork_configs\x18\x01 \x03(\v2+.google.cloud.managedkafka.v1.NetworkConfigB\x03\xe0A\x02R\x0enetworkConfigs\"\xa8\x01\n" +
-	"\tGcpConfig\x12T\n" +
-	"\raccess_config\x18\x03 \x01(\v2*.google.cloud.managedkafka.v1.AccessConfigB\x03\xe0A\x02R\faccessConfig\x12E\n" +
-	"\akms_key\x18\x02 \x01(\tB,\xe0A\x01\xe0A\x05\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\"\xa2\x01\n" +
-	"\tTlsConfig\x12Q\n" +
-	"\ftrust_config\x18\x01 \x01(\v2).google.cloud.managedkafka.v1.TrustConfigB\x03\xe0A\x01R\vtrustConfig\x12B\n" +
-	"\x1bssl_principal_mapping_rules\x18\x02 \x01(\tB\x03\xe0A\x01R\x18sslPrincipalMappingRules\"\xe7\x01\n" +
-	"\vTrustConfig\x12q\n" +
-	"\vcas_configs\x18\x01 \x03(\v2K.google.cloud.managedkafka.v1.TrustConfig.CertificateAuthorityServiceConfigB\x03\xe0A\x01R\n" +
-	"casConfigs\x1ae\n" +
-	"!CertificateAuthorityServiceConfig\x12@\n" +
-	"\aca_pool\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolR\x06caPool\"\x95\x03\n" +
-	"\x05Topic\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12,\n" +
-	"\x0fpartition_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0epartitionCount\x125\n" +
-	"\x12replication_factor\x18\x03 \x01(\x05B\x06\xe0A\x02\xe0A\x05R\x11replicationFactor\x12O\n" +
-	"\aconfigs\x18\x04 \x03(\v20.google.cloud.managedkafka.v1.Topic.ConfigsEntryB\x03\xe0A\x01R\aconfigs\x1a:\n" +
+	"\x1aAUTO_REBALANCE_ON_SCALE_UP\x10\x02\"-\n" +
+	"\rNetworkConfig\x12\x1c\n" +
+	"\x06subnet\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06subnet\"j\n" +
+	"\fAccessConfig\x12Z\n" +
+	"\x0fnetwork_configs\x18\x01 \x03(\v2+.google.cloud.managedkafka.v1.NetworkConfigB\x04\xe2A\x01\x02R\x0enetworkConfigs\"\xa8\x01\n" +
+	"\tGcpConfig\x12U\n" +
+	"\raccess_config\x18\x03 \x01(\v2*.google.cloud.managedkafka.v1.AccessConfigB\x04\xe2A\x01\x02R\faccessConfig\x12D\n" +
+	"\akms_key\x18\x02 \x01(\tB+\xe2A\x02\x01\x05\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\"\xa4\x01\n" +
+	"\tTlsConfig\x12R\n" +
+	"\ftrust_config\x18\x01 \x01(\v2).google.cloud.managedkafka.v1.TrustConfigB\x04\xe2A\x01\x01R\vtrustConfig\x12C\n" +
+	"\x1bssl_principal_mapping_rules\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x18sslPrincipalMappingRules\"\xe9\x01\n" +
+	"\vTrustConfig\x12r\n" +
+	"\vcas_configs\x18\x01 \x03(\v2K.google.cloud.managedkafka.v1.TrustConfig.CertificateAuthorityServiceConfigB\x04\xe2A\x01\x01R\n" +
+	"casConfigs\x1af\n" +
+	"!CertificateAuthorityServiceConfig\x12A\n" +
+	"\aca_pool\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolR\x06caPool\"\x97\x03\n" +
+	"\x05Topic\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12-\n" +
+	"\x0fpartition_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0epartitionCount\x124\n" +
+	"\x12replication_factor\x18\x03 \x01(\x05B\x05\xe2A\x02\x02\x05R\x11replicationFactor\x12P\n" +
+	"\aconfigs\x18\x04 \x03(\v20.google.cloud.managedkafka.v1.Topic.ConfigsEntryB\x04\xe2A\x01\x01R\aconfigs\x1a:\n" +
 	"\fConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x80\x01\xeaA}\n" +
-	"!managedkafka.googleapis.com/Topic\x12Iprojects/{project}/locations/{location}/clusters/{cluster}/topics/{topic}*\x06topics2\x05topic\"\xf9\x01\n" +
-	"\x15ConsumerTopicMetadata\x12h\n" +
+	"!managedkafka.googleapis.com/Topic\x12Iprojects/{project}/locations/{location}/clusters/{cluster}/topics/{topic}*\x06topics2\x05topic\"\xfa\x01\n" +
+	"\x15ConsumerTopicMetadata\x12i\n" +
 	"\n" +
-	"partitions\x18\x01 \x03(\v2C.google.cloud.managedkafka.v1.ConsumerTopicMetadata.PartitionsEntryB\x03\xe0A\x01R\n" +
+	"partitions\x18\x01 \x03(\v2C.google.cloud.managedkafka.v1.ConsumerTopicMetadata.PartitionsEntryB\x04\xe2A\x01\x01R\n" +
 	"partitions\x1av\n" +
 	"\x0fPartitionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12M\n" +
-	"\x05value\x18\x02 \x01(\v27.google.cloud.managedkafka.v1.ConsumerPartitionMetadataR\x05value:\x028\x01\"Y\n" +
-	"\x19ConsumerPartitionMetadata\x12\x1b\n" +
-	"\x06offset\x18\x01 \x01(\x03B\x03\xe0A\x02R\x06offset\x12\x1f\n" +
-	"\bmetadata\x18\x02 \x01(\tB\x03\xe0A\x01R\bmetadata\"\x9b\x03\n" +
-	"\rConsumerGroup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12T\n" +
-	"\x06topics\x18\x02 \x03(\v27.google.cloud.managedkafka.v1.ConsumerGroup.TopicsEntryB\x03\xe0A\x01R\x06topics\x1an\n" +
+	"\x05value\x18\x02 \x01(\v27.google.cloud.managedkafka.v1.ConsumerPartitionMetadataR\x05value:\x028\x01\"[\n" +
+	"\x19ConsumerPartitionMetadata\x12\x1c\n" +
+	"\x06offset\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x06offset\x12 \n" +
+	"\bmetadata\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bmetadata\"\x9d\x03\n" +
+	"\rConsumerGroup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12U\n" +
+	"\x06topics\x18\x02 \x03(\v27.google.cloud.managedkafka.v1.ConsumerGroup.TopicsEntryB\x04\xe2A\x01\x01R\x06topics\x1an\n" +
 	"\vTopicsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12I\n" +
 	"\x05value\x18\x02 \x01(\v23.google.cloud.managedkafka.v1.ConsumerTopicMetadataR\x05value:\x028\x01:\xaa\x01\xeaA\xa6\x01\n" +
-	")managedkafka.googleapis.com/ConsumerGroup\x12Zprojects/{project}/locations/{location}/clusters/{cluster}/consumerGroups/{consumer_group}*\x0econsumerGroups2\rconsumerGroup\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xf9\a\n" +
-	"\x0eConnectCluster\x12T\n" +
+	")managedkafka.googleapis.com/ConsumerGroup\x12Zprojects/{project}/locations/{location}/clusters/{cluster}/consumerGroups/{consumer_group}*\x0econsumerGroups2\rconsumerGroup\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\x80\b\n" +
+	"\x0eConnectCluster\x12U\n" +
 	"\n" +
-	"gcp_config\x18\a \x01(\v2..google.cloud.managedkafka.v1.ConnectGcpConfigB\x03\xe0A\x02H\x00R\tgcpConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
-	"\rkafka_cluster\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\fkafkaCluster\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12U\n" +
-	"\x06labels\x18\x05 \x03(\v28.google.cloud.managedkafka.v1.ConnectCluster.LabelsEntryB\x03\xe0A\x01R\x06labels\x12Z\n" +
-	"\x0fcapacity_config\x18\x06 \x01(\v2,.google.cloud.managedkafka.v1.CapacityConfigB\x03\xe0A\x02R\x0ecapacityConfig\x12M\n" +
-	"\x05state\x18\b \x01(\x0e22.google.cloud.managedkafka.v1.ConnectCluster.StateB\x03\xe0A\x03R\x05state\x12U\n" +
-	"\x06config\x18\t \x03(\v28.google.cloud.managedkafka.v1.ConnectCluster.ConfigEntryB\x03\xe0A\x01R\x06config\x1a9\n" +
+	"gcp_config\x18\a \x01(\v2..google.cloud.managedkafka.v1.ConnectGcpConfigB\x04\xe2A\x01\x02H\x00R\tgcpConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12*\n" +
+	"\rkafka_cluster\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\fkafkaCluster\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12V\n" +
+	"\x06labels\x18\x05 \x03(\v28.google.cloud.managedkafka.v1.ConnectCluster.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12[\n" +
+	"\x0fcapacity_config\x18\x06 \x01(\v2,.google.cloud.managedkafka.v1.CapacityConfigB\x04\xe2A\x01\x02R\x0ecapacityConfig\x12N\n" +
+	"\x05state\x18\b \x01(\x0e22.google.cloud.managedkafka.v1.ConnectCluster.StateB\x04\xe2A\x01\x03R\x05state\x12V\n" +
+	"\x06config\x18\t \x03(\v28.google.cloud.managedkafka.v1.ConnectCluster.ConfigEntryB\x04\xe2A\x01\x01R\x06config\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -2056,22 +2056,22 @@ const file_google_cloud_managedkafka_v1_resources_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:\x9c\x01\xeaA\x98\x01\n" +
 	"*managedkafka.googleapis.com/ConnectCluster\x12Iprojects/{project}/locations/{location}/connectClusters/{connect_cluster}*\x0fconnectClusters2\x0econnectClusterB\x11\n" +
-	"\x0fplatform_config\"\xa5\x01\n" +
-	"\x14ConnectNetworkConfig\x12*\n" +
-	"\x0eprimary_subnet\x18\x03 \x01(\tB\x03\xe0A\x02R\rprimarySubnet\x122\n" +
-	"\x12additional_subnets\x18\x04 \x03(\tB\x03\xe0A\x01R\x11additionalSubnets\x12-\n" +
-	"\x10dns_domain_names\x18\x02 \x03(\tB\x03\xe0A\x01R\x0ednsDomainNames\"w\n" +
-	"\x13ConnectAccessConfig\x12`\n" +
-	"\x0fnetwork_configs\x18\x01 \x03(\v22.google.cloud.managedkafka.v1.ConnectNetworkConfigB\x03\xe0A\x02R\x0enetworkConfigs\"\xc6\x01\n" +
-	"\x10ConnectGcpConfig\x12[\n" +
-	"\raccess_config\x18\x01 \x01(\v21.google.cloud.managedkafka.v1.ConnectAccessConfigB\x03\xe0A\x02R\faccessConfig\x12U\n" +
-	"\fsecret_paths\x18\x02 \x03(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\vsecretPaths\"\x90\x05\n" +
-	"\tConnector\x12d\n" +
-	"\x13task_restart_policy\x18\x04 \x01(\v2-.google.cloud.managedkafka.v1.TaskRetryPolicyB\x03\xe0A\x01H\x00R\x11taskRestartPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12S\n" +
-	"\aconfigs\x18\x02 \x03(\v24.google.cloud.managedkafka.v1.Connector.ConfigsEntryB\x03\xe0A\x01R\aconfigs\x12H\n" +
-	"\x05state\x18\x03 \x01(\x0e2-.google.cloud.managedkafka.v1.Connector.StateB\x03\xe0A\x03R\x05state\x1a:\n" +
+	"\x0fplatform_config\"\xa8\x01\n" +
+	"\x14ConnectNetworkConfig\x12+\n" +
+	"\x0eprimary_subnet\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rprimarySubnet\x123\n" +
+	"\x12additional_subnets\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x11additionalSubnets\x12.\n" +
+	"\x10dns_domain_names\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0ednsDomainNames\"x\n" +
+	"\x13ConnectAccessConfig\x12a\n" +
+	"\x0fnetwork_configs\x18\x01 \x03(\v22.google.cloud.managedkafka.v1.ConnectNetworkConfigB\x04\xe2A\x01\x02R\x0enetworkConfigs\"\xc8\x01\n" +
+	"\x10ConnectGcpConfig\x12\\\n" +
+	"\raccess_config\x18\x01 \x01(\v21.google.cloud.managedkafka.v1.ConnectAccessConfigB\x04\xe2A\x01\x02R\faccessConfig\x12V\n" +
+	"\fsecret_paths\x18\x02 \x03(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\vsecretPaths\"\x94\x05\n" +
+	"\tConnector\x12e\n" +
+	"\x13task_restart_policy\x18\x04 \x01(\v2-.google.cloud.managedkafka.v1.TaskRetryPolicyB\x04\xe2A\x01\x01H\x00R\x11taskRestartPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12T\n" +
+	"\aconfigs\x18\x02 \x03(\v24.google.cloud.managedkafka.v1.Connector.ConfigsEntryB\x04\xe2A\x01\x01R\aconfigs\x12I\n" +
+	"\x05state\x18\x03 \x01(\x0e2-.google.cloud.managedkafka.v1.Connector.StateB\x04\xe2A\x01\x03R\x05state\x1a:\n" +
 	"\fConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"p\n" +
@@ -2089,24 +2089,24 @@ const file_google_cloud_managedkafka_v1_resources_proto_rawDesc = "" +
 	"\aSTOPPED\x10\x06:\xa4\x01\xeaA\xa0\x01\n" +
 	"%managedkafka.googleapis.com/Connector\x12`projects/{project}/locations/{location}/connectClusters/{connect_cluster}/connectors/{connector}*\n" +
 	"connectors2\tconnectorB\x10\n" +
-	"\x0erestart_policy\"\xa3\x01\n" +
-	"\x0fTaskRetryPolicy\x12G\n" +
-	"\x0fminimum_backoff\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0eminimumBackoff\x12G\n" +
-	"\x0fmaximum_backoff\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0emaximumBackoff\"\xf9\x02\n" +
-	"\x03Acl\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12L\n" +
-	"\vacl_entries\x18\x02 \x03(\v2&.google.cloud.managedkafka.v1.AclEntryB\x03\xe0A\x02R\n" +
-	"aclEntries\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x12(\n" +
-	"\rresource_type\x18\x04 \x01(\tB\x03\xe0A\x03R\fresourceType\x12(\n" +
-	"\rresource_name\x18\x05 \x01(\tB\x03\xe0A\x03R\fresourceName\x12&\n" +
-	"\fpattern_type\x18\x06 \x01(\tB\x03\xe0A\x03R\vpatternType:v\xeaAs\n" +
-	"\x1fmanagedkafka.googleapis.com/Acl\x12Eprojects/{project}/locations/{location}/clusters/{cluster}/acls/{acl}*\x04acls2\x03acl\"\x97\x01\n" +
-	"\bAclEntry\x12!\n" +
-	"\tprincipal\x18\x04 \x01(\tB\x03\xe0A\x02R\tprincipal\x12,\n" +
-	"\x0fpermission_type\x18\x05 \x01(\tB\x03\xe0A\x02R\x0epermissionType\x12!\n" +
-	"\toperation\x18\x06 \x01(\tB\x03\xe0A\x02R\toperation\x12\x17\n" +
-	"\x04host\x18\a \x01(\tB\x03\xe0A\x02R\x04hostB\xa2\x04\xeaAx\n" +
+	"\x0erestart_policy\"\xa5\x01\n" +
+	"\x0fTaskRetryPolicy\x12H\n" +
+	"\x0fminimum_backoff\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0eminimumBackoff\x12H\n" +
+	"\x0fmaximum_backoff\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0emaximumBackoff\"\xff\x02\n" +
+	"\x03Acl\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12M\n" +
+	"\vacl_entries\x18\x02 \x03(\v2&.google.cloud.managedkafka.v1.AclEntryB\x04\xe2A\x01\x02R\n" +
+	"aclEntries\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12)\n" +
+	"\rresource_type\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\fresourceType\x12)\n" +
+	"\rresource_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\fresourceName\x12'\n" +
+	"\fpattern_type\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vpatternType:v\xeaAs\n" +
+	"\x1fmanagedkafka.googleapis.com/Acl\x12Eprojects/{project}/locations/{location}/clusters/{cluster}/acls/{acl}*\x04acls2\x03acl\"\x9b\x01\n" +
+	"\bAclEntry\x12\"\n" +
+	"\tprincipal\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\tprincipal\x12-\n" +
+	"\x0fpermission_type\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x0epermissionType\x12\"\n" +
+	"\toperation\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\toperation\x12\x18\n" +
+	"\x04host\x18\a \x01(\tB\x04\xe2A\x01\x02R\x04hostB\xa2\x04\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaAk\n" +
 	"*secretmanager.googleapis.com/SecretVersion\x12=projects/{project}/secrets/{secret}/versions/{secret_version}\xeaA\\\n" +
 	"\x1fprivateca.googleapis.com/CaPool\x129projects/{project}/locations/{location}/caPools/{ca_pool}\n" +

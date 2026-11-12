@@ -29,32 +29,71 @@ const (
 // scopedTestChannel returns a Channel with only the scope the resource-name
 // parsers depend on (no session.Client dialed).
 func scopedTestChannel() *Channel {
-	return &Channel{scopePrefix: scopePrefixFor(testProject, testInstance)}
+	return &Channel{
+		project:     testProject,
+		instance:    testInstance,
+		scopePrefix: scopePrefixFor(testProject, testInstance),
+	}
+}
+
+func projectScopedTestChannel() *Channel {
+	return &Channel{
+		project:     testProject,
+		scopePrefix: scopePrefixFor(testProject, ""),
+	}
 }
 
 func TestParseTableName(t *testing.T) {
 	cases := []struct {
 		name     string
 		in       string
+		wantInst string
 		wantLeaf string
 		wantCode codes.Code
 	}{
-		{"in-scope", "projects/p/instances/i/tables/t", "t", codes.OK},
-		{"wrong-project", "projects/other/instances/i/tables/t", "", codes.InvalidArgument},
-		{"wrong-instance", "projects/p/instances/other/tables/t", "", codes.InvalidArgument},
-		{"not-a-table", "projects/p/instances/i/materializedViews/mv", "", codes.InvalidArgument},
-		{"empty-leaf", "projects/p/instances/i/tables/", "", codes.InvalidArgument},
-		{"extra-segment", "projects/p/instances/i/tables/t/authorizedViews/v", "", codes.InvalidArgument},
-		{"bare-leaf", "t", "", codes.InvalidArgument},
+		{"in-scope", "projects/p/instances/i/tables/t", "i", "t", codes.OK},
+		{"wrong-project", "projects/other/instances/i/tables/t", "", "", codes.InvalidArgument},
+		{"wrong-instance", "projects/p/instances/other/tables/t", "", "", codes.InvalidArgument},
+		{"not-a-table", "projects/p/instances/i/materializedViews/mv", "", "", codes.InvalidArgument},
+		{"empty-leaf", "projects/p/instances/i/tables/", "", "", codes.InvalidArgument},
+		{"extra-segment", "projects/p/instances/i/tables/t/authorizedViews/v", "", "", codes.InvalidArgument},
+		{"bare-leaf", "t", "", "", codes.InvalidArgument},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := scopedTestChannel().parseTableName(tc.in)
+			gotInst, got, err := scopedTestChannel().parseTableName(tc.in)
 			if status.Code(err) != tc.wantCode {
 				t.Fatalf("parseTableName(%q) code = %v; want %v (err=%v)", tc.in, status.Code(err), tc.wantCode, err)
 			}
-			if got != tc.wantLeaf {
-				t.Errorf("parseTableName(%q) = %q; want %q", tc.in, got, tc.wantLeaf)
+			if gotInst != tc.wantInst || got != tc.wantLeaf {
+				t.Errorf("parseTableName(%q) = (%q, %q); want (%q, %q)", tc.in, gotInst, got, tc.wantInst, tc.wantLeaf)
+			}
+		})
+	}
+}
+
+func TestParseTableName_ProjectScoped(t *testing.T) {
+	cases := []struct {
+		name     string
+		in       string
+		wantInst string
+		wantLeaf string
+		wantCode codes.Code
+	}{
+		{"instance-a", "projects/p/instances/inst-a/tables/t1", "inst-a", "t1", codes.OK},
+		{"instance-b", "projects/p/instances/inst-b/tables/t2", "inst-b", "t2", codes.OK},
+		{"wrong-project", "projects/other/instances/inst-a/tables/t1", "", "", codes.InvalidArgument},
+		{"empty-instance", "projects/p/instances//tables/t1", "", "", codes.InvalidArgument},
+		{"missing-tables-seg", "projects/p/instances/inst-a", "", "", codes.InvalidArgument},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			gotInst, got, err := projectScopedTestChannel().parseTableName(tc.in)
+			if status.Code(err) != tc.wantCode {
+				t.Fatalf("parseTableName(%q) code = %v; want %v (err=%v)", tc.in, status.Code(err), tc.wantCode, err)
+			}
+			if gotInst != tc.wantInst || got != tc.wantLeaf {
+				t.Errorf("parseTableName(%q) = (%q, %q); want (%q, %q)", tc.in, gotInst, got, tc.wantInst, tc.wantLeaf)
 			}
 		})
 	}
@@ -64,24 +103,25 @@ func TestParseAuthorizedViewName(t *testing.T) {
 	cases := []struct {
 		name      string
 		in        string
+		wantInst  string
 		wantTable string
 		wantView  string
 		wantCode  codes.Code
 	}{
-		{"in-scope", "projects/p/instances/i/tables/t/authorizedViews/v", "t", "v", codes.OK},
-		{"wrong-project", "projects/other/instances/i/tables/t/authorizedViews/v", "", "", codes.InvalidArgument},
-		{"missing-view", "projects/p/instances/i/tables/t", "", "", codes.InvalidArgument},
-		{"empty-view", "projects/p/instances/i/tables/t/authorizedViews/", "", "", codes.InvalidArgument},
-		{"empty-table", "projects/p/instances/i/tables//authorizedViews/v", "", "", codes.InvalidArgument},
+		{"in-scope", "projects/p/instances/i/tables/t/authorizedViews/v", "i", "t", "v", codes.OK},
+		{"wrong-project", "projects/other/instances/i/tables/t/authorizedViews/v", "", "", "", codes.InvalidArgument},
+		{"missing-view", "projects/p/instances/i/tables/t", "", "", "", codes.InvalidArgument},
+		{"empty-view", "projects/p/instances/i/tables/t/authorizedViews/", "", "", "", codes.InvalidArgument},
+		{"empty-table", "projects/p/instances/i/tables//authorizedViews/v", "", "", "", codes.InvalidArgument},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotT, gotV, err := scopedTestChannel().parseAuthorizedViewName(tc.in)
+			gotInst, gotT, gotV, err := scopedTestChannel().parseAuthorizedViewName(tc.in)
 			if status.Code(err) != tc.wantCode {
 				t.Fatalf("parseAuthorizedViewName(%q) code = %v; want %v (err=%v)", tc.in, status.Code(err), tc.wantCode, err)
 			}
-			if gotT != tc.wantTable || gotV != tc.wantView {
-				t.Errorf("parseAuthorizedViewName(%q) = (%q, %q); want (%q, %q)", tc.in, gotT, gotV, tc.wantTable, tc.wantView)
+			if gotInst != tc.wantInst || gotT != tc.wantTable || gotV != tc.wantView {
+				t.Errorf("parseAuthorizedViewName(%q) = (%q, %q, %q); want (%q, %q, %q)", tc.in, gotInst, gotT, gotV, tc.wantInst, tc.wantTable, tc.wantView)
 			}
 		})
 	}
@@ -91,22 +131,23 @@ func TestParseMaterializedViewName(t *testing.T) {
 	cases := []struct {
 		name     string
 		in       string
+		wantInst string
 		wantLeaf string
 		wantCode codes.Code
 	}{
-		{"in-scope", "projects/p/instances/i/materializedViews/mv", "mv", codes.OK},
-		{"wrong-instance", "projects/p/instances/other/materializedViews/mv", "", codes.InvalidArgument},
-		{"not-a-mat-view", "projects/p/instances/i/tables/t", "", codes.InvalidArgument},
-		{"empty-leaf", "projects/p/instances/i/materializedViews/", "", codes.InvalidArgument},
+		{"in-scope", "projects/p/instances/i/materializedViews/mv", "i", "mv", codes.OK},
+		{"wrong-instance", "projects/p/instances/other/materializedViews/mv", "", "", codes.InvalidArgument},
+		{"not-a-mat-view", "projects/p/instances/i/tables/t", "", "", codes.InvalidArgument},
+		{"empty-leaf", "projects/p/instances/i/materializedViews/", "", "", codes.InvalidArgument},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := scopedTestChannel().parseMaterializedViewName(tc.in)
+			gotInst, got, err := scopedTestChannel().parseMaterializedViewName(tc.in)
 			if status.Code(err) != tc.wantCode {
 				t.Fatalf("parseMaterializedViewName(%q) code = %v; want %v (err=%v)", tc.in, status.Code(err), tc.wantCode, err)
 			}
-			if got != tc.wantLeaf {
-				t.Errorf("parseMaterializedViewName(%q) = %q; want %q", tc.in, got, tc.wantLeaf)
+			if gotInst != tc.wantInst || got != tc.wantLeaf {
+				t.Errorf("parseMaterializedViewName(%q) = (%q, %q); want (%q, %q)", tc.in, gotInst, got, tc.wantInst, tc.wantLeaf)
 			}
 		})
 	}

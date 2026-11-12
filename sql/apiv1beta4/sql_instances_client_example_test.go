@@ -308,6 +308,31 @@ func ExampleSqlInstancesClient_ExecuteSql() {
 	_ = resp
 }
 
+func ExampleSqlInstancesClient_ExecuteSqlReadOnly() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := sql.NewSqlInstancesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &sqlpb.SqlInstancesExecuteSqlReadOnlyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlInstancesExecuteSqlReadOnlyRequest.
+	}
+	resp, err := c.ExecuteSqlReadOnly(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleSqlInstancesClient_Export() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -720,6 +745,31 @@ func ExampleSqlInstancesClient_PromoteReplica() {
 	_ = resp
 }
 
+func ExampleSqlInstancesClient_ReconcileNetworking() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := sql.NewSqlInstancesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &sqlpb.SqlInstancesReconcileNetworkingRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlInstancesReconcileNetworkingRequest.
+	}
+	resp, err := c.ReconcileNetworking(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleSqlInstancesClient_Reencrypt() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -970,6 +1020,31 @@ func ExampleSqlInstancesClient_RotateServerCertificate() {
 	_ = resp
 }
 
+func ExampleSqlInstancesClient_Start() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := sql.NewSqlInstancesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &sqlpb.SqlInstancesStartRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlInstancesStartRequest.
+	}
+	resp, err := c.Start(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleSqlInstancesClient_StartExternalSync() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1013,6 +1088,31 @@ func ExampleSqlInstancesClient_StartReplica() {
 		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlInstancesStartReplicaRequest.
 	}
 	resp, err := c.StartReplica(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleSqlInstancesClient_Stop() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := sql.NewSqlInstancesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &sqlpb.SqlInstancesStopRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlInstancesStopRequest.
+	}
+	resp, err := c.Stop(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

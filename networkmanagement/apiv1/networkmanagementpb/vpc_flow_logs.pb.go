@@ -733,50 +733,50 @@ var File_google_cloud_networkmanagement_v1_vpc_flow_logs_proto protoreflect.File
 
 const file_google_cloud_networkmanagement_v1_vpc_flow_logs_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/networkmanagement/v1/vpc_flow_logs.proto\x12!google.cloud.networkmanagement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkmanagement/v1/reachability.proto\x1a<google/cloud/networkmanagement/v1/vpc_flow_logs_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xf6\x01\n" +
-	"\x1dListVpcFlowLogsConfigsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networkmanagement.googleapis.com/VpcFlowLogsConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"5google/cloud/networkmanagement/v1/vpc_flow_logs.proto\x12!google.cloud.networkmanagement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkmanagement/v1/reachability.proto\x1a<google/cloud/networkmanagement/v1/vpc_flow_logs_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xfb\x01\n" +
+	"\x1dListVpcFlowLogsConfigsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networkmanagement.googleapis.com/VpcFlowLogsConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd3\x01\n" +
 	"\x1eListVpcFlowLogsConfigsResponse\x12g\n" +
 	"\x15vpc_flow_logs_configs\x18\x01 \x03(\v24.google.cloud.networkmanagement.v1.VpcFlowLogsConfigR\x12vpcFlowLogsConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"m\n" +
-	"\x1bGetVpcFlowLogsConfigRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2networkmanagement.googleapis.com/VpcFlowLogsConfigR\x04name\"\xd2\x02\n" +
-	"\x1eCreateVpcFlowLogsConfigRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networkmanagement.googleapis.com/VpcFlowLogsConfigR\x06parent\x12p\n" +
-	"\x17vpc_flow_logs_config_id\x18\x02 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2networkmanagement.googleapis.com/VpcFlowLogsConfigR\x13vpcFlowLogsConfigId\x12j\n" +
-	"\x14vpc_flow_logs_config\x18\x03 \x01(\v24.google.cloud.networkmanagement.v1.VpcFlowLogsConfigB\x03\xe0A\x02R\x11vpcFlowLogsConfig\"\xce\x01\n" +
-	"\x1eUpdateVpcFlowLogsConfigRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12j\n" +
-	"\x14vpc_flow_logs_config\x18\x02 \x01(\v24.google.cloud.networkmanagement.v1.VpcFlowLogsConfigB\x03\xe0A\x02R\x11vpcFlowLogsConfig\"p\n" +
-	"\x1eDeleteVpcFlowLogsConfigRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2networkmanagement.googleapis.com/VpcFlowLogsConfigR\x04name\"\xda\x01\n" +
-	"!QueryOrgVpcFlowLogsConfigsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networkmanagement.googleapis.com/VpcFlowLogsConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"n\n" +
+	"\x1bGetVpcFlowLogsConfigRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2networkmanagement.googleapis.com/VpcFlowLogsConfigR\x04name\"\xd5\x02\n" +
+	"\x1eCreateVpcFlowLogsConfigRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networkmanagement.googleapis.com/VpcFlowLogsConfigR\x06parent\x12q\n" +
+	"\x17vpc_flow_logs_config_id\x18\x02 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2networkmanagement.googleapis.com/VpcFlowLogsConfigR\x13vpcFlowLogsConfigId\x12k\n" +
+	"\x14vpc_flow_logs_config\x18\x03 \x01(\v24.google.cloud.networkmanagement.v1.VpcFlowLogsConfigB\x04\xe2A\x01\x02R\x11vpcFlowLogsConfig\"\xd0\x01\n" +
+	"\x1eUpdateVpcFlowLogsConfigRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12k\n" +
+	"\x14vpc_flow_logs_config\x18\x02 \x01(\v24.google.cloud.networkmanagement.v1.VpcFlowLogsConfigB\x04\xe2A\x01\x02R\x11vpcFlowLogsConfig\"q\n" +
+	"\x1eDeleteVpcFlowLogsConfigRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2networkmanagement.googleapis.com/VpcFlowLogsConfigR\x04name\"\xde\x01\n" +
+	"!QueryOrgVpcFlowLogsConfigsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networkmanagement.googleapis.com/VpcFlowLogsConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xd7\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xd7\x01\n" +
 	"\"QueryOrgVpcFlowLogsConfigsResponse\x12g\n" +
 	"\x15vpc_flow_logs_configs\x18\x01 \x03(\v24.google.cloud.networkmanagement.v1.VpcFlowLogsConfigR\x12vpcFlowLogsConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xfd\x01\n" +
-	"#ShowEffectiveFlowLogsConfigsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networkmanagement.googleapis.com/VpcFlowLogsConfigR\x06parent\x12\x1f\n" +
-	"\bresource\x18\x02 \x01(\tB\x03\xe0A\x02R\bresource\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x82\x02\n" +
+	"#ShowEffectiveFlowLogsConfigsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networkmanagement.googleapis.com/VpcFlowLogsConfigR\x06parent\x12 \n" +
+	"\bresource\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bresource\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xee\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xee\x01\n" +
 	"$ShowEffectiveFlowLogsConfigsResponse\x12|\n" +
 	"\x1beffective_flow_logs_configs\x18\x01 \x03(\v2=.google.cloud.networkmanagement.v1.EffectiveVpcFlowLogsConfigR\x18effectiveFlowLogsConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +

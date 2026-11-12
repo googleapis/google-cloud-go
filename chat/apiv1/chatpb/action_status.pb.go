@@ -25,6 +25,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -98,7 +99,7 @@ var File_google_chat_v1_action_status_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_action_status_proto_rawDesc = "" +
 	"\n" +
-	"\"google/chat/v1/action_status.proto\x12\x0egoogle.chat.v1\x1a\x15google/rpc/code.proto\"q\n" +
+	"\"google/chat/v1/action_status.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x15google/rpc/code.proto\"q\n" +
 	"\fActionStatus\x121\n" +
 	"\vstatus_code\x18\x01 \x01(\x0e2\x10.google.rpc.CodeR\n" +
 	"statusCode\x12.\n" +

@@ -42,11 +42,13 @@ var newZoneVmExtensionPoliciesClientHook clientHook
 
 // ZoneVmExtensionPoliciesCallOptions contains the retry settings for each method of ZoneVmExtensionPoliciesClient.
 type ZoneVmExtensionPoliciesCallOptions struct {
-	Delete []gax.CallOption
-	Get    []gax.CallOption
-	Insert []gax.CallOption
-	List   []gax.CallOption
-	Update []gax.CallOption
+	Delete           []gax.CallOption
+	Get              []gax.CallOption
+	GetVmExtension   []gax.CallOption
+	Insert           []gax.CallOption
+	List             []gax.CallOption
+	ListVmExtensions []gax.CallOption
+	Update           []gax.CallOption
 }
 
 func defaultZoneVmExtensionPoliciesRESTCallOptions() *ZoneVmExtensionPoliciesCallOptions {
@@ -55,6 +57,18 @@ func defaultZoneVmExtensionPoliciesRESTCallOptions() *ZoneVmExtensionPoliciesCal
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetVmExtension: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -81,6 +95,18 @@ func defaultZoneVmExtensionPoliciesRESTCallOptions() *ZoneVmExtensionPoliciesCal
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListVmExtensions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Update: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -94,8 +120,10 @@ type internalZoneVmExtensionPoliciesClient interface {
 	Connection() *grpc.ClientConn
 	Delete(context.Context, *computepb.DeleteZoneVmExtensionPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetZoneVmExtensionPolicyRequest, ...gax.CallOption) (*computepb.VmExtensionPolicy, error)
+	GetVmExtension(context.Context, *computepb.GetVmExtensionZoneVmExtensionPolicyRequest, ...gax.CallOption) (*computepb.VmExtension, error)
 	Insert(context.Context, *computepb.InsertZoneVmExtensionPolicyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListZoneVmExtensionPoliciesRequest, ...gax.CallOption) *VmExtensionPolicyIterator
+	ListVmExtensions(context.Context, *computepb.ListVmExtensionsZoneVmExtensionPoliciesRequest, ...gax.CallOption) *VmExtensionIterator
 	Update(context.Context, *computepb.UpdateZoneVmExtensionPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
@@ -103,6 +131,8 @@ type internalZoneVmExtensionPoliciesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ZoneVmExtensionPolicies API.
+//
+// This client uses ZoneVmExtensionPolicies version 2026-10-01-preview.
 type ZoneVmExtensionPoliciesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalZoneVmExtensionPoliciesClient
@@ -144,6 +174,11 @@ func (c *ZoneVmExtensionPoliciesClient) Get(ctx context.Context, req *computepb.
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
+// GetVmExtension retrieves details of a specific VM extension within a project.
+func (c *ZoneVmExtensionPoliciesClient) GetVmExtension(ctx context.Context, req *computepb.GetVmExtensionZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*computepb.VmExtension, error) {
+	return c.internalClient.GetVmExtension(ctx, req, opts...)
+}
+
 // Insert creates a new zone-level VM extension policy within a project.
 func (c *ZoneVmExtensionPoliciesClient) Insert(ctx context.Context, req *computepb.InsertZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
@@ -152,6 +187,12 @@ func (c *ZoneVmExtensionPoliciesClient) Insert(ctx context.Context, req *compute
 // List lists all VM extension policies within a specific zone for a project.
 func (c *ZoneVmExtensionPoliciesClient) List(ctx context.Context, req *computepb.ListZoneVmExtensionPoliciesRequest, opts ...gax.CallOption) *VmExtensionPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// ListVmExtensions lists all VM extensions within a specific zone for a project.
+// This is a read-only API.
+func (c *ZoneVmExtensionPoliciesClient) ListVmExtensions(ctx context.Context, req *computepb.ListVmExtensionsZoneVmExtensionPoliciesRequest, opts ...gax.CallOption) *VmExtensionIterator {
+	return c.internalClient.ListVmExtensions(ctx, req, opts...)
 }
 
 // Update modifies an existing zone VM extension policy within a project.
@@ -222,9 +263,50 @@ func NewZoneVmExtensionPoliciesRESTClient(ctx context.Context, opts ...option.Cl
 
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetVmExtension = append(callOpts.GetVmExtension, gax.WithClientMetrics(metrics))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListVmExtensions = append(callOpts.ListVmExtensions, gax.WithClientMetrics(metrics))
 		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetVmExtension = append(callOpts.GetVmExtension, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListVmExtensions = append(callOpts.ListVmExtensions, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetVmExtension = append(callOpts.GetVmExtension, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListVmExtensions = append(callOpts.ListVmExtensions, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
 	}
 
 	o := []option.ClientOption{
@@ -260,6 +342,7 @@ func (c *zoneVmExtensionPoliciesRESTClient) setGoogleClientInfo(keyval ...string
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 
@@ -287,6 +370,13 @@ func (c *zoneVmExtensionPoliciesRESTClient) Delete(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetVmExtensionPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/vmExtensionPolicies/%v", req.GetProject(), req.GetZone(), req.GetVmExtensionPolicy())
 
 	params := url.Values{}
@@ -302,9 +392,6 @@ func (c *zoneVmExtensionPoliciesRESTClient) Delete(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/vmExtensionPolicies/%v", req.GetProject(), req.GetZone(), req.GetVmExtensionPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ZoneVmExtensionPolicies/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/vmExtensionPolicies/{vm_extension_policy}")
@@ -354,6 +441,13 @@ func (c *zoneVmExtensionPoliciesRESTClient) Get(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetVmExtensionPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/vmExtensionPolicies/%v", req.GetProject(), req.GetZone(), req.GetVmExtensionPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -362,9 +456,6 @@ func (c *zoneVmExtensionPoliciesRESTClient) Get(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/vmExtensionPolicies/%v", req.GetProject(), req.GetZone(), req.GetVmExtensionPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ZoneVmExtensionPolicies/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/vmExtensionPolicies/{vm_extension_policy}")
@@ -400,6 +491,62 @@ func (c *zoneVmExtensionPoliciesRESTClient) Get(ctx context.Context, req *comput
 	return resp, nil
 }
 
+// GetVmExtension retrieves details of a specific VM extension within a project.
+func (c *zoneVmExtensionPoliciesRESTClient) GetVmExtension(ctx context.Context, req *computepb.GetVmExtensionZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*computepb.VmExtension, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetExtensionName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/vmExtensions/%v", req.GetProject(), req.GetZone(), req.GetExtensionName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "extension_name", url.QueryEscape(req.GetExtensionName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ZoneVmExtensionPolicies/GetVmExtension")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/vmExtensions/{extension_name}")
+	}
+	opts = append((*c.CallOptions).GetVmExtension[0:len((*c.CallOptions).GetVmExtension):len((*c.CallOptions).GetVmExtension)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.VmExtension{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVmExtension")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // Insert creates a new zone-level VM extension policy within a project.
 func (c *zoneVmExtensionPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -411,6 +558,12 @@ func (c *zoneVmExtensionPoliciesRESTClient) Insert(ctx context.Context, req *com
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/vmExtensionPolicies", req.GetProject(), req.GetZone())
@@ -428,9 +581,6 @@ func (c *zoneVmExtensionPoliciesRESTClient) Insert(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v", req.GetProject(), req.GetZone()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ZoneVmExtensionPolicies/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/vmExtensionPolicies")
@@ -493,6 +643,12 @@ func (c *zoneVmExtensionPoliciesRESTClient) List(ctx context.Context, req *compu
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/vmExtensionPolicies", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
@@ -507,9 +663,6 @@ func (c *zoneVmExtensionPoliciesRESTClient) List(ctx context.Context, req *compu
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -560,6 +713,96 @@ func (c *zoneVmExtensionPoliciesRESTClient) List(ctx context.Context, req *compu
 	return it
 }
 
+// ListVmExtensions lists all VM extensions within a specific zone for a project.
+// This is a read-only API.
+func (c *zoneVmExtensionPoliciesRESTClient) ListVmExtensions(ctx context.Context, req *computepb.ListVmExtensionsZoneVmExtensionPoliciesRequest, opts ...gax.CallOption) *VmExtensionIterator {
+	it := &VmExtensionIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.VmExtension, string, error) {
+		resp := &computepb.ListVmExtensionsResponse{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/vmExtensions", req.GetProject(), req.GetZone())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVmExtensions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // Update modifies an existing zone VM extension policy within a project.
 func (c *zoneVmExtensionPoliciesRESTClient) Update(ctx context.Context, req *computepb.UpdateZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -571,6 +814,13 @@ func (c *zoneVmExtensionPoliciesRESTClient) Update(ctx context.Context, req *com
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetVmExtensionPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/vmExtensionPolicies/%v", req.GetProject(), req.GetZone(), req.GetVmExtensionPolicy())
@@ -588,9 +838,6 @@ func (c *zoneVmExtensionPoliciesRESTClient) Update(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/vmExtensionPolicies/%v", req.GetProject(), req.GetZone(), req.GetVmExtensionPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ZoneVmExtensionPolicies/Update")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/vmExtensionPolicies/{vm_extension_policy}")

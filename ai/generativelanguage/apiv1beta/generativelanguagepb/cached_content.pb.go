@@ -277,26 +277,26 @@ var File_google_ai_generativelanguage_v1beta_cached_content_proto protoreflect.F
 
 const file_google_ai_generativelanguage_v1beta_cached_content_proto_rawDesc = "" +
 	"\n" +
-	"8google/ai/generativelanguage/v1beta/cached_content.proto\x12#google.ai.generativelanguage.v1beta\x1a1google/ai/generativelanguage/v1beta/content.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x84\t\n" +
+	"8google/ai/generativelanguage/v1beta/cached_content.proto\x12#google.ai.generativelanguage.v1beta\x1a1google/ai/generativelanguage/v1beta/content.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\b\n" +
 	"\rCachedContent\x12=\n" +
 	"\vexpire_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
-	"expireTime\x122\n" +
+	"expireTime\x123\n" +
 	"\x03ttl\x18\n" +
-	" \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04H\x00R\x03ttl\x12\x1f\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03H\x01R\x04name\x88\x01\x01\x12.\n" +
-	"\fdisplay_name\x18\v \x01(\tB\x06\xe0A\x01\xe0A\x05H\x02R\vdisplayName\x88\x01\x01\x12M\n" +
-	"\x05model\x18\x02 \x01(\tB2\xe0A\x05\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelH\x03R\x05model\x88\x01\x01\x12k\n" +
-	"\x12system_instruction\x18\x03 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\t\xe0A\x01\xe0A\x05\xe0A\x04H\x04R\x11systemInstruction\x88\x01\x01\x12S\n" +
-	"\bcontents\x18\x04 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\t\xe0A\x01\xe0A\x05\xe0A\x04R\bcontents\x12J\n" +
-	"\x05tools\x18\x05 \x03(\v2).google.ai.generativelanguage.v1beta.ToolB\t\xe0A\x01\xe0A\x05\xe0A\x04R\x05tools\x12`\n" +
-	"\vtool_config\x18\x06 \x01(\v2/.google.ai.generativelanguage.v1beta.ToolConfigB\t\xe0A\x01\xe0A\x05\xe0A\x04H\x05R\n" +
-	"toolConfig\x88\x01\x01\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12l\n" +
-	"\x0eusage_metadata\x18\f \x01(\v2@.google.ai.generativelanguage.v1beta.CachedContent.UsageMetadataB\x03\xe0A\x03R\rusageMetadata\x1a;\n" +
+	" \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04H\x00R\x03ttl\x12\x1e\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03H\x01R\x04name\x88\x01\x01\x12-\n" +
+	"\fdisplay_name\x18\v \x01(\tB\x05\xe2A\x02\x01\x05H\x02R\vdisplayName\x88\x01\x01\x12L\n" +
+	"\x05model\x18\x02 \x01(\tB1\xe2A\x02\x05\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelH\x03R\x05model\x88\x01\x01\x12h\n" +
+	"\x12system_instruction\x18\x03 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x06\xe2A\x03\x01\x05\x04H\x04R\x11systemInstruction\x88\x01\x01\x12P\n" +
+	"\bcontents\x18\x04 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\x06\xe2A\x03\x01\x05\x04R\bcontents\x12G\n" +
+	"\x05tools\x18\x05 \x03(\v2).google.ai.generativelanguage.v1beta.ToolB\x06\xe2A\x03\x01\x05\x04R\x05tools\x12]\n" +
+	"\vtool_config\x18\x06 \x01(\v2/.google.ai.generativelanguage.v1beta.ToolConfigB\x06\xe2A\x03\x01\x05\x04H\x05R\n" +
+	"toolConfig\x88\x01\x01\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12m\n" +
+	"\x0eusage_metadata\x18\f \x01(\v2@.google.ai.generativelanguage.v1beta.CachedContent.UsageMetadataB\x04\xe2A\x01\x03R\rusageMetadata\x1a;\n" +
 	"\rUsageMetadata\x12*\n" +
 	"\x11total_token_count\x18\x01 \x01(\x05R\x0ftotalTokenCount:h\xeaAe\n" +
 	"/generativelanguage.googleapis.com/CachedContent\x12\x13cachedContents/{id}*\x0ecachedContents2\rcachedContentB\f\n" +

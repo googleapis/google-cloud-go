@@ -356,9 +356,9 @@ var File_google_cloud_dialogflow_cx_v3_changelog_proto protoreflect.FileDescript
 
 const file_google_cloud_dialogflow_cx_v3_changelog_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dialogflow/cx/v3/changelog.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x01\n" +
-	"\x15ListChangelogsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#dialogflow.googleapis.com/ChangelogR\x06parent\x12\x16\n" +
+	"-google/cloud/dialogflow/cx/v3/changelog.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb1\x01\n" +
+	"\x15ListChangelogsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#dialogflow.googleapis.com/ChangelogR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -367,9 +367,9 @@ const file_google_cloud_dialogflow_cx_v3_changelog_proto_rawDesc = "" +
 	"\n" +
 	"changelogs\x18\x01 \x03(\v2(.google.cloud.dialogflow.cx.v3.ChangelogR\n" +
 	"changelogs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
-	"\x13GetChangelogRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
+	"\x13GetChangelogRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#dialogflow.googleapis.com/ChangelogR\x04name\"\x84\x03\n" +
 	"\tChangelog\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +

@@ -525,6 +525,86 @@ func TestPoolClose_UnwindsMaintenanceLoops(t *testing.T) {
 	}
 }
 
+// TestPoolClose_UnblocksReadLoopsViaCtxCancel is the regression test for the
+// 44-minute Close deadlock on TestPool_LeastInFlight_FansOutAcrossAFEs and
+// its siblings — surfaced in CI as a `spawns.Wait` stack parked on
+// `Session.WaitGoroutines → readLoop → fakeStream.Recv (chan receive)`.
+//
+// In the failure, a Tick-spawned createSession had a readLoop parked on
+// fakeStream.Recv (a plain <-f.recv), which does not observe context
+// cancellation. When Close reached Phase-5 spawns.Wait, its Phase-4
+// poolCancel had already fired — but the newTestPool poolCtx.Done →
+// closeStreams bridge is asynchronous, and any timing where its close hadn't
+// reached every stream still had readLoops parked forever. Result: 44 min
+// hang until the test framework killed the process.
+//
+// The fix binds dialCtx (derived from poolCtx) into every fakeStream and
+// makes fakeStream.Recv select on that ctx alongside its recv chan — so a
+// poolCancel synchronously unblocks every readLoop regardless of whether
+// the bridge has scheduled yet. This test forces the exact CI scenario:
+// a real Tick-spawned createSession + readLoop, then Close called
+// WITHOUT the newTestPool cleanup bridge in the loop, and asserts Close
+// returns well under the pool's 30-second internal budget.
+func TestPoolClose_UnblocksReadLoopsViaCtxCancel(t *testing.T) {
+	factory, closeStreams := newStubStreamFactory()
+	// Cleanup on error / t.Fatal path — the happy path proves Close alone
+	// is sufficient.
+	t.Cleanup(closeStreams)
+
+	p := NewSessionPoolImpl(
+		uint64(1),
+		"ctx-unblock-pool",
+		factory,
+		&spb.OpenSessionRequest{ProtocolVersion: 1},
+		nil,
+		SessionTypeTable, true,
+	)
+	// Configure a small pool so Tick fires createSessions we can wait for.
+	p.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: 3, MaxSessionCount: 10,
+	})
+
+	// Kick Tick synchronously so we know its spawns have been Added
+	// before Close begins.
+	p.Tick(p.poolCtx)
+
+	// Wait until at least one createSession has entered startingSessions —
+	// that means s.Start returned, which means readLoop is spawned and
+	// parked on fakeStream.Recv. Sessions never reach Ready in this test
+	// (nothing feeds an OpenSessionResponse into the fake), so we key on
+	// the starting-set, not sl.
+	countStarting := func() int {
+		p.mu.Lock()
+		defer p.mu.Unlock()
+		return len(p.startingSessions)
+	}
+	deadline := time.Now().Add(500 * time.Millisecond)
+	for time.Now().Before(deadline) {
+		if countStarting() >= 1 {
+			break
+		}
+		time.Sleep(2 * time.Millisecond)
+	}
+	if got := countStarting(); got == 0 {
+		t.Fatalf("no session reached startingSessions within 500ms — Tick did not spawn a readLoop, test is vacuous")
+	}
+
+	// Close with a tight timeout: pre-fix this parks for the pool's full
+	// 30s Phase-3 budget and then hangs indefinitely on Phase-5. Post-fix
+	// it returns essentially immediately.
+	done := make(chan error, 1)
+	go func() { done <- p.Close() }()
+
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Errorf("Close returned err = %v", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatalf("Close did not return within 5s — poolCancel failed to unblock readLoops parked on fakeStream.Recv")
+	}
+}
+
 // TestPoolStart_AfterClose_LoopsExitImmediately guards the Start-after-Close
 // order. maintCtx is already cancelled by then, so any loop Start launches
 // must fall out on its first select rather than tick against a torn-down

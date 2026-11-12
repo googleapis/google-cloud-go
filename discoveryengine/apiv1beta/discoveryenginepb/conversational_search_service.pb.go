@@ -3392,11 +3392,11 @@ var File_google_cloud_discoveryengine_v1beta_conversational_search_service_proto
 
 const file_google_cloud_discoveryengine_v1beta_conversational_search_service_proto_rawDesc = "" +
 	"\n" +
-	"Ggoogle/cloud/discoveryengine/v1beta/conversational_search_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/answer.proto\x1a6google/cloud/discoveryengine/v1beta/conversation.proto\x1a0google/cloud/discoveryengine/v1beta/safety.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a1google/cloud/discoveryengine/v1beta/session.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x9f\x06\n" +
-	"\x1bConverseConversationRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+discoveryengine.googleapis.com/ConversationR\x04name\x12I\n" +
-	"\x05query\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1beta.TextInputB\x03\xe0A\x02R\x05query\x12X\n" +
+	"Ggoogle/cloud/discoveryengine/v1beta/conversational_search_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/answer.proto\x1a6google/cloud/discoveryengine/v1beta/conversation.proto\x1a0google/cloud/discoveryengine/v1beta/safety.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a1google/cloud/discoveryengine/v1beta/session.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa1\x06\n" +
+	"\x1bConverseConversationRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+discoveryengine.googleapis.com/ConversationR\x04name\x12J\n" +
+	"\x05query\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1beta.TextInputB\x04\xe2A\x01\x02R\x05query\x12X\n" +
 	"\x0eserving_config\x18\x03 \x01(\tB1\xfaA.\n" +
 	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12U\n" +
 	"\fconversation\x18\x05 \x01(\v21.google.cloud.discoveryengine.v1beta.ConversationR\fconversation\x12\x1f\n" +
@@ -3416,23 +3416,23 @@ const file_google_cloud_discoveryengine_v1beta_conversational_search_service_pro
 	"\x05reply\x18\x01 \x01(\v2*.google.cloud.discoveryengine.v1beta.ReplyR\x05reply\x12U\n" +
 	"\fconversation\x18\x02 \x01(\v21.google.cloud.discoveryengine.v1beta.ConversationR\fconversation\x12+\n" +
 	"\x11related_questions\x18\x06 \x03(\tR\x10relatedQuestions\x12g\n" +
-	"\x0esearch_results\x18\x03 \x03(\v2@.google.cloud.discoveryengine.v1beta.SearchResponse.SearchResultR\rsearchResults\"\xc1\x01\n" +
-	"\x19CreateConversationRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12Z\n" +
-	"\fconversation\x18\x02 \x01(\v21.google.cloud.discoveryengine.v1beta.ConversationB\x03\xe0A\x02R\fconversation\"\xb4\x01\n" +
-	"\x19UpdateConversationRequest\x12Z\n" +
-	"\fconversation\x18\x01 \x01(\v21.google.cloud.discoveryengine.v1beta.ConversationB\x03\xe0A\x02R\fconversation\x12;\n" +
+	"\x0esearch_results\x18\x03 \x03(\v2@.google.cloud.discoveryengine.v1beta.SearchResponse.SearchResultR\rsearchResults\"\xc3\x01\n" +
+	"\x19CreateConversationRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12[\n" +
+	"\fconversation\x18\x02 \x01(\v21.google.cloud.discoveryengine.v1beta.ConversationB\x04\xe2A\x01\x02R\fconversation\"\xb5\x01\n" +
+	"\x19UpdateConversationRequest\x12[\n" +
+	"\fconversation\x18\x01 \x01(\v21.google.cloud.discoveryengine.v1beta.ConversationB\x04\xe2A\x01\x02R\fconversation\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"d\n" +
-	"\x19DeleteConversationRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+discoveryengine.googleapis.com/ConversationR\x04name\"a\n" +
-	"\x16GetConversationRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+discoveryengine.googleapis.com/ConversationR\x04name\"\xd3\x01\n" +
-	"\x18ListConversationsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"updateMask\"e\n" +
+	"\x19DeleteConversationRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+discoveryengine.googleapis.com/ConversationR\x04name\"b\n" +
+	"\x16GetConversationRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+discoveryengine.googleapis.com/ConversationR\x04name\"\xd4\x01\n" +
+	"\x18ListConversationsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -3441,17 +3441,17 @@ const file_google_cloud_discoveryengine_v1beta_conversational_search_service_pro
 	"\border_by\x18\x05 \x01(\tR\aorderBy\"\x9c\x01\n" +
 	"\x19ListConversationsResponse\x12W\n" +
 	"\rconversations\x18\x01 \x03(\v21.google.cloud.discoveryengine.v1beta.ConversationR\rconversations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9b>\n" +
-	"\x12AnswerQueryRequest\x12[\n" +
-	"\x0eserving_config\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12E\n" +
-	"\x05query\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1beta.QueryB\x03\xe0A\x02R\x05query\x12E\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xac>\n" +
+	"\x12AnswerQueryRequest\x12\\\n" +
+	"\x0eserving_config\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12F\n" +
+	"\x05query\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1beta.QueryB\x04\xe2A\x01\x02R\x05query\x12E\n" +
 	"\asession\x18\x03 \x01(\tB+\xfaA(\n" +
 	"&discoveryengine.googleapis.com/SessionR\asession\x12c\n" +
 	"\vsafety_spec\x18\x04 \x01(\v2B.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SafetySpecR\n" +
 	"safetySpec\x12\x82\x01\n" +
-	"\x16related_questions_spec\x18\x05 \x01(\v2L.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.RelatedQuestionsSpecR\x14relatedQuestionsSpec\x12q\n" +
-	"\x0egrounding_spec\x18\x06 \x01(\v2E.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.GroundingSpecB\x03\xe0A\x01R\rgroundingSpec\x12\x82\x01\n" +
+	"\x16related_questions_spec\x18\x05 \x01(\v2L.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.RelatedQuestionsSpecR\x14relatedQuestionsSpec\x12r\n" +
+	"\x0egrounding_spec\x18\x06 \x01(\v2E.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.GroundingSpecB\x04\xe2A\x01\x01R\rgroundingSpec\x12\x82\x01\n" +
 	"\x16answer_generation_spec\x18\a \x01(\v2L.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.AnswerGenerationSpecR\x14answerGenerationSpec\x12c\n" +
 	"\vsearch_spec\x18\b \x01(\v2B.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SearchSpecR\n" +
 	"searchSpec\x12\x88\x01\n" +
@@ -3460,15 +3460,15 @@ const file_google_cloud_discoveryengine_v1beta_conversational_search_service_pro
 	" \x01(\bB\x02\x18\x01R\x10asynchronousMode\x12$\n" +
 	"\x0euser_pseudo_id\x18\f \x01(\tR\fuserPseudoId\x12h\n" +
 	"\vuser_labels\x18\r \x03(\v2G.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.UserLabelsEntryR\n" +
-	"userLabels\x12l\n" +
-	"\rend_user_spec\x18\x0e \x01(\v2C.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.EndUserSpecB\x03\xe0A\x01R\vendUserSpec\x1a\xb3\x04\n" +
+	"userLabels\x12m\n" +
+	"\rend_user_spec\x18\x0e \x01(\v2C.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.EndUserSpecB\x04\xe2A\x01\x01R\vendUserSpec\x1a\xb6\x04\n" +
 	"\n" +
 	"SafetySpec\x12\x16\n" +
-	"\x06enable\x18\x01 \x01(\bR\x06enable\x12~\n" +
-	"\x0fsafety_settings\x18\x02 \x03(\v2P.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SafetySpec.SafetySettingB\x03\xe0A\x01R\x0esafetySettings\x1a\x8c\x03\n" +
-	"\rSafetySetting\x12R\n" +
-	"\bcategory\x18\x01 \x01(\x0e21.google.cloud.discoveryengine.v1beta.HarmCategoryB\x03\xe0A\x02R\bcategory\x12\x86\x01\n" +
-	"\tthreshold\x18\x02 \x01(\x0e2c.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SafetySpec.SafetySetting.HarmBlockThresholdB\x03\xe0A\x02R\tthreshold\"\x9d\x01\n" +
+	"\x06enable\x18\x01 \x01(\bR\x06enable\x12\x7f\n" +
+	"\x0fsafety_settings\x18\x02 \x03(\v2P.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SafetySpec.SafetySettingB\x04\xe2A\x01\x01R\x0esafetySettings\x1a\x8e\x03\n" +
+	"\rSafetySetting\x12S\n" +
+	"\bcategory\x18\x01 \x01(\x0e21.google.cloud.discoveryengine.v1beta.HarmCategoryB\x04\xe2A\x01\x02R\bcategory\x12\x87\x01\n" +
+	"\tthreshold\x18\x02 \x01(\x0e2c.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SafetySpec.SafetySetting.HarmBlockThresholdB\x04\xe2A\x01\x02R\tthreshold\"\x9d\x01\n" +
 	"\x12HarmBlockThreshold\x12$\n" +
 	" HARM_BLOCK_THRESHOLD_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13BLOCK_LOW_AND_ABOVE\x10\x01\x12\x1a\n" +
@@ -3478,14 +3478,14 @@ const file_google_cloud_discoveryengine_v1beta_conversational_search_service_pro
 	"BLOCK_NONE\x10\x04\x12\a\n" +
 	"\x03OFF\x10\x05\x1a.\n" +
 	"\x14RelatedQuestionsSpec\x12\x16\n" +
-	"\x06enable\x18\x01 \x01(\bR\x06enable\x1a\xbd\x02\n" +
-	"\rGroundingSpec\x12A\n" +
-	"\x1ainclude_grounding_supports\x18\x02 \x01(\bB\x03\xe0A\x01R\x18includeGroundingSupports\x12\x82\x01\n" +
-	"\x0ffiltering_level\x18\x03 \x01(\x0e2T.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.GroundingSpec.FilteringLevelB\x03\xe0A\x01R\x0efilteringLevel\"d\n" +
+	"\x06enable\x18\x01 \x01(\bR\x06enable\x1a\xbf\x02\n" +
+	"\rGroundingSpec\x12B\n" +
+	"\x1ainclude_grounding_supports\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x18includeGroundingSupports\x12\x83\x01\n" +
+	"\x0ffiltering_level\x18\x03 \x01(\x0e2T.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.GroundingSpec.FilteringLevelB\x04\xe2A\x01\x01R\x0efilteringLevel\"d\n" +
 	"\x0eFilteringLevel\x12\x1f\n" +
 	"\x1bFILTERING_LEVEL_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13FILTERING_LEVEL_LOW\x10\x01\x12\x18\n" +
-	"\x14FILTERING_LEVEL_HIGH\x10\x02\x1a\x94\t\n" +
+	"\x14FILTERING_LEVEL_HIGH\x10\x02\x1a\x97\t\n" +
 	"\x14AnswerGenerationSpec\x12u\n" +
 	"\n" +
 	"model_spec\x18\x01 \x01(\v2V.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.AnswerGenerationSpec.ModelSpecR\tmodelSpec\x12x\n" +
@@ -3495,26 +3495,26 @@ const file_google_cloud_discoveryengine_v1beta_conversational_search_service_pro
 	"\x14answer_language_code\x18\x04 \x01(\tR\x12answerLanguageCode\x128\n" +
 	"\x18ignore_adversarial_query\x18\x05 \x01(\bR\x16ignoreAdversarialQuery\x12D\n" +
 	"\x1fignore_non_answer_seeking_query\x18\x06 \x01(\bR\x1bignoreNonAnswerSeekingQuery\x12B\n" +
-	"\x1bignore_low_relevant_content\x18\a \x01(\bH\x00R\x18ignoreLowRelevantContent\x88\x01\x01\x12@\n" +
-	"\x1aignore_jail_breaking_query\x18\b \x01(\bB\x03\xe0A\x01R\x17ignoreJailBreakingQuery\x12\x89\x01\n" +
-	"\x0fmultimodal_spec\x18\t \x01(\v2[.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.AnswerGenerationSpec.MultimodalSpecB\x03\xe0A\x01R\x0emultimodalSpec\x1a0\n" +
+	"\x1bignore_low_relevant_content\x18\a \x01(\bH\x00R\x18ignoreLowRelevantContent\x88\x01\x01\x12A\n" +
+	"\x1aignore_jail_breaking_query\x18\b \x01(\bB\x04\xe2A\x01\x01R\x17ignoreJailBreakingQuery\x12\x8a\x01\n" +
+	"\x0fmultimodal_spec\x18\t \x01(\v2[.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.AnswerGenerationSpec.MultimodalSpecB\x04\xe2A\x01\x01R\x0emultimodalSpec\x1a0\n" +
 	"\tModelSpec\x12#\n" +
 	"\rmodel_version\x18\x01 \x01(\tR\fmodelVersion\x1a(\n" +
 	"\n" +
 	"PromptSpec\x12\x1a\n" +
-	"\bpreamble\x18\x01 \x01(\tR\bpreamble\x1a\x9d\x02\n" +
-	"\x0eMultimodalSpec\x12\x8f\x01\n" +
-	"\fimage_source\x18\x03 \x01(\x0e2g.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.AnswerGenerationSpec.MultimodalSpec.ImageSourceB\x03\xe0A\x01R\vimageSource\"y\n" +
+	"\bpreamble\x18\x01 \x01(\tR\bpreamble\x1a\x9e\x02\n" +
+	"\x0eMultimodalSpec\x12\x90\x01\n" +
+	"\fimage_source\x18\x03 \x01(\x0e2g.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.AnswerGenerationSpec.MultimodalSpec.ImageSourceB\x04\xe2A\x01\x01R\vimageSource\"y\n" +
 	"\vImageSource\x12\x1c\n" +
 	"\x18IMAGE_SOURCE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15ALL_AVAILABLE_SOURCES\x10\x01\x12\x15\n" +
 	"\x11CORPUS_IMAGE_ONLY\x10\x02\x12\x1a\n" +
 	"\x16FIGURE_GENERATION_ONLY\x10\x03B\x1e\n" +
-	"\x1c_ignore_low_relevant_content\x1a\xb2\x15\n" +
+	"\x1c_ignore_low_relevant_content\x1a\xb3\x15\n" +
 	"\n" +
 	"SearchSpec\x12v\n" +
 	"\rsearch_params\x18\x01 \x01(\v2O.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SearchSpec.SearchParamsH\x00R\fsearchParams\x12\x83\x01\n" +
-	"\x12search_result_list\x18\x02 \x01(\v2S.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SearchSpec.SearchResultListH\x00R\x10searchResultList\x1a\xf8\x04\n" +
+	"\x12search_result_list\x18\x02 \x01(\v2S.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SearchSpec.SearchResultListH\x00R\x10searchResultList\x1a\xf9\x04\n" +
 	"\fSearchParams\x12,\n" +
 	"\x12max_return_results\x18\x01 \x01(\x05R\x10maxReturnResults\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12[\n" +
@@ -3522,8 +3522,8 @@ const file_google_cloud_discoveryengine_v1beta_conversational_search_service_pro
 	"boost_spec\x18\x03 \x01(\v2<.google.cloud.discoveryengine.v1beta.SearchRequest.BoostSpecR\tboostSpec\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\x12\x83\x01\n" +
 	"\x12search_result_mode\x18\x05 \x01(\x0e2U.google.cloud.discoveryengine.v1beta.SearchRequest.ContentSearchSpec.SearchResultModeR\x10searchResultMode\x12j\n" +
-	"\x10data_store_specs\x18\a \x03(\v2@.google.cloud.discoveryengine.v1beta.SearchRequest.DataStoreSpecR\x0edataStoreSpecs\x12\xb7\x01\n" +
-	")natural_language_query_understanding_spec\x18\b \x01(\v2X.google.cloud.discoveryengine.v1beta.SearchRequest.NaturalLanguageQueryUnderstandingSpecB\x03\xe0A\x01R%naturalLanguageQueryUnderstandingSpec\x1a\xa1\x0e\n" +
+	"\x10data_store_specs\x18\a \x03(\v2@.google.cloud.discoveryengine.v1beta.SearchRequest.DataStoreSpecR\x0edataStoreSpecs\x12\xb8\x01\n" +
+	")natural_language_query_understanding_spec\x18\b \x01(\v2X.google.cloud.discoveryengine.v1beta.SearchRequest.NaturalLanguageQueryUnderstandingSpecB\x04\xe2A\x01\x01R%naturalLanguageQueryUnderstandingSpec\x1a\xa1\x0e\n" +
 	"\x10SearchResultList\x12\x87\x01\n" +
 	"\x0esearch_results\x18\x01 \x03(\v2`.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.SearchSpec.SearchResultList.SearchResultR\rsearchResults\x1a\x82\r\n" +
 	"\fSearchResult\x12\xb9\x01\n" +
@@ -3556,11 +3556,11 @@ const file_google_cloud_discoveryengine_v1beta_conversational_search_service_pro
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05titleB\t\n" +
 	"\acontentB\a\n" +
-	"\x05input\x1a\xc1\t\n" +
+	"\x05input\x1a\xc4\t\n" +
 	"\x16QueryUnderstandingSpec\x12\xa2\x01\n" +
 	"\x19query_classification_spec\x18\x01 \x01(\v2f.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.QueryUnderstandingSpec.QueryClassificationSpecR\x17queryClassificationSpec\x12\x93\x01\n" +
-	"\x14query_rephraser_spec\x18\x02 \x01(\v2a.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.QueryUnderstandingSpec.QueryRephraserSpecR\x12queryRephraserSpec\x12=\n" +
-	"\x18disable_spell_correction\x18\x03 \x01(\bB\x03\xe0A\x01R\x16disableSpellCorrection\x1a\xd2\x02\n" +
+	"\x14query_rephraser_spec\x18\x02 \x01(\v2a.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.QueryUnderstandingSpec.QueryRephraserSpecR\x12queryRephraserSpec\x12>\n" +
+	"\x18disable_spell_correction\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x16disableSpellCorrection\x1a\xd2\x02\n" +
 	"\x17QueryClassificationSpec\x12\x81\x01\n" +
 	"\x05types\x18\x01 \x03(\x0e2k.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.QueryUnderstandingSpec.QueryClassificationSpec.TypeR\x05types\"\xb2\x01\n" +
 	"\x04Type\x12\x14\n" +
@@ -3569,21 +3569,21 @@ const file_google_cloud_discoveryengine_v1beta_conversational_search_service_pro
 	"\x18NON_ANSWER_SEEKING_QUERY\x10\x02\x12\x17\n" +
 	"\x13JAIL_BREAKING_QUERY\x10\x03\x12\x1f\n" +
 	"\x1bNON_ANSWER_SEEKING_QUERY_V2\x10\x04\x12%\n" +
-	"!USER_DEFINED_CLASSIFICATION_QUERY\x10\x05\x1a\xd7\x03\n" +
+	"!USER_DEFINED_CLASSIFICATION_QUERY\x10\x05\x1a\xd9\x03\n" +
 	"\x12QueryRephraserSpec\x12\x18\n" +
 	"\adisable\x18\x01 \x01(\bR\adisable\x12,\n" +
-	"\x12max_rephrase_steps\x18\x02 \x01(\x05R\x10maxRephraseSteps\x12\x8f\x01\n" +
+	"\x12max_rephrase_steps\x18\x02 \x01(\x05R\x10maxRephraseSteps\x12\x90\x01\n" +
 	"\n" +
-	"model_spec\x18\x03 \x01(\v2k.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.QueryUnderstandingSpec.QueryRephraserSpec.ModelSpecB\x03\xe0A\x01R\tmodelSpec\x1a\xe6\x01\n" +
-	"\tModelSpec\x12\x99\x01\n" +
+	"model_spec\x18\x03 \x01(\v2k.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.QueryUnderstandingSpec.QueryRephraserSpec.ModelSpecB\x04\xe2A\x01\x01R\tmodelSpec\x1a\xe7\x01\n" +
+	"\tModelSpec\x12\x9a\x01\n" +
 	"\n" +
-	"model_type\x18\x01 \x01(\x0e2u.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.QueryUnderstandingSpec.QueryRephraserSpec.ModelSpec.ModelTypeB\x03\xe0A\x01R\tmodelType\"=\n" +
+	"model_type\x18\x01 \x01(\x0e2u.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.QueryUnderstandingSpec.QueryRephraserSpec.ModelSpec.ModelTypeB\x04\xe2A\x01\x01R\tmodelType\"=\n" +
 	"\tModelType\x12\x1a\n" +
 	"\x16MODEL_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05SMALL\x10\x01\x12\t\n" +
-	"\x05LARGE\x10\x02\x1a\xa3\x04\n" +
-	"\vEndUserSpec\x12\x84\x01\n" +
-	"\x11end_user_metadata\x18\x01 \x03(\v2S.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.EndUserSpec.EndUserMetaDataB\x03\xe0A\x01R\x0fendUserMetadata\x1a\x8c\x03\n" +
+	"\x05LARGE\x10\x02\x1a\xa4\x04\n" +
+	"\vEndUserSpec\x12\x85\x01\n" +
+	"\x11end_user_metadata\x18\x01 \x03(\v2S.google.cloud.discoveryengine.v1beta.AnswerQueryRequest.EndUserSpec.EndUserMetaDataB\x04\xe2A\x01\x01R\x0fendUserMetadata\x1a\x8c\x03\n" +
 	"\x0fEndUserMetaData\x12~\n" +
 	"\n" +
 	"chunk_info\x18\x01 \x01(\v2].google.cloud.discoveryengine.v1beta.AnswerQueryRequest.EndUserSpec.EndUserMetaData.ChunkInfoH\x00R\tchunkInfo\x1a\xed\x01\n" +
@@ -3599,29 +3599,29 @@ const file_google_cloud_discoveryengine_v1beta_conversational_search_service_pro
 	"\x13AnswerQueryResponse\x12C\n" +
 	"\x06answer\x18\x01 \x01(\v2+.google.cloud.discoveryengine.v1beta.AnswerR\x06answer\x12F\n" +
 	"\asession\x18\x02 \x01(\v2,.google.cloud.discoveryengine.v1beta.SessionR\asession\x12,\n" +
-	"\x12answer_query_token\x18\x03 \x01(\tR\x10answerQueryToken\"U\n" +
-	"\x10GetAnswerRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/AnswerR\x04name\"\xd1\x01\n" +
-	"\x14CreateSessionRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12K\n" +
-	"\asession\x18\x02 \x01(\v2,.google.cloud.discoveryengine.v1beta.SessionB\x03\xe0A\x02R\asession\x12\"\n" +
+	"\x12answer_query_token\x18\x03 \x01(\tR\x10answerQueryToken\"V\n" +
+	"\x10GetAnswerRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/AnswerR\x04name\"\xd4\x01\n" +
+	"\x14CreateSessionRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12L\n" +
+	"\asession\x18\x02 \x01(\v2,.google.cloud.discoveryengine.v1beta.SessionB\x04\xe2A\x01\x02R\asession\x12#\n" +
 	"\n" +
-	"session_id\x18\x03 \x01(\tB\x03\xe0A\x01R\tsessionId\"\xa0\x01\n" +
-	"\x14UpdateSessionRequest\x12K\n" +
-	"\asession\x18\x01 \x01(\v2,.google.cloud.discoveryengine.v1beta.SessionB\x03\xe0A\x02R\asession\x12;\n" +
+	"session_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tsessionId\"\xa1\x01\n" +
+	"\x14UpdateSessionRequest\x12L\n" +
+	"\asession\x18\x01 \x01(\v2,.google.cloud.discoveryengine.v1beta.SessionB\x04\xe2A\x01\x02R\asession\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Z\n" +
-	"\x14DeleteSessionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&discoveryengine.googleapis.com/SessionR\x04name\"\x92\x01\n" +
-	"\x11GetSessionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&discoveryengine.googleapis.com/SessionR\x04name\x129\n" +
-	"\x16include_answer_details\x18\x02 \x01(\bB\x03\xe0A\x01R\x14includeAnswerDetails\"\xce\x01\n" +
-	"\x13ListSessionsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"updateMask\"[\n" +
+	"\x14DeleteSessionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&discoveryengine.googleapis.com/SessionR\x04name\"\x94\x01\n" +
+	"\x11GetSessionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&discoveryengine.googleapis.com/SessionR\x04name\x12:\n" +
+	"\x16include_answer_details\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x14includeAnswerDetails\"\xcf\x01\n" +
+	"\x13ListSessionsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

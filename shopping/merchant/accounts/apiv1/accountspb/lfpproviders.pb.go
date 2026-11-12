@@ -343,26 +343,26 @@ var File_google_shopping_merchant_accounts_v1_lfpproviders_proto protoreflect.Fi
 
 const file_google_shopping_merchant_accounts_v1_lfpproviders_proto_rawDesc = "" +
 	"\n" +
-	"7google/shopping/merchant/accounts/v1/lfpproviders.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x93\x02\n" +
-	"\vLfpProvider\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
-	"\vregion_code\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
+	"7google/shopping/merchant/accounts/v1/lfpproviders.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x95\x02\n" +
+	"\vLfpProvider\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12%\n" +
+	"\vregion_code\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"regionCode\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName:\xa1\x01\xeaA\x9d\x01\n" +
-	"&merchantapi.googleapis.com/LfpProvider\x12Xaccounts/{account}/omnichannelSettings/{omnichannel_setting}/lfpProviders/{lfp_provider}*\flfpProviders2\vlfpProvider\"\xae\x01\n" +
-	"\x17FindLfpProvidersRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-merchantapi.googleapis.com/OmnichannelSettingR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"&merchantapi.googleapis.com/LfpProvider\x12Xaccounts/{account}/omnichannelSettings/{omnichannel_setting}/lfpProviders/{lfp_provider}*\flfpProviders2\vlfpProvider\"\xb1\x01\n" +
+	"\x17FindLfpProvidersRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-merchantapi.googleapis.com/OmnichannelSettingR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9a\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9a\x01\n" +
 	"\x18FindLfpProvidersResponse\x12V\n" +
 	"\rlfp_providers\x18\x01 \x03(\v21.google.shopping.merchant.accounts.v1.LfpProviderR\flfpProviders\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x91\x01\n" +
-	"\x16LinkLfpProviderRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&merchantapi.googleapis.com/LfpProviderR\x04name\x123\n" +
-	"\x13external_account_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11externalAccountId\"M\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x93\x01\n" +
+	"\x16LinkLfpProviderRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&merchantapi.googleapis.com/LfpProviderR\x04name\x124\n" +
+	"\x13external_account_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11externalAccountId\"M\n" +
 	"\x17LinkLfpProviderResponse\x122\n" +
 	"\bresponse\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\bresponse2\xc5\x04\n" +
 	"\x13LfpProvidersService\x12\xec\x01\n" +

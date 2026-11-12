@@ -530,16 +530,16 @@ var File_google_cloud_channel_v1_entitlement_changes_proto protoreflect.FileDesc
 
 const file_google_cloud_channel_v1_entitlement_changes_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/channel/v1/entitlement_changes.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/channel/v1/entitlements.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\r\n" +
+	"1google/cloud/channel/v1/entitlement_changes.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/channel/v1/entitlements.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xef\r\n" +
 	"\x11EntitlementChange\x12d\n" +
 	"\x11suspension_reason\x18\t \x01(\x0e25.google.cloud.channel.v1.Entitlement.SuspensionReasonH\x00R\x10suspensionReason\x12p\n" +
 	"\x13cancellation_reason\x18\n" +
 	" \x01(\x0e2=.google.cloud.channel.v1.EntitlementChange.CancellationReasonH\x00R\x12cancellationReason\x12j\n" +
 	"\x11activation_reason\x18\v \x01(\x0e2;.google.cloud.channel.v1.EntitlementChange.ActivationReasonH\x00R\x10activationReason\x120\n" +
-	"\x13other_change_reason\x18d \x01(\tH\x00R\x11otherChangeReason\x12Q\n" +
-	"\ventitlement\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'cloudchannel.googleapis.com/EntitlementR\ventitlement\x12?\n" +
-	"\x05offer\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x13other_change_reason\x18d \x01(\tH\x00R\x11otherChangeReason\x12R\n" +
+	"\ventitlement\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'cloudchannel.googleapis.com/EntitlementR\ventitlement\x12@\n" +
+	"\x05offer\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!cloudchannel.googleapis.com/OfferR\x05offer\x12\\\n" +
 	"\x13provisioned_service\x18\x03 \x01(\v2+.google.cloud.channel.v1.ProvisionedServiceR\x12provisionedService\x12V\n" +
 	"\vchange_type\x18\x04 \x01(\x0e25.google.cloud.channel.v1.EntitlementChange.ChangeTypeR\n" +

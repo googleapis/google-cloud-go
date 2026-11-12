@@ -265,27 +265,27 @@ var File_google_cloud_bigquery_v2_external_catalog_table_options_proto protorefl
 
 const file_google_cloud_bigquery_v2_external_catalog_table_options_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/bigquery/v2/external_catalog_table_options.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xd3\x02\n" +
-	"\x1bExternalCatalogTableOptions\x12j\n" +
+	"=google/cloud/bigquery/v2/external_catalog_table_options.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xd6\x02\n" +
+	"\x1bExternalCatalogTableOptions\x12k\n" +
 	"\n" +
-	"parameters\x18\x01 \x03(\v2E.google.cloud.bigquery.v2.ExternalCatalogTableOptions.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12_\n" +
-	"\x12storage_descriptor\x18\x02 \x01(\v2+.google.cloud.bigquery.v2.StorageDescriptorB\x03\xe0A\x01R\x11storageDescriptor\x12(\n" +
-	"\rconnection_id\x18\x03 \x01(\tB\x03\xe0A\x01R\fconnectionId\x1a=\n" +
+	"parameters\x18\x01 \x03(\v2E.google.cloud.bigquery.v2.ExternalCatalogTableOptions.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12`\n" +
+	"\x12storage_descriptor\x18\x02 \x01(\v2+.google.cloud.bigquery.v2.StorageDescriptorB\x04\xe2A\x01\x01R\x11storageDescriptor\x12)\n" +
+	"\rconnection_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fconnectionId\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd6\x01\n" +
-	"\x11StorageDescriptor\x12&\n" +
-	"\flocation_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\vlocationUri\x12&\n" +
-	"\finput_format\x18\x02 \x01(\tB\x03\xe0A\x01R\vinputFormat\x12(\n" +
-	"\routput_format\x18\x03 \x01(\tB\x03\xe0A\x01R\foutputFormat\x12G\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xda\x01\n" +
+	"\x11StorageDescriptor\x12'\n" +
+	"\flocation_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vlocationUri\x12'\n" +
+	"\finput_format\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vinputFormat\x12)\n" +
+	"\routput_format\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\foutputFormat\x12H\n" +
 	"\n" +
-	"serde_info\x18\x04 \x01(\v2#.google.cloud.bigquery.v2.SerDeInfoB\x03\xe0A\x01R\tserdeInfo\"\xf7\x01\n" +
-	"\tSerDeInfo\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x128\n" +
-	"\x15serialization_library\x18\x02 \x01(\tB\x03\xe0A\x02R\x14serializationLibrary\x12X\n" +
+	"serde_info\x18\x04 \x01(\v2#.google.cloud.bigquery.v2.SerDeInfoB\x04\xe2A\x01\x01R\tserdeInfo\"\xfa\x01\n" +
+	"\tSerDeInfo\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x129\n" +
+	"\x15serialization_library\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x14serializationLibrary\x12Y\n" +
 	"\n" +
-	"parameters\x18\x03 \x03(\v23.google.cloud.bigquery.v2.SerDeInfo.ParametersEntryB\x03\xe0A\x01R\n" +
+	"parameters\x18\x03 \x03(\v23.google.cloud.bigquery.v2.SerDeInfo.ParametersEntryB\x04\xe2A\x01\x01R\n" +
 	"parameters\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

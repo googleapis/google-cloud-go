@@ -3393,26 +3393,26 @@ var File_google_cloud_workloadmanager_v1_service_proto protoreflect.FileDescript
 
 const file_google_cloud_workloadmanager_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/workloadmanager/v1/service.proto\x12\x1fgoogle.cloud.workloadmanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x84\t\n" +
+	"-google/cloud/workloadmanager/v1/service.proto\x12\x1fgoogle.cloud.workloadmanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\t\n" +
 	"\n" +
 	"Evaluation\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12X\n" +
 	"\x0fresource_filter\x18\x03 \x01(\v2/.google.cloud.workloadmanager.v1.ResourceFilterR\x0eresourceFilter\x12\x1d\n" +
 	"\n" +
-	"rule_names\x18\x04 \x03(\tR\truleNames\x12]\n" +
-	"\x0fresource_status\x18\x06 \x01(\v2/.google.cloud.workloadmanager.v1.ResourceStatusB\x03\xe0A\x03R\x0eresourceStatus\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"rule_names\x18\x04 \x03(\tR\truleNames\x12^\n" +
+	"\x0fresource_status\x18\x06 \x01(\v2/.google.cloud.workloadmanager.v1.ResourceStatusB\x04\xe2A\x01\x03R\x0eresourceStatus\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12O\n" +
 	"\x06labels\x18\t \x03(\v27.google.cloud.workloadmanager.v1.Evaluation.LabelsEntryR\x06labels\x12\x1f\n" +
 	"\bschedule\x18\n" +
 	" \x01(\tH\x00R\bschedule\x88\x01\x01\x12.\n" +
 	"\x13custom_rules_bucket\x18\v \x01(\tR\x11customRulesBucket\x12c\n" +
-	"\x0fevaluation_type\x18\f \x01(\x0e2:.google.cloud.workloadmanager.v1.Evaluation.EvaluationTypeR\x0eevaluationType\x12m\n" +
-	"\x15big_query_destination\x18\r \x01(\v24.google.cloud.workloadmanager.v1.BigQueryDestinationB\x03\xe0A\x01R\x13bigQueryDestination\x12B\n" +
-	"\akms_key\x18\x0f \x01(\tB)\xe0A\x05\xfaA#\n" +
+	"\x0fevaluation_type\x18\f \x01(\x0e2:.google.cloud.workloadmanager.v1.Evaluation.EvaluationTypeR\x0eevaluationType\x12n\n" +
+	"\x15big_query_destination\x18\r \x01(\v24.google.cloud.workloadmanager.v1.BigQueryDestinationB\x04\xe2A\x01\x01R\x13bigQueryDestination\x12C\n" +
+	"\akms_key\x18\x0f \x01(\tB*\xe2A\x01\x05\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -3443,12 +3443,12 @@ const file_google_cloud_workloadmanager_v1_service_proto_rawDesc = "" +
 	"\bCREATING\x10\x01\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
-	"\bDELETING\x10\x03\"\x89\x01\n" +
-	"\x13BigQueryDestination\x124\n" +
-	"\x13destination_dataset\x18\x01 \x01(\tB\x03\xe0A\x01R\x12destinationDataset\x12<\n" +
-	"\x18create_new_results_table\x18\x02 \x01(\bB\x03\xe0A\x01R\x15createNewResultsTable\"\xd2\x01\n" +
-	"\x16ListEvaluationsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)workloadmanager.googleapis.com/EvaluationR\x06parent\x12\x1b\n" +
+	"\bDELETING\x10\x03\"\x8b\x01\n" +
+	"\x13BigQueryDestination\x125\n" +
+	"\x13destination_dataset\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x12destinationDataset\x12=\n" +
+	"\x18create_new_results_table\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x15createNewResultsTable\"\xd3\x01\n" +
+	"\x16ListEvaluationsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)workloadmanager.googleapis.com/EvaluationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3457,63 +3457,63 @@ const file_google_cloud_workloadmanager_v1_service_proto_rawDesc = "" +
 	"\x17ListEvaluationsResponse\x12M\n" +
 	"\vevaluations\x18\x01 \x03(\v2+.google.cloud.workloadmanager.v1.EvaluationR\vevaluations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"]\n" +
-	"\x14GetEvaluationRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")workloadmanager.googleapis.com/EvaluationR\x04name\"\x84\x02\n" +
-	"\x17CreateEvaluationRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)workloadmanager.googleapis.com/EvaluationR\x06parent\x12(\n" +
-	"\revaluation_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fevaluationId\x12P\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
+	"\x14GetEvaluationRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")workloadmanager.googleapis.com/EvaluationR\x04name\"\x88\x02\n" +
+	"\x17CreateEvaluationRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)workloadmanager.googleapis.com/EvaluationR\x06parent\x12)\n" +
+	"\revaluation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fevaluationId\x12Q\n" +
 	"\n" +
-	"evaluation\x18\x03 \x01(\v2+.google.cloud.workloadmanager.v1.EvaluationB\x03\xe0A\x02R\n" +
-	"evaluation\x12\"\n" +
+	"evaluation\x18\x03 \x01(\v2+.google.cloud.workloadmanager.v1.EvaluationB\x04\xe2A\x01\x02R\n" +
+	"evaluation\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd1\x01\n" +
-	"\x17UpdateEvaluationRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12P\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd4\x01\n" +
+	"\x17UpdateEvaluationRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12Q\n" +
 	"\n" +
-	"evaluation\x18\x02 \x01(\v2+.google.cloud.workloadmanager.v1.EvaluationB\x03\xe0A\x02R\n" +
-	"evaluation\x12\"\n" +
+	"evaluation\x18\x02 \x01(\v2+.google.cloud.workloadmanager.v1.EvaluationB\x04\xe2A\x01\x02R\n" +
+	"evaluation\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x9f\x01\n" +
-	"\x17DeleteEvaluationRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")workloadmanager.googleapis.com/EvaluationR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xa2\x01\n" +
+	"\x17DeleteEvaluationRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")workloadmanager.googleapis.com/EvaluationR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\x88\x0e\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\x9a\x0e\n" +
 	"\tExecution\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12>\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12F\n" +
-	"\x0einventory_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rinventoryTime\x12K\n" +
-	"\x05state\x18\x05 \x01(\x0e20.google.cloud.workloadmanager.v1.Execution.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\revaluation_id\x18\x06 \x01(\tB\x03\xe0A\x03R\fevaluationId\x12N\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12G\n" +
+	"\x0einventory_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rinventoryTime\x12L\n" +
+	"\x05state\x18\x05 \x01(\x0e20.google.cloud.workloadmanager.v1.Execution.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\revaluation_id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\fevaluationId\x12N\n" +
 	"\x06labels\x18\a \x03(\v26.google.cloud.workloadmanager.v1.Execution.LabelsEntryR\x06labels\x12J\n" +
-	"\brun_type\x18\b \x01(\x0e2/.google.cloud.workloadmanager.v1.Execution.TypeR\arunType\x12\\\n" +
-	"\frule_results\x18\t \x03(\v24.google.cloud.workloadmanager.v1.RuleExecutionResultB\x03\xe0A\x03R\vruleResults\x12w\n" +
+	"\brun_type\x18\b \x01(\x0e2/.google.cloud.workloadmanager.v1.Execution.TypeR\arunType\x12]\n" +
+	"\frule_results\x18\t \x03(\v24.google.cloud.workloadmanager.v1.RuleExecutionResultB\x04\xe2A\x01\x03R\vruleResults\x12x\n" +
 	"\x15external_data_sources\x18\n" +
-	" \x03(\v2>.google.cloud.workloadmanager.v1.Execution.ExternalDataSourcesB\x03\xe0A\x01R\x13externalDataSources\x12P\n" +
-	"\anotices\x18\v \x03(\v21.google.cloud.workloadmanager.v1.Execution.NoticeB\x03\xe0A\x03R\anotices\x12N\n" +
-	"\x06engine\x18\f \x01(\x0e21.google.cloud.workloadmanager.v1.Execution.EngineB\x03\xe0A\x01R\x06engine\x12^\n" +
-	"\x0eresult_summary\x18\r \x01(\v22.google.cloud.workloadmanager.v1.Execution.SummaryB\x03\xe0A\x03R\rresultSummary\x1a\xfa\x01\n" +
-	"\x13ExternalDataSources\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x03uri\x12\\\n" +
-	"\x04type\x18\x03 \x01(\x0e2C.google.cloud.workloadmanager.v1.Execution.ExternalDataSources.TypeB\x03\xe0A\x02R\x04type\x12\"\n" +
+	" \x03(\v2>.google.cloud.workloadmanager.v1.Execution.ExternalDataSourcesB\x04\xe2A\x01\x01R\x13externalDataSources\x12Q\n" +
+	"\anotices\x18\v \x03(\v21.google.cloud.workloadmanager.v1.Execution.NoticeB\x04\xe2A\x01\x03R\anotices\x12O\n" +
+	"\x06engine\x18\f \x01(\x0e21.google.cloud.workloadmanager.v1.Execution.EngineB\x04\xe2A\x01\x01R\x06engine\x12_\n" +
+	"\x0eresult_summary\x18\r \x01(\v22.google.cloud.workloadmanager.v1.Execution.SummaryB\x04\xe2A\x01\x03R\rresultSummary\x1a\xfe\x01\n" +
+	"\x13ExternalDataSources\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12]\n" +
+	"\x04type\x18\x03 \x01(\x0e2C.google.cloud.workloadmanager.v1.Execution.ExternalDataSources.TypeB\x04\xe2A\x01\x02R\x04type\x12#\n" +
 	"\n" +
-	"asset_type\x18\x04 \x01(\tB\x03\xe0A\x02R\tassetType\"1\n" +
+	"asset_type\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\tassetType\"1\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
-	"\x0fBIG_QUERY_TABLE\x10\x01\x1a'\n" +
-	"\x06Notice\x12\x1d\n" +
-	"\amessage\x18\x01 \x01(\tB\x03\xe0A\x03R\amessage\x1at\n" +
-	"\aSummary\x12\x1f\n" +
-	"\bfailures\x18\x01 \x01(\x03B\x03\xe0A\x03R\bfailures\x12&\n" +
-	"\fnew_failures\x18\x02 \x01(\x03B\x03\xe0A\x03R\vnewFailures\x12 \n" +
-	"\tnew_fixes\x18\x03 \x01(\x03B\x03\xe0A\x03R\bnewFixes\x1a9\n" +
+	"\x0fBIG_QUERY_TABLE\x10\x01\x1a(\n" +
+	"\x06Notice\x12\x1e\n" +
+	"\amessage\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\amessage\x1aw\n" +
+	"\aSummary\x12 \n" +
+	"\bfailures\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\bfailures\x12'\n" +
+	"\fnew_failures\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\vnewFailures\x12!\n" +
+	"\tnew_fixes\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\bnewFixes\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"F\n" +
@@ -3532,10 +3532,10 @@ const file_google_cloud_workloadmanager_v1_service_proto_rawDesc = "" +
 	"\x0eENGINE_SCANNER\x10\x01\x12\x06\n" +
 	"\x02V2\x10\x02:\x9e\x01\xeaA\x9a\x01\n" +
 	"(workloadmanager.googleapis.com/Execution\x12Wprojects/{project}/locations/{location}/evaluations/{evaluation}/executions/{execution}*\n" +
-	"executions2\texecution\"\xcc\x02\n" +
+	"executions2\texecution\"\xcd\x02\n" +
 	"\x13RuleExecutionResult\x12\x12\n" +
-	"\x04rule\x18\x01 \x01(\tR\x04rule\x12U\n" +
-	"\x05state\x18\x02 \x01(\x0e2:.google.cloud.workloadmanager.v1.RuleExecutionResult.StateB\x03\xe0A\x03R\x05state\x12\x18\n" +
+	"\x04rule\x18\x01 \x01(\tR\x04rule\x12V\n" +
+	"\x05state\x18\x02 \x01(\x0e2:.google.cloud.workloadmanager.v1.RuleExecutionResult.StateB\x04\xe2A\x01\x03R\x05state\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessage\x12!\n" +
 	"\fresult_count\x18\x04 \x01(\x03R\vresultCount\x124\n" +
 	"\x16scanned_resource_count\x18\x05 \x01(\x03R\x14scannedResourceCount\"W\n" +
@@ -3543,9 +3543,9 @@ const file_google_cloud_workloadmanager_v1_service_proto_rawDesc = "" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rSTATE_SUCCESS\x10\x01\x12\x11\n" +
 	"\rSTATE_FAILURE\x10\x02\x12\x11\n" +
-	"\rSTATE_SKIPPED\x10\x03\"\xd0\x01\n" +
-	"\x15ListExecutionsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(workloadmanager.googleapis.com/ExecutionR\x06parent\x12\x1b\n" +
+	"\rSTATE_SKIPPED\x10\x03\"\xd1\x01\n" +
+	"\x15ListExecutionsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(workloadmanager.googleapis.com/ExecutionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3556,24 +3556,24 @@ const file_google_cloud_workloadmanager_v1_service_proto_rawDesc = "" +
 	"executions\x18\x01 \x03(\v2*.google.cloud.workloadmanager.v1.ExecutionR\n" +
 	"executions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"[\n" +
-	"\x13GetExecutionRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(workloadmanager.googleapis.com/ExecutionR\x04name\"\xf8\x01\n" +
-	"\x14RunEvaluationRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")workloadmanager.googleapis.com/EvaluationR\x04name\x12&\n" +
-	"\fexecution_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vexecutionId\x12M\n" +
-	"\texecution\x18\x03 \x01(\v2*.google.cloud.workloadmanager.v1.ExecutionB\x03\xe0A\x02R\texecution\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\\\n" +
+	"\x13GetExecutionRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(workloadmanager.googleapis.com/ExecutionR\x04name\"\xfc\x01\n" +
+	"\x14RunEvaluationRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")workloadmanager.googleapis.com/EvaluationR\x04name\x12'\n" +
+	"\fexecution_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vexecutionId\x12N\n" +
+	"\texecution\x18\x03 \x01(\v2*.google.cloud.workloadmanager.v1.ExecutionB\x04\xe2A\x01\x02R\texecution\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x82\x01\n" +
-	"\x16DeleteExecutionRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(workloadmanager.googleapis.com/ExecutionR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x84\x01\n" +
+	"\x16DeleteExecutionRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(workloadmanager.googleapis.com/ExecutionR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8e\x01\n" +
-	"\x1bListExecutionResultsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8f\x01\n" +
+	"\x1bListExecutionResultsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3610,19 +3610,19 @@ const file_google_cloud_workloadmanager_v1_service_proto_rawDesc = "" +
 	"\fShellCommand\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12\x12\n" +
 	"\x04args\x18\x02 \x01(\tR\x04args\x12'\n" +
-	"\x0ftimeout_seconds\x18\x03 \x01(\x05R\x0etimeoutSeconds\"\xc0\x01\n" +
+	"\x0ftimeout_seconds\x18\x03 \x01(\x05R\x0etimeoutSeconds\"\xc2\x01\n" +
 	"\n" +
-	"RuleOutput\x12W\n" +
-	"\adetails\x18\x01 \x03(\v28.google.cloud.workloadmanager.v1.RuleOutput.DetailsEntryB\x03\xe0A\x03R\adetails\x12\x1d\n" +
-	"\amessage\x18\x02 \x01(\tB\x03\xe0A\x03R\amessage\x1a:\n" +
+	"RuleOutput\x12X\n" +
+	"\adetails\x18\x01 \x03(\v28.google.cloud.workloadmanager.v1.RuleOutput.DetailsEntryB\x04\xe2A\x01\x03R\adetails\x12\x1e\n" +
+	"\amessage\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\amessage\x1a:\n" +
 	"\fDetailsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbe\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbf\x02\n" +
 	"\x10ViolationDetails\x12\x14\n" +
 	"\x05asset\x18\x01 \x01(\tR\x05asset\x12'\n" +
 	"\x0fservice_account\x18\x02 \x01(\tR\x0eserviceAccount\x12[\n" +
-	"\bobserved\x18\x03 \x03(\v2?.google.cloud.workloadmanager.v1.ViolationDetails.ObservedEntryR\bobserved\x12Q\n" +
-	"\vrule_output\x18\x04 \x03(\v2+.google.cloud.workloadmanager.v1.RuleOutputB\x03\xe0A\x03R\n" +
+	"\bobserved\x18\x03 \x03(\v2?.google.cloud.workloadmanager.v1.ViolationDetails.ObservedEntryR\bobserved\x12R\n" +
+	"\vrule_output\x18\x04 \x03(\v2+.google.cloud.workloadmanager.v1.RuleOutputB\x04\xe2A\x01\x03R\n" +
 	"ruleOutput\x1a;\n" +
 	"\rObservedEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -3630,20 +3630,20 @@ const file_google_cloud_workloadmanager_v1_service_proto_rawDesc = "" +
 	"\bResource\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12'\n" +
-	"\x0fservice_account\x18\x03 \x01(\tR\x0eserviceAccount\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\x82\x05\n" +
+	"\x0fservice_account\x18\x03 \x01(\tR\x0eserviceAccount\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\x83\x05\n" +
 	"\x04Rule\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12$\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"revisionId\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x1a\n" +
@@ -3663,19 +3663,19 @@ const file_google_cloud_workloadmanager_v1_service_proto_rawDesc = "" +
 	"\bBASELINE\x10\x01\x12\n" +
 	"\n" +
 	"\x06CUSTOM\x10\x02:k\xeaAh\n" +
-	"#workloadmanager.googleapis.com/Rule\x124projects/{project}/locations/{location}/rules/{rule}*\x05rules2\x04rule\"\xc5\x02\n" +
-	"\x10ListRulesRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#workloadmanager.googleapis.com/RuleR\x06parent\x12\x1b\n" +
+	"#workloadmanager.googleapis.com/Rule\x124projects/{project}/locations/{location}/rules/{rule}*\x05rules2\x04rule\"\xc7\x02\n" +
+	"\x10ListRulesRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#workloadmanager.googleapis.com/RuleR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\x12.\n" +
-	"\x13custom_rules_bucket\x18\x05 \x01(\tR\x11customRulesBucket\x12h\n" +
-	"\x0fevaluation_type\x18\x06 \x01(\x0e2:.google.cloud.workloadmanager.v1.Evaluation.EvaluationTypeB\x03\xe0A\x01R\x0eevaluationType\"P\n" +
+	"\x13custom_rules_bucket\x18\x05 \x01(\tR\x11customRulesBucket\x12i\n" +
+	"\x0fevaluation_type\x18\x06 \x01(\x0e2:.google.cloud.workloadmanager.v1.Evaluation.EvaluationTypeB\x04\xe2A\x01\x01R\x0eevaluationType\"P\n" +
 	"\x11ListRulesResponse\x12;\n" +
-	"\x05rules\x18\x01 \x03(\v2%.google.cloud.workloadmanager.v1.RuleR\x05rules\"\xbd\x01\n" +
-	"\x1bListScannedResourcesRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x12\n" +
+	"\x05rules\x18\x01 \x03(\v2%.google.cloud.workloadmanager.v1.RuleR\x05rules\"\xbe\x01\n" +
+	"\x1bListScannedResourcesRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x12\n" +
 	"\x04rule\x18\x02 \x01(\tR\x04rule\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

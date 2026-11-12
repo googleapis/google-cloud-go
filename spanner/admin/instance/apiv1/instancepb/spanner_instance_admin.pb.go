@@ -845,6 +845,18 @@ type InstanceConfig struct {
 	// Output only. Describes whether free instances are available to be created
 	// in this instance configuration.
 	FreeInstanceAvailability InstanceConfig_FreeInstanceAvailability `protobuf:"varint,12,opt,name=free_instance_availability,json=freeInstanceAvailability,proto3,enum=google.spanner.admin.instance.v1.InstanceConfig_FreeInstanceAvailability" json:"free_instance_availability,omitempty"`
+	// Output only. Defines the ranges of allowed processing units supported by
+	// this instance configuration. If multiple ranges are specified, an instance
+	// using this configuration may use a valid increment in any of the given
+	// ranges. For example, an allowed_processing_units specification of
+	// `[{min_processing_units:100, max_processing_units:900,
+	// processing_unit_increment:100}, {min_processing_units:1000,
+	// processing_unit_increment:1000}]` specifies that the instance configuration
+	// supports instances with quantities of processing units in multiples of 100
+	// processing units (100, 200, 300 and so on) up to and including 900
+	// processing units and quantities that are at least 1000 processing units and
+	// multiples of 1000 processing units (1000, 2000, 3000 and so on).
+	AllowedProcessingUnits []*InstanceConfig_AllowedProcessingUnits `protobuf:"bytes,13,rep,name=allowed_processing_units,json=allowedProcessingUnits,proto3" json:"allowed_processing_units,omitempty"`
 	// Output only. The `QuorumType` of the instance configuration.
 	QuorumType InstanceConfig_QuorumType `protobuf:"varint,18,opt,name=quorum_type,json=quorumType,proto3,enum=google.spanner.admin.instance.v1.InstanceConfig_QuorumType" json:"quorum_type,omitempty"`
 	// Output only. The storage limit in bytes per processing unit.
@@ -965,6 +977,13 @@ func (x *InstanceConfig) GetFreeInstanceAvailability() InstanceConfig_FreeInstan
 		return x.FreeInstanceAvailability
 	}
 	return InstanceConfig_FREE_INSTANCE_AVAILABILITY_UNSPECIFIED
+}
+
+func (x *InstanceConfig) GetAllowedProcessingUnits() []*InstanceConfig_AllowedProcessingUnits {
+	if x != nil {
+		return x.AllowedProcessingUnits
+	}
+	return nil
 }
 
 func (x *InstanceConfig) GetQuorumType() InstanceConfig_QuorumType {
@@ -3969,6 +3988,73 @@ func (x *MoveInstanceMetadata) GetCancelTime() *timestamppb.Timestamp {
 	return nil
 }
 
+// Defines a range of processing units supported by an instance configuration.
+type InstanceConfig_AllowedProcessingUnits struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The minimum value of processing units applicable to this interval,
+	// inclusive.
+	MinProcessingUnits int32 `protobuf:"varint,1,opt,name=min_processing_units,json=minProcessingUnits,proto3" json:"min_processing_units,omitempty"`
+	// The maximum value of processing units applicable to this interval,
+	// inclusive. If unset, there is no predefined limit to the supported
+	// number of processing units, although project quota limits still apply.
+	MaxProcessingUnits int32 `protobuf:"varint,2,opt,name=max_processing_units,json=maxProcessingUnits,proto3" json:"max_processing_units,omitempty"`
+	// Allowed increments of processing units between “min” and “max”.
+	ProcessingUnitIncrement int32 `protobuf:"varint,3,opt,name=processing_unit_increment,json=processingUnitIncrement,proto3" json:"processing_unit_increment,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *InstanceConfig_AllowedProcessingUnits) Reset() {
+	*x = InstanceConfig_AllowedProcessingUnits{}
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstanceConfig_AllowedProcessingUnits) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstanceConfig_AllowedProcessingUnits) ProtoMessage() {}
+
+func (x *InstanceConfig_AllowedProcessingUnits) ProtoReflect() protoreflect.Message {
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstanceConfig_AllowedProcessingUnits.ProtoReflect.Descriptor instead.
+func (*InstanceConfig_AllowedProcessingUnits) Descriptor() ([]byte, []int) {
+	return file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *InstanceConfig_AllowedProcessingUnits) GetMinProcessingUnits() int32 {
+	if x != nil {
+		return x.MinProcessingUnits
+	}
+	return 0
+}
+
+func (x *InstanceConfig_AllowedProcessingUnits) GetMaxProcessingUnits() int32 {
+	if x != nil {
+		return x.MaxProcessingUnits
+	}
+	return 0
+}
+
+func (x *InstanceConfig_AllowedProcessingUnits) GetProcessingUnitIncrement() int32 {
+	if x != nil {
+		return x.ProcessingUnitIncrement
+	}
+	return 0
+}
+
 // The autoscaling limits for the instance. Users can define the minimum and
 // maximum compute capacity allocated to the instance, and the autoscaler will
 // only scale within that range. Users can either use nodes or processing
@@ -3998,7 +4084,7 @@ type AutoscalingConfig_AutoscalingLimits struct {
 
 func (x *AutoscalingConfig_AutoscalingLimits) Reset() {
 	*x = AutoscalingConfig_AutoscalingLimits{}
-	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[39]
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4010,7 +4096,7 @@ func (x *AutoscalingConfig_AutoscalingLimits) String() string {
 func (*AutoscalingConfig_AutoscalingLimits) ProtoMessage() {}
 
 func (x *AutoscalingConfig_AutoscalingLimits) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[39]
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4151,7 +4237,7 @@ type AutoscalingConfig_AutoscalingTargets struct {
 
 func (x *AutoscalingConfig_AutoscalingTargets) Reset() {
 	*x = AutoscalingConfig_AutoscalingTargets{}
-	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[40]
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4163,7 +4249,7 @@ func (x *AutoscalingConfig_AutoscalingTargets) String() string {
 func (*AutoscalingConfig_AutoscalingTargets) ProtoMessage() {}
 
 func (x *AutoscalingConfig_AutoscalingTargets) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[40]
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4216,7 +4302,7 @@ type AutoscalingConfig_AsymmetricAutoscalingOption struct {
 
 func (x *AutoscalingConfig_AsymmetricAutoscalingOption) Reset() {
 	*x = AutoscalingConfig_AsymmetricAutoscalingOption{}
-	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[41]
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4228,7 +4314,7 @@ func (x *AutoscalingConfig_AsymmetricAutoscalingOption) String() string {
 func (*AutoscalingConfig_AsymmetricAutoscalingOption) ProtoMessage() {}
 
 func (x *AutoscalingConfig_AsymmetricAutoscalingOption) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[41]
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4325,7 +4411,7 @@ type AutoscalingConfig_AsymmetricAutoscalingOption_AutoscalingConfigOverrides st
 
 func (x *AutoscalingConfig_AsymmetricAutoscalingOption_AutoscalingConfigOverrides) Reset() {
 	*x = AutoscalingConfig_AsymmetricAutoscalingOption_AutoscalingConfigOverrides{}
-	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[42]
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4337,7 +4423,7 @@ func (x *AutoscalingConfig_AsymmetricAutoscalingOption_AutoscalingConfigOverride
 func (*AutoscalingConfig_AsymmetricAutoscalingOption_AutoscalingConfigOverrides) ProtoMessage() {}
 
 func (x *AutoscalingConfig_AsymmetricAutoscalingOption_AutoscalingConfigOverrides) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[42]
+	mi := &file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4402,27 +4488,32 @@ const file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc
 	"\n" +
 	"READ_WRITE\x10\x01\x12\r\n" +
 	"\tREAD_ONLY\x10\x02\x12\v\n" +
-	"\aWITNESS\x10\x03\"\x8a\f\n" +
+	"\aWITNESS\x10\x03\"\xd6\x0e\n" +
 	"\x0eInstanceConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12[\n" +
-	"\vconfig_type\x18\x05 \x01(\x0e25.google.spanner.admin.instance.v1.InstanceConfig.TypeB\x03\xe0A\x03R\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\\\n" +
+	"\vconfig_type\x18\x05 \x01(\x0e25.google.spanner.admin.instance.v1.InstanceConfig.TypeB\x04\xe2A\x01\x03R\n" +
 	"configType\x12I\n" +
-	"\breplicas\x18\x03 \x03(\v2-.google.spanner.admin.instance.v1.ReplicaInfoR\breplicas\x12_\n" +
-	"\x11optional_replicas\x18\x06 \x03(\v2-.google.spanner.admin.instance.v1.ReplicaInfoB\x03\xe0A\x03R\x10optionalReplicas\x12K\n" +
+	"\breplicas\x18\x03 \x03(\v2-.google.spanner.admin.instance.v1.ReplicaInfoR\breplicas\x12`\n" +
+	"\x11optional_replicas\x18\x06 \x03(\v2-.google.spanner.admin.instance.v1.ReplicaInfoB\x04\xe2A\x01\x03R\x10optionalReplicas\x12K\n" +
 	"\vbase_config\x18\a \x01(\tB*\xfaA'\n" +
 	"%spanner.googleapis.com/InstanceConfigR\n" +
 	"baseConfig\x12T\n" +
 	"\x06labels\x18\b \x03(\v2<.google.spanner.admin.instance.v1.InstanceConfig.LabelsEntryR\x06labels\x12\x12\n" +
 	"\x04etag\x18\t \x01(\tR\x04etag\x12%\n" +
-	"\x0eleader_options\x18\x04 \x03(\tR\rleaderOptions\x12%\n" +
+	"\x0eleader_options\x18\x04 \x03(\tR\rleaderOptions\x12&\n" +
 	"\vreconciling\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\vreconciling\x12Q\n" +
-	"\x05state\x18\v \x01(\x0e26.google.spanner.admin.instance.v1.InstanceConfig.StateB\x03\xe0A\x03R\x05state\x12\x8c\x01\n" +
-	"\x1afree_instance_availability\x18\f \x01(\x0e2I.google.spanner.admin.instance.v1.InstanceConfig.FreeInstanceAvailabilityB\x03\xe0A\x03R\x18freeInstanceAvailability\x12a\n" +
-	"\vquorum_type\x18\x12 \x01(\x0e2;.google.spanner.admin.instance.v1.InstanceConfig.QuorumTypeB\x03\xe0A\x03R\n" +
-	"quorumType\x12M\n" +
-	"!storage_limit_per_processing_unit\x18\x13 \x01(\x03B\x03\xe0A\x03R\x1dstorageLimitPerProcessingUnit\x1a9\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12R\n" +
+	"\x05state\x18\v \x01(\x0e26.google.spanner.admin.instance.v1.InstanceConfig.StateB\x04\xe2A\x01\x03R\x05state\x12\x8d\x01\n" +
+	"\x1afree_instance_availability\x18\f \x01(\x0e2I.google.spanner.admin.instance.v1.InstanceConfig.FreeInstanceAvailabilityB\x04\xe2A\x01\x03R\x18freeInstanceAvailability\x12\x87\x01\n" +
+	"\x18allowed_processing_units\x18\r \x03(\v2G.google.spanner.admin.instance.v1.InstanceConfig.AllowedProcessingUnitsB\x04\xe2A\x01\x03R\x16allowedProcessingUnits\x12b\n" +
+	"\vquorum_type\x18\x12 \x01(\x0e2;.google.spanner.admin.instance.v1.InstanceConfig.QuorumTypeB\x04\xe2A\x01\x03R\n" +
+	"quorumType\x12N\n" +
+	"!storage_limit_per_processing_unit\x18\x13 \x01(\x03B\x04\xe2A\x01\x03R\x1dstorageLimitPerProcessingUnit\x1a\xb8\x01\n" +
+	"\x16AllowedProcessingUnits\x120\n" +
+	"\x14min_processing_units\x18\x01 \x01(\x05R\x12minProcessingUnits\x120\n" +
+	"\x14max_processing_units\x18\x02 \x01(\x05R\x12maxProcessingUnits\x12:\n" +
+	"\x19processing_unit_increment\x18\x03 \x01(\x05R\x17processingUnitIncrement\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"B\n" +
@@ -4447,59 +4538,59 @@ const file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc
 	"\x06REGION\x10\x01\x12\x0f\n" +
 	"\vDUAL_REGION\x10\x02\x12\x10\n" +
 	"\fMULTI_REGION\x10\x03:\x81\x01\xeaA~\n" +
-	"%spanner.googleapis.com/InstanceConfig\x124projects/{project}/instanceConfigs/{instance_config}*\x0finstanceConfigs2\x0einstanceConfig\"\xe0\x01\n" +
-	"\x16ReplicaComputeCapacity\x12d\n" +
-	"\x11replica_selection\x18\x01 \x01(\v22.google.spanner.admin.instance.v1.ReplicaSelectionB\x03\xe0A\x02R\x10replicaSelection\x12\x1f\n" +
+	"%spanner.googleapis.com/InstanceConfig\x124projects/{project}/instanceConfigs/{instance_config}*\x0finstanceConfigs2\x0einstanceConfig\"\xe1\x01\n" +
+	"\x16ReplicaComputeCapacity\x12e\n" +
+	"\x11replica_selection\x18\x01 \x01(\v22.google.spanner.admin.instance.v1.ReplicaSelectionB\x04\xe2A\x01\x02R\x10replicaSelection\x12\x1f\n" +
 	"\n" +
 	"node_count\x18\x02 \x01(\x05H\x00R\tnodeCount\x12+\n" +
 	"\x10processing_units\x18\x03 \x01(\x05H\x00R\x0fprocessingUnitsB\x12\n" +
-	"\x10compute_capacity\"\xb0\r\n" +
-	"\x11AutoscalingConfig\x12y\n" +
-	"\x12autoscaling_limits\x18\x01 \x01(\v2E.google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimitsB\x03\xe0A\x02R\x11autoscalingLimits\x12|\n" +
-	"\x13autoscaling_targets\x18\x02 \x01(\v2F.google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingTargetsB\x03\xe0A\x02R\x12autoscalingTargets\x12\x9a\x01\n" +
-	"\x1easymmetric_autoscaling_options\x18\x03 \x03(\v2O.google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOptionB\x03\xe0A\x01R\x1casymmetricAutoscalingOptions\x1a\xd3\x01\n" +
+	"\x10compute_capacity\"\xbd\r\n" +
+	"\x11AutoscalingConfig\x12z\n" +
+	"\x12autoscaling_limits\x18\x01 \x01(\v2E.google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimitsB\x04\xe2A\x01\x02R\x11autoscalingLimits\x12}\n" +
+	"\x13autoscaling_targets\x18\x02 \x01(\v2F.google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingTargetsB\x04\xe2A\x01\x02R\x12autoscalingTargets\x12\x9b\x01\n" +
+	"\x1easymmetric_autoscaling_options\x18\x03 \x03(\v2O.google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOptionB\x04\xe2A\x01\x01R\x1casymmetricAutoscalingOptions\x1a\xd3\x01\n" +
 	"\x11AutoscalingLimits\x12\x1d\n" +
 	"\tmin_nodes\x18\x01 \x01(\x05H\x00R\bminNodes\x122\n" +
 	"\x14min_processing_units\x18\x02 \x01(\x05H\x00R\x12minProcessingUnits\x12\x1d\n" +
 	"\tmax_nodes\x18\x03 \x01(\x05H\x01R\bmaxNodes\x122\n" +
 	"\x14max_processing_units\x18\x04 \x01(\x05H\x01R\x12maxProcessingUnitsB\v\n" +
 	"\tmin_limitB\v\n" +
-	"\tmax_limit\x1a\xf8\x01\n" +
-	"\x12AutoscalingTargets\x12U\n" +
-	"%high_priority_cpu_utilization_percent\x18\x01 \x01(\x05B\x03\xe0A\x01R!highPriorityCpuUtilizationPercent\x12F\n" +
-	"\x1dtotal_cpu_utilization_percent\x18\x04 \x01(\x05B\x03\xe0A\x01R\x1atotalCpuUtilizationPercent\x12C\n" +
-	"\x1bstorage_utilization_percent\x18\x02 \x01(\x05B\x03\xe0A\x02R\x19storageUtilizationPercent\x1a\xb3\x06\n" +
-	"\x1bAsymmetricAutoscalingOption\x12d\n" +
-	"\x11replica_selection\x18\x01 \x01(\v22.google.spanner.admin.instance.v1.ReplicaSelectionB\x03\xe0A\x02R\x10replicaSelection\x12\x8d\x01\n" +
-	"\toverrides\x18\x02 \x01(\v2j.google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.AutoscalingConfigOverridesB\x03\xe0A\x01R\toverrides\x1a\x9d\x04\n" +
-	"\x1aAutoscalingConfigOverrides\x12y\n" +
-	"\x12autoscaling_limits\x18\x01 \x01(\v2E.google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimitsB\x03\xe0A\x01R\x11autoscalingLimits\x12y\n" +
-	"8autoscaling_target_high_priority_cpu_utilization_percent\x18\x02 \x01(\x05B\x03\xe0A\x01R2autoscalingTargetHighPriorityCpuUtilizationPercent\x12j\n" +
-	"0autoscaling_target_total_cpu_utilization_percent\x18\x04 \x01(\x05B\x03\xe0A\x01R+autoscalingTargetTotalCpuUtilizationPercent\x12U\n" +
-	"%disable_high_priority_cpu_autoscaling\x18\x05 \x01(\bB\x03\xe0A\x01R!disableHighPriorityCpuAutoscaling\x12F\n" +
-	"\x1ddisable_total_cpu_autoscaling\x18\x06 \x01(\bB\x03\xe0A\x01R\x1adisableTotalCpuAutoscaling\"\x96\r\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12E\n" +
-	"\x06config\x18\x02 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%spanner.googleapis.com/InstanceConfigR\x06config\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x1d\n" +
+	"\tmax_limit\x1a\xfb\x01\n" +
+	"\x12AutoscalingTargets\x12V\n" +
+	"%high_priority_cpu_utilization_percent\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R!highPriorityCpuUtilizationPercent\x12G\n" +
+	"\x1dtotal_cpu_utilization_percent\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x1atotalCpuUtilizationPercent\x12D\n" +
+	"\x1bstorage_utilization_percent\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x19storageUtilizationPercent\x1a\xba\x06\n" +
+	"\x1bAsymmetricAutoscalingOption\x12e\n" +
+	"\x11replica_selection\x18\x01 \x01(\v22.google.spanner.admin.instance.v1.ReplicaSelectionB\x04\xe2A\x01\x02R\x10replicaSelection\x12\x8e\x01\n" +
+	"\toverrides\x18\x02 \x01(\v2j.google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.AutoscalingConfigOverridesB\x04\xe2A\x01\x01R\toverrides\x1a\xa2\x04\n" +
+	"\x1aAutoscalingConfigOverrides\x12z\n" +
+	"\x12autoscaling_limits\x18\x01 \x01(\v2E.google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimitsB\x04\xe2A\x01\x01R\x11autoscalingLimits\x12z\n" +
+	"8autoscaling_target_high_priority_cpu_utilization_percent\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R2autoscalingTargetHighPriorityCpuUtilizationPercent\x12k\n" +
+	"0autoscaling_target_total_cpu_utilization_percent\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R+autoscalingTargetTotalCpuUtilizationPercent\x12V\n" +
+	"%disable_high_priority_cpu_autoscaling\x18\x05 \x01(\bB\x04\xe2A\x01\x01R!disableHighPriorityCpuAutoscaling\x12G\n" +
+	"\x1ddisable_total_cpu_autoscaling\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x1adisableTotalCpuAutoscaling\"\xa0\r\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12F\n" +
+	"\x06config\x18\x02 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%spanner.googleapis.com/InstanceConfigR\x06config\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x1d\n" +
 	"\n" +
 	"node_count\x18\x05 \x01(\x05R\tnodeCount\x12)\n" +
-	"\x10processing_units\x18\t \x01(\x05R\x0fprocessingUnits\x12w\n" +
-	"\x18replica_compute_capacity\x18\x13 \x03(\v28.google.spanner.admin.instance.v1.ReplicaComputeCapacityB\x03\xe0A\x03R\x16replicaComputeCapacity\x12g\n" +
-	"\x12autoscaling_config\x18\x11 \x01(\v23.google.spanner.admin.instance.v1.AutoscalingConfigB\x03\xe0A\x01R\x11autoscalingConfig\x12K\n" +
-	"\x05state\x18\x06 \x01(\x0e20.google.spanner.admin.instance.v1.Instance.StateB\x03\xe0A\x03R\x05state\x12N\n" +
+	"\x10processing_units\x18\t \x01(\x05R\x0fprocessingUnits\x12x\n" +
+	"\x18replica_compute_capacity\x18\x13 \x03(\v28.google.spanner.admin.instance.v1.ReplicaComputeCapacityB\x04\xe2A\x01\x03R\x16replicaComputeCapacity\x12h\n" +
+	"\x12autoscaling_config\x18\x11 \x01(\v23.google.spanner.admin.instance.v1.AutoscalingConfigB\x04\xe2A\x01\x01R\x11autoscalingConfig\x12L\n" +
+	"\x05state\x18\x06 \x01(\x0e20.google.spanner.admin.instance.v1.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12N\n" +
 	"\x06labels\x18\a \x03(\v26.google.spanner.admin.instance.v1.Instance.LabelsEntryR\x06labels\x12\\\n" +
 	"\rinstance_type\x18\n" +
 	" \x01(\x0e27.google.spanner.admin.instance.v1.Instance.InstanceTypeR\finstanceType\x12#\n" +
-	"\rendpoint_uris\x18\b \x03(\tR\fendpointUris\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\rendpoint_uris\x18\b \x03(\tR\fendpointUris\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12l\n" +
-	"\x16free_instance_metadata\x18\r \x01(\v26.google.spanner.admin.instance.v1.FreeInstanceMetadataR\x14freeInstanceMetadata\x12Q\n" +
-	"\aedition\x18\x14 \x01(\x0e22.google.spanner.admin.instance.v1.Instance.EditionB\x03\xe0A\x01R\aedition\x12\x8a\x01\n" +
-	"\x1cdefault_backup_schedule_type\x18\x17 \x01(\x0e2D.google.spanner.admin.instance.v1.Instance.DefaultBackupScheduleTypeB\x03\xe0A\x01R\x19defaultBackupScheduleType\x1a9\n" +
+	"\x16free_instance_metadata\x18\r \x01(\v26.google.spanner.admin.instance.v1.FreeInstanceMetadataR\x14freeInstanceMetadata\x12R\n" +
+	"\aedition\x18\x14 \x01(\x0e22.google.spanner.admin.instance.v1.Instance.EditionB\x04\xe2A\x01\x01R\aedition\x12\x8b\x01\n" +
+	"\x1cdefault_backup_schedule_type\x18\x17 \x01(\x0e2D.google.spanner.admin.instance.v1.Instance.DefaultBackupScheduleTypeB\x04\xe2A\x01\x01R\x19defaultBackupScheduleType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"7\n" +
@@ -4521,37 +4612,37 @@ const file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc
 	"(DEFAULT_BACKUP_SCHEDULE_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\r\n" +
 	"\tAUTOMATIC\x10\x02:b\xeaA_\n" +
-	"\x1fspanner.googleapis.com/Instance\x12'projects/{project}/instances/{instance}*\tinstances2\binstance\"\xa5\x01\n" +
-	"\x1aListInstanceConfigsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x1fspanner.googleapis.com/Instance\x12'projects/{project}/instances/{instance}*\tinstances2\binstance\"\xa6\x01\n" +
+	"\x1aListInstanceConfigsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa2\x01\n" +
 	"\x1bListInstanceConfigsResponse\x12[\n" +
 	"\x10instance_configs\x18\x01 \x03(\v20.google.spanner.admin.instance.v1.InstanceConfigR\x0finstanceConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
-	"\x18GetInstanceConfigRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%spanner.googleapis.com/InstanceConfigR\x04name\"\xa2\x02\n" +
-	"\x1bCreateInstanceConfigRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x121\n" +
-	"\x12instance_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10instanceConfigId\x12^\n" +
-	"\x0finstance_config\x18\x03 \x01(\v20.google.spanner.admin.instance.v1.InstanceConfigB\x03\xe0A\x02R\x0einstanceConfig\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xe4\x01\n" +
-	"\x1bUpdateInstanceConfigRequest\x12^\n" +
-	"\x0finstance_config\x18\x01 \x01(\v20.google.spanner.admin.instance.v1.InstanceConfigB\x03\xe0A\x02R\x0einstanceConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
+	"\x18GetInstanceConfigRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%spanner.googleapis.com/InstanceConfigR\x04name\"\xa5\x02\n" +
+	"\x1bCreateInstanceConfigRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x122\n" +
+	"\x12instance_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10instanceConfigId\x12_\n" +
+	"\x0finstance_config\x18\x03 \x01(\v20.google.spanner.admin.instance.v1.InstanceConfigB\x04\xe2A\x01\x02R\x0einstanceConfig\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xe6\x01\n" +
+	"\x1bUpdateInstanceConfigRequest\x12_\n" +
+	"\x0finstance_config\x18\x01 \x01(\v20.google.spanner.admin.instance.v1.InstanceConfigB\x04\xe2A\x01\x02R\x0einstanceConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\x99\x01\n" +
-	"\x1bDeleteInstanceConfigRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\x9a\x01\n" +
+	"\x1bDeleteInstanceConfigRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%spanner.googleapis.com/InstanceConfigR\x04name\x12\x12\n" +
 	"\x04etag\x18\x02 \x01(\tR\x04etag\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\xc6\x01\n" +
-	"#ListInstanceConfigOperationsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\xc7\x01\n" +
+	"#ListInstanceConfigOperationsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -4561,20 +4652,20 @@ const file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc
 	"\n" +
 	"operations\x18\x01 \x03(\v2\x1d.google.longrunning.OperationR\n" +
 	"operations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8c\x01\n" +
-	"\x12GetInstanceRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8d\x01\n" +
+	"\x12GetInstanceRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/InstanceR\x04name\x129\n" +
 	"\n" +
-	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\tfieldMask\"\xd7\x01\n" +
-	"\x15CreateInstanceRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12K\n" +
-	"\binstance\x18\x03 \x01(\v2*.google.spanner.admin.instance.v1.InstanceB\x03\xe0A\x02R\binstance\"\x80\x02\n" +
-	"\x14ListInstancesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\tfieldMask\"\xda\x01\n" +
+	"\x15CreateInstanceRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12L\n" +
+	"\binstance\x18\x03 \x01(\v2*.google.spanner.admin.instance.v1.InstanceB\x04\xe2A\x01\x02R\binstance\"\x81\x02\n" +
+	"\x14ListInstancesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -4584,13 +4675,13 @@ const file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc
 	"\x15ListInstancesResponse\x12H\n" +
 	"\tinstances\x18\x01 \x03(\v2*.google.spanner.admin.instance.v1.InstanceR\tinstances\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa4\x01\n" +
-	"\x15UpdateInstanceRequest\x12K\n" +
-	"\binstance\x18\x01 \x01(\v2*.google.spanner.admin.instance.v1.InstanceB\x03\xe0A\x02R\binstance\x12>\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa6\x01\n" +
+	"\x15UpdateInstanceRequest\x12L\n" +
+	"\binstance\x18\x01 \x01(\v2*.google.spanner.admin.instance.v1.InstanceB\x04\xe2A\x01\x02R\binstance\x12?\n" +
 	"\n" +
-	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\tfieldMask\"T\n" +
-	"\x15DeleteInstanceRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\tfieldMask\"U\n" +
+	"\x15DeleteInstanceRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/InstanceR\x04name\"\x84\x03\n" +
 	"\x16CreateInstanceMetadata\x12F\n" +
 	"\binstance\x18\x01 \x01(\v2*.google.spanner.admin.instance.v1.InstanceR\binstance\x129\n" +
@@ -4607,11 +4698,11 @@ const file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc
 	"\vcancel_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"cancelTime\x125\n" +
 	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12s\n" +
-	"\x1bexpected_fulfillment_period\x18\x05 \x01(\x0e23.google.spanner.admin.instance.v1.FulfillmentPeriodR\x19expectedFulfillmentPeriod\"\xf7\x02\n" +
-	"\x14FreeInstanceMetadata\x12@\n" +
-	"\vexpire_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12B\n" +
-	"\fupgrade_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vupgradeTime\x12n\n" +
+	"\x1bexpected_fulfillment_period\x18\x05 \x01(\x0e23.google.spanner.admin.instance.v1.FulfillmentPeriodR\x19expectedFulfillmentPeriod\"\xf9\x02\n" +
+	"\x14FreeInstanceMetadata\x12A\n" +
+	"\vexpire_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12C\n" +
+	"\fupgrade_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vupgradeTime\x12n\n" +
 	"\x0fexpire_behavior\x18\x03 \x01(\x0e2E.google.spanner.admin.instance.v1.FreeInstanceMetadata.ExpireBehaviorR\x0eexpireBehavior\"i\n" +
 	"\x0eExpireBehavior\x12\x1f\n" +
 	"\x1bEXPIRE_BEHAVIOR_UNSPECIFIED\x10\x00\x12\x17\n" +
@@ -4626,24 +4717,24 @@ const file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc
 	"\x0finstance_config\x18\x01 \x01(\v20.google.spanner.admin.instance.v1.InstanceConfigR\x0einstanceConfig\x12O\n" +
 	"\bprogress\x18\x02 \x01(\v23.google.spanner.admin.instance.v1.OperationProgressR\bprogress\x12;\n" +
 	"\vcancel_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"cancelTime\"\xa8\a\n" +
-	"\x11InstancePartition\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12E\n" +
-	"\x06config\x18\x02 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%spanner.googleapis.com/InstanceConfigR\x06config\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x1f\n" +
+	"cancelTime\"\xb1\a\n" +
+	"\x11InstancePartition\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12F\n" +
+	"\x06config\x18\x02 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%spanner.googleapis.com/InstanceConfigR\x06config\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x1f\n" +
 	"\n" +
 	"node_count\x18\x05 \x01(\x05H\x00R\tnodeCount\x12+\n" +
-	"\x10processing_units\x18\x06 \x01(\x05H\x00R\x0fprocessingUnits\x12g\n" +
-	"\x12autoscaling_config\x18\r \x01(\v23.google.spanner.admin.instance.v1.AutoscalingConfigB\x03\xe0A\x01R\x11autoscalingConfig\x12T\n" +
-	"\x05state\x18\a \x01(\x0e29.google.spanner.admin.instance.v1.InstancePartition.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x128\n" +
+	"\x10processing_units\x18\x06 \x01(\x05H\x00R\x0fprocessingUnits\x12h\n" +
+	"\x12autoscaling_config\x18\r \x01(\v23.google.spanner.admin.instance.v1.AutoscalingConfigB\x04\xe2A\x01\x01R\x11autoscalingConfig\x12U\n" +
+	"\x05state\x18\a \x01(\x0e29.google.spanner.admin.instance.v1.InstancePartition.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x129\n" +
 	"\x15referencing_databases\x18\n" +
-	" \x03(\tB\x03\xe0A\x03R\x14referencingDatabases\x126\n" +
-	"\x13referencing_backups\x18\v \x03(\tB\x05\xe0A\x03\x18\x01R\x12referencingBackups\x12\x12\n" +
+	" \x03(\tB\x04\xe2A\x01\x03R\x14referencingDatabases\x127\n" +
+	"\x13referencing_backups\x18\v \x03(\tB\x06\xe2A\x01\x03\x18\x01R\x12referencingBackups\x12\x12\n" +
 	"\x04etag\x18\f \x01(\tR\x04etag\"7\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
@@ -4657,59 +4748,59 @@ const file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12;\n" +
 	"\vcancel_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"cancelTime\x125\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\x83\x02\n" +
-	"\x1eCreateInstancePartitionRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/InstanceR\x06parent\x127\n" +
-	"\x15instance_partition_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x13instancePartitionId\x12g\n" +
-	"\x12instance_partition\x18\x03 \x01(\v23.google.spanner.admin.instance.v1.InstancePartitionB\x03\xe0A\x02R\x11instancePartition\"z\n" +
-	"\x1eDeleteInstancePartitionRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\x86\x02\n" +
+	"\x1eCreateInstancePartitionRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/InstanceR\x06parent\x128\n" +
+	"\x15instance_partition_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13instancePartitionId\x12h\n" +
+	"\x12instance_partition\x18\x03 \x01(\v23.google.spanner.admin.instance.v1.InstancePartitionB\x04\xe2A\x01\x02R\x11instancePartition\"{\n" +
+	"\x1eDeleteInstancePartitionRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(spanner.googleapis.com/InstancePartitionR\x04name\x12\x12\n" +
-	"\x04etag\x18\x02 \x01(\tR\x04etag\"c\n" +
-	"\x1bGetInstancePartitionRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(spanner.googleapis.com/InstancePartitionR\x04name\"\xc9\x01\n" +
-	"\x1eUpdateInstancePartitionRequest\x12g\n" +
-	"\x12instance_partition\x18\x01 \x01(\v23.google.spanner.admin.instance.v1.InstancePartitionB\x03\xe0A\x02R\x11instancePartition\x12>\n" +
+	"\x04etag\x18\x02 \x01(\tR\x04etag\"d\n" +
+	"\x1bGetInstancePartitionRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(spanner.googleapis.com/InstancePartitionR\x04name\"\xcb\x01\n" +
+	"\x1eUpdateInstancePartitionRequest\x12h\n" +
+	"\x12instance_partition\x18\x01 \x01(\v23.google.spanner.admin.instance.v1.InstancePartitionB\x04\xe2A\x01\x02R\x11instancePartition\x12?\n" +
 	"\n" +
-	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\tfieldMask\"\xb4\x02\n" +
+	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\tfieldMask\"\xb4\x02\n" +
 	"\x1fUpdateInstancePartitionMetadata\x12b\n" +
 	"\x12instance_partition\x18\x01 \x01(\v23.google.spanner.admin.instance.v1.InstancePartitionR\x11instancePartition\x129\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12;\n" +
 	"\vcancel_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"cancelTime\x125\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xfd\x01\n" +
-	"\x1dListInstancePartitionsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xff\x01\n" +
+	"\x1dListInstancePartitionsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12_\n" +
-	"\x1binstance_partition_deadline\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x19instancePartitionDeadline\"\xd0\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12`\n" +
+	"\x1binstance_partition_deadline\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x19instancePartitionDeadline\"\xd0\x01\n" +
 	"\x1eListInstancePartitionsResponse\x12d\n" +
 	"\x13instance_partitions\x18\x01 \x03(\v23.google.spanner.admin.instance.v1.InstancePartitionR\x12instancePartitions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xad\x02\n" +
-	"&ListInstancePartitionOperationsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xb2\x02\n" +
+	"&ListInstancePartitionOperationsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12_\n" +
-	"\x1binstance_partition_deadline\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x19instancePartitionDeadline\"\xd8\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12`\n" +
+	"\x1binstance_partition_deadline\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x19instancePartitionDeadline\"\xd8\x01\n" +
 	"'ListInstancePartitionOperationsResponse\x12=\n" +
 	"\n" +
 	"operations\x18\x01 \x03(\v2\x1d.google.longrunning.OperationR\n" +
 	"operations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12F\n" +
-	"\x1funreachable_instance_partitions\x18\x03 \x03(\tR\x1dunreachableInstancePartitions\"\xa6\x01\n" +
-	"\x13MoveInstanceRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/InstanceR\x04name\x12R\n" +
-	"\rtarget_config\x18\x02 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x1funreachable_instance_partitions\x18\x03 \x03(\tR\x1dunreachableInstancePartitions\"\xa8\x01\n" +
+	"\x13MoveInstanceRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/InstanceR\x04name\x12S\n" +
+	"\rtarget_config\x18\x02 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%spanner.googleapis.com/InstanceConfigR\ftargetConfig\"\x16\n" +
 	"\x14MoveInstanceResponse\"\xc9\x01\n" +
 	"\x14MoveInstanceMetadata\x12#\n" +
@@ -4761,200 +4852,202 @@ func file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDescG
 }
 
 var file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
+var file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 45)
 var file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_goTypes = []any{
-	(ReplicaInfo_ReplicaType)(0),                          // 0: google.spanner.admin.instance.v1.ReplicaInfo.ReplicaType
-	(InstanceConfig_Type)(0),                              // 1: google.spanner.admin.instance.v1.InstanceConfig.Type
-	(InstanceConfig_State)(0),                             // 2: google.spanner.admin.instance.v1.InstanceConfig.State
-	(InstanceConfig_FreeInstanceAvailability)(0),          // 3: google.spanner.admin.instance.v1.InstanceConfig.FreeInstanceAvailability
-	(InstanceConfig_QuorumType)(0),                        // 4: google.spanner.admin.instance.v1.InstanceConfig.QuorumType
-	(Instance_State)(0),                                   // 5: google.spanner.admin.instance.v1.Instance.State
-	(Instance_InstanceType)(0),                            // 6: google.spanner.admin.instance.v1.Instance.InstanceType
-	(Instance_Edition)(0),                                 // 7: google.spanner.admin.instance.v1.Instance.Edition
-	(Instance_DefaultBackupScheduleType)(0),               // 8: google.spanner.admin.instance.v1.Instance.DefaultBackupScheduleType
-	(FreeInstanceMetadata_ExpireBehavior)(0),              // 9: google.spanner.admin.instance.v1.FreeInstanceMetadata.ExpireBehavior
-	(InstancePartition_State)(0),                          // 10: google.spanner.admin.instance.v1.InstancePartition.State
-	(*ReplicaInfo)(nil),                                   // 11: google.spanner.admin.instance.v1.ReplicaInfo
-	(*InstanceConfig)(nil),                                // 12: google.spanner.admin.instance.v1.InstanceConfig
-	(*ReplicaComputeCapacity)(nil),                        // 13: google.spanner.admin.instance.v1.ReplicaComputeCapacity
-	(*AutoscalingConfig)(nil),                             // 14: google.spanner.admin.instance.v1.AutoscalingConfig
-	(*Instance)(nil),                                      // 15: google.spanner.admin.instance.v1.Instance
-	(*ListInstanceConfigsRequest)(nil),                    // 16: google.spanner.admin.instance.v1.ListInstanceConfigsRequest
-	(*ListInstanceConfigsResponse)(nil),                   // 17: google.spanner.admin.instance.v1.ListInstanceConfigsResponse
-	(*GetInstanceConfigRequest)(nil),                      // 18: google.spanner.admin.instance.v1.GetInstanceConfigRequest
-	(*CreateInstanceConfigRequest)(nil),                   // 19: google.spanner.admin.instance.v1.CreateInstanceConfigRequest
-	(*UpdateInstanceConfigRequest)(nil),                   // 20: google.spanner.admin.instance.v1.UpdateInstanceConfigRequest
-	(*DeleteInstanceConfigRequest)(nil),                   // 21: google.spanner.admin.instance.v1.DeleteInstanceConfigRequest
-	(*ListInstanceConfigOperationsRequest)(nil),           // 22: google.spanner.admin.instance.v1.ListInstanceConfigOperationsRequest
-	(*ListInstanceConfigOperationsResponse)(nil),          // 23: google.spanner.admin.instance.v1.ListInstanceConfigOperationsResponse
-	(*GetInstanceRequest)(nil),                            // 24: google.spanner.admin.instance.v1.GetInstanceRequest
-	(*CreateInstanceRequest)(nil),                         // 25: google.spanner.admin.instance.v1.CreateInstanceRequest
-	(*ListInstancesRequest)(nil),                          // 26: google.spanner.admin.instance.v1.ListInstancesRequest
-	(*ListInstancesResponse)(nil),                         // 27: google.spanner.admin.instance.v1.ListInstancesResponse
-	(*UpdateInstanceRequest)(nil),                         // 28: google.spanner.admin.instance.v1.UpdateInstanceRequest
-	(*DeleteInstanceRequest)(nil),                         // 29: google.spanner.admin.instance.v1.DeleteInstanceRequest
-	(*CreateInstanceMetadata)(nil),                        // 30: google.spanner.admin.instance.v1.CreateInstanceMetadata
-	(*UpdateInstanceMetadata)(nil),                        // 31: google.spanner.admin.instance.v1.UpdateInstanceMetadata
-	(*FreeInstanceMetadata)(nil),                          // 32: google.spanner.admin.instance.v1.FreeInstanceMetadata
-	(*CreateInstanceConfigMetadata)(nil),                  // 33: google.spanner.admin.instance.v1.CreateInstanceConfigMetadata
-	(*UpdateInstanceConfigMetadata)(nil),                  // 34: google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata
-	(*InstancePartition)(nil),                             // 35: google.spanner.admin.instance.v1.InstancePartition
-	(*CreateInstancePartitionMetadata)(nil),               // 36: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata
-	(*CreateInstancePartitionRequest)(nil),                // 37: google.spanner.admin.instance.v1.CreateInstancePartitionRequest
-	(*DeleteInstancePartitionRequest)(nil),                // 38: google.spanner.admin.instance.v1.DeleteInstancePartitionRequest
-	(*GetInstancePartitionRequest)(nil),                   // 39: google.spanner.admin.instance.v1.GetInstancePartitionRequest
-	(*UpdateInstancePartitionRequest)(nil),                // 40: google.spanner.admin.instance.v1.UpdateInstancePartitionRequest
-	(*UpdateInstancePartitionMetadata)(nil),               // 41: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata
-	(*ListInstancePartitionsRequest)(nil),                 // 42: google.spanner.admin.instance.v1.ListInstancePartitionsRequest
-	(*ListInstancePartitionsResponse)(nil),                // 43: google.spanner.admin.instance.v1.ListInstancePartitionsResponse
-	(*ListInstancePartitionOperationsRequest)(nil),        // 44: google.spanner.admin.instance.v1.ListInstancePartitionOperationsRequest
-	(*ListInstancePartitionOperationsResponse)(nil),       // 45: google.spanner.admin.instance.v1.ListInstancePartitionOperationsResponse
-	(*MoveInstanceRequest)(nil),                           // 46: google.spanner.admin.instance.v1.MoveInstanceRequest
-	(*MoveInstanceResponse)(nil),                          // 47: google.spanner.admin.instance.v1.MoveInstanceResponse
-	(*MoveInstanceMetadata)(nil),                          // 48: google.spanner.admin.instance.v1.MoveInstanceMetadata
-	nil,                                                   // 49: google.spanner.admin.instance.v1.InstanceConfig.LabelsEntry
-	(*AutoscalingConfig_AutoscalingLimits)(nil),           // 50: google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimits
-	(*AutoscalingConfig_AutoscalingTargets)(nil),          // 51: google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingTargets
-	(*AutoscalingConfig_AsymmetricAutoscalingOption)(nil), // 52: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption
-	(*AutoscalingConfig_AsymmetricAutoscalingOption_AutoscalingConfigOverrides)(nil), // 53: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.AutoscalingConfigOverrides
-	nil,                                      // 54: google.spanner.admin.instance.v1.Instance.LabelsEntry
-	(*ReplicaSelection)(nil),                 // 55: google.spanner.admin.instance.v1.ReplicaSelection
-	(*timestamppb.Timestamp)(nil),            // 56: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),            // 57: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil),          // 58: google.longrunning.Operation
-	(FulfillmentPeriod)(0),                   // 59: google.spanner.admin.instance.v1.FulfillmentPeriod
-	(*OperationProgress)(nil),                // 60: google.spanner.admin.instance.v1.OperationProgress
-	(*iampb.SetIamPolicyRequest)(nil),        // 61: google.iam.v1.SetIamPolicyRequest
-	(*iampb.GetIamPolicyRequest)(nil),        // 62: google.iam.v1.GetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),  // 63: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                    // 64: google.protobuf.Empty
-	(*iampb.Policy)(nil),                     // 65: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil), // 66: google.iam.v1.TestIamPermissionsResponse
+	(ReplicaInfo_ReplicaType)(0),                    // 0: google.spanner.admin.instance.v1.ReplicaInfo.ReplicaType
+	(InstanceConfig_Type)(0),                        // 1: google.spanner.admin.instance.v1.InstanceConfig.Type
+	(InstanceConfig_State)(0),                       // 2: google.spanner.admin.instance.v1.InstanceConfig.State
+	(InstanceConfig_FreeInstanceAvailability)(0),    // 3: google.spanner.admin.instance.v1.InstanceConfig.FreeInstanceAvailability
+	(InstanceConfig_QuorumType)(0),                  // 4: google.spanner.admin.instance.v1.InstanceConfig.QuorumType
+	(Instance_State)(0),                             // 5: google.spanner.admin.instance.v1.Instance.State
+	(Instance_InstanceType)(0),                      // 6: google.spanner.admin.instance.v1.Instance.InstanceType
+	(Instance_Edition)(0),                           // 7: google.spanner.admin.instance.v1.Instance.Edition
+	(Instance_DefaultBackupScheduleType)(0),         // 8: google.spanner.admin.instance.v1.Instance.DefaultBackupScheduleType
+	(FreeInstanceMetadata_ExpireBehavior)(0),        // 9: google.spanner.admin.instance.v1.FreeInstanceMetadata.ExpireBehavior
+	(InstancePartition_State)(0),                    // 10: google.spanner.admin.instance.v1.InstancePartition.State
+	(*ReplicaInfo)(nil),                             // 11: google.spanner.admin.instance.v1.ReplicaInfo
+	(*InstanceConfig)(nil),                          // 12: google.spanner.admin.instance.v1.InstanceConfig
+	(*ReplicaComputeCapacity)(nil),                  // 13: google.spanner.admin.instance.v1.ReplicaComputeCapacity
+	(*AutoscalingConfig)(nil),                       // 14: google.spanner.admin.instance.v1.AutoscalingConfig
+	(*Instance)(nil),                                // 15: google.spanner.admin.instance.v1.Instance
+	(*ListInstanceConfigsRequest)(nil),              // 16: google.spanner.admin.instance.v1.ListInstanceConfigsRequest
+	(*ListInstanceConfigsResponse)(nil),             // 17: google.spanner.admin.instance.v1.ListInstanceConfigsResponse
+	(*GetInstanceConfigRequest)(nil),                // 18: google.spanner.admin.instance.v1.GetInstanceConfigRequest
+	(*CreateInstanceConfigRequest)(nil),             // 19: google.spanner.admin.instance.v1.CreateInstanceConfigRequest
+	(*UpdateInstanceConfigRequest)(nil),             // 20: google.spanner.admin.instance.v1.UpdateInstanceConfigRequest
+	(*DeleteInstanceConfigRequest)(nil),             // 21: google.spanner.admin.instance.v1.DeleteInstanceConfigRequest
+	(*ListInstanceConfigOperationsRequest)(nil),     // 22: google.spanner.admin.instance.v1.ListInstanceConfigOperationsRequest
+	(*ListInstanceConfigOperationsResponse)(nil),    // 23: google.spanner.admin.instance.v1.ListInstanceConfigOperationsResponse
+	(*GetInstanceRequest)(nil),                      // 24: google.spanner.admin.instance.v1.GetInstanceRequest
+	(*CreateInstanceRequest)(nil),                   // 25: google.spanner.admin.instance.v1.CreateInstanceRequest
+	(*ListInstancesRequest)(nil),                    // 26: google.spanner.admin.instance.v1.ListInstancesRequest
+	(*ListInstancesResponse)(nil),                   // 27: google.spanner.admin.instance.v1.ListInstancesResponse
+	(*UpdateInstanceRequest)(nil),                   // 28: google.spanner.admin.instance.v1.UpdateInstanceRequest
+	(*DeleteInstanceRequest)(nil),                   // 29: google.spanner.admin.instance.v1.DeleteInstanceRequest
+	(*CreateInstanceMetadata)(nil),                  // 30: google.spanner.admin.instance.v1.CreateInstanceMetadata
+	(*UpdateInstanceMetadata)(nil),                  // 31: google.spanner.admin.instance.v1.UpdateInstanceMetadata
+	(*FreeInstanceMetadata)(nil),                    // 32: google.spanner.admin.instance.v1.FreeInstanceMetadata
+	(*CreateInstanceConfigMetadata)(nil),            // 33: google.spanner.admin.instance.v1.CreateInstanceConfigMetadata
+	(*UpdateInstanceConfigMetadata)(nil),            // 34: google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata
+	(*InstancePartition)(nil),                       // 35: google.spanner.admin.instance.v1.InstancePartition
+	(*CreateInstancePartitionMetadata)(nil),         // 36: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata
+	(*CreateInstancePartitionRequest)(nil),          // 37: google.spanner.admin.instance.v1.CreateInstancePartitionRequest
+	(*DeleteInstancePartitionRequest)(nil),          // 38: google.spanner.admin.instance.v1.DeleteInstancePartitionRequest
+	(*GetInstancePartitionRequest)(nil),             // 39: google.spanner.admin.instance.v1.GetInstancePartitionRequest
+	(*UpdateInstancePartitionRequest)(nil),          // 40: google.spanner.admin.instance.v1.UpdateInstancePartitionRequest
+	(*UpdateInstancePartitionMetadata)(nil),         // 41: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata
+	(*ListInstancePartitionsRequest)(nil),           // 42: google.spanner.admin.instance.v1.ListInstancePartitionsRequest
+	(*ListInstancePartitionsResponse)(nil),          // 43: google.spanner.admin.instance.v1.ListInstancePartitionsResponse
+	(*ListInstancePartitionOperationsRequest)(nil),  // 44: google.spanner.admin.instance.v1.ListInstancePartitionOperationsRequest
+	(*ListInstancePartitionOperationsResponse)(nil), // 45: google.spanner.admin.instance.v1.ListInstancePartitionOperationsResponse
+	(*MoveInstanceRequest)(nil),                     // 46: google.spanner.admin.instance.v1.MoveInstanceRequest
+	(*MoveInstanceResponse)(nil),                    // 47: google.spanner.admin.instance.v1.MoveInstanceResponse
+	(*MoveInstanceMetadata)(nil),                    // 48: google.spanner.admin.instance.v1.MoveInstanceMetadata
+	(*InstanceConfig_AllowedProcessingUnits)(nil),   // 49: google.spanner.admin.instance.v1.InstanceConfig.AllowedProcessingUnits
+	nil, // 50: google.spanner.admin.instance.v1.InstanceConfig.LabelsEntry
+	(*AutoscalingConfig_AutoscalingLimits)(nil),                                      // 51: google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimits
+	(*AutoscalingConfig_AutoscalingTargets)(nil),                                     // 52: google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingTargets
+	(*AutoscalingConfig_AsymmetricAutoscalingOption)(nil),                            // 53: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption
+	(*AutoscalingConfig_AsymmetricAutoscalingOption_AutoscalingConfigOverrides)(nil), // 54: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.AutoscalingConfigOverrides
+	nil,                                      // 55: google.spanner.admin.instance.v1.Instance.LabelsEntry
+	(*ReplicaSelection)(nil),                 // 56: google.spanner.admin.instance.v1.ReplicaSelection
+	(*timestamppb.Timestamp)(nil),            // 57: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),            // 58: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil),          // 59: google.longrunning.Operation
+	(FulfillmentPeriod)(0),                   // 60: google.spanner.admin.instance.v1.FulfillmentPeriod
+	(*OperationProgress)(nil),                // 61: google.spanner.admin.instance.v1.OperationProgress
+	(*iampb.SetIamPolicyRequest)(nil),        // 62: google.iam.v1.SetIamPolicyRequest
+	(*iampb.GetIamPolicyRequest)(nil),        // 63: google.iam.v1.GetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 64: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                    // 65: google.protobuf.Empty
+	(*iampb.Policy)(nil),                     // 66: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 67: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_depIdxs = []int32{
 	0,  // 0: google.spanner.admin.instance.v1.ReplicaInfo.type:type_name -> google.spanner.admin.instance.v1.ReplicaInfo.ReplicaType
 	1,  // 1: google.spanner.admin.instance.v1.InstanceConfig.config_type:type_name -> google.spanner.admin.instance.v1.InstanceConfig.Type
 	11, // 2: google.spanner.admin.instance.v1.InstanceConfig.replicas:type_name -> google.spanner.admin.instance.v1.ReplicaInfo
 	11, // 3: google.spanner.admin.instance.v1.InstanceConfig.optional_replicas:type_name -> google.spanner.admin.instance.v1.ReplicaInfo
-	49, // 4: google.spanner.admin.instance.v1.InstanceConfig.labels:type_name -> google.spanner.admin.instance.v1.InstanceConfig.LabelsEntry
+	50, // 4: google.spanner.admin.instance.v1.InstanceConfig.labels:type_name -> google.spanner.admin.instance.v1.InstanceConfig.LabelsEntry
 	2,  // 5: google.spanner.admin.instance.v1.InstanceConfig.state:type_name -> google.spanner.admin.instance.v1.InstanceConfig.State
 	3,  // 6: google.spanner.admin.instance.v1.InstanceConfig.free_instance_availability:type_name -> google.spanner.admin.instance.v1.InstanceConfig.FreeInstanceAvailability
-	4,  // 7: google.spanner.admin.instance.v1.InstanceConfig.quorum_type:type_name -> google.spanner.admin.instance.v1.InstanceConfig.QuorumType
-	55, // 8: google.spanner.admin.instance.v1.ReplicaComputeCapacity.replica_selection:type_name -> google.spanner.admin.instance.v1.ReplicaSelection
-	50, // 9: google.spanner.admin.instance.v1.AutoscalingConfig.autoscaling_limits:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimits
-	51, // 10: google.spanner.admin.instance.v1.AutoscalingConfig.autoscaling_targets:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingTargets
-	52, // 11: google.spanner.admin.instance.v1.AutoscalingConfig.asymmetric_autoscaling_options:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption
-	13, // 12: google.spanner.admin.instance.v1.Instance.replica_compute_capacity:type_name -> google.spanner.admin.instance.v1.ReplicaComputeCapacity
-	14, // 13: google.spanner.admin.instance.v1.Instance.autoscaling_config:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig
-	5,  // 14: google.spanner.admin.instance.v1.Instance.state:type_name -> google.spanner.admin.instance.v1.Instance.State
-	54, // 15: google.spanner.admin.instance.v1.Instance.labels:type_name -> google.spanner.admin.instance.v1.Instance.LabelsEntry
-	6,  // 16: google.spanner.admin.instance.v1.Instance.instance_type:type_name -> google.spanner.admin.instance.v1.Instance.InstanceType
-	56, // 17: google.spanner.admin.instance.v1.Instance.create_time:type_name -> google.protobuf.Timestamp
-	56, // 18: google.spanner.admin.instance.v1.Instance.update_time:type_name -> google.protobuf.Timestamp
-	32, // 19: google.spanner.admin.instance.v1.Instance.free_instance_metadata:type_name -> google.spanner.admin.instance.v1.FreeInstanceMetadata
-	7,  // 20: google.spanner.admin.instance.v1.Instance.edition:type_name -> google.spanner.admin.instance.v1.Instance.Edition
-	8,  // 21: google.spanner.admin.instance.v1.Instance.default_backup_schedule_type:type_name -> google.spanner.admin.instance.v1.Instance.DefaultBackupScheduleType
-	12, // 22: google.spanner.admin.instance.v1.ListInstanceConfigsResponse.instance_configs:type_name -> google.spanner.admin.instance.v1.InstanceConfig
-	12, // 23: google.spanner.admin.instance.v1.CreateInstanceConfigRequest.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
-	12, // 24: google.spanner.admin.instance.v1.UpdateInstanceConfigRequest.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
-	57, // 25: google.spanner.admin.instance.v1.UpdateInstanceConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	58, // 26: google.spanner.admin.instance.v1.ListInstanceConfigOperationsResponse.operations:type_name -> google.longrunning.Operation
-	57, // 27: google.spanner.admin.instance.v1.GetInstanceRequest.field_mask:type_name -> google.protobuf.FieldMask
-	15, // 28: google.spanner.admin.instance.v1.CreateInstanceRequest.instance:type_name -> google.spanner.admin.instance.v1.Instance
-	56, // 29: google.spanner.admin.instance.v1.ListInstancesRequest.instance_deadline:type_name -> google.protobuf.Timestamp
-	15, // 30: google.spanner.admin.instance.v1.ListInstancesResponse.instances:type_name -> google.spanner.admin.instance.v1.Instance
-	15, // 31: google.spanner.admin.instance.v1.UpdateInstanceRequest.instance:type_name -> google.spanner.admin.instance.v1.Instance
-	57, // 32: google.spanner.admin.instance.v1.UpdateInstanceRequest.field_mask:type_name -> google.protobuf.FieldMask
-	15, // 33: google.spanner.admin.instance.v1.CreateInstanceMetadata.instance:type_name -> google.spanner.admin.instance.v1.Instance
-	56, // 34: google.spanner.admin.instance.v1.CreateInstanceMetadata.start_time:type_name -> google.protobuf.Timestamp
-	56, // 35: google.spanner.admin.instance.v1.CreateInstanceMetadata.cancel_time:type_name -> google.protobuf.Timestamp
-	56, // 36: google.spanner.admin.instance.v1.CreateInstanceMetadata.end_time:type_name -> google.protobuf.Timestamp
-	59, // 37: google.spanner.admin.instance.v1.CreateInstanceMetadata.expected_fulfillment_period:type_name -> google.spanner.admin.instance.v1.FulfillmentPeriod
-	15, // 38: google.spanner.admin.instance.v1.UpdateInstanceMetadata.instance:type_name -> google.spanner.admin.instance.v1.Instance
-	56, // 39: google.spanner.admin.instance.v1.UpdateInstanceMetadata.start_time:type_name -> google.protobuf.Timestamp
-	56, // 40: google.spanner.admin.instance.v1.UpdateInstanceMetadata.cancel_time:type_name -> google.protobuf.Timestamp
-	56, // 41: google.spanner.admin.instance.v1.UpdateInstanceMetadata.end_time:type_name -> google.protobuf.Timestamp
-	59, // 42: google.spanner.admin.instance.v1.UpdateInstanceMetadata.expected_fulfillment_period:type_name -> google.spanner.admin.instance.v1.FulfillmentPeriod
-	56, // 43: google.spanner.admin.instance.v1.FreeInstanceMetadata.expire_time:type_name -> google.protobuf.Timestamp
-	56, // 44: google.spanner.admin.instance.v1.FreeInstanceMetadata.upgrade_time:type_name -> google.protobuf.Timestamp
-	9,  // 45: google.spanner.admin.instance.v1.FreeInstanceMetadata.expire_behavior:type_name -> google.spanner.admin.instance.v1.FreeInstanceMetadata.ExpireBehavior
-	12, // 46: google.spanner.admin.instance.v1.CreateInstanceConfigMetadata.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
-	60, // 47: google.spanner.admin.instance.v1.CreateInstanceConfigMetadata.progress:type_name -> google.spanner.admin.instance.v1.OperationProgress
-	56, // 48: google.spanner.admin.instance.v1.CreateInstanceConfigMetadata.cancel_time:type_name -> google.protobuf.Timestamp
-	12, // 49: google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
-	60, // 50: google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.progress:type_name -> google.spanner.admin.instance.v1.OperationProgress
-	56, // 51: google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.cancel_time:type_name -> google.protobuf.Timestamp
-	14, // 52: google.spanner.admin.instance.v1.InstancePartition.autoscaling_config:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig
-	10, // 53: google.spanner.admin.instance.v1.InstancePartition.state:type_name -> google.spanner.admin.instance.v1.InstancePartition.State
-	56, // 54: google.spanner.admin.instance.v1.InstancePartition.create_time:type_name -> google.protobuf.Timestamp
-	56, // 55: google.spanner.admin.instance.v1.InstancePartition.update_time:type_name -> google.protobuf.Timestamp
-	35, // 56: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata.instance_partition:type_name -> google.spanner.admin.instance.v1.InstancePartition
-	56, // 57: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata.start_time:type_name -> google.protobuf.Timestamp
-	56, // 58: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata.cancel_time:type_name -> google.protobuf.Timestamp
-	56, // 59: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata.end_time:type_name -> google.protobuf.Timestamp
-	35, // 60: google.spanner.admin.instance.v1.CreateInstancePartitionRequest.instance_partition:type_name -> google.spanner.admin.instance.v1.InstancePartition
-	35, // 61: google.spanner.admin.instance.v1.UpdateInstancePartitionRequest.instance_partition:type_name -> google.spanner.admin.instance.v1.InstancePartition
-	57, // 62: google.spanner.admin.instance.v1.UpdateInstancePartitionRequest.field_mask:type_name -> google.protobuf.FieldMask
-	35, // 63: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata.instance_partition:type_name -> google.spanner.admin.instance.v1.InstancePartition
-	56, // 64: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata.start_time:type_name -> google.protobuf.Timestamp
-	56, // 65: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata.cancel_time:type_name -> google.protobuf.Timestamp
-	56, // 66: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata.end_time:type_name -> google.protobuf.Timestamp
-	56, // 67: google.spanner.admin.instance.v1.ListInstancePartitionsRequest.instance_partition_deadline:type_name -> google.protobuf.Timestamp
-	35, // 68: google.spanner.admin.instance.v1.ListInstancePartitionsResponse.instance_partitions:type_name -> google.spanner.admin.instance.v1.InstancePartition
-	56, // 69: google.spanner.admin.instance.v1.ListInstancePartitionOperationsRequest.instance_partition_deadline:type_name -> google.protobuf.Timestamp
-	58, // 70: google.spanner.admin.instance.v1.ListInstancePartitionOperationsResponse.operations:type_name -> google.longrunning.Operation
-	60, // 71: google.spanner.admin.instance.v1.MoveInstanceMetadata.progress:type_name -> google.spanner.admin.instance.v1.OperationProgress
-	56, // 72: google.spanner.admin.instance.v1.MoveInstanceMetadata.cancel_time:type_name -> google.protobuf.Timestamp
-	55, // 73: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.replica_selection:type_name -> google.spanner.admin.instance.v1.ReplicaSelection
-	53, // 74: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.overrides:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.AutoscalingConfigOverrides
-	50, // 75: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.AutoscalingConfigOverrides.autoscaling_limits:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimits
-	16, // 76: google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigs:input_type -> google.spanner.admin.instance.v1.ListInstanceConfigsRequest
-	18, // 77: google.spanner.admin.instance.v1.InstanceAdmin.GetInstanceConfig:input_type -> google.spanner.admin.instance.v1.GetInstanceConfigRequest
-	19, // 78: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstanceConfig:input_type -> google.spanner.admin.instance.v1.CreateInstanceConfigRequest
-	20, // 79: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstanceConfig:input_type -> google.spanner.admin.instance.v1.UpdateInstanceConfigRequest
-	21, // 80: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstanceConfig:input_type -> google.spanner.admin.instance.v1.DeleteInstanceConfigRequest
-	22, // 81: google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigOperations:input_type -> google.spanner.admin.instance.v1.ListInstanceConfigOperationsRequest
-	26, // 82: google.spanner.admin.instance.v1.InstanceAdmin.ListInstances:input_type -> google.spanner.admin.instance.v1.ListInstancesRequest
-	42, // 83: google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitions:input_type -> google.spanner.admin.instance.v1.ListInstancePartitionsRequest
-	24, // 84: google.spanner.admin.instance.v1.InstanceAdmin.GetInstance:input_type -> google.spanner.admin.instance.v1.GetInstanceRequest
-	25, // 85: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstance:input_type -> google.spanner.admin.instance.v1.CreateInstanceRequest
-	28, // 86: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstance:input_type -> google.spanner.admin.instance.v1.UpdateInstanceRequest
-	29, // 87: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstance:input_type -> google.spanner.admin.instance.v1.DeleteInstanceRequest
-	61, // 88: google.spanner.admin.instance.v1.InstanceAdmin.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	62, // 89: google.spanner.admin.instance.v1.InstanceAdmin.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	63, // 90: google.spanner.admin.instance.v1.InstanceAdmin.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	39, // 91: google.spanner.admin.instance.v1.InstanceAdmin.GetInstancePartition:input_type -> google.spanner.admin.instance.v1.GetInstancePartitionRequest
-	37, // 92: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstancePartition:input_type -> google.spanner.admin.instance.v1.CreateInstancePartitionRequest
-	38, // 93: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstancePartition:input_type -> google.spanner.admin.instance.v1.DeleteInstancePartitionRequest
-	40, // 94: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstancePartition:input_type -> google.spanner.admin.instance.v1.UpdateInstancePartitionRequest
-	44, // 95: google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitionOperations:input_type -> google.spanner.admin.instance.v1.ListInstancePartitionOperationsRequest
-	46, // 96: google.spanner.admin.instance.v1.InstanceAdmin.MoveInstance:input_type -> google.spanner.admin.instance.v1.MoveInstanceRequest
-	17, // 97: google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigs:output_type -> google.spanner.admin.instance.v1.ListInstanceConfigsResponse
-	12, // 98: google.spanner.admin.instance.v1.InstanceAdmin.GetInstanceConfig:output_type -> google.spanner.admin.instance.v1.InstanceConfig
-	58, // 99: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstanceConfig:output_type -> google.longrunning.Operation
-	58, // 100: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstanceConfig:output_type -> google.longrunning.Operation
-	64, // 101: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstanceConfig:output_type -> google.protobuf.Empty
-	23, // 102: google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigOperations:output_type -> google.spanner.admin.instance.v1.ListInstanceConfigOperationsResponse
-	27, // 103: google.spanner.admin.instance.v1.InstanceAdmin.ListInstances:output_type -> google.spanner.admin.instance.v1.ListInstancesResponse
-	43, // 104: google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitions:output_type -> google.spanner.admin.instance.v1.ListInstancePartitionsResponse
-	15, // 105: google.spanner.admin.instance.v1.InstanceAdmin.GetInstance:output_type -> google.spanner.admin.instance.v1.Instance
-	58, // 106: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstance:output_type -> google.longrunning.Operation
-	58, // 107: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstance:output_type -> google.longrunning.Operation
-	64, // 108: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstance:output_type -> google.protobuf.Empty
-	65, // 109: google.spanner.admin.instance.v1.InstanceAdmin.SetIamPolicy:output_type -> google.iam.v1.Policy
-	65, // 110: google.spanner.admin.instance.v1.InstanceAdmin.GetIamPolicy:output_type -> google.iam.v1.Policy
-	66, // 111: google.spanner.admin.instance.v1.InstanceAdmin.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	35, // 112: google.spanner.admin.instance.v1.InstanceAdmin.GetInstancePartition:output_type -> google.spanner.admin.instance.v1.InstancePartition
-	58, // 113: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstancePartition:output_type -> google.longrunning.Operation
-	64, // 114: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstancePartition:output_type -> google.protobuf.Empty
-	58, // 115: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstancePartition:output_type -> google.longrunning.Operation
-	45, // 116: google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitionOperations:output_type -> google.spanner.admin.instance.v1.ListInstancePartitionOperationsResponse
-	58, // 117: google.spanner.admin.instance.v1.InstanceAdmin.MoveInstance:output_type -> google.longrunning.Operation
-	97, // [97:118] is the sub-list for method output_type
-	76, // [76:97] is the sub-list for method input_type
-	76, // [76:76] is the sub-list for extension type_name
-	76, // [76:76] is the sub-list for extension extendee
-	0,  // [0:76] is the sub-list for field type_name
+	49, // 7: google.spanner.admin.instance.v1.InstanceConfig.allowed_processing_units:type_name -> google.spanner.admin.instance.v1.InstanceConfig.AllowedProcessingUnits
+	4,  // 8: google.spanner.admin.instance.v1.InstanceConfig.quorum_type:type_name -> google.spanner.admin.instance.v1.InstanceConfig.QuorumType
+	56, // 9: google.spanner.admin.instance.v1.ReplicaComputeCapacity.replica_selection:type_name -> google.spanner.admin.instance.v1.ReplicaSelection
+	51, // 10: google.spanner.admin.instance.v1.AutoscalingConfig.autoscaling_limits:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimits
+	52, // 11: google.spanner.admin.instance.v1.AutoscalingConfig.autoscaling_targets:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingTargets
+	53, // 12: google.spanner.admin.instance.v1.AutoscalingConfig.asymmetric_autoscaling_options:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption
+	13, // 13: google.spanner.admin.instance.v1.Instance.replica_compute_capacity:type_name -> google.spanner.admin.instance.v1.ReplicaComputeCapacity
+	14, // 14: google.spanner.admin.instance.v1.Instance.autoscaling_config:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig
+	5,  // 15: google.spanner.admin.instance.v1.Instance.state:type_name -> google.spanner.admin.instance.v1.Instance.State
+	55, // 16: google.spanner.admin.instance.v1.Instance.labels:type_name -> google.spanner.admin.instance.v1.Instance.LabelsEntry
+	6,  // 17: google.spanner.admin.instance.v1.Instance.instance_type:type_name -> google.spanner.admin.instance.v1.Instance.InstanceType
+	57, // 18: google.spanner.admin.instance.v1.Instance.create_time:type_name -> google.protobuf.Timestamp
+	57, // 19: google.spanner.admin.instance.v1.Instance.update_time:type_name -> google.protobuf.Timestamp
+	32, // 20: google.spanner.admin.instance.v1.Instance.free_instance_metadata:type_name -> google.spanner.admin.instance.v1.FreeInstanceMetadata
+	7,  // 21: google.spanner.admin.instance.v1.Instance.edition:type_name -> google.spanner.admin.instance.v1.Instance.Edition
+	8,  // 22: google.spanner.admin.instance.v1.Instance.default_backup_schedule_type:type_name -> google.spanner.admin.instance.v1.Instance.DefaultBackupScheduleType
+	12, // 23: google.spanner.admin.instance.v1.ListInstanceConfigsResponse.instance_configs:type_name -> google.spanner.admin.instance.v1.InstanceConfig
+	12, // 24: google.spanner.admin.instance.v1.CreateInstanceConfigRequest.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
+	12, // 25: google.spanner.admin.instance.v1.UpdateInstanceConfigRequest.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
+	58, // 26: google.spanner.admin.instance.v1.UpdateInstanceConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	59, // 27: google.spanner.admin.instance.v1.ListInstanceConfigOperationsResponse.operations:type_name -> google.longrunning.Operation
+	58, // 28: google.spanner.admin.instance.v1.GetInstanceRequest.field_mask:type_name -> google.protobuf.FieldMask
+	15, // 29: google.spanner.admin.instance.v1.CreateInstanceRequest.instance:type_name -> google.spanner.admin.instance.v1.Instance
+	57, // 30: google.spanner.admin.instance.v1.ListInstancesRequest.instance_deadline:type_name -> google.protobuf.Timestamp
+	15, // 31: google.spanner.admin.instance.v1.ListInstancesResponse.instances:type_name -> google.spanner.admin.instance.v1.Instance
+	15, // 32: google.spanner.admin.instance.v1.UpdateInstanceRequest.instance:type_name -> google.spanner.admin.instance.v1.Instance
+	58, // 33: google.spanner.admin.instance.v1.UpdateInstanceRequest.field_mask:type_name -> google.protobuf.FieldMask
+	15, // 34: google.spanner.admin.instance.v1.CreateInstanceMetadata.instance:type_name -> google.spanner.admin.instance.v1.Instance
+	57, // 35: google.spanner.admin.instance.v1.CreateInstanceMetadata.start_time:type_name -> google.protobuf.Timestamp
+	57, // 36: google.spanner.admin.instance.v1.CreateInstanceMetadata.cancel_time:type_name -> google.protobuf.Timestamp
+	57, // 37: google.spanner.admin.instance.v1.CreateInstanceMetadata.end_time:type_name -> google.protobuf.Timestamp
+	60, // 38: google.spanner.admin.instance.v1.CreateInstanceMetadata.expected_fulfillment_period:type_name -> google.spanner.admin.instance.v1.FulfillmentPeriod
+	15, // 39: google.spanner.admin.instance.v1.UpdateInstanceMetadata.instance:type_name -> google.spanner.admin.instance.v1.Instance
+	57, // 40: google.spanner.admin.instance.v1.UpdateInstanceMetadata.start_time:type_name -> google.protobuf.Timestamp
+	57, // 41: google.spanner.admin.instance.v1.UpdateInstanceMetadata.cancel_time:type_name -> google.protobuf.Timestamp
+	57, // 42: google.spanner.admin.instance.v1.UpdateInstanceMetadata.end_time:type_name -> google.protobuf.Timestamp
+	60, // 43: google.spanner.admin.instance.v1.UpdateInstanceMetadata.expected_fulfillment_period:type_name -> google.spanner.admin.instance.v1.FulfillmentPeriod
+	57, // 44: google.spanner.admin.instance.v1.FreeInstanceMetadata.expire_time:type_name -> google.protobuf.Timestamp
+	57, // 45: google.spanner.admin.instance.v1.FreeInstanceMetadata.upgrade_time:type_name -> google.protobuf.Timestamp
+	9,  // 46: google.spanner.admin.instance.v1.FreeInstanceMetadata.expire_behavior:type_name -> google.spanner.admin.instance.v1.FreeInstanceMetadata.ExpireBehavior
+	12, // 47: google.spanner.admin.instance.v1.CreateInstanceConfigMetadata.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
+	61, // 48: google.spanner.admin.instance.v1.CreateInstanceConfigMetadata.progress:type_name -> google.spanner.admin.instance.v1.OperationProgress
+	57, // 49: google.spanner.admin.instance.v1.CreateInstanceConfigMetadata.cancel_time:type_name -> google.protobuf.Timestamp
+	12, // 50: google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
+	61, // 51: google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.progress:type_name -> google.spanner.admin.instance.v1.OperationProgress
+	57, // 52: google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.cancel_time:type_name -> google.protobuf.Timestamp
+	14, // 53: google.spanner.admin.instance.v1.InstancePartition.autoscaling_config:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig
+	10, // 54: google.spanner.admin.instance.v1.InstancePartition.state:type_name -> google.spanner.admin.instance.v1.InstancePartition.State
+	57, // 55: google.spanner.admin.instance.v1.InstancePartition.create_time:type_name -> google.protobuf.Timestamp
+	57, // 56: google.spanner.admin.instance.v1.InstancePartition.update_time:type_name -> google.protobuf.Timestamp
+	35, // 57: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata.instance_partition:type_name -> google.spanner.admin.instance.v1.InstancePartition
+	57, // 58: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata.start_time:type_name -> google.protobuf.Timestamp
+	57, // 59: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata.cancel_time:type_name -> google.protobuf.Timestamp
+	57, // 60: google.spanner.admin.instance.v1.CreateInstancePartitionMetadata.end_time:type_name -> google.protobuf.Timestamp
+	35, // 61: google.spanner.admin.instance.v1.CreateInstancePartitionRequest.instance_partition:type_name -> google.spanner.admin.instance.v1.InstancePartition
+	35, // 62: google.spanner.admin.instance.v1.UpdateInstancePartitionRequest.instance_partition:type_name -> google.spanner.admin.instance.v1.InstancePartition
+	58, // 63: google.spanner.admin.instance.v1.UpdateInstancePartitionRequest.field_mask:type_name -> google.protobuf.FieldMask
+	35, // 64: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata.instance_partition:type_name -> google.spanner.admin.instance.v1.InstancePartition
+	57, // 65: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata.start_time:type_name -> google.protobuf.Timestamp
+	57, // 66: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata.cancel_time:type_name -> google.protobuf.Timestamp
+	57, // 67: google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata.end_time:type_name -> google.protobuf.Timestamp
+	57, // 68: google.spanner.admin.instance.v1.ListInstancePartitionsRequest.instance_partition_deadline:type_name -> google.protobuf.Timestamp
+	35, // 69: google.spanner.admin.instance.v1.ListInstancePartitionsResponse.instance_partitions:type_name -> google.spanner.admin.instance.v1.InstancePartition
+	57, // 70: google.spanner.admin.instance.v1.ListInstancePartitionOperationsRequest.instance_partition_deadline:type_name -> google.protobuf.Timestamp
+	59, // 71: google.spanner.admin.instance.v1.ListInstancePartitionOperationsResponse.operations:type_name -> google.longrunning.Operation
+	61, // 72: google.spanner.admin.instance.v1.MoveInstanceMetadata.progress:type_name -> google.spanner.admin.instance.v1.OperationProgress
+	57, // 73: google.spanner.admin.instance.v1.MoveInstanceMetadata.cancel_time:type_name -> google.protobuf.Timestamp
+	56, // 74: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.replica_selection:type_name -> google.spanner.admin.instance.v1.ReplicaSelection
+	54, // 75: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.overrides:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.AutoscalingConfigOverrides
+	51, // 76: google.spanner.admin.instance.v1.AutoscalingConfig.AsymmetricAutoscalingOption.AutoscalingConfigOverrides.autoscaling_limits:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig.AutoscalingLimits
+	16, // 77: google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigs:input_type -> google.spanner.admin.instance.v1.ListInstanceConfigsRequest
+	18, // 78: google.spanner.admin.instance.v1.InstanceAdmin.GetInstanceConfig:input_type -> google.spanner.admin.instance.v1.GetInstanceConfigRequest
+	19, // 79: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstanceConfig:input_type -> google.spanner.admin.instance.v1.CreateInstanceConfigRequest
+	20, // 80: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstanceConfig:input_type -> google.spanner.admin.instance.v1.UpdateInstanceConfigRequest
+	21, // 81: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstanceConfig:input_type -> google.spanner.admin.instance.v1.DeleteInstanceConfigRequest
+	22, // 82: google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigOperations:input_type -> google.spanner.admin.instance.v1.ListInstanceConfigOperationsRequest
+	26, // 83: google.spanner.admin.instance.v1.InstanceAdmin.ListInstances:input_type -> google.spanner.admin.instance.v1.ListInstancesRequest
+	42, // 84: google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitions:input_type -> google.spanner.admin.instance.v1.ListInstancePartitionsRequest
+	24, // 85: google.spanner.admin.instance.v1.InstanceAdmin.GetInstance:input_type -> google.spanner.admin.instance.v1.GetInstanceRequest
+	25, // 86: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstance:input_type -> google.spanner.admin.instance.v1.CreateInstanceRequest
+	28, // 87: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstance:input_type -> google.spanner.admin.instance.v1.UpdateInstanceRequest
+	29, // 88: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstance:input_type -> google.spanner.admin.instance.v1.DeleteInstanceRequest
+	62, // 89: google.spanner.admin.instance.v1.InstanceAdmin.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	63, // 90: google.spanner.admin.instance.v1.InstanceAdmin.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	64, // 91: google.spanner.admin.instance.v1.InstanceAdmin.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	39, // 92: google.spanner.admin.instance.v1.InstanceAdmin.GetInstancePartition:input_type -> google.spanner.admin.instance.v1.GetInstancePartitionRequest
+	37, // 93: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstancePartition:input_type -> google.spanner.admin.instance.v1.CreateInstancePartitionRequest
+	38, // 94: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstancePartition:input_type -> google.spanner.admin.instance.v1.DeleteInstancePartitionRequest
+	40, // 95: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstancePartition:input_type -> google.spanner.admin.instance.v1.UpdateInstancePartitionRequest
+	44, // 96: google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitionOperations:input_type -> google.spanner.admin.instance.v1.ListInstancePartitionOperationsRequest
+	46, // 97: google.spanner.admin.instance.v1.InstanceAdmin.MoveInstance:input_type -> google.spanner.admin.instance.v1.MoveInstanceRequest
+	17, // 98: google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigs:output_type -> google.spanner.admin.instance.v1.ListInstanceConfigsResponse
+	12, // 99: google.spanner.admin.instance.v1.InstanceAdmin.GetInstanceConfig:output_type -> google.spanner.admin.instance.v1.InstanceConfig
+	59, // 100: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstanceConfig:output_type -> google.longrunning.Operation
+	59, // 101: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstanceConfig:output_type -> google.longrunning.Operation
+	65, // 102: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstanceConfig:output_type -> google.protobuf.Empty
+	23, // 103: google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigOperations:output_type -> google.spanner.admin.instance.v1.ListInstanceConfigOperationsResponse
+	27, // 104: google.spanner.admin.instance.v1.InstanceAdmin.ListInstances:output_type -> google.spanner.admin.instance.v1.ListInstancesResponse
+	43, // 105: google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitions:output_type -> google.spanner.admin.instance.v1.ListInstancePartitionsResponse
+	15, // 106: google.spanner.admin.instance.v1.InstanceAdmin.GetInstance:output_type -> google.spanner.admin.instance.v1.Instance
+	59, // 107: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstance:output_type -> google.longrunning.Operation
+	59, // 108: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstance:output_type -> google.longrunning.Operation
+	65, // 109: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstance:output_type -> google.protobuf.Empty
+	66, // 110: google.spanner.admin.instance.v1.InstanceAdmin.SetIamPolicy:output_type -> google.iam.v1.Policy
+	66, // 111: google.spanner.admin.instance.v1.InstanceAdmin.GetIamPolicy:output_type -> google.iam.v1.Policy
+	67, // 112: google.spanner.admin.instance.v1.InstanceAdmin.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	35, // 113: google.spanner.admin.instance.v1.InstanceAdmin.GetInstancePartition:output_type -> google.spanner.admin.instance.v1.InstancePartition
+	59, // 114: google.spanner.admin.instance.v1.InstanceAdmin.CreateInstancePartition:output_type -> google.longrunning.Operation
+	65, // 115: google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstancePartition:output_type -> google.protobuf.Empty
+	59, // 116: google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstancePartition:output_type -> google.longrunning.Operation
+	45, // 117: google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitionOperations:output_type -> google.spanner.admin.instance.v1.ListInstancePartitionOperationsResponse
+	59, // 118: google.spanner.admin.instance.v1.InstanceAdmin.MoveInstance:output_type -> google.longrunning.Operation
+	98, // [98:119] is the sub-list for method output_type
+	77, // [77:98] is the sub-list for method input_type
+	77, // [77:77] is the sub-list for extension type_name
+	77, // [77:77] is the sub-list for extension extendee
+	0,  // [0:77] is the sub-list for field type_name
 }
 
 func init() { file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_init() }
@@ -4971,7 +5064,7 @@ func file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_init() {
 		(*InstancePartition_NodeCount)(nil),
 		(*InstancePartition_ProcessingUnits)(nil),
 	}
-	file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[39].OneofWrappers = []any{
+	file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_msgTypes[40].OneofWrappers = []any{
 		(*AutoscalingConfig_AutoscalingLimits_MinNodes)(nil),
 		(*AutoscalingConfig_AutoscalingLimits_MinProcessingUnits)(nil),
 		(*AutoscalingConfig_AutoscalingLimits_MaxNodes)(nil),
@@ -4983,7 +5076,7 @@ func file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc), len(file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDesc)),
 			NumEnums:      11,
-			NumMessages:   44,
+			NumMessages:   45,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

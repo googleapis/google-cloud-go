@@ -313,10 +313,10 @@ var File_google_maps_fleetengine_delivery_v1_header_proto protoreflect.FileDescr
 
 const file_google_maps_fleetengine_delivery_v1_header_proto_rawDesc = "" +
 	"\n" +
-	"0google/maps/fleetengine/delivery/v1/header.proto\x12\x1cmaps.fleetengine.delivery.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xc8\x05\n" +
+	"0google/maps/fleetengine/delivery/v1/header.proto\x12\x1cmaps.fleetengine.delivery.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xc9\x05\n" +
 	"\x15DeliveryRequestHeader\x12#\n" +
-	"\rlanguage_code\x18\x01 \x01(\tR\flanguageCode\x12$\n" +
-	"\vregion_code\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"\rlanguage_code\x18\x01 \x01(\tR\flanguageCode\x12%\n" +
+	"\vregion_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"regionCode\x12\x1f\n" +
 	"\vsdk_version\x18\x03 \x01(\tR\n" +
 	"sdkVersion\x12\x1d\n" +

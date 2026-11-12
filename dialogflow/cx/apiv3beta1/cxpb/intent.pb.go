@@ -284,7 +284,7 @@ type Intent struct {
 	// head intent. "sys-contextual" means the intent is a contextual intent.
 	Labels map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Human readable description for better understanding an intent like its
-	// scope, content, result etc. Maximum character limit: 140 characters.
+	// scope, content, result etc. Maximum character limit: 1000 characters.
 	Description string `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
 	// Optional. Matching DTMF pattern for the intent.
 	DtmfPattern   string `protobuf:"bytes,16,opt,name=dtmf_pattern,json=dtmfPattern,proto3" json:"dtmf_pattern,omitempty"`
@@ -1564,10 +1564,10 @@ var File_google_cloud_dialogflow_cx_v3beta1_intent_proto protoreflect.FileDescri
 
 const file_google_cloud_dialogflow_cx_v3beta1_intent_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/dialogflow/cx/v3beta1/intent.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/dialogflow/cx/v3beta1/inline.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x8f\b\n" +
+	"/google/cloud/dialogflow/cx/v3beta1/intent.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/dialogflow/cx/v3beta1/inline.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x96\b\n" +
 	"\x06Intent\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12d\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12d\n" +
 	"\x10training_phrases\x18\x03 \x03(\v29.google.cloud.dialogflow.cx.v3beta1.Intent.TrainingPhraseR\x0ftrainingPhrases\x12T\n" +
 	"\n" +
 	"parameters\x18\x04 \x03(\v24.google.cloud.dialogflow.cx.v3beta1.Intent.ParameterR\n" +
@@ -1576,18 +1576,18 @@ const file_google_cloud_dialogflow_cx_v3beta1_intent_proto_rawDesc = "" +
 	"\vis_fallback\x18\x06 \x01(\bR\n" +
 	"isFallback\x12N\n" +
 	"\x06labels\x18\a \x03(\v26.google.cloud.dialogflow.cx.v3beta1.Intent.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\b \x01(\tR\vdescription\x12&\n" +
-	"\fdtmf_pattern\x18\x10 \x01(\tB\x03\xe0A\x01R\vdtmfPattern\x1a\xe7\x01\n" +
-	"\x0eTrainingPhrase\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12Y\n" +
-	"\x05parts\x18\x02 \x03(\v2>.google.cloud.dialogflow.cx.v3beta1.Intent.TrainingPhrase.PartB\x03\xe0A\x02R\x05parts\x12!\n" +
-	"\frepeat_count\x18\x03 \x01(\x05R\vrepeatCount\x1aB\n" +
-	"\x04Part\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x12!\n" +
-	"\fparameter_id\x18\x02 \x01(\tR\vparameterId\x1a\xa0\x01\n" +
-	"\tParameter\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12M\n" +
-	"\ventity_type\x18\x02 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\vdescription\x18\b \x01(\tR\vdescription\x12'\n" +
+	"\fdtmf_pattern\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\vdtmfPattern\x1a\xea\x01\n" +
+	"\x0eTrainingPhrase\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12Z\n" +
+	"\x05parts\x18\x02 \x03(\v2>.google.cloud.dialogflow.cx.v3beta1.Intent.TrainingPhrase.PartB\x04\xe2A\x01\x02R\x05parts\x12!\n" +
+	"\frepeat_count\x18\x03 \x01(\x05R\vrepeatCount\x1aC\n" +
+	"\x04Part\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\x12!\n" +
+	"\fparameter_id\x18\x02 \x01(\tR\vparameterId\x1a\xa2\x01\n" +
+	"\tParameter\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12N\n" +
+	"\ventity_type\x18\x02 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$dialogflow.googleapis.com/EntityTypeR\n" +
 	"entityType\x12\x17\n" +
 	"\ais_list\x18\x03 \x01(\bR\x06isList\x12\x16\n" +
@@ -1595,9 +1595,9 @@ const file_google_cloud_dialogflow_cx_v3beta1_intent_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:n\xeaAk\n" +
-	" dialogflow.googleapis.com/Intent\x12Gprojects/{project}/locations/{location}/agents/{agent}/intents/{intent}\"\x88\x02\n" +
-	"\x12ListIntentsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12#\n" +
+	" dialogflow.googleapis.com/Intent\x12Gprojects/{project}/locations/{location}/agents/{agent}/intents/{intent}\"\x89\x02\n" +
+	"\x12ListIntentsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\x12O\n" +
 	"\vintent_view\x18\x05 \x01(\x0e2..google.cloud.dialogflow.cx.v3beta1.IntentViewR\n" +
 	"intentView\x12\x1b\n" +
@@ -1606,25 +1606,25 @@ const file_google_cloud_dialogflow_cx_v3beta1_intent_proto_rawDesc = "" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x83\x01\n" +
 	"\x13ListIntentsResponse\x12D\n" +
 	"\aintents\x18\x01 \x03(\v2*.google.cloud.dialogflow.cx.v3beta1.IntentR\aintents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"u\n" +
-	"\x10GetIntentRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"v\n" +
+	"\x10GetIntentRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" dialogflow.googleapis.com/IntentR\x04name\x12#\n" +
-	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\xc5\x01\n" +
-	"\x13CreateIntentRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12G\n" +
-	"\x06intent\x18\x02 \x01(\v2*.google.cloud.dialogflow.cx.v3beta1.IntentB\x03\xe0A\x02R\x06intent\x12#\n" +
-	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"\xc0\x01\n" +
-	"\x13UpdateIntentRequest\x12G\n" +
-	"\x06intent\x18\x01 \x01(\v2*.google.cloud.dialogflow.cx.v3beta1.IntentB\x03\xe0A\x02R\x06intent\x12#\n" +
+	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\xc7\x01\n" +
+	"\x13CreateIntentRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12H\n" +
+	"\x06intent\x18\x02 \x01(\v2*.google.cloud.dialogflow.cx.v3beta1.IntentB\x04\xe2A\x01\x02R\x06intent\x12#\n" +
+	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"\xc1\x01\n" +
+	"\x13UpdateIntentRequest\x12H\n" +
+	"\x06intent\x18\x01 \x01(\v2*.google.cloud.dialogflow.cx.v3beta1.IntentB\x04\xe2A\x01\x02R\x06intent\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"S\n" +
-	"\x13DeleteIntentRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dialogflow.googleapis.com/IntentR\x04name\"\xcc\x03\n" +
-	"\x14ImportIntentsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12!\n" +
+	"updateMask\"T\n" +
+	"\x13DeleteIntentRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dialogflow.googleapis.com/IntentR\x04name\"\xcd\x03\n" +
+	"\x14ImportIntentsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12!\n" +
 	"\vintents_uri\x18\x02 \x01(\tH\x00R\n" +
 	"intentsUri\x12[\n" +
 	"\x0fintents_content\x18\x03 \x01(\v20.google.cloud.dialogflow.cx.v3beta1.InlineSourceH\x00R\x0eintentsContent\x12g\n" +
@@ -1646,14 +1646,14 @@ const file_google_cloud_dialogflow_cx_v3beta1_intent_proto_rawDesc = "" +
 	"\x14ConflictingResources\x120\n" +
 	"\x14intent_display_names\x18\x01 \x03(\tR\x12intentDisplayNames\x120\n" +
 	"\x14entity_display_names\x18\x02 \x03(\tR\x12entityDisplayNames\"\x17\n" +
-	"\x15ImportIntentsMetadata\"\x9e\x03\n" +
-	"\x14ExportIntentsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12\x1d\n" +
-	"\aintents\x18\x02 \x03(\tB\x03\xe0A\x02R\aintents\x12&\n" +
-	"\vintents_uri\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\n" +
-	"intentsUri\x12;\n" +
-	"\x16intents_content_inline\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\x14intentsContentInline\x12i\n" +
-	"\vdata_format\x18\x05 \x01(\x0e2C.google.cloud.dialogflow.cx.v3beta1.ExportIntentsRequest.DataFormatB\x03\xe0A\x01R\n" +
+	"\x15ImportIntentsMetadata\"\xa3\x03\n" +
+	"\x14ExportIntentsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 dialogflow.googleapis.com/IntentR\x06parent\x12\x1e\n" +
+	"\aintents\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\aintents\x12'\n" +
+	"\vintents_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
+	"intentsUri\x12<\n" +
+	"\x16intents_content_inline\x18\x04 \x01(\bB\x04\xe2A\x01\x01H\x00R\x14intentsContentInline\x12j\n" +
+	"\vdata_format\x18\x05 \x01(\x0e2C.google.cloud.dialogflow.cx.v3beta1.ExportIntentsRequest.DataFormatB\x04\xe2A\x01\x01R\n" +
 	"dataFormat\"F\n" +
 	"\n" +
 	"DataFormat\x12\x1b\n" +

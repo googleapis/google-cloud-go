@@ -603,13 +603,13 @@ var File_google_cloud_cloudcontrolspartner_v1beta_customer_workloads_proto proto
 
 const file_google_cloud_cloudcontrolspartner_v1beta_customer_workloads_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/cloudcontrolspartner/v1beta/customer_workloads.proto\x12(google.cloud.cloudcontrolspartner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a?google/cloud/cloudcontrolspartner/v1beta/completion_state.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\a\n" +
-	"\bWorkload\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\tfolder_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\bfolderId\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x1b\n" +
-	"\x06folder\x18\x04 \x01(\tB\x03\xe0A\x03R\x06folder\x12}\n" +
+	"Agoogle/cloud/cloudcontrolspartner/v1beta/customer_workloads.proto\x12(google.cloud.cloudcontrolspartner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a?google/cloud/cloudcontrolspartner/v1beta/completion_state.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\a\n" +
+	"\bWorkload\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\tfolder_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\bfolderId\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\x1c\n" +
+	"\x06folder\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06folder\x12}\n" +
 	"\x19workload_onboarding_state\x18\x05 \x01(\v2A.google.cloud.cloudcontrolspartner.v1beta.WorkloadOnboardingStateR\x17workloadOnboardingState\x12!\n" +
 	"\fis_onboarded\x18\x06 \x01(\bR\visOnboarded\x129\n" +
 	"\x19key_management_project_id\x18\a \x01(\tR\x16keyManagementProjectId\x12\x1a\n" +
@@ -623,29 +623,29 @@ const file_google_cloud_cloudcontrolspartner_v1beta_customer_workloads_proto_raw
 	"!PARTNER_SOVEREIGN_CONTROLS_BY_PSN\x10\x04\x12'\n" +
 	"#PARTNER_SOVEREIGN_CONTROLS_BY_CNTXT\x10\x06\x12.\n" +
 	"*PARTNER_SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM\x10\a:\xa4\x01\xeaA\xa0\x01\n" +
-	",cloudcontrolspartner.googleapis.com/Workload\x12[organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}*\tworkloads2\bworkload\"\xdd\x01\n" +
-	"\x14ListWorkloadsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,cloudcontrolspartner.googleapis.com/WorkloadR\x06parent\x12\x1b\n" +
+	",cloudcontrolspartner.googleapis.com/Workload\x12[organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}*\tworkloads2\bworkload\"\xe0\x01\n" +
+	"\x14ListWorkloadsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,cloudcontrolspartner.googleapis.com/WorkloadR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb3\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb3\x01\n" +
 	"\x15ListWorkloadsResponse\x12P\n" +
 	"\tworkloads\x18\x01 \x03(\v22.google.cloud.cloudcontrolspartner.v1beta.WorkloadR\tworkloads\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
-	"\x12GetWorkloadRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
+	"\x12GetWorkloadRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",cloudcontrolspartner.googleapis.com/WorkloadR\x04name\"\x86\x01\n" +
 	"\x17WorkloadOnboardingState\x12k\n" +
-	"\x10onboarding_steps\x18\x01 \x03(\v2@.google.cloud.cloudcontrolspartner.v1beta.WorkloadOnboardingStepR\x0fonboardingSteps\"\xb8\x03\n" +
+	"\x10onboarding_steps\x18\x01 \x03(\v2@.google.cloud.cloudcontrolspartner.v1beta.WorkloadOnboardingStepR\x0fonboardingSteps\"\xb9\x03\n" +
 	"\x16WorkloadOnboardingStep\x12Y\n" +
 	"\x04step\x18\x01 \x01(\x0e2E.google.cloud.cloudcontrolspartner.v1beta.WorkloadOnboardingStep.StepR\x04step\x129\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12C\n" +
-	"\x0fcompletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionTime\x12i\n" +
-	"\x10completion_state\x18\x04 \x01(\x0e29.google.cloud.cloudcontrolspartner.v1beta.CompletionStateB\x03\xe0A\x03R\x0fcompletionState\"X\n" +
+	"\x0fcompletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionTime\x12j\n" +
+	"\x10completion_state\x18\x04 \x01(\x0e29.google.cloud.cloudcontrolspartner.v1beta.CompletionStateB\x04\xe2A\x01\x03R\x0fcompletionState\"X\n" +
 	"\x04Step\x12\x14\n" +
 	"\x10STEP_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fEKM_PROVISIONED\x10\x01\x12%\n" +

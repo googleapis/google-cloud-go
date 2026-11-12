@@ -572,9 +572,9 @@ var File_google_monitoring_dashboard_v1_xychart_proto protoreflect.FileDescripto
 
 const file_google_monitoring_dashboard_v1_xychart_proto_rawDesc = "" +
 	"\n" +
-	",google/monitoring/dashboard/v1/xychart.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/monitoring/dashboard/v1/metrics.proto\x1a\x1egoogle/protobuf/duration.proto\"\xf3\t\n" +
-	"\aXyChart\x12Q\n" +
-	"\tdata_sets\x18\x01 \x03(\v2/.google.monitoring.dashboard.v1.XyChart.DataSetB\x03\xe0A\x02R\bdataSets\x12H\n" +
+	",google/monitoring/dashboard/v1/xychart.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/monitoring/dashboard/v1/metrics.proto\x1a\x1egoogle/protobuf/duration.proto\"\xf7\t\n" +
+	"\aXyChart\x12R\n" +
+	"\tdata_sets\x18\x01 \x03(\v2/.google.monitoring.dashboard.v1.XyChart.DataSetB\x04\xe2A\x01\x02R\bdataSets\x12H\n" +
 	"\x12timeshift_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x11timeshiftDuration\x12I\n" +
 	"\n" +
 	"thresholds\x18\x05 \x03(\v2).google.monitoring.dashboard.v1.ThresholdR\n" +
@@ -582,13 +582,13 @@ const file_google_monitoring_dashboard_v1_xychart_proto_rawDesc = "" +
 	"\x06x_axis\x18\x06 \x01(\v2,.google.monitoring.dashboard.v1.XyChart.AxisR\x05xAxis\x12C\n" +
 	"\x06y_axis\x18\a \x01(\v2,.google.monitoring.dashboard.v1.XyChart.AxisR\x05yAxis\x12E\n" +
 	"\ay2_axis\x18\t \x01(\v2,.google.monitoring.dashboard.v1.XyChart.AxisR\x06y2Axis\x12Q\n" +
-	"\rchart_options\x18\b \x01(\v2,.google.monitoring.dashboard.v1.ChartOptionsR\fchartOptions\x1a\xbb\x04\n" +
-	"\aDataSet\x12`\n" +
-	"\x11time_series_query\x18\x01 \x01(\v2/.google.monitoring.dashboard.v1.TimeSeriesQueryB\x03\xe0A\x02R\x0ftimeSeriesQuery\x12U\n" +
+	"\rchart_options\x18\b \x01(\v2,.google.monitoring.dashboard.v1.ChartOptionsR\fchartOptions\x1a\xbe\x04\n" +
+	"\aDataSet\x12a\n" +
+	"\x11time_series_query\x18\x01 \x01(\v2/.google.monitoring.dashboard.v1.TimeSeriesQueryB\x04\xe2A\x01\x02R\x0ftimeSeriesQuery\x12U\n" +
 	"\tplot_type\x18\x02 \x01(\x0e28.google.monitoring.dashboard.v1.XyChart.DataSet.PlotTypeR\bplotType\x12'\n" +
-	"\x0flegend_template\x18\x03 \x01(\tR\x0elegendTemplate\x12P\n" +
-	"\x14min_alignment_period\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x12minAlignmentPeriod\x12`\n" +
-	"\vtarget_axis\x18\x05 \x01(\x0e2:.google.monitoring.dashboard.v1.XyChart.DataSet.TargetAxisB\x03\xe0A\x01R\n" +
+	"\x0flegend_template\x18\x03 \x01(\tR\x0elegendTemplate\x12Q\n" +
+	"\x14min_alignment_period\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x12minAlignmentPeriod\x12a\n" +
+	"\vtarget_axis\x18\x05 \x01(\x0e2:.google.monitoring.dashboard.v1.XyChart.DataSet.TargetAxisB\x04\xe2A\x01\x01R\n" +
 	"targetAxis\"_\n" +
 	"\bPlotType\x12\x19\n" +
 	"\x15PLOT_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +

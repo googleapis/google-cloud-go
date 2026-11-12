@@ -36,6 +36,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	AppTopology_GenerateDiscoveredResourcesTopology_FullMethodName = "/google.cloud.apptopology.v1.AppTopology/GenerateDiscoveredResourcesTopology"
 	AppTopology_GetSchema_FullMethodName                           = "/google.cloud.apptopology.v1.AppTopology/GetSchema"
+	AppTopology_ExploreSchema_FullMethodName                       = "/google.cloud.apptopology.v1.AppTopology/ExploreSchema"
 	AppTopology_GetDomain_FullMethodName                           = "/google.cloud.apptopology.v1.AppTopology/GetDomain"
 	AppTopology_ListDomains_FullMethodName                         = "/google.cloud.apptopology.v1.AppTopology/ListDomains"
 )
@@ -55,6 +56,9 @@ type AppTopologyClient interface {
 	// GenerateDiscoveredResourcesTopology requests and responses for a given
 	// domain.
 	GetSchema(ctx context.Context, in *GetSchemaRequest, opts ...grpc.CallOption) (*Schema, error)
+	// Explores the topology schema starting from given node types or label names
+	// up to a specified hop depth.
+	ExploreSchema(ctx context.Context, in *ExploreSchemaRequest, opts ...grpc.CallOption) (*ExploreSchemaResponse, error)
 	// Retrieves the specified topology domain.
 	GetDomain(ctx context.Context, in *GetDomainRequest, opts ...grpc.CallOption) (*Domain, error)
 	// Lists the topology domains available in a specific location.
@@ -82,6 +86,15 @@ func (c *appTopologyClient) GenerateDiscoveredResourcesTopology(ctx context.Cont
 func (c *appTopologyClient) GetSchema(ctx context.Context, in *GetSchemaRequest, opts ...grpc.CallOption) (*Schema, error) {
 	out := new(Schema)
 	err := c.cc.Invoke(ctx, AppTopology_GetSchema_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appTopologyClient) ExploreSchema(ctx context.Context, in *ExploreSchemaRequest, opts ...grpc.CallOption) (*ExploreSchemaResponse, error) {
+	out := new(ExploreSchemaResponse)
+	err := c.cc.Invoke(ctx, AppTopology_ExploreSchema_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -121,6 +134,9 @@ type AppTopologyServer interface {
 	// GenerateDiscoveredResourcesTopology requests and responses for a given
 	// domain.
 	GetSchema(context.Context, *GetSchemaRequest) (*Schema, error)
+	// Explores the topology schema starting from given node types or label names
+	// up to a specified hop depth.
+	ExploreSchema(context.Context, *ExploreSchemaRequest) (*ExploreSchemaResponse, error)
 	// Retrieves the specified topology domain.
 	GetDomain(context.Context, *GetDomainRequest) (*Domain, error)
 	// Lists the topology domains available in a specific location.
@@ -137,6 +153,9 @@ func (UnimplementedAppTopologyServer) GenerateDiscoveredResourcesTopology(contex
 }
 func (UnimplementedAppTopologyServer) GetSchema(context.Context, *GetSchemaRequest) (*Schema, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSchema not implemented")
+}
+func (UnimplementedAppTopologyServer) ExploreSchema(context.Context, *ExploreSchemaRequest) (*ExploreSchemaResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExploreSchema not implemented")
 }
 func (UnimplementedAppTopologyServer) GetDomain(context.Context, *GetDomainRequest) (*Domain, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDomain not implemented")
@@ -192,6 +211,24 @@ func _AppTopology_GetSchema_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AppTopology_ExploreSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExploreSchemaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppTopologyServer).ExploreSchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AppTopology_ExploreSchema_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppTopologyServer).ExploreSchema(ctx, req.(*ExploreSchemaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AppTopology_GetDomain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDomainRequest)
 	if err := dec(in); err != nil {
@@ -242,6 +279,10 @@ var AppTopology_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSchema",
 			Handler:    _AppTopology_GetSchema_Handler,
+		},
+		{
+			MethodName: "ExploreSchema",
+			Handler:    _AppTopology_ExploreSchema_Handler,
 		},
 		{
 			MethodName: "GetDomain",

@@ -289,6 +289,37 @@ func NewPredictionApiKeyRegistryClient(ctx context.Context, opts ...option.Clien
 		client.CallOptions.ListPredictionApiKeyRegistrations = append(client.CallOptions.ListPredictionApiKeyRegistrations, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeletePredictionApiKeyRegistration = append(client.CallOptions.DeletePredictionApiKeyRegistration, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePredictionApiKeyRegistration = append(client.CallOptions.CreatePredictionApiKeyRegistration, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPredictionApiKeyRegistrations = append(client.CallOptions.ListPredictionApiKeyRegistrations, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePredictionApiKeyRegistration = append(client.CallOptions.DeletePredictionApiKeyRegistration, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePredictionApiKeyRegistration = append(client.CallOptions.CreatePredictionApiKeyRegistration, gax.WithClientLogging(logging))
+		client.CallOptions.ListPredictionApiKeyRegistrations = append(client.CallOptions.ListPredictionApiKeyRegistrations, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePredictionApiKeyRegistration = append(client.CallOptions.DeletePredictionApiKeyRegistration, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -386,6 +417,37 @@ func NewPredictionApiKeyRegistryRESTClient(ctx context.Context, opts ...option.C
 		callOpts.ListPredictionApiKeyRegistrations = append(callOpts.ListPredictionApiKeyRegistrations, gax.WithClientMetrics(metrics))
 		callOpts.DeletePredictionApiKeyRegistration = append(callOpts.DeletePredictionApiKeyRegistration, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePredictionApiKeyRegistration = append(callOpts.CreatePredictionApiKeyRegistration, gax.WithClientTracing(tracing))
+		callOpts.ListPredictionApiKeyRegistrations = append(callOpts.ListPredictionApiKeyRegistrations, gax.WithClientTracing(tracing))
+		callOpts.DeletePredictionApiKeyRegistration = append(callOpts.DeletePredictionApiKeyRegistration, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePredictionApiKeyRegistration = append(callOpts.CreatePredictionApiKeyRegistration, gax.WithClientLogging(logging))
+		callOpts.ListPredictionApiKeyRegistrations = append(callOpts.ListPredictionApiKeyRegistrations, gax.WithClientLogging(logging))
+		callOpts.DeletePredictionApiKeyRegistration = append(callOpts.DeletePredictionApiKeyRegistration, gax.WithClientLogging(logging))
+	}
 
 	return &PredictionApiKeyRegistryClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -432,9 +494,6 @@ func (c *predictionApiKeyRegistryGRPCClient) CreatePredictionApiKeyRegistration(
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry/CreatePredictionApiKeyRegistration")
 	}
@@ -456,9 +515,6 @@ func (c *predictionApiKeyRegistryGRPCClient) ListPredictionApiKeyRegistrations(c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry/ListPredictionApiKeyRegistrations")
 	}
@@ -508,9 +564,6 @@ func (c *predictionApiKeyRegistryGRPCClient) DeletePredictionApiKeyRegistration(
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry/DeletePredictionApiKeyRegistration")
 	}
@@ -535,6 +588,11 @@ func (c *predictionApiKeyRegistryRESTClient) CreatePredictionApiKeyRegistration(
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/predictionApiKeyRegistrations", req.GetParent())
 
 	params := url.Values{}
@@ -548,9 +606,6 @@ func (c *predictionApiKeyRegistryRESTClient) CreatePredictionApiKeyRegistration(
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry/CreatePredictionApiKeyRegistration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/catalogs/*/eventStores/*}/predictionApiKeyRegistrations")
@@ -603,6 +658,11 @@ func (c *predictionApiKeyRegistryRESTClient) ListPredictionApiKeyRegistrations(c
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/predictionApiKeyRegistrations", req.GetParent())
@@ -670,6 +730,11 @@ func (c *predictionApiKeyRegistryRESTClient) DeletePredictionApiKeyRegistration(
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -683,9 +748,6 @@ func (c *predictionApiKeyRegistryRESTClient) DeletePredictionApiKeyRegistration(
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry/DeletePredictionApiKeyRegistration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/catalogs/*/eventStores/*/predictionApiKeyRegistrations/*}")

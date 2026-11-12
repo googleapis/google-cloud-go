@@ -1052,40 +1052,40 @@ var File_google_cloud_discoveryengine_v1alpha_session_proto protoreflect.FileDes
 
 const file_google_cloud_discoveryengine_v1alpha_session_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/discoveryengine/v1alpha/session.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/answer.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xde\t\n" +
-	"\aSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\a \x01(\tB\x03\xe0A\x01R\vdisplayName\x12I\n" +
+	"2google/cloud/discoveryengine/v1alpha/session.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/answer.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe7\t\n" +
+	"\aSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12I\n" +
 	"\x05state\x18\x02 \x01(\x0e23.google.cloud.discoveryengine.v1alpha.Session.StateR\x05state\x12$\n" +
 	"\x0euser_pseudo_id\x18\x03 \x01(\tR\fuserPseudoId\x12H\n" +
-	"\x05turns\x18\x04 \x03(\v22.google.cloud.discoveryengine.v1alpha.Session.TurnR\x05turns\x12>\n" +
+	"\x05turns\x18\x04 \x03(\v22.google.cloud.discoveryengine.v1alpha.Session.TurnR\x05turns\x12?\n" +
 	"\n" +
-	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12 \n" +
-	"\tis_pinned\x18\b \x01(\bB\x03\xe0A\x01R\bisPinned\x1a\x9e\x03\n" +
-	"\x04Turn\x12F\n" +
-	"\x05query\x18\x01 \x01(\v2+.google.cloud.discoveryengine.v1alpha.QueryB\x03\xe0A\x01R\x05query\x12E\n" +
-	"\x06answer\x18\x02 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%discoveryengine.googleapis.com/AnswerR\x06answer\x12Z\n" +
-	"\x0fdetailed_answer\x18\a \x01(\v2,.google.cloud.discoveryengine.v1alpha.AnswerB\x03\xe0A\x03R\x0edetailedAnswer\x12k\n" +
-	"\fquery_config\x18\x10 \x03(\v2C.google.cloud.discoveryengine.v1alpha.Session.Turn.QueryConfigEntryB\x03\xe0A\x01R\vqueryConfig\x1a>\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12!\n" +
+	"\tis_pinned\x18\b \x01(\bB\x04\xe2A\x01\x01R\bisPinned\x1a\xa2\x03\n" +
+	"\x04Turn\x12G\n" +
+	"\x05query\x18\x01 \x01(\v2+.google.cloud.discoveryengine.v1alpha.QueryB\x04\xe2A\x01\x01R\x05query\x12F\n" +
+	"\x06answer\x18\x02 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%discoveryengine.googleapis.com/AnswerR\x06answer\x12[\n" +
+	"\x0fdetailed_answer\x18\a \x01(\v2,.google.cloud.discoveryengine.v1alpha.AnswerB\x04\xe2A\x01\x03R\x0edetailedAnswer\x12l\n" +
+	"\fquery_config\x18\x10 \x03(\v2C.google.cloud.discoveryengine.v1alpha.Session.Turn.QueryConfigEntryB\x04\xe2A\x01\x01R\vqueryConfig\x1a>\n" +
 	"\x10QueryConfigEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"/\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01:\xe6\x02\xeaA\xe2\x02\n" +
-	"&discoveryengine.googleapis.com/Session\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/sessions/{session}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/sessions/{session}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}*\bsessions2\asession\"H\n" +
+	"&discoveryengine.googleapis.com/Session\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/sessions/{session}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/sessions/{session}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}*\bsessions2\asession\"I\n" +
 	"\x05Query\x12\x14\n" +
-	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12\x1e\n" +
-	"\bquery_id\x18\x01 \x01(\tB\x03\xe0A\x03R\aqueryIdB\t\n" +
-	"\acontent\"\xca\x02\n" +
-	"\x14ImageCharacteristics\x12\x19\n" +
-	"\x05width\x18\x01 \x01(\x05B\x03\xe0A\x03R\x05width\x12\x1b\n" +
-	"\x06height\x18\x02 \x01(\x05B\x03\xe0A\x03R\x06height\x12k\n" +
-	"\vcolor_space\x18\x03 \x01(\x0e2E.google.cloud.discoveryengine.v1alpha.ImageCharacteristics.ColorSpaceB\x03\xe0A\x03R\n" +
-	"colorSpace\x12 \n" +
-	"\tbit_depth\x18\x04 \x01(\x05B\x03\xe0A\x03R\bbitDepth\"k\n" +
+	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12\x1f\n" +
+	"\bquery_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\aqueryIdB\t\n" +
+	"\acontent\"\xce\x02\n" +
+	"\x14ImageCharacteristics\x12\x1a\n" +
+	"\x05width\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x05width\x12\x1c\n" +
+	"\x06height\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x06height\x12l\n" +
+	"\vcolor_space\x18\x03 \x01(\x0e2E.google.cloud.discoveryengine.v1alpha.ImageCharacteristics.ColorSpaceB\x04\xe2A\x01\x03R\n" +
+	"colorSpace\x12!\n" +
+	"\tbit_depth\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\bbitDepth\"k\n" +
 	"\n" +
 	"ColorSpace\x12\x1b\n" +
 	"\x17COLOR_SPACE_UNSPECIFIED\x10\x00\x12\a\n" +
@@ -1093,48 +1093,48 @@ const file_google_cloud_discoveryengine_v1alpha_session_proto_rawDesc = "" +
 	"\x04CMYK\x10\x02\x12\r\n" +
 	"\tGRAYSCALE\x10\x03\x12\a\n" +
 	"\x03YUV\x10\x04\x12\x15\n" +
-	"\x11OTHER_COLOR_SPACE\x10\x05\"\xe4\x02\n" +
-	"\x14VideoCharacteristics\x12\x19\n" +
-	"\x05width\x18\x01 \x01(\x05B\x03\xe0A\x03R\x05width\x12\x1b\n" +
-	"\x06height\x18\x02 \x01(\x05B\x03\xe0A\x03R\x06height\x12:\n" +
-	"\bduration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\bduration\x12\"\n" +
+	"\x11OTHER_COLOR_SPACE\x10\x05\"\xec\x02\n" +
+	"\x14VideoCharacteristics\x12\x1a\n" +
+	"\x05width\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x05width\x12\x1c\n" +
+	"\x06height\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x06height\x12;\n" +
+	"\bduration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\bduration\x12#\n" +
 	"\n" +
-	"frame_rate\x18\x04 \x01(\x01B\x03\xe0A\x03R\tframeRate\x12&\n" +
-	"\faudio_codecs\x18\x05 \x03(\tB\x03\xe0A\x03R\vaudioCodecs\x12&\n" +
-	"\fvideo_codecs\x18\x06 \x03(\tB\x03\xe0A\x03R\vvideoCodecs\x121\n" +
-	"\x12video_bitrate_kbps\x18\a \x01(\x05B\x03\xe0A\x03R\x10videoBitrateKbps\x121\n" +
-	"\x12audio_bitrate_kbps\x18\b \x01(\x05B\x03\xe0A\x03R\x10audioBitrateKbps\"\xd8\x01\n" +
-	"\x13FileCharacteristics\x12}\n" +
-	"\x0fcharacteristics\x18\x06 \x03(\v2N.google.cloud.discoveryengine.v1alpha.FileCharacteristics.CharacteristicsEntryB\x03\xe0A\x03R\x0fcharacteristics\x1aB\n" +
+	"frame_rate\x18\x04 \x01(\x01B\x04\xe2A\x01\x03R\tframeRate\x12'\n" +
+	"\faudio_codecs\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\vaudioCodecs\x12'\n" +
+	"\fvideo_codecs\x18\x06 \x03(\tB\x04\xe2A\x01\x03R\vvideoCodecs\x122\n" +
+	"\x12video_bitrate_kbps\x18\a \x01(\x05B\x04\xe2A\x01\x03R\x10videoBitrateKbps\x122\n" +
+	"\x12audio_bitrate_kbps\x18\b \x01(\x05B\x04\xe2A\x01\x03R\x10audioBitrateKbps\"\xd9\x01\n" +
+	"\x13FileCharacteristics\x12~\n" +
+	"\x0fcharacteristics\x18\x06 \x03(\v2N.google.cloud.discoveryengine.v1alpha.FileCharacteristics.CharacteristicsEntryB\x04\xe2A\x01\x03R\x0fcharacteristics\x1aB\n" +
 	"\x14CharacteristicsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbd\x04\n" +
-	"\bFileView\x12v\n" +
-	"\x15image_characteristics\x18\x06 \x01(\v2:.google.cloud.discoveryengine.v1alpha.ImageCharacteristicsB\x03\xe0A\x03H\x00R\x14imageCharacteristics\x12v\n" +
-	"\x15video_characteristics\x18\a \x01(\v2:.google.cloud.discoveryengine.v1alpha.VideoCharacteristicsB\x03\xe0A\x03H\x00R\x14videoCharacteristics\x12s\n" +
-	"\x14file_characteristics\x18\b \x01(\v29.google.cloud.discoveryengine.v1alpha.FileCharacteristicsB\x03\xe0A\x03H\x00R\x13fileCharacteristics\x12\x1c\n" +
-	"\aview_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x06viewId\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uri\x12 \n" +
-	"\tmime_type\x18\x03 \x01(\tB\x03\xe0A\x03R\bmimeType\x12 \n" +
-	"\tbyte_size\x18\x04 \x01(\x03B\x03\xe0A\x03R\bbyteSize\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc5\x04\n" +
+	"\bFileView\x12w\n" +
+	"\x15image_characteristics\x18\x06 \x01(\v2:.google.cloud.discoveryengine.v1alpha.ImageCharacteristicsB\x04\xe2A\x01\x03H\x00R\x14imageCharacteristics\x12w\n" +
+	"\x15video_characteristics\x18\a \x01(\v2:.google.cloud.discoveryengine.v1alpha.VideoCharacteristicsB\x04\xe2A\x01\x03H\x00R\x14videoCharacteristics\x12t\n" +
+	"\x14file_characteristics\x18\b \x01(\v29.google.cloud.discoveryengine.v1alpha.FileCharacteristicsB\x04\xe2A\x01\x03H\x00R\x13fileCharacteristics\x12\x1d\n" +
+	"\aview_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06viewId\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12!\n" +
+	"\tmime_type\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bmimeType\x12!\n" +
+	"\tbyte_size\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\bbyteSize\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTimeB\x11\n" +
-	"\x0fcharacteristics\"\x8d\a\n" +
-	"\fFileMetadata\x12\x1c\n" +
-	"\afile_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x06fileId\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1b\n" +
-	"\tmime_type\x18\x03 \x01(\tR\bmimeType\x12 \n" +
-	"\tbyte_size\x18\x04 \x01(\x03B\x03\xe0A\x03R\bbyteSize\x12&\n" +
-	"\foriginal_uri\x18\t \x01(\tB\x03\xe0A\x01R\voriginalUri\x12g\n" +
+	"\x0fcharacteristics\"\x98\a\n" +
+	"\fFileMetadata\x12\x1d\n" +
+	"\afile_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06fileId\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1b\n" +
+	"\tmime_type\x18\x03 \x01(\tR\bmimeType\x12!\n" +
+	"\tbyte_size\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\bbyteSize\x12'\n" +
+	"\foriginal_uri\x18\t \x01(\tB\x04\xe2A\x01\x01R\voriginalUri\x12h\n" +
 	"\x14original_source_type\x18\n" +
-	" \x01(\x0e20.google.cloud.discoveryengine.v1alpha.FileSourceB\x03\xe0A\x01R\x12originalSourceType\x12@\n" +
-	"\vupload_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"uploadTime\x12C\n" +
-	"\rlast_add_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vlastAddTime\x12a\n" +
-	"\bmetadata\x18\x12 \x03(\v2@.google.cloud.discoveryengine.v1alpha.FileMetadata.MetadataEntryB\x03\xe0A\x01R\bmetadata\x12&\n" +
-	"\fdownload_uri\x18\x14 \x01(\tB\x03\xe0A\x03R\vdownloadUri\x12c\n" +
-	"\x10file_origin_type\x18\x15 \x01(\x0e24.google.cloud.discoveryengine.v1alpha.FileOriginTypeB\x03\xe0A\x01R\x0efileOriginType\x12X\n" +
-	"\x05views\x18\x16 \x03(\v2=.google.cloud.discoveryengine.v1alpha.FileMetadata.ViewsEntryB\x03\xe0A\x03R\x05views\x1a;\n" +
+	" \x01(\x0e20.google.cloud.discoveryengine.v1alpha.FileSourceB\x04\xe2A\x01\x01R\x12originalSourceType\x12A\n" +
+	"\vupload_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"uploadTime\x12D\n" +
+	"\rlast_add_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vlastAddTime\x12b\n" +
+	"\bmetadata\x18\x12 \x03(\v2@.google.cloud.discoveryengine.v1alpha.FileMetadata.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x12'\n" +
+	"\fdownload_uri\x18\x14 \x01(\tB\x04\xe2A\x01\x03R\vdownloadUri\x12d\n" +
+	"\x10file_origin_type\x18\x15 \x01(\x0e24.google.cloud.discoveryengine.v1alpha.FileOriginTypeB\x04\xe2A\x01\x01R\x0efileOriginType\x12Y\n" +
+	"\x05views\x18\x16 \x03(\v2=.google.cloud.discoveryengine.v1alpha.FileMetadata.ViewsEntryB\x04\xe2A\x01\x03R\x05views\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1ah\n" +

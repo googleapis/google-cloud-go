@@ -3365,7 +3365,7 @@ const file_google_devtools_artifactregistry_v1_repository_proto_rawDesc = "" +
 	"\x04KEEP\x10\x02B\x10\n" +
 	"\x0econdition_type\"{\n" +
 	"\x17VirtualRepositoryConfig\x12`\n" +
-	"\x11upstream_policies\x18\x01 \x03(\v23.google.devtools.artifactregistry.v1.UpstreamPolicyR\x10upstreamPolicies\"\x85$\n" +
+	"\x11upstream_policies\x18\x01 \x03(\v23.google.devtools.artifactregistry.v1.UpstreamPolicyR\x10upstreamPolicies\"\x88$\n" +
 	"\x16RemoteRepositoryConfig\x12{\n" +
 	"\x11docker_repository\x18\x02 \x01(\v2L.google.devtools.artifactregistry.v1.RemoteRepositoryConfig.DockerRepositoryH\x00R\x10dockerRepository\x12x\n" +
 	"\x10maven_repository\x18\x03 \x01(\v2K.google.devtools.artifactregistry.v1.RemoteRepositoryConfig.MavenRepositoryH\x00R\x0fmavenRepository\x12r\n" +
@@ -3374,9 +3374,9 @@ const file_google_devtools_artifactregistry_v1_repository_proto_rawDesc = "" +
 	"\x0eapt_repository\x18\x06 \x01(\v2I.google.devtools.artifactregistry.v1.RemoteRepositoryConfig.AptRepositoryH\x00R\raptRepository\x12r\n" +
 	"\x0eyum_repository\x18\a \x01(\v2I.google.devtools.artifactregistry.v1.RemoteRepositoryConfig.YumRepositoryH\x00R\ryumRepository\x12\x81\x01\n" +
 	"\x11common_repository\x18\x0e \x01(\v2R.google.devtools.artifactregistry.v1.RemoteRepositoryConfig.CommonRemoteRepositoryH\x00R\x10commonRepository\x12 \n" +
-	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x87\x01\n" +
-	"\x14upstream_credentials\x18\t \x01(\v2O.google.devtools.artifactregistry.v1.RemoteRepositoryConfig.UpstreamCredentialsB\x03\xe0A\x01R\x13upstreamCredentials\x12C\n" +
-	"\x1bdisable_upstream_validation\x18\f \x01(\bB\x03\xe0A\x04R\x19disableUpstreamValidation\x1a\xfd\x02\n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x88\x01\n" +
+	"\x14upstream_credentials\x18\t \x01(\v2O.google.devtools.artifactregistry.v1.RemoteRepositoryConfig.UpstreamCredentialsB\x04\xe2A\x01\x01R\x13upstreamCredentials\x12D\n" +
+	"\x1bdisable_upstream_validation\x18\f \x01(\bB\x04\xe2A\x01\x04R\x19disableUpstreamValidation\x1a\xfd\x02\n" +
 	"\x13UpstreamCredentials\x12\xb1\x01\n" +
 	"\x1dusername_password_credentials\x18\x01 \x01(\v2k.google.devtools.artifactregistry.v1.RemoteRepositoryConfig.UpstreamCredentials.UsernamePasswordCredentialsH\x00R\x1busernamePasswordCredentials\x1a\xa2\x01\n" +
 	"\x1bUsernamePasswordCredentials\x12\x1a\n" +
@@ -3460,37 +3460,37 @@ const file_google_devtools_artifactregistry_v1_repository_proto_rawDesc = "" +
 	"\x10CustomRepository\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uriB\n" +
 	"\n" +
-	"\bupstream\x1a/\n" +
-	"\x16CommonRemoteRepository\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uriB\x0f\n" +
-	"\rremote_source\"\x84\x18\n" +
+	"\bupstream\x1a0\n" +
+	"\x16CommonRemoteRepository\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uriB\x0f\n" +
+	"\rremote_source\"\x94\x18\n" +
 	"\n" +
 	"Repository\x12j\n" +
 	"\fmaven_config\x18\t \x01(\v2E.google.devtools.artifactregistry.v1.Repository.MavenRepositoryConfigH\x00R\vmavenConfig\x12m\n" +
 	"\rdocker_config\x18\x11 \x01(\v2F.google.devtools.artifactregistry.v1.Repository.DockerRepositoryConfigH\x00R\fdockerConfig\x12z\n" +
 	"\x19virtual_repository_config\x18\x0e \x01(\v2<.google.devtools.artifactregistry.v1.VirtualRepositoryConfigH\x01R\x17virtualRepositoryConfig\x12w\n" +
 	"\x18remote_repository_config\x18\x0f \x01(\v2;.google.devtools.artifactregistry.v1.RemoteRepositoryConfigH\x01R\x16remoteRepositoryConfig\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12S\n" +
-	"\x06format\x18\x02 \x01(\x0e26.google.devtools.artifactregistry.v1.Repository.FormatB\x03\xe0A\x01R\x06format\x12 \n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12T\n" +
+	"\x06format\x18\x02 \x01(\x0e26.google.devtools.artifactregistry.v1.Repository.FormatB\x04\xe2A\x01\x01R\x06format\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12S\n" +
-	"\x06labels\x18\x04 \x03(\v2;.google.devtools.artifactregistry.v1.Repository.LabelsEntryR\x06labels\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x06labels\x18\x04 \x03(\v2;.google.devtools.artifactregistry.v1.Repository.LabelsEntryR\x06labels\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12 \n" +
 	"\fkms_key_name\x18\b \x01(\tR\n" +
-	"kmsKeyName\x12M\n" +
+	"kmsKeyName\x12N\n" +
 	"\x04mode\x18\n" +
-	" \x01(\x0e24.google.devtools.artifactregistry.v1.Repository.ModeB\x03\xe0A\x01R\x04mode\x12t\n" +
-	"\x10cleanup_policies\x18\f \x03(\v2D.google.devtools.artifactregistry.v1.Repository.CleanupPoliciesEntryB\x03\xe0A\x01R\x0fcleanupPolicies\x12\"\n" +
+	" \x01(\x0e24.google.devtools.artifactregistry.v1.Repository.ModeB\x04\xe2A\x01\x01R\x04mode\x12u\n" +
+	"\x10cleanup_policies\x18\f \x03(\v2D.google.devtools.artifactregistry.v1.Repository.CleanupPoliciesEntryB\x04\xe2A\x01\x01R\x0fcleanupPolicies\x12#\n" +
 	"\n" +
-	"size_bytes\x18\r \x01(\x03B\x03\xe0A\x03R\tsizeBytes\x12(\n" +
-	"\rsatisfies_pzs\x18\x10 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x128\n" +
-	"\x16cleanup_policy_dry_run\x18\x12 \x01(\bB\x03\xe0A\x01R\x13cleanupPolicyDryRun\x12\x94\x01\n" +
-	"\x1dvulnerability_scanning_config\x18\x13 \x01(\v2K.google.devtools.artifactregistry.v1.Repository.VulnerabilityScanningConfigB\x03\xe0A\x01R\x1bvulnerabilityScanningConfig\x12?\n" +
-	"\x19disallow_unspecified_mode\x18\x15 \x01(\bB\x03\xe0A\x01R\x17disallowUnspecifiedMode\x12(\n" +
-	"\rsatisfies_pzi\x18\x16 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x12&\n" +
-	"\fregistry_uri\x18\x1a \x01(\tB\x03\xe0A\x03R\vregistryUri\x1a\x9b\x02\n" +
+	"size_bytes\x18\r \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes\x12)\n" +
+	"\rsatisfies_pzs\x18\x10 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x129\n" +
+	"\x16cleanup_policy_dry_run\x18\x12 \x01(\bB\x04\xe2A\x01\x01R\x13cleanupPolicyDryRun\x12\x95\x01\n" +
+	"\x1dvulnerability_scanning_config\x18\x13 \x01(\v2K.google.devtools.artifactregistry.v1.Repository.VulnerabilityScanningConfigB\x04\xe2A\x01\x01R\x1bvulnerabilityScanningConfig\x12@\n" +
+	"\x19disallow_unspecified_mode\x18\x15 \x01(\bB\x04\xe2A\x01\x01R\x17disallowUnspecifiedMode\x12)\n" +
+	"\rsatisfies_pzi\x18\x16 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x12'\n" +
+	"\fregistry_uri\x18\x1a \x01(\tB\x04\xe2A\x01\x03R\vregistryUri\x1a\x9b\x02\n" +
 	"\x15MavenRepositoryConfig\x12:\n" +
 	"\x19allow_snapshot_overwrites\x18\x01 \x01(\bR\x17allowSnapshotOverwrites\x12z\n" +
 	"\x0eversion_policy\x18\x02 \x01(\x0e2S.google.devtools.artifactregistry.v1.Repository.MavenRepositoryConfig.VersionPolicyR\rversionPolicy\"J\n" +
@@ -3499,12 +3499,12 @@ const file_google_devtools_artifactregistry_v1_repository_proto_rawDesc = "" +
 	"\aRELEASE\x10\x01\x12\f\n" +
 	"\bSNAPSHOT\x10\x02\x1a?\n" +
 	"\x16DockerRepositoryConfig\x12%\n" +
-	"\x0eimmutable_tags\x18\x01 \x01(\bR\rimmutableTags\x1a\x93\x05\n" +
-	"\x1bVulnerabilityScanningConfig\x12\x8e\x01\n" +
-	"\x11enablement_config\x18\x01 \x01(\x0e2\\.google.devtools.artifactregistry.v1.Repository.VulnerabilityScanningConfig.EnablementConfigB\x03\xe0A\x01R\x10enablementConfig\x12I\n" +
-	"\x10last_enable_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastEnableTime\x12\x8b\x01\n" +
-	"\x10enablement_state\x18\x03 \x01(\x0e2[.google.devtools.artifactregistry.v1.Repository.VulnerabilityScanningConfig.EnablementStateB\x03\xe0A\x03R\x0fenablementState\x12;\n" +
-	"\x17enablement_state_reason\x18\x04 \x01(\tB\x03\xe0A\x03R\x15enablementStateReason\"R\n" +
+	"\x0eimmutable_tags\x18\x01 \x01(\bR\rimmutableTags\x1a\x97\x05\n" +
+	"\x1bVulnerabilityScanningConfig\x12\x8f\x01\n" +
+	"\x11enablement_config\x18\x01 \x01(\x0e2\\.google.devtools.artifactregistry.v1.Repository.VulnerabilityScanningConfig.EnablementConfigB\x04\xe2A\x01\x01R\x10enablementConfig\x12J\n" +
+	"\x10last_enable_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastEnableTime\x12\x8c\x01\n" +
+	"\x10enablement_state\x18\x03 \x01(\x0e2[.google.devtools.artifactregistry.v1.Repository.VulnerabilityScanningConfig.EnablementStateB\x04\xe2A\x01\x03R\x0fenablementState\x12<\n" +
+	"\x17enablement_state_reason\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x15enablementStateReason\"R\n" +
 	"\x10EnablementConfig\x12!\n" +
 	"\x1dENABLEMENT_CONFIG_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tINHERITED\x10\x01\x12\f\n" +
@@ -3542,34 +3542,34 @@ const file_google_devtools_artifactregistry_v1_repository_proto_rawDesc = "" +
 	"\x11REMOTE_REPOSITORY\x10\x03:r\xeaAo\n" +
 	"*artifactregistry.googleapis.com/Repository\x12Aprojects/{project}/locations/{location}/repositories/{repository}B\x0f\n" +
 	"\rformat_configB\r\n" +
-	"\vmode_config\"\xde\x01\n" +
-	"\x17ListRepositoriesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*artifactregistry.googleapis.com/RepositoryR\x06parent\x12\x1b\n" +
+	"\vmode_config\"\xe1\x01\n" +
+	"\x17ListRepositoriesRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*artifactregistry.googleapis.com/RepositoryR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x97\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x97\x01\n" +
 	"\x18ListRepositoriesResponse\x12S\n" +
 	"\frepositories\x18\x01 \x03(\v2/.google.devtools.artifactregistry.v1.RepositoryR\frepositories\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x14GetRepositoryRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*artifactregistry.googleapis.com/RepositoryR\x04name\"\xe5\x01\n" +
-	"\x17CreateRepositoryRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*artifactregistry.googleapis.com/RepositoryR\x06parent\x12(\n" +
-	"\rrepository_id\x18\x02 \x01(\tB\x03\xe0A\x02R\frepositoryId\x12T\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x14GetRepositoryRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*artifactregistry.googleapis.com/RepositoryR\x04name\"\xe8\x01\n" +
+	"\x17CreateRepositoryRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*artifactregistry.googleapis.com/RepositoryR\x06parent\x12)\n" +
+	"\rrepository_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\frepositoryId\x12U\n" +
 	"\n" +
-	"repository\x18\x03 \x01(\v2/.google.devtools.artifactregistry.v1.RepositoryB\x03\xe0A\x02R\n" +
+	"repository\x18\x03 \x01(\v2/.google.devtools.artifactregistry.v1.RepositoryB\x04\xe2A\x01\x02R\n" +
 	"repository\"\xa7\x01\n" +
 	"\x17UpdateRepositoryRequest\x12O\n" +
 	"\n" +
 	"repository\x18\x01 \x01(\v2/.google.devtools.artifactregistry.v1.RepositoryR\n" +
 	"repository\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"a\n" +
-	"\x17DeleteRepositoryRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"updateMask\"b\n" +
+	"\x17DeleteRepositoryRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*artifactregistry.googleapis.com/RepositoryR\x04nameB\xe7\x03\xeaAk\n" +
 	"*secretmanager.googleapis.com/SecretVersion\x12=projects/{project}/secrets/{secret}/versions/{secret_version}\xeaA|\n" +
 	"'servicedirectory.googleapis.com/Service\x12Qprojects/{project}/locations/{location}/namespaces/{namespace}/services/{service}\n" +

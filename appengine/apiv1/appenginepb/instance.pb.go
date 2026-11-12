@@ -404,28 +404,28 @@ var File_google_appengine_v1_instance_proto protoreflect.FileDescriptor
 
 const file_google_appengine_v1_instance_proto_rawDesc = "" +
 	"\n" +
-	"\"google/appengine/v1/instance.proto\x12\x13google.appengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\a\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x03R\x02id\x121\n" +
-	"\x12app_engine_release\x18\x03 \x01(\tB\x03\xe0A\x03R\x10appEngineRelease\x12S\n" +
-	"\favailability\x18\x04 \x01(\x0e2*.google.appengine.v1.Instance.AvailabilityB\x03\xe0A\x03R\favailability\x12\x1c\n" +
-	"\avm_name\x18\x05 \x01(\tB\x03\xe0A\x03R\x06vmName\x12%\n" +
-	"\fvm_zone_name\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"vmZoneName\x12\x18\n" +
-	"\x05vm_id\x18\a \x01(\tB\x03\xe0A\x03R\x04vmId\x12>\n" +
+	"\"google/appengine/v1/instance.proto\x12\x13google.appengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8e\b\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x02id\x122\n" +
+	"\x12app_engine_release\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x10appEngineRelease\x12T\n" +
+	"\favailability\x18\x04 \x01(\x0e2*.google.appengine.v1.Instance.AvailabilityB\x04\xe2A\x01\x03R\favailability\x12\x1d\n" +
+	"\avm_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x06vmName\x12&\n" +
+	"\fvm_zone_name\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"vmZoneName\x12\x19\n" +
+	"\x05vm_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\x04vmId\x12?\n" +
 	"\n" +
-	"start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12\x1f\n" +
-	"\brequests\x18\t \x01(\x05B\x03\xe0A\x03R\brequests\x12\x1b\n" +
+	"start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12 \n" +
+	"\brequests\x18\t \x01(\x05B\x04\xe2A\x01\x03R\brequests\x12\x1c\n" +
 	"\x06errors\x18\n" +
-	" \x01(\x05B\x03\xe0A\x03R\x06errors\x12\x15\n" +
-	"\x03qps\x18\v \x01(\x02B\x03\xe0A\x03R\x03qps\x12,\n" +
-	"\x0faverage_latency\x18\f \x01(\x05B\x03\xe0A\x03R\x0eaverageLatency\x12&\n" +
-	"\fmemory_usage\x18\r \x01(\x03B\x03\xe0A\x03R\vmemoryUsage\x12 \n" +
-	"\tvm_status\x18\x0e \x01(\tB\x03\xe0A\x03R\bvmStatus\x12-\n" +
-	"\x10vm_debug_enabled\x18\x0f \x01(\bB\x03\xe0A\x03R\x0evmDebugEnabled\x12\x18\n" +
-	"\x05vm_ip\x18\x10 \x01(\tB\x03\xe0A\x03R\x04vmIp\x12Z\n" +
-	"\vvm_liveness\x18\x11 \x01(\x0e24.google.appengine.v1.Instance.Liveness.LivenessStateB\x03\xe0A\x03R\n" +
+	" \x01(\x05B\x04\xe2A\x01\x03R\x06errors\x12\x16\n" +
+	"\x03qps\x18\v \x01(\x02B\x04\xe2A\x01\x03R\x03qps\x12-\n" +
+	"\x0faverage_latency\x18\f \x01(\x05B\x04\xe2A\x01\x03R\x0eaverageLatency\x12'\n" +
+	"\fmemory_usage\x18\r \x01(\x03B\x04\xe2A\x01\x03R\vmemoryUsage\x12!\n" +
+	"\tvm_status\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\bvmStatus\x12.\n" +
+	"\x10vm_debug_enabled\x18\x0f \x01(\bB\x04\xe2A\x01\x03R\x0evmDebugEnabled\x12\x19\n" +
+	"\x05vm_ip\x18\x10 \x01(\tB\x04\xe2A\x01\x03R\x04vmIp\x12[\n" +
+	"\vvm_liveness\x18\x11 \x01(\x0e24.google.appengine.v1.Instance.Liveness.LivenessStateB\x04\xe2A\x01\x03R\n" +
 	"vmLiveness\x1a\x7f\n" +
 	"\bLiveness\"s\n" +
 	"\rLivenessState\x12\x1e\n" +

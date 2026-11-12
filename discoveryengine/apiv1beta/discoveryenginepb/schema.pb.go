@@ -145,12 +145,12 @@ var File_google_cloud_discoveryengine_v1beta_schema_proto protoreflect.FileDescr
 
 const file_google_cloud_discoveryengine_v1beta_schema_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/discoveryengine/v1beta/schema.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf9\x02\n" +
+	"0google/cloud/discoveryengine/v1beta/schema.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xfa\x02\n" +
 	"\x06Schema\x12>\n" +
 	"\rstruct_schema\x18\x02 \x01(\v2\x17.google.protobuf.StructH\x00R\fstructSchema\x12!\n" +
 	"\vjson_schema\x18\x03 \x01(\tH\x00R\n" +
-	"jsonSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name:\xe8\x01\xeaA\xe4\x01\n" +
+	"jsonSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name:\xe8\x01\xeaA\xe4\x01\n" +
 	"%discoveryengine.googleapis.com/Schema\x12Pprojects/{project}/locations/{location}/dataStores/{data_store}/schemas/{schema}\x12iprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/schemas/{schema}B\b\n" +
 	"\x06schemaB\x92\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\vSchemaProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"

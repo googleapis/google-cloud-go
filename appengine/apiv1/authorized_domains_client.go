@@ -198,6 +198,33 @@ func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption
 
 		client.CallOptions.ListAuthorizedDomains = append(client.CallOptions.ListAuthorizedDomains, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAuthorizedDomains = append(client.CallOptions.ListAuthorizedDomains, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAuthorizedDomains = append(client.CallOptions.ListAuthorizedDomains, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -290,6 +317,33 @@ func NewAuthorizedDomainsRESTClient(ctx context.Context, opts ...option.ClientOp
 		)
 
 		callOpts.ListAuthorizedDomains = append(callOpts.ListAuthorizedDomains, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAuthorizedDomains = append(callOpts.ListAuthorizedDomains, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAuthorizedDomains = append(callOpts.ListAuthorizedDomains, gax.WithClientLogging(logging))
 	}
 
 	return &AuthorizedDomainsClient{internalClient: c, CallOptions: callOpts}, nil
@@ -398,6 +452,11 @@ func (c *authorizedDomainsRESTClient) ListAuthorizedDomains(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/authorizedDomains", req.GetParent())

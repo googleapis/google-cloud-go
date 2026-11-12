@@ -2340,13 +2340,13 @@ var File_google_maps_places_v1_places_service_proto protoreflect.FileDescriptor
 
 const file_google_maps_places_v1_places_service_proto_rawDesc = "" +
 	"\n" +
-	"*google/maps/places/v1/places_service.proto\x12\x15google.maps.places.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/geo/type/viewport.proto\x1a.google/maps/places/v1/contextual_content.proto\x1a'google/maps/places/v1/ev_charging.proto\x1a$google/maps/places/v1/geometry.proto\x1a!google/maps/places/v1/place.proto\x1a$google/maps/places/v1/polyline.proto\x1a+google/maps/places/v1/route_modifiers.proto\x1a.google/maps/places/v1/routing_preference.proto\x1a+google/maps/places/v1/routing_summary.proto\x1a'google/maps/places/v1/travel_mode.proto\x1a\x18google/type/latlng.proto\"\xc1\x02\n" +
-	"\x11RoutingParameters\x120\n" +
-	"\x06origin\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x01R\x06origin\x12G\n" +
-	"\vtravel_mode\x18\x02 \x01(\x0e2!.google.maps.places.v1.TravelModeB\x03\xe0A\x01R\n" +
-	"travelMode\x12S\n" +
-	"\x0froute_modifiers\x18\x03 \x01(\v2%.google.maps.places.v1.RouteModifiersB\x03\xe0A\x01R\x0erouteModifiers\x12\\\n" +
-	"\x12routing_preference\x18\x04 \x01(\x0e2(.google.maps.places.v1.RoutingPreferenceB\x03\xe0A\x01R\x11routingPreference\"\xf2\x06\n" +
+	"*google/maps/places/v1/places_service.proto\x12\x15google.maps.places.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/geo/type/viewport.proto\x1a.google/maps/places/v1/contextual_content.proto\x1a'google/maps/places/v1/ev_charging.proto\x1a$google/maps/places/v1/geometry.proto\x1a!google/maps/places/v1/place.proto\x1a$google/maps/places/v1/polyline.proto\x1a+google/maps/places/v1/route_modifiers.proto\x1a.google/maps/places/v1/routing_preference.proto\x1a+google/maps/places/v1/routing_summary.proto\x1a'google/maps/places/v1/travel_mode.proto\x1a\x18google/type/latlng.proto\"\xc5\x02\n" +
+	"\x11RoutingParameters\x121\n" +
+	"\x06origin\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x01R\x06origin\x12H\n" +
+	"\vtravel_mode\x18\x02 \x01(\x0e2!.google.maps.places.v1.TravelModeB\x04\xe2A\x01\x01R\n" +
+	"travelMode\x12T\n" +
+	"\x0froute_modifiers\x18\x03 \x01(\v2%.google.maps.places.v1.RouteModifiersB\x04\xe2A\x01\x01R\x0erouteModifiers\x12]\n" +
+	"\x12routing_preference\x18\x04 \x01(\x0e2(.google.maps.places.v1.RoutingPreferenceB\x04\xe2A\x01\x01R\x11routingPreference\"\xf5\x06\n" +
 	"\x13SearchNearbyRequest\x12#\n" +
 	"\rlanguage_code\x18\x01 \x01(\tR\flanguageCode\x12\x1f\n" +
 	"\vregion_code\x18\x02 \x01(\tR\n" +
@@ -2355,12 +2355,12 @@ const file_google_maps_places_v1_places_service_proto_rawDesc = "" +
 	"\x0eexcluded_types\x18\x04 \x03(\tR\rexcludedTypes\x124\n" +
 	"\x16included_primary_types\x18\x05 \x03(\tR\x14includedPrimaryTypes\x124\n" +
 	"\x16excluded_primary_types\x18\x06 \x03(\tR\x14excludedPrimaryTypes\x12(\n" +
-	"\x10max_result_count\x18\a \x01(\x05R\x0emaxResultCount\x12v\n" +
-	"\x14location_restriction\x18\b \x01(\v2>.google.maps.places.v1.SearchNearbyRequest.LocationRestrictionB\x03\xe0A\x02R\x13locationRestriction\x12b\n" +
-	"\x0frank_preference\x18\t \x01(\x0e29.google.maps.places.v1.SearchNearbyRequest.RankPreferenceR\x0erankPreference\x12\\\n" +
+	"\x10max_result_count\x18\a \x01(\x05R\x0emaxResultCount\x12w\n" +
+	"\x14location_restriction\x18\b \x01(\v2>.google.maps.places.v1.SearchNearbyRequest.LocationRestrictionB\x04\xe2A\x01\x02R\x13locationRestriction\x12b\n" +
+	"\x0frank_preference\x18\t \x01(\x0e29.google.maps.places.v1.SearchNearbyRequest.RankPreferenceR\x0erankPreference\x12]\n" +
 	"\x12routing_parameters\x18\n" +
-	" \x01(\v2(.google.maps.places.v1.RoutingParametersB\x03\xe0A\x01R\x11routingParameters\x12N\n" +
-	"!include_future_opening_businesses\x18\x0f \x01(\bB\x03\xe0A\x01R\x1eincludeFutureOpeningBusinesses\x1aV\n" +
+	" \x01(\v2(.google.maps.places.v1.RoutingParametersB\x04\xe2A\x01\x01R\x11routingParameters\x12O\n" +
+	"!include_future_opening_businesses\x18\x0f \x01(\bB\x04\xe2A\x01\x01R\x1eincludeFutureOpeningBusinesses\x1aV\n" +
 	"\x13LocationRestriction\x127\n" +
 	"\x06circle\x18\x02 \x01(\v2\x1d.google.maps.places.v1.CircleH\x00R\x06circleB\x06\n" +
 	"\x04type\"O\n" +
@@ -2371,10 +2371,10 @@ const file_google_maps_places_v1_places_service_proto_rawDesc = "" +
 	"POPULARITY\x10\x02\"\xa0\x01\n" +
 	"\x14SearchNearbyResponse\x124\n" +
 	"\x06places\x18\x01 \x03(\v2\x1c.google.maps.places.v1.PlaceR\x06places\x12R\n" +
-	"\x11routing_summaries\x18\x02 \x03(\v2%.google.maps.places.v1.RoutingSummaryR\x10routingSummaries\"\xd1\r\n" +
-	"\x11SearchTextRequest\x12\"\n" +
+	"\x11routing_summaries\x18\x02 \x03(\v2%.google.maps.places.v1.RoutingSummaryR\x10routingSummaries\"\xda\r\n" +
+	"\x11SearchTextRequest\x12#\n" +
 	"\n" +
-	"text_query\x18\x01 \x01(\tB\x03\xe0A\x02R\ttextQuery\x12#\n" +
+	"text_query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ttextQuery\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\x12\x1f\n" +
 	"\vregion_code\x18\x03 \x01(\tR\n" +
 	"regionCode\x12`\n" +
@@ -2388,25 +2388,25 @@ const file_google_maps_places_v1_places_service_proto_rawDesc = "" +
 	"\fprice_levels\x18\v \x03(\x0e2!.google.maps.places.v1.PriceLevelR\vpriceLevels\x122\n" +
 	"\x15strict_type_filtering\x18\f \x01(\bR\x13strictTypeFiltering\x12Z\n" +
 	"\rlocation_bias\x18\r \x01(\v25.google.maps.places.v1.SearchTextRequest.LocationBiasR\flocationBias\x12o\n" +
-	"\x14location_restriction\x18\x0e \x01(\v2<.google.maps.places.v1.SearchTextRequest.LocationRestrictionR\x13locationRestriction\x12V\n" +
+	"\x14location_restriction\x18\x0e \x01(\v2<.google.maps.places.v1.SearchTextRequest.LocationRestrictionR\x13locationRestriction\x12W\n" +
 	"\n" +
-	"ev_options\x18\x0f \x01(\v22.google.maps.places.v1.SearchTextRequest.EVOptionsB\x03\xe0A\x01R\tevOptions\x12\\\n" +
-	"\x12routing_parameters\x18\x10 \x01(\v2(.google.maps.places.v1.RoutingParametersB\x03\xe0A\x01R\x11routingParameters\x12\x8b\x01\n" +
-	"\x1dsearch_along_route_parameters\x18\x11 \x01(\v2C.google.maps.places.v1.SearchTextRequest.SearchAlongRouteParametersB\x03\xe0A\x01R\x1asearchAlongRouteParameters\x12S\n" +
-	"$include_pure_service_area_businesses\x18\x14 \x01(\bB\x03\xe0A\x01R includePureServiceAreaBusinesses\x12N\n" +
-	"!include_future_opening_businesses\x18\x15 \x01(\bB\x03\xe0A\x01R\x1eincludeFutureOpeningBusinesses\x1a\x8a\x01\n" +
+	"ev_options\x18\x0f \x01(\v22.google.maps.places.v1.SearchTextRequest.EVOptionsB\x04\xe2A\x01\x01R\tevOptions\x12]\n" +
+	"\x12routing_parameters\x18\x10 \x01(\v2(.google.maps.places.v1.RoutingParametersB\x04\xe2A\x01\x01R\x11routingParameters\x12\x8c\x01\n" +
+	"\x1dsearch_along_route_parameters\x18\x11 \x01(\v2C.google.maps.places.v1.SearchTextRequest.SearchAlongRouteParametersB\x04\xe2A\x01\x01R\x1asearchAlongRouteParameters\x12T\n" +
+	"$include_pure_service_area_businesses\x18\x14 \x01(\bB\x04\xe2A\x01\x01R includePureServiceAreaBusinesses\x12O\n" +
+	"!include_future_opening_businesses\x18\x15 \x01(\bB\x04\xe2A\x01\x01R\x1eincludeFutureOpeningBusinesses\x1a\x8a\x01\n" +
 	"\fLocationBias\x129\n" +
 	"\trectangle\x18\x01 \x01(\v2\x19.google.geo.type.ViewportH\x00R\trectangle\x127\n" +
 	"\x06circle\x18\x02 \x01(\v2\x1d.google.maps.places.v1.CircleH\x00R\x06circleB\x06\n" +
 	"\x04type\x1aX\n" +
 	"\x13LocationRestriction\x129\n" +
 	"\trectangle\x18\x01 \x01(\v2\x19.google.geo.type.ViewportH\x00R\trectangleB\x06\n" +
-	"\x04type\x1a\x9f\x01\n" +
-	"\tEVOptions\x12<\n" +
-	"\x18minimum_charging_rate_kw\x18\x01 \x01(\x01B\x03\xe0A\x01R\x15minimumChargingRateKw\x12T\n" +
-	"\x0fconnector_types\x18\x02 \x03(\x0e2&.google.maps.places.v1.EVConnectorTypeB\x03\xe0A\x01R\x0econnectorTypes\x1a^\n" +
-	"\x1aSearchAlongRouteParameters\x12@\n" +
-	"\bpolyline\x18\x01 \x01(\v2\x1f.google.maps.places.v1.PolylineB\x03\xe0A\x02R\bpolyline\"N\n" +
+	"\x04type\x1a\xa1\x01\n" +
+	"\tEVOptions\x12=\n" +
+	"\x18minimum_charging_rate_kw\x18\x01 \x01(\x01B\x04\xe2A\x01\x01R\x15minimumChargingRateKw\x12U\n" +
+	"\x0fconnector_types\x18\x02 \x03(\x0e2&.google.maps.places.v1.EVConnectorTypeB\x04\xe2A\x01\x01R\x0econnectorTypes\x1a_\n" +
+	"\x1aSearchAlongRouteParameters\x12A\n" +
+	"\bpolyline\x18\x01 \x01(\v2\x1f.google.maps.places.v1.PolylineB\x04\xe2A\x01\x02R\bpolyline\"N\n" +
 	"\x0eRankPreference\x12\x1f\n" +
 	"\x1bRANK_PREFERENCE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISTANCE\x10\x01\x12\r\n" +
@@ -2414,43 +2414,43 @@ const file_google_maps_places_v1_places_service_proto_rawDesc = "" +
 	"\x12SearchTextResponse\x124\n" +
 	"\x06places\x18\x01 \x03(\v2\x1c.google.maps.places.v1.PlaceR\x06places\x12R\n" +
 	"\x11routing_summaries\x18\x02 \x03(\v2%.google.maps.places.v1.RoutingSummaryR\x10routingSummaries\x12Y\n" +
-	"\x13contextual_contents\x18\x03 \x03(\v2(.google.maps.places.v1.ContextualContentR\x12contextualContents\"\xd7\x01\n" +
-	"\x14GetPhotoMediaRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" places.googleapis.com/PhotoMediaR\x04name\x12%\n" +
-	"\fmax_width_px\x18\x02 \x01(\x05B\x03\xe0A\x01R\n" +
-	"maxWidthPx\x12'\n" +
-	"\rmax_height_px\x18\x03 \x01(\x05B\x03\xe0A\x01R\vmaxHeightPx\x121\n" +
-	"\x12skip_http_redirect\x18\x04 \x01(\bB\x03\xe0A\x01R\x10skipHttpRedirect\"\xaf\x01\n" +
+	"\x13contextual_contents\x18\x03 \x03(\v2(.google.maps.places.v1.ContextualContentR\x12contextualContents\"\xdb\x01\n" +
+	"\x14GetPhotoMediaRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" places.googleapis.com/PhotoMediaR\x04name\x12&\n" +
+	"\fmax_width_px\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"maxWidthPx\x12(\n" +
+	"\rmax_height_px\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\vmaxHeightPx\x122\n" +
+	"\x12skip_http_redirect\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x10skipHttpRedirect\"\xaf\x01\n" +
 	"\n" +
 	"PhotoMedia\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
 	"\tphoto_uri\x18\x02 \x01(\tR\bphotoUri:p\xeaAm\n" +
 	" places.googleapis.com/PhotoMedia\x120places/{place_id}/photos/{photo_reference}/media*\vphotoMedias2\n" +
-	"photoMedia\"\xc4\x01\n" +
-	"\x0fGetPlaceRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bplaces.googleapis.com/PlaceR\x04name\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12$\n" +
-	"\vregion_code\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x12(\n" +
-	"\rsession_token\x18\x04 \x01(\tB\x03\xe0A\x01R\fsessionToken\"\xec\b\n" +
-	"\x19AutocompletePlacesRequest\x12\x19\n" +
-	"\x05input\x18\x01 \x01(\tB\x03\xe0A\x02R\x05input\x12g\n" +
-	"\rlocation_bias\x18\x02 \x01(\v2=.google.maps.places.v1.AutocompletePlacesRequest.LocationBiasB\x03\xe0A\x01R\flocationBias\x12|\n" +
-	"\x14location_restriction\x18\x03 \x01(\v2D.google.maps.places.v1.AutocompletePlacesRequest.LocationRestrictionB\x03\xe0A\x01R\x13locationRestriction\x129\n" +
-	"\x16included_primary_types\x18\x04 \x03(\tB\x03\xe0A\x01R\x14includedPrimaryTypes\x127\n" +
-	"\x15included_region_codes\x18\x05 \x03(\tB\x03\xe0A\x01R\x13includedRegionCodes\x12(\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12$\n" +
-	"\vregion_code\x18\a \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x120\n" +
-	"\x06origin\x18\b \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x01R\x06origin\x12&\n" +
-	"\finput_offset\x18\t \x01(\x05B\x03\xe0A\x01R\vinputOffset\x12?\n" +
+	"photoMedia\"\xc8\x01\n" +
+	"\x0fGetPlaceRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bplaces.googleapis.com/PlaceR\x04name\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12%\n" +
+	"\vregion_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x12)\n" +
+	"\rsession_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fsessionToken\"\xf9\b\n" +
+	"\x19AutocompletePlacesRequest\x12\x1a\n" +
+	"\x05input\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05input\x12h\n" +
+	"\rlocation_bias\x18\x02 \x01(\v2=.google.maps.places.v1.AutocompletePlacesRequest.LocationBiasB\x04\xe2A\x01\x01R\flocationBias\x12}\n" +
+	"\x14location_restriction\x18\x03 \x01(\v2D.google.maps.places.v1.AutocompletePlacesRequest.LocationRestrictionB\x04\xe2A\x01\x01R\x13locationRestriction\x12:\n" +
+	"\x16included_primary_types\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x14includedPrimaryTypes\x128\n" +
+	"\x15included_region_codes\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x13includedRegionCodes\x12)\n" +
+	"\rlanguage_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12%\n" +
+	"\vregion_code\x18\a \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x121\n" +
+	"\x06origin\x18\b \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x01R\x06origin\x12'\n" +
+	"\finput_offset\x18\t \x01(\x05B\x04\xe2A\x01\x01R\vinputOffset\x12@\n" +
 	"\x19include_query_predictions\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\x17includeQueryPredictions\x12(\n" +
-	"\rsession_token\x18\v \x01(\tB\x03\xe0A\x01R\fsessionToken\x12S\n" +
-	"$include_pure_service_area_businesses\x18\f \x01(\bB\x03\xe0A\x01R includePureServiceAreaBusinesses\x12N\n" +
-	"!include_future_opening_businesses\x18\r \x01(\bB\x03\xe0A\x01R\x1eincludeFutureOpeningBusinesses\x1a\x8a\x01\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\x17includeQueryPredictions\x12)\n" +
+	"\rsession_token\x18\v \x01(\tB\x04\xe2A\x01\x01R\fsessionToken\x12T\n" +
+	"$include_pure_service_area_businesses\x18\f \x01(\bB\x04\xe2A\x01\x01R includePureServiceAreaBusinesses\x12O\n" +
+	"!include_future_opening_businesses\x18\r \x01(\bB\x04\xe2A\x01\x01R\x1eincludeFutureOpeningBusinesses\x1a\x8a\x01\n" +
 	"\fLocationBias\x129\n" +
 	"\trectangle\x18\x01 \x01(\v2\x19.google.geo.type.ViewportH\x00R\trectangle\x127\n" +
 	"\x06circle\x18\x02 \x01(\v2\x1d.google.maps.places.v1.CircleH\x00R\x06circleB\x06\n" +

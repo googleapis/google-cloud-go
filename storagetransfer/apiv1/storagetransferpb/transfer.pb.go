@@ -1015,60 +1015,60 @@ var File_google_storagetransfer_v1_transfer_proto protoreflect.FileDescriptor
 
 const file_google_storagetransfer_v1_transfer_proto_rawDesc = "" +
 	"\n" +
-	"(google/storagetransfer/v1/transfer.proto\x12\x19google.storagetransfer.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a.google/storagetransfer/v1/transfer_types.proto\"D\n" +
-	"\x1eGetGoogleServiceAccountRequest\x12\"\n" +
+	"(google/storagetransfer/v1/transfer.proto\x12\x19google.storagetransfer.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a.google/storagetransfer/v1/transfer_types.proto\"E\n" +
+	"\x1eGetGoogleServiceAccountRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\"j\n" +
-	"\x18CreateTransferJobRequest\x12N\n" +
-	"\ftransfer_job\x18\x01 \x01(\v2&.google.storagetransfer.v1.TransferJobB\x03\xe0A\x02R\vtransferJob\"\x8e\x02\n" +
-	"\x18UpdateTransferJobRequest\x12\x1e\n" +
-	"\bjob_name\x18\x01 \x01(\tB\x03\xe0A\x02R\ajobName\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\"k\n" +
+	"\x18CreateTransferJobRequest\x12O\n" +
+	"\ftransfer_job\x18\x01 \x01(\v2&.google.storagetransfer.v1.TransferJobB\x04\xe2A\x01\x02R\vtransferJob\"\x91\x02\n" +
+	"\x18UpdateTransferJobRequest\x12\x1f\n" +
+	"\bjob_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ajobName\x12#\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tprojectId\x12N\n" +
-	"\ftransfer_job\x18\x03 \x01(\v2&.google.storagetransfer.v1.TransferJobB\x03\xe0A\x02R\vtransferJob\x12^\n" +
-	"\x1eupdate_transfer_job_field_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskR\x1aupdateTransferJobFieldMask\"[\n" +
-	"\x15GetTransferJobRequest\x12\x1e\n" +
-	"\bjob_name\x18\x01 \x01(\tB\x03\xe0A\x02R\ajobName\x12\"\n" +
+	"project_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12O\n" +
+	"\ftransfer_job\x18\x03 \x01(\v2&.google.storagetransfer.v1.TransferJobB\x04\xe2A\x01\x02R\vtransferJob\x12^\n" +
+	"\x1eupdate_transfer_job_field_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskR\x1aupdateTransferJobFieldMask\"]\n" +
+	"\x15GetTransferJobRequest\x12\x1f\n" +
+	"\bjob_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ajobName\x12#\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tprojectId\"^\n" +
-	"\x18DeleteTransferJobRequest\x12\x1e\n" +
-	"\bjob_name\x18\x01 \x01(\tB\x03\xe0A\x02R\ajobName\x12\"\n" +
+	"project_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\"`\n" +
+	"\x18DeleteTransferJobRequest\x12\x1f\n" +
+	"\bjob_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ajobName\x12#\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tprojectId\"r\n" +
-	"\x17ListTransferJobsRequest\x12\x1b\n" +
-	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x02R\x06filter\x12\x1b\n" +
+	"project_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\"s\n" +
+	"\x17ListTransferJobsRequest\x12\x1c\n" +
+	"\x06filter\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x05 \x01(\tR\tpageToken\"\x8f\x01\n" +
 	"\x18ListTransferJobsResponse\x12K\n" +
 	"\rtransfer_jobs\x18\x01 \x03(\v2&.google.storagetransfer.v1.TransferJobR\ftransferJobs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"8\n" +
-	"\x1dPauseTransferOperationRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"9\n" +
-	"\x1eResumeTransferOperationRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"[\n" +
-	"\x15RunTransferJobRequest\x12\x1e\n" +
-	"\bjob_name\x18\x01 \x01(\tB\x03\xe0A\x02R\ajobName\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"9\n" +
+	"\x1dPauseTransferOperationRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\":\n" +
+	"\x1eResumeTransferOperationRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"]\n" +
+	"\x15RunTransferJobRequest\x12\x1f\n" +
+	"\bjob_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ajobName\x12#\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tprojectId\"\xaf\x01\n" +
-	"\x16CreateAgentPoolRequest\x12\"\n" +
+	"project_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\"\xb2\x01\n" +
+	"\x16CreateAgentPoolRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12H\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12I\n" +
 	"\n" +
-	"agent_pool\x18\x02 \x01(\v2$.google.storagetransfer.v1.AgentPoolB\x03\xe0A\x02R\tagentPool\x12'\n" +
-	"\ragent_pool_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vagentPoolId\"\x9f\x01\n" +
-	"\x16UpdateAgentPoolRequest\x12H\n" +
+	"agent_pool\x18\x02 \x01(\v2$.google.storagetransfer.v1.AgentPoolB\x04\xe2A\x01\x02R\tagentPool\x12(\n" +
+	"\ragent_pool_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vagentPoolId\"\xa0\x01\n" +
+	"\x16UpdateAgentPoolRequest\x12I\n" +
 	"\n" +
-	"agent_pool\x18\x01 \x01(\v2$.google.storagetransfer.v1.AgentPoolB\x03\xe0A\x02R\tagentPool\x12;\n" +
+	"agent_pool\x18\x01 \x01(\v2$.google.storagetransfer.v1.AgentPoolB\x04\xe2A\x01\x02R\tagentPool\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\".\n" +
-	"\x13GetAgentPoolRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"1\n" +
-	"\x16DeleteAgentPoolRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\x8f\x01\n" +
-	"\x15ListAgentPoolsRequest\x12\"\n" +
+	"updateMask\"/\n" +
+	"\x13GetAgentPoolRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"2\n" +
+	"\x16DeleteAgentPoolRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\x90\x01\n" +
+	"\x15ListAgentPoolsRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x16\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

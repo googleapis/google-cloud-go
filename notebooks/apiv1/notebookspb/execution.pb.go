@@ -907,10 +907,10 @@ var File_google_cloud_notebooks_v1_execution_proto protoreflect.FileDescriptor
 
 const file_google_cloud_notebooks_v1_execution_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/notebooks/v1/execution.proto\x12\x19google.cloud.notebooks.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8e\x0f\n" +
-	"\x11ExecutionTemplate\x12\\\n" +
+	")google/cloud/notebooks/v1/execution.proto\x12\x19google.cloud.notebooks.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8f\x0f\n" +
+	"\x11ExecutionTemplate\x12]\n" +
 	"\n" +
-	"scale_tier\x18\x01 \x01(\x0e26.google.cloud.notebooks.v1.ExecutionTemplate.ScaleTierB\x05\xe0A\x02\x18\x01R\tscaleTier\x12\x1f\n" +
+	"scale_tier\x18\x01 \x01(\x0e26.google.cloud.notebooks.v1.ExecutionTemplate.ScaleTierB\x06\xe2A\x01\x02\x18\x01R\tscaleTier\x12\x1f\n" +
 	"\vmaster_type\x18\x02 \x01(\tR\n" +
 	"masterType\x12v\n" +
 	"\x12accelerator_config\x18\x03 \x01(\v2G.google.cloud.notebooks.v1.ExecutionTemplate.SchedulerAcceleratorConfigR\x11acceleratorConfig\x12P\n" +
@@ -973,19 +973,19 @@ const file_google_cloud_notebooks_v1_execution_proto_rawDesc = "" +
 	"\x14JOB_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tVERTEX_AI\x10\x01\x12\f\n" +
 	"\bDATAPROC\x10\x02B\x10\n" +
-	"\x0ejob_parameters\"\xf0\x05\n" +
+	"\x0ejob_parameters\"\xf6\x05\n" +
 	"\tExecution\x12[\n" +
-	"\x12execution_template\x18\x01 \x01(\v2,.google.cloud.notebooks.v1.ExecutionTemplateR\x11executionTemplate\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12E\n" +
-	"\x05state\x18\a \x01(\x0e2*.google.cloud.notebooks.v1.Execution.StateB\x03\xe0A\x03R\x05state\x120\n" +
-	"\x14output_notebook_file\x18\b \x01(\tR\x12outputNotebookFile\x12\x1c\n" +
-	"\ajob_uri\x18\t \x01(\tB\x03\xe0A\x03R\x06jobUri\"\x9f\x01\n" +
+	"\x12execution_template\x18\x01 \x01(\v2,.google.cloud.notebooks.v1.ExecutionTemplateR\x11executionTemplate\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12F\n" +
+	"\x05state\x18\a \x01(\x0e2*.google.cloud.notebooks.v1.Execution.StateB\x04\xe2A\x01\x03R\x05state\x120\n" +
+	"\x14output_notebook_file\x18\b \x01(\tR\x12outputNotebookFile\x12\x1d\n" +
+	"\ajob_uri\x18\t \x01(\tB\x04\xe2A\x01\x03R\x06jobUri\"\x9f\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

@@ -288,9 +288,9 @@ var File_google_cloud_asset_v1p5beta1_asset_service_proto protoreflect.FileDescr
 
 const file_google_cloud_asset_v1p5beta1_asset_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/asset/v1p5beta1/asset_service.proto\x12\x1cgoogle.cloud.asset.v1p5beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/asset/v1p5beta1/assets.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb8\x02\n" +
-	"\x11ListAssetsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fcloudasset.googleapis.com/AssetR\x06parent\x127\n" +
+	"0google/cloud/asset/v1p5beta1/asset_service.proto\x12\x1cgoogle.cloud.asset.v1p5beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/asset/v1p5beta1/assets.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb9\x02\n" +
+	"\x11ListAssetsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fcloudasset.googleapis.com/AssetR\x06parent\x127\n" +
 	"\tread_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\breadTime\x12\x1f\n" +
 	"\vasset_types\x18\x03 \x03(\tR\n" +
 	"assetTypes\x12L\n" +

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -37,6 +38,173 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The type of web grounding to use.
+type Assistant_WebGroundingType int32
+
+const (
+	// Default, unspecified setting. This is the same as disabled.
+	Assistant_WEB_GROUNDING_TYPE_UNSPECIFIED Assistant_WebGroundingType = 0
+	// Web grounding is disabled.
+	Assistant_WEB_GROUNDING_TYPE_DISABLED Assistant_WebGroundingType = 1
+	// Grounding with Google Search is enabled.
+	Assistant_WEB_GROUNDING_TYPE_GOOGLE_SEARCH Assistant_WebGroundingType = 2
+	// Grounding with Enterprise Web Search is enabled.
+	Assistant_WEB_GROUNDING_TYPE_ENTERPRISE_WEB_SEARCH Assistant_WebGroundingType = 3
+)
+
+// Enum value maps for Assistant_WebGroundingType.
+var (
+	Assistant_WebGroundingType_name = map[int32]string{
+		0: "WEB_GROUNDING_TYPE_UNSPECIFIED",
+		1: "WEB_GROUNDING_TYPE_DISABLED",
+		2: "WEB_GROUNDING_TYPE_GOOGLE_SEARCH",
+		3: "WEB_GROUNDING_TYPE_ENTERPRISE_WEB_SEARCH",
+	}
+	Assistant_WebGroundingType_value = map[string]int32{
+		"WEB_GROUNDING_TYPE_UNSPECIFIED":           0,
+		"WEB_GROUNDING_TYPE_DISABLED":              1,
+		"WEB_GROUNDING_TYPE_GOOGLE_SEARCH":         2,
+		"WEB_GROUNDING_TYPE_ENTERPRISE_WEB_SEARCH": 3,
+	}
+)
+
+func (x Assistant_WebGroundingType) Enum() *Assistant_WebGroundingType {
+	p := new(Assistant_WebGroundingType)
+	*p = x
+	return p
+}
+
+func (x Assistant_WebGroundingType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Assistant_WebGroundingType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_enumTypes[0].Descriptor()
+}
+
+func (Assistant_WebGroundingType) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_assistant_proto_enumTypes[0]
+}
+
+func (x Assistant_WebGroundingType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Assistant_WebGroundingType.Descriptor instead.
+func (Assistant_WebGroundingType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 0}
+}
+
+// The matching method for the banned phrase.
+type Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType int32
+
+const (
+	// Defaults to SIMPLE_STRING_MATCH.
+	Assistant_CustomerPolicy_BannedPhrase_BANNED_PHRASE_MATCH_TYPE_UNSPECIFIED Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType = 0
+	// The banned phrase matches if it is found anywhere in the text as an
+	// exact substring.
+	Assistant_CustomerPolicy_BannedPhrase_SIMPLE_STRING_MATCH Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType = 1
+	// Banned phrase only matches if the pattern found in the text is
+	// surrounded by word delimiters. The phrase itself may still contain
+	// word delimiters.
+	Assistant_CustomerPolicy_BannedPhrase_WORD_BOUNDARY_STRING_MATCH Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType = 2
+)
+
+// Enum value maps for Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType.
+var (
+	Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType_name = map[int32]string{
+		0: "BANNED_PHRASE_MATCH_TYPE_UNSPECIFIED",
+		1: "SIMPLE_STRING_MATCH",
+		2: "WORD_BOUNDARY_STRING_MATCH",
+	}
+	Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType_value = map[string]int32{
+		"BANNED_PHRASE_MATCH_TYPE_UNSPECIFIED": 0,
+		"SIMPLE_STRING_MATCH":                  1,
+		"WORD_BOUNDARY_STRING_MATCH":           2,
+	}
+)
+
+func (x Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType) Enum() *Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType {
+	p := new(Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType)
+	*p = x
+	return p
+}
+
+func (x Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_enumTypes[1].Descriptor()
+}
+
+func (Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_assistant_proto_enumTypes[1]
+}
+
+func (x Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType.Descriptor instead.
+func (Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 3, 0, 0}
+}
+
+// Determines the behavior when Model Armor fails to process a request.
+type Assistant_CustomerPolicy_ModelArmorConfig_FailureMode int32
+
+const (
+	// Unspecified failure mode, default behavior is `FAIL_CLOSED`.
+	Assistant_CustomerPolicy_ModelArmorConfig_FAILURE_MODE_UNSPECIFIED Assistant_CustomerPolicy_ModelArmorConfig_FailureMode = 0
+	// In case of a Model Armor processing failure, the request is allowed
+	// to proceed without any changes.
+	Assistant_CustomerPolicy_ModelArmorConfig_FAIL_OPEN Assistant_CustomerPolicy_ModelArmorConfig_FailureMode = 1
+	// In case of a Model Armor processing failure, the request is rejected.
+	Assistant_CustomerPolicy_ModelArmorConfig_FAIL_CLOSED Assistant_CustomerPolicy_ModelArmorConfig_FailureMode = 2
+)
+
+// Enum value maps for Assistant_CustomerPolicy_ModelArmorConfig_FailureMode.
+var (
+	Assistant_CustomerPolicy_ModelArmorConfig_FailureMode_name = map[int32]string{
+		0: "FAILURE_MODE_UNSPECIFIED",
+		1: "FAIL_OPEN",
+		2: "FAIL_CLOSED",
+	}
+	Assistant_CustomerPolicy_ModelArmorConfig_FailureMode_value = map[string]int32{
+		"FAILURE_MODE_UNSPECIFIED": 0,
+		"FAIL_OPEN":                1,
+		"FAIL_CLOSED":              2,
+	}
+)
+
+func (x Assistant_CustomerPolicy_ModelArmorConfig_FailureMode) Enum() *Assistant_CustomerPolicy_ModelArmorConfig_FailureMode {
+	p := new(Assistant_CustomerPolicy_ModelArmorConfig_FailureMode)
+	*p = x
+	return p
+}
+
+func (x Assistant_CustomerPolicy_ModelArmorConfig_FailureMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Assistant_CustomerPolicy_ModelArmorConfig_FailureMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_enumTypes[2].Descriptor()
+}
+
+func (Assistant_CustomerPolicy_ModelArmorConfig_FailureMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_assistant_proto_enumTypes[2]
+}
+
+func (x Assistant_CustomerPolicy_ModelArmorConfig_FailureMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Assistant_CustomerPolicy_ModelArmorConfig_FailureMode.Descriptor instead.
+func (Assistant_CustomerPolicy_ModelArmorConfig_FailureMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 3, 1, 0}
+}
+
 // Discovery Engine Assistant resource.
 type Assistant struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -45,7 +213,47 @@ type Assistant struct {
 	// `projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/assistants/{assistant}`
 	//
 	// It must be a UTF-8 encoded string with a length limit of 1024 characters.
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The assistant display name.
+	//
+	// It must be a UTF-8 encoded string with a length limit of 128 characters.
+	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	// Optional. Description for additional information. Expected to be shown on
+	// the configuration UI, not to the users of the assistant.
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Optional. Configuration for the generation of the assistant response.
+	GenerationConfig *Assistant_GenerationConfig `protobuf:"bytes,19,opt,name=generation_config,json=generationConfig,proto3" json:"generation_config,omitempty"`
+	// Optional. The type of web grounding to use.
+	WebGroundingType Assistant_WebGroundingType `protobuf:"varint,4,opt,name=web_grounding_type,json=webGroundingType,proto3,enum=google.cloud.discoveryengine.v1.Assistant_WebGroundingType" json:"web_grounding_type,omitempty"`
+	// Optional. This field controls the default web grounding toggle for end
+	// users if `web_grounding_type` is set to `WEB_GROUNDING_TYPE_GOOGLE_SEARCH`
+	// or `WEB_GROUNDING_TYPE_ENTERPRISE_WEB_SEARCH`. By default, this field is
+	// set to false. If `web_grounding_type` is `WEB_GROUNDING_TYPE_GOOGLE_SEARCH`
+	// or `WEB_GROUNDING_TYPE_ENTERPRISE_WEB_SEARCH`, end users will have web
+	// grounding enabled by default on UI. If true, grounding toggle will be
+	// disabled by default on UI. End users can still enable web grounding in
+	// the UI if web grounding is enabled.
+	DefaultWebGroundingToggleOff bool `protobuf:"varint,22,opt,name=default_web_grounding_toggle_off,json=defaultWebGroundingToggleOff,proto3" json:"default_web_grounding_toggle_off,omitempty"`
+	// Optional. Note: not implemented yet. Use
+	// [enabled_actions][google.cloud.discoveryengine.v1.Assistant.enabled_actions]
+	// instead. The enabled tools on this assistant. The keys are connector name,
+	// for example
+	// "projects/{projectId}/locations/{locationId}/collections/{collectionId}/dataconnector
+	// The values consist of admin enabled tools towards the connector
+	// instance. Admin can selectively enable multiple tools on any of the
+	// connector instances that they created in the project. For example
+	// {"jira1ConnectorName": [(toolId1, "createTicket"), (toolId2,
+	// "transferTicket")],
+	//
+	//	"gmail1ConnectorName": [(toolId3, "sendEmail"),..] }
+	EnabledTools map[string]*Assistant_ToolList `protobuf:"bytes,18,rep,name=enabled_tools,json=enabledTools,proto3" json:"enabled_tools,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Customer policy for the assistant.
+	CustomerPolicy *Assistant_CustomerPolicy `protobuf:"bytes,12,opt,name=customer_policy,json=customerPolicy,proto3" json:"customer_policy,omitempty"`
+	// Output only. Represents the time when this Assistant was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,24,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. Represents the time when this Assistant was most recently
+	// updated.
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,25,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -87,13 +295,566 @@ func (x *Assistant) GetName() string {
 	return ""
 }
 
+func (x *Assistant) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *Assistant) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Assistant) GetGenerationConfig() *Assistant_GenerationConfig {
+	if x != nil {
+		return x.GenerationConfig
+	}
+	return nil
+}
+
+func (x *Assistant) GetWebGroundingType() Assistant_WebGroundingType {
+	if x != nil {
+		return x.WebGroundingType
+	}
+	return Assistant_WEB_GROUNDING_TYPE_UNSPECIFIED
+}
+
+func (x *Assistant) GetDefaultWebGroundingToggleOff() bool {
+	if x != nil {
+		return x.DefaultWebGroundingToggleOff
+	}
+	return false
+}
+
+func (x *Assistant) GetEnabledTools() map[string]*Assistant_ToolList {
+	if x != nil {
+		return x.EnabledTools
+	}
+	return nil
+}
+
+func (x *Assistant) GetCustomerPolicy() *Assistant_CustomerPolicy {
+	if x != nil {
+		return x.CustomerPolicy
+	}
+	return nil
+}
+
+func (x *Assistant) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *Assistant) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+// Configuration for the generation of the assistant response.
+type Assistant_GenerationConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The default model to use for assistant.
+	DefaultModelId string `protobuf:"bytes,1,opt,name=default_model_id,json=defaultModelId,proto3" json:"default_model_id,omitempty"`
+	// Optional. The list of models that are allowed to be used for assistant.
+	AllowedModelIds []string `protobuf:"bytes,2,rep,name=allowed_model_ids,json=allowedModelIds,proto3" json:"allowed_model_ids,omitempty"`
+	// System instruction, also known as the prompt preamble for LLM calls.
+	// See also
+	// https://cloud.google.com/vertex-ai/generative-ai/docs/learn/prompts/system-instructions
+	SystemInstruction *Assistant_GenerationConfig_SystemInstruction `protobuf:"bytes,3,opt,name=system_instruction,json=systemInstruction,proto3" json:"system_instruction,omitempty"`
+	// The default language to use for the generation of the assistant
+	// response.
+	// Use an ISO 639-1 language code such as `en`.
+	// If not specified, the language will be automatically detected.
+	DefaultLanguage string `protobuf:"bytes,4,opt,name=default_language,json=defaultLanguage,proto3" json:"default_language,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *Assistant_GenerationConfig) Reset() {
+	*x = Assistant_GenerationConfig{}
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Assistant_GenerationConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Assistant_GenerationConfig) ProtoMessage() {}
+
+func (x *Assistant_GenerationConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Assistant_GenerationConfig.ProtoReflect.Descriptor instead.
+func (*Assistant_GenerationConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *Assistant_GenerationConfig) GetDefaultModelId() string {
+	if x != nil {
+		return x.DefaultModelId
+	}
+	return ""
+}
+
+func (x *Assistant_GenerationConfig) GetAllowedModelIds() []string {
+	if x != nil {
+		return x.AllowedModelIds
+	}
+	return nil
+}
+
+func (x *Assistant_GenerationConfig) GetSystemInstruction() *Assistant_GenerationConfig_SystemInstruction {
+	if x != nil {
+		return x.SystemInstruction
+	}
+	return nil
+}
+
+func (x *Assistant_GenerationConfig) GetDefaultLanguage() string {
+	if x != nil {
+		return x.DefaultLanguage
+	}
+	return ""
+}
+
+// Information to identify a tool.
+type Assistant_ToolInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The name of the tool as defined by
+	// DataConnectorService.QueryAvailableActions.
+	// Note: it's using `action` in the DataConnectorService apis, but they are
+	// the same as the `tool` here.
+	ToolName string `protobuf:"bytes,1,opt,name=tool_name,json=toolName,proto3" json:"tool_name,omitempty"`
+	// The display name of the tool.
+	ToolDisplayName string `protobuf:"bytes,2,opt,name=tool_display_name,json=toolDisplayName,proto3" json:"tool_display_name,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *Assistant_ToolInfo) Reset() {
+	*x = Assistant_ToolInfo{}
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Assistant_ToolInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Assistant_ToolInfo) ProtoMessage() {}
+
+func (x *Assistant_ToolInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Assistant_ToolInfo.ProtoReflect.Descriptor instead.
+func (*Assistant_ToolInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 1}
+}
+
+func (x *Assistant_ToolInfo) GetToolName() string {
+	if x != nil {
+		return x.ToolName
+	}
+	return ""
+}
+
+func (x *Assistant_ToolInfo) GetToolDisplayName() string {
+	if x != nil {
+		return x.ToolDisplayName
+	}
+	return ""
+}
+
+// The enabled tools on a connector
+type Assistant_ToolList struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of tools with corresponding tool information.
+	ToolInfo      []*Assistant_ToolInfo `protobuf:"bytes,1,rep,name=tool_info,json=toolInfo,proto3" json:"tool_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Assistant_ToolList) Reset() {
+	*x = Assistant_ToolList{}
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Assistant_ToolList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Assistant_ToolList) ProtoMessage() {}
+
+func (x *Assistant_ToolList) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Assistant_ToolList.ProtoReflect.Descriptor instead.
+func (*Assistant_ToolList) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 2}
+}
+
+func (x *Assistant_ToolList) GetToolInfo() []*Assistant_ToolInfo {
+	if x != nil {
+		return x.ToolInfo
+	}
+	return nil
+}
+
+// Customer-defined policy for the assistant.
+type Assistant_CustomerPolicy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. List of banned phrases.
+	BannedPhrases []*Assistant_CustomerPolicy_BannedPhrase `protobuf:"bytes,1,rep,name=banned_phrases,json=bannedPhrases,proto3" json:"banned_phrases,omitempty"`
+	// Optional. Model Armor configuration to be used for sanitizing user
+	// prompts and assistant responses.
+	ModelArmorConfig *Assistant_CustomerPolicy_ModelArmorConfig `protobuf:"bytes,2,opt,name=model_armor_config,json=modelArmorConfig,proto3" json:"model_armor_config,omitempty"`
+	// Optional. Data protection policy to be used for sanitizing file uploads.
+	DataProtectionPolicy *DataProtectionPolicy `protobuf:"bytes,3,opt,name=data_protection_policy,json=dataProtectionPolicy,proto3" json:"data_protection_policy,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *Assistant_CustomerPolicy) Reset() {
+	*x = Assistant_CustomerPolicy{}
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Assistant_CustomerPolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Assistant_CustomerPolicy) ProtoMessage() {}
+
+func (x *Assistant_CustomerPolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Assistant_CustomerPolicy.ProtoReflect.Descriptor instead.
+func (*Assistant_CustomerPolicy) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 3}
+}
+
+func (x *Assistant_CustomerPolicy) GetBannedPhrases() []*Assistant_CustomerPolicy_BannedPhrase {
+	if x != nil {
+		return x.BannedPhrases
+	}
+	return nil
+}
+
+func (x *Assistant_CustomerPolicy) GetModelArmorConfig() *Assistant_CustomerPolicy_ModelArmorConfig {
+	if x != nil {
+		return x.ModelArmorConfig
+	}
+	return nil
+}
+
+func (x *Assistant_CustomerPolicy) GetDataProtectionPolicy() *DataProtectionPolicy {
+	if x != nil {
+		return x.DataProtectionPolicy
+	}
+	return nil
+}
+
+// System instruction, also known as the prompt preamble for LLM calls.
+type Assistant_GenerationConfig_SystemInstruction struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Additional system instruction that will be added to the
+	// default system instruction.
+	AdditionalSystemInstruction string `protobuf:"bytes,2,opt,name=additional_system_instruction,json=additionalSystemInstruction,proto3" json:"additional_system_instruction,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *Assistant_GenerationConfig_SystemInstruction) Reset() {
+	*x = Assistant_GenerationConfig_SystemInstruction{}
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Assistant_GenerationConfig_SystemInstruction) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Assistant_GenerationConfig_SystemInstruction) ProtoMessage() {}
+
+func (x *Assistant_GenerationConfig_SystemInstruction) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Assistant_GenerationConfig_SystemInstruction.ProtoReflect.Descriptor instead.
+func (*Assistant_GenerationConfig_SystemInstruction) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 0, 0}
+}
+
+func (x *Assistant_GenerationConfig_SystemInstruction) GetAdditionalSystemInstruction() string {
+	if x != nil {
+		return x.AdditionalSystemInstruction
+	}
+	return ""
+}
+
+// Definition of a customer-defined banned phrase. A banned phrase is not
+// allowed to appear in the user query or the LLM response, or else the
+// answer will be refused.
+type Assistant_CustomerPolicy_BannedPhrase struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The raw string content to be banned.
+	Phrase string `protobuf:"bytes,1,opt,name=phrase,proto3" json:"phrase,omitempty"`
+	// Optional. Match type for the banned phrase.
+	MatchType Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType `protobuf:"varint,2,opt,name=match_type,json=matchType,proto3,enum=google.cloud.discoveryengine.v1.Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType" json:"match_type,omitempty"`
+	// Optional. If true, diacritical marks (e.g., accents, umlauts) are
+	// ignored when matching banned phrases. For example, "cafe" would match
+	// "café".
+	IgnoreDiacritics bool `protobuf:"varint,3,opt,name=ignore_diacritics,json=ignoreDiacritics,proto3" json:"ignore_diacritics,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *Assistant_CustomerPolicy_BannedPhrase) Reset() {
+	*x = Assistant_CustomerPolicy_BannedPhrase{}
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Assistant_CustomerPolicy_BannedPhrase) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Assistant_CustomerPolicy_BannedPhrase) ProtoMessage() {}
+
+func (x *Assistant_CustomerPolicy_BannedPhrase) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Assistant_CustomerPolicy_BannedPhrase.ProtoReflect.Descriptor instead.
+func (*Assistant_CustomerPolicy_BannedPhrase) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 3, 0}
+}
+
+func (x *Assistant_CustomerPolicy_BannedPhrase) GetPhrase() string {
+	if x != nil {
+		return x.Phrase
+	}
+	return ""
+}
+
+func (x *Assistant_CustomerPolicy_BannedPhrase) GetMatchType() Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType {
+	if x != nil {
+		return x.MatchType
+	}
+	return Assistant_CustomerPolicy_BannedPhrase_BANNED_PHRASE_MATCH_TYPE_UNSPECIFIED
+}
+
+func (x *Assistant_CustomerPolicy_BannedPhrase) GetIgnoreDiacritics() bool {
+	if x != nil {
+		return x.IgnoreDiacritics
+	}
+	return false
+}
+
+// Configuration for customer defined Model Armor templates to be used for
+// sanitizing user prompts and assistant responses.
+type Assistant_CustomerPolicy_ModelArmorConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The resource name of the Model Armor template for sanitizing
+	// user prompts. Format:
+	// `projects/{project}/locations/{location}/templates/{template_id}`
+	//
+	// If not specified, no sanitization will be applied to the user prompt.
+	UserPromptTemplate string `protobuf:"bytes,1,opt,name=user_prompt_template,json=userPromptTemplate,proto3" json:"user_prompt_template,omitempty"`
+	// Optional. The resource name of the Model Armor template for sanitizing
+	// assistant responses. Format:
+	// `projects/{project}/locations/{location}/templates/{template_id}`
+	//
+	// If not specified, no sanitization will be applied to the assistant
+	// response.
+	ResponseTemplate string `protobuf:"bytes,2,opt,name=response_template,json=responseTemplate,proto3" json:"response_template,omitempty"`
+	// Optional. Defines the failure mode for Model Armor sanitization.
+	FailureMode   Assistant_CustomerPolicy_ModelArmorConfig_FailureMode `protobuf:"varint,3,opt,name=failure_mode,json=failureMode,proto3,enum=google.cloud.discoveryengine.v1.Assistant_CustomerPolicy_ModelArmorConfig_FailureMode" json:"failure_mode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Assistant_CustomerPolicy_ModelArmorConfig) Reset() {
+	*x = Assistant_CustomerPolicy_ModelArmorConfig{}
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Assistant_CustomerPolicy_ModelArmorConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Assistant_CustomerPolicy_ModelArmorConfig) ProtoMessage() {}
+
+func (x *Assistant_CustomerPolicy_ModelArmorConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Assistant_CustomerPolicy_ModelArmorConfig.ProtoReflect.Descriptor instead.
+func (*Assistant_CustomerPolicy_ModelArmorConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP(), []int{0, 3, 1}
+}
+
+func (x *Assistant_CustomerPolicy_ModelArmorConfig) GetUserPromptTemplate() string {
+	if x != nil {
+		return x.UserPromptTemplate
+	}
+	return ""
+}
+
+func (x *Assistant_CustomerPolicy_ModelArmorConfig) GetResponseTemplate() string {
+	if x != nil {
+		return x.ResponseTemplate
+	}
+	return ""
+}
+
+func (x *Assistant_CustomerPolicy_ModelArmorConfig) GetFailureMode() Assistant_CustomerPolicy_ModelArmorConfig_FailureMode {
+	if x != nil {
+		return x.FailureMode
+	}
+	return Assistant_CustomerPolicy_ModelArmorConfig_FAILURE_MODE_UNSPECIFIED
+}
+
 var File_google_cloud_discoveryengine_v1_assistant_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_assistant_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/discoveryengine/v1/assistant.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbf\x01\n" +
-	"\tAssistant\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name:\x98\x01\xeaA\x94\x01\n" +
+	"/google/cloud/discoveryengine/v1/assistant.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe8\x16\n" +
+	"\tAssistant\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12n\n" +
+	"\x11generation_config\x18\x13 \x01(\v2;.google.cloud.discoveryengine.v1.Assistant.GenerationConfigB\x04\xe2A\x01\x01R\x10generationConfig\x12o\n" +
+	"\x12web_grounding_type\x18\x04 \x01(\x0e2;.google.cloud.discoveryengine.v1.Assistant.WebGroundingTypeB\x04\xe2A\x01\x01R\x10webGroundingType\x12L\n" +
+	" default_web_grounding_toggle_off\x18\x16 \x01(\bB\x04\xe2A\x01\x01R\x1cdefaultWebGroundingToggleOff\x12g\n" +
+	"\renabled_tools\x18\x12 \x03(\v2<.google.cloud.discoveryengine.v1.Assistant.EnabledToolsEntryB\x04\xe2A\x01\x01R\fenabledTools\x12h\n" +
+	"\x0fcustomer_policy\x18\f \x01(\v29.google.cloud.discoveryengine.v1.Assistant.CustomerPolicyB\x04\xe2A\x01\x01R\x0ecustomerPolicy\x12A\n" +
+	"\vcreate_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a\xfc\x02\n" +
+	"\x10GenerationConfig\x12.\n" +
+	"\x10default_model_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0edefaultModelId\x120\n" +
+	"\x11allowed_model_ids\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0fallowedModelIds\x12|\n" +
+	"\x12system_instruction\x18\x03 \x01(\v2M.google.cloud.discoveryengine.v1.Assistant.GenerationConfig.SystemInstructionR\x11systemInstruction\x12)\n" +
+	"\x10default_language\x18\x04 \x01(\tR\x0fdefaultLanguage\x1a]\n" +
+	"\x11SystemInstruction\x12H\n" +
+	"\x1dadditional_system_instruction\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x1badditionalSystemInstruction\x1aS\n" +
+	"\bToolInfo\x12\x1b\n" +
+	"\ttool_name\x18\x01 \x01(\tR\btoolName\x12*\n" +
+	"\x11tool_display_name\x18\x02 \x01(\tR\x0ftoolDisplayName\x1a\\\n" +
+	"\bToolList\x12P\n" +
+	"\ttool_info\x18\x01 \x03(\v23.google.cloud.discoveryengine.v1.Assistant.ToolInfoR\btoolInfo\x1a\xf6\b\n" +
+	"\x0eCustomerPolicy\x12s\n" +
+	"\x0ebanned_phrases\x18\x01 \x03(\v2F.google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.BannedPhraseB\x04\xe2A\x01\x01R\rbannedPhrases\x12~\n" +
+	"\x12model_armor_config\x18\x02 \x01(\v2J.google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.ModelArmorConfigB\x04\xe2A\x01\x01R\x10modelArmorConfig\x12q\n" +
+	"\x16data_protection_policy\x18\x03 \x01(\v25.google.cloud.discoveryengine.v1.DataProtectionPolicyB\x04\xe2A\x01\x01R\x14dataProtectionPolicy\x1a\xdf\x02\n" +
+	"\fBannedPhrase\x12\x1c\n" +
+	"\x06phrase\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06phrase\x12\x81\x01\n" +
+	"\n" +
+	"match_type\x18\x02 \x01(\x0e2\\.google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.BannedPhrase.BannedPhraseMatchTypeB\x04\xe2A\x01\x01R\tmatchType\x121\n" +
+	"\x11ignore_diacritics\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x10ignoreDiacritics\"z\n" +
+	"\x15BannedPhraseMatchType\x12(\n" +
+	"$BANNED_PHRASE_MATCH_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
+	"\x13SIMPLE_STRING_MATCH\x10\x01\x12\x1e\n" +
+	"\x1aWORD_BOUNDARY_STRING_MATCH\x10\x02\x1a\x99\x03\n" +
+	"\x10ModelArmorConfig\x12]\n" +
+	"\x14user_prompt_template\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x12userPromptTemplate\x12X\n" +
+	"\x11response_template\x18\x02 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x10responseTemplate\x12\x7f\n" +
+	"\ffailure_mode\x18\x03 \x01(\x0e2V.google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.ModelArmorConfig.FailureModeB\x04\xe2A\x01\x01R\vfailureMode\"K\n" +
+	"\vFailureMode\x12\x1c\n" +
+	"\x18FAILURE_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tFAIL_OPEN\x10\x01\x12\x0f\n" +
+	"\vFAIL_CLOSED\x10\x02\x1at\n" +
+	"\x11EnabledToolsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12I\n" +
+	"\x05value\x18\x02 \x01(\v23.google.cloud.discoveryengine.v1.Assistant.ToolListR\x05value:\x028\x01\"\xab\x01\n" +
+	"\x10WebGroundingType\x12\"\n" +
+	"\x1eWEB_GROUNDING_TYPE_UNSPECIFIED\x10\x00\x12\x1f\n" +
+	"\x1bWEB_GROUNDING_TYPE_DISABLED\x10\x01\x12$\n" +
+	" WEB_GROUNDING_TYPE_GOOGLE_SEARCH\x10\x02\x12,\n" +
+	"(WEB_GROUNDING_TYPE_ENTERPRISE_WEB_SEARCH\x10\x03:\x98\x01\xeaA\x94\x01\n" +
 	"(discoveryengine.googleapis.com/Assistant\x12hprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/assistants/{assistant}B\x81\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x0eAssistantProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
@@ -109,16 +870,44 @@ func file_google_cloud_discoveryengine_v1_assistant_proto_rawDescGZIP() []byte {
 	return file_google_cloud_discoveryengine_v1_assistant_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_google_cloud_discoveryengine_v1_assistant_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_discoveryengine_v1_assistant_proto_goTypes = []any{
-	(*Assistant)(nil), // 0: google.cloud.discoveryengine.v1.Assistant
+	(Assistant_WebGroundingType)(0),                                  // 0: google.cloud.discoveryengine.v1.Assistant.WebGroundingType
+	(Assistant_CustomerPolicy_BannedPhrase_BannedPhraseMatchType)(0), // 1: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.BannedPhrase.BannedPhraseMatchType
+	(Assistant_CustomerPolicy_ModelArmorConfig_FailureMode)(0),       // 2: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.ModelArmorConfig.FailureMode
+	(*Assistant)(nil),                  // 3: google.cloud.discoveryengine.v1.Assistant
+	(*Assistant_GenerationConfig)(nil), // 4: google.cloud.discoveryengine.v1.Assistant.GenerationConfig
+	(*Assistant_ToolInfo)(nil),         // 5: google.cloud.discoveryengine.v1.Assistant.ToolInfo
+	(*Assistant_ToolList)(nil),         // 6: google.cloud.discoveryengine.v1.Assistant.ToolList
+	(*Assistant_CustomerPolicy)(nil),   // 7: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy
+	nil,                                // 8: google.cloud.discoveryengine.v1.Assistant.EnabledToolsEntry
+	(*Assistant_GenerationConfig_SystemInstruction)(nil), // 9: google.cloud.discoveryengine.v1.Assistant.GenerationConfig.SystemInstruction
+	(*Assistant_CustomerPolicy_BannedPhrase)(nil),        // 10: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.BannedPhrase
+	(*Assistant_CustomerPolicy_ModelArmorConfig)(nil),    // 11: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.ModelArmorConfig
+	(*timestamppb.Timestamp)(nil),                        // 12: google.protobuf.Timestamp
+	(*DataProtectionPolicy)(nil),                         // 13: google.cloud.discoveryengine.v1.DataProtectionPolicy
 }
 var file_google_cloud_discoveryengine_v1_assistant_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	4,  // 0: google.cloud.discoveryengine.v1.Assistant.generation_config:type_name -> google.cloud.discoveryengine.v1.Assistant.GenerationConfig
+	0,  // 1: google.cloud.discoveryengine.v1.Assistant.web_grounding_type:type_name -> google.cloud.discoveryengine.v1.Assistant.WebGroundingType
+	8,  // 2: google.cloud.discoveryengine.v1.Assistant.enabled_tools:type_name -> google.cloud.discoveryengine.v1.Assistant.EnabledToolsEntry
+	7,  // 3: google.cloud.discoveryengine.v1.Assistant.customer_policy:type_name -> google.cloud.discoveryengine.v1.Assistant.CustomerPolicy
+	12, // 4: google.cloud.discoveryengine.v1.Assistant.create_time:type_name -> google.protobuf.Timestamp
+	12, // 5: google.cloud.discoveryengine.v1.Assistant.update_time:type_name -> google.protobuf.Timestamp
+	9,  // 6: google.cloud.discoveryengine.v1.Assistant.GenerationConfig.system_instruction:type_name -> google.cloud.discoveryengine.v1.Assistant.GenerationConfig.SystemInstruction
+	5,  // 7: google.cloud.discoveryengine.v1.Assistant.ToolList.tool_info:type_name -> google.cloud.discoveryengine.v1.Assistant.ToolInfo
+	10, // 8: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.banned_phrases:type_name -> google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.BannedPhrase
+	11, // 9: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.model_armor_config:type_name -> google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.ModelArmorConfig
+	13, // 10: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.data_protection_policy:type_name -> google.cloud.discoveryengine.v1.DataProtectionPolicy
+	6,  // 11: google.cloud.discoveryengine.v1.Assistant.EnabledToolsEntry.value:type_name -> google.cloud.discoveryengine.v1.Assistant.ToolList
+	1,  // 12: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.BannedPhrase.match_type:type_name -> google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.BannedPhrase.BannedPhraseMatchType
+	2,  // 13: google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.ModelArmorConfig.failure_mode:type_name -> google.cloud.discoveryengine.v1.Assistant.CustomerPolicy.ModelArmorConfig.FailureMode
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_assistant_proto_init() }
@@ -126,18 +915,20 @@ func file_google_cloud_discoveryengine_v1_assistant_proto_init() {
 	if File_google_cloud_discoveryengine_v1_assistant_proto != nil {
 		return
 	}
+	file_google_cloud_discoveryengine_v1_common_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_assistant_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_assistant_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   1,
+			NumEnums:      3,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_google_cloud_discoveryengine_v1_assistant_proto_goTypes,
 		DependencyIndexes: file_google_cloud_discoveryengine_v1_assistant_proto_depIdxs,
+		EnumInfos:         file_google_cloud_discoveryengine_v1_assistant_proto_enumTypes,
 		MessageInfos:      file_google_cloud_discoveryengine_v1_assistant_proto_msgTypes,
 	}.Build()
 	File_google_cloud_discoveryengine_v1_assistant_proto = out.File

@@ -27,6 +27,7 @@ import (
 	"time"
 
 	discoveryenginepb "cloud.google.com/go/discoveryengine/apiv1/discoveryenginepb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
@@ -53,6 +54,8 @@ type EngineCallOptions struct {
 	UpdateEngine    []gax.CallOption
 	GetEngine       []gax.CallOption
 	ListEngines     []gax.CallOption
+	GetIamPolicy    []gax.CallOption
+	SetIamPolicy    []gax.CallOption
 	CancelOperation []gax.CallOption
 	GetOperation    []gax.CallOption
 	ListOperations  []gax.CallOption
@@ -80,6 +83,8 @@ func defaultEngineCallOptions() *EngineCallOptions {
 		UpdateEngine: []gax.CallOption{},
 		GetEngine:    []gax.CallOption{},
 		ListEngines:  []gax.CallOption{},
+		GetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -126,6 +131,8 @@ func defaultEngineRESTCallOptions() *EngineCallOptions {
 		UpdateEngine: []gax.CallOption{},
 		GetEngine:    []gax.CallOption{},
 		ListEngines:  []gax.CallOption{},
+		GetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -174,6 +181,8 @@ type internalEngineClient interface {
 	UpdateEngine(context.Context, *discoveryenginepb.UpdateEngineRequest, ...gax.CallOption) (*discoveryenginepb.Engine, error)
 	GetEngine(context.Context, *discoveryenginepb.GetEngineRequest, ...gax.CallOption) (*discoveryenginepb.Engine, error)
 	ListEngines(context.Context, *discoveryenginepb.ListEnginesRequest, ...gax.CallOption) *EngineIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
@@ -220,7 +229,7 @@ func (c *EngineClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateEngine creates a Engine.
+// CreateEngine creates an Engine.
 func (c *EngineClient) CreateEngine(ctx context.Context, req *discoveryenginepb.CreateEngineRequest, opts ...gax.CallOption) (*CreateEngineOperation, error) {
 	return c.internalClient.CreateEngine(ctx, req, opts...)
 }
@@ -231,7 +240,7 @@ func (c *EngineClient) CreateEngineOperation(name string) *CreateEngineOperation
 	return c.internalClient.CreateEngineOperation(name)
 }
 
-// DeleteEngine deletes a Engine.
+// DeleteEngine deletes an Engine.
 func (c *EngineClient) DeleteEngine(ctx context.Context, req *discoveryenginepb.DeleteEngineRequest, opts ...gax.CallOption) (*DeleteEngineOperation, error) {
 	return c.internalClient.DeleteEngine(ctx, req, opts...)
 }
@@ -247,7 +256,7 @@ func (c *EngineClient) UpdateEngine(ctx context.Context, req *discoveryenginepb.
 	return c.internalClient.UpdateEngine(ctx, req, opts...)
 }
 
-// GetEngine gets a Engine.
+// GetEngine gets an Engine.
 func (c *EngineClient) GetEngine(ctx context.Context, req *discoveryenginepb.GetEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	return c.internalClient.GetEngine(ctx, req, opts...)
 }
@@ -256,6 +265,31 @@ func (c *EngineClient) GetEngine(ctx context.Context, req *discoveryenginepb.Get
 // with the project.
 func (c *EngineClient) ListEngines(ctx context.Context, req *discoveryenginepb.ListEnginesRequest, opts ...gax.CallOption) *EngineIterator {
 	return c.internalClient.ListEngines(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the IAM access control policy for an
+// Engine. A NOT_FOUND error is
+// returned if the resource does not exist. An empty policy is returned if the
+// resource exists but does not have a policy set on it.
+func (c *EngineClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the IAM access control policy for an
+// Engine. A NOT_FOUND error is
+// returned if the resource does not exist.
+//
+// Important: When setting a policy directly on an Engine resource,
+// the only recommended roles in the bindings are:
+// roles/discoveryengine.admin,
+// roles/discoveryengine.agentspaceAdmin,
+// roles/discoveryengine.user,
+// roles/discoveryengine.agentspaceUser,
+// roles/discoveryengine.viewer,
+// roles/discoveryengine.agentspaceViewer.
+// Attempting to grant any other role will result in a warning in logging.
+func (c *EngineClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -355,9 +389,56 @@ func NewEngineClient(ctx context.Context, opts ...option.ClientOption) (*EngineC
 		client.CallOptions.UpdateEngine = append(client.CallOptions.UpdateEngine, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetEngine = append(client.CallOptions.GetEngine, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListEngines = append(client.CallOptions.ListEngines, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateEngine = append(client.CallOptions.CreateEngine, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEngine = append(client.CallOptions.DeleteEngine, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEngine = append(client.CallOptions.UpdateEngine, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEngine = append(client.CallOptions.GetEngine, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEngines = append(client.CallOptions.ListEngines, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateEngine = append(client.CallOptions.CreateEngine, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEngine = append(client.CallOptions.DeleteEngine, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEngine = append(client.CallOptions.UpdateEngine, gax.WithClientLogging(logging))
+		client.CallOptions.GetEngine = append(client.CallOptions.GetEngine, gax.WithClientLogging(logging))
+		client.CallOptions.ListEngines = append(client.CallOptions.ListEngines, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -470,9 +551,56 @@ func NewEngineRESTClient(ctx context.Context, opts ...option.ClientOption) (*Eng
 		callOpts.UpdateEngine = append(callOpts.UpdateEngine, gax.WithClientMetrics(metrics))
 		callOpts.GetEngine = append(callOpts.GetEngine, gax.WithClientMetrics(metrics))
 		callOpts.ListEngines = append(callOpts.ListEngines, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateEngine = append(callOpts.CreateEngine, gax.WithClientTracing(tracing))
+		callOpts.DeleteEngine = append(callOpts.DeleteEngine, gax.WithClientTracing(tracing))
+		callOpts.UpdateEngine = append(callOpts.UpdateEngine, gax.WithClientTracing(tracing))
+		callOpts.GetEngine = append(callOpts.GetEngine, gax.WithClientTracing(tracing))
+		callOpts.ListEngines = append(callOpts.ListEngines, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateEngine = append(callOpts.CreateEngine, gax.WithClientLogging(logging))
+		callOpts.DeleteEngine = append(callOpts.DeleteEngine, gax.WithClientLogging(logging))
+		callOpts.UpdateEngine = append(callOpts.UpdateEngine, gax.WithClientLogging(logging))
+		callOpts.GetEngine = append(callOpts.GetEngine, gax.WithClientLogging(logging))
+		callOpts.ListEngines = append(callOpts.ListEngines, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -530,9 +658,6 @@ func (c *engineGRPCClient) CreateEngine(ctx context.Context, req *discoveryengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/CreateEngine")
 	}
@@ -560,9 +685,6 @@ func (c *engineGRPCClient) DeleteEngine(ctx context.Context, req *discoveryengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/DeleteEngine")
 	}
@@ -611,9 +733,6 @@ func (c *engineGRPCClient) GetEngine(ctx context.Context, req *discoveryenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/GetEngine")
 	}
@@ -635,9 +754,6 @@ func (c *engineGRPCClient) ListEngines(ctx context.Context, req *discoveryengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/ListEngines")
 	}
@@ -680,6 +796,48 @@ func (c *engineGRPCClient) ListEngines(ctx context.Context, req *discoveryengine
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *engineGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/GetIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.engineClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *engineGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/SetIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.engineClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *engineGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
@@ -769,7 +927,7 @@ func (c *engineGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	return it
 }
 
-// CreateEngine creates a Engine.
+// CreateEngine creates an Engine.
 func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryenginepb.CreateEngineRequest, opts ...gax.CallOption) (*CreateEngineOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEngine()
@@ -780,6 +938,11 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/engines", req.GetParent())
@@ -796,9 +959,6 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/CreateEngine")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/collections/*}/engines")
@@ -841,10 +1001,15 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 	}, nil
 }
 
-// DeleteEngine deletes a Engine.
+// DeleteEngine deletes an Engine.
 func (c *engineRESTClient) DeleteEngine(ctx context.Context, req *discoveryenginepb.DeleteEngineRequest, opts ...gax.CallOption) (*DeleteEngineOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -860,9 +1025,6 @@ func (c *engineRESTClient) DeleteEngine(ctx context.Context, req *discoveryengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/DeleteEngine")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/collections/*/engines/*}")
@@ -916,6 +1078,11 @@ func (c *engineRESTClient) UpdateEngine(ctx context.Context, req *discoveryengin
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEngine().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEngine().GetName())
@@ -973,10 +1140,15 @@ func (c *engineRESTClient) UpdateEngine(ctx context.Context, req *discoveryengin
 	return resp, nil
 }
 
-// GetEngine gets a Engine.
+// GetEngine gets an Engine.
 func (c *engineRESTClient) GetEngine(ctx context.Context, req *discoveryenginepb.GetEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -992,9 +1164,6 @@ func (c *engineRESTClient) GetEngine(ctx context.Context, req *discoveryenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/GetEngine")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/collections/*/engines/*}")
@@ -1048,6 +1217,11 @@ func (c *engineRESTClient) ListEngines(ctx context.Context, req *discoveryengine
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/engines", req.GetParent())
@@ -1112,6 +1286,148 @@ func (c *engineRESTClient) ListEngines(ctx context.Context, req *discoveryengine
 	return it
 }
 
+// GetIamPolicy gets the IAM access control policy for an
+// Engine. A NOT_FOUND error is
+// returned if the resource does not exist. An empty policy is returned if the
+// resource exists but does not have a policy set on it.
+func (c *engineRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
+		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/collections/*/engines/*}:getIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets the IAM access control policy for an
+// Engine. A NOT_FOUND error is
+// returned if the resource does not exist.
+//
+// Important: When setting a policy directly on an Engine resource,
+// the only recommended roles in the bindings are:
+// roles/discoveryengine.admin,
+// roles/discoveryengine.agentspaceAdmin,
+// roles/discoveryengine.user,
+// roles/discoveryengine.agentspaceUser,
+// roles/discoveryengine.viewer,
+// roles/discoveryengine.agentspaceViewer.
+// Attempting to grant any other role will result in a warning in logging.
+func (c *engineRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/collections/*/engines/*}:setIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1122,6 +1438,11 @@ func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunning
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
@@ -1161,6 +1482,11 @@ func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunning
 func (c *engineRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1228,6 +1554,11 @@ func (c *engineRESTClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

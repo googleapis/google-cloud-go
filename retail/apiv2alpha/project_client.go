@@ -529,6 +529,51 @@ func NewProjectClient(ctx context.Context, opts ...option.ClientOption) (*Projec
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProject = append(client.CallOptions.GetProject, gax.WithClientTracing(tracing))
+		client.CallOptions.AcceptTerms = append(client.CallOptions.AcceptTerms, gax.WithClientTracing(tracing))
+		client.CallOptions.EnrollSolution = append(client.CallOptions.EnrollSolution, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEnrolledSolutions = append(client.CallOptions.ListEnrolledSolutions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLoggingConfig = append(client.CallOptions.GetLoggingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateLoggingConfig = append(client.CallOptions.UpdateLoggingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAlertConfig = append(client.CallOptions.GetAlertConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAlertConfig = append(client.CallOptions.UpdateAlertConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProject = append(client.CallOptions.GetProject, gax.WithClientLogging(logging))
+		client.CallOptions.AcceptTerms = append(client.CallOptions.AcceptTerms, gax.WithClientLogging(logging))
+		client.CallOptions.EnrollSolution = append(client.CallOptions.EnrollSolution, gax.WithClientLogging(logging))
+		client.CallOptions.ListEnrolledSolutions = append(client.CallOptions.ListEnrolledSolutions, gax.WithClientLogging(logging))
+		client.CallOptions.GetLoggingConfig = append(client.CallOptions.GetLoggingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateLoggingConfig = append(client.CallOptions.UpdateLoggingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetAlertConfig = append(client.CallOptions.GetAlertConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAlertConfig = append(client.CallOptions.UpdateAlertConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -645,6 +690,51 @@ func NewProjectRESTClient(ctx context.Context, opts ...option.ClientOption) (*Pr
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProject = append(callOpts.GetProject, gax.WithClientTracing(tracing))
+		callOpts.AcceptTerms = append(callOpts.AcceptTerms, gax.WithClientTracing(tracing))
+		callOpts.EnrollSolution = append(callOpts.EnrollSolution, gax.WithClientTracing(tracing))
+		callOpts.ListEnrolledSolutions = append(callOpts.ListEnrolledSolutions, gax.WithClientTracing(tracing))
+		callOpts.GetLoggingConfig = append(callOpts.GetLoggingConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateLoggingConfig = append(callOpts.UpdateLoggingConfig, gax.WithClientTracing(tracing))
+		callOpts.GetAlertConfig = append(callOpts.GetAlertConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateAlertConfig = append(callOpts.UpdateAlertConfig, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProject = append(callOpts.GetProject, gax.WithClientLogging(logging))
+		callOpts.AcceptTerms = append(callOpts.AcceptTerms, gax.WithClientLogging(logging))
+		callOpts.EnrollSolution = append(callOpts.EnrollSolution, gax.WithClientLogging(logging))
+		callOpts.ListEnrolledSolutions = append(callOpts.ListEnrolledSolutions, gax.WithClientLogging(logging))
+		callOpts.GetLoggingConfig = append(callOpts.GetLoggingConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateLoggingConfig = append(callOpts.UpdateLoggingConfig, gax.WithClientLogging(logging))
+		callOpts.GetAlertConfig = append(callOpts.GetAlertConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateAlertConfig = append(callOpts.UpdateAlertConfig, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -701,9 +791,6 @@ func (c *projectGRPCClient) GetProject(ctx context.Context, req *retailpb.GetPro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetProject")
 	}
@@ -725,9 +812,6 @@ func (c *projectGRPCClient) AcceptTerms(ctx context.Context, req *retailpb.Accep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/AcceptTerms")
 	}
@@ -749,9 +833,6 @@ func (c *projectGRPCClient) EnrollSolution(ctx context.Context, req *retailpb.En
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/EnrollSolution")
 	}
@@ -779,9 +860,6 @@ func (c *projectGRPCClient) ListEnrolledSolutions(ctx context.Context, req *reta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/ListEnrolledSolutions")
 	}
@@ -803,9 +881,6 @@ func (c *projectGRPCClient) GetLoggingConfig(ctx context.Context, req *retailpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetLoggingConfig")
 	}
@@ -848,9 +923,6 @@ func (c *projectGRPCClient) GetAlertConfig(ctx context.Context, req *retailpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetAlertConfig")
 	}
@@ -967,6 +1039,11 @@ func (c *projectRESTClient) GetProject(ctx context.Context, req *retailpb.GetPro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -980,9 +1057,6 @@ func (c *projectRESTClient) GetProject(ctx context.Context, req *retailpb.GetPro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetProject")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/retailProject}")
@@ -1033,6 +1107,11 @@ func (c *projectRESTClient) AcceptTerms(ctx context.Context, req *retailpb.Accep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:acceptTerms", req.GetProject())
 
 	params := url.Values{}
@@ -1046,9 +1125,6 @@ func (c *projectRESTClient) AcceptTerms(ctx context.Context, req *retailpb.Accep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/AcceptTerms")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{project=projects/*/retailProject}:acceptTerms")
@@ -1103,6 +1179,11 @@ func (c *projectRESTClient) EnrollSolution(ctx context.Context, req *retailpb.En
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:enrollSolution", req.GetProject())
 
 	params := url.Values{}
@@ -1116,9 +1197,6 @@ func (c *projectRESTClient) EnrollSolution(ctx context.Context, req *retailpb.En
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/EnrollSolution")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{project=projects/*}:enrollSolution")
@@ -1167,6 +1245,11 @@ func (c *projectRESTClient) ListEnrolledSolutions(ctx context.Context, req *reta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:enrolledSolutions", req.GetParent())
 
 	params := url.Values{}
@@ -1180,9 +1263,6 @@ func (c *projectRESTClient) ListEnrolledSolutions(ctx context.Context, req *reta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/ListEnrolledSolutions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*}:enrolledSolutions")
@@ -1225,6 +1305,11 @@ func (c *projectRESTClient) GetLoggingConfig(ctx context.Context, req *retailpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1238,9 +1323,6 @@ func (c *projectRESTClient) GetLoggingConfig(ctx context.Context, req *retailpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetLoggingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/loggingConfig}")
@@ -1288,6 +1370,11 @@ func (c *projectRESTClient) UpdateLoggingConfig(ctx context.Context, req *retail
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLoggingConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetLoggingConfig().GetName())
@@ -1352,6 +1439,11 @@ func (c *projectRESTClient) GetAlertConfig(ctx context.Context, req *retailpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1365,9 +1457,6 @@ func (c *projectRESTClient) GetAlertConfig(ctx context.Context, req *retailpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetAlertConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/alertConfig}")
@@ -1414,6 +1503,11 @@ func (c *projectRESTClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAlertConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetAlertConfig().GetName())
@@ -1475,6 +1569,11 @@ func (c *projectRESTClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 func (c *projectRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1542,6 +1641,11 @@ func (c *projectRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())

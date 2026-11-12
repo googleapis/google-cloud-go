@@ -2072,21 +2072,21 @@ var File_google_cloud_networkconnectivity_v1beta_transport_manager_proto protore
 
 const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/networkconnectivity/v1beta/transport_manager.proto\x12'google.cloud.networkconnectivity.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkconnectivity/v1beta/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\r\n" +
-	"\x16RemoteTransportProfile\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12h\n" +
-	"\x06labels\x18\x04 \x03(\v2K.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.LabelsEntryB\x03\xe0A\x03R\x06labels\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x03R\vdescription\x12\x1f\n" +
-	"\bprovider\x18\a \x01(\tB\x03\xe0A\x03R\bprovider\x12(\n" +
-	"\rprovider_site\x18\b \x01(\tB\x03\xe0A\x03R\fproviderSite\x12\x81\x01\n" +
-	"\x14supported_bandwidths\x18\t \x03(\x0e2I.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.BandwidthB\x03\xe0A\x03R\x13supportedBandwidths\x12o\n" +
+	"?google/cloud/networkconnectivity/v1beta/transport_manager.proto\x12'google.cloud.networkconnectivity.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkconnectivity/v1beta/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\r\n" +
+	"\x16RemoteTransportProfile\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12i\n" +
+	"\x06labels\x18\x04 \x03(\v2K.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.LabelsEntryB\x04\xe2A\x01\x03R\x06labels\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12 \n" +
+	"\bprovider\x18\a \x01(\tB\x04\xe2A\x01\x03R\bprovider\x12)\n" +
+	"\rprovider_site\x18\b \x01(\tB\x04\xe2A\x01\x03R\fproviderSite\x12\x82\x01\n" +
+	"\x14supported_bandwidths\x18\t \x03(\x0e2I.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.BandwidthB\x04\xe2A\x01\x03R\x13supportedBandwidths\x12p\n" +
 	"\x03sla\x18\n" +
-	" \x01(\x0e2X.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.ServiceLevelAvailabilityB\x03\xe0A\x03R\x03sla\x12l\n" +
-	"\x04flow\x18\v \x01(\x0e2S.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.KeyProvisioningFlowB\x03\xe0A\x03R\x04flow\x12k\n" +
-	"\vorder_state\x18\f \x01(\x0e2E.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.StateB\x03\xe0A\x03R\n" +
-	"orderState\x12&\n" +
-	"\fdisplay_name\x18\r \x01(\tB\x03\xe0A\x03R\vdisplayName\x12v\n" +
-	"\rprovider_type\x18\x0e \x01(\x0e2L.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.ProviderTypeB\x03\xe0A\x03R\fproviderType\x1a9\n" +
+	" \x01(\x0e2X.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.ServiceLevelAvailabilityB\x04\xe2A\x01\x03R\x03sla\x12m\n" +
+	"\x04flow\x18\v \x01(\x0e2S.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.KeyProvisioningFlowB\x04\xe2A\x01\x03R\x04flow\x12l\n" +
+	"\vorder_state\x18\f \x01(\x0e2E.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.StateB\x04\xe2A\x01\x03R\n" +
+	"orderState\x12'\n" +
+	"\fdisplay_name\x18\r \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12w\n" +
+	"\rprovider_type\x18\x0e \x01(\x0e2L.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.ProviderTypeB\x04\xe2A\x01\x03R\fproviderType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd2\x01\n" +
@@ -2128,54 +2128,54 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"\x19PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05CLOUD\x10\x01\x12\v\n" +
 	"\aNETWORK\x10\x02:\xcc\x01\xeaA\xc8\x01\n" +
-	"9networkconnectivity.googleapis.com/RemoteTransportProfile\x12Zprojects/{project}/locations/{location}/remoteTransportProfiles/{remote_transport_profile}*\x17remoteTransportProfiles2\x16remoteTransportProfile\"\x82\x02\n" +
-	"\"ListRemoteTransportProfilesRequest\x12Y\n" +
-	"\x06parent\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\x129networkconnectivity.googleapis.com/RemoteTransportProfileR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"9networkconnectivity.googleapis.com/RemoteTransportProfile\x12Zprojects/{project}/locations/{location}/remoteTransportProfiles/{remote_transport_profile}*\x17remoteTransportProfiles2\x16remoteTransportProfile\"\x87\x02\n" +
+	"\"ListRemoteTransportProfilesRequest\x12Z\n" +
+	"\x06parent\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\x129networkconnectivity.googleapis.com/RemoteTransportProfileR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xf1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xf2\x01\n" +
 	"#ListRemoteTransportProfilesResponse\x12{\n" +
 	"\x19remote_transport_profiles\x18\x01 \x03(\v2?.google.cloud.networkconnectivity.v1beta.RemoteTransportProfileR\x17remoteTransportProfiles\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"y\n" +
-	" GetRemoteTransportProfileRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9networkconnectivity.googleapis.com/RemoteTransportProfileR\x04name\"\xa6\x01\n" +
-	"\x1dParseFromActivationKeyRequest\x12Y\n" +
-	"\x06parent\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\x129networkconnectivity.googleapis.com/RemoteTransportProfileR\x06parent\x12*\n" +
-	"\x0eactivation_key\x18\x02 \x01(\tB\x03\xe0A\x02R\ractivationKey\"\x9b\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"z\n" +
+	" GetRemoteTransportProfileRequest\x12V\n" +
+	"\x04name\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\n" +
+	"9networkconnectivity.googleapis.com/RemoteTransportProfileR\x04name\"\xa8\x01\n" +
+	"\x1dParseFromActivationKeyRequest\x12Z\n" +
+	"\x06parent\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\x129networkconnectivity.googleapis.com/RemoteTransportProfileR\x06parent\x12+\n" +
+	"\x0eactivation_key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\ractivationKey\"\x9b\x01\n" +
 	"\x1eParseFromActivationKeyResponse\x12y\n" +
-	"\x18remote_transport_profile\x18\x01 \x01(\v2?.google.cloud.networkconnectivity.v1beta.RemoteTransportProfileR\x16remoteTransportProfile\"\xde\x0e\n" +
-	"\tTransport\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12[\n" +
-	"\x06labels\x18\x04 \x03(\v2>.google.cloud.networkconnectivity.v1beta.Transport.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12k\n" +
-	"\x0eremote_profile\x18\a \x01(\tBD\xe0A\x01\xe0A\x05\xfaA;\n" +
-	"9networkconnectivity.googleapis.com/RemoteTransportProfileR\rremoteProfile\x12>\n" +
-	"\x17provided_activation_key\x18\b \x01(\tB\x06\xe0A\x01\xe0A\x05R\x15providedActivationKey\x12=\n" +
-	"\x18generated_activation_key\x18\t \x01(\tB\x03\xe0A\x03R\x16generatedActivationKey\x12_\n" +
+	"\x18remote_transport_profile\x18\x01 \x01(\v2?.google.cloud.networkconnectivity.v1beta.RemoteTransportProfileR\x16remoteTransportProfile\"\xe4\x0e\n" +
+	"\tTransport\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\\\n" +
+	"\x06labels\x18\x04 \x03(\v2>.google.cloud.networkconnectivity.v1beta.Transport.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12j\n" +
+	"\x0eremote_profile\x18\a \x01(\tBC\xe2A\x02\x01\x05\xfaA;\n" +
+	"9networkconnectivity.googleapis.com/RemoteTransportProfileR\rremoteProfile\x12=\n" +
+	"\x17provided_activation_key\x18\b \x01(\tB\x05\xe2A\x02\x01\x05R\x15providedActivationKey\x12>\n" +
+	"\x18generated_activation_key\x18\t \x01(\tB\x04\xe2A\x01\x03R\x16generatedActivationKey\x12`\n" +
 	"\tbandwidth\x18\n" +
-	" \x01(\x0e2<.google.cloud.networkconnectivity.v1beta.Transport.BandwidthB\x03\xe0A\x01R\tbandwidth\x12`\n" +
+	" \x01(\x0e2<.google.cloud.networkconnectivity.v1beta.Transport.BandwidthB\x04\xe2A\x01\x01R\tbandwidth\x12a\n" +
 	"\n" +
-	"stack_type\x18\v \x01(\x0e2<.google.cloud.networkconnectivity.v1beta.Transport.StackTypeB\x03\xe0A\x01R\tstackType\x12S\n" +
-	"\x05state\x18\f \x01(\x0e28.google.cloud.networkconnectivity.v1beta.Transport.StateB\x03\xe0A\x03R\x05state\x12 \n" +
-	"\tmtu_limit\x18\r \x01(\x05B\x03\xe0A\x03R\bmtuLimit\x12(\n" +
-	"\radmin_enabled\x18\x0e \x01(\bB\x03\xe0A\x01R\fadminEnabled\x12C\n" +
-	"\anetwork\x18\x0f \x01(\tB)\xe0A\x01\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x120\n" +
-	"\x11advertised_routes\x18\x10 \x03(\tB\x03\xe0A\x01R\x10advertisedRoutes\x122\n" +
-	"\x11remote_account_id\x18\x11 \x01(\tB\x06\xe0A\x01\xe0A\x05R\x0fremoteAccountId\x12,\n" +
-	"\x0fpeering_network\x18\x12 \x01(\tB\x03\xe0A\x03R\x0epeeringNetwork\x12C\n" +
-	"\x03hub\x18\x13 \x01(\tB1\xe0A\x01\xe0A\x05\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x03hub\x126\n" +
-	"\x13psc_routing_enabled\x18\x14 \x01(\bB\x06\xe0A\x01\xe0A\x05R\x11pscRoutingEnabled\x12'\n" +
-	"\vauto_accept\x18\x15 \x01(\bB\x06\xe0A\x01\xe0A\x05R\n" +
+	"stack_type\x18\v \x01(\x0e2<.google.cloud.networkconnectivity.v1beta.Transport.StackTypeB\x04\xe2A\x01\x01R\tstackType\x12T\n" +
+	"\x05state\x18\f \x01(\x0e28.google.cloud.networkconnectivity.v1beta.Transport.StateB\x04\xe2A\x01\x03R\x05state\x12!\n" +
+	"\tmtu_limit\x18\r \x01(\x05B\x04\xe2A\x01\x03R\bmtuLimit\x12)\n" +
+	"\radmin_enabled\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\fadminEnabled\x12B\n" +
+	"\anetwork\x18\x0f \x01(\tB(\xe2A\x02\x01\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x121\n" +
+	"\x11advertised_routes\x18\x10 \x03(\tB\x04\xe2A\x01\x01R\x10advertisedRoutes\x121\n" +
+	"\x11remote_account_id\x18\x11 \x01(\tB\x05\xe2A\x02\x01\x05R\x0fremoteAccountId\x12-\n" +
+	"\x0fpeering_network\x18\x12 \x01(\tB\x04\xe2A\x01\x03R\x0epeeringNetwork\x12B\n" +
+	"\x03hub\x18\x13 \x01(\tB0\xe2A\x02\x01\x05\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x03hub\x125\n" +
+	"\x13psc_routing_enabled\x18\x14 \x01(\bB\x05\xe2A\x02\x01\x05R\x11pscRoutingEnabled\x12&\n" +
+	"\vauto_accept\x18\x15 \x01(\bB\x05\xe2A\x02\x01\x05R\n" +
 	"autoAccept\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2213,28 +2213,28 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"\bDELETING\x10\x05\x12\x11\n" +
 	"\rDEPROVISIONED\x10\x06:\x89\x01\xeaA\x85\x01\n" +
 	",networkconnectivity.googleapis.com/Transport\x12>projects/{project}/locations/{location}/transports/{transport}*\n" +
-	"transports2\ttransport\"\xe8\x01\n" +
-	"\x15ListTransportsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,networkconnectivity.googleapis.com/TransportR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"transports2\ttransport\"\xed\x01\n" +
+	"\x15ListTransportsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,networkconnectivity.googleapis.com/TransportR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbb\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xbc\x01\n" +
 	"\x16ListTransportsResponse\x12R\n" +
 	"\n" +
 	"transports\x18\x01 \x03(\v22.google.cloud.networkconnectivity.v1beta.TransportR\n" +
 	"transports\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"_\n" +
-	"\x13GetTransportRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",networkconnectivity.googleapis.com/TransportR\x04name\"\x80\x01\n" +
-	"\x10GetStatusRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",networkconnectivity.googleapis.com/TransportR\x04name\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"`\n" +
+	"\x13GetTransportRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",networkconnectivity.googleapis.com/TransportR\x04name\"\x82\x01\n" +
+	"\x10GetStatusRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",networkconnectivity.googleapis.com/TransportR\x04name\x12#\n" +
 	"\n" +
-	"skip_cache\x18\x02 \x01(\bB\x03\xe0A\x01R\tskipCache\"\x85\b\n" +
+	"skip_cache\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\tskipCache\"\x85\b\n" +
 	"\x11GetStatusResponse\x12o\n" +
 	"\x0eoverall_status\x18\x01 \x01(\x0e2H.google.cloud.networkconnectivity.v1beta.GetStatusResponse.OverallStatusR\roverallStatus\x12{\n" +
 	"\x12operational_status\x18\x02 \x01(\x0e2L.google.cloud.networkconnectivity.v1beta.GetStatusResponse.OperationalStatusR\x11operationalStatus\x12~\n" +
@@ -2260,24 +2260,24 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"\x1aMAC_SEC_STATUS_UNSPECIFIED\x10\x00\x12%\n" +
 	"!MAC_SEC_STATUS_ACTIVE_FAIL_CLOSED\x10\x01\x12#\n" +
 	"\x1fMAC_SEC_STATUS_ACTIVE_FAIL_OPEN\x10\x02\x12!\n" +
-	"\x1dMAC_SEC_STATUS_NOT_CONFIGURED\x10\x03\"\x91\x02\n" +
-	"\x16CreateTransportRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,networkconnectivity.googleapis.com/TransportR\x06parent\x12&\n" +
-	"\ftransport_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vtransportId\x12U\n" +
-	"\ttransport\x18\x03 \x01(\v22.google.cloud.networkconnectivity.v1beta.TransportB\x03\xe0A\x02R\ttransport\x12*\n" +
+	"\x1dMAC_SEC_STATUS_NOT_CONFIGURED\x10\x03\"\x95\x02\n" +
+	"\x16CreateTransportRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,networkconnectivity.googleapis.com/TransportR\x06parent\x12'\n" +
+	"\ftransport_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vtransportId\x12V\n" +
+	"\ttransport\x18\x03 \x01(\v22.google.cloud.networkconnectivity.v1beta.TransportB\x04\xe2A\x01\x02R\ttransport\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xdd\x01\n" +
-	"\x16UpdateTransportRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12U\n" +
-	"\ttransport\x18\x02 \x01(\v22.google.cloud.networkconnectivity.v1beta.TransportB\x03\xe0A\x02R\ttransport\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe0\x01\n" +
+	"\x16UpdateTransportRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12V\n" +
+	"\ttransport\x18\x02 \x01(\v22.google.cloud.networkconnectivity.v1beta.TransportB\x04\xe2A\x01\x02R\ttransport\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8e\x01\n" +
-	"\x16DeleteTransportRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",networkconnectivity.googleapis.com/TransportR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x90\x01\n" +
+	"\x16DeleteTransportRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",networkconnectivity.googleapis.com/TransportR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId2\xe1\x11\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId2\xe1\x11\n" +
 	"\x10TransportManager\x12\x8a\x02\n" +
 	"\x1bListRemoteTransportProfiles\x12K.google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesRequest\x1aL.google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesResponse\"P\xdaA\x06parent\x82\xd3\xe4\x93\x02A\x12?/v1beta/{parent=projects/*/locations/*}/remoteTransportProfiles\x12\xf7\x01\n" +
 	"\x19GetRemoteTransportProfile\x12I.google.cloud.networkconnectivity.v1beta.GetRemoteTransportProfileRequest\x1a?.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile\"N\xdaA\x04name\x82\xd3\xe4\x93\x02A\x12?/v1beta/{name=projects/*/locations/*/remoteTransportProfiles/*}\x12\x9c\x02\n" +

@@ -924,7 +924,7 @@ var File_google_cloud_tasks_v2beta3_queue_proto protoreflect.FileDescriptor
 
 const file_google_cloud_tasks_v2beta3_queue_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/tasks/v2beta3/queue.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/tasks/v2beta3/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xab\b\n" +
+	"&google/cloud/tasks/v2beta3/queue.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/tasks/v2beta3/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xad\b\n" +
 	"\x05Queue\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12c\n" +
 	"\x15app_engine_http_queue\x18\x03 \x01(\v2..google.cloud.tasks.v2beta3.AppEngineHttpQueueH\x00R\x12appEngineHttpQueue\x12G\n" +
@@ -939,9 +939,9 @@ const file_google_cloud_tasks_v2beta3_queue_proto_rawDesc = "" +
 	"\btask_ttl\x18\b \x01(\v2\x19.google.protobuf.DurationR\ataskTtl\x12>\n" +
 	"\rtombstone_ttl\x18\t \x01(\v2\x19.google.protobuf.DurationR\ftombstoneTtl\x12r\n" +
 	"\x1astackdriver_logging_config\x18\n" +
-	" \x01(\v24.google.cloud.tasks.v2beta3.StackdriverLoggingConfigR\x18stackdriverLoggingConfig\x12?\n" +
-	"\x04type\x18\v \x01(\x0e2&.google.cloud.tasks.v2beta3.Queue.TypeB\x03\xe0A\x05R\x04type\x12A\n" +
-	"\x05stats\x18\f \x01(\v2&.google.cloud.tasks.v2beta3.QueueStatsB\x03\xe0A\x03R\x05stats\"E\n" +
+	" \x01(\v24.google.cloud.tasks.v2beta3.StackdriverLoggingConfigR\x18stackdriverLoggingConfig\x12@\n" +
+	"\x04type\x18\v \x01(\x0e2&.google.cloud.tasks.v2beta3.Queue.TypeB\x04\xe2A\x01\x05R\x04type\x12B\n" +
+	"\x05stats\x18\f \x01(\v2&.google.cloud.tasks.v2beta3.QueueStatsB\x04\xe2A\x01\x03R\x05stats\"E\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\n" +
@@ -969,15 +969,15 @@ const file_google_cloud_tasks_v2beta3_queue_proto_rawDesc = "" +
 	"maxBackoff\x12#\n" +
 	"\rmax_doublings\x18\x05 \x01(\x05R\fmaxDoublings\"A\n" +
 	"\x18StackdriverLoggingConfig\x12%\n" +
-	"\x0esampling_ratio\x18\x01 \x01(\x01R\rsamplingRatio\"\xdc\x02\n" +
+	"\x0esampling_ratio\x18\x01 \x01(\x01R\rsamplingRatio\"\xe1\x02\n" +
 	"\n" +
-	"QueueStats\x12$\n" +
-	"\vtasks_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\n" +
-	"tasksCount\x12b\n" +
-	"\x1doldest_estimated_arrival_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1aoldestEstimatedArrivalTime\x12@\n" +
-	"\x1aexecuted_last_minute_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x17executedLastMinuteCount\x12C\n" +
-	"\x1bconcurrent_dispatches_count\x18\x04 \x01(\x03B\x03\xe0A\x03R\x19concurrentDispatchesCount\x12=\n" +
-	"\x18effective_execution_rate\x18\x05 \x01(\x01B\x03\xe0A\x03R\x16effectiveExecutionRateBs\n" +
+	"QueueStats\x12%\n" +
+	"\vtasks_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"tasksCount\x12c\n" +
+	"\x1doldest_estimated_arrival_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1aoldestEstimatedArrivalTime\x12A\n" +
+	"\x1aexecuted_last_minute_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x17executedLastMinuteCount\x12D\n" +
+	"\x1bconcurrent_dispatches_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\x19concurrentDispatchesCount\x12>\n" +
+	"\x18effective_execution_rate\x18\x05 \x01(\x01B\x04\xe2A\x01\x03R\x16effectiveExecutionRateBs\n" +
 	"\x1ecom.google.cloud.tasks.v2beta3B\n" +
 	"QueueProtoP\x01ZCcloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb;cloudtaskspbb\x06proto3"
 

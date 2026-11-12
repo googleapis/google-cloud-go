@@ -58,11 +58,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &meetpb.ConnectActiveConferenceRequest{
+//	req := &meetpb.BatchUpdateMembersRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#ConnectActiveConferenceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#BatchUpdateMembersRequest.
 //	}
-//	resp, err := c.ConnectActiveConference(ctx, req)
+//	resp, err := c.BatchUpdateMembers(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

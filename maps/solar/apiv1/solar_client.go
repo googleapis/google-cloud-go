@@ -277,6 +277,37 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetDataLayers = append(client.CallOptions.GetDataLayers, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetGeoTiff = append(client.CallOptions.GetGeoTiff, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "solar",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/solar/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "solar.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FindClosestBuildingInsights = append(client.CallOptions.FindClosestBuildingInsights, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataLayers = append(client.CallOptions.GetDataLayers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGeoTiff = append(client.CallOptions.GetGeoTiff, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "solar",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/solar/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "solar.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FindClosestBuildingInsights = append(client.CallOptions.FindClosestBuildingInsights, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataLayers = append(client.CallOptions.GetDataLayers, gax.WithClientLogging(logging))
+		client.CallOptions.GetGeoTiff = append(client.CallOptions.GetGeoTiff, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -369,6 +400,37 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.FindClosestBuildingInsights = append(callOpts.FindClosestBuildingInsights, gax.WithClientMetrics(metrics))
 		callOpts.GetDataLayers = append(callOpts.GetDataLayers, gax.WithClientMetrics(metrics))
 		callOpts.GetGeoTiff = append(callOpts.GetGeoTiff, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "solar",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/solar/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "solar.googleapis.com",
+			}),
+		)
+
+		callOpts.FindClosestBuildingInsights = append(callOpts.FindClosestBuildingInsights, gax.WithClientTracing(tracing))
+		callOpts.GetDataLayers = append(callOpts.GetDataLayers, gax.WithClientTracing(tracing))
+		callOpts.GetGeoTiff = append(callOpts.GetGeoTiff, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "solar",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/solar/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "solar.googleapis.com",
+			}),
+		)
+
+		callOpts.FindClosestBuildingInsights = append(callOpts.FindClosestBuildingInsights, gax.WithClientLogging(logging))
+		callOpts.GetDataLayers = append(callOpts.GetDataLayers, gax.WithClientLogging(logging))
+		callOpts.GetGeoTiff = append(callOpts.GetGeoTiff, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
@@ -477,6 +539,11 @@ func (c *restClient) FindClosestBuildingInsights(ctx context.Context, req *solar
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetAdditionalInsights(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("additionalInsights", fmt.Sprintf("%v", item))
+		}
+	}
 	if req.GetExactQualityRequired() {
 		params.Add("exactQualityRequired", fmt.Sprintf("%v", req.GetExactQualityRequired()))
 	}

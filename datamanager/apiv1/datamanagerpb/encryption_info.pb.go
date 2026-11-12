@@ -460,25 +460,25 @@ const file_google_ads_datamanager_v1_encryption_info_proto_rawDesc = "" +
 	"\x14gcp_wrapped_key_info\x18\x01 \x01(\v2,.google.ads.datamanager.v1.GcpWrappedKeyInfoH\x00R\x11gcpWrappedKeyInfo\x12_\n" +
 	"\x14aws_wrapped_key_info\x18\x02 \x01(\v2,.google.ads.datamanager.v1.AwsWrappedKeyInfoH\x00R\x11awsWrappedKeyInfo\x12a\n" +
 	"\x14coordinator_key_info\x18\x03 \x01(\v2-.google.ads.datamanager.v1.CoordinatorKeyInfoH\x00R\x12coordinatorKeyInfoB\r\n" +
-	"\vwrapped_key\"\x96\x02\n" +
-	"\x11GcpWrappedKeyInfo\x12T\n" +
-	"\bkey_type\x18\x01 \x01(\x0e24.google.ads.datamanager.v1.GcpWrappedKeyInfo.KeyTypeB\x03\xe0A\x02R\akeyType\x12&\n" +
-	"\fwip_provider\x18\x02 \x01(\tB\x03\xe0A\x02R\vwipProvider\x12\x1c\n" +
-	"\akek_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\x06kekUri\x12(\n" +
-	"\rencrypted_dek\x18\x04 \x01(\tB\x03\xe0A\x02R\fencryptedDek\";\n" +
+	"\vwrapped_key\"\x9a\x02\n" +
+	"\x11GcpWrappedKeyInfo\x12U\n" +
+	"\bkey_type\x18\x01 \x01(\x0e24.google.ads.datamanager.v1.GcpWrappedKeyInfo.KeyTypeB\x04\xe2A\x01\x02R\akeyType\x12'\n" +
+	"\fwip_provider\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vwipProvider\x12\x1d\n" +
+	"\akek_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06kekUri\x12)\n" +
+	"\rencrypted_dek\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\fencryptedDek\";\n" +
 	"\aKeyType\x12\x18\n" +
 	"\x14KEY_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
-	"\x12XCHACHA20_POLY1305\x10\x01\"\x8e\x02\n" +
-	"\x11AwsWrappedKeyInfo\x12T\n" +
-	"\bkey_type\x18\x01 \x01(\x0e24.google.ads.datamanager.v1.AwsWrappedKeyInfo.KeyTypeB\x03\xe0A\x02R\akeyType\x12\x1e\n" +
-	"\brole_arn\x18\x02 \x01(\tB\x03\xe0A\x02R\aroleArn\x12\x1c\n" +
-	"\akek_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\x06kekUri\x12(\n" +
-	"\rencrypted_dek\x18\x04 \x01(\tB\x03\xe0A\x02R\fencryptedDek\";\n" +
+	"\x12XCHACHA20_POLY1305\x10\x01\"\x92\x02\n" +
+	"\x11AwsWrappedKeyInfo\x12U\n" +
+	"\bkey_type\x18\x01 \x01(\x0e24.google.ads.datamanager.v1.AwsWrappedKeyInfo.KeyTypeB\x04\xe2A\x01\x02R\akeyType\x12\x1f\n" +
+	"\brole_arn\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aroleArn\x12\x1d\n" +
+	"\akek_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06kekUri\x12)\n" +
+	"\rencrypted_dek\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\fencryptedDek\";\n" +
 	"\aKeyType\x12\x18\n" +
 	"\x14KEY_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
-	"\x12XCHACHA20_POLY1305\x10\x01\"0\n" +
-	"\x12CoordinatorKeyInfo\x12\x1a\n" +
-	"\x06key_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x05keyIdB\xd0\x01\n" +
+	"\x12XCHACHA20_POLY1305\x10\x01\"1\n" +
+	"\x12CoordinatorKeyInfo\x12\x1b\n" +
+	"\x06key_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05keyIdB\xd0\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x13EncryptionInfoProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

@@ -48,6 +48,8 @@ const (
 	NetApp_UpdateVolume_FullMethodName                = "/google.cloud.netapp.v1.NetApp/UpdateVolume"
 	NetApp_DeleteVolume_FullMethodName                = "/google.cloud.netapp.v1.NetApp/DeleteVolume"
 	NetApp_RevertVolume_FullMethodName                = "/google.cloud.netapp.v1.NetApp/RevertVolume"
+	NetApp_StartSplit_FullMethodName                  = "/google.cloud.netapp.v1.NetApp/StartSplit"
+	NetApp_GetSplitStatus_FullMethodName              = "/google.cloud.netapp.v1.NetApp/GetSplitStatus"
 	NetApp_EstablishVolumePeering_FullMethodName      = "/google.cloud.netapp.v1.NetApp/EstablishVolumePeering"
 	NetApp_ListSnapshots_FullMethodName               = "/google.cloud.netapp.v1.NetApp/ListSnapshots"
 	NetApp_GetSnapshot_FullMethodName                 = "/google.cloud.netapp.v1.NetApp/GetSnapshot"
@@ -106,6 +108,9 @@ const (
 	NetApp_ExecuteOntapGet_FullMethodName             = "/google.cloud.netapp.v1.NetApp/ExecuteOntapGet"
 	NetApp_ExecuteOntapDelete_FullMethodName          = "/google.cloud.netapp.v1.NetApp/ExecuteOntapDelete"
 	NetApp_ExecuteOntapPatch_FullMethodName           = "/google.cloud.netapp.v1.NetApp/ExecuteOntapPatch"
+	NetApp_RestoreVolume_FullMethodName               = "/google.cloud.netapp.v1.NetApp/RestoreVolume"
+	NetApp_ListBackupConfigs_FullMethodName           = "/google.cloud.netapp.v1.NetApp/ListBackupConfigs"
+	NetApp_UpdateBackupConfig_FullMethodName          = "/google.cloud.netapp.v1.NetApp/UpdateBackupConfig"
 )
 
 // NetAppClient is the client API for NetApp service.
@@ -142,6 +147,15 @@ type NetAppClient interface {
 	// Warning! This operation will permanently revert all changes made after the
 	// snapshot was created.
 	RevertVolume(ctx context.Context, in *RevertVolumeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Splits a clone volume from its source volume.
+	// This operation will only work for volumes which have clone_details
+	// set(clones).
+	// For volumes that are not clones, this operation will return an error.
+	StartSplit(ctx context.Context, in *StartSplitRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Retrieves the current state, progress, and details of a split operation for
+	// a volume. This method is relevant when the volume is a clone. For volumes
+	// that are not clones, this method will return an error.
+	GetSplitStatus(ctx context.Context, in *GetSplitStatusRequest, opts ...grpc.CallOption) (*SplitStatus, error)
 	// Establish volume peering. This is used to establish cluster and svm
 	// peerings between the GCNV and OnPrem clusters.
 	EstablishVolumePeering(ctx context.Context, in *EstablishVolumePeeringRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -259,18 +273,24 @@ type NetAppClient interface {
 	UpdateHostGroup(ctx context.Context, in *UpdateHostGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a host group.
 	DeleteHostGroup(ctx context.Context, in *DeleteHostGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// `ExecuteOntapPost` dispatches the ONTAP `POST` request to the
+	// `ExecuteOntapPost` sends the ONTAP `POST` request to the
 	// `StoragePool` cluster.
 	ExecuteOntapPost(ctx context.Context, in *ExecuteOntapPostRequest, opts ...grpc.CallOption) (*ExecuteOntapPostResponse, error)
-	// `ExecuteOntapGet` dispatches the ONTAP `GET` request to the
+	// `ExecuteOntapGet` sends the ONTAP `GET` request to the
 	// `StoragePool` cluster.
 	ExecuteOntapGet(ctx context.Context, in *ExecuteOntapGetRequest, opts ...grpc.CallOption) (*ExecuteOntapGetResponse, error)
-	// `ExecuteOntapDelete` dispatches the ONTAP `DELETE` request to the
+	// `ExecuteOntapDelete` sends the ONTAP `DELETE` request to the
 	// `StoragePool` cluster.
 	ExecuteOntapDelete(ctx context.Context, in *ExecuteOntapDeleteRequest, opts ...grpc.CallOption) (*ExecuteOntapDeleteResponse, error)
-	// `ExecuteOntapPatch` dispatches the ONTAP `PATCH` request to the
+	// `ExecuteOntapPatch` sends the ONTAP `PATCH` request to the
 	// `StoragePool` cluster.
 	ExecuteOntapPatch(ctx context.Context, in *ExecuteOntapPatchRequest, opts ...grpc.CallOption) (*ExecuteOntapPatchResponse, error)
+	// Restores a backup to an ONTAP-mode volume.
+	RestoreVolume(ctx context.Context, in *RestoreVolumeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists backup configurations for all volumes in an ONTAP-mode Storage Pool.
+	ListBackupConfigs(ctx context.Context, in *ListBackupConfigsRequest, opts ...grpc.CallOption) (*ListBackupConfigsResponse, error)
+	// Updates the backup configuration for an ONTAP-mode volume.
+	UpdateBackupConfig(ctx context.Context, in *UpdateBackupConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type netAppClient struct {
@@ -392,6 +412,24 @@ func (c *netAppClient) DeleteVolume(ctx context.Context, in *DeleteVolumeRequest
 func (c *netAppClient) RevertVolume(ctx context.Context, in *RevertVolumeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, NetApp_RevertVolume_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *netAppClient) StartSplit(ctx context.Context, in *StartSplitRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, NetApp_StartSplit_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *netAppClient) GetSplitStatus(ctx context.Context, in *GetSplitStatusRequest, opts ...grpc.CallOption) (*SplitStatus, error) {
+	out := new(SplitStatus)
+	err := c.cc.Invoke(ctx, NetApp_GetSplitStatus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -920,6 +958,33 @@ func (c *netAppClient) ExecuteOntapPatch(ctx context.Context, in *ExecuteOntapPa
 	return out, nil
 }
 
+func (c *netAppClient) RestoreVolume(ctx context.Context, in *RestoreVolumeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, NetApp_RestoreVolume_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *netAppClient) ListBackupConfigs(ctx context.Context, in *ListBackupConfigsRequest, opts ...grpc.CallOption) (*ListBackupConfigsResponse, error) {
+	out := new(ListBackupConfigsResponse)
+	err := c.cc.Invoke(ctx, NetApp_ListBackupConfigs_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *netAppClient) UpdateBackupConfig(ctx context.Context, in *UpdateBackupConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, NetApp_UpdateBackupConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NetAppServer is the server API for NetApp service.
 // All implementations should embed UnimplementedNetAppServer
 // for forward compatibility
@@ -954,6 +1019,15 @@ type NetAppServer interface {
 	// Warning! This operation will permanently revert all changes made after the
 	// snapshot was created.
 	RevertVolume(context.Context, *RevertVolumeRequest) (*longrunningpb.Operation, error)
+	// Splits a clone volume from its source volume.
+	// This operation will only work for volumes which have clone_details
+	// set(clones).
+	// For volumes that are not clones, this operation will return an error.
+	StartSplit(context.Context, *StartSplitRequest) (*longrunningpb.Operation, error)
+	// Retrieves the current state, progress, and details of a split operation for
+	// a volume. This method is relevant when the volume is a clone. For volumes
+	// that are not clones, this method will return an error.
+	GetSplitStatus(context.Context, *GetSplitStatusRequest) (*SplitStatus, error)
 	// Establish volume peering. This is used to establish cluster and svm
 	// peerings between the GCNV and OnPrem clusters.
 	EstablishVolumePeering(context.Context, *EstablishVolumePeeringRequest) (*longrunningpb.Operation, error)
@@ -1071,18 +1145,24 @@ type NetAppServer interface {
 	UpdateHostGroup(context.Context, *UpdateHostGroupRequest) (*longrunningpb.Operation, error)
 	// Deletes a host group.
 	DeleteHostGroup(context.Context, *DeleteHostGroupRequest) (*longrunningpb.Operation, error)
-	// `ExecuteOntapPost` dispatches the ONTAP `POST` request to the
+	// `ExecuteOntapPost` sends the ONTAP `POST` request to the
 	// `StoragePool` cluster.
 	ExecuteOntapPost(context.Context, *ExecuteOntapPostRequest) (*ExecuteOntapPostResponse, error)
-	// `ExecuteOntapGet` dispatches the ONTAP `GET` request to the
+	// `ExecuteOntapGet` sends the ONTAP `GET` request to the
 	// `StoragePool` cluster.
 	ExecuteOntapGet(context.Context, *ExecuteOntapGetRequest) (*ExecuteOntapGetResponse, error)
-	// `ExecuteOntapDelete` dispatches the ONTAP `DELETE` request to the
+	// `ExecuteOntapDelete` sends the ONTAP `DELETE` request to the
 	// `StoragePool` cluster.
 	ExecuteOntapDelete(context.Context, *ExecuteOntapDeleteRequest) (*ExecuteOntapDeleteResponse, error)
-	// `ExecuteOntapPatch` dispatches the ONTAP `PATCH` request to the
+	// `ExecuteOntapPatch` sends the ONTAP `PATCH` request to the
 	// `StoragePool` cluster.
 	ExecuteOntapPatch(context.Context, *ExecuteOntapPatchRequest) (*ExecuteOntapPatchResponse, error)
+	// Restores a backup to an ONTAP-mode volume.
+	RestoreVolume(context.Context, *RestoreVolumeRequest) (*longrunningpb.Operation, error)
+	// Lists backup configurations for all volumes in an ONTAP-mode Storage Pool.
+	ListBackupConfigs(context.Context, *ListBackupConfigsRequest) (*ListBackupConfigsResponse, error)
+	// Updates the backup configuration for an ONTAP-mode volume.
+	UpdateBackupConfig(context.Context, *UpdateBackupConfigRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedNetAppServer should be embedded to have forward compatible implementations.
@@ -1127,6 +1207,12 @@ func (UnimplementedNetAppServer) DeleteVolume(context.Context, *DeleteVolumeRequ
 }
 func (UnimplementedNetAppServer) RevertVolume(context.Context, *RevertVolumeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RevertVolume not implemented")
+}
+func (UnimplementedNetAppServer) StartSplit(context.Context, *StartSplitRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartSplit not implemented")
+}
+func (UnimplementedNetAppServer) GetSplitStatus(context.Context, *GetSplitStatusRequest) (*SplitStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSplitStatus not implemented")
 }
 func (UnimplementedNetAppServer) EstablishVolumePeering(context.Context, *EstablishVolumePeeringRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EstablishVolumePeering not implemented")
@@ -1301,6 +1387,15 @@ func (UnimplementedNetAppServer) ExecuteOntapDelete(context.Context, *ExecuteOnt
 }
 func (UnimplementedNetAppServer) ExecuteOntapPatch(context.Context, *ExecuteOntapPatchRequest) (*ExecuteOntapPatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecuteOntapPatch not implemented")
+}
+func (UnimplementedNetAppServer) RestoreVolume(context.Context, *RestoreVolumeRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RestoreVolume not implemented")
+}
+func (UnimplementedNetAppServer) ListBackupConfigs(context.Context, *ListBackupConfigsRequest) (*ListBackupConfigsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBackupConfigs not implemented")
+}
+func (UnimplementedNetAppServer) UpdateBackupConfig(context.Context, *UpdateBackupConfigRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBackupConfig not implemented")
 }
 
 // UnsafeNetAppServer may be embedded to opt out of forward compatibility for this service.
@@ -1544,6 +1639,42 @@ func _NetApp_RevertVolume_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(NetAppServer).RevertVolume(ctx, req.(*RevertVolumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NetApp_StartSplit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartSplitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).StartSplit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_StartSplit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).StartSplit(ctx, req.(*StartSplitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NetApp_GetSplitStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSplitStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).GetSplitStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_GetSplitStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).GetSplitStatus(ctx, req.(*GetSplitStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2592,6 +2723,60 @@ func _NetApp_ExecuteOntapPatch_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NetApp_RestoreVolume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreVolumeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).RestoreVolume(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_RestoreVolume_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).RestoreVolume(ctx, req.(*RestoreVolumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NetApp_ListBackupConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBackupConfigsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).ListBackupConfigs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_ListBackupConfigs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).ListBackupConfigs(ctx, req.(*ListBackupConfigsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NetApp_UpdateBackupConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateBackupConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).UpdateBackupConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_UpdateBackupConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).UpdateBackupConfig(ctx, req.(*UpdateBackupConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NetApp_ServiceDesc is the grpc.ServiceDesc for NetApp service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2650,6 +2835,14 @@ var NetApp_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RevertVolume",
 			Handler:    _NetApp_RevertVolume_Handler,
+		},
+		{
+			MethodName: "StartSplit",
+			Handler:    _NetApp_StartSplit_Handler,
+		},
+		{
+			MethodName: "GetSplitStatus",
+			Handler:    _NetApp_GetSplitStatus_Handler,
 		},
 		{
 			MethodName: "EstablishVolumePeering",
@@ -2882,6 +3075,18 @@ var NetApp_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExecuteOntapPatch",
 			Handler:    _NetApp_ExecuteOntapPatch_Handler,
+		},
+		{
+			MethodName: "RestoreVolume",
+			Handler:    _NetApp_RestoreVolume_Handler,
+		},
+		{
+			MethodName: "ListBackupConfigs",
+			Handler:    _NetApp_ListBackupConfigs_Handler,
+		},
+		{
+			MethodName: "UpdateBackupConfig",
+			Handler:    _NetApp_UpdateBackupConfig_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

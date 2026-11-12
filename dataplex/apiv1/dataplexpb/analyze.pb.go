@@ -1057,78 +1057,78 @@ var File_google_cloud_dataplex_v1_analyze_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_analyze_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/dataplex/v1/analyze.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dataplex/v1/resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe6\x0f\n" +
-	"\vEnvironment\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x03\xfaA%\n" +
-	"#dataplex.googleapis.com/EnvironmentR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12N\n" +
-	"\x06labels\x18\x06 \x03(\v21.google.cloud.dataplex.v1.Environment.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12:\n" +
-	"\x05state\x18\b \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x03\xe0A\x03R\x05state\x12n\n" +
-	"\x13infrastructure_spec\x18d \x01(\v28.google.cloud.dataplex.v1.Environment.InfrastructureSpecB\x03\xe0A\x02R\x12infrastructureSpec\x12Y\n" +
-	"\fsession_spec\x18e \x01(\v21.google.cloud.dataplex.v1.Environment.SessionSpecB\x03\xe0A\x01R\vsessionSpec\x12_\n" +
-	"\x0esession_status\x18f \x01(\v23.google.cloud.dataplex.v1.Environment.SessionStatusB\x03\xe0A\x03R\rsessionStatus\x12S\n" +
-	"\tendpoints\x18\xc8\x01 \x01(\v2/.google.cloud.dataplex.v1.Environment.EndpointsB\x03\xe0A\x03R\tendpoints\x1a\xe2\x05\n" +
-	"\x12InfrastructureSpec\x12j\n" +
-	"\acompute\x182 \x01(\v2I.google.cloud.dataplex.v1.Environment.InfrastructureSpec.ComputeResourcesB\x03\xe0A\x01H\x00R\acompute\x12i\n" +
-	"\bos_image\x18d \x01(\v2G.google.cloud.dataplex.v1.Environment.InfrastructureSpec.OsImageRuntimeB\x03\xe0A\x02H\x01R\aosImage\x1a\x88\x01\n" +
-	"\x10ComputeResources\x12%\n" +
-	"\fdisk_size_gb\x18\x01 \x01(\x05B\x03\xe0A\x01R\n" +
-	"diskSizeGb\x12\"\n" +
+	"&google/cloud/dataplex/v1/analyze.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dataplex/v1/resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x80\x10\n" +
+	"\vEnvironment\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x03\xfaA%\n" +
+	"#dataplex.googleapis.com/EnvironmentR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12O\n" +
+	"\x06labels\x18\x06 \x03(\v21.google.cloud.dataplex.v1.Environment.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12;\n" +
+	"\x05state\x18\b \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x04\xe2A\x01\x03R\x05state\x12o\n" +
+	"\x13infrastructure_spec\x18d \x01(\v28.google.cloud.dataplex.v1.Environment.InfrastructureSpecB\x04\xe2A\x01\x02R\x12infrastructureSpec\x12Z\n" +
+	"\fsession_spec\x18e \x01(\v21.google.cloud.dataplex.v1.Environment.SessionSpecB\x04\xe2A\x01\x01R\vsessionSpec\x12`\n" +
+	"\x0esession_status\x18f \x01(\v23.google.cloud.dataplex.v1.Environment.SessionStatusB\x04\xe2A\x01\x03R\rsessionStatus\x12T\n" +
+	"\tendpoints\x18\xc8\x01 \x01(\v2/.google.cloud.dataplex.v1.Environment.EndpointsB\x04\xe2A\x01\x03R\tendpoints\x1a\xeb\x05\n" +
+	"\x12InfrastructureSpec\x12k\n" +
+	"\acompute\x182 \x01(\v2I.google.cloud.dataplex.v1.Environment.InfrastructureSpec.ComputeResourcesB\x04\xe2A\x01\x01H\x00R\acompute\x12j\n" +
+	"\bos_image\x18d \x01(\v2G.google.cloud.dataplex.v1.Environment.InfrastructureSpec.OsImageRuntimeB\x04\xe2A\x01\x02H\x01R\aosImage\x1a\x8b\x01\n" +
+	"\x10ComputeResources\x12&\n" +
+	"\fdisk_size_gb\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"diskSizeGb\x12#\n" +
 	"\n" +
-	"node_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\tnodeCount\x12)\n" +
-	"\x0emax_node_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\fmaxNodeCount\x1a\xd1\x02\n" +
-	"\x0eOsImageRuntime\x12(\n" +
-	"\rimage_version\x18\x01 \x01(\tB\x03\xe0A\x02R\fimageVersion\x12*\n" +
-	"\x0ejava_libraries\x18\x02 \x03(\tB\x03\xe0A\x01R\rjavaLibraries\x12,\n" +
-	"\x0fpython_packages\x18\x03 \x03(\tB\x03\xe0A\x01R\x0epythonPackages\x12|\n" +
+	"node_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\tnodeCount\x12*\n" +
+	"\x0emax_node_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\fmaxNodeCount\x1a\xd5\x02\n" +
+	"\x0eOsImageRuntime\x12)\n" +
+	"\rimage_version\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fimageVersion\x12+\n" +
+	"\x0ejava_libraries\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\rjavaLibraries\x12-\n" +
+	"\x0fpython_packages\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x0epythonPackages\x12}\n" +
 	"\n" +
-	"properties\x18\x04 \x03(\v2W.google.cloud.dataplex.v1.Environment.InfrastructureSpec.OsImageRuntime.PropertiesEntryB\x03\xe0A\x01R\n" +
+	"properties\x18\x04 \x03(\v2W.google.cloud.dataplex.v1.Environment.InfrastructureSpec.OsImageRuntime.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
 	"properties\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\v\n" +
 	"\tresourcesB\t\n" +
-	"\aruntime\x1a\x8e\x01\n" +
-	"\vSessionSpec\x12J\n" +
-	"\x11max_idle_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0fmaxIdleDuration\x123\n" +
-	"\x13enable_fast_startup\x18\x02 \x01(\bB\x03\xe0A\x01R\x11enableFastStartup\x1a,\n" +
-	"\rSessionStatus\x12\x1b\n" +
-	"\x06active\x18\x01 \x01(\bB\x03\xe0A\x03R\x06active\x1aE\n" +
-	"\tEndpoints\x12!\n" +
-	"\tnotebooks\x18\x01 \x01(\tB\x03\xe0A\x03R\tnotebooks\x12\x15\n" +
-	"\x03sql\x18\x02 \x01(\tB\x03\xe0A\x03R\x03sql\x1a9\n" +
+	"\aruntime\x1a\x90\x01\n" +
+	"\vSessionSpec\x12K\n" +
+	"\x11max_idle_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0fmaxIdleDuration\x124\n" +
+	"\x13enable_fast_startup\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x11enableFastStartup\x1a-\n" +
+	"\rSessionStatus\x12\x1c\n" +
+	"\x06active\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\x06active\x1aG\n" +
+	"\tEndpoints\x12\"\n" +
+	"\tnotebooks\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tnotebooks\x12\x16\n" +
+	"\x03sql\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03sql\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:y\xeaAv\n" +
-	"#dataplex.googleapis.com/Environment\x12Oprojects/{project}/locations/{location}/lakes/{lake}/environments/{environment}\"\xa3\b\n" +
-	"\aContent\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fdataplex.googleapis.com/ContentR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12\x17\n" +
-	"\x04path\x18\x03 \x01(\tB\x03\xe0A\x02R\x04path\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12J\n" +
-	"\x06labels\x18\x06 \x03(\v2-.google.cloud.dataplex.v1.Content.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12\"\n" +
-	"\tdata_text\x18\t \x01(\tB\x03\xe0A\x02H\x00R\bdataText\x12L\n" +
+	"#dataplex.googleapis.com/Environment\x12Oprojects/{project}/locations/{location}/lakes/{lake}/environments/{environment}\"\xad\b\n" +
+	"\aContent\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fdataplex.googleapis.com/ContentR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12\x18\n" +
+	"\x04path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12K\n" +
+	"\x06labels\x18\x06 \x03(\v2-.google.cloud.dataplex.v1.Content.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12#\n" +
+	"\tdata_text\x18\t \x01(\tB\x04\xe2A\x01\x02H\x00R\bdataText\x12L\n" +
 	"\n" +
 	"sql_script\x18d \x01(\v2+.google.cloud.dataplex.v1.Content.SqlScriptH\x01R\tsqlScript\x12H\n" +
-	"\bnotebook\x18e \x01(\v2*.google.cloud.dataplex.v1.Content.NotebookH\x01R\bnotebook\x1a\x99\x01\n" +
-	"\tSqlScript\x12T\n" +
-	"\x06engine\x18\x01 \x01(\x0e27.google.cloud.dataplex.v1.Content.SqlScript.QueryEngineB\x03\xe0A\x02R\x06engine\"6\n" +
+	"\bnotebook\x18e \x01(\v2*.google.cloud.dataplex.v1.Content.NotebookH\x01R\bnotebook\x1a\x9a\x01\n" +
+	"\tSqlScript\x12U\n" +
+	"\x06engine\x18\x01 \x01(\x0e27.google.cloud.dataplex.v1.Content.SqlScript.QueryEngineB\x04\xe2A\x01\x02R\x06engine\"6\n" +
 	"\vQueryEngine\x12\x1c\n" +
 	"\x18QUERY_ENGINE_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05SPARK\x10\x02\x1a\x9f\x01\n" +
-	"\bNotebook\x12[\n" +
-	"\vkernel_type\x18\x01 \x01(\x0e25.google.cloud.dataplex.v1.Content.Notebook.KernelTypeB\x03\xe0A\x02R\n" +
+	"\x05SPARK\x10\x02\x1a\xa0\x01\n" +
+	"\bNotebook\x12\\\n" +
+	"\vkernel_type\x18\x01 \x01(\x0e25.google.cloud.dataplex.v1.Content.Notebook.KernelTypeB\x04\xe2A\x01\x02R\n" +
 	"kernelType\"6\n" +
 	"\n" +
 	"KernelType\x12\x1b\n" +
@@ -1139,14 +1139,14 @@ const file_google_cloud_dataplex_v1_analyze_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:l\xeaAi\n" +
 	"\x1fdataplex.googleapis.com/Content\x12Fprojects/{project}/locations/{location}/lakes/{lake}/content/{content}B\x06\n" +
 	"\x04dataB\t\n" +
-	"\acontent\"\xee\x02\n" +
-	"\aSession\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fdataplex.googleapis.com/SessionR\x04name\x12\x1c\n" +
-	"\auser_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x06userId\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\x05state\x18\x04 \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x03\xe0A\x03R\x05state:\x89\x01\xeaA\x85\x01\n" +
+	"\acontent\"\xf2\x02\n" +
+	"\aSession\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fdataplex.googleapis.com/SessionR\x04name\x12\x1d\n" +
+	"\auser_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06userId\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\x05state\x18\x04 \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x04\xe2A\x01\x03R\x05state:\x89\x01\xeaA\x85\x01\n" +
 	"\x1fdataplex.googleapis.com/Session\x12bprojects/{project}/locations/{location}/lakes/{lake}/environments/{environment}/sessions/{session}Bh\n" +
 	"\x1ccom.google.cloud.dataplex.v1B\fAnalyzeProtoP\x01Z8cloud.google.com/go/dataplex/apiv1/dataplexpb;dataplexpbb\x06proto3"
 

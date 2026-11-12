@@ -162,16 +162,16 @@ var File_google_cloud_servicedirectory_v1beta1_service_proto protoreflect.FileDe
 
 const file_google_cloud_servicedirectory_v1beta1_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/servicedirectory/v1beta1/service.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/servicedirectory/v1beta1/endpoint.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xae\x04\n" +
-	"\aService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12]\n" +
-	"\bmetadata\x18\x02 \x03(\v2<.google.cloud.servicedirectory.v1beta1.Service.MetadataEntryB\x03\xe0A\x01R\bmetadata\x12R\n" +
-	"\tendpoints\x18\x03 \x03(\v2/.google.cloud.servicedirectory.v1beta1.EndpointB\x03\xe0A\x03R\tendpoints\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x15\n" +
-	"\x03uid\x18\b \x01(\tB\x03\xe0A\x03R\x03uid\x1a;\n" +
+	"3google/cloud/servicedirectory/v1beta1/service.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/servicedirectory/v1beta1/endpoint.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb4\x04\n" +
+	"\aService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12^\n" +
+	"\bmetadata\x18\x02 \x03(\v2<.google.cloud.servicedirectory.v1beta1.Service.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x12S\n" +
+	"\tendpoints\x18\x03 \x03(\v2/.google.cloud.servicedirectory.v1beta1.EndpointB\x04\xe2A\x01\x03R\tendpoints\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x16\n" +
+	"\x03uid\x18\b \x01(\tB\x04\xe2A\x01\x03R\x03uid\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x7f\xeaA|\n" +

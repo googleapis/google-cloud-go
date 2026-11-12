@@ -592,18 +592,18 @@ var File_google_shopping_merchant_lfp_v1beta_lfpmerchantstate_proto protoreflect
 
 const file_google_shopping_merchant_lfp_v1beta_lfpmerchantstate_proto_rawDesc = "" +
 	"\n" +
-	":google/shopping/merchant/lfp/v1beta/lfpmerchantstate.proto\x12#google.shopping.merchant.lfp.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd7\x11\n" +
-	"\x10LfpMerchantState\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1f\n" +
+	":google/shopping/merchant/lfp/v1beta/lfpmerchantstate.proto\x12#google.shopping.merchant.lfp.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xde\x11\n" +
+	"\x10LfpMerchantState\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1f\n" +
 	"\vlinked_gbps\x18\x02 \x01(\x03R\n" +
-	"linkedGbps\x12k\n" +
-	"\fstore_states\x18\x03 \x03(\v2C.google.shopping.merchant.lfp.v1beta.LfpMerchantState.LfpStoreStateB\x03\xe0A\x03R\vstoreStates\x12m\n" +
+	"linkedGbps\x12l\n" +
+	"\fstore_states\x18\x03 \x03(\v2C.google.shopping.merchant.lfp.v1beta.LfpMerchantState.LfpStoreStateB\x04\xe2A\x01\x03R\vstoreStates\x12m\n" +
 	"\x0finventory_stats\x18\x04 \x01(\v2D.google.shopping.merchant.lfp.v1beta.LfpMerchantState.InventoryStatsR\x0einventoryStats\x12p\n" +
 	"\x10country_settings\x18\x05 \x03(\v2E.google.shopping.merchant.lfp.v1beta.LfpMerchantState.CountrySettingsR\x0fcountrySettings\x1a\xea\x02\n" +
-	"\rLfpStoreState\x12%\n" +
+	"\rLfpStoreState\x12$\n" +
 	"\n" +
-	"store_code\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tstoreCode\x12\x82\x01\n" +
-	"\x0ematching_state\x18\x02 \x01(\x0e2V.google.shopping.merchant.lfp.v1beta.LfpMerchantState.LfpStoreState.StoreMatchingStateB\x03\xe0A\x03R\rmatchingState\x12.\n" +
+	"store_code\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\tstoreCode\x12\x83\x01\n" +
+	"\x0ematching_state\x18\x02 \x01(\x0e2V.google.shopping.merchant.lfp.v1beta.LfpMerchantState.LfpStoreState.StoreMatchingStateB\x04\xe2A\x01\x03R\rmatchingState\x12.\n" +
 	"\x13matching_state_hint\x18\x03 \x01(\tR\x11matchingStateHint\"}\n" +
 	"\x12StoreMatchingState\x12$\n" +
 	" STORE_MATCHING_STATE_UNSPECIFIED\x10\x00\x12 \n" +
@@ -613,16 +613,16 @@ const file_google_shopping_merchant_lfp_v1beta_lfpmerchantstate_proto_rawDesc = 
 	"\x11submitted_entries\x18\x01 \x01(\x03R\x10submittedEntries\x12;\n" +
 	"\x1asubmitted_in_stock_entries\x18\x02 \x01(\x03R\x17submittedInStockEntries\x12/\n" +
 	"\x13unsubmitted_entries\x18\x03 \x01(\x03R\x12unsubmittedEntries\x12-\n" +
-	"\x12submitted_products\x18\x04 \x01(\x03R\x11submittedProducts\x1a\xdc\b\n" +
-	"\x0fCountrySettings\x12$\n" +
-	"\vregion_code\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x12submitted_products\x18\x04 \x01(\x03R\x11submittedProducts\x1a\xe1\b\n" +
+	"\x0fCountrySettings\x12%\n" +
+	"\vregion_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"regionCode\x12=\n" +
 	"\x1bfree_local_listings_enabled\x18\x02 \x01(\bR\x18freeLocalListingsEnabled\x12=\n" +
-	"\x1blocal_inventory_ads_enabled\x18\x03 \x01(\bR\x18localInventoryAdsEnabled\x12\x9e\x01\n" +
-	"\x1cinventory_verification_state\x18\x04 \x01(\x0e2W.google.shopping.merchant.lfp.v1beta.LfpMerchantState.CountrySettings.VerificationStateB\x03\xe0A\x03R\x1ainventoryVerificationState\x12\x86\x01\n" +
-	"\x11product_page_type\x18\x05 \x01(\x0e2U.google.shopping.merchant.lfp.v1beta.LfpMerchantState.CountrySettings.ProductPageTypeB\x03\xe0A\x03R\x0fproductPageType\x12\xa9\x01\n" +
-	"\"instock_serving_verification_state\x18\x06 \x01(\x0e2W.google.shopping.merchant.lfp.v1beta.LfpMerchantState.CountrySettings.VerificationStateB\x03\xe0A\x03R\x1finstockServingVerificationState\x12\xa7\x01\n" +
-	"!pickup_serving_verification_state\x18\a \x01(\x0e2W.google.shopping.merchant.lfp.v1beta.LfpMerchantState.CountrySettings.VerificationStateB\x03\xe0A\x03R\x1epickupServingVerificationState\"\xa1\x01\n" +
+	"\x1blocal_inventory_ads_enabled\x18\x03 \x01(\bR\x18localInventoryAdsEnabled\x12\x9f\x01\n" +
+	"\x1cinventory_verification_state\x18\x04 \x01(\x0e2W.google.shopping.merchant.lfp.v1beta.LfpMerchantState.CountrySettings.VerificationStateB\x04\xe2A\x01\x03R\x1ainventoryVerificationState\x12\x87\x01\n" +
+	"\x11product_page_type\x18\x05 \x01(\x0e2U.google.shopping.merchant.lfp.v1beta.LfpMerchantState.CountrySettings.ProductPageTypeB\x04\xe2A\x01\x03R\x0fproductPageType\x12\xaa\x01\n" +
+	"\"instock_serving_verification_state\x18\x06 \x01(\x0e2W.google.shopping.merchant.lfp.v1beta.LfpMerchantState.CountrySettings.VerificationStateB\x04\xe2A\x01\x03R\x1finstockServingVerificationState\x12\xa8\x01\n" +
+	"!pickup_serving_verification_state\x18\a \x01(\x0e2W.google.shopping.merchant.lfp.v1beta.LfpMerchantState.CountrySettings.VerificationStateB\x04\xe2A\x01\x03R\x1epickupServingVerificationState\"\xa1\x01\n" +
 	"\x11VerificationState\x12\"\n" +
 	"\x1eVERIFICATION_STATE_UNSPECIFIED\x10\x00\x12#\n" +
 	"\x1fVERIFICATION_STATE_NOT_APPROVED\x10\x01\x12\"\n" +
@@ -633,9 +633,9 @@ const file_google_shopping_merchant_lfp_v1beta_lfpmerchantstate_proto_rawDesc = 
 	"\rGOOGLE_HOSTED\x10\x01\x12\x13\n" +
 	"\x0fMERCHANT_HOSTED\x10\x02\x12\"\n" +
 	"\x1eMERCHANT_HOSTED_STORE_SPECIFIC\x10\x03:\x91\x01\xeaA\x8d\x01\n" +
-	"+merchantapi.googleapis.com/LfpMerchantState\x129accounts/{account}/lfpMerchantStates/{lfp_merchant_state}*\x11lfpMerchantStates2\x10lfpMerchantState\"e\n" +
-	"\x1aGetLfpMerchantStateRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/LfpMerchantState\x129accounts/{account}/lfpMerchantStates/{lfp_merchant_state}*\x11lfpMerchantStates2\x10lfpMerchantState\"f\n" +
+	"\x1aGetLfpMerchantStateRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+merchantapi.googleapis.com/LfpMerchantStateR\x04name2\xb4\x02\n" +
 	"\x17LfpMerchantStateService\x12\xcf\x01\n" +
 	"\x13GetLfpMerchantState\x12?.google.shopping.merchant.lfp.v1beta.GetLfpMerchantStateRequest\x1a5.google.shopping.merchant.lfp.v1beta.LfpMerchantState\"@\xdaA\x04name\x82\xd3\xe4\x93\x023\x121/lfp/v1beta/{name=accounts/*/lfpMerchantStates/*}\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\x83\x01\n" +

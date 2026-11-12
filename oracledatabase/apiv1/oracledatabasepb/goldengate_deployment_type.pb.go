@@ -478,21 +478,21 @@ var File_google_cloud_oracledatabase_v1_goldengate_deployment_type_proto protore
 
 const file_google_cloud_oracledatabase_v1_goldengate_deployment_type_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/oracledatabase/v1/goldengate_deployment_type.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xf2\t\n" +
-	"\x18GoldengateDeploymentType\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12u\n" +
-	"\x0fdeployment_type\x18\x02 \x01(\x0e2G.google.cloud.oracledatabase.v1.GoldengateDeploymentType.DeploymentTypeB\x03\xe0A\x03R\x0edeploymentType\x12l\n" +
-	"\bcategory\x18\x03 \x01(\x0e2K.google.cloud.oracledatabase.v1.GoldengateDeploymentType.DeploymentCategoryB\x03\xe0A\x03R\bcategory\x12.\n" +
-	"\x10connection_types\x18\x04 \x03(\tB\x03\xe0A\x03R\x0fconnectionTypes\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12$\n" +
-	"\vogg_version\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"oggVersion\x124\n" +
-	"\x13source_technologies\x18\a \x03(\tB\x03\xe0A\x03R\x12sourceTechnologies\x12:\n" +
-	"\x16supported_capabilities\x18\b \x03(\tB\x03\xe0A\x03R\x15supportedCapabilities\x12A\n" +
-	"\x1asupported_technologies_url\x18\t \x01(\tB\x03\xe0A\x03R\x18supportedTechnologiesUrl\x124\n" +
+	"?google/cloud/oracledatabase/v1/goldengate_deployment_type.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xfd\t\n" +
+	"\x18GoldengateDeploymentType\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12v\n" +
+	"\x0fdeployment_type\x18\x02 \x01(\x0e2G.google.cloud.oracledatabase.v1.GoldengateDeploymentType.DeploymentTypeB\x04\xe2A\x01\x03R\x0edeploymentType\x12m\n" +
+	"\bcategory\x18\x03 \x01(\x0e2K.google.cloud.oracledatabase.v1.GoldengateDeploymentType.DeploymentCategoryB\x04\xe2A\x01\x03R\bcategory\x12/\n" +
+	"\x10connection_types\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\x0fconnectionTypes\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12%\n" +
+	"\vogg_version\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"oggVersion\x125\n" +
+	"\x13source_technologies\x18\a \x03(\tB\x04\xe2A\x01\x03R\x12sourceTechnologies\x12;\n" +
+	"\x16supported_capabilities\x18\b \x03(\tB\x04\xe2A\x01\x03R\x15supportedCapabilities\x12B\n" +
+	"\x1asupported_technologies_url\x18\t \x01(\tB\x04\xe2A\x01\x03R\x18supportedTechnologiesUrl\x125\n" +
 	"\x13target_technologies\x18\n" +
-	" \x03(\tB\x03\xe0A\x03R\x12targetTechnologies\x12.\n" +
-	"\x10default_username\x18\v \x01(\tB\x03\xe0A\x03R\x0fdefaultUsername\"\xf2\x01\n" +
+	" \x03(\tB\x04\xe2A\x01\x03R\x12targetTechnologies\x12/\n" +
+	"\x10default_username\x18\v \x01(\tB\x04\xe2A\x01\x03R\x0fdefaultUsername\"\xf2\x01\n" +
 	"\x0eDeploymentType\x12\x1f\n" +
 	"\x1bDEPLOYMENT_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03OGG\x10\x01\x12\x13\n" +
@@ -510,18 +510,18 @@ const file_google_cloud_oracledatabase_v1_goldengate_deployment_type_proto_rawDe
 	"\x1fDEPLOYMENT_CATEGORY_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19DATA_REPLICATION_CATEGORY\x10\x01\x12\x1c\n" +
 	"\x18DATA_TRANSFORMS_CATEGORY\x10\x02:\xd1\x01\xeaA\xcd\x01\n" +
-	"6oracledatabase.googleapis.com/GoldengateDeploymentType\x12^projects/{project}/locations/{location}/goldengateDeploymentTypes/{goldengate_deployment_type}*\x19goldengateDeploymentTypes2\x18goldengateDeploymentType\"\x81\x02\n" +
-	"$ListGoldengateDeploymentTypesRequest\x12V\n" +
-	"\x06parent\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\x126oracledatabase.googleapis.com/GoldengateDeploymentTypeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"6oracledatabase.googleapis.com/GoldengateDeploymentType\x12^projects/{project}/locations/{location}/goldengateDeploymentTypes/{goldengate_deployment_type}*\x19goldengateDeploymentTypes2\x18goldengateDeploymentType\"\x86\x02\n" +
+	"$ListGoldengateDeploymentTypesRequest\x12W\n" +
+	"\x06parent\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\x126oracledatabase.googleapis.com/GoldengateDeploymentTypeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xf0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xf1\x01\n" +
 	"%ListGoldengateDeploymentTypesResponse\x12x\n" +
 	"\x1bgoldengate_deployment_types\x18\x01 \x03(\v28.google.cloud.oracledatabase.v1.GoldengateDeploymentTypeR\x19goldengateDeploymentTypes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachableB\xf7\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachableB\xf7\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x1dGoldengateDeploymentTypeProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

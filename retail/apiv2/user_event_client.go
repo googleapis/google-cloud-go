@@ -451,6 +451,45 @@ func NewUserEventClient(ctx context.Context, opts ...option.ClientOption) (*User
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.WriteUserEvent = append(client.CallOptions.WriteUserEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.CollectUserEvent = append(client.CallOptions.CollectUserEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.PurgeUserEvents = append(client.CallOptions.PurgeUserEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportUserEvents = append(client.CallOptions.ImportUserEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.RejoinUserEvents = append(client.CallOptions.RejoinUserEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.WriteUserEvent = append(client.CallOptions.WriteUserEvent, gax.WithClientLogging(logging))
+		client.CallOptions.CollectUserEvent = append(client.CallOptions.CollectUserEvent, gax.WithClientLogging(logging))
+		client.CallOptions.PurgeUserEvents = append(client.CallOptions.PurgeUserEvents, gax.WithClientLogging(logging))
+		client.CallOptions.ImportUserEvents = append(client.CallOptions.ImportUserEvents, gax.WithClientLogging(logging))
+		client.CallOptions.RejoinUserEvents = append(client.CallOptions.RejoinUserEvents, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -564,6 +603,45 @@ func NewUserEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.WriteUserEvent = append(callOpts.WriteUserEvent, gax.WithClientTracing(tracing))
+		callOpts.CollectUserEvent = append(callOpts.CollectUserEvent, gax.WithClientTracing(tracing))
+		callOpts.PurgeUserEvents = append(callOpts.PurgeUserEvents, gax.WithClientTracing(tracing))
+		callOpts.ImportUserEvents = append(callOpts.ImportUserEvents, gax.WithClientTracing(tracing))
+		callOpts.RejoinUserEvents = append(callOpts.RejoinUserEvents, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.WriteUserEvent = append(callOpts.WriteUserEvent, gax.WithClientLogging(logging))
+		callOpts.CollectUserEvent = append(callOpts.CollectUserEvent, gax.WithClientLogging(logging))
+		callOpts.PurgeUserEvents = append(callOpts.PurgeUserEvents, gax.WithClientLogging(logging))
+		callOpts.ImportUserEvents = append(callOpts.ImportUserEvents, gax.WithClientLogging(logging))
+		callOpts.RejoinUserEvents = append(callOpts.RejoinUserEvents, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -662,9 +740,6 @@ func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *retailpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.UserEventService/PurgeUserEvents")
 	}
@@ -692,9 +767,6 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *retailp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.UserEventService/ImportUserEvents")
 	}
@@ -827,6 +899,11 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *retailpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/userEvents:write", req.GetParent())
 
 	params := url.Values{}
@@ -888,6 +965,11 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *retailpb.
 func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *retailpb.CollectUserEventRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/userEvents:collect", req.GetParent())
@@ -966,6 +1048,11 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *retailpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/userEvents:purge", req.GetParent())
 
 	params := url.Values{}
@@ -979,9 +1066,6 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *retailpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.UserEventService/PurgeUserEvents")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*/catalogs/*}/userEvents:purge")
@@ -1042,6 +1126,11 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *retailp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/userEvents:import", req.GetParent())
 
 	params := url.Values{}
@@ -1055,9 +1144,6 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *retailp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.UserEventService/ImportUserEvents")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*/catalogs/*}/userEvents:import")
@@ -1119,6 +1205,11 @@ func (c *userEventRESTClient) RejoinUserEvents(ctx context.Context, req *retailp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/userEvents:rejoin", req.GetParent())
 
 	params := url.Values{}
@@ -1178,6 +1269,11 @@ func (c *userEventRESTClient) RejoinUserEvents(ctx context.Context, req *retailp
 func (c *userEventRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1245,6 +1341,11 @@ func (c *userEventRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())

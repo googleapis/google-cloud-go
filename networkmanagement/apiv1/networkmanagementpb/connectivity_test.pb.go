@@ -622,6 +622,11 @@ type Endpoint struct {
 	// name format:
 	// projects/{project}/locations/{location}/privateConnections/{privateConnection}.
 	DmsPrivateConnection string `protobuf:"bytes,22,opt,name=dms_private_connection,json=dmsPrivateConnection,proto3" json:"dms_private_connection,omitempty"`
+	// A [Datastream Private
+	// Connection](https://docs.cloud.google.com/datastream/docs/reference/rest/v1/projects.locations.privateConnections)
+	// name format:
+	// projects/{project}/locations/{location}/privateConnections/{privateConnection}.
+	DatastreamPrivateConnection string `protobuf:"bytes,23,opt,name=datastream_private_connection,json=datastreamPrivateConnection,proto3" json:"datastream_private_connection,omitempty"`
 	// A [Cloud Function](https://cloud.google.com/functions). Applicable only to
 	// source endpoint.
 	CloudFunction *Endpoint_CloudFunctionEndpoint `protobuf:"bytes,10,opt,name=cloud_function,json=cloudFunction,proto3" json:"cloud_function,omitempty"`
@@ -778,6 +783,13 @@ func (x *Endpoint) GetGkePod() string {
 func (x *Endpoint) GetDmsPrivateConnection() string {
 	if x != nil {
 		return x.DmsPrivateConnection
+	}
+	return ""
+}
+
+func (x *Endpoint) GetDatastreamPrivateConnection() string {
+	if x != nil {
+		return x.DatastreamPrivateConnection
 	}
 	return ""
 }
@@ -1455,47 +1467,48 @@ var File_google_cloud_networkmanagement_v1_connectivity_test_proto protoreflect.
 
 const file_google_cloud_networkmanagement_v1_connectivity_test_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/networkmanagement/v1/connectivity_test.proto\x12!google.cloud.networkmanagement.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/networkmanagement/v1/trace.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x8b\t\n" +
-	"\x10ConnectivityTest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12H\n" +
-	"\x06source\x18\x03 \x01(\v2+.google.cloud.networkmanagement.v1.EndpointB\x03\xe0A\x02R\x06source\x12R\n" +
-	"\vdestination\x18\x04 \x01(\v2+.google.cloud.networkmanagement.v1.EndpointB\x03\xe0A\x02R\vdestination\x12\x1a\n" +
+	"9google/cloud/networkmanagement/v1/connectivity_test.proto\x12!google.cloud.networkmanagement.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/networkmanagement/v1/trace.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x94\t\n" +
+	"\x10ConnectivityTest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12I\n" +
+	"\x06source\x18\x03 \x01(\v2+.google.cloud.networkmanagement.v1.EndpointB\x04\xe2A\x01\x02R\x06source\x12S\n" +
+	"\vdestination\x18\x04 \x01(\v2+.google.cloud.networkmanagement.v1.EndpointB\x04\xe2A\x01\x02R\vdestination\x12\x1a\n" +
 	"\bprotocol\x18\x05 \x01(\tR\bprotocol\x12)\n" +
-	"\x10related_projects\x18\x06 \x03(\tR\x0frelatedProjects\x12&\n" +
-	"\fdisplay_name\x18\a \x01(\tB\x03\xe0A\x03R\vdisplayName\x12W\n" +
-	"\x06labels\x18\b \x03(\v2?.google.cloud.networkmanagement.v1.ConnectivityTest.LabelsEntryR\x06labels\x12@\n" +
+	"\x10related_projects\x18\x06 \x03(\tR\x0frelatedProjects\x12'\n" +
+	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12W\n" +
+	"\x06labels\x18\b \x03(\v2?.google.cloud.networkmanagement.v1.ConnectivityTest.LabelsEntryR\x06labels\x12A\n" +
 	"\vcreate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12n\n" +
-	"\x14reachability_details\x18\f \x01(\v26.google.cloud.networkmanagement.v1.ReachabilityDetailsB\x03\xe0A\x03R\x13reachabilityDetails\x12_\n" +
-	"\x0fprobing_details\x18\x0e \x01(\v21.google.cloud.networkmanagement.v1.ProbingDetailsB\x03\xe0A\x03R\x0eprobingDetails\x12\x1d\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12o\n" +
+	"\x14reachability_details\x18\f \x01(\v26.google.cloud.networkmanagement.v1.ReachabilityDetailsB\x04\xe2A\x01\x03R\x13reachabilityDetails\x12`\n" +
+	"\x0fprobing_details\x18\x0e \x01(\v21.google.cloud.networkmanagement.v1.ProbingDetailsB\x04\xe2A\x01\x03R\x0eprobingDetails\x12\x1d\n" +
 	"\n" +
-	"round_trip\x18\x0f \x01(\bR\troundTrip\x12{\n" +
-	"\x1breturn_reachability_details\x18\x10 \x01(\v26.google.cloud.networkmanagement.v1.ReachabilityDetailsB\x03\xe0A\x03R\x19returnReachabilityDetails\x124\n" +
+	"round_trip\x18\x0f \x01(\bR\troundTrip\x12|\n" +
+	"\x1breturn_reachability_details\x18\x10 \x01(\v26.google.cloud.networkmanagement.v1.ReachabilityDetailsB\x04\xe2A\x01\x03R\x19returnReachabilityDetails\x124\n" +
 	"\x16bypass_firewall_checks\x18\x11 \x01(\bR\x14bypassFirewallChecks\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:t\xeaAq\n" +
-	"1networkmanagement.googleapis.com/ConnectivityTest\x12<projects/{project}/locations/global/connectivityTests/{test}\"\x8c\r\n" +
+	"1networkmanagement.googleapis.com/ConnectivityTest\x12<projects/{project}/locations/global/connectivityTests/{test}\"\xd4\r\n" +
 	"\bEndpoint\x12\x1d\n" +
 	"\n" +
 	"ip_address\x18\x01 \x01(\tR\tipAddress\x12\x12\n" +
 	"\x04port\x18\x02 \x01(\x05R\x04port\x12\x1a\n" +
 	"\binstance\x18\x03 \x01(\tR\binstance\x12'\n" +
-	"\x0fforwarding_rule\x18\r \x01(\tR\x0eforwardingRule\x12\x80\x01\n" +
-	"\x16forwarding_rule_target\x18\x0e \x01(\x0e2@.google.cloud.networkmanagement.v1.Endpoint.ForwardingRuleTargetB\x03\xe0A\x03H\x00R\x14forwardingRuleTarget\x88\x01\x01\x122\n" +
-	"\x10load_balancer_id\x18\x0f \x01(\tB\x03\xe0A\x03H\x01R\x0eloadBalancerId\x88\x01\x01\x12k\n" +
-	"\x12load_balancer_type\x18\x10 \x01(\x0e23.google.cloud.networkmanagement.v1.LoadBalancerTypeB\x03\xe0A\x03H\x02R\x10loadBalancerType\x88\x01\x01\x12,\n" +
+	"\x0fforwarding_rule\x18\r \x01(\tR\x0eforwardingRule\x12\x81\x01\n" +
+	"\x16forwarding_rule_target\x18\x0e \x01(\x0e2@.google.cloud.networkmanagement.v1.Endpoint.ForwardingRuleTargetB\x04\xe2A\x01\x03H\x00R\x14forwardingRuleTarget\x88\x01\x01\x123\n" +
+	"\x10load_balancer_id\x18\x0f \x01(\tB\x04\xe2A\x01\x03H\x01R\x0eloadBalancerId\x88\x01\x01\x12l\n" +
+	"\x12load_balancer_type\x18\x10 \x01(\x0e23.google.cloud.networkmanagement.v1.LoadBalancerTypeB\x04\xe2A\x01\x03H\x02R\x10loadBalancerType\x88\x01\x01\x12,\n" +
 	"\x12gke_master_cluster\x18\a \x01(\tR\x10gkeMasterCluster\x12\x12\n" +
 	"\x04fqdn\x18\x13 \x01(\tR\x04fqdn\x12,\n" +
 	"\x12cloud_sql_instance\x18\b \x01(\tR\x10cloudSqlInstance\x12%\n" +
 	"\x0eredis_instance\x18\x11 \x01(\tR\rredisInstance\x12#\n" +
 	"\rredis_cluster\x18\x12 \x01(\tR\fredisCluster\x12\x17\n" +
 	"\agke_pod\x18\x15 \x01(\tR\x06gkePod\x124\n" +
-	"\x16dms_private_connection\x18\x16 \x01(\tR\x14dmsPrivateConnection\x12h\n" +
+	"\x16dms_private_connection\x18\x16 \x01(\tR\x14dmsPrivateConnection\x12B\n" +
+	"\x1ddatastream_private_connection\x18\x17 \x01(\tR\x1bdatastreamPrivateConnection\x12h\n" +
 	"\x0ecloud_function\x18\n" +
 	" \x01(\v2A.google.cloud.networkmanagement.v1.Endpoint.CloudFunctionEndpointR\rcloudFunction\x12r\n" +
 	"\x12app_engine_version\x18\v \x01(\v2D.google.cloud.networkmanagement.v1.Endpoint.AppEngineVersionEndpointR\x10appEngineVersion\x12r\n" +
@@ -1508,10 +1521,10 @@ const file_google_cloud_networkmanagement_v1_connectivity_test_proto_rawDesc = "
 	"\x15CloudFunctionEndpoint\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x1a,\n" +
 	"\x18AppEngineVersionEndpoint\x12\x10\n" +
-	"\x03uri\x18\x01 \x01(\tR\x03uri\x1aR\n" +
+	"\x03uri\x18\x01 \x01(\tR\x03uri\x1aS\n" +
 	"\x18CloudRunRevisionEndpoint\x12\x10\n" +
-	"\x03uri\x18\x01 \x01(\tR\x03uri\x12$\n" +
-	"\vservice_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
+	"\x03uri\x18\x01 \x01(\tR\x03uri\x12%\n" +
+	"\vservice_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"serviceUri\"_\n" +
 	"\vNetworkType\x12\x1c\n" +
 	"\x18NETWORK_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +

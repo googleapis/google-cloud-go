@@ -434,27 +434,27 @@ var File_google_cloud_ces_v1beta_agent_transfers_proto protoreflect.FileDescript
 
 const file_google_cloud_ces_v1beta_agent_transfers_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/ces/v1beta/agent_transfers.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\":\n" +
-	"\x13ExpressionCondition\x12#\n" +
+	"-google/cloud/ces/v1beta/agent_transfers.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\";\n" +
+	"\x13ExpressionCondition\x12$\n" +
 	"\n" +
-	"expression\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"expression\";\n" +
-	"\x13PythonCodeCondition\x12$\n" +
-	"\vpython_code\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"pythonCode\"\xfb\x06\n" +
-	"\fTransferRule\x12y\n" +
-	"\x16deterministic_transfer\x18\x03 \x01(\v2;.google.cloud.ces.v1beta.TransferRule.DeterministicTransferB\x03\xe0A\x01H\x00R\x15deterministicTransfer\x12}\n" +
-	"\x18disable_planner_transfer\x18\x04 \x01(\v2<.google.cloud.ces.v1beta.TransferRule.DisablePlannerTransferB\x03\xe0A\x01H\x00R\x16disablePlannerTransfer\x12A\n" +
-	"\vchild_agent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
+	"expression\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"expression\"<\n" +
+	"\x13PythonCodeCondition\x12%\n" +
+	"\vpython_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"pythonCode\"\x82\a\n" +
+	"\fTransferRule\x12z\n" +
+	"\x16deterministic_transfer\x18\x03 \x01(\v2;.google.cloud.ces.v1beta.TransferRule.DeterministicTransferB\x04\xe2A\x01\x01H\x00R\x15deterministicTransfer\x12~\n" +
+	"\x18disable_planner_transfer\x18\x04 \x01(\v2<.google.cloud.ces.v1beta.TransferRule.DisablePlannerTransferB\x04\xe2A\x01\x01H\x00R\x16disablePlannerTransfer\x12B\n" +
+	"\vchild_agent\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +
 	"\x18ces.googleapis.com/AgentR\n" +
-	"childAgent\x12R\n" +
-	"\tdirection\x18\x02 \x01(\x0e2/.google.cloud.ces.v1beta.TransferRule.DirectionB\x03\xe0A\x02R\tdirection\x1a\xfa\x01\n" +
-	"\x15DeterministicTransfer\x12f\n" +
-	"\x14expression_condition\x18\x01 \x01(\v2,.google.cloud.ces.v1beta.ExpressionConditionB\x03\xe0A\x01H\x00R\x13expressionCondition\x12g\n" +
-	"\x15python_code_condition\x18\x02 \x01(\v2,.google.cloud.ces.v1beta.PythonCodeConditionB\x03\xe0A\x01H\x00R\x13pythonCodeConditionB\x10\n" +
-	"\x0econdition_type\x1a~\n" +
-	"\x16DisablePlannerTransfer\x12d\n" +
-	"\x14expression_condition\x18\x01 \x01(\v2,.google.cloud.ces.v1beta.ExpressionConditionB\x03\xe0A\x02R\x13expressionCondition\"P\n" +
+	"childAgent\x12S\n" +
+	"\tdirection\x18\x02 \x01(\x0e2/.google.cloud.ces.v1beta.TransferRule.DirectionB\x04\xe2A\x01\x02R\tdirection\x1a\xfc\x01\n" +
+	"\x15DeterministicTransfer\x12g\n" +
+	"\x14expression_condition\x18\x01 \x01(\v2,.google.cloud.ces.v1beta.ExpressionConditionB\x04\xe2A\x01\x01H\x00R\x13expressionCondition\x12h\n" +
+	"\x15python_code_condition\x18\x02 \x01(\v2,.google.cloud.ces.v1beta.PythonCodeConditionB\x04\xe2A\x01\x01H\x00R\x13pythonCodeConditionB\x10\n" +
+	"\x0econdition_type\x1a\x7f\n" +
+	"\x16DisablePlannerTransfer\x12e\n" +
+	"\x14expression_condition\x18\x01 \x01(\v2,.google.cloud.ces.v1beta.ExpressionConditionB\x04\xe2A\x01\x02R\x13expressionCondition\"P\n" +
 	"\tDirection\x12\x19\n" +
 	"\x15DIRECTION_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fPARENT_TO_CHILD\x10\x01\x12\x13\n" +

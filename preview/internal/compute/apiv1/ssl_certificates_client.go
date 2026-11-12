@@ -43,11 +43,12 @@ var newSslCertificatesClientHook clientHook
 
 // SslCertificatesCallOptions contains the retry settings for each method of SslCertificatesClient.
 type SslCertificatesCallOptions struct {
-	AggregatedList []gax.CallOption
-	Delete         []gax.CallOption
-	Get            []gax.CallOption
-	Insert         []gax.CallOption
-	List           []gax.CallOption
+	AggregatedList     []gax.CallOption
+	Delete             []gax.CallOption
+	FetchEncryptionKey []gax.CallOption
+	Get                []gax.CallOption
+	Insert             []gax.CallOption
+	List               []gax.CallOption
 }
 
 func defaultSslCertificatesRESTCallOptions() *SslCertificatesCallOptions {
@@ -66,6 +67,18 @@ func defaultSslCertificatesRESTCallOptions() *SslCertificatesCallOptions {
 		},
 		Delete: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		FetchEncryptionKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
 		},
 		Get: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -104,6 +117,7 @@ type internalSslCertificatesClient interface {
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListSslCertificatesRequest, ...gax.CallOption) *SslCertificatesScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteSslCertificateRequest, ...gax.CallOption) (*Operation, error)
+	FetchEncryptionKey(context.Context, *computepb.FetchEncryptionKeySslCertificateRequest, ...gax.CallOption) (*computepb.SslCertificatesFetchEncryptionKeyResponse, error)
 	Get(context.Context, *computepb.GetSslCertificateRequest, ...gax.CallOption) (*computepb.SslCertificate, error)
 	Insert(context.Context, *computepb.InsertSslCertificateRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListSslCertificatesRequest, ...gax.CallOption) *SslCertificateIterator
@@ -113,6 +127,8 @@ type internalSslCertificatesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The SslCertificates API.
+//
+// This client uses SslCertificates version 2026-10-01-preview.
 type SslCertificatesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSslCertificatesClient
@@ -156,6 +172,12 @@ func (c *SslCertificatesClient) AggregatedList(ctx context.Context, req *compute
 // Delete deletes the specified SslCertificate resource.
 func (c *SslCertificatesClient) Delete(ctx context.Context, req *computepb.DeleteSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
+}
+
+// FetchEncryptionKey returns the public encryption key used to encrypt the TLS private key
+// before upload.
+func (c *SslCertificatesClient) FetchEncryptionKey(ctx context.Context, req *computepb.FetchEncryptionKeySslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificatesFetchEncryptionKeyResponse, error) {
+	return c.internalClient.FetchEncryptionKey(ctx, req, opts...)
 }
 
 // Get returns the specified SslCertificate resource.
@@ -238,9 +260,47 @@ func NewSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.FetchEncryptionKey = append(callOpts.FetchEncryptionKey, gax.WithClientMetrics(metrics))
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.FetchEncryptionKey = append(callOpts.FetchEncryptionKey, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.FetchEncryptionKey = append(callOpts.FetchEncryptionKey, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
 	}
 
 	o := []option.ClientOption{
@@ -276,6 +336,7 @@ func (c *sslCertificatesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 
@@ -320,6 +381,11 @@ func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *com
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/sslCertificates", req.GetProject())
 
 		params := url.Values{}
@@ -337,9 +403,6 @@ func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *com
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -406,6 +469,12 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSslCertificate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
 
 	params := url.Values{}
@@ -421,9 +490,6 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.SslCertificates/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/sslCertificates/{ssl_certificate}")
@@ -466,10 +532,71 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	return op, nil
 }
 
+// FetchEncryptionKey returns the public encryption key used to encrypt the TLS private key
+// before upload.
+func (c *sslCertificatesRESTClient) FetchEncryptionKey(ctx context.Context, req *computepb.FetchEncryptionKeySslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificatesFetchEncryptionKeyResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/encryptionKey", req.GetProject())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.SslCertificates/FetchEncryptionKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/sslCertificates/encryptionKey")
+	}
+	opts = append((*c.CallOptions).FetchEncryptionKey[0:len((*c.CallOptions).FetchEncryptionKey):len((*c.CallOptions).FetchEncryptionKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.SslCertificatesFetchEncryptionKeyResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchEncryptionKey")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // Get returns the specified SslCertificate resource.
 func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSslCertificate(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
@@ -480,9 +607,6 @@ func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetS
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.SslCertificates/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/sslCertificates/{ssl_certificate}")
@@ -532,6 +656,11 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates", req.GetProject())
 
 	params := url.Values{}
@@ -547,9 +676,6 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.SslCertificates/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/sslCertificates")
@@ -612,6 +738,11 @@ func (c *sslCertificatesRESTClient) List(ctx context.Context, req *computepb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates", req.GetProject())
 
 		params := url.Values{}
@@ -626,9 +757,6 @@ func (c *sslCertificatesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

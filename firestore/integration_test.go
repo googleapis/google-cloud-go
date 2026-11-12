@@ -21,11 +21,13 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"maps"
 	"math"
 	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
@@ -94,7 +96,7 @@ func TestMain(m *testing.M) {
 
 		// 2. Initialize Enterprise Clients
 		if dbStr := os.Getenv(envEnterpriseDatabases); dbStr != "" {
-			for _, dbID := range strings.Split(dbStr, ",") {
+			for dbID := range strings.SplitSeq(dbStr, ",") {
 				dbID = strings.TrimSpace(dbID)
 				if dbID == "" {
 					continue
@@ -458,7 +460,7 @@ func testIntegrationGetAll(t *testing.T) {
 	t.Cleanup(func() {
 		deleteDocuments(docRefs)
 	})
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
 		if i != 3 {
@@ -510,7 +512,7 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 	h := testHelper{t}
 	coll := integrationColl(t)
 	var wantDocRefs []*DocumentRef
-	for i := 0; i < count; i++ {
+	for i := range count {
 		doc := coll.Doc("getRunWithOptionsTestcases" + fmt.Sprint(i))
 		wantDocRefs = append(wantDocRefs, doc)
 		h.mustCreate(doc, getAll{N: i})
@@ -560,12 +562,7 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 }
 
 func contains[T comparable](s []T, e T) bool {
-	for _, v := range s {
-		if v == e {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(s, e)
 }
 
 func testIntegrationGetAllWithRunOptions(t *testing.T) {
@@ -868,7 +865,7 @@ func testIntegrationCollections(t *testing.T) {
 		t.Errorf("got %d collections, want 0", len(got))
 	}
 	var want []*CollectionRef
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		id := collectionIDs.New()
 		cr := doc.Collection(id)
 		want = append(want, cr)
@@ -1318,7 +1315,7 @@ func testIntegrationQueryDocuments(t *testing.T) {
 	t.Cleanup(func() {
 		deleteDocuments(createdDocRefs)
 	})
-	for i := 0; i < 8; i++ {
+	for i := range 8 {
 		doc := coll.NewDoc()
 		createdDocRefs = append(createdDocRefs, doc)
 
@@ -1508,7 +1505,7 @@ func testIntegrationQueryName(t *testing.T) {
 	t.Cleanup(func() {
 		deleteDocuments(docRefs)
 	})
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
 		h.mustCreate(doc, map[string]interface{}{"nm": 1})
@@ -2390,9 +2387,7 @@ func loc() string {
 
 func copyMap(m map[string]interface{}) map[string]interface{} {
 	c := map[string]interface{}{}
-	for k, v := range m {
-		c[k] = v
-	}
+	maps.Copy(c, m)
 	return c
 }
 
@@ -2574,7 +2569,7 @@ func testIntegrationColGroupRefPartitionsLarge(t *testing.T) {
 	// Create documents in a collection sufficient to trigger multiple partitions.
 	batch := iClient.Batch()
 	deleteBatch := iClient.Batch()
-	for i := 0; i < documentCount; i++ {
+	for i := range documentCount {
 		doc := coll.Doc(fmt.Sprintf("doc%d", i))
 		batch.Create(doc, integrationTestMap)
 		deleteBatch.Delete(doc)
@@ -2791,7 +2786,7 @@ func testIntegrationBulkWriter(t *testing.T) {
 	var jobs []*BulkWriterJob
 
 	// Test a slew of writes sent at the BulkWriter
-	for i := 0; i < numNewWrites; i++ {
+	for range numNewWrites {
 		d := iColl.NewDoc()
 		docRefs = append(docRefs, d)
 		jb, err := bw.Create(d, f)
@@ -3528,7 +3523,7 @@ func testIntegrationFindNearest(t *testing.T) {
 	})
 
 	// create documents with vector field
-	for i := 0; i < len(beans); i++ {
+	for i := range beans {
 		doc := collRef.NewDoc()
 		docRefs = append(docRefs, doc)
 		h.mustCreate(doc, beans[i])
@@ -3548,7 +3543,7 @@ func testIntegrationFindNearest(t *testing.T) {
 		{
 			desc: "FindNearest threshold and resultField",
 			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, &FindNearestOptions{
-				DistanceThreshold:   Ptr(20.0),
+				DistanceThreshold:   new(20.0),
 				DistanceResultField: resultField,
 			}),
 			wantBeans:    beans[:3],
@@ -3600,7 +3595,6 @@ func testIntegrationFindNearest(t *testing.T) {
 
 func testIntegrationBSONTypes(t *testing.T) {
 	skipIfEdition(t, "BSON types", editionStandard)
-	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
 	ctx := context.Background()
 	coll := integrationColl(t)
 	doc := coll.NewDoc()
@@ -3752,7 +3746,6 @@ func testIntegrationTransactionWithReadOptionsError(t *testing.T) {
 
 func testIntegrationBSONQueries(t *testing.T) {
 	skipIfEdition(t, "BSON types", editionStandard)
-	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
 	ctx := context.Background()
 	client := integrationClient(t)
 	h := testHelper{t}
@@ -3771,10 +3764,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qOid1 := coll.Where("key", ">", oid1).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qOid1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qOid1, []string{"doc3", "doc2"})
 
 		qOid2 := coll.Where("key", "in", []interface{}{oid1, oid2}).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qOid2, []string{"doc2", "doc1"})
+		assertBSONQueryOrder(ctx, t, qOid2, []string{"doc2", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderInt32", func(t *testing.T) {
@@ -3791,10 +3784,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qInt1 := coll.Where("key", ">=", i2).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qInt1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qInt1, []string{"doc3", "doc2"})
 
 		qInt2 := coll.Where("key", "not-in", []interface{}{i2}).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qInt2, []string{"doc3", "doc1"})
+		assertBSONQueryOrder(ctx, t, qInt2, []string{"doc3", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderDecimal128", func(t *testing.T) {
@@ -3811,10 +3804,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qDec1 := coll.Where("key", ">=", BSONDecimal128("-1.1")).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qDec1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qDec1, []string{"doc3", "doc2"})
 
 		qDec2 := coll.Where("key", "not-in", []interface{}{BSONDecimal128("1.2e-3")}).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qDec2, []string{"doc2", "doc1"})
+		assertBSONQueryOrder(ctx, t, qDec2, []string{"doc2", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderBsonTimestamp", func(t *testing.T) {
@@ -3831,10 +3824,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qBt1 := coll.Where("key", ">", bt1).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBt1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qBt1, []string{"doc3", "doc2"})
 
 		qBt2 := coll.Where("key", "!=", bt1).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBt2, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qBt2, []string{"doc3", "doc2"})
 	})
 
 	t.Run("canFilterAndOrderBsonBinaryData", func(t *testing.T) {
@@ -3851,10 +3844,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qBb1 := coll.Where("key", ">", bb1).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBb1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qBb1, []string{"doc3", "doc2"})
 
 		qBb2 := coll.Where("key", ">=", bb1).Where("key", "<", bb3).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBb2, []string{"doc2", "doc1"})
+		assertBSONQueryOrder(ctx, t, qBb2, []string{"doc2", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderRegexValues", func(t *testing.T) {
@@ -3876,7 +3869,7 @@ func testIntegrationBSONQueries(t *testing.T) {
 				PropertyFilter{Path: "key", Operator: "!=", Value: BSONRegex{Pattern: "^bar", Options: "x"}},
 			},
 		}).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBr1, []string{"doc3", "doc1"})
+		assertBSONQueryOrder(ctx, t, qBr1, []string{"doc3", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderMinKeys", func(t *testing.T) {
@@ -3890,7 +3883,7 @@ func testIntegrationBSONQueries(t *testing.T) {
 
 		qMin1 := coll.Where("key", "==", BSONMinKey{}).OrderBy("key", Desc)
 		// MinKeys are equal, would sort by documentId as secondary order
-		assertQueryOrder(ctx, t, qMin1, []string{"doc2", "doc1"})
+		assertBSONQueryOrder(ctx, t, qMin1, []string{"doc2", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderMaxKeys", func(t *testing.T) {
@@ -3904,13 +3897,12 @@ func testIntegrationBSONQueries(t *testing.T) {
 
 		qMax1 := coll.Where("key", "==", BSONMaxKey{}).OrderBy("key", Desc)
 		// MaxKeys are equal, would sort by documentId as secondary order
-		assertQueryOrder(ctx, t, qMax1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qMax1, []string{"doc3", "doc2"})
 	})
 }
 
 func testIntegrationBSONCrossTypeOrder(t *testing.T) {
 	skipIfEdition(t, "BSON types", editionStandard)
-	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
 	ctx := context.Background()
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
@@ -3955,12 +3947,11 @@ func testIntegrationBSONCrossTypeOrder(t *testing.T) {
 	}
 
 	q := coll.OrderBy("key", Desc)
-	assertQueryOrder(ctx, t, q, expectedResult)
+	assertBSONQueryOrder(ctx, t, q, expectedResult)
 }
 
 func testIntegrationBSONValidationRejection(t *testing.T) {
 	skipIfEdition(t, "BSON types", editionStandard)
-	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
 	ctx := context.Background()
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
@@ -3994,9 +3985,11 @@ func testIntegrationBSONValidationRejection(t *testing.T) {
 	})
 }
 
-func assertQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []string) {
+// assertBSONQueryOrder verifies server-side query ordering for BSON query tests.
+// Watch streams (Query.Snapshots) are not checked here because BSON is only
+// supported on Enterprise databases, which do not support Listen queries.
+func assertBSONQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []string) {
 	t.Helper()
-	// Test server-side query
 	iter := q.Documents(ctx)
 	defer iter.Stop()
 	docs, err := iter.GetAll()
@@ -4007,26 +4000,6 @@ func assertQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []s
 	if !testEqual(gotDocIDs, wantDocIDs) {
 		t.Errorf("Server query got %v, want %v", gotDocIDs, wantDocIDs)
 	}
-
-	// Test client-side sorting (Watch stream)
-	watchDocs, err := getFirstSnapshot(ctx, q)
-	if err != nil {
-		t.Fatalf("getFirstSnapshot failed: %v", err)
-	}
-	gotWatchDocIDs := docIDs(watchDocs)
-	if !testEqual(gotWatchDocIDs, wantDocIDs) {
-		t.Errorf("Watch snapshot got %v, want %v", gotWatchDocIDs, wantDocIDs)
-	}
-}
-
-func getFirstSnapshot(ctx context.Context, q Query) ([]*DocumentSnapshot, error) {
-	it := q.Snapshots(ctx)
-	defer it.Stop()
-	snap, err := it.Next()
-	if err != nil {
-		return nil, err
-	}
-	return snap.Documents.GetAll()
 }
 
 func docIDs(docs []*DocumentSnapshot) []string {

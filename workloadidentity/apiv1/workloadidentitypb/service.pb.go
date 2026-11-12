@@ -401,37 +401,38 @@ var File_google_cloud_workloadidentity_v1_service_proto protoreflect.FileDescrip
 
 const file_google_cloud_workloadidentity_v1_service_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/workloadidentity/v1/service.proto\x12 google.cloud.workloadidentity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x05\n" +
-	"\fServiceAgent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12'\n" +
-	"\tcontainer\x18\x05 \x01(\tB\t\xe0A\x01\xfaA\x03\n" +
-	"\x01*R\tcontainer\x12.\n" +
-	"\x10service_producer\x18\x06 \x01(\tB\x03\xe0A\x01R\x0fserviceProducer\x12!\n" +
-	"\tprincipal\x18\a \x01(\tB\x03\xe0A\x01R\tprincipal\x12\x17\n" +
-	"\x04role\x18\t \x01(\tB\x03\xe0A\x01R\x04role\x12O\n" +
+	".google/cloud/workloadidentity/v1/service.proto\x12 google.cloud.workloadidentity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe6\x05\n" +
+	"\fServiceAgent\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12(\n" +
+	"\tcontainer\x18\x05 \x01(\tB\n" +
+	"\xe2A\x01\x01\xfaA\x03\n" +
+	"\x01*R\tcontainer\x12/\n" +
+	"\x10service_producer\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0fserviceProducer\x12\"\n" +
+	"\tprincipal\x18\a \x01(\tB\x04\xe2A\x01\x01R\tprincipal\x12\x18\n" +
+	"\x04role\x18\t \x01(\tB\x04\xe2A\x01\x01R\x04role\x12P\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e24.google.cloud.workloadidentity.v1.ServiceAgent.StateB\x03\xe0A\x03R\x05state\"6\n" +
+	" \x01(\x0e24.google.cloud.workloadidentity.v1.ServiceAgent.StateB\x04\xe2A\x01\x03R\x05state\"6\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x02:\x98\x03\xeaA\x94\x03\n" +
-	",workloadidentity.googleapis.com/ServiceAgent\x12iprojects/{project}/locations/{location}/serviceProducers/{service_producer}/serviceAgents/{service_agent}\x12gfolders/{folder}/locations/{location}/serviceProducers/{service_producer}/serviceAgents/{service_agent}\x12sorganizations/{organization}/locations/{location}/serviceProducers/{service_producer}/serviceAgents/{service_agent}*\rserviceAgents2\fserviceAgent\"o\n" +
-	"\x1cGenerateServiceAgentsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	",workloadidentity.googleapis.com/ServiceAgent\x12iprojects/{project}/locations/{location}/serviceProducers/{service_producer}/serviceAgents/{service_agent}\x12gfolders/{folder}/locations/{location}/serviceProducers/{service_producer}/serviceAgents/{service_agent}\x12sorganizations/{organization}/locations/{location}/serviceProducers/{service_producer}/serviceAgents/{service_agent}*\rserviceAgents2\fserviceAgent\"p\n" +
+	"\x1cGenerateServiceAgentsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/workloadidentity.googleapis.com/ServiceProducerR\x06parent\"v\n" +
 	"\x1dGenerateServiceAgentsResponse\x12U\n" +
-	"\x0eservice_agents\x18\x01 \x03(\v2..google.cloud.workloadidentity.v1.ServiceAgentR\rserviceAgents\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"\x0eservice_agents\x18\x01 \x03(\v2..google.cloud.workloadidentity.v1.ServiceAgentR\rserviceAgents\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\xa3\x04\n" +
 	"\x10WorkloadIdentity\x12\xb9\x03\n" +
 	"\x15GenerateServiceAgents\x12>.google.cloud.workloadidentity.v1.GenerateServiceAgentsRequest\x1a\x1d.google.longrunning.Operation\"\xc0\x02\xcaA2\n" +

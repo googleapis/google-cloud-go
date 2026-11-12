@@ -272,6 +272,35 @@ func NewRoutesClient(ctx context.Context, opts ...option.ClientOption) (*RoutesC
 		client.CallOptions.ComputeRoutes = append(client.CallOptions.ComputeRoutes, gax.WithClientMetrics(metrics))
 		client.CallOptions.ComputeRouteMatrix = append(client.CallOptions.ComputeRouteMatrix, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "routes",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routing/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "routes.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeRoutes = append(client.CallOptions.ComputeRoutes, gax.WithClientTracing(tracing))
+		client.CallOptions.ComputeRouteMatrix = append(client.CallOptions.ComputeRouteMatrix, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "routes",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routing/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "routes.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeRoutes = append(client.CallOptions.ComputeRoutes, gax.WithClientLogging(logging))
+		client.CallOptions.ComputeRouteMatrix = append(client.CallOptions.ComputeRouteMatrix, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -363,6 +392,35 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 
 		callOpts.ComputeRoutes = append(callOpts.ComputeRoutes, gax.WithClientMetrics(metrics))
 		callOpts.ComputeRouteMatrix = append(callOpts.ComputeRouteMatrix, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "routes",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routing/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "routes.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeRoutes = append(callOpts.ComputeRoutes, gax.WithClientTracing(tracing))
+		callOpts.ComputeRouteMatrix = append(callOpts.ComputeRouteMatrix, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "routes",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routing/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "routes.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeRoutes = append(callOpts.ComputeRoutes, gax.WithClientLogging(logging))
+		callOpts.ComputeRouteMatrix = append(callOpts.ComputeRouteMatrix, gax.WithClientLogging(logging))
 	}
 
 	return &RoutesClient{internalClient: c, CallOptions: callOpts}, nil

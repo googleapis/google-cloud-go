@@ -543,11 +543,11 @@ var File_google_ai_generativelanguage_v1beta2_text_service_proto protoreflect.Fi
 
 const file_google_ai_generativelanguage_v1beta2_text_service_proto_rawDesc = "" +
 	"\n" +
-	"7google/ai/generativelanguage/v1beta2/text_service.proto\x12$google.ai.generativelanguage.v1beta2\x1a3google/ai/generativelanguage/v1beta2/citation.proto\x1a1google/ai/generativelanguage/v1beta2/safety.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xb8\x04\n" +
-	"\x13GenerateTextRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12M\n" +
-	"\x06prompt\x18\x02 \x01(\v20.google.ai.generativelanguage.v1beta2.TextPromptB\x03\xe0A\x02R\x06prompt\x12%\n" +
+	"7google/ai/generativelanguage/v1beta2/text_service.proto\x12$google.ai.generativelanguage.v1beta2\x1a3google/ai/generativelanguage/v1beta2/citation.proto\x1a1google/ai/generativelanguage/v1beta2/safety.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xba\x04\n" +
+	"\x13GenerateTextRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12N\n" +
+	"\x06prompt\x18\x02 \x01(\v20.google.ai.generativelanguage.v1beta2.TextPromptB\x04\xe2A\x01\x02R\x06prompt\x12%\n" +
 	"\vtemperature\x18\x03 \x01(\x02H\x00R\vtemperature\x88\x01\x01\x12,\n" +
 	"\x0fcandidate_count\x18\x04 \x01(\x05H\x01R\x0ecandidateCount\x88\x01\x01\x12/\n" +
 	"\x11max_output_tokens\x18\x05 \x01(\x05H\x02R\x0fmaxOutputTokens\x88\x01\x01\x12\x18\n" +
@@ -565,21 +565,21 @@ const file_google_ai_generativelanguage_v1beta2_text_service_proto_rawDesc = "" 
 	"candidates\x18\x01 \x03(\v24.google.ai.generativelanguage.v1beta2.TextCompletionR\n" +
 	"candidates\x12M\n" +
 	"\afilters\x18\x03 \x03(\v23.google.ai.generativelanguage.v1beta2.ContentFilterR\afilters\x12]\n" +
-	"\x0fsafety_feedback\x18\x04 \x03(\v24.google.ai.generativelanguage.v1beta2.SafetyFeedbackR\x0esafetyFeedback\"%\n" +
+	"\x0fsafety_feedback\x18\x04 \x03(\v24.google.ai.generativelanguage.v1beta2.SafetyFeedbackR\x0esafetyFeedback\"&\n" +
 	"\n" +
-	"TextPrompt\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\"\x8d\x02\n" +
-	"\x0eTextCompletion\x12\x1b\n" +
-	"\x06output\x18\x01 \x01(\tB\x03\xe0A\x03R\x06output\x12Y\n" +
-	"\x0esafety_ratings\x18\x02 \x03(\v22.google.ai.generativelanguage.v1beta2.SafetyRatingR\rsafetyRatings\x12m\n" +
-	"\x11citation_metadata\x18\x03 \x01(\v26.google.ai.generativelanguage.v1beta2.CitationMetadataB\x03\xe0A\x03H\x00R\x10citationMetadata\x88\x01\x01B\x14\n" +
-	"\x12_citation_metadata\"r\n" +
-	"\x10EmbedTextRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12\x17\n" +
-	"\x04text\x18\x02 \x01(\tB\x03\xe0A\x02R\x04text\"z\n" +
-	"\x11EmbedTextResponse\x12W\n" +
-	"\tembedding\x18\x01 \x01(\v2/.google.ai.generativelanguage.v1beta2.EmbeddingB\x03\xe0A\x03H\x00R\tembedding\x88\x01\x01B\f\n" +
+	"TextPrompt\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\"\x8f\x02\n" +
+	"\x0eTextCompletion\x12\x1c\n" +
+	"\x06output\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06output\x12Y\n" +
+	"\x0esafety_ratings\x18\x02 \x03(\v22.google.ai.generativelanguage.v1beta2.SafetyRatingR\rsafetyRatings\x12n\n" +
+	"\x11citation_metadata\x18\x03 \x01(\v26.google.ai.generativelanguage.v1beta2.CitationMetadataB\x04\xe2A\x01\x03H\x00R\x10citationMetadata\x88\x01\x01B\x14\n" +
+	"\x12_citation_metadata\"t\n" +
+	"\x10EmbedTextRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12\x18\n" +
+	"\x04text\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04text\"{\n" +
+	"\x11EmbedTextResponse\x12X\n" +
+	"\tembedding\x18\x01 \x01(\v2/.google.ai.generativelanguage.v1beta2.EmbeddingB\x04\xe2A\x01\x03H\x00R\tembedding\x88\x01\x01B\f\n" +
 	"\n" +
 	"_embedding\"!\n" +
 	"\tEmbedding\x12\x14\n" +

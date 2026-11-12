@@ -796,33 +796,33 @@ var File_google_cloud_recommendationengine_v1beta1_import_proto protoreflect.Fil
 
 const file_google_cloud_recommendationengine_v1beta1_import_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/recommendationengine/v1beta1/import.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/recommendationengine/v1beta1/catalog.proto\x1a:google/cloud/recommendationengine/v1beta1/user_event.proto\x1aNgoogle/cloud/recommendationengine/v1beta1/recommendationengine_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"/\n" +
-	"\tGcsSource\x12\"\n" +
+	"6google/cloud/recommendationengine/v1beta1/import.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/recommendationengine/v1beta1/catalog.proto\x1a:google/cloud/recommendationengine/v1beta1/user_event.proto\x1aNgoogle/cloud/recommendationengine/v1beta1/recommendationengine_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"0\n" +
+	"\tGcsSource\x12#\n" +
 	"\n" +
-	"input_uris\x18\x01 \x03(\tB\x03\xe0A\x02R\tinputUris\"w\n" +
-	"\x13CatalogInlineSource\x12`\n" +
-	"\rcatalog_items\x18\x01 \x03(\v26.google.cloud.recommendationengine.v1beta1.CatalogItemB\x03\xe0A\x01R\fcatalogItems\"s\n" +
-	"\x15UserEventInlineSource\x12Z\n" +
-	"\vuser_events\x18\x01 \x03(\v24.google.cloud.recommendationengine.v1beta1.UserEventB\x03\xe0A\x01R\n" +
+	"input_uris\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\tinputUris\"x\n" +
+	"\x13CatalogInlineSource\x12a\n" +
+	"\rcatalog_items\x18\x01 \x03(\v26.google.cloud.recommendationengine.v1beta1.CatalogItemB\x04\xe2A\x01\x01R\fcatalogItems\"t\n" +
+	"\x15UserEventInlineSource\x12[\n" +
+	"\vuser_events\x18\x01 \x03(\v24.google.cloud.recommendationengine.v1beta1.UserEventB\x04\xe2A\x01\x01R\n" +
 	"userEvents\"D\n" +
 	"\x12ImportErrorsConfig\x12\x1f\n" +
 	"\n" +
 	"gcs_prefix\x18\x01 \x01(\tH\x00R\tgcsPrefixB\r\n" +
-	"\vdestination\"\xd5\x02\n" +
-	"\x19ImportCatalogItemsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+recommendationengine.googleapis.com/CatalogR\x06parent\x12\"\n" +
+	"\vdestination\"\xd9\x02\n" +
+	"\x19ImportCatalogItemsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+recommendationengine.googleapis.com/CatalogR\x06parent\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12^\n" +
-	"\finput_config\x18\x03 \x01(\v26.google.cloud.recommendationengine.v1beta1.InputConfigB\x03\xe0A\x02R\vinputConfig\x12g\n" +
-	"\rerrors_config\x18\x04 \x01(\v2=.google.cloud.recommendationengine.v1beta1.ImportErrorsConfigB\x03\xe0A\x01R\ferrorsConfig\"\xd6\x02\n" +
-	"\x17ImportUserEventsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12_\n" +
+	"\finput_config\x18\x03 \x01(\v26.google.cloud.recommendationengine.v1beta1.InputConfigB\x04\xe2A\x01\x02R\vinputConfig\x12h\n" +
+	"\rerrors_config\x18\x04 \x01(\v2=.google.cloud.recommendationengine.v1beta1.ImportErrorsConfigB\x04\xe2A\x01\x01R\ferrorsConfig\"\xda\x02\n" +
+	"\x17ImportUserEventsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12^\n" +
-	"\finput_config\x18\x03 \x01(\v26.google.cloud.recommendationengine.v1beta1.InputConfigB\x03\xe0A\x02R\vinputConfig\x12g\n" +
-	"\rerrors_config\x18\x04 \x01(\v2=.google.cloud.recommendationengine.v1beta1.ImportErrorsConfigB\x03\xe0A\x01R\ferrorsConfig\"\xe1\x02\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12_\n" +
+	"\finput_config\x18\x03 \x01(\v26.google.cloud.recommendationengine.v1beta1.InputConfigB\x04\xe2A\x01\x02R\vinputConfig\x12h\n" +
+	"\rerrors_config\x18\x04 \x01(\v2=.google.cloud.recommendationengine.v1beta1.ImportErrorsConfigB\x04\xe2A\x01\x01R\ferrorsConfig\"\xe1\x02\n" +
 	"\vInputConfig\x12t\n" +
 	"\x15catalog_inline_source\x18\x01 \x01(\v2>.google.cloud.recommendationengine.v1beta1.CatalogInlineSourceH\x00R\x13catalogInlineSource\x12U\n" +
 	"\n" +

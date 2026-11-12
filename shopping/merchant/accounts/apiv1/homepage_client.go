@@ -312,6 +312,39 @@ func NewHomepageClient(ctx context.Context, opts ...option.ClientOption) (*Homep
 		client.CallOptions.ClaimHomepage = append(client.CallOptions.ClaimHomepage, gax.WithClientMetrics(metrics))
 		client.CallOptions.UnclaimHomepage = append(client.CallOptions.UnclaimHomepage, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetHomepage = append(client.CallOptions.GetHomepage, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateHomepage = append(client.CallOptions.UpdateHomepage, gax.WithClientTracing(tracing))
+		client.CallOptions.ClaimHomepage = append(client.CallOptions.ClaimHomepage, gax.WithClientTracing(tracing))
+		client.CallOptions.UnclaimHomepage = append(client.CallOptions.UnclaimHomepage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetHomepage = append(client.CallOptions.GetHomepage, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateHomepage = append(client.CallOptions.UpdateHomepage, gax.WithClientLogging(logging))
+		client.CallOptions.ClaimHomepage = append(client.CallOptions.ClaimHomepage, gax.WithClientLogging(logging))
+		client.CallOptions.UnclaimHomepage = append(client.CallOptions.UnclaimHomepage, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -406,6 +439,39 @@ func NewHomepageRESTClient(ctx context.Context, opts ...option.ClientOption) (*H
 		callOpts.ClaimHomepage = append(callOpts.ClaimHomepage, gax.WithClientMetrics(metrics))
 		callOpts.UnclaimHomepage = append(callOpts.UnclaimHomepage, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetHomepage = append(callOpts.GetHomepage, gax.WithClientTracing(tracing))
+		callOpts.UpdateHomepage = append(callOpts.UpdateHomepage, gax.WithClientTracing(tracing))
+		callOpts.ClaimHomepage = append(callOpts.ClaimHomepage, gax.WithClientTracing(tracing))
+		callOpts.UnclaimHomepage = append(callOpts.UnclaimHomepage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetHomepage = append(callOpts.GetHomepage, gax.WithClientLogging(logging))
+		callOpts.UpdateHomepage = append(callOpts.UpdateHomepage, gax.WithClientLogging(logging))
+		callOpts.ClaimHomepage = append(callOpts.ClaimHomepage, gax.WithClientLogging(logging))
+		callOpts.UnclaimHomepage = append(callOpts.UnclaimHomepage, gax.WithClientLogging(logging))
+	}
 
 	return &HomepageClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -452,9 +518,6 @@ func (c *homepageGRPCClient) GetHomepage(ctx context.Context, req *accountspb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.HomepageService/GetHomepage")
 	}
@@ -497,9 +560,6 @@ func (c *homepageGRPCClient) ClaimHomepage(ctx context.Context, req *accountspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.HomepageService/ClaimHomepage")
 	}
@@ -521,9 +581,6 @@ func (c *homepageGRPCClient) UnclaimHomepage(ctx context.Context, req *accountsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.HomepageService/UnclaimHomepage")
 	}
@@ -546,6 +603,11 @@ func (c *homepageRESTClient) GetHomepage(ctx context.Context, req *accountspb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -559,9 +621,6 @@ func (c *homepageRESTClient) GetHomepage(ctx context.Context, req *accountspb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.HomepageService/GetHomepage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/homepage}")
@@ -608,6 +667,11 @@ func (c *homepageRESTClient) UpdateHomepage(ctx context.Context, req *accountspb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetHomepage().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetHomepage().GetName())
@@ -685,6 +749,11 @@ func (c *homepageRESTClient) ClaimHomepage(ctx context.Context, req *accountspb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:claim", req.GetName())
 
 	params := url.Values{}
@@ -698,9 +767,6 @@ func (c *homepageRESTClient) ClaimHomepage(ctx context.Context, req *accountspb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.HomepageService/ClaimHomepage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/homepage}:claim")
@@ -748,6 +814,11 @@ func (c *homepageRESTClient) UnclaimHomepage(ctx context.Context, req *accountsp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:unclaim", req.GetName())
 
 	params := url.Values{}
@@ -761,9 +832,6 @@ func (c *homepageRESTClient) UnclaimHomepage(ctx context.Context, req *accountsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.HomepageService/UnclaimHomepage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/homepage}:unclaim")

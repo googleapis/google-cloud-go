@@ -330,13 +330,13 @@ const file_google_cloud_bigquery_storage_v1beta2_table_proto_rawDesc = "" +
 	"\n" +
 	"1google/cloud/bigquery/storage/v1beta2/table.proto\x12%google.cloud.bigquery.storage.v1beta2\x1a\x1fgoogle/api/field_behavior.proto\"^\n" +
 	"\vTableSchema\x12O\n" +
-	"\x06fields\x18\x01 \x03(\v27.google.cloud.bigquery.storage.v1beta2.TableFieldSchemaR\x06fields\"\xf6\x04\n" +
-	"\x10TableFieldSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12U\n" +
-	"\x04type\x18\x02 \x01(\x0e2<.google.cloud.bigquery.storage.v1beta2.TableFieldSchema.TypeB\x03\xe0A\x02R\x04type\x12U\n" +
-	"\x04mode\x18\x03 \x01(\x0e2<.google.cloud.bigquery.storage.v1beta2.TableFieldSchema.ModeB\x03\xe0A\x01R\x04mode\x12T\n" +
-	"\x06fields\x18\x04 \x03(\v27.google.cloud.bigquery.storage.v1beta2.TableFieldSchemaB\x03\xe0A\x01R\x06fields\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\"\xd5\x01\n" +
+	"\x06fields\x18\x01 \x03(\v27.google.cloud.bigquery.storage.v1beta2.TableFieldSchemaR\x06fields\"\xfb\x04\n" +
+	"\x10TableFieldSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12V\n" +
+	"\x04type\x18\x02 \x01(\x0e2<.google.cloud.bigquery.storage.v1beta2.TableFieldSchema.TypeB\x04\xe2A\x01\x02R\x04type\x12V\n" +
+	"\x04mode\x18\x03 \x01(\x0e2<.google.cloud.bigquery.storage.v1beta2.TableFieldSchema.ModeB\x04\xe2A\x01\x01R\x04mode\x12U\n" +
+	"\x06fields\x18\x04 \x03(\v27.google.cloud.bigquery.storage.v1beta2.TableFieldSchemaB\x04\xe2A\x01\x01R\x06fields\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\"\xd5\x01\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

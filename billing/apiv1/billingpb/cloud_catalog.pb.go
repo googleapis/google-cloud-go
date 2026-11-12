@@ -1218,9 +1218,9 @@ const file_google_cloud_billing_v1_cloud_catalog_proto_rawDesc = "" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\"|\n" +
 	"\x14ListServicesResponse\x12<\n" +
 	"\bservices\x18\x01 \x03(\v2 .google.cloud.billing.v1.ServiceR\bservices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa9\x02\n" +
-	"\x0fListSkusRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xaa\x02\n" +
+	"\x0fListSkusRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#cloudbilling.googleapis.com/ServiceR\x06parent\x129\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +

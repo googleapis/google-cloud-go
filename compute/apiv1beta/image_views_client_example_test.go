@@ -21,6 +21,7 @@ import (
 
 	compute "cloud.google.com/go/compute/apiv1beta"
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
+	"google.golang.org/api/iterator"
 )
 
 func ExampleNewImageViewsRESTClient() {
@@ -63,4 +64,41 @@ func ExampleImageViewsClient_Get() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleImageViewsClient_List() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewImageViewsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.ListImageViewsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#ListImageViewsRequest.
+	}
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.ImageViewsListResponse)
+	}
 }

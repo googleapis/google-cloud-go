@@ -37,6 +37,7 @@ type Job struct {
 	email      string
 	config     *bq.JobConfiguration
 	lastStatus *JobStatus
+	queryID    string
 }
 
 // JobFromID creates a Job which refers to an existing BigQuery job. The job
@@ -342,9 +343,12 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 			projectID: j.projectID,
 			jobID:     j.jobID,
 			location:  j.location,
+			queryID:   j.queryID,
 		}
-		it = newRowIterator(ctx, &rowSource{j: itJob}, pf)
+		it = newRowIterator(ctx, &rowSource{j: itJob, queryID: j.queryID}, pf)
 		it.TotalRows = totalRows
+	} else {
+		it.src.queryID = j.queryID
 	}
 	it.Schema = schema
 	return it, nil
@@ -1057,7 +1061,7 @@ func (c *Client) Jobs(ctx context.Context) *JobIterator {
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.items) },
-		func() interface{} { b := it.items; it.items = nil; return b })
+		func() any { b := it.items; it.items = nil; return b })
 	return it
 }
 

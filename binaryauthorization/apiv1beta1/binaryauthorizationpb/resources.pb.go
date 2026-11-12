@@ -1014,21 +1014,21 @@ var File_google_cloud_binaryauthorization_v1beta1_resources_proto protoreflect.F
 
 const file_google_cloud_binaryauthorization_v1beta1_resources_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/binaryauthorization/v1beta1/resources.proto\x12(google.cloud.binaryauthorization.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf1\x0f\n" +
-	"\x06Policy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x93\x01\n" +
-	"\x1dglobal_policy_evaluation_mode\x18\a \x01(\x0e2K.google.cloud.binaryauthorization.v1beta1.Policy.GlobalPolicyEvaluationModeB\x03\xe0A\x01R\x1aglobalPolicyEvaluationMode\x12\x8a\x01\n" +
-	"\x1cadmission_whitelist_patterns\x18\x02 \x03(\v2C.google.cloud.binaryauthorization.v1beta1.AdmissionWhitelistPatternB\x03\xe0A\x01R\x1aadmissionWhitelistPatterns\x12\x88\x01\n" +
-	"\x17cluster_admission_rules\x18\x03 \x03(\v2K.google.cloud.binaryauthorization.v1beta1.Policy.ClusterAdmissionRulesEntryB\x03\xe0A\x01R\x15clusterAdmissionRules\x12\xad\x01\n" +
+	"8google/cloud/binaryauthorization/v1beta1/resources.proto\x12(google.cloud.binaryauthorization.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfc\x0f\n" +
+	"\x06Policy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x94\x01\n" +
+	"\x1dglobal_policy_evaluation_mode\x18\a \x01(\x0e2K.google.cloud.binaryauthorization.v1beta1.Policy.GlobalPolicyEvaluationModeB\x04\xe2A\x01\x01R\x1aglobalPolicyEvaluationMode\x12\x8b\x01\n" +
+	"\x1cadmission_whitelist_patterns\x18\x02 \x03(\v2C.google.cloud.binaryauthorization.v1beta1.AdmissionWhitelistPatternB\x04\xe2A\x01\x01R\x1aadmissionWhitelistPatterns\x12\x89\x01\n" +
+	"\x17cluster_admission_rules\x18\x03 \x03(\v2K.google.cloud.binaryauthorization.v1beta1.Policy.ClusterAdmissionRulesEntryB\x04\xe2A\x01\x01R\x15clusterAdmissionRules\x12\xae\x01\n" +
 	"$kubernetes_namespace_admission_rules\x18\n" +
-	" \x03(\v2W.google.cloud.binaryauthorization.v1beta1.Policy.KubernetesNamespaceAdmissionRulesEntryB\x03\xe0A\x01R!kubernetesNamespaceAdmissionRules\x12\xbd\x01\n" +
-	"*kubernetes_service_account_admission_rules\x18\b \x03(\v2\\.google.cloud.binaryauthorization.v1beta1.Policy.KubernetesServiceAccountAdmissionRulesEntryB\x03\xe0A\x01R&kubernetesServiceAccountAdmissionRules\x12\xb1\x01\n" +
-	"&istio_service_identity_admission_rules\x18\t \x03(\v2X.google.cloud.binaryauthorization.v1beta1.Policy.IstioServiceIdentityAdmissionRulesEntryB\x03\xe0A\x01R\"istioServiceIdentityAdmissionRules\x12r\n" +
-	"\x16default_admission_rule\x18\x04 \x01(\v27.google.cloud.binaryauthorization.v1beta1.AdmissionRuleB\x03\xe0A\x02R\x14defaultAdmissionRule\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x01R\x04etag\x1a\x81\x01\n" +
+	" \x03(\v2W.google.cloud.binaryauthorization.v1beta1.Policy.KubernetesNamespaceAdmissionRulesEntryB\x04\xe2A\x01\x01R!kubernetesNamespaceAdmissionRules\x12\xbe\x01\n" +
+	"*kubernetes_service_account_admission_rules\x18\b \x03(\v2\\.google.cloud.binaryauthorization.v1beta1.Policy.KubernetesServiceAccountAdmissionRulesEntryB\x04\xe2A\x01\x01R&kubernetesServiceAccountAdmissionRules\x12\xb2\x01\n" +
+	"&istio_service_identity_admission_rules\x18\t \x03(\v2X.google.cloud.binaryauthorization.v1beta1.Policy.IstioServiceIdentityAdmissionRulesEntryB\x04\xe2A\x01\x01R\"istioServiceIdentityAdmissionRules\x12s\n" +
+	"\x16default_admission_rule\x18\x04 \x01(\v27.google.cloud.binaryauthorization.v1beta1.AdmissionRuleB\x04\xe2A\x01\x02R\x14defaultAdmissionRule\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1a\x81\x01\n" +
 	"\x1aClusterAdmissionRulesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12M\n" +
 	"\x05value\x18\x02 \x01(\v27.google.cloud.binaryauthorization.v1beta1.AdmissionRuleR\x05value:\x028\x01\x1a\x8d\x01\n" +
@@ -1048,11 +1048,11 @@ const file_google_cloud_binaryauthorization_v1beta1_resources_proto_rawDesc = ""
 	"\aDISABLE\x10\x02:f\xeaAc\n" +
 	")binaryauthorization.googleapis.com/Policy\x12\x19projects/{project}/policy\x12\x1blocations/{location}/policy\">\n" +
 	"\x19AdmissionWhitelistPattern\x12!\n" +
-	"\fname_pattern\x18\x01 \x01(\tR\vnamePattern\"\x9c\x04\n" +
-	"\rAdmissionRule\x12t\n" +
-	"\x0fevaluation_mode\x18\x01 \x01(\x0e2F.google.cloud.binaryauthorization.v1beta1.AdmissionRule.EvaluationModeB\x03\xe0A\x02R\x0eevaluationMode\x12;\n" +
-	"\x17require_attestations_by\x18\x02 \x03(\tB\x03\xe0A\x01R\x15requireAttestationsBy\x12w\n" +
-	"\x10enforcement_mode\x18\x03 \x01(\x0e2G.google.cloud.binaryauthorization.v1beta1.AdmissionRule.EnforcementModeB\x03\xe0A\x02R\x0fenforcementMode\"m\n" +
+	"\fname_pattern\x18\x01 \x01(\tR\vnamePattern\"\x9f\x04\n" +
+	"\rAdmissionRule\x12u\n" +
+	"\x0fevaluation_mode\x18\x01 \x01(\x0e2F.google.cloud.binaryauthorization.v1beta1.AdmissionRule.EvaluationModeB\x04\xe2A\x01\x02R\x0eevaluationMode\x12<\n" +
+	"\x17require_attestations_by\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x15requireAttestationsBy\x12x\n" +
+	"\x10enforcement_mode\x18\x03 \x01(\x0e2G.google.cloud.binaryauthorization.v1beta1.AdmissionRule.EnforcementModeB\x04\xe2A\x01\x02R\x0fenforcementMode\"m\n" +
 	"\x0eEvaluationMode\x12\x1f\n" +
 	"\x1bEVALUATION_MODE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fALWAYS_ALLOW\x10\x01\x12\x17\n" +
@@ -1061,21 +1061,21 @@ const file_google_cloud_binaryauthorization_v1beta1_resources_proto_rawDesc = ""
 	"\x0fEnforcementMode\x12 \n" +
 	"\x1cENFORCEMENT_MODE_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cENFORCED_BLOCK_AND_AUDIT_LOG\x10\x01\x12\x19\n" +
-	"\x15DRYRUN_AUDIT_LOG_ONLY\x10\x02\"\x8a\x03\n" +
-	"\bAttestor\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12w\n" +
-	"\x17user_owned_drydock_note\x18\x03 \x01(\v2>.google.cloud.binaryauthorization.v1beta1.UserOwnedDrydockNoteH\x00R\x14userOwnedDrydockNote\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x01R\x04etag:Y\xeaAV\n" +
+	"\x15DRYRUN_AUDIT_LOG_ONLY\x10\x02\"\x8e\x03\n" +
+	"\bAttestor\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12w\n" +
+	"\x17user_owned_drydock_note\x18\x03 \x01(\v2>.google.cloud.binaryauthorization.v1beta1.UserOwnedDrydockNoteH\x00R\x14userOwnedDrydockNote\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\a \x01(\tB\x04\xe2A\x01\x01R\x04etag:Y\xeaAV\n" +
 	"+binaryauthorization.googleapis.com/Attestor\x12'projects/{project}/attestors/{attestor}B\x0f\n" +
-	"\rattestor_type\"\xf3\x01\n" +
-	"\x14UserOwnedDrydockNote\x12*\n" +
-	"\x0enote_reference\x18\x01 \x01(\tB\x03\xe0A\x02R\rnoteReference\x12a\n" +
-	"\vpublic_keys\x18\x02 \x03(\v2;.google.cloud.binaryauthorization.v1beta1.AttestorPublicKeyB\x03\xe0A\x01R\n" +
-	"publicKeys\x12L\n" +
-	" delegation_service_account_email\x18\x03 \x01(\tB\x03\xe0A\x03R\x1ddelegationServiceAccountEmail\"\xed\x05\n" +
+	"\rattestor_type\"\xf6\x01\n" +
+	"\x14UserOwnedDrydockNote\x12+\n" +
+	"\x0enote_reference\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rnoteReference\x12b\n" +
+	"\vpublic_keys\x18\x02 \x03(\v2;.google.cloud.binaryauthorization.v1beta1.AttestorPublicKeyB\x04\xe2A\x01\x01R\n" +
+	"publicKeys\x12M\n" +
+	" delegation_service_account_email\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x1ddelegationServiceAccountEmail\"\xed\x05\n" +
 	"\rPkixPublicKey\x12$\n" +
 	"\x0epublic_key_pem\x18\x01 \x01(\tR\fpublicKeyPem\x12{\n" +
 	"\x13signature_algorithm\x18\x02 \x01(\x0e2J.google.cloud.binaryauthorization.v1beta1.PkixPublicKey.SignatureAlgorithmR\x12signatureAlgorithm\"\xb8\x04\n" +
@@ -1101,9 +1101,9 @@ const file_google_cloud_binaryauthorization_v1beta1_resources_proto_rawDesc = ""
 	"\x12\x15\n" +
 	"\x11ECDSA_P521_SHA512\x10\v\x12\x17\n" +
 	"\x13EC_SIGN_P521_SHA512\x10\v\x12\r\n" +
-	"\tML_DSA_65\x10\r\x1a\x02\x10\x01\"\xf5\x01\n" +
-	"\x11AttestorPublicKey\x12\x1d\n" +
-	"\acomment\x18\x01 \x01(\tB\x03\xe0A\x01R\acomment\x12\x0e\n" +
+	"\tML_DSA_65\x10\r\x1a\x02\x10\x01\"\xf6\x01\n" +
+	"\x11AttestorPublicKey\x12\x1e\n" +
+	"\acomment\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\acomment\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12@\n" +
 	"\x1cascii_armored_pgp_public_key\x18\x03 \x01(\tH\x00R\x18asciiArmoredPgpPublicKey\x12a\n" +
 	"\x0fpkix_public_key\x18\x05 \x01(\v27.google.cloud.binaryauthorization.v1beta1.PkixPublicKeyH\x00R\rpkixPublicKeyB\f\n" +

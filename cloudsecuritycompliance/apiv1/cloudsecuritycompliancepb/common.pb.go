@@ -2651,78 +2651,78 @@ var File_google_cloud_cloudsecuritycompliance_v1_common_proto protoreflect.FileD
 
 const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/cloudsecuritycompliance/v1/common.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\b\n" +
-	"\tFramework\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12/\n" +
-	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\x0fmajorRevisionId\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12Y\n" +
-	"\x04type\x18\x06 \x01(\x0e2@.google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkTypeB\x03\xe0A\x03R\x04type\x12u\n" +
-	"\x15cloud_control_details\x18\b \x03(\v2<.google.cloud.cloudsecuritycompliance.v1.CloudControlDetailsB\x03\xe0A\x01R\x13cloudControlDetails\x12[\n" +
-	"\bcategory\x18\t \x03(\x0e2:.google.cloud.cloudsecuritycompliance.v1.FrameworkCategoryB\x03\xe0A\x01R\bcategory\x12w\n" +
+	"4google/cloud/cloudsecuritycompliance/v1/common.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x85\t\n" +
+	"\tFramework\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x120\n" +
+	"\x11major_revision_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x0fmajorRevisionId\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Z\n" +
+	"\x04type\x18\x06 \x01(\x0e2@.google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkTypeB\x04\xe2A\x01\x03R\x04type\x12v\n" +
+	"\x15cloud_control_details\x18\b \x03(\v2<.google.cloud.cloudsecuritycompliance.v1.CloudControlDetailsB\x04\xe2A\x01\x01R\x13cloudControlDetails\x12\\\n" +
+	"\bcategory\x18\t \x03(\x0e2:.google.cloud.cloudsecuritycompliance.v1.FrameworkCategoryB\x04\xe2A\x01\x01R\bcategory\x12x\n" +
 	"\x19supported_cloud_providers\x18\n" +
-	" \x03(\x0e26.google.cloud.cloudsecuritycompliance.v1.CloudProviderB\x03\xe0A\x03R\x17supportedCloudProviders\x12\x87\x01\n" +
-	"\x1fsupported_target_resource_types\x18\v \x03(\x0e2;.google.cloud.cloudsecuritycompliance.v1.TargetResourceTypeB\x03\xe0A\x03R\x1csupportedTargetResourceTypes\x12}\n" +
-	"\x1bsupported_enforcement_modes\x18\r \x03(\x0e28.google.cloud.cloudsecuritycompliance.v1.EnforcementModeB\x03\xe0A\x03R\x19supportedEnforcementModes\"I\n" +
+	" \x03(\x0e26.google.cloud.cloudsecuritycompliance.v1.CloudProviderB\x04\xe2A\x01\x03R\x17supportedCloudProviders\x12\x88\x01\n" +
+	"\x1fsupported_target_resource_types\x18\v \x03(\x0e2;.google.cloud.cloudsecuritycompliance.v1.TargetResourceTypeB\x04\xe2A\x01\x03R\x1csupportedTargetResourceTypes\x12~\n" +
+	"\x1bsupported_enforcement_modes\x18\r \x03(\x0e28.google.cloud.cloudsecuritycompliance.v1.EnforcementModeB\x04\xe2A\x01\x03R\x19supportedEnforcementModes\"I\n" +
 	"\rFrameworkType\x12\x1e\n" +
 	"\x1aFRAMEWORK_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bBUILT_IN\x10\x01\x12\n" +
 	"\n" +
 	"\x06CUSTOM\x10\x02:\xd7\x01\xeaA\xd3\x01\n" +
 	"0cloudsecuritycompliance.googleapis.com/Framework\x12Horganizations/{organization}/locations/{location}/frameworks/{framework}\x12>projects/{project}/locations/{location}/frameworks/{framework}*\n" +
-	"frameworks2\tframework\"\xb8\x01\n" +
-	"\x13CloudControlDetails\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12/\n" +
-	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x02R\x0fmajorRevisionId\x12W\n" +
+	"frameworks2\tframework\"\xbb\x01\n" +
+	"\x13CloudControlDetails\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x120\n" +
+	"\x11major_revision_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\x0fmajorRevisionId\x12X\n" +
 	"\n" +
-	"parameters\x18\x04 \x03(\v22.google.cloud.cloudsecuritycompliance.v1.ParameterB\x03\xe0A\x01R\n" +
-	"parameters\"\xb8\x01\n" +
-	"\x12FrameworkReference\x12V\n" +
-	"\tframework\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0cloudsecuritycompliance.googleapis.com/FrameworkR\tframework\x124\n" +
-	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x01H\x00R\x0fmajorRevisionId\x88\x01\x01B\x14\n" +
-	"\x12_major_revision_id\"\x87\x01\n" +
-	"\tParameter\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12a\n" +
-	"\x0fparameter_value\x18\x02 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.ParamValueB\x03\xe0A\x02R\x0eparameterValue\"\x93\v\n" +
-	"\fCloudControl\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12/\n" +
-	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\x0fmajorRevisionId\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12}\n" +
-	"\x1bsupported_enforcement_modes\x18\a \x03(\x0e28.google.cloud.cloudsecuritycompliance.v1.EnforcementModeB\x03\xe0A\x03R\x19supportedEnforcementModes\x12b\n" +
-	"\x0eparameter_spec\x18\b \x03(\v26.google.cloud.cloudsecuritycompliance.v1.ParameterSpecB\x03\xe0A\x01R\rparameterSpec\x12H\n" +
-	"\x05rules\x18\t \x03(\v2-.google.cloud.cloudsecuritycompliance.v1.RuleB\x03\xe0A\x01R\x05rules\x12R\n" +
-	"\bseverity\x18\v \x01(\x0e21.google.cloud.cloudsecuritycompliance.v1.SeverityB\x03\xe0A\x01R\bseverity\x12.\n" +
-	"\x10finding_category\x18\f \x01(\tB\x03\xe0A\x01R\x0ffindingCategory\x12w\n" +
-	"\x19supported_cloud_providers\x18\r \x03(\x0e26.google.cloud.cloudsecuritycompliance.v1.CloudProviderB\x03\xe0A\x01R\x17supportedCloudProviders\x122\n" +
-	"\x12related_frameworks\x18\x0e \x03(\tB\x03\xe0A\x03R\x11relatedFrameworks\x120\n" +
-	"\x11remediation_steps\x18\x0f \x01(\tB\x03\xe0A\x01R\x10remediationSteps\x12b\n" +
+	"parameters\x18\x04 \x03(\v22.google.cloud.cloudsecuritycompliance.v1.ParameterB\x04\xe2A\x01\x01R\n" +
+	"parameters\"\xba\x01\n" +
+	"\x12FrameworkReference\x12W\n" +
+	"\tframework\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0cloudsecuritycompliance.googleapis.com/FrameworkR\tframework\x125\n" +
+	"\x11major_revision_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x0fmajorRevisionId\x88\x01\x01B\x14\n" +
+	"\x12_major_revision_id\"\x89\x01\n" +
+	"\tParameter\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12b\n" +
+	"\x0fparameter_value\x18\x02 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.ParamValueB\x04\xe2A\x01\x02R\x0eparameterValue\"\xa0\v\n" +
+	"\fCloudControl\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x120\n" +
+	"\x11major_revision_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x0fmajorRevisionId\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12~\n" +
+	"\x1bsupported_enforcement_modes\x18\a \x03(\x0e28.google.cloud.cloudsecuritycompliance.v1.EnforcementModeB\x04\xe2A\x01\x03R\x19supportedEnforcementModes\x12c\n" +
+	"\x0eparameter_spec\x18\b \x03(\v26.google.cloud.cloudsecuritycompliance.v1.ParameterSpecB\x04\xe2A\x01\x01R\rparameterSpec\x12I\n" +
+	"\x05rules\x18\t \x03(\v2-.google.cloud.cloudsecuritycompliance.v1.RuleB\x04\xe2A\x01\x01R\x05rules\x12S\n" +
+	"\bseverity\x18\v \x01(\x0e21.google.cloud.cloudsecuritycompliance.v1.SeverityB\x04\xe2A\x01\x01R\bseverity\x12/\n" +
+	"\x10finding_category\x18\f \x01(\tB\x04\xe2A\x01\x01R\x0ffindingCategory\x12x\n" +
+	"\x19supported_cloud_providers\x18\r \x03(\x0e26.google.cloud.cloudsecuritycompliance.v1.CloudProviderB\x04\xe2A\x01\x01R\x17supportedCloudProviders\x123\n" +
+	"\x12related_frameworks\x18\x0e \x03(\tB\x04\xe2A\x01\x03R\x11relatedFrameworks\x121\n" +
+	"\x11remediation_steps\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\x10remediationSteps\x12c\n" +
 	"\n" +
-	"categories\x18\x10 \x03(\x0e2=.google.cloud.cloudsecuritycompliance.v1.CloudControlCategoryB\x03\xe0A\x01R\n" +
-	"categories\x12@\n" +
-	"\vcreate_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x87\x01\n" +
-	"\x1fsupported_target_resource_types\x18\x12 \x03(\x0e2;.google.cloud.cloudsecuritycompliance.v1.TargetResourceTypeB\x03\xe0A\x01R\x1csupportedTargetResourceTypes\"6\n" +
+	"categories\x18\x10 \x03(\x0e2=.google.cloud.cloudsecuritycompliance.v1.CloudControlCategoryB\x04\xe2A\x01\x01R\n" +
+	"categories\x12A\n" +
+	"\vcreate_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\x88\x01\n" +
+	"\x1fsupported_target_resource_types\x18\x12 \x03(\x0e2;.google.cloud.cloudsecuritycompliance.v1.TargetResourceTypeB\x04\xe2A\x01\x01R\x1csupportedTargetResourceTypes\"6\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06CUSTOM\x10\x01\x12\f\n" +
 	"\bBUILT_IN\x10\x02:\xee\x01\xeaA\xea\x01\n" +
-	"3cloudsecuritycompliance.googleapis.com/CloudControl\x12Oorganizations/{organization}/locations/{location}/cloudControls/{cloud_control}\x12Eprojects/{project}/locations/{location}/cloudControls/{cloud_control}*\rcloudControls2\fcloudControl\"\x81\x06\n" +
-	"\rParameterSpec\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12$\n" +
-	"\vis_required\x18\x04 \x01(\bB\x03\xe0A\x02R\n" +
-	"isRequired\x12d\n" +
+	"3cloudsecuritycompliance.googleapis.com/CloudControl\x12Oorganizations/{organization}/locations/{location}/cloudControls/{cloud_control}\x12Eprojects/{project}/locations/{location}/cloudControls/{cloud_control}*\rcloudControls2\fcloudControl\"\x8a\x06\n" +
+	"\rParameterSpec\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12%\n" +
+	"\vis_required\x18\x04 \x01(\bB\x04\xe2A\x01\x02R\n" +
+	"isRequired\x12e\n" +
 	"\n" +
-	"value_type\x18\x05 \x01(\x0e2@.google.cloud.cloudsecuritycompliance.v1.ParameterSpec.ValueTypeB\x03\xe0A\x02R\tvalueType\x12]\n" +
-	"\rdefault_value\x18\x06 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.ParamValueB\x03\xe0A\x01R\fdefaultValue\x12v\n" +
-	"\x12substitution_rules\x18\a \x03(\v2B.google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRuleB\x03\xe0A\x01R\x11substitutionRules\x12b\n" +
-	"\x0esub_parameters\x18\b \x03(\v26.google.cloud.cloudsecuritycompliance.v1.ParameterSpecB\x03\xe0A\x01R\rsubParameters\x12X\n" +
+	"value_type\x18\x05 \x01(\x0e2@.google.cloud.cloudsecuritycompliance.v1.ParameterSpec.ValueTypeB\x04\xe2A\x01\x02R\tvalueType\x12^\n" +
+	"\rdefault_value\x18\x06 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.ParamValueB\x04\xe2A\x01\x01R\fdefaultValue\x12w\n" +
+	"\x12substitution_rules\x18\a \x03(\v2B.google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRuleB\x04\xe2A\x01\x01R\x11substitutionRules\x12c\n" +
+	"\x0esub_parameters\x18\b \x03(\v26.google.cloud.cloudsecuritycompliance.v1.ParameterSpecB\x04\xe2A\x01\x01R\rsubParameters\x12Y\n" +
 	"\n" +
-	"validation\x18\t \x01(\v23.google.cloud.cloudsecuritycompliance.v1.ValidationB\x03\xe0A\x01R\n" +
+	"validation\x18\t \x01(\v23.google.cloud.cloudsecuritycompliance.v1.ValidationB\x04\xe2A\x01\x01R\n" +
 	"validation\"g\n" +
 	"\tValueType\x12\x1a\n" +
 	"\x16VALUE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
@@ -2740,25 +2740,25 @@ const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"\tint_range\x18\x02 \x01(\v21.google.cloud.cloudsecuritycompliance.v1.IntRangeH\x00R\bintRange\x12_\n" +
 	"\x0eregexp_pattern\x18\x03 \x01(\v26.google.cloud.cloudsecuritycompliance.v1.RegexpPatternH\x00R\rregexpPatternB\f\n" +
 	"\n" +
-	"constraint\"a\n" +
-	"\rAllowedValues\x12P\n" +
-	"\x06values\x18\x01 \x03(\v23.google.cloud.cloudsecuritycompliance.v1.ParamValueB\x03\xe0A\x02R\x06values\".\n" +
-	"\rRegexpPattern\x12\x1d\n" +
-	"\apattern\x18\x01 \x01(\tB\x03\xe0A\x02R\apattern\"8\n" +
-	"\bIntRange\x12\x15\n" +
-	"\x03min\x18\x01 \x01(\x03B\x03\xe0A\x02R\x03min\x12\x15\n" +
-	"\x03max\x18\x02 \x01(\x03B\x03\xe0A\x02R\x03max\")\n" +
+	"constraint\"b\n" +
+	"\rAllowedValues\x12Q\n" +
+	"\x06values\x18\x01 \x03(\v23.google.cloud.cloudsecuritycompliance.v1.ParamValueB\x04\xe2A\x01\x02R\x06values\"/\n" +
+	"\rRegexpPattern\x12\x1e\n" +
+	"\apattern\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\apattern\":\n" +
+	"\bIntRange\x12\x16\n" +
+	"\x03min\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x03min\x12\x16\n" +
+	"\x03max\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\x03max\"*\n" +
 	"\n" +
-	"StringList\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\"\xd2\x02\n" +
+	"StringList\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\"\xd7\x02\n" +
 	"\n" +
-	"ParamValue\x12(\n" +
-	"\fstring_value\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\vstringValue\x12$\n" +
+	"ParamValue\x12)\n" +
+	"\fstring_value\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\vstringValue\x12%\n" +
 	"\n" +
-	"bool_value\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\tboolValue\x12f\n" +
-	"\x11string_list_value\x18\x05 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.StringListB\x03\xe0A\x01H\x00R\x0fstringListValue\x12(\n" +
-	"\fnumber_value\x18\x06 \x01(\x01B\x03\xe0A\x01H\x00R\vnumberValue\x12Z\n" +
-	"\voneof_value\x18\a \x01(\v22.google.cloud.cloudsecuritycompliance.v1.ParameterB\x03\xe0A\x01H\x00R\n" +
+	"bool_value\x18\x04 \x01(\bB\x04\xe2A\x01\x01H\x00R\tboolValue\x12g\n" +
+	"\x11string_list_value\x18\x05 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.StringListB\x04\xe2A\x01\x01H\x00R\x0fstringListValue\x12)\n" +
+	"\fnumber_value\x18\x06 \x01(\x01B\x04\xe2A\x01\x01H\x00R\vnumberValue\x12[\n" +
+	"\voneof_value\x18\a \x01(\v22.google.cloud.cloudsecuritycompliance.v1.ParameterB\x04\xe2A\x01\x01H\x00R\n" +
 	"oneofValueB\x06\n" +
 	"\x04kind\"\xc4\x02\n" +
 	"\x19ParameterSubstitutionRule\x12\x8a\x01\n" +
@@ -2768,46 +2768,46 @@ const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"\x19AttributeSubstitutionRule\x12\x1c\n" +
 	"\tattribute\x18\x01 \x01(\tR\tattribute\";\n" +
 	"\x1bPlaceholderSubstitutionRule\x12\x1c\n" +
-	"\tattribute\x18\x01 \x01(\tR\tattribute\"\x8a\x02\n" +
+	"\tattribute\x18\x01 \x01(\tR\tattribute\"\x8c\x02\n" +
 	"\x04Rule\x12_\n" +
-	"\x0ecel_expression\x18\x01 \x01(\v26.google.cloud.cloudsecuritycompliance.v1.CELExpressionH\x00R\rcelExpression\x12%\n" +
+	"\x0ecel_expression\x18\x01 \x01(\v26.google.cloud.cloudsecuritycompliance.v1.CELExpressionH\x00R\rcelExpression\x12&\n" +
 	"\vdescription\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\vdescription\x12h\n" +
-	"\x11rule_action_types\x18\x10 \x03(\x0e27.google.cloud.cloudsecuritycompliance.v1.RuleActionTypeB\x03\xe0A\x02R\x0fruleActionTypesB\x10\n" +
-	"\x0eimplementation\"\xab\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12i\n" +
+	"\x11rule_action_types\x18\x10 \x03(\x0e27.google.cloud.cloudsecuritycompliance.v1.RuleActionTypeB\x04\xe2A\x01\x02R\x0fruleActionTypesB\x10\n" +
+	"\x0eimplementation\"\xac\x01\n" +
 	"\rCELExpression\x12i\n" +
-	"\x15resource_types_values\x18\x03 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.StringListH\x00R\x13resourceTypesValues\x12#\n" +
+	"\x15resource_types_values\x18\x03 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.StringListH\x00R\x13resourceTypesValues\x12$\n" +
 	"\n" +
-	"expression\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"expression\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"expressionB\n" +
 	"\n" +
-	"\bcriteria\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xc7\n" +
+	"\bcriteria\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xd4\n" +
 	"\n" +
-	"\aControl\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x03R\vdescription\x12T\n" +
-	"\x06family\x18\x05 \x01(\x0e27.google.cloud.cloudsecuritycompliance.v1.Control.FamilyB\x03\xe0A\x03R\x06family\x12b\n" +
-	"\x0econtrol_family\x18\x06 \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ControlFamilyB\x03\xe0A\x03R\rcontrolFamily\x12\x82\x01\n" +
-	"\x13responsibility_type\x18\a \x01(\x0e2L.google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityTypeB\x03\xe0A\x03R\x12responsibilityType\x12O\n" +
-	"!google_responsibility_description\x18\b \x01(\tB\x03\xe0A\x03R\x1fgoogleResponsibilityDescription\x12U\n" +
-	"$google_responsibility_implementation\x18\t \x01(\tB\x03\xe0A\x03R\"googleResponsibilityImplementation\x12S\n" +
+	"\aControl\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12U\n" +
+	"\x06family\x18\x05 \x01(\x0e27.google.cloud.cloudsecuritycompliance.v1.Control.FamilyB\x04\xe2A\x01\x03R\x06family\x12c\n" +
+	"\x0econtrol_family\x18\x06 \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ControlFamilyB\x04\xe2A\x01\x03R\rcontrolFamily\x12\x83\x01\n" +
+	"\x13responsibility_type\x18\a \x01(\x0e2L.google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityTypeB\x04\xe2A\x01\x03R\x12responsibilityType\x12P\n" +
+	"!google_responsibility_description\x18\b \x01(\tB\x04\xe2A\x01\x03R\x1fgoogleResponsibilityDescription\x12V\n" +
+	"$google_responsibility_implementation\x18\t \x01(\tB\x04\xe2A\x01\x03R\"googleResponsibilityImplementation\x12T\n" +
 	"#customer_responsibility_description\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R!customerResponsibilityDescription\x12Y\n" +
-	"&customer_responsibility_implementation\x18\v \x01(\tB\x03\xe0A\x03R$customerResponsibilityImplementation\x12O\n" +
-	"!shared_responsibility_description\x18\f \x01(\tB\x03\xe0A\x03R\x1fsharedResponsibilityDescription\x129\n" +
-	"\x16additional_content_uri\x18\r \x01(\tB\x03\xe0A\x03R\x14additionalContentUri\x122\n" +
-	"\x12related_frameworks\x18\x0e \x03(\tB\x03\xe0A\x03R\x11relatedFrameworks\"\xb0\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R!customerResponsibilityDescription\x12Z\n" +
+	"&customer_responsibility_implementation\x18\v \x01(\tB\x04\xe2A\x01\x03R$customerResponsibilityImplementation\x12P\n" +
+	"!shared_responsibility_description\x18\f \x01(\tB\x04\xe2A\x01\x03R\x1fsharedResponsibilityDescription\x12:\n" +
+	"\x16additional_content_uri\x18\r \x01(\tB\x04\xe2A\x01\x03R\x14additionalContentUri\x123\n" +
+	"\x12related_frameworks\x18\x0e \x03(\tB\x04\xe2A\x01\x03R\x11relatedFrameworks\"\xb0\x01\n" +
 	"\x06Family\x12\x16\n" +
 	"\x12FAMILY_UNSPECIFIED\x10\x00\x12\x06\n" +
 	"\x02AC\x10\x01\x12\x06\n" +

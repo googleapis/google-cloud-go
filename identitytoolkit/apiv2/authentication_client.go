@@ -207,6 +207,35 @@ func NewAuthenticationClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.FinalizeMfaSignIn = append(client.CallOptions.FinalizeMfaSignIn, gax.WithClientMetrics(metrics))
 		client.CallOptions.StartMfaSignIn = append(client.CallOptions.StartMfaSignIn, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "identitytoolkit",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/identitytoolkit/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "identitytoolkit.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FinalizeMfaSignIn = append(client.CallOptions.FinalizeMfaSignIn, gax.WithClientTracing(tracing))
+		client.CallOptions.StartMfaSignIn = append(client.CallOptions.StartMfaSignIn, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "identitytoolkit",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/identitytoolkit/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "identitytoolkit.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FinalizeMfaSignIn = append(client.CallOptions.FinalizeMfaSignIn, gax.WithClientLogging(logging))
+		client.CallOptions.StartMfaSignIn = append(client.CallOptions.StartMfaSignIn, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -298,6 +327,35 @@ func NewAuthenticationRESTClient(ctx context.Context, opts ...option.ClientOptio
 
 		callOpts.FinalizeMfaSignIn = append(callOpts.FinalizeMfaSignIn, gax.WithClientMetrics(metrics))
 		callOpts.StartMfaSignIn = append(callOpts.StartMfaSignIn, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "identitytoolkit",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/identitytoolkit/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "identitytoolkit.googleapis.com",
+			}),
+		)
+
+		callOpts.FinalizeMfaSignIn = append(callOpts.FinalizeMfaSignIn, gax.WithClientTracing(tracing))
+		callOpts.StartMfaSignIn = append(callOpts.StartMfaSignIn, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "identitytoolkit",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/identitytoolkit/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "identitytoolkit.googleapis.com",
+			}),
+		)
+
+		callOpts.FinalizeMfaSignIn = append(callOpts.FinalizeMfaSignIn, gax.WithClientLogging(logging))
+		callOpts.StartMfaSignIn = append(callOpts.StartMfaSignIn, gax.WithClientLogging(logging))
 	}
 
 	return &AuthenticationClient{internalClient: c, CallOptions: callOpts}, nil

@@ -52,10 +52,7 @@ func defaultReadClientSettings() readClientSettings {
 
 // newReadClient instantiates a new storage read client.
 func newReadClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *readClient, err error) {
-	numConns := runtime.GOMAXPROCS(0)
-	if numConns > 4 {
-		numConns = 4
-	}
+	numConns := min(runtime.GOMAXPROCS(0), 4)
 	o := []option.ClientOption{
 		option.WithGRPCConnectionPool(numConns),
 		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, internal.Version)),

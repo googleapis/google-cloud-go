@@ -338,6 +338,75 @@ func (Cluster_NodeScalingFactor) EnumDescriptor() ([]byte, []int) {
 	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{3, 1}
 }
 
+// Possible states of a memory layer.
+type MemoryLayer_State int32
+
+const (
+	// The state of the memory layer could not be determined.
+	MemoryLayer_STATE_NOT_KNOWN MemoryLayer_State = 0
+	// The memory layer has been successfully enabled and is ready to serve
+	// requests.
+	MemoryLayer_READY MemoryLayer_State = 1
+	// The memory layer is currently being enabled, and may be disabled
+	// if the enablement process encounters an error. A cluster may not be able
+	// to serve requests from the memory layer while being enabled.
+	MemoryLayer_ENABLING MemoryLayer_State = 2
+	// The memory layer is currently being resized, and may revert to its
+	// previous storage size if the process encounters an error. The memory
+	// layer is still capable of serving requests while being resized, but may
+	// exhibit performance as if its number of allocated nodes is between the
+	// starting and requested states.
+	MemoryLayer_RESIZING MemoryLayer_State = 3
+	// The memory layer is disabled. The default state for a cluster without a
+	// memory layer.
+	MemoryLayer_DISABLED MemoryLayer_State = 4
+)
+
+// Enum value maps for MemoryLayer_State.
+var (
+	MemoryLayer_State_name = map[int32]string{
+		0: "STATE_NOT_KNOWN",
+		1: "READY",
+		2: "ENABLING",
+		3: "RESIZING",
+		4: "DISABLED",
+	}
+	MemoryLayer_State_value = map[string]int32{
+		"STATE_NOT_KNOWN": 0,
+		"READY":           1,
+		"ENABLING":        2,
+		"RESIZING":        3,
+		"DISABLED":        4,
+	}
+)
+
+func (x MemoryLayer_State) Enum() *MemoryLayer_State {
+	p := new(MemoryLayer_State)
+	*p = x
+	return p
+}
+
+func (x MemoryLayer_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (MemoryLayer_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_bigtable_admin_v2_instance_proto_enumTypes[5].Descriptor()
+}
+
+func (MemoryLayer_State) Type() protoreflect.EnumType {
+	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[5]
+}
+
+func (x MemoryLayer_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use MemoryLayer_State.Descriptor instead.
+func (MemoryLayer_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4, 0}
+}
+
 // Possible priorities for an app profile. Note that higher priority writes
 // can sometimes queue behind lower priority writes to the same tablet, as
 // writes must be strictly sequenced in the durability log.
@@ -378,11 +447,11 @@ func (x AppProfile_Priority) String() string {
 }
 
 func (AppProfile_Priority) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_bigtable_admin_v2_instance_proto_enumTypes[5].Descriptor()
+	return file_google_bigtable_admin_v2_instance_proto_enumTypes[6].Descriptor()
 }
 
 func (AppProfile_Priority) Type() protoreflect.EnumType {
-	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[5]
+	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[6]
 }
 
 func (x AppProfile_Priority) Number() protoreflect.EnumNumber {
@@ -391,7 +460,7 @@ func (x AppProfile_Priority) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AppProfile_Priority.Descriptor instead.
 func (AppProfile_Priority) EnumDescriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4, 0}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5, 0}
 }
 
 // Compute Billing Owner specifies how usage should be accounted when using
@@ -430,11 +499,11 @@ func (x AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) String() stri
 }
 
 func (AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_bigtable_admin_v2_instance_proto_enumTypes[6].Descriptor()
+	return file_google_bigtable_admin_v2_instance_proto_enumTypes[7].Descriptor()
 }
 
 func (AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) Type() protoreflect.EnumType {
-	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[6]
+	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[7]
 }
 
 func (x AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) Number() protoreflect.EnumNumber {
@@ -443,7 +512,7 @@ func (x AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) Number() prot
 
 // Deprecated: Use AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner.Descriptor instead.
 func (AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) EnumDescriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4, 3, 0}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5, 3, 0}
 }
 
 // A collection of Bigtable [Tables][google.bigtable.admin.v2.Table] and
@@ -858,6 +927,85 @@ type Cluster_ClusterConfig_ struct {
 
 func (*Cluster_ClusterConfig_) isCluster_Config() {}
 
+// The memory layer of a cluster. A memory layer serves reads from
+// memory without hitting the backing persistent data store.
+type MemoryLayer struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Name of the memory layer. This is always:
+	// "projects/{project}/instances/{instance}/clusters/{cluster}/memoryLayer".
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// The configuration of this memory layer. Set an empty `memory_config` to
+	// enable the memory layer. Unset this to disable the memory layer.
+	MemoryConfig *MemoryLayer_MemoryConfig `protobuf:"bytes,2,opt,name=memory_config,json=memoryConfig,proto3" json:"memory_config,omitempty"`
+	// Optional. The etag for this memory layer.
+	// This may be sent on update requests to ensure that the client has an
+	// up-to-date value before proceeding. The server returns an ABORTED error on
+	// a mismatched etag.
+	Etag string `protobuf:"bytes,3,opt,name=etag,proto3" json:"etag,omitempty"`
+	// Output only. The current state of the memory layer.
+	State         MemoryLayer_State `protobuf:"varint,4,opt,name=state,proto3,enum=google.bigtable.admin.v2.MemoryLayer_State" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MemoryLayer) Reset() {
+	*x = MemoryLayer{}
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MemoryLayer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MemoryLayer) ProtoMessage() {}
+
+func (x *MemoryLayer) ProtoReflect() protoreflect.Message {
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MemoryLayer.ProtoReflect.Descriptor instead.
+func (*MemoryLayer) Descriptor() ([]byte, []int) {
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *MemoryLayer) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *MemoryLayer) GetMemoryConfig() *MemoryLayer_MemoryConfig {
+	if x != nil {
+		return x.MemoryConfig
+	}
+	return nil
+}
+
+func (x *MemoryLayer) GetEtag() string {
+	if x != nil {
+		return x.Etag
+	}
+	return ""
+}
+
+func (x *MemoryLayer) GetState() MemoryLayer_State {
+	if x != nil {
+		return x.State
+	}
+	return MemoryLayer_STATE_NOT_KNOWN
+}
+
 // A configuration object describing how Cloud Bigtable should treat traffic
 // from a particular end user application.
 type AppProfile struct {
@@ -898,7 +1046,7 @@ type AppProfile struct {
 
 func (x *AppProfile) Reset() {
 	*x = AppProfile{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[4]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -910,7 +1058,7 @@ func (x *AppProfile) String() string {
 func (*AppProfile) ProtoMessage() {}
 
 func (x *AppProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[4]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -923,7 +1071,7 @@ func (x *AppProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppProfile.ProtoReflect.Descriptor instead.
 func (*AppProfile) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *AppProfile) GetName() string {
@@ -1089,7 +1237,7 @@ type HotTablet struct {
 
 func (x *HotTablet) Reset() {
 	*x = HotTablet{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[5]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1101,7 +1249,7 @@ func (x *HotTablet) String() string {
 func (*HotTablet) ProtoMessage() {}
 
 func (x *HotTablet) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[5]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1114,7 +1262,7 @@ func (x *HotTablet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HotTablet.ProtoReflect.Descriptor instead.
 func (*HotTablet) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *HotTablet) GetName() string {
@@ -1188,7 +1336,7 @@ type LogicalView struct {
 
 func (x *LogicalView) Reset() {
 	*x = LogicalView{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[6]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1200,7 +1348,7 @@ func (x *LogicalView) String() string {
 func (*LogicalView) ProtoMessage() {}
 
 func (x *LogicalView) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[6]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1213,7 +1361,7 @@ func (x *LogicalView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogicalView.ProtoReflect.Descriptor instead.
 func (*LogicalView) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{6}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *LogicalView) GetName() string {
@@ -1266,7 +1414,7 @@ type MaterializedView struct {
 
 func (x *MaterializedView) Reset() {
 	*x = MaterializedView{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[7]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1278,7 +1426,7 @@ func (x *MaterializedView) String() string {
 func (*MaterializedView) ProtoMessage() {}
 
 func (x *MaterializedView) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[7]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1291,7 +1439,7 @@ func (x *MaterializedView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaterializedView.ProtoReflect.Descriptor instead.
 func (*MaterializedView) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{7}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *MaterializedView) GetName() string {
@@ -1335,7 +1483,7 @@ type Cluster_ClusterAutoscalingConfig struct {
 
 func (x *Cluster_ClusterAutoscalingConfig) Reset() {
 	*x = Cluster_ClusterAutoscalingConfig{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[10]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1347,7 +1495,7 @@ func (x *Cluster_ClusterAutoscalingConfig) String() string {
 func (*Cluster_ClusterAutoscalingConfig) ProtoMessage() {}
 
 func (x *Cluster_ClusterAutoscalingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[10]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1388,7 +1536,7 @@ type Cluster_ClusterConfig struct {
 
 func (x *Cluster_ClusterConfig) Reset() {
 	*x = Cluster_ClusterConfig{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[11]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1400,7 +1548,7 @@ func (x *Cluster_ClusterConfig) String() string {
 func (*Cluster_ClusterConfig) ProtoMessage() {}
 
 func (x *Cluster_ClusterConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[11]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1444,7 +1592,7 @@ type Cluster_EncryptionConfig struct {
 
 func (x *Cluster_EncryptionConfig) Reset() {
 	*x = Cluster_EncryptionConfig{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[12]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1456,7 +1604,7 @@ func (x *Cluster_EncryptionConfig) String() string {
 func (*Cluster_EncryptionConfig) ProtoMessage() {}
 
 func (x *Cluster_EncryptionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[12]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1477,6 +1625,52 @@ func (x *Cluster_EncryptionConfig) GetKmsKeyName() string {
 		return x.KmsKeyName
 	}
 	return ""
+}
+
+// Configuration of a memory layer.
+type MemoryLayer_MemoryConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Reporting the current size of the memory layer in GiB.
+	StorageSizeGib int32 `protobuf:"varint,2,opt,name=storage_size_gib,json=storageSizeGib,proto3" json:"storage_size_gib,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *MemoryLayer_MemoryConfig) Reset() {
+	*x = MemoryLayer_MemoryConfig{}
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MemoryLayer_MemoryConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MemoryLayer_MemoryConfig) ProtoMessage() {}
+
+func (x *MemoryLayer_MemoryConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MemoryLayer_MemoryConfig.ProtoReflect.Descriptor instead.
+func (*MemoryLayer_MemoryConfig) Descriptor() ([]byte, []int) {
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4, 0}
+}
+
+func (x *MemoryLayer_MemoryConfig) GetStorageSizeGib() int32 {
+	if x != nil {
+		return x.StorageSizeGib
+	}
+	return 0
 }
 
 // Read/write requests are routed to the nearest cluster in the instance, and
@@ -1508,7 +1702,7 @@ type AppProfile_MultiClusterRoutingUseAny struct {
 
 func (x *AppProfile_MultiClusterRoutingUseAny) Reset() {
 	*x = AppProfile_MultiClusterRoutingUseAny{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[13]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1520,7 +1714,7 @@ func (x *AppProfile_MultiClusterRoutingUseAny) String() string {
 func (*AppProfile_MultiClusterRoutingUseAny) ProtoMessage() {}
 
 func (x *AppProfile_MultiClusterRoutingUseAny) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[13]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1533,7 +1727,7 @@ func (x *AppProfile_MultiClusterRoutingUseAny) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use AppProfile_MultiClusterRoutingUseAny.ProtoReflect.Descriptor instead.
 func (*AppProfile_MultiClusterRoutingUseAny) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4, 0}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5, 0}
 }
 
 func (x *AppProfile_MultiClusterRoutingUseAny) GetClusterIds() []string {
@@ -1589,7 +1783,7 @@ type AppProfile_SingleClusterRouting struct {
 
 func (x *AppProfile_SingleClusterRouting) Reset() {
 	*x = AppProfile_SingleClusterRouting{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[14]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1601,7 +1795,7 @@ func (x *AppProfile_SingleClusterRouting) String() string {
 func (*AppProfile_SingleClusterRouting) ProtoMessage() {}
 
 func (x *AppProfile_SingleClusterRouting) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[14]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1614,7 +1808,7 @@ func (x *AppProfile_SingleClusterRouting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppProfile_SingleClusterRouting.ProtoReflect.Descriptor instead.
 func (*AppProfile_SingleClusterRouting) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4, 1}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5, 1}
 }
 
 func (x *AppProfile_SingleClusterRouting) GetClusterId() string {
@@ -1636,14 +1830,17 @@ func (x *AppProfile_SingleClusterRouting) GetAllowTransactionalWrites() bool {
 type AppProfile_StandardIsolation struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The priority of requests sent using this app profile.
-	Priority      AppProfile_Priority `protobuf:"varint,1,opt,name=priority,proto3,enum=google.bigtable.admin.v2.AppProfile_Priority" json:"priority,omitempty"`
+	Priority AppProfile_Priority `protobuf:"varint,1,opt,name=priority,proto3,enum=google.bigtable.admin.v2.AppProfile_Priority" json:"priority,omitempty"`
+	// Optional. The memory config to use for requests sent using this app
+	// profile.
+	MemoryConfig  *AppProfile_StandardIsolation_MemoryConfig `protobuf:"bytes,2,opt,name=memory_config,json=memoryConfig,proto3" json:"memory_config,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AppProfile_StandardIsolation) Reset() {
 	*x = AppProfile_StandardIsolation{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[15]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1655,7 +1852,7 @@ func (x *AppProfile_StandardIsolation) String() string {
 func (*AppProfile_StandardIsolation) ProtoMessage() {}
 
 func (x *AppProfile_StandardIsolation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[15]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1668,7 +1865,7 @@ func (x *AppProfile_StandardIsolation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppProfile_StandardIsolation.ProtoReflect.Descriptor instead.
 func (*AppProfile_StandardIsolation) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4, 2}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5, 2}
 }
 
 func (x *AppProfile_StandardIsolation) GetPriority() AppProfile_Priority {
@@ -1676,6 +1873,13 @@ func (x *AppProfile_StandardIsolation) GetPriority() AppProfile_Priority {
 		return x.Priority
 	}
 	return AppProfile_PRIORITY_UNSPECIFIED
+}
+
+func (x *AppProfile_StandardIsolation) GetMemoryConfig() *AppProfile_StandardIsolation_MemoryConfig {
+	if x != nil {
+		return x.MemoryConfig
+	}
+	return nil
 }
 
 // Data Boost is a serverless compute capability that lets you run
@@ -1693,7 +1897,7 @@ type AppProfile_DataBoostIsolationReadOnly struct {
 
 func (x *AppProfile_DataBoostIsolationReadOnly) Reset() {
 	*x = AppProfile_DataBoostIsolationReadOnly{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[16]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1705,7 +1909,7 @@ func (x *AppProfile_DataBoostIsolationReadOnly) String() string {
 func (*AppProfile_DataBoostIsolationReadOnly) ProtoMessage() {}
 
 func (x *AppProfile_DataBoostIsolationReadOnly) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[16]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1718,7 +1922,7 @@ func (x *AppProfile_DataBoostIsolationReadOnly) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use AppProfile_DataBoostIsolationReadOnly.ProtoReflect.Descriptor instead.
 func (*AppProfile_DataBoostIsolationReadOnly) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4, 3}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5, 3}
 }
 
 func (x *AppProfile_DataBoostIsolationReadOnly) GetComputeBillingOwner() AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner {
@@ -1745,7 +1949,7 @@ type AppProfile_MultiClusterRoutingUseAny_RowAffinity struct {
 
 func (x *AppProfile_MultiClusterRoutingUseAny_RowAffinity) Reset() {
 	*x = AppProfile_MultiClusterRoutingUseAny_RowAffinity{}
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[17]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1757,7 +1961,7 @@ func (x *AppProfile_MultiClusterRoutingUseAny_RowAffinity) String() string {
 func (*AppProfile_MultiClusterRoutingUseAny_RowAffinity) ProtoMessage() {}
 
 func (x *AppProfile_MultiClusterRoutingUseAny_RowAffinity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[17]
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1770,26 +1974,67 @@ func (x *AppProfile_MultiClusterRoutingUseAny_RowAffinity) ProtoReflect() protor
 
 // Deprecated: Use AppProfile_MultiClusterRoutingUseAny_RowAffinity.ProtoReflect.Descriptor instead.
 func (*AppProfile_MultiClusterRoutingUseAny_RowAffinity) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{4, 0, 0}
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5, 0, 0}
+}
+
+// If set, eligible single-row requests (currently limited to ReadRows)
+// using this app profile will be routed to the memory layer. All eligible
+// writes populate the memory layer. MemoryConfig can only be set if the
+// AppProfile uses single cluster routing and the configured cluster has a
+// memory layer enabled.
+type AppProfile_StandardIsolation_MemoryConfig struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AppProfile_StandardIsolation_MemoryConfig) Reset() {
+	*x = AppProfile_StandardIsolation_MemoryConfig{}
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AppProfile_StandardIsolation_MemoryConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AppProfile_StandardIsolation_MemoryConfig) ProtoMessage() {}
+
+func (x *AppProfile_StandardIsolation_MemoryConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_bigtable_admin_v2_instance_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AppProfile_StandardIsolation_MemoryConfig.ProtoReflect.Descriptor instead.
+func (*AppProfile_StandardIsolation_MemoryConfig) Descriptor() ([]byte, []int) {
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{5, 2, 0}
 }
 
 var File_google_bigtable_admin_v2_instance_proto protoreflect.FileDescriptor
 
 const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\n" +
-	"'google/bigtable/admin/v2/instance.proto\x12\x18google.bigtable.admin.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/bigtable/admin/v2/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\b\n" +
+	"'google/bigtable/admin/v2/instance.proto\x12\x18google.bigtable.admin.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/bigtable/admin/v2/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\b\n" +
 	"\bInstance\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12C\n" +
-	"\x05state\x18\x03 \x01(\x0e2(.google.bigtable.admin.v2.Instance.StateB\x03\xe0A\x03R\x05state\x12;\n" +
-	"\x04type\x18\x04 \x01(\x0e2'.google.bigtable.admin.v2.Instance.TypeR\x04type\x12I\n" +
-	"\aedition\x18\x0e \x01(\x0e2*.google.bigtable.admin.v2.Instance.EditionB\x03\xe0A\x01R\aedition\x12F\n" +
-	"\x06labels\x18\x05 \x03(\v2..google.bigtable.admin.v2.Instance.LabelsEntryR\x06labels\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12-\n" +
-	"\rsatisfies_pzs\x18\b \x01(\bB\x03\xe0A\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\v \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12K\n" +
-	"\x04tags\x18\f \x03(\v2,.google.bigtable.admin.v2.Instance.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x1a9\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12D\n" +
+	"\x05state\x18\x03 \x01(\x0e2(.google.bigtable.admin.v2.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12;\n" +
+	"\x04type\x18\x04 \x01(\x0e2'.google.bigtable.admin.v2.Instance.TypeR\x04type\x12J\n" +
+	"\aedition\x18\x0e \x01(\x0e2*.google.bigtable.admin.v2.Instance.EditionB\x04\xe2A\x01\x01R\aedition\x12F\n" +
+	"\x06labels\x18\x05 \x03(\v2..google.bigtable.admin.v2.Instance.LabelsEntryR\x06labels\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12.\n" +
+	"\rsatisfies_pzs\x18\b \x01(\bB\x04\xe2A\x01\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\v \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12H\n" +
+	"\x04tags\x18\f \x03(\v2,.google.bigtable.admin.v2.Instance.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
@@ -1815,25 +2060,25 @@ const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\x0e_satisfies_pzi\"\x94\x01\n" +
 	"\x12AutoscalingTargets\x126\n" +
 	"\x17cpu_utilization_percent\x18\x02 \x01(\x05R\x15cpuUtilizationPercent\x12F\n" +
-	" storage_utilization_gib_per_node\x18\x03 \x01(\x05R\x1cstorageUtilizationGibPerNode\"m\n" +
-	"\x11AutoscalingLimits\x12+\n" +
-	"\x0fmin_serve_nodes\x18\x01 \x01(\x05B\x03\xe0A\x02R\rminServeNodes\x12+\n" +
-	"\x0fmax_serve_nodes\x18\x02 \x01(\x05B\x03\xe0A\x02R\rmaxServeNodes\"\xe6\n" +
+	" storage_utilization_gib_per_node\x18\x03 \x01(\x05R\x1cstorageUtilizationGibPerNode\"o\n" +
+	"\x11AutoscalingLimits\x12,\n" +
+	"\x0fmin_serve_nodes\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\rminServeNodes\x12,\n" +
+	"\x0fmax_serve_nodes\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\rmaxServeNodes\"\xed\n" +
 	"\n" +
 	"\aCluster\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12E\n" +
-	"\blocation\x18\x02 \x01(\tB)\xe0A\x05\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\blocation\x12B\n" +
-	"\x05state\x18\x03 \x01(\x0e2'.google.bigtable.admin.v2.Cluster.StateB\x03\xe0A\x03R\x05state\x12\x1f\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12F\n" +
+	"\blocation\x18\x02 \x01(\tB*\xe2A\x01\x05\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\blocation\x12C\n" +
+	"\x05state\x18\x03 \x01(\x0e2'.google.bigtable.admin.v2.Cluster.StateB\x04\xe2A\x01\x03R\x05state\x12\x1f\n" +
 	"\vserve_nodes\x18\x04 \x01(\x05R\n" +
-	"serveNodes\x12h\n" +
-	"\x13node_scaling_factor\x18\t \x01(\x0e23.google.bigtable.admin.v2.Cluster.NodeScalingFactorB\x03\xe0A\x05R\x11nodeScalingFactor\x12X\n" +
-	"\x0ecluster_config\x18\a \x01(\v2/.google.bigtable.admin.v2.Cluster.ClusterConfigH\x00R\rclusterConfig\x12\\\n" +
-	"\x14default_storage_type\x18\x05 \x01(\x0e2%.google.bigtable.admin.v2.StorageTypeB\x03\xe0A\x05R\x12defaultStorageType\x12d\n" +
-	"\x11encryption_config\x18\x06 \x01(\v22.google.bigtable.admin.v2.Cluster.EncryptionConfigB\x03\xe0A\x05R\x10encryptionConfig\x1a\xdf\x01\n" +
-	"\x18ClusterAutoscalingConfig\x12_\n" +
-	"\x12autoscaling_limits\x18\x01 \x01(\v2+.google.bigtable.admin.v2.AutoscalingLimitsB\x03\xe0A\x02R\x11autoscalingLimits\x12b\n" +
-	"\x13autoscaling_targets\x18\x02 \x01(\v2,.google.bigtable.admin.v2.AutoscalingTargetsB\x03\xe0A\x02R\x12autoscalingTargets\x1a\x89\x01\n" +
+	"serveNodes\x12i\n" +
+	"\x13node_scaling_factor\x18\t \x01(\x0e23.google.bigtable.admin.v2.Cluster.NodeScalingFactorB\x04\xe2A\x01\x05R\x11nodeScalingFactor\x12X\n" +
+	"\x0ecluster_config\x18\a \x01(\v2/.google.bigtable.admin.v2.Cluster.ClusterConfigH\x00R\rclusterConfig\x12]\n" +
+	"\x14default_storage_type\x18\x05 \x01(\x0e2%.google.bigtable.admin.v2.StorageTypeB\x04\xe2A\x01\x05R\x12defaultStorageType\x12e\n" +
+	"\x11encryption_config\x18\x06 \x01(\v22.google.bigtable.admin.v2.Cluster.EncryptionConfigB\x04\xe2A\x01\x05R\x10encryptionConfig\x1a\xe1\x01\n" +
+	"\x18ClusterAutoscalingConfig\x12`\n" +
+	"\x12autoscaling_limits\x18\x01 \x01(\v2+.google.bigtable.admin.v2.AutoscalingLimitsB\x04\xe2A\x01\x02R\x11autoscalingLimits\x12c\n" +
+	"\x13autoscaling_targets\x18\x02 \x01(\v2,.google.bigtable.admin.v2.AutoscalingTargetsB\x04\xe2A\x01\x02R\x12autoscalingTargets\x1a\x89\x01\n" +
 	"\rClusterConfig\x12x\n" +
 	"\x1acluster_autoscaling_config\x18\x01 \x01(\v2:.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfigR\x18clusterAutoscalingConfig\x1a\\\n" +
 	"\x10EncryptionConfig\x12H\n" +
@@ -1851,7 +2096,21 @@ const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\x16NODE_SCALING_FACTOR_1X\x10\x01\x12\x1a\n" +
 	"\x16NODE_SCALING_FACTOR_2X\x10\x02:x\xeaAu\n" +
 	"$bigtableadmin.googleapis.com/Cluster\x12:projects/{project}/instances/{instance}/clusters/{cluster}*\bclusters2\aclusterB\b\n" +
-	"\x06config\"\xd0\f\n" +
+	"\x06config\"\x8a\x04\n" +
+	"\vMemoryLayer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12W\n" +
+	"\rmemory_config\x18\x02 \x01(\v22.google.bigtable.admin.v2.MemoryLayer.MemoryConfigR\fmemoryConfig\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12G\n" +
+	"\x05state\x18\x04 \x01(\x0e2+.google.bigtable.admin.v2.MemoryLayer.StateB\x04\xe2A\x01\x03R\x05state\x1a>\n" +
+	"\fMemoryConfig\x12.\n" +
+	"\x10storage_size_gib\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x0estorageSizeGib\"Q\n" +
+	"\x05State\x12\x13\n" +
+	"\x0fSTATE_NOT_KNOWN\x10\x00\x12\t\n" +
+	"\x05READY\x10\x01\x12\f\n" +
+	"\bENABLING\x10\x02\x12\f\n" +
+	"\bRESIZING\x10\x03\x12\f\n" +
+	"\bDISABLED\x10\x04:\x91\x01\xeaA\x8d\x01\n" +
+	"(bigtableadmin.googleapis.com/MemoryLayer\x12Fprojects/{project}/instances/{instance}/clusters/{cluster}/memoryLayer*\fmemoryLayers2\vmemoryLayer\"\xd1\r\n" +
 	"\n" +
 	"AppProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
@@ -1873,9 +2132,11 @@ const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\x14SingleClusterRouting\x12\x1d\n" +
 	"\n" +
 	"cluster_id\x18\x01 \x01(\tR\tclusterId\x12<\n" +
-	"\x1aallow_transactional_writes\x18\x02 \x01(\bR\x18allowTransactionalWrites\x1a^\n" +
+	"\x1aallow_transactional_writes\x18\x02 \x01(\bR\x18allowTransactionalWrites\x1a\xde\x01\n" +
 	"\x11StandardIsolation\x12I\n" +
-	"\bpriority\x18\x01 \x01(\x0e2-.google.bigtable.admin.v2.AppProfile.PriorityR\bpriority\x1a\x92\x02\n" +
+	"\bpriority\x18\x01 \x01(\x0e2-.google.bigtable.admin.v2.AppProfile.PriorityR\bpriority\x12n\n" +
+	"\rmemory_config\x18\x02 \x01(\v2C.google.bigtable.admin.v2.AppProfile.StandardIsolation.MemoryConfigB\x04\xe2A\x01\x01R\fmemoryConfig\x1a\x0e\n" +
+	"\fMemoryConfig\x1a\x92\x02\n" +
 	"\x1aDataBoostIsolationReadOnly\x12\x8c\x01\n" +
 	"\x15compute_billing_owner\x18\x01 \x01(\x0e2S.google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwnerH\x00R\x13computeBillingOwner\x88\x01\x01\"K\n" +
 	"\x13ComputeBillingOwner\x12%\n" +
@@ -1890,30 +2151,30 @@ const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"'bigtableadmin.googleapis.com/AppProfile\x12Aprojects/{project}/instances/{instance}/appProfiles/{app_profile}*\vappProfiles2\n" +
 	"appProfileB\x10\n" +
 	"\x0erouting_policyB\v\n" +
-	"\tisolation\"\xed\x03\n" +
+	"\tisolation\"\xf0\x03\n" +
 	"\tHotTablet\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12F\n" +
 	"\n" +
 	"table_name\x18\x02 \x01(\tB'\xfaA$\n" +
-	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12>\n" +
+	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1b\n" +
 	"\tstart_key\x18\x05 \x01(\tR\bstartKey\x12\x17\n" +
-	"\aend_key\x18\x06 \x01(\tR\x06endKey\x128\n" +
-	"\x16node_cpu_usage_percent\x18\a \x01(\x02B\x03\xe0A\x03R\x13nodeCpuUsagePercent:\x97\x01\xeaA\x93\x01\n" +
+	"\aend_key\x18\x06 \x01(\tR\x06endKey\x129\n" +
+	"\x16node_cpu_usage_percent\x18\a \x01(\x02B\x04\xe2A\x01\x03R\x13nodeCpuUsagePercent:\x97\x01\xeaA\x93\x01\n" +
 	"&bigtableadmin.googleapis.com/HotTablet\x12Rprojects/{project}/instances/{instance}/clusters/{cluster}/hotTablets/{hot_tablet}*\n" +
-	"hotTablets2\thotTablet\"\xa1\x02\n" +
-	"\vLogicalView\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x124\n" +
-	"\x13deletion_protection\x18\x06 \x01(\bB\x03\xe0A\x01R\x12deletionProtection:\x8e\x01\xeaA\x8a\x01\n" +
-	"(bigtableadmin.googleapis.com/LogicalView\x12Cprojects/{project}/instances/{instance}/logicalViews/{logical_view}*\flogicalViews2\vlogicalView\"\xbd\x02\n" +
-	"\x10MaterializedView\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1c\n" +
-	"\x05query\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x05query\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x12/\n" +
+	"hotTablets2\thotTablet\"\xa5\x02\n" +
+	"\vLogicalView\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x125\n" +
+	"\x13deletion_protection\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x12deletionProtection:\x8e\x01\xeaA\x8a\x01\n" +
+	"(bigtableadmin.googleapis.com/LogicalView\x12Cprojects/{project}/instances/{instance}/logicalViews/{logical_view}*\flogicalViews2\vlogicalView\"\xbe\x02\n" +
+	"\x10MaterializedView\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1b\n" +
+	"\x05query\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\x05query\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12/\n" +
 	"\x13deletion_protection\x18\x06 \x01(\bR\x12deletionProtection:\xa7\x01\xeaA\xa3\x01\n" +
 	"-bigtableadmin.googleapis.com/MaterializedView\x12Mprojects/{project}/instances/{instance}/materializedViews/{materialized_view}*\x11materializedViews2\x10materializedViewB\xcb\x02\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\n" +
@@ -1931,67 +2192,74 @@ func file_google_bigtable_admin_v2_instance_proto_rawDescGZIP() []byte {
 	return file_google_bigtable_admin_v2_instance_proto_rawDescData
 }
 
-var file_google_bigtable_admin_v2_instance_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
-var file_google_bigtable_admin_v2_instance_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_google_bigtable_admin_v2_instance_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_google_bigtable_admin_v2_instance_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_google_bigtable_admin_v2_instance_proto_goTypes = []any{
 	(Instance_State)(0),            // 0: google.bigtable.admin.v2.Instance.State
 	(Instance_Type)(0),             // 1: google.bigtable.admin.v2.Instance.Type
 	(Instance_Edition)(0),          // 2: google.bigtable.admin.v2.Instance.Edition
 	(Cluster_State)(0),             // 3: google.bigtable.admin.v2.Cluster.State
 	(Cluster_NodeScalingFactor)(0), // 4: google.bigtable.admin.v2.Cluster.NodeScalingFactor
-	(AppProfile_Priority)(0),       // 5: google.bigtable.admin.v2.AppProfile.Priority
-	(AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner)(0), // 6: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner
-	(*Instance)(nil),                         // 7: google.bigtable.admin.v2.Instance
-	(*AutoscalingTargets)(nil),               // 8: google.bigtable.admin.v2.AutoscalingTargets
-	(*AutoscalingLimits)(nil),                // 9: google.bigtable.admin.v2.AutoscalingLimits
-	(*Cluster)(nil),                          // 10: google.bigtable.admin.v2.Cluster
-	(*AppProfile)(nil),                       // 11: google.bigtable.admin.v2.AppProfile
-	(*HotTablet)(nil),                        // 12: google.bigtable.admin.v2.HotTablet
-	(*LogicalView)(nil),                      // 13: google.bigtable.admin.v2.LogicalView
-	(*MaterializedView)(nil),                 // 14: google.bigtable.admin.v2.MaterializedView
-	nil,                                      // 15: google.bigtable.admin.v2.Instance.LabelsEntry
-	nil,                                      // 16: google.bigtable.admin.v2.Instance.TagsEntry
-	(*Cluster_ClusterAutoscalingConfig)(nil), // 17: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
-	(*Cluster_ClusterConfig)(nil),            // 18: google.bigtable.admin.v2.Cluster.ClusterConfig
-	(*Cluster_EncryptionConfig)(nil),         // 19: google.bigtable.admin.v2.Cluster.EncryptionConfig
-	(*AppProfile_MultiClusterRoutingUseAny)(nil),             // 20: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
-	(*AppProfile_SingleClusterRouting)(nil),                  // 21: google.bigtable.admin.v2.AppProfile.SingleClusterRouting
-	(*AppProfile_StandardIsolation)(nil),                     // 22: google.bigtable.admin.v2.AppProfile.StandardIsolation
-	(*AppProfile_DataBoostIsolationReadOnly)(nil),            // 23: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly
-	(*AppProfile_MultiClusterRoutingUseAny_RowAffinity)(nil), // 24: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity
-	(*timestamppb.Timestamp)(nil),                            // 25: google.protobuf.Timestamp
-	(StorageType)(0),                                         // 26: google.bigtable.admin.v2.StorageType
+	(MemoryLayer_State)(0),         // 5: google.bigtable.admin.v2.MemoryLayer.State
+	(AppProfile_Priority)(0),       // 6: google.bigtable.admin.v2.AppProfile.Priority
+	(AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner)(0), // 7: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner
+	(*Instance)(nil),                         // 8: google.bigtable.admin.v2.Instance
+	(*AutoscalingTargets)(nil),               // 9: google.bigtable.admin.v2.AutoscalingTargets
+	(*AutoscalingLimits)(nil),                // 10: google.bigtable.admin.v2.AutoscalingLimits
+	(*Cluster)(nil),                          // 11: google.bigtable.admin.v2.Cluster
+	(*MemoryLayer)(nil),                      // 12: google.bigtable.admin.v2.MemoryLayer
+	(*AppProfile)(nil),                       // 13: google.bigtable.admin.v2.AppProfile
+	(*HotTablet)(nil),                        // 14: google.bigtable.admin.v2.HotTablet
+	(*LogicalView)(nil),                      // 15: google.bigtable.admin.v2.LogicalView
+	(*MaterializedView)(nil),                 // 16: google.bigtable.admin.v2.MaterializedView
+	nil,                                      // 17: google.bigtable.admin.v2.Instance.LabelsEntry
+	nil,                                      // 18: google.bigtable.admin.v2.Instance.TagsEntry
+	(*Cluster_ClusterAutoscalingConfig)(nil), // 19: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+	(*Cluster_ClusterConfig)(nil),            // 20: google.bigtable.admin.v2.Cluster.ClusterConfig
+	(*Cluster_EncryptionConfig)(nil),         // 21: google.bigtable.admin.v2.Cluster.EncryptionConfig
+	(*MemoryLayer_MemoryConfig)(nil),         // 22: google.bigtable.admin.v2.MemoryLayer.MemoryConfig
+	(*AppProfile_MultiClusterRoutingUseAny)(nil),             // 23: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
+	(*AppProfile_SingleClusterRouting)(nil),                  // 24: google.bigtable.admin.v2.AppProfile.SingleClusterRouting
+	(*AppProfile_StandardIsolation)(nil),                     // 25: google.bigtable.admin.v2.AppProfile.StandardIsolation
+	(*AppProfile_DataBoostIsolationReadOnly)(nil),            // 26: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly
+	(*AppProfile_MultiClusterRoutingUseAny_RowAffinity)(nil), // 27: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity
+	(*AppProfile_StandardIsolation_MemoryConfig)(nil),        // 28: google.bigtable.admin.v2.AppProfile.StandardIsolation.MemoryConfig
+	(*timestamppb.Timestamp)(nil),                            // 29: google.protobuf.Timestamp
+	(StorageType)(0),                                         // 30: google.bigtable.admin.v2.StorageType
 }
 var file_google_bigtable_admin_v2_instance_proto_depIdxs = []int32{
 	0,  // 0: google.bigtable.admin.v2.Instance.state:type_name -> google.bigtable.admin.v2.Instance.State
 	1,  // 1: google.bigtable.admin.v2.Instance.type:type_name -> google.bigtable.admin.v2.Instance.Type
 	2,  // 2: google.bigtable.admin.v2.Instance.edition:type_name -> google.bigtable.admin.v2.Instance.Edition
-	15, // 3: google.bigtable.admin.v2.Instance.labels:type_name -> google.bigtable.admin.v2.Instance.LabelsEntry
-	25, // 4: google.bigtable.admin.v2.Instance.create_time:type_name -> google.protobuf.Timestamp
-	16, // 5: google.bigtable.admin.v2.Instance.tags:type_name -> google.bigtable.admin.v2.Instance.TagsEntry
+	17, // 3: google.bigtable.admin.v2.Instance.labels:type_name -> google.bigtable.admin.v2.Instance.LabelsEntry
+	29, // 4: google.bigtable.admin.v2.Instance.create_time:type_name -> google.protobuf.Timestamp
+	18, // 5: google.bigtable.admin.v2.Instance.tags:type_name -> google.bigtable.admin.v2.Instance.TagsEntry
 	3,  // 6: google.bigtable.admin.v2.Cluster.state:type_name -> google.bigtable.admin.v2.Cluster.State
 	4,  // 7: google.bigtable.admin.v2.Cluster.node_scaling_factor:type_name -> google.bigtable.admin.v2.Cluster.NodeScalingFactor
-	18, // 8: google.bigtable.admin.v2.Cluster.cluster_config:type_name -> google.bigtable.admin.v2.Cluster.ClusterConfig
-	26, // 9: google.bigtable.admin.v2.Cluster.default_storage_type:type_name -> google.bigtable.admin.v2.StorageType
-	19, // 10: google.bigtable.admin.v2.Cluster.encryption_config:type_name -> google.bigtable.admin.v2.Cluster.EncryptionConfig
-	20, // 11: google.bigtable.admin.v2.AppProfile.multi_cluster_routing_use_any:type_name -> google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
-	21, // 12: google.bigtable.admin.v2.AppProfile.single_cluster_routing:type_name -> google.bigtable.admin.v2.AppProfile.SingleClusterRouting
-	5,  // 13: google.bigtable.admin.v2.AppProfile.priority:type_name -> google.bigtable.admin.v2.AppProfile.Priority
-	22, // 14: google.bigtable.admin.v2.AppProfile.standard_isolation:type_name -> google.bigtable.admin.v2.AppProfile.StandardIsolation
-	23, // 15: google.bigtable.admin.v2.AppProfile.data_boost_isolation_read_only:type_name -> google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly
-	25, // 16: google.bigtable.admin.v2.HotTablet.start_time:type_name -> google.protobuf.Timestamp
-	25, // 17: google.bigtable.admin.v2.HotTablet.end_time:type_name -> google.protobuf.Timestamp
-	9,  // 18: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscaling_limits:type_name -> google.bigtable.admin.v2.AutoscalingLimits
-	8,  // 19: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscaling_targets:type_name -> google.bigtable.admin.v2.AutoscalingTargets
-	17, // 20: google.bigtable.admin.v2.Cluster.ClusterConfig.cluster_autoscaling_config:type_name -> google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
-	24, // 21: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.row_affinity:type_name -> google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity
-	5,  // 22: google.bigtable.admin.v2.AppProfile.StandardIsolation.priority:type_name -> google.bigtable.admin.v2.AppProfile.Priority
-	6,  // 23: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.compute_billing_owner:type_name -> google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner
-	24, // [24:24] is the sub-list for method output_type
-	24, // [24:24] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	20, // 8: google.bigtable.admin.v2.Cluster.cluster_config:type_name -> google.bigtable.admin.v2.Cluster.ClusterConfig
+	30, // 9: google.bigtable.admin.v2.Cluster.default_storage_type:type_name -> google.bigtable.admin.v2.StorageType
+	21, // 10: google.bigtable.admin.v2.Cluster.encryption_config:type_name -> google.bigtable.admin.v2.Cluster.EncryptionConfig
+	22, // 11: google.bigtable.admin.v2.MemoryLayer.memory_config:type_name -> google.bigtable.admin.v2.MemoryLayer.MemoryConfig
+	5,  // 12: google.bigtable.admin.v2.MemoryLayer.state:type_name -> google.bigtable.admin.v2.MemoryLayer.State
+	23, // 13: google.bigtable.admin.v2.AppProfile.multi_cluster_routing_use_any:type_name -> google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
+	24, // 14: google.bigtable.admin.v2.AppProfile.single_cluster_routing:type_name -> google.bigtable.admin.v2.AppProfile.SingleClusterRouting
+	6,  // 15: google.bigtable.admin.v2.AppProfile.priority:type_name -> google.bigtable.admin.v2.AppProfile.Priority
+	25, // 16: google.bigtable.admin.v2.AppProfile.standard_isolation:type_name -> google.bigtable.admin.v2.AppProfile.StandardIsolation
+	26, // 17: google.bigtable.admin.v2.AppProfile.data_boost_isolation_read_only:type_name -> google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly
+	29, // 18: google.bigtable.admin.v2.HotTablet.start_time:type_name -> google.protobuf.Timestamp
+	29, // 19: google.bigtable.admin.v2.HotTablet.end_time:type_name -> google.protobuf.Timestamp
+	10, // 20: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscaling_limits:type_name -> google.bigtable.admin.v2.AutoscalingLimits
+	9,  // 21: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscaling_targets:type_name -> google.bigtable.admin.v2.AutoscalingTargets
+	19, // 22: google.bigtable.admin.v2.Cluster.ClusterConfig.cluster_autoscaling_config:type_name -> google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+	27, // 23: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.row_affinity:type_name -> google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity
+	6,  // 24: google.bigtable.admin.v2.AppProfile.StandardIsolation.priority:type_name -> google.bigtable.admin.v2.AppProfile.Priority
+	28, // 25: google.bigtable.admin.v2.AppProfile.StandardIsolation.memory_config:type_name -> google.bigtable.admin.v2.AppProfile.StandardIsolation.MemoryConfig
+	7,  // 26: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.compute_billing_owner:type_name -> google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner
+	27, // [27:27] is the sub-list for method output_type
+	27, // [27:27] is the sub-list for method input_type
+	27, // [27:27] is the sub-list for extension type_name
+	27, // [27:27] is the sub-list for extension extendee
+	0,  // [0:27] is the sub-list for field type_name
 }
 
 func init() { file_google_bigtable_admin_v2_instance_proto_init() }
@@ -2004,24 +2272,24 @@ func file_google_bigtable_admin_v2_instance_proto_init() {
 	file_google_bigtable_admin_v2_instance_proto_msgTypes[3].OneofWrappers = []any{
 		(*Cluster_ClusterConfig_)(nil),
 	}
-	file_google_bigtable_admin_v2_instance_proto_msgTypes[4].OneofWrappers = []any{
+	file_google_bigtable_admin_v2_instance_proto_msgTypes[5].OneofWrappers = []any{
 		(*AppProfile_MultiClusterRoutingUseAny_)(nil),
 		(*AppProfile_SingleClusterRouting_)(nil),
 		(*AppProfile_Priority_)(nil),
 		(*AppProfile_StandardIsolation_)(nil),
 		(*AppProfile_DataBoostIsolationReadOnly_)(nil),
 	}
-	file_google_bigtable_admin_v2_instance_proto_msgTypes[13].OneofWrappers = []any{
+	file_google_bigtable_admin_v2_instance_proto_msgTypes[15].OneofWrappers = []any{
 		(*AppProfile_MultiClusterRoutingUseAny_RowAffinity_)(nil),
 	}
-	file_google_bigtable_admin_v2_instance_proto_msgTypes[16].OneofWrappers = []any{}
+	file_google_bigtable_admin_v2_instance_proto_msgTypes[18].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_bigtable_admin_v2_instance_proto_rawDesc), len(file_google_bigtable_admin_v2_instance_proto_rawDesc)),
-			NumEnums:      7,
-			NumMessages:   18,
+			NumEnums:      8,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

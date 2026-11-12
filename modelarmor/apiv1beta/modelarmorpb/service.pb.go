@@ -4558,28 +4558,28 @@ var File_google_cloud_modelarmor_v1beta_service_proto protoreflect.FileDescripto
 
 const file_google_cloud_modelarmor_v1beta_service_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/modelarmor/v1beta/service.proto\x12\x1egoogle.cloud.modelarmor.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf6\f\n" +
-	"\bTemplate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.modelarmor.v1beta.Template.LabelsEntryB\x03\xe0A\x01R\x06labels\x12V\n" +
-	"\rfilter_config\x18\x05 \x01(\v2,.google.cloud.modelarmor.v1beta.FilterConfigB\x03\xe0A\x02R\ffilterConfig\x12k\n" +
-	"\x11template_metadata\x18\x06 \x01(\v29.google.cloud.modelarmor.v1beta.Template.TemplateMetadataB\x03\xe0A\x01R\x10templateMetadata\x1a\xfd\a\n" +
-	"\x10TemplateMetadata\x12P\n" +
-	"\"ignore_partial_invocation_failures\x18\x01 \x01(\bB\x03\xe0A\x01R\x1fignorePartialInvocationFailures\x12I\n" +
-	"\x1fcustom_prompt_safety_error_code\x18\x02 \x01(\x05B\x03\xe0A\x01R\x1bcustomPromptSafetyErrorCode\x12O\n" +
-	"\"custom_prompt_safety_error_message\x18\x03 \x01(\tB\x03\xe0A\x01R\x1ecustomPromptSafetyErrorMessage\x12T\n" +
-	"%custom_llm_response_safety_error_code\x18\x04 \x01(\x05B\x03\xe0A\x01R customLlmResponseSafetyErrorCode\x12Z\n" +
-	"(custom_llm_response_safety_error_message\x18\x05 \x01(\tB\x03\xe0A\x01R#customLlmResponseSafetyErrorMessage\x12;\n" +
-	"\x17log_template_operations\x18\x06 \x01(\bB\x03\xe0A\x01R\x15logTemplateOperations\x12;\n" +
-	"\x17log_sanitize_operations\x18\a \x01(\bB\x03\xe0A\x01R\x15logSanitizeOperations\x12y\n" +
-	"\x10enforcement_type\x18\b \x01(\x0e2I.google.cloud.modelarmor.v1beta.Template.TemplateMetadata.EnforcementTypeB\x03\xe0A\x01R\x0fenforcementType\x12\x8f\x01\n" +
-	"\x18multi_language_detection\x18\t \x01(\v2P.google.cloud.modelarmor.v1beta.Template.TemplateMetadata.MultiLanguageDetectionB\x03\xe0A\x01R\x16multiLanguageDetection\x1ad\n" +
-	"\x16MultiLanguageDetection\x12J\n" +
-	"\x1fenable_multi_language_detection\x18\x01 \x01(\bB\x03\xe0A\x02R\x1cenableMultiLanguageDetection\"\\\n" +
+	",google/cloud/modelarmor/v1beta/service.proto\x12\x1egoogle.cloud.modelarmor.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x86\r\n" +
+	"\bTemplate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.modelarmor.v1beta.Template.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12W\n" +
+	"\rfilter_config\x18\x05 \x01(\v2,.google.cloud.modelarmor.v1beta.FilterConfigB\x04\xe2A\x01\x02R\ffilterConfig\x12l\n" +
+	"\x11template_metadata\x18\x06 \x01(\v29.google.cloud.modelarmor.v1beta.Template.TemplateMetadataB\x04\xe2A\x01\x01R\x10templateMetadata\x1a\x87\b\n" +
+	"\x10TemplateMetadata\x12Q\n" +
+	"\"ignore_partial_invocation_failures\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1fignorePartialInvocationFailures\x12J\n" +
+	"\x1fcustom_prompt_safety_error_code\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x1bcustomPromptSafetyErrorCode\x12P\n" +
+	"\"custom_prompt_safety_error_message\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x1ecustomPromptSafetyErrorMessage\x12U\n" +
+	"%custom_llm_response_safety_error_code\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R customLlmResponseSafetyErrorCode\x12[\n" +
+	"(custom_llm_response_safety_error_message\x18\x05 \x01(\tB\x04\xe2A\x01\x01R#customLlmResponseSafetyErrorMessage\x12<\n" +
+	"\x17log_template_operations\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x15logTemplateOperations\x12<\n" +
+	"\x17log_sanitize_operations\x18\a \x01(\bB\x04\xe2A\x01\x01R\x15logSanitizeOperations\x12z\n" +
+	"\x10enforcement_type\x18\b \x01(\x0e2I.google.cloud.modelarmor.v1beta.Template.TemplateMetadata.EnforcementTypeB\x04\xe2A\x01\x01R\x0fenforcementType\x12\x90\x01\n" +
+	"\x18multi_language_detection\x18\t \x01(\v2P.google.cloud.modelarmor.v1beta.Template.TemplateMetadata.MultiLanguageDetectionB\x04\xe2A\x01\x01R\x16multiLanguageDetection\x1ae\n" +
+	"\x16MultiLanguageDetection\x12K\n" +
+	"\x1fenable_multi_language_detection\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\x1cenableMultiLanguageDetection\"\\\n" +
 	"\x0fEnforcementType\x12 \n" +
 	"\x1cENFORCEMENT_TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fINSPECT_ONLY\x10\x01\x12\x15\n" +
@@ -4587,23 +4587,23 @@ const file_google_cloud_modelarmor_v1beta_service_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:z\xeaAw\n" +
-	"\"modelarmor.googleapis.com/Template\x12<projects/{project}/locations/{location}/templates/{template}*\ttemplates2\btemplate\"\xa6\f\n" +
-	"\fFloorSetting\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12V\n" +
-	"\rfilter_config\x18\x04 \x01(\v2,.google.cloud.modelarmor.v1beta.FilterConfigB\x03\xe0A\x02R\ffilterConfig\x12Q\n" +
-	" enable_floor_setting_enforcement\x18\x05 \x01(\bB\x03\xe0A\x01H\x00R\x1denableFloorSettingEnforcement\x88\x01\x01\x12t\n" +
-	"\x13integrated_services\x18\x06 \x03(\x0e2>.google.cloud.modelarmor.v1beta.FloorSetting.IntegratedServiceB\x03\xe0A\x01R\x12integratedServices\x12{\n" +
-	"\x19ai_platform_floor_setting\x18\a \x01(\v26.google.cloud.modelarmor.v1beta.AiPlatformFloorSettingB\x03\xe0A\x01H\x01R\x16aiPlatformFloorSetting\x88\x01\x01\x12|\n" +
-	"\x16floor_setting_metadata\x18\b \x01(\v2A.google.cloud.modelarmor.v1beta.FloorSetting.FloorSettingMetadataB\x03\xe0A\x01R\x14floorSettingMetadata\x12\x85\x01\n" +
-	"\x1fgoogle_mcp_server_floor_setting\x18\t \x01(\v25.google.cloud.modelarmor.v1beta.McpServerFloorSettingB\x03\xe0A\x01H\x02R\x1bgoogleMcpServerFloorSetting\x88\x01\x01\x1a\x96\x02\n" +
-	"\x14FloorSettingMetadata\x12\x97\x01\n" +
-	"\x18multi_language_detection\x18\x01 \x01(\v2X.google.cloud.modelarmor.v1beta.FloorSetting.FloorSettingMetadata.MultiLanguageDetectionB\x03\xe0A\x01R\x16multiLanguageDetection\x1ad\n" +
-	"\x16MultiLanguageDetection\x12J\n" +
-	"\x1fenable_multi_language_detection\x18\x01 \x01(\bB\x03\xe0A\x02R\x1cenableMultiLanguageDetection\"_\n" +
+	"\"modelarmor.googleapis.com/Template\x12<projects/{project}/locations/{location}/templates/{template}*\ttemplates2\btemplate\"\xb1\f\n" +
+	"\fFloorSetting\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12W\n" +
+	"\rfilter_config\x18\x04 \x01(\v2,.google.cloud.modelarmor.v1beta.FilterConfigB\x04\xe2A\x01\x02R\ffilterConfig\x12R\n" +
+	" enable_floor_setting_enforcement\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x00R\x1denableFloorSettingEnforcement\x88\x01\x01\x12u\n" +
+	"\x13integrated_services\x18\x06 \x03(\x0e2>.google.cloud.modelarmor.v1beta.FloorSetting.IntegratedServiceB\x04\xe2A\x01\x01R\x12integratedServices\x12|\n" +
+	"\x19ai_platform_floor_setting\x18\a \x01(\v26.google.cloud.modelarmor.v1beta.AiPlatformFloorSettingB\x04\xe2A\x01\x01H\x01R\x16aiPlatformFloorSetting\x88\x01\x01\x12}\n" +
+	"\x16floor_setting_metadata\x18\b \x01(\v2A.google.cloud.modelarmor.v1beta.FloorSetting.FloorSettingMetadataB\x04\xe2A\x01\x01R\x14floorSettingMetadata\x12\x86\x01\n" +
+	"\x1fgoogle_mcp_server_floor_setting\x18\t \x01(\v25.google.cloud.modelarmor.v1beta.McpServerFloorSettingB\x04\xe2A\x01\x01H\x02R\x1bgoogleMcpServerFloorSetting\x88\x01\x01\x1a\x98\x02\n" +
+	"\x14FloorSettingMetadata\x12\x98\x01\n" +
+	"\x18multi_language_detection\x18\x01 \x01(\v2X.google.cloud.modelarmor.v1beta.FloorSetting.FloorSettingMetadata.MultiLanguageDetectionB\x04\xe2A\x01\x01R\x16multiLanguageDetection\x1ae\n" +
+	"\x16MultiLanguageDetection\x12K\n" +
+	"\x1fenable_multi_language_detection\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\x1cenableMultiLanguageDetection\"_\n" +
 	"\x11IntegratedService\x12\"\n" +
 	"\x1eINTEGRATED_SERVICE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vAI_PLATFORM\x10\x01\x12\x15\n" +
@@ -4611,120 +4611,120 @@ const file_google_cloud_modelarmor_v1beta_service_proto_rawDesc = "" +
 	"&modelarmor.googleapis.com/FloorSetting\x124projects/{project}/locations/{location}/floorSetting\x122folders/{folder}/locations/{location}/floorSetting\x12>organizations/{organization}/locations/{location}/floorSetting*\rfloorSettings2\ffloorSettingB#\n" +
 	"!_enable_floor_setting_enforcementB\x1c\n" +
 	"\x1a_ai_platform_floor_settingB\"\n" +
-	" _google_mcp_server_floor_setting\"\xd8\x01\n" +
-	"\x15McpServerFloorSetting\x12(\n" +
-	"\finspect_only\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\vinspectOnly\x121\n" +
-	"\x11inspect_and_block\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\x0finspectAndBlock\x125\n" +
-	"\x14enable_cloud_logging\x18\x03 \x01(\bB\x03\xe0A\x01R\x12enableCloudLogging\x12\x17\n" +
-	"\x04apis\x18\x04 \x03(\tB\x03\xe0A\x01R\x04apisB\x12\n" +
-	"\x10enforcement_type\"\xc0\x01\n" +
-	"\x16AiPlatformFloorSetting\x12(\n" +
-	"\finspect_only\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\vinspectOnly\x121\n" +
-	"\x11inspect_and_block\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\x0finspectAndBlock\x125\n" +
-	"\x14enable_cloud_logging\x18\x03 \x01(\bB\x03\xe0A\x01R\x12enableCloudLoggingB\x12\n" +
-	"\x10enforcement_type\"\xdd\x01\n" +
-	"\x14ListTemplatesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"modelarmor.googleapis.com/TemplateR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	" _google_mcp_server_floor_setting\"\xdc\x01\n" +
+	"\x15McpServerFloorSetting\x12)\n" +
+	"\finspect_only\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\vinspectOnly\x122\n" +
+	"\x11inspect_and_block\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\x0finspectAndBlock\x126\n" +
+	"\x14enable_cloud_logging\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x12enableCloudLogging\x12\x18\n" +
+	"\x04apis\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x04apisB\x12\n" +
+	"\x10enforcement_type\"\xc3\x01\n" +
+	"\x16AiPlatformFloorSetting\x12)\n" +
+	"\finspect_only\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\vinspectOnly\x122\n" +
+	"\x11inspect_and_block\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\x0finspectAndBlock\x126\n" +
+	"\x14enable_cloud_logging\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x12enableCloudLoggingB\x12\n" +
+	"\x10enforcement_type\"\xe2\x01\n" +
+	"\x14ListTemplatesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"modelarmor.googleapis.com/TemplateR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa9\x01\n" +
 	"\x15ListTemplatesResponse\x12F\n" +
 	"\ttemplates\x18\x01 \x03(\v2(.google.cloud.modelarmor.v1beta.TemplateR\ttemplates\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
-	"\x12GetTemplateRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"modelarmor.googleapis.com/TemplateR\x04name\"\xf8\x01\n" +
-	"\x15CreateTemplateRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"modelarmor.googleapis.com/TemplateR\x06parent\x12$\n" +
-	"\vtemplate_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"templateId\x12I\n" +
-	"\btemplate\x18\x03 \x01(\v2(.google.cloud.modelarmor.v1beta.TemplateB\x03\xe0A\x02R\btemplate\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"U\n" +
+	"\x12GetTemplateRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x04name\"\xfc\x01\n" +
+	"\x15CreateTemplateRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"modelarmor.googleapis.com/TemplateR\x06parent\x12%\n" +
+	"\vtemplate_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"templateId\x12J\n" +
+	"\btemplate\x18\x03 \x01(\v2(.google.cloud.modelarmor.v1beta.TemplateB\x04\xe2A\x01\x02R\btemplate\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd0\x01\n" +
-	"\x15UpdateTemplateRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12I\n" +
-	"\btemplate\x18\x02 \x01(\v2(.google.cloud.modelarmor.v1beta.TemplateB\x03\xe0A\x02R\btemplate\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd3\x01\n" +
+	"\x15UpdateTemplateRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12J\n" +
+	"\btemplate\x18\x02 \x01(\v2(.google.cloud.modelarmor.v1beta.TemplateB\x04\xe2A\x01\x02R\btemplate\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x83\x01\n" +
-	"\x15DeleteTemplateRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"modelarmor.googleapis.com/TemplateR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x85\x01\n" +
+	"\x15DeleteTemplateRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\\\n" +
-	"\x16GetFloorSettingRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&modelarmor.googleapis.com/FloorSettingR\x04name\"\xb5\x01\n" +
-	"\x19UpdateFloorSettingRequest\x12V\n" +
-	"\rfloor_setting\x18\x01 \x01(\v2,.google.cloud.modelarmor.v1beta.FloorSettingB\x03\xe0A\x02R\ffloorSetting\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xd5\x03\n" +
-	"\fFilterConfig\x12Y\n" +
-	"\frai_settings\x18\x01 \x01(\v21.google.cloud.modelarmor.v1beta.RaiFilterSettingsB\x03\xe0A\x01R\vraiSettings\x12Y\n" +
-	"\fsdp_settings\x18\x02 \x01(\v21.google.cloud.modelarmor.v1beta.SdpFilterSettingsB\x03\xe0A\x01R\vsdpSettings\x12\x89\x01\n" +
-	" pi_and_jailbreak_filter_settings\x18\x03 \x01(\v2<.google.cloud.modelarmor.v1beta.PiAndJailbreakFilterSettingsB\x03\xe0A\x01R\x1cpiAndJailbreakFilterSettings\x12\x82\x01\n" +
-	"\x1dmalicious_uri_filter_settings\x18\x04 \x01(\v2:.google.cloud.modelarmor.v1beta.MaliciousUriFilterSettingsB\x03\xe0A\x01R\x1amaliciousUriFilterSettings\"\x8e\x03\n" +
-	"\x1cPiAndJailbreakFilterSettings\x12\x90\x01\n" +
-	"\x12filter_enforcement\x18\x01 \x01(\x0e2\\.google.cloud.modelarmor.v1beta.PiAndJailbreakFilterSettings.PiAndJailbreakFilterEnforcementB\x03\xe0A\x01R\x11filterEnforcement\x12h\n" +
-	"\x10confidence_level\x18\x03 \x01(\x0e28.google.cloud.modelarmor.v1beta.DetectionConfidenceLevelB\x03\xe0A\x01R\x0fconfidenceLevel\"q\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"]\n" +
+	"\x16GetFloorSettingRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&modelarmor.googleapis.com/FloorSettingR\x04name\"\xb7\x01\n" +
+	"\x19UpdateFloorSettingRequest\x12W\n" +
+	"\rfloor_setting\x18\x01 \x01(\v2,.google.cloud.modelarmor.v1beta.FloorSettingB\x04\xe2A\x01\x02R\ffloorSetting\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xd9\x03\n" +
+	"\fFilterConfig\x12Z\n" +
+	"\frai_settings\x18\x01 \x01(\v21.google.cloud.modelarmor.v1beta.RaiFilterSettingsB\x04\xe2A\x01\x01R\vraiSettings\x12Z\n" +
+	"\fsdp_settings\x18\x02 \x01(\v21.google.cloud.modelarmor.v1beta.SdpFilterSettingsB\x04\xe2A\x01\x01R\vsdpSettings\x12\x8a\x01\n" +
+	" pi_and_jailbreak_filter_settings\x18\x03 \x01(\v2<.google.cloud.modelarmor.v1beta.PiAndJailbreakFilterSettingsB\x04\xe2A\x01\x01R\x1cpiAndJailbreakFilterSettings\x12\x83\x01\n" +
+	"\x1dmalicious_uri_filter_settings\x18\x04 \x01(\v2:.google.cloud.modelarmor.v1beta.MaliciousUriFilterSettingsB\x04\xe2A\x01\x01R\x1amaliciousUriFilterSettings\"\x90\x03\n" +
+	"\x1cPiAndJailbreakFilterSettings\x12\x91\x01\n" +
+	"\x12filter_enforcement\x18\x01 \x01(\x0e2\\.google.cloud.modelarmor.v1beta.PiAndJailbreakFilterSettings.PiAndJailbreakFilterEnforcementB\x04\xe2A\x01\x01R\x11filterEnforcement\x12i\n" +
+	"\x10confidence_level\x18\x03 \x01(\x0e28.google.cloud.modelarmor.v1beta.DetectionConfidenceLevelB\x04\xe2A\x01\x01R\x0fconfidenceLevel\"q\n" +
 	"\x1fPiAndJailbreakFilterEnforcement\x123\n" +
 	"/PI_AND_JAILBREAK_FILTER_ENFORCEMENT_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
-	"\bDISABLED\x10\x02\"\x99\x02\n" +
-	"\x1aMaliciousUriFilterSettings\x12\x8c\x01\n" +
-	"\x12filter_enforcement\x18\x01 \x01(\x0e2X.google.cloud.modelarmor.v1beta.MaliciousUriFilterSettings.MaliciousUriFilterEnforcementB\x03\xe0A\x01R\x11filterEnforcement\"l\n" +
+	"\bDISABLED\x10\x02\"\x9a\x02\n" +
+	"\x1aMaliciousUriFilterSettings\x12\x8d\x01\n" +
+	"\x12filter_enforcement\x18\x01 \x01(\x0e2X.google.cloud.modelarmor.v1beta.MaliciousUriFilterSettings.MaliciousUriFilterEnforcementB\x04\xe2A\x01\x01R\x11filterEnforcement\"l\n" +
 	"\x1dMaliciousUriFilterEnforcement\x120\n" +
 	",MALICIOUS_URI_FILTER_ENFORCEMENT_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
-	"\bDISABLED\x10\x02\"\xc3\x02\n" +
-	"\x11RaiFilterSettings\x12a\n" +
-	"\vrai_filters\x18\x01 \x03(\v2;.google.cloud.modelarmor.v1beta.RaiFilterSettings.RaiFilterB\x03\xe0A\x02R\n" +
-	"raiFilters\x1a\xca\x01\n" +
-	"\tRaiFilter\x12S\n" +
-	"\vfilter_type\x18\x01 \x01(\x0e2-.google.cloud.modelarmor.v1beta.RaiFilterTypeB\x03\xe0A\x02R\n" +
-	"filterType\x12h\n" +
-	"\x10confidence_level\x18\x02 \x01(\x0e28.google.cloud.modelarmor.v1beta.DetectionConfidenceLevelB\x03\xe0A\x01R\x0fconfidenceLevel\"\xe5\x01\n" +
-	"\x11SdpFilterSettings\x12X\n" +
-	"\fbasic_config\x18\x01 \x01(\v2..google.cloud.modelarmor.v1beta.SdpBasicConfigB\x03\xe0A\x01H\x00R\vbasicConfig\x12a\n" +
-	"\x0fadvanced_config\x18\x02 \x01(\v21.google.cloud.modelarmor.v1beta.SdpAdvancedConfigB\x03\xe0A\x01H\x00R\x0eadvancedConfigB\x13\n" +
-	"\x11sdp_configuration\"\xf4\x01\n" +
-	"\x0eSdpBasicConfig\x12|\n" +
-	"\x12filter_enforcement\x18\x03 \x01(\x0e2H.google.cloud.modelarmor.v1beta.SdpBasicConfig.SdpBasicConfigEnforcementB\x03\xe0A\x01R\x11filterEnforcement\"d\n" +
+	"\bDISABLED\x10\x02\"\xc6\x02\n" +
+	"\x11RaiFilterSettings\x12b\n" +
+	"\vrai_filters\x18\x01 \x03(\v2;.google.cloud.modelarmor.v1beta.RaiFilterSettings.RaiFilterB\x04\xe2A\x01\x02R\n" +
+	"raiFilters\x1a\xcc\x01\n" +
+	"\tRaiFilter\x12T\n" +
+	"\vfilter_type\x18\x01 \x01(\x0e2-.google.cloud.modelarmor.v1beta.RaiFilterTypeB\x04\xe2A\x01\x02R\n" +
+	"filterType\x12i\n" +
+	"\x10confidence_level\x18\x02 \x01(\x0e28.google.cloud.modelarmor.v1beta.DetectionConfidenceLevelB\x04\xe2A\x01\x01R\x0fconfidenceLevel\"\xe7\x01\n" +
+	"\x11SdpFilterSettings\x12Y\n" +
+	"\fbasic_config\x18\x01 \x01(\v2..google.cloud.modelarmor.v1beta.SdpBasicConfigB\x04\xe2A\x01\x01H\x00R\vbasicConfig\x12b\n" +
+	"\x0fadvanced_config\x18\x02 \x01(\v21.google.cloud.modelarmor.v1beta.SdpAdvancedConfigB\x04\xe2A\x01\x01H\x00R\x0eadvancedConfigB\x13\n" +
+	"\x11sdp_configuration\"\xf5\x01\n" +
+	"\x0eSdpBasicConfig\x12}\n" +
+	"\x12filter_enforcement\x18\x03 \x01(\x0e2H.google.cloud.modelarmor.v1beta.SdpBasicConfig.SdpBasicConfigEnforcementB\x04\xe2A\x01\x01R\x11filterEnforcement\"d\n" +
 	"\x19SdpBasicConfigEnforcement\x12,\n" +
 	"(SDP_BASIC_CONFIG_ENFORCEMENT_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
-	"\bDISABLED\x10\x02\"y\n" +
-	"\x11SdpAdvancedConfig\x12.\n" +
-	"\x10inspect_template\x18\x01 \x01(\tB\x03\xe0A\x01R\x0finspectTemplate\x124\n" +
-	"\x13deidentify_template\x18\x02 \x01(\tB\x03\xe0A\x01R\x12deidentifyTemplate\"\xb8\x03\n" +
-	"\x19SanitizeUserPromptRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"modelarmor.googleapis.com/TemplateR\x04name\x12W\n" +
-	"\x10user_prompt_data\x18\x02 \x01(\v2(.google.cloud.modelarmor.v1beta.DataItemB\x03\xe0A\x02R\x0euserPromptData\x12\x8e\x01\n" +
-	"!multi_language_detection_metadata\x18\x06 \x01(\v2>.google.cloud.modelarmor.v1beta.MultiLanguageDetectionMetadataB\x03\xe0A\x01R\x1emultiLanguageDetectionMetadata\x12^\n" +
-	"\x0estreaming_mode\x18\a \x01(\x0e2-.google.cloud.modelarmor.v1beta.StreamingModeB\x03\xe0A\x01H\x00R\rstreamingMode\x88\x01\x01B\x11\n" +
-	"\x0f_streaming_mode\"\xe7\x03\n" +
-	"\x1cSanitizeModelResponseRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"modelarmor.googleapis.com/TemplateR\x04name\x12]\n" +
-	"\x13model_response_data\x18\x02 \x01(\v2(.google.cloud.modelarmor.v1beta.DataItemB\x03\xe0A\x02R\x11modelResponseData\x12$\n" +
-	"\vuser_prompt\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"userPrompt\x12\x8e\x01\n" +
-	"!multi_language_detection_metadata\x18\a \x01(\v2>.google.cloud.modelarmor.v1beta.MultiLanguageDetectionMetadataB\x03\xe0A\x01R\x1emultiLanguageDetectionMetadata\x12^\n" +
-	"\x0estreaming_mode\x18\b \x01(\x0e2-.google.cloud.modelarmor.v1beta.StreamingModeB\x03\xe0A\x01H\x00R\rstreamingMode\x88\x01\x01B\x11\n" +
-	"\x0f_streaming_mode\"\x86\x01\n" +
-	"\x1aSanitizeUserPromptResponse\x12h\n" +
-	"\x13sanitization_result\x18\x01 \x01(\v22.google.cloud.modelarmor.v1beta.SanitizationResultB\x03\xe0A\x03R\x12sanitizationResult\"\x89\x01\n" +
-	"\x1dSanitizeModelResponseResponse\x12h\n" +
-	"\x13sanitization_result\x18\x01 \x01(\v22.google.cloud.modelarmor.v1beta.SanitizationResultB\x03\xe0A\x03R\x12sanitizationResult\"\xee\x05\n" +
-	"\x12SanitizationResult\x12c\n" +
-	"\x12filter_match_state\x18\x01 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x03\xe0A\x03R\x10filterMatchState\x12q\n" +
-	"\x0efilter_results\x18\x02 \x03(\v2E.google.cloud.modelarmor.v1beta.SanitizationResult.FilterResultsEntryB\x03\xe0A\x03R\rfilterResults\x12b\n" +
-	"\x11invocation_result\x18\x04 \x01(\x0e20.google.cloud.modelarmor.v1beta.InvocationResultB\x03\xe0A\x03R\x10invocationResult\x12\x81\x01\n" +
-	"\x15sanitization_metadata\x18\x03 \x01(\v2G.google.cloud.modelarmor.v1beta.SanitizationResult.SanitizationMetadataB\x03\xe0A\x03R\x14sanitizationMetadata\x1a\xa7\x01\n" +
+	"\bDISABLED\x10\x02\"{\n" +
+	"\x11SdpAdvancedConfig\x12/\n" +
+	"\x10inspect_template\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0finspectTemplate\x125\n" +
+	"\x13deidentify_template\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x12deidentifyTemplate\"\xbc\x03\n" +
+	"\x19SanitizeUserPromptRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x04name\x12X\n" +
+	"\x10user_prompt_data\x18\x02 \x01(\v2(.google.cloud.modelarmor.v1beta.DataItemB\x04\xe2A\x01\x02R\x0euserPromptData\x12\x8f\x01\n" +
+	"!multi_language_detection_metadata\x18\x06 \x01(\v2>.google.cloud.modelarmor.v1beta.MultiLanguageDetectionMetadataB\x04\xe2A\x01\x01R\x1emultiLanguageDetectionMetadata\x12_\n" +
+	"\x0estreaming_mode\x18\a \x01(\x0e2-.google.cloud.modelarmor.v1beta.StreamingModeB\x04\xe2A\x01\x01H\x00R\rstreamingMode\x88\x01\x01B\x11\n" +
+	"\x0f_streaming_mode\"\xec\x03\n" +
+	"\x1cSanitizeModelResponseRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x04name\x12^\n" +
+	"\x13model_response_data\x18\x02 \x01(\v2(.google.cloud.modelarmor.v1beta.DataItemB\x04\xe2A\x01\x02R\x11modelResponseData\x12%\n" +
+	"\vuser_prompt\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"userPrompt\x12\x8f\x01\n" +
+	"!multi_language_detection_metadata\x18\a \x01(\v2>.google.cloud.modelarmor.v1beta.MultiLanguageDetectionMetadataB\x04\xe2A\x01\x01R\x1emultiLanguageDetectionMetadata\x12_\n" +
+	"\x0estreaming_mode\x18\b \x01(\x0e2-.google.cloud.modelarmor.v1beta.StreamingModeB\x04\xe2A\x01\x01H\x00R\rstreamingMode\x88\x01\x01B\x11\n" +
+	"\x0f_streaming_mode\"\x87\x01\n" +
+	"\x1aSanitizeUserPromptResponse\x12i\n" +
+	"\x13sanitization_result\x18\x01 \x01(\v22.google.cloud.modelarmor.v1beta.SanitizationResultB\x04\xe2A\x01\x03R\x12sanitizationResult\"\x8a\x01\n" +
+	"\x1dSanitizeModelResponseResponse\x12i\n" +
+	"\x13sanitization_result\x18\x01 \x01(\v22.google.cloud.modelarmor.v1beta.SanitizationResultB\x04\xe2A\x01\x03R\x12sanitizationResult\"\xf2\x05\n" +
+	"\x12SanitizationResult\x12d\n" +
+	"\x12filter_match_state\x18\x01 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x04\xe2A\x01\x03R\x10filterMatchState\x12r\n" +
+	"\x0efilter_results\x18\x02 \x03(\v2E.google.cloud.modelarmor.v1beta.SanitizationResult.FilterResultsEntryB\x04\xe2A\x01\x03R\rfilterResults\x12c\n" +
+	"\x11invocation_result\x18\x04 \x01(\x0e20.google.cloud.modelarmor.v1beta.InvocationResultB\x04\xe2A\x01\x03R\x10invocationResult\x12\x82\x01\n" +
+	"\x15sanitization_metadata\x18\x03 \x01(\v2G.google.cloud.modelarmor.v1beta.SanitizationResult.SanitizationMetadataB\x04\xe2A\x01\x03R\x14sanitizationMetadata\x1a\xa7\x01\n" +
 	"\x14SanitizationMetadata\x12\x1d\n" +
 	"\n" +
 	"error_code\x18\x01 \x01(\x03R\terrorCode\x12#\n" +
@@ -4732,10 +4732,10 @@ const file_google_cloud_modelarmor_v1beta_service_proto_rawDesc = "" +
 	"\"ignore_partial_invocation_failures\x18\x03 \x01(\bR\x1fignorePartialInvocationFailures\x1an\n" +
 	"\x12FilterResultsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12B\n" +
-	"\x05value\x18\x02 \x01(\v2,.google.cloud.modelarmor.v1beta.FilterResultR\x05value:\x028\x01\"\x9a\x01\n" +
-	"\x1eMultiLanguageDetectionMetadata\x12,\n" +
-	"\x0fsource_language\x18\x01 \x01(\tB\x03\xe0A\x01R\x0esourceLanguage\x12J\n" +
-	"\x1fenable_multi_language_detection\x18\x02 \x01(\bB\x03\xe0A\x01R\x1cenableMultiLanguageDetection\"\xbc\x05\n" +
+	"\x05value\x18\x02 \x01(\v2,.google.cloud.modelarmor.v1beta.FilterResultR\x05value:\x028\x01\"\x9c\x01\n" +
+	"\x1eMultiLanguageDetectionMetadata\x12-\n" +
+	"\x0fsource_language\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0esourceLanguage\x12K\n" +
+	"\x1fenable_multi_language_detection\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x1cenableMultiLanguageDetection\"\xbc\x05\n" +
 	"\fFilterResult\x12]\n" +
 	"\x11rai_filter_result\x18\x01 \x01(\v2/.google.cloud.modelarmor.v1beta.RaiFilterResultH\x00R\x0fraiFilterResult\x12]\n" +
 	"\x11sdp_filter_result\x18\x02 \x01(\v2/.google.cloud.modelarmor.v1beta.SdpFilterResultH\x00R\x0fsdpFilterResult\x12\x80\x01\n" +
@@ -4743,18 +4743,18 @@ const file_google_cloud_modelarmor_v1beta_service_proto_rawDesc = "" +
 	"\x1bmalicious_uri_filter_result\x18\x04 \x01(\v28.google.cloud.modelarmor.v1beta.MaliciousUriFilterResultH\x00R\x18maliciousUriFilterResult\x12m\n" +
 	"\x19csam_filter_filter_result\x18\x05 \x01(\v20.google.cloud.modelarmor.v1beta.CsamFilterResultH\x00R\x16csamFilterFilterResult\x12p\n" +
 	"\x18virus_scan_filter_result\x18\x06 \x01(\v25.google.cloud.modelarmor.v1beta.VirusScanFilterResultH\x00R\x15virusScanFilterResultB\x0f\n" +
-	"\rfilter_result\"\xd6\x06\n" +
-	"\x0fRaiFilterResult\x12b\n" +
-	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12P\n" +
-	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12V\n" +
-	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x03\xe0A\x03R\n" +
+	"\rfilter_result\"\xd9\x06\n" +
+	"\x0fRaiFilterResult\x12c\n" +
+	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x04\xe2A\x01\x03R\x0eexecutionState\x12P\n" +
+	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12W\n" +
+	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x04\xe2A\x01\x03R\n" +
 	"matchState\x12\x80\x01\n" +
-	"\x17rai_filter_type_results\x18\x04 \x03(\v2I.google.cloud.modelarmor.v1beta.RaiFilterResult.RaiFilterTypeResultsEntryR\x14raiFilterTypeResults\x1a\xa2\x02\n" +
+	"\x17rai_filter_type_results\x18\x04 \x03(\v2I.google.cloud.modelarmor.v1beta.RaiFilterResult.RaiFilterTypeResultsEntryR\x14raiFilterTypeResults\x1a\xa3\x02\n" +
 	"\x13RaiFilterTypeResult\x12N\n" +
 	"\vfilter_type\x18\x01 \x01(\x0e2-.google.cloud.modelarmor.v1beta.RaiFilterTypeR\n" +
 	"filterType\x12c\n" +
-	"\x10confidence_level\x18\x02 \x01(\x0e28.google.cloud.modelarmor.v1beta.DetectionConfidenceLevelR\x0fconfidenceLevel\x12V\n" +
-	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x03\xe0A\x03R\n" +
+	"\x10confidence_level\x18\x02 \x01(\x0e28.google.cloud.modelarmor.v1beta.DetectionConfidenceLevelR\x0fconfidenceLevel\x12W\n" +
+	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x04\xe2A\x01\x03R\n" +
 	"matchState\x1a\x8c\x01\n" +
 	"\x19RaiFilterTypeResultsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12Y\n" +
@@ -4762,23 +4762,23 @@ const file_google_cloud_modelarmor_v1beta_service_proto_rawDesc = "" +
 	"\x0fSdpFilterResult\x12Y\n" +
 	"\x0einspect_result\x18\x01 \x01(\v20.google.cloud.modelarmor.v1beta.SdpInspectResultH\x00R\rinspectResult\x12b\n" +
 	"\x11deidentify_result\x18\x02 \x01(\v23.google.cloud.modelarmor.v1beta.SdpDeidentifyResultH\x00R\x10deidentifyResultB\b\n" +
-	"\x06result\"\x97\x03\n" +
-	"\x10SdpInspectResult\x12b\n" +
-	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12P\n" +
-	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12V\n" +
-	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x03\xe0A\x03R\n" +
+	"\x06result\"\x99\x03\n" +
+	"\x10SdpInspectResult\x12c\n" +
+	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x04\xe2A\x01\x03R\x0eexecutionState\x12P\n" +
+	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12W\n" +
+	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x04\xe2A\x01\x03R\n" +
 	"matchState\x12F\n" +
 	"\bfindings\x18\x04 \x03(\v2*.google.cloud.modelarmor.v1beta.SdpFindingR\bfindings\x12-\n" +
 	"\x12findings_truncated\x18\x05 \x01(\bR\x11findingsTruncated\"z\n" +
 	"\bDataItem\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12K\n" +
 	"\tbyte_item\x18\x02 \x01(\v2,.google.cloud.modelarmor.v1beta.ByteDataItemH\x00R\bbyteItemB\v\n" +
-	"\tdata_item\"\xe3\x02\n" +
-	"\fByteDataItem\x12d\n" +
-	"\x0ebyte_data_type\x18\x01 \x01(\x0e29.google.cloud.modelarmor.v1beta.ByteDataItem.ByteItemTypeB\x03\xe0A\x02R\fbyteDataType\x12 \n" +
-	"\tbyte_data\x18\x02 \x01(\fB\x03\xe0A\x02R\bbyteData\x12\"\n" +
+	"\tdata_item\"\xe6\x02\n" +
+	"\fByteDataItem\x12e\n" +
+	"\x0ebyte_data_type\x18\x01 \x01(\x0e29.google.cloud.modelarmor.v1beta.ByteDataItem.ByteItemTypeB\x04\xe2A\x01\x02R\fbyteDataType\x12!\n" +
+	"\tbyte_data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\bbyteData\x12#\n" +
 	"\n" +
-	"file_label\x18\x03 \x01(\tB\x03\xe0A\x01R\tfileLabel\"\xa6\x01\n" +
+	"file_label\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tfileLabel\"\xa6\x01\n" +
 	"\fByteItemType\x12\x1e\n" +
 	"\x1aBYTE_ITEM_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0ePLAINTEXT_UTF8\x10\x01\x12\a\n" +
@@ -4788,11 +4788,11 @@ const file_google_cloud_modelarmor_v1beta_service_proto_rawDesc = "" +
 	"\x13POWERPOINT_DOCUMENT\x10\x05\x12\a\n" +
 	"\x03TXT\x10\x06\x12\a\n" +
 	"\x03CSV\x10\a\x12\a\n" +
-	"\x03ZIP\x10\t\"\xad\x03\n" +
-	"\x13SdpDeidentifyResult\x12b\n" +
-	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12P\n" +
-	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12V\n" +
-	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x03\xe0A\x03R\n" +
+	"\x03ZIP\x10\t\"\xaf\x03\n" +
+	"\x13SdpDeidentifyResult\x12c\n" +
+	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x04\xe2A\x01\x03R\x0eexecutionState\x12P\n" +
+	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12W\n" +
+	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x04\xe2A\x01\x03R\n" +
 	"matchState\x12<\n" +
 	"\x04data\x18\x04 \x01(\v2(.google.cloud.modelarmor.v1beta.DataItemR\x04data\x12+\n" +
 	"\x11transformed_bytes\x18\x05 \x01(\x03R\x10transformedBytes\x12\x1d\n" +
@@ -4808,26 +4808,26 @@ const file_google_cloud_modelarmor_v1beta_service_proto_rawDesc = "" +
 	"\x12SdpFindingLocation\x12H\n" +
 	"\n" +
 	"byte_range\x18\x01 \x01(\v2).google.cloud.modelarmor.v1beta.RangeInfoR\tbyteRange\x12R\n" +
-	"\x0fcodepoint_range\x18\x02 \x01(\v2).google.cloud.modelarmor.v1beta.RangeInfoR\x0ecodepointRange\"\x8f\x03\n" +
-	"\x1aPiAndJailbreakFilterResult\x12b\n" +
-	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12P\n" +
-	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12V\n" +
-	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x03\xe0A\x03R\n" +
+	"\x0fcodepoint_range\x18\x02 \x01(\v2).google.cloud.modelarmor.v1beta.RangeInfoR\x0ecodepointRange\"\x91\x03\n" +
+	"\x1aPiAndJailbreakFilterResult\x12c\n" +
+	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x04\xe2A\x01\x03R\x0eexecutionState\x12P\n" +
+	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12W\n" +
+	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x04\xe2A\x01\x03R\n" +
 	"matchState\x12c\n" +
-	"\x10confidence_level\x18\x05 \x01(\x0e28.google.cloud.modelarmor.v1beta.DetectionConfidenceLevelR\x0fconfidenceLevel\"\xb0\x04\n" +
-	"\x18MaliciousUriFilterResult\x12b\n" +
-	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12P\n" +
-	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12V\n" +
-	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x03\xe0A\x03R\n" +
+	"\x10confidence_level\x18\x05 \x01(\x0e28.google.cloud.modelarmor.v1beta.DetectionConfidenceLevelR\x0fconfidenceLevel\"\xb2\x04\n" +
+	"\x18MaliciousUriFilterResult\x12c\n" +
+	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x04\xe2A\x01\x03R\x0eexecutionState\x12P\n" +
+	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12W\n" +
+	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x04\xe2A\x01\x03R\n" +
 	"matchState\x12\x8f\x01\n" +
 	"\x1bmalicious_uri_matched_items\x18\x04 \x03(\v2P.google.cloud.modelarmor.v1beta.MaliciousUriFilterResult.MaliciousUriMatchedItemR\x18maliciousUriMatchedItems\x1at\n" +
 	"\x17MaliciousUriMatchedItem\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12G\n" +
-	"\tlocations\x18\x02 \x03(\v2).google.cloud.modelarmor.v1beta.RangeInfoR\tlocations\"\x8d\x05\n" +
-	"\x15VirusScanFilterResult\x12b\n" +
-	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12P\n" +
-	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12V\n" +
-	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x03\xe0A\x03R\n" +
+	"\tlocations\x18\x02 \x03(\v2).google.cloud.modelarmor.v1beta.RangeInfoR\tlocations\"\x8f\x05\n" +
+	"\x15VirusScanFilterResult\x12c\n" +
+	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x04\xe2A\x01\x03R\x0eexecutionState\x12P\n" +
+	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12W\n" +
+	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x04\xe2A\x01\x03R\n" +
 	"matchState\x12z\n" +
 	"\x14scanned_content_type\x18\x04 \x01(\x0e2H.google.cloud.modelarmor.v1beta.VirusScanFilterResult.ScannedContentTypeR\x12scannedContentType\x12&\n" +
 	"\fscanned_size\x18\x05 \x01(\x03H\x00R\vscannedSize\x88\x01\x01\x12P\n" +
@@ -4850,11 +4850,11 @@ const file_google_cloud_modelarmor_v1beta_service_proto_rawDesc = "" +
 	"\rVIRUS_OR_WORM\x10\x02\x12\x15\n" +
 	"\x11MALICIOUS_PROGRAM\x10\x03\x12\x1f\n" +
 	"\x1bPOTENTIALLY_HARMFUL_CONTENT\x10\x04\x12 \n" +
-	"\x1cPOTENTIALLY_UNWANTED_CONTENT\x10\x05\"\xa0\x02\n" +
-	"\x10CsamFilterResult\x12b\n" +
-	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12P\n" +
-	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12V\n" +
-	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x03\xe0A\x03R\n" +
+	"\x1cPOTENTIALLY_UNWANTED_CONTENT\x10\x05\"\xa2\x02\n" +
+	"\x10CsamFilterResult\x12c\n" +
+	"\x0fexecution_state\x18\x01 \x01(\x0e24.google.cloud.modelarmor.v1beta.FilterExecutionStateB\x04\xe2A\x01\x03R\x0eexecutionState\x12P\n" +
+	"\rmessage_items\x18\x02 \x03(\v2+.google.cloud.modelarmor.v1beta.MessageItemR\fmessageItems\x12W\n" +
+	"\vmatch_state\x18\x03 \x01(\x0e20.google.cloud.modelarmor.v1beta.FilterMatchStateB\x04\xe2A\x01\x03R\n" +
 	"matchState\"\xd2\x01\n" +
 	"\vMessageItem\x12Z\n" +
 	"\fmessage_type\x18\x01 \x01(\x0e27.google.cloud.modelarmor.v1beta.MessageItem.MessageTypeR\vmessageType\x12\x18\n" +

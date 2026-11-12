@@ -457,17 +457,17 @@ const file_google_cloud_dialogflow_cx_v3_deployment_proto_rawDesc = "" +
 	"\tSUCCEEDED\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03:\x96\x01\xeaA\x92\x01\n" +
-	"$dialogflow.googleapis.com/Deployment\x12jprojects/{project}/locations/{location}/agents/{agent}/environments/{environment}/deployments/{deployment}\"\x9a\x01\n" +
-	"\x16ListDeploymentsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/DeploymentR\x06parent\x12\x1b\n" +
+	"$dialogflow.googleapis.com/Deployment\x12jprojects/{project}/locations/{location}/agents/{agent}/environments/{environment}/deployments/{deployment}\"\x9b\x01\n" +
+	"\x16ListDeploymentsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/DeploymentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8e\x01\n" +
 	"\x17ListDeploymentsResponse\x12K\n" +
 	"\vdeployments\x18\x01 \x03(\v2).google.cloud.dialogflow.cx.v3.DeploymentR\vdeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
-	"\x14GetDeploymentRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
+	"\x14GetDeploymentRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$dialogflow.googleapis.com/DeploymentR\x04name2\xae\x04\n" +
 	"\vDeployments\x12\xda\x01\n" +
 	"\x0fListDeployments\x125.google.cloud.dialogflow.cx.v3.ListDeploymentsRequest\x1a6.google.cloud.dialogflow.cx.v3.ListDeploymentsResponse\"X\xdaA\x06parent\x82\xd3\xe4\x93\x02I\x12G/v3/{parent=projects/*/locations/*/agents/*/environments/*}/deployments\x12\xc7\x01\n" +

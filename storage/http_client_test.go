@@ -17,12 +17,19 @@ package storage
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
+	"strconv"
+	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	"google.golang.org/api/option"
 )
 
 func TestSetHeadersFromContext(t *testing.T) {
@@ -96,6 +103,70 @@ func TestSetHeadersFromContext(t *testing.T) {
 	}
 }
 
+// TestXMLReaderRetryInvocationHeaders verifies that retried XML read requests
+// carry only the invocation headers for the current attempt. The underlying
+// *http.Request is reused across attempts, so headers from earlier attempts
+// must not leak into later ones.
+func TestXMLReaderRetryInvocationHeaders(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	const failures = 2
+	var (
+		mu         sync.Mutex
+		gotHeaders []string
+	)
+	hc, closeServer := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		gotHeaders = append(gotHeaders, strings.Join(r.Header.Values(xGoogHeaderKey), " "))
+		n := len(gotHeaders)
+		mu.Unlock()
+		if n <= failures {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.Header().Set("Content-Length", strconv.Itoa(len(readData)))
+		w.Write([]byte(readData))
+	})
+	defer closeServer()
+
+	client, err := NewClient(ctx, option.WithHTTPClient(hc))
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	r, err := client.Bucket("b").Object("o").Retryer(
+		WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}),
+		WithPolicy(RetryAlways),
+	).NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	defer r.Close()
+	if _, err := io.ReadAll(r); err != nil {
+		t.Fatalf("ReadAll: %v", err)
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(gotHeaders) != failures+1 {
+		t.Fatalf("got %d requests, want %d", len(gotHeaders), failures+1)
+	}
+	for i, h := range gotHeaders {
+		attempt := i + 1
+		if got := strings.Count(h, "gccl-attempt-count/"); got != 1 {
+			t.Errorf("attempt %d: %q has %d gccl-attempt-count tokens, want 1", attempt, h, got)
+		}
+		if want := fmt.Sprintf("gccl-attempt-count/%d", attempt); !strings.Contains(h, want) {
+			t.Errorf("attempt %d: %q does not contain %q", attempt, h, want)
+		}
+		if got := strings.Count(h, "gccl-invocation-id/"); got != 1 {
+			t.Errorf("attempt %d: %q has %d gccl-invocation-id tokens, want 1", attempt, h, got)
+		}
+	}
+}
+
 func TestAppendableWriteUnsupported(t *testing.T) {
 	ctx := context.Background()
 	c, err := newHTTPStorageClient(ctx)
@@ -141,7 +212,7 @@ func TestValidateChecksumFromServer(t *testing.T) {
 		{
 			name:          "wrong checksum",
 			wrongChecksum: true,
-			wantErr:       fmt.Errorf("storage: object checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(2), encodeUint32(1)),
+			wantErr:       fmt.Errorf("storage: checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(2), encodeUint32(1)),
 		},
 	}
 	for _, test := range tests {
@@ -191,7 +262,7 @@ func TestTrackingTransport(t *testing.T) {
 
 	gotHeader := mock.gotReq.Header.Get(featureTrackerHeaderName)
 	wantFeatures := uint32(1<<featurePCU) | uint32(1<<featureMultistreamInMRD)
-	wantHeader := encodeUint32(wantFeatures)
+	wantHeader := encodeFeatureMask(wantFeatures)
 
 	if gotHeader != wantHeader {
 		t.Errorf("Header %s = %q; want %q", featureTrackerHeaderName, gotHeader, wantHeader)
@@ -200,6 +271,80 @@ func TestTrackingTransport(t *testing.T) {
 	// Verify original request was not modified.
 	if req.Header.Get(featureTrackerHeaderName) != "" {
 		t.Errorf("Original request header was modified")
+	}
+}
+
+// TestTrackingTransport_OwnsHeader verifies that the transport always rewrites
+// the feature header from its own bitmask: foreign or malformed values present
+// on the request (e.g. set via callctx for a different client) are either
+// replaced by the merged mask or dropped when there is nothing to report.
+func TestTrackingTransport_OwnsHeader(t *testing.T) {
+	foreign := strings.Repeat("Zm9v", 130) // ~390 bytes of non-mask payload.
+	tests := []struct {
+		desc        string
+		features    uint32
+		ctxFeatures []trackedFeature
+		reqHeader   []string
+		wantHeader  []string
+	}{
+		{
+			desc:       "no features, no header: untouched",
+			wantHeader: nil,
+		},
+		{
+			desc:       "no features, zero mask header: dropped",
+			reqHeader:  []string{encodeFeatureMask(0)},
+			wantHeader: nil,
+		},
+		{
+			desc:       "no features, foreign value: dropped",
+			reqHeader:  []string{foreign},
+			wantHeader: nil,
+		},
+		{
+			desc:       "features, foreign value: replaced by mask",
+			features:   uint32(1 << featurePCU),
+			reqHeader:  []string{foreign},
+			wantHeader: []string{encodeFeatureMask(uint32(1 << featurePCU))},
+		},
+		{
+			desc:        "legacy standard-alphabet value is merged and re-encoded",
+			ctxFeatures: []trackedFeature{featureMultistreamInMRD},
+			reqHeader:   []string{"AAAA+A=="}, // 0xF8 in standard base64 (bits 0 and 1 unset).
+			wantHeader:  []string{encodeFeatureMask(0xF8 | uint32(1<<featureMultistreamInMRD))},
+		},
+		{
+			desc:       "multiple values collapse to one",
+			reqHeader:  []string{encodeFeatureMask(1), encodeFeatureMask(2), foreign},
+			wantHeader: []string{encodeFeatureMask(3)},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			mock := &mockTransport{}
+			mock.addResult(&http.Response{Status: "200 OK"}, nil)
+			tt := &trackingTransport{base: mock, features: tc.features}
+
+			ctx := context.Background()
+			if len(tc.ctxFeatures) > 0 {
+				ctx = addFeatureAttributes(ctx, tc.ctxFeatures...)
+			}
+			req, _ := http.NewRequestWithContext(ctx, "GET", "http://example.com", nil)
+			for _, v := range tc.reqHeader {
+				req.Header.Add(featureTrackerHeaderName, v)
+			}
+
+			if _, err := tt.RoundTrip(req); err != nil {
+				t.Fatalf("RoundTrip failed: %v", err)
+			}
+			got := mock.gotReq.Header.Values(featureTrackerHeaderName)
+			if diff := cmp.Diff(tc.wantHeader, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("header %s mismatch (-want +got):\n%s", featureTrackerHeaderName, diff)
+			}
+			if diff := cmp.Diff(tc.reqHeader, req.Header.Values(featureTrackerHeaderName), cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("caller request header %s modified (-want +got):\n%s", featureTrackerHeaderName, diff)
+			}
+		})
 	}
 }
 

@@ -257,7 +257,7 @@ func (x DataStoreTool_ModalityConfig_ModalityType) Number() protoreflect.EnumNum
 
 // Deprecated: Use DataStoreTool_ModalityConfig_ModalityType.Descriptor instead.
 func (DataStoreTool_ModalityConfig_ModalityType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_data_store_tool_proto_rawDescGZIP(), []int{0, 7, 0}
+	return file_google_cloud_ces_v1beta_data_store_tool_proto_rawDescGZIP(), []int{0, 8, 0}
 }
 
 // Tool to retrieve from Vertex AI Search datastore or engine for grounding.
@@ -819,6 +819,62 @@ func (x *DataStoreTool_BoostSpec) GetConditionBoostSpecs() []*DataStoreTool_Boos
 	return nil
 }
 
+// Snippets configuration.
+type DataStoreTool_SnippetsConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Whether snippets are enabled.
+	EnableSnippets bool `protobuf:"varint,1,opt,name=enable_snippets,json=enableSnippets,proto3" json:"enable_snippets,omitempty"`
+	// Optional. Number of snippets to return per query.
+	// If unset, returns all snippets from the service by default.
+	MaxSnippets   int32 `protobuf:"varint,2,opt,name=max_snippets,json=maxSnippets,proto3" json:"max_snippets,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataStoreTool_SnippetsConfig) Reset() {
+	*x = DataStoreTool_SnippetsConfig{}
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataStoreTool_SnippetsConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataStoreTool_SnippetsConfig) ProtoMessage() {}
+
+func (x *DataStoreTool_SnippetsConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataStoreTool_SnippetsConfig.ProtoReflect.Descriptor instead.
+func (*DataStoreTool_SnippetsConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_data_store_tool_proto_rawDescGZIP(), []int{0, 7}
+}
+
+func (x *DataStoreTool_SnippetsConfig) GetEnableSnippets() bool {
+	if x != nil {
+		return x.EnableSnippets
+	}
+	return false
+}
+
+func (x *DataStoreTool_SnippetsConfig) GetMaxSnippets() int32 {
+	if x != nil {
+		return x.MaxSnippets
+	}
+	return 0
+}
+
 // If specified, will apply the given configuration for the specified
 // modality.
 type DataStoreTool_ModalityConfig struct {
@@ -831,13 +887,15 @@ type DataStoreTool_ModalityConfig struct {
 	SummarizationConfig *DataStoreTool_SummarizationConfig `protobuf:"bytes,3,opt,name=summarization_config,json=summarizationConfig,proto3" json:"summarization_config,omitempty"`
 	// Optional. The grounding configuration.
 	GroundingConfig *DataStoreTool_GroundingConfig `protobuf:"bytes,4,opt,name=grounding_config,json=groundingConfig,proto3" json:"grounding_config,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. The snippets configuration.
+	SnippetsConfig *DataStoreTool_SnippetsConfig `protobuf:"bytes,5,opt,name=snippets_config,json=snippetsConfig,proto3" json:"snippets_config,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *DataStoreTool_ModalityConfig) Reset() {
 	*x = DataStoreTool_ModalityConfig{}
-	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -849,7 +907,7 @@ func (x *DataStoreTool_ModalityConfig) String() string {
 func (*DataStoreTool_ModalityConfig) ProtoMessage() {}
 
 func (x *DataStoreTool_ModalityConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -862,7 +920,7 @@ func (x *DataStoreTool_ModalityConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataStoreTool_ModalityConfig.ProtoReflect.Descriptor instead.
 func (*DataStoreTool_ModalityConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_data_store_tool_proto_rawDescGZIP(), []int{0, 7}
+	return file_google_cloud_ces_v1beta_data_store_tool_proto_rawDescGZIP(), []int{0, 8}
 }
 
 func (x *DataStoreTool_ModalityConfig) GetModalityType() DataStoreTool_ModalityConfig_ModalityType {
@@ -889,6 +947,13 @@ func (x *DataStoreTool_ModalityConfig) GetSummarizationConfig() *DataStoreTool_S
 func (x *DataStoreTool_ModalityConfig) GetGroundingConfig() *DataStoreTool_GroundingConfig {
 	if x != nil {
 		return x.GroundingConfig
+	}
+	return nil
+}
+
+func (x *DataStoreTool_ModalityConfig) GetSnippetsConfig() *DataStoreTool_SnippetsConfig {
+	if x != nil {
+		return x.SnippetsConfig
 	}
 	return nil
 }
@@ -922,7 +987,7 @@ type DataStoreTool_BoostSpec_ConditionBoostSpec struct {
 
 func (x *DataStoreTool_BoostSpec_ConditionBoostSpec) Reset() {
 	*x = DataStoreTool_BoostSpec_ConditionBoostSpec{}
-	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -934,7 +999,7 @@ func (x *DataStoreTool_BoostSpec_ConditionBoostSpec) String() string {
 func (*DataStoreTool_BoostSpec_ConditionBoostSpec) ProtoMessage() {}
 
 func (x *DataStoreTool_BoostSpec_ConditionBoostSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -999,7 +1064,7 @@ type DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec struct {
 
 func (x *DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec) Reset() {
 	*x = DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec{}
-	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1011,7 +1076,7 @@ func (x *DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec) String() s
 func (*DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec) ProtoMessage() {}
 
 func (x *DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1076,7 +1141,7 @@ type DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint st
 
 func (x *DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) Reset() {
 	*x = DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint{}
-	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1088,7 +1153,7 @@ func (x *DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoin
 func (*DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) ProtoMessage() {}
 
 func (x *DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1122,56 +1187,56 @@ var File_google_cloud_ces_v1beta_data_store_tool_proto protoreflect.FileDescript
 
 const file_google_cloud_ces_v1beta_data_store_tool_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/ces/v1beta/data_store_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a(google/cloud/ces/v1beta/data_store.proto\"\x9a\x19\n" +
-	"\rDataStoreTool\x12i\n" +
-	"\x11data_store_source\x18\x03 \x01(\v26.google.cloud.ces.v1beta.DataStoreTool.DataStoreSourceB\x03\xe0A\x01H\x00R\x0fdataStoreSource\x12_\n" +
-	"\rengine_source\x18\x04 \x01(\v23.google.cloud.ces.v1beta.DataStoreTool.EngineSourceB\x03\xe0A\x01H\x00R\fengineSource\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12W\n" +
-	"\vboost_specs\x18\b \x03(\v21.google.cloud.ces.v1beta.DataStoreTool.BoostSpecsB\x03\xe0A\x01R\n" +
-	"boostSpecs\x12e\n" +
-	"\x10modality_configs\x18\t \x03(\v25.google.cloud.ces.v1beta.DataStoreTool.ModalityConfigB\x03\xe0A\x01R\x0fmodalityConfigs\x12\x7f\n" +
+	"-google/cloud/ces/v1beta/data_store_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a(google/cloud/ces/v1beta/data_store.proto\"\x8f\x1b\n" +
+	"\rDataStoreTool\x12j\n" +
+	"\x11data_store_source\x18\x03 \x01(\v26.google.cloud.ces.v1beta.DataStoreTool.DataStoreSourceB\x04\xe2A\x01\x01H\x00R\x0fdataStoreSource\x12`\n" +
+	"\rengine_source\x18\x04 \x01(\v23.google.cloud.ces.v1beta.DataStoreTool.EngineSourceB\x04\xe2A\x01\x01H\x00R\fengineSource\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12X\n" +
+	"\vboost_specs\x18\b \x03(\v21.google.cloud.ces.v1beta.DataStoreTool.BoostSpecsB\x04\xe2A\x01\x01R\n" +
+	"boostSpecs\x12f\n" +
+	"\x10modality_configs\x18\t \x03(\v25.google.cloud.ces.v1beta.DataStoreTool.ModalityConfigB\x04\xe2A\x01\x01R\x0fmodalityConfigs\x12\x80\x01\n" +
 	"\x19filter_parameter_behavior\x18\n" +
-	" \x01(\x0e2>.google.cloud.ces.v1beta.DataStoreTool.FilterParameterBehaviorB\x03\xe0A\x01R\x17filterParameterBehavior\x1a\xa2\x01\n" +
-	"\x0eRewriterConfig\x12R\n" +
-	"\x0emodel_settings\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x03\xe0A\x02R\rmodelSettings\x12\x1b\n" +
-	"\x06prompt\x18\x02 \x01(\tB\x03\xe0A\x01R\x06prompt\x12\x1f\n" +
-	"\bdisabled\x18\x03 \x01(\bB\x03\xe0A\x01R\bdisabled\x1a\xa7\x01\n" +
-	"\x13SummarizationConfig\x12R\n" +
-	"\x0emodel_settings\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x03\xe0A\x01R\rmodelSettings\x12\x1b\n" +
-	"\x06prompt\x18\x02 \x01(\tB\x03\xe0A\x01R\x06prompt\x12\x1f\n" +
-	"\bdisabled\x18\x03 \x01(\bB\x03\xe0A\x01R\bdisabled\x1a`\n" +
-	"\x0fGroundingConfig\x12,\n" +
-	"\x0fgrounding_level\x18\x01 \x01(\x02B\x03\xe0A\x01R\x0egroundingLevel\x12\x1f\n" +
-	"\bdisabled\x18\x02 \x01(\bB\x03\xe0A\x01R\bdisabled\x1av\n" +
-	"\x0fDataStoreSource\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12F\n" +
+	" \x01(\x0e2>.google.cloud.ces.v1beta.DataStoreTool.FilterParameterBehaviorB\x04\xe2A\x01\x01R\x17filterParameterBehavior\x1a\xa5\x01\n" +
+	"\x0eRewriterConfig\x12S\n" +
+	"\x0emodel_settings\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x04\xe2A\x01\x02R\rmodelSettings\x12\x1c\n" +
+	"\x06prompt\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06prompt\x12 \n" +
+	"\bdisabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x1a\xaa\x01\n" +
+	"\x13SummarizationConfig\x12S\n" +
+	"\x0emodel_settings\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x04\xe2A\x01\x01R\rmodelSettings\x12\x1c\n" +
+	"\x06prompt\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06prompt\x12 \n" +
+	"\bdisabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x1ab\n" +
+	"\x0fGroundingConfig\x12-\n" +
+	"\x0fgrounding_level\x18\x01 \x01(\x02B\x04\xe2A\x01\x01R\x0egroundingLevel\x12 \n" +
+	"\bdisabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x1ax\n" +
+	"\x0fDataStoreSource\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12G\n" +
 	"\n" +
-	"data_store\x18\x04 \x01(\v2\".google.cloud.ces.v1beta.DataStoreB\x03\xe0A\x01R\tdataStore\x1a\xb3\x01\n" +
-	"\fEngineSource\x12\x1b\n" +
-	"\x06engine\x18\x01 \x01(\tB\x03\xe0A\x02R\x06engine\x12i\n" +
-	"\x12data_store_sources\x18\x02 \x03(\v26.google.cloud.ces.v1beta.DataStoreTool.DataStoreSourceB\x03\xe0A\x01R\x10dataStoreSources\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x1a}\n" +
+	"data_store\x18\x04 \x01(\v2\".google.cloud.ces.v1beta.DataStoreB\x04\xe2A\x01\x01R\tdataStore\x1a\xb6\x01\n" +
+	"\fEngineSource\x12\x1c\n" +
+	"\x06engine\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06engine\x12j\n" +
+	"\x12data_store_sources\x18\x02 \x03(\v26.google.cloud.ces.v1beta.DataStoreTool.DataStoreSourceB\x04\xe2A\x01\x01R\x10dataStoreSources\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x1a\x7f\n" +
 	"\n" +
-	"BoostSpecs\x12$\n" +
-	"\vdata_stores\x18\x01 \x03(\tB\x03\xe0A\x02R\n" +
-	"dataStores\x12I\n" +
-	"\x04spec\x18\x02 \x03(\v20.google.cloud.ces.v1beta.DataStoreTool.BoostSpecB\x03\xe0A\x02R\x04spec\x1a\xd9\b\n" +
-	"\tBoostSpec\x12|\n" +
-	"\x15condition_boost_specs\x18\x01 \x03(\v2C.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpecB\x03\xe0A\x02R\x13conditionBoostSpecs\x1a\xcd\a\n" +
-	"\x12ConditionBoostSpec\x12!\n" +
-	"\tcondition\x18\x01 \x01(\tB\x03\xe0A\x02R\tcondition\x12\x19\n" +
-	"\x05boost\x18\x02 \x01(\x02B\x03\xe0A\x01R\x05boost\x12\x87\x01\n" +
-	"\x12boost_control_spec\x18\x04 \x01(\v2T.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpecB\x03\xe0A\x01R\x10boostControlSpec\x1a\xee\x05\n" +
-	"\x10BoostControlSpec\x12\"\n" +
+	"BoostSpecs\x12%\n" +
+	"\vdata_stores\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\n" +
+	"dataStores\x12J\n" +
+	"\x04spec\x18\x02 \x03(\v20.google.cloud.ces.v1beta.DataStoreTool.BoostSpecB\x04\xe2A\x01\x02R\x04spec\x1a\xe3\b\n" +
+	"\tBoostSpec\x12}\n" +
+	"\x15condition_boost_specs\x18\x01 \x03(\v2C.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpecB\x04\xe2A\x01\x02R\x13conditionBoostSpecs\x1a\xd6\a\n" +
+	"\x12ConditionBoostSpec\x12\"\n" +
+	"\tcondition\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tcondition\x12\x1a\n" +
+	"\x05boost\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x05boost\x12\x88\x01\n" +
+	"\x12boost_control_spec\x18\x04 \x01(\v2T.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpecB\x04\xe2A\x01\x01R\x10boostControlSpec\x1a\xf4\x05\n" +
+	"\x10BoostControlSpec\x12#\n" +
 	"\n" +
-	"field_name\x18\x01 \x01(\tB\x03\xe0A\x01R\tfieldName\x12\x8e\x01\n" +
-	"\x0eattribute_type\x18\x02 \x01(\x0e2b.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeTypeB\x03\xe0A\x01R\rattributeType\x12\x9a\x01\n" +
-	"\x12interpolation_type\x18\x03 \x01(\x0e2f.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationTypeB\x03\xe0A\x01R\x11interpolationType\x12\x8d\x01\n" +
-	"\x0econtrol_points\x18\x04 \x03(\v2a.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPointB\x03\xe0A\x01R\rcontrolPoints\x1ad\n" +
-	"\fControlPoint\x12,\n" +
-	"\x0fattribute_value\x18\x01 \x01(\tB\x03\xe0A\x01R\x0eattributeValue\x12&\n" +
-	"\fboost_amount\x18\x02 \x01(\x02B\x03\xe0A\x01R\vboostAmount\"M\n" +
+	"field_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tfieldName\x12\x8f\x01\n" +
+	"\x0eattribute_type\x18\x02 \x01(\x0e2b.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeTypeB\x04\xe2A\x01\x01R\rattributeType\x12\x9b\x01\n" +
+	"\x12interpolation_type\x18\x03 \x01(\x0e2f.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationTypeB\x04\xe2A\x01\x01R\x11interpolationType\x12\x8e\x01\n" +
+	"\x0econtrol_points\x18\x04 \x03(\v2a.google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPointB\x04\xe2A\x01\x01R\rcontrolPoints\x1af\n" +
+	"\fControlPoint\x12-\n" +
+	"\x0fattribute_value\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0eattributeValue\x12'\n" +
+	"\fboost_amount\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\vboostAmount\"M\n" +
 	"\rAttributeType\x12\x1e\n" +
 	"\x1aATTRIBUTE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNUMERICAL\x10\x01\x12\r\n" +
@@ -1179,12 +1244,16 @@ const file_google_cloud_ces_v1beta_data_store_tool_proto_rawDesc = "" +
 	"\x11InterpolationType\x12\"\n" +
 	"\x1eINTERPOLATION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06LINEAR\x10\x01\x1a\x83\x04\n" +
-	"\x0eModalityConfig\x12l\n" +
-	"\rmodality_type\x18\x01 \x01(\x0e2B.google.cloud.ces.v1beta.DataStoreTool.ModalityConfig.ModalityTypeB\x03\xe0A\x02R\fmodalityType\x12c\n" +
-	"\x0frewriter_config\x18\x02 \x01(\v25.google.cloud.ces.v1beta.DataStoreTool.RewriterConfigB\x03\xe0A\x01R\x0erewriterConfig\x12r\n" +
-	"\x14summarization_config\x18\x03 \x01(\v2:.google.cloud.ces.v1beta.DataStoreTool.SummarizationConfigB\x03\xe0A\x01R\x13summarizationConfig\x12f\n" +
-	"\x10grounding_config\x18\x04 \x01(\v26.google.cloud.ces.v1beta.DataStoreTool.GroundingConfigB\x03\xe0A\x01R\x0fgroundingConfig\"B\n" +
+	"\x06LINEAR\x10\x01\x1ah\n" +
+	"\x0eSnippetsConfig\x12-\n" +
+	"\x0fenable_snippets\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0eenableSnippets\x12'\n" +
+	"\fmax_snippets\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\vmaxSnippets\x1a\xed\x04\n" +
+	"\x0eModalityConfig\x12m\n" +
+	"\rmodality_type\x18\x01 \x01(\x0e2B.google.cloud.ces.v1beta.DataStoreTool.ModalityConfig.ModalityTypeB\x04\xe2A\x01\x02R\fmodalityType\x12d\n" +
+	"\x0frewriter_config\x18\x02 \x01(\v25.google.cloud.ces.v1beta.DataStoreTool.RewriterConfigB\x04\xe2A\x01\x01R\x0erewriterConfig\x12s\n" +
+	"\x14summarization_config\x18\x03 \x01(\v2:.google.cloud.ces.v1beta.DataStoreTool.SummarizationConfigB\x04\xe2A\x01\x01R\x13summarizationConfig\x12g\n" +
+	"\x10grounding_config\x18\x04 \x01(\v26.google.cloud.ces.v1beta.DataStoreTool.GroundingConfigB\x04\xe2A\x01\x01R\x0fgroundingConfig\x12d\n" +
+	"\x0fsnippets_config\x18\x05 \x01(\v25.google.cloud.ces.v1beta.DataStoreTool.SnippetsConfigB\x04\xe2A\x01\x01R\x0esnippetsConfig\"B\n" +
 	"\fModalityType\x12\x1d\n" +
 	"\x19MODALITY_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TEXT\x10\x01\x12\t\n" +
@@ -1209,7 +1278,7 @@ func file_google_cloud_ces_v1beta_data_store_tool_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_ces_v1beta_data_store_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_google_cloud_ces_v1beta_data_store_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_google_cloud_ces_v1beta_data_store_tool_proto_goTypes = []any{
 	(DataStoreTool_FilterParameterBehavior)(0),                                         // 0: google.cloud.ces.v1beta.DataStoreTool.FilterParameterBehavior
 	(DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType)(0),     // 1: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeType
@@ -1223,38 +1292,40 @@ var file_google_cloud_ces_v1beta_data_store_tool_proto_goTypes = []any{
 	(*DataStoreTool_EngineSource)(nil),                                               // 9: google.cloud.ces.v1beta.DataStoreTool.EngineSource
 	(*DataStoreTool_BoostSpecs)(nil),                                                 // 10: google.cloud.ces.v1beta.DataStoreTool.BoostSpecs
 	(*DataStoreTool_BoostSpec)(nil),                                                  // 11: google.cloud.ces.v1beta.DataStoreTool.BoostSpec
-	(*DataStoreTool_ModalityConfig)(nil),                                             // 12: google.cloud.ces.v1beta.DataStoreTool.ModalityConfig
-	(*DataStoreTool_BoostSpec_ConditionBoostSpec)(nil),                               // 13: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec
-	(*DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec)(nil),              // 14: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec
-	(*DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint)(nil), // 15: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
-	(*ModelSettings)(nil),                                                            // 16: google.cloud.ces.v1beta.ModelSettings
-	(*DataStore)(nil),                                                                // 17: google.cloud.ces.v1beta.DataStore
+	(*DataStoreTool_SnippetsConfig)(nil),                                             // 12: google.cloud.ces.v1beta.DataStoreTool.SnippetsConfig
+	(*DataStoreTool_ModalityConfig)(nil),                                             // 13: google.cloud.ces.v1beta.DataStoreTool.ModalityConfig
+	(*DataStoreTool_BoostSpec_ConditionBoostSpec)(nil),                               // 14: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec
+	(*DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec)(nil),              // 15: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec
+	(*DataStoreTool_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint)(nil), // 16: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
+	(*ModelSettings)(nil),                                                            // 17: google.cloud.ces.v1beta.ModelSettings
+	(*DataStore)(nil),                                                                // 18: google.cloud.ces.v1beta.DataStore
 }
 var file_google_cloud_ces_v1beta_data_store_tool_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.ces.v1beta.DataStoreTool.data_store_source:type_name -> google.cloud.ces.v1beta.DataStoreTool.DataStoreSource
 	9,  // 1: google.cloud.ces.v1beta.DataStoreTool.engine_source:type_name -> google.cloud.ces.v1beta.DataStoreTool.EngineSource
 	10, // 2: google.cloud.ces.v1beta.DataStoreTool.boost_specs:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpecs
-	12, // 3: google.cloud.ces.v1beta.DataStoreTool.modality_configs:type_name -> google.cloud.ces.v1beta.DataStoreTool.ModalityConfig
+	13, // 3: google.cloud.ces.v1beta.DataStoreTool.modality_configs:type_name -> google.cloud.ces.v1beta.DataStoreTool.ModalityConfig
 	0,  // 4: google.cloud.ces.v1beta.DataStoreTool.filter_parameter_behavior:type_name -> google.cloud.ces.v1beta.DataStoreTool.FilterParameterBehavior
-	16, // 5: google.cloud.ces.v1beta.DataStoreTool.RewriterConfig.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
-	16, // 6: google.cloud.ces.v1beta.DataStoreTool.SummarizationConfig.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
-	17, // 7: google.cloud.ces.v1beta.DataStoreTool.DataStoreSource.data_store:type_name -> google.cloud.ces.v1beta.DataStore
+	17, // 5: google.cloud.ces.v1beta.DataStoreTool.RewriterConfig.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
+	17, // 6: google.cloud.ces.v1beta.DataStoreTool.SummarizationConfig.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
+	18, // 7: google.cloud.ces.v1beta.DataStoreTool.DataStoreSource.data_store:type_name -> google.cloud.ces.v1beta.DataStore
 	8,  // 8: google.cloud.ces.v1beta.DataStoreTool.EngineSource.data_store_sources:type_name -> google.cloud.ces.v1beta.DataStoreTool.DataStoreSource
 	11, // 9: google.cloud.ces.v1beta.DataStoreTool.BoostSpecs.spec:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec
-	13, // 10: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.condition_boost_specs:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec
+	14, // 10: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.condition_boost_specs:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec
 	3,  // 11: google.cloud.ces.v1beta.DataStoreTool.ModalityConfig.modality_type:type_name -> google.cloud.ces.v1beta.DataStoreTool.ModalityConfig.ModalityType
 	5,  // 12: google.cloud.ces.v1beta.DataStoreTool.ModalityConfig.rewriter_config:type_name -> google.cloud.ces.v1beta.DataStoreTool.RewriterConfig
 	6,  // 13: google.cloud.ces.v1beta.DataStoreTool.ModalityConfig.summarization_config:type_name -> google.cloud.ces.v1beta.DataStoreTool.SummarizationConfig
 	7,  // 14: google.cloud.ces.v1beta.DataStoreTool.ModalityConfig.grounding_config:type_name -> google.cloud.ces.v1beta.DataStoreTool.GroundingConfig
-	14, // 15: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.boost_control_spec:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec
-	1,  // 16: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.attribute_type:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeType
-	2,  // 17: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.interpolation_type:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationType
-	15, // 18: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.control_points:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
-	19, // [19:19] is the sub-list for method output_type
-	19, // [19:19] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	12, // 15: google.cloud.ces.v1beta.DataStoreTool.ModalityConfig.snippets_config:type_name -> google.cloud.ces.v1beta.DataStoreTool.SnippetsConfig
+	15, // 16: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.boost_control_spec:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec
+	1,  // 17: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.attribute_type:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeType
+	2,  // 18: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.interpolation_type:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationType
+	16, // 19: google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.control_points:type_name -> google.cloud.ces.v1beta.DataStoreTool.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
+	20, // [20:20] is the sub-list for method output_type
+	20, // [20:20] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_data_store_tool_proto_init() }
@@ -1274,7 +1345,7 @@ func file_google_cloud_ces_v1beta_data_store_tool_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_data_store_tool_proto_rawDesc), len(file_google_cloud_ces_v1beta_data_store_tool_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

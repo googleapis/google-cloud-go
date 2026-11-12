@@ -348,6 +348,53 @@ func NewIdentityAwareProxyAdminClient(ctx context.Context, opts ...option.Client
 		client.CallOptions.DeleteTunnelDestGroup = append(client.CallOptions.DeleteTunnelDestGroup, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateTunnelDestGroup = append(client.CallOptions.UpdateTunnelDestGroup, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIapSettings = append(client.CallOptions.GetIapSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIapSettings = append(client.CallOptions.UpdateIapSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.ValidateIapAttributeExpression = append(client.CallOptions.ValidateIapAttributeExpression, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTunnelDestGroups = append(client.CallOptions.ListTunnelDestGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTunnelDestGroup = append(client.CallOptions.CreateTunnelDestGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTunnelDestGroup = append(client.CallOptions.GetTunnelDestGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTunnelDestGroup = append(client.CallOptions.DeleteTunnelDestGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTunnelDestGroup = append(client.CallOptions.UpdateTunnelDestGroup, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.GetIapSettings = append(client.CallOptions.GetIapSettings, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIapSettings = append(client.CallOptions.UpdateIapSettings, gax.WithClientLogging(logging))
+		client.CallOptions.ValidateIapAttributeExpression = append(client.CallOptions.ValidateIapAttributeExpression, gax.WithClientLogging(logging))
+		client.CallOptions.ListTunnelDestGroups = append(client.CallOptions.ListTunnelDestGroups, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTunnelDestGroup = append(client.CallOptions.CreateTunnelDestGroup, gax.WithClientLogging(logging))
+		client.CallOptions.GetTunnelDestGroup = append(client.CallOptions.GetTunnelDestGroup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTunnelDestGroup = append(client.CallOptions.DeleteTunnelDestGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTunnelDestGroup = append(client.CallOptions.UpdateTunnelDestGroup, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -449,6 +496,53 @@ func NewIdentityAwareProxyAdminRESTClient(ctx context.Context, opts ...option.Cl
 		callOpts.DeleteTunnelDestGroup = append(callOpts.DeleteTunnelDestGroup, gax.WithClientMetrics(metrics))
 		callOpts.UpdateTunnelDestGroup = append(callOpts.UpdateTunnelDestGroup, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.GetIapSettings = append(callOpts.GetIapSettings, gax.WithClientTracing(tracing))
+		callOpts.UpdateIapSettings = append(callOpts.UpdateIapSettings, gax.WithClientTracing(tracing))
+		callOpts.ValidateIapAttributeExpression = append(callOpts.ValidateIapAttributeExpression, gax.WithClientTracing(tracing))
+		callOpts.ListTunnelDestGroups = append(callOpts.ListTunnelDestGroups, gax.WithClientTracing(tracing))
+		callOpts.CreateTunnelDestGroup = append(callOpts.CreateTunnelDestGroup, gax.WithClientTracing(tracing))
+		callOpts.GetTunnelDestGroup = append(callOpts.GetTunnelDestGroup, gax.WithClientTracing(tracing))
+		callOpts.DeleteTunnelDestGroup = append(callOpts.DeleteTunnelDestGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateTunnelDestGroup = append(callOpts.UpdateTunnelDestGroup, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.GetIapSettings = append(callOpts.GetIapSettings, gax.WithClientLogging(logging))
+		callOpts.UpdateIapSettings = append(callOpts.UpdateIapSettings, gax.WithClientLogging(logging))
+		callOpts.ValidateIapAttributeExpression = append(callOpts.ValidateIapAttributeExpression, gax.WithClientLogging(logging))
+		callOpts.ListTunnelDestGroups = append(callOpts.ListTunnelDestGroups, gax.WithClientLogging(logging))
+		callOpts.CreateTunnelDestGroup = append(callOpts.CreateTunnelDestGroup, gax.WithClientLogging(logging))
+		callOpts.GetTunnelDestGroup = append(callOpts.GetTunnelDestGroup, gax.WithClientLogging(logging))
+		callOpts.DeleteTunnelDestGroup = append(callOpts.DeleteTunnelDestGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateTunnelDestGroup = append(callOpts.UpdateTunnelDestGroup, gax.WithClientLogging(logging))
+	}
 
 	return &IdentityAwareProxyAdminClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -495,9 +589,6 @@ func (c *identityAwareProxyAdminGRPCClient) SetIamPolicy(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/SetIamPolicy")
 	}
@@ -519,9 +610,6 @@ func (c *identityAwareProxyAdminGRPCClient) GetIamPolicy(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/GetIamPolicy")
 	}
@@ -543,9 +631,6 @@ func (c *identityAwareProxyAdminGRPCClient) TestIamPermissions(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/TestIamPermissions")
 	}
@@ -630,9 +715,6 @@ func (c *identityAwareProxyAdminGRPCClient) ListTunnelDestGroups(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/ListTunnelDestGroups")
 	}
@@ -682,9 +764,6 @@ func (c *identityAwareProxyAdminGRPCClient) CreateTunnelDestGroup(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/CreateTunnelDestGroup")
 	}
@@ -706,9 +785,6 @@ func (c *identityAwareProxyAdminGRPCClient) GetTunnelDestGroup(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/GetTunnelDestGroup")
 	}
@@ -730,9 +806,6 @@ func (c *identityAwareProxyAdminGRPCClient) DeleteTunnelDestGroup(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/DeleteTunnelDestGroup")
 	}
@@ -781,6 +854,11 @@ func (c *identityAwareProxyAdminRESTClient) SetIamPolicy(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -794,9 +872,6 @@ func (c *identityAwareProxyAdminRESTClient) SetIamPolicy(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=**}:setIamPolicy")
@@ -847,6 +922,11 @@ func (c *identityAwareProxyAdminRESTClient) GetIamPolicy(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -860,9 +940,6 @@ func (c *identityAwareProxyAdminRESTClient) GetIamPolicy(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=**}:getIamPolicy")
@@ -913,6 +990,11 @@ func (c *identityAwareProxyAdminRESTClient) TestIamPermissions(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -926,9 +1008,6 @@ func (c *identityAwareProxyAdminRESTClient) TestIamPermissions(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=**}:testIamPermissions")
@@ -968,6 +1047,11 @@ func (c *identityAwareProxyAdminRESTClient) TestIamPermissions(ctx context.Conte
 func (c *identityAwareProxyAdminRESTClient) GetIapSettings(ctx context.Context, req *iappb.GetIapSettingsRequest, opts ...gax.CallOption) (*iappb.IapSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:iapSettings", req.GetName())
@@ -1032,6 +1116,11 @@ func (c *identityAwareProxyAdminRESTClient) UpdateIapSettings(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIapSettings().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:iapSettings", req.GetIapSettings().GetName())
 
 	params := url.Values{}
@@ -1091,6 +1180,11 @@ func (c *identityAwareProxyAdminRESTClient) UpdateIapSettings(ctx context.Contex
 func (c *identityAwareProxyAdminRESTClient) ValidateIapAttributeExpression(ctx context.Context, req *iappb.ValidateIapAttributeExpressionRequest, opts ...gax.CallOption) (*iappb.ValidateIapAttributeExpressionResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:validateAttributeExpression", req.GetName())
@@ -1161,6 +1255,11 @@ func (c *identityAwareProxyAdminRESTClient) ListTunnelDestGroups(ctx context.Con
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/destGroups", req.GetParent())
@@ -1235,6 +1334,11 @@ func (c *identityAwareProxyAdminRESTClient) CreateTunnelDestGroup(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/destGroups", req.GetParent())
 
 	params := url.Values{}
@@ -1249,9 +1353,6 @@ func (c *identityAwareProxyAdminRESTClient) CreateTunnelDestGroup(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/CreateTunnelDestGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/iap_tunnel/locations/*}/destGroups")
@@ -1293,6 +1394,11 @@ func (c *identityAwareProxyAdminRESTClient) GetTunnelDestGroup(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1306,9 +1412,6 @@ func (c *identityAwareProxyAdminRESTClient) GetTunnelDestGroup(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/GetTunnelDestGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/iap_tunnel/locations/*/destGroups/*}")
@@ -1350,6 +1453,11 @@ func (c *identityAwareProxyAdminRESTClient) DeleteTunnelDestGroup(ctx context.Co
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1363,9 +1471,6 @@ func (c *identityAwareProxyAdminRESTClient) DeleteTunnelDestGroup(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iap.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyAdminService/DeleteTunnelDestGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/iap_tunnel/locations/*/destGroups/*}")
@@ -1397,6 +1502,11 @@ func (c *identityAwareProxyAdminRESTClient) UpdateTunnelDestGroup(ctx context.Co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTunnelDestGroup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTunnelDestGroup().GetName())

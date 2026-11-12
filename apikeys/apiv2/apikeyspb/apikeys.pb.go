@@ -652,43 +652,43 @@ var File_google_api_apikeys_v2_apikeys_proto protoreflect.FileDescriptor
 
 const file_google_api_apikeys_v2_apikeys_proto_rawDesc = "" +
 	"\n" +
-	"#google/api/apikeys/v2/apikeys.proto\x12\x15google.api.apikeys.v2\x1a\x1cgoogle/api/annotations.proto\x1a%google/api/apikeys/v2/resources.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x98\x01\n" +
-	"\x10CreateKeyRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1aapikeys.googleapis.com/KeyR\x06parent\x121\n" +
-	"\x03key\x18\x02 \x01(\v2\x1a.google.api.apikeys.v2.KeyB\x03\xe0A\x02R\x03key\x12\x15\n" +
-	"\x06key_id\x18\x03 \x01(\tR\x05keyId\"\xbb\x01\n" +
-	"\x0fListKeysRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1aapikeys.googleapis.com/KeyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"#google/api/apikeys/v2/apikeys.proto\x12\x15google.api.apikeys.v2\x1a\x1cgoogle/api/annotations.proto\x1a%google/api/apikeys/v2/resources.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x9a\x01\n" +
+	"\x10CreateKeyRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1aapikeys.googleapis.com/KeyR\x06parent\x122\n" +
+	"\x03key\x18\x02 \x01(\v2\x1a.google.api.apikeys.v2.KeyB\x04\xe2A\x01\x02R\x03key\x12\x15\n" +
+	"\x06key_id\x18\x03 \x01(\tR\x05keyId\"\xbf\x01\n" +
+	"\x0fListKeysRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1aapikeys.googleapis.com/KeyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12&\n" +
-	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"j\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12'\n" +
+	"\fshow_deleted\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\"j\n" +
 	"\x10ListKeysResponse\x12.\n" +
 	"\x04keys\x18\x01 \x03(\v2\x1a.google.api.apikeys.v2.KeyR\x04keys\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"G\n" +
-	"\rGetKeyRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aapikeys.googleapis.com/KeyR\x04name\"M\n" +
-	"\x13GetKeyStringRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"H\n" +
+	"\rGetKeyRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aapikeys.googleapis.com/KeyR\x04name\"N\n" +
+	"\x13GetKeyStringRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
 	"\x1aapikeys.googleapis.com/KeyR\x04name\"5\n" +
 	"\x14GetKeyStringResponse\x12\x1d\n" +
 	"\n" +
-	"key_string\x18\x01 \x01(\tR\tkeyString\"\x82\x01\n" +
-	"\x10UpdateKeyRequest\x121\n" +
-	"\x03key\x18\x01 \x01(\v2\x1a.google.api.apikeys.v2.KeyB\x03\xe0A\x02R\x03key\x12;\n" +
+	"key_string\x18\x01 \x01(\tR\tkeyString\"\x83\x01\n" +
+	"\x10UpdateKeyRequest\x122\n" +
+	"\x03key\x18\x01 \x01(\v2\x1a.google.api.apikeys.v2.KeyB\x04\xe2A\x01\x02R\x03key\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"c\n" +
-	"\x10DeleteKeyRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aapikeys.googleapis.com/KeyR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"L\n" +
-	"\x12UndeleteKeyRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aapikeys.googleapis.com/KeyR\x04name\"6\n" +
-	"\x10LookupKeyRequest\x12\"\n" +
+	"updateMask\"e\n" +
+	"\x10DeleteKeyRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aapikeys.googleapis.com/KeyR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"M\n" +
+	"\x12UndeleteKeyRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aapikeys.googleapis.com/KeyR\x04name\"7\n" +
+	"\x10LookupKeyRequest\x12#\n" +
 	"\n" +
-	"key_string\x18\x01 \x01(\tB\x03\xe0A\x02R\tkeyString\"?\n" +
+	"key_string\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tkeyString\"?\n" +
 	"\x11LookupKeyResponse\x12\x16\n" +
 	"\x06parent\x18\x01 \x01(\tR\x06parent\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name2\xbe\v\n" +

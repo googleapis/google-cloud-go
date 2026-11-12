@@ -1374,7 +1374,7 @@ var File_google_cloud_channel_v1_offers_proto protoreflect.FileDescriptor
 
 const file_google_cloud_channel_v1_offers_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/channel/v1/offers.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/channel/v1/common.proto\x1a&google/cloud/channel/v1/products.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/money.proto\"\xaf\x05\n" +
+	"$google/cloud/channel/v1/offers.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/channel/v1/common.proto\x1a&google/cloud/channel/v1/products.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/money.proto\"\xb0\x05\n" +
 	"\x05Offer\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12M\n" +
 	"\x0emarketing_info\x18\x02 \x01(\v2&.google.cloud.channel.v1.MarketingInfoR\rmarketingInfo\x12.\n" +
@@ -1383,8 +1383,8 @@ const file_google_cloud_channel_v1_offers_proto_rawDesc = "" +
 	"\vconstraints\x18\x05 \x01(\v2$.google.cloud.channel.v1.ConstraintsR\vconstraints\x12V\n" +
 	"\x12price_by_resources\x18\x06 \x03(\v2(.google.cloud.channel.v1.PriceByResourceR\x10priceByResources\x129\n" +
 	"\n" +
-	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12:\n" +
-	"\bend_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12a\n" +
+	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12;\n" +
+	"\bend_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12a\n" +
 	"\x15parameter_definitions\x18\t \x03(\v2,.google.cloud.channel.v1.ParameterDefinitionR\x14parameterDefinitions\x12\x1b\n" +
 	"\tdeal_code\x18\f \x01(\tR\bdealCode:I\xeaAF\n" +
 	"!cloudchannel.googleapis.com/Offer\x12!accounts/{account}/offers/{offer}\"\xca\x03\n" +

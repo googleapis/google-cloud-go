@@ -1429,6 +1429,109 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.ListIntelligenceFindingRevisions = append(client.CallOptions.ListIntelligenceFindingRevisions, gax.WithClientMetrics(metrics))
 		client.CallOptions.ViewObjectFullContext = append(client.CallOptions.ViewObjectFullContext, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "storage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storage/control/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "storage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFolders = append(client.CallOptions.ListFolders, gax.WithClientTracing(tracing))
+		client.CallOptions.RenameFolder = append(client.CallOptions.RenameFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFolderRecursive = append(client.CallOptions.DeleteFolderRecursive, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStorageLayout = append(client.CallOptions.GetStorageLayout, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateManagedFolder = append(client.CallOptions.CreateManagedFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteManagedFolder = append(client.CallOptions.DeleteManagedFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.GetManagedFolder = append(client.CallOptions.GetManagedFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.ListManagedFolders = append(client.CallOptions.ListManagedFolders, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateManagedFolder = append(client.CallOptions.UpdateManagedFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAnywhereCache = append(client.CallOptions.CreateAnywhereCache, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAnywhereCache = append(client.CallOptions.UpdateAnywhereCache, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableAnywhereCache = append(client.CallOptions.DisableAnywhereCache, gax.WithClientTracing(tracing))
+		client.CallOptions.PauseAnywhereCache = append(client.CallOptions.PauseAnywhereCache, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumeAnywhereCache = append(client.CallOptions.ResumeAnywhereCache, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAnywhereCache = append(client.CallOptions.GetAnywhereCache, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAnywhereCaches = append(client.CallOptions.ListAnywhereCaches, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRapidCache = append(client.CallOptions.CreateRapidCache, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRapidCache = append(client.CallOptions.UpdateRapidCache, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableRapidCache = append(client.CallOptions.DisableRapidCache, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRapidCache = append(client.CallOptions.GetRapidCache, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRapidCaches = append(client.CallOptions.ListRapidCaches, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProjectIntelligenceConfig = append(client.CallOptions.GetProjectIntelligenceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProjectIntelligenceConfig = append(client.CallOptions.UpdateProjectIntelligenceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFolderIntelligenceConfig = append(client.CallOptions.GetFolderIntelligenceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFolderIntelligenceConfig = append(client.CallOptions.UpdateFolderIntelligenceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOrganizationIntelligenceConfig = append(client.CallOptions.GetOrganizationIntelligenceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateOrganizationIntelligenceConfig = append(client.CallOptions.UpdateOrganizationIntelligenceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIntelligenceFinding = append(client.CallOptions.GetIntelligenceFinding, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIntelligenceFindings = append(client.CallOptions.ListIntelligenceFindings, gax.WithClientTracing(tracing))
+		client.CallOptions.SummarizeIntelligenceFindings = append(client.CallOptions.SummarizeIntelligenceFindings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIntelligenceFindingRevision = append(client.CallOptions.GetIntelligenceFindingRevision, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIntelligenceFindingRevisions = append(client.CallOptions.ListIntelligenceFindingRevisions, gax.WithClientTracing(tracing))
+		client.CallOptions.ViewObjectFullContext = append(client.CallOptions.ViewObjectFullContext, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "storage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storage/control/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "storage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientLogging(logging))
+		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientLogging(logging))
+		client.CallOptions.ListFolders = append(client.CallOptions.ListFolders, gax.WithClientLogging(logging))
+		client.CallOptions.RenameFolder = append(client.CallOptions.RenameFolder, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFolderRecursive = append(client.CallOptions.DeleteFolderRecursive, gax.WithClientLogging(logging))
+		client.CallOptions.GetStorageLayout = append(client.CallOptions.GetStorageLayout, gax.WithClientLogging(logging))
+		client.CallOptions.CreateManagedFolder = append(client.CallOptions.CreateManagedFolder, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteManagedFolder = append(client.CallOptions.DeleteManagedFolder, gax.WithClientLogging(logging))
+		client.CallOptions.GetManagedFolder = append(client.CallOptions.GetManagedFolder, gax.WithClientLogging(logging))
+		client.CallOptions.ListManagedFolders = append(client.CallOptions.ListManagedFolders, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateManagedFolder = append(client.CallOptions.UpdateManagedFolder, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAnywhereCache = append(client.CallOptions.CreateAnywhereCache, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAnywhereCache = append(client.CallOptions.UpdateAnywhereCache, gax.WithClientLogging(logging))
+		client.CallOptions.DisableAnywhereCache = append(client.CallOptions.DisableAnywhereCache, gax.WithClientLogging(logging))
+		client.CallOptions.PauseAnywhereCache = append(client.CallOptions.PauseAnywhereCache, gax.WithClientLogging(logging))
+		client.CallOptions.ResumeAnywhereCache = append(client.CallOptions.ResumeAnywhereCache, gax.WithClientLogging(logging))
+		client.CallOptions.GetAnywhereCache = append(client.CallOptions.GetAnywhereCache, gax.WithClientLogging(logging))
+		client.CallOptions.ListAnywhereCaches = append(client.CallOptions.ListAnywhereCaches, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRapidCache = append(client.CallOptions.CreateRapidCache, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRapidCache = append(client.CallOptions.UpdateRapidCache, gax.WithClientLogging(logging))
+		client.CallOptions.DisableRapidCache = append(client.CallOptions.DisableRapidCache, gax.WithClientLogging(logging))
+		client.CallOptions.GetRapidCache = append(client.CallOptions.GetRapidCache, gax.WithClientLogging(logging))
+		client.CallOptions.ListRapidCaches = append(client.CallOptions.ListRapidCaches, gax.WithClientLogging(logging))
+		client.CallOptions.GetProjectIntelligenceConfig = append(client.CallOptions.GetProjectIntelligenceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProjectIntelligenceConfig = append(client.CallOptions.UpdateProjectIntelligenceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetFolderIntelligenceConfig = append(client.CallOptions.GetFolderIntelligenceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFolderIntelligenceConfig = append(client.CallOptions.UpdateFolderIntelligenceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetOrganizationIntelligenceConfig = append(client.CallOptions.GetOrganizationIntelligenceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateOrganizationIntelligenceConfig = append(client.CallOptions.UpdateOrganizationIntelligenceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.GetIntelligenceFinding = append(client.CallOptions.GetIntelligenceFinding, gax.WithClientLogging(logging))
+		client.CallOptions.ListIntelligenceFindings = append(client.CallOptions.ListIntelligenceFindings, gax.WithClientLogging(logging))
+		client.CallOptions.SummarizeIntelligenceFindings = append(client.CallOptions.SummarizeIntelligenceFindings, gax.WithClientLogging(logging))
+		client.CallOptions.GetIntelligenceFindingRevision = append(client.CallOptions.GetIntelligenceFindingRevision, gax.WithClientLogging(logging))
+		client.CallOptions.ListIntelligenceFindingRevisions = append(client.CallOptions.ListIntelligenceFindingRevisions, gax.WithClientLogging(logging))
+		client.CallOptions.ViewObjectFullContext = append(client.CallOptions.ViewObjectFullContext, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1574,6 +1677,109 @@ func NewStorageControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.ListIntelligenceFindingRevisions = append(callOpts.ListIntelligenceFindingRevisions, gax.WithClientMetrics(metrics))
 		callOpts.ViewObjectFullContext = append(callOpts.ViewObjectFullContext, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "storage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storage/control/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "storage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientTracing(tracing))
+		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientTracing(tracing))
+		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientTracing(tracing))
+		callOpts.ListFolders = append(callOpts.ListFolders, gax.WithClientTracing(tracing))
+		callOpts.RenameFolder = append(callOpts.RenameFolder, gax.WithClientTracing(tracing))
+		callOpts.DeleteFolderRecursive = append(callOpts.DeleteFolderRecursive, gax.WithClientTracing(tracing))
+		callOpts.GetStorageLayout = append(callOpts.GetStorageLayout, gax.WithClientTracing(tracing))
+		callOpts.CreateManagedFolder = append(callOpts.CreateManagedFolder, gax.WithClientTracing(tracing))
+		callOpts.DeleteManagedFolder = append(callOpts.DeleteManagedFolder, gax.WithClientTracing(tracing))
+		callOpts.GetManagedFolder = append(callOpts.GetManagedFolder, gax.WithClientTracing(tracing))
+		callOpts.ListManagedFolders = append(callOpts.ListManagedFolders, gax.WithClientTracing(tracing))
+		callOpts.UpdateManagedFolder = append(callOpts.UpdateManagedFolder, gax.WithClientTracing(tracing))
+		callOpts.CreateAnywhereCache = append(callOpts.CreateAnywhereCache, gax.WithClientTracing(tracing))
+		callOpts.UpdateAnywhereCache = append(callOpts.UpdateAnywhereCache, gax.WithClientTracing(tracing))
+		callOpts.DisableAnywhereCache = append(callOpts.DisableAnywhereCache, gax.WithClientTracing(tracing))
+		callOpts.PauseAnywhereCache = append(callOpts.PauseAnywhereCache, gax.WithClientTracing(tracing))
+		callOpts.ResumeAnywhereCache = append(callOpts.ResumeAnywhereCache, gax.WithClientTracing(tracing))
+		callOpts.GetAnywhereCache = append(callOpts.GetAnywhereCache, gax.WithClientTracing(tracing))
+		callOpts.ListAnywhereCaches = append(callOpts.ListAnywhereCaches, gax.WithClientTracing(tracing))
+		callOpts.CreateRapidCache = append(callOpts.CreateRapidCache, gax.WithClientTracing(tracing))
+		callOpts.UpdateRapidCache = append(callOpts.UpdateRapidCache, gax.WithClientTracing(tracing))
+		callOpts.DisableRapidCache = append(callOpts.DisableRapidCache, gax.WithClientTracing(tracing))
+		callOpts.GetRapidCache = append(callOpts.GetRapidCache, gax.WithClientTracing(tracing))
+		callOpts.ListRapidCaches = append(callOpts.ListRapidCaches, gax.WithClientTracing(tracing))
+		callOpts.GetProjectIntelligenceConfig = append(callOpts.GetProjectIntelligenceConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateProjectIntelligenceConfig = append(callOpts.UpdateProjectIntelligenceConfig, gax.WithClientTracing(tracing))
+		callOpts.GetFolderIntelligenceConfig = append(callOpts.GetFolderIntelligenceConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateFolderIntelligenceConfig = append(callOpts.UpdateFolderIntelligenceConfig, gax.WithClientTracing(tracing))
+		callOpts.GetOrganizationIntelligenceConfig = append(callOpts.GetOrganizationIntelligenceConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateOrganizationIntelligenceConfig = append(callOpts.UpdateOrganizationIntelligenceConfig, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.GetIntelligenceFinding = append(callOpts.GetIntelligenceFinding, gax.WithClientTracing(tracing))
+		callOpts.ListIntelligenceFindings = append(callOpts.ListIntelligenceFindings, gax.WithClientTracing(tracing))
+		callOpts.SummarizeIntelligenceFindings = append(callOpts.SummarizeIntelligenceFindings, gax.WithClientTracing(tracing))
+		callOpts.GetIntelligenceFindingRevision = append(callOpts.GetIntelligenceFindingRevision, gax.WithClientTracing(tracing))
+		callOpts.ListIntelligenceFindingRevisions = append(callOpts.ListIntelligenceFindingRevisions, gax.WithClientTracing(tracing))
+		callOpts.ViewObjectFullContext = append(callOpts.ViewObjectFullContext, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "storage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storage/control/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "storage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientLogging(logging))
+		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientLogging(logging))
+		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientLogging(logging))
+		callOpts.ListFolders = append(callOpts.ListFolders, gax.WithClientLogging(logging))
+		callOpts.RenameFolder = append(callOpts.RenameFolder, gax.WithClientLogging(logging))
+		callOpts.DeleteFolderRecursive = append(callOpts.DeleteFolderRecursive, gax.WithClientLogging(logging))
+		callOpts.GetStorageLayout = append(callOpts.GetStorageLayout, gax.WithClientLogging(logging))
+		callOpts.CreateManagedFolder = append(callOpts.CreateManagedFolder, gax.WithClientLogging(logging))
+		callOpts.DeleteManagedFolder = append(callOpts.DeleteManagedFolder, gax.WithClientLogging(logging))
+		callOpts.GetManagedFolder = append(callOpts.GetManagedFolder, gax.WithClientLogging(logging))
+		callOpts.ListManagedFolders = append(callOpts.ListManagedFolders, gax.WithClientLogging(logging))
+		callOpts.UpdateManagedFolder = append(callOpts.UpdateManagedFolder, gax.WithClientLogging(logging))
+		callOpts.CreateAnywhereCache = append(callOpts.CreateAnywhereCache, gax.WithClientLogging(logging))
+		callOpts.UpdateAnywhereCache = append(callOpts.UpdateAnywhereCache, gax.WithClientLogging(logging))
+		callOpts.DisableAnywhereCache = append(callOpts.DisableAnywhereCache, gax.WithClientLogging(logging))
+		callOpts.PauseAnywhereCache = append(callOpts.PauseAnywhereCache, gax.WithClientLogging(logging))
+		callOpts.ResumeAnywhereCache = append(callOpts.ResumeAnywhereCache, gax.WithClientLogging(logging))
+		callOpts.GetAnywhereCache = append(callOpts.GetAnywhereCache, gax.WithClientLogging(logging))
+		callOpts.ListAnywhereCaches = append(callOpts.ListAnywhereCaches, gax.WithClientLogging(logging))
+		callOpts.CreateRapidCache = append(callOpts.CreateRapidCache, gax.WithClientLogging(logging))
+		callOpts.UpdateRapidCache = append(callOpts.UpdateRapidCache, gax.WithClientLogging(logging))
+		callOpts.DisableRapidCache = append(callOpts.DisableRapidCache, gax.WithClientLogging(logging))
+		callOpts.GetRapidCache = append(callOpts.GetRapidCache, gax.WithClientLogging(logging))
+		callOpts.ListRapidCaches = append(callOpts.ListRapidCaches, gax.WithClientLogging(logging))
+		callOpts.GetProjectIntelligenceConfig = append(callOpts.GetProjectIntelligenceConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateProjectIntelligenceConfig = append(callOpts.UpdateProjectIntelligenceConfig, gax.WithClientLogging(logging))
+		callOpts.GetFolderIntelligenceConfig = append(callOpts.GetFolderIntelligenceConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateFolderIntelligenceConfig = append(callOpts.UpdateFolderIntelligenceConfig, gax.WithClientLogging(logging))
+		callOpts.GetOrganizationIntelligenceConfig = append(callOpts.GetOrganizationIntelligenceConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateOrganizationIntelligenceConfig = append(callOpts.UpdateOrganizationIntelligenceConfig, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.GetIntelligenceFinding = append(callOpts.GetIntelligenceFinding, gax.WithClientLogging(logging))
+		callOpts.ListIntelligenceFindings = append(callOpts.ListIntelligenceFindings, gax.WithClientLogging(logging))
+		callOpts.SummarizeIntelligenceFindings = append(callOpts.SummarizeIntelligenceFindings, gax.WithClientLogging(logging))
+		callOpts.GetIntelligenceFindingRevision = append(callOpts.GetIntelligenceFindingRevision, gax.WithClientLogging(logging))
+		callOpts.ListIntelligenceFindingRevisions = append(callOpts.ListIntelligenceFindingRevisions, gax.WithClientLogging(logging))
+		callOpts.ViewObjectFullContext = append(callOpts.ViewObjectFullContext, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1639,9 +1845,6 @@ func (c *storageControlGRPCClient) CreateFolder(ctx context.Context, req *contro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateFolder")
 	}
@@ -1675,9 +1878,6 @@ func (c *storageControlGRPCClient) DeleteFolder(ctx context.Context, req *contro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DeleteFolder")
 	}
@@ -1707,9 +1907,6 @@ func (c *storageControlGRPCClient) GetFolder(ctx context.Context, req *controlpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetFolder")
 	}
@@ -1743,9 +1940,6 @@ func (c *storageControlGRPCClient) ListFolders(ctx context.Context, req *control
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ListFolders")
 	}
@@ -1804,9 +1998,6 @@ func (c *storageControlGRPCClient) RenameFolder(ctx context.Context, req *contro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/RenameFolder")
 	}
@@ -1846,9 +2037,6 @@ func (c *storageControlGRPCClient) DeleteFolderRecursive(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DeleteFolderRecursive")
 	}
@@ -1888,9 +2076,6 @@ func (c *storageControlGRPCClient) GetStorageLayout(ctx context.Context, req *co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetStorageLayout")
 	}
@@ -1924,9 +2109,6 @@ func (c *storageControlGRPCClient) CreateManagedFolder(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateManagedFolder")
 	}
@@ -1960,9 +2142,6 @@ func (c *storageControlGRPCClient) DeleteManagedFolder(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DeleteManagedFolder")
 	}
@@ -1992,9 +2171,6 @@ func (c *storageControlGRPCClient) GetManagedFolder(ctx context.Context, req *co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetManagedFolder")
 	}
@@ -2028,9 +2204,6 @@ func (c *storageControlGRPCClient) ListManagedFolders(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ListManagedFolders")
 	}
@@ -2092,6 +2265,9 @@ func (c *storageControlGRPCClient) UpdateManagedFolder(ctx context.Context, req 
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateManagedFolder")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).UpdateManagedFolder[0:len((*c.CallOptions).UpdateManagedFolder):len((*c.CallOptions).UpdateManagedFolder)], opts...)
 	var resp *controlpb.ManagedFolder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2119,9 +2295,6 @@ func (c *storageControlGRPCClient) CreateAnywhereCache(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateAnywhereCache")
 	}
@@ -2200,9 +2373,6 @@ func (c *storageControlGRPCClient) DisableAnywhereCache(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DisableAnywhereCache")
 	}
@@ -2236,9 +2406,6 @@ func (c *storageControlGRPCClient) PauseAnywhereCache(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/PauseAnywhereCache")
 	}
@@ -2272,9 +2439,6 @@ func (c *storageControlGRPCClient) ResumeAnywhereCache(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ResumeAnywhereCache")
 	}
@@ -2308,9 +2472,6 @@ func (c *storageControlGRPCClient) GetAnywhereCache(ctx context.Context, req *co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetAnywhereCache")
 	}
@@ -2344,9 +2505,6 @@ func (c *storageControlGRPCClient) ListAnywhereCaches(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ListAnywhereCaches")
 	}
@@ -2405,11 +2563,11 @@ func (c *storageControlGRPCClient) CreateRapidCache(ctx context.Context, req *co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateRapidCache")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).CreateRapidCache[0:len((*c.CallOptions).CreateRapidCache):len((*c.CallOptions).CreateRapidCache)], opts...)
 	var resp *longrunningpb.Operation
@@ -2447,6 +2605,9 @@ func (c *storageControlGRPCClient) UpdateRapidCache(ctx context.Context, req *co
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateRapidCache")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).UpdateRapidCache[0:len((*c.CallOptions).UpdateRapidCache):len((*c.CallOptions).UpdateRapidCache)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2480,11 +2641,11 @@ func (c *storageControlGRPCClient) DisableRapidCache(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DisableRapidCache")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).DisableRapidCache[0:len((*c.CallOptions).DisableRapidCache):len((*c.CallOptions).DisableRapidCache)], opts...)
 	var resp *longrunningpb.Operation
@@ -2519,11 +2680,11 @@ func (c *storageControlGRPCClient) GetRapidCache(ctx context.Context, req *contr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetRapidCache")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).GetRapidCache[0:len((*c.CallOptions).GetRapidCache):len((*c.CallOptions).GetRapidCache)], opts...)
 	var resp *controlpb.RapidCache
@@ -2552,9 +2713,6 @@ func (c *storageControlGRPCClient) ListRapidCaches(ctx context.Context, req *con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ListRapidCaches")
 	}
@@ -2604,9 +2762,6 @@ func (c *storageControlGRPCClient) GetProjectIntelligenceConfig(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetProjectIntelligenceConfig")
 	}
@@ -2631,6 +2786,9 @@ func (c *storageControlGRPCClient) UpdateProjectIntelligenceConfig(ctx context.C
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateProjectIntelligenceConfig")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).UpdateProjectIntelligenceConfig[0:len((*c.CallOptions).UpdateProjectIntelligenceConfig):len((*c.CallOptions).UpdateProjectIntelligenceConfig)], opts...)
 	var resp *controlpb.IntelligenceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2649,9 +2807,6 @@ func (c *storageControlGRPCClient) GetFolderIntelligenceConfig(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetFolderIntelligenceConfig")
 	}
@@ -2676,6 +2831,9 @@ func (c *storageControlGRPCClient) UpdateFolderIntelligenceConfig(ctx context.Co
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateFolderIntelligenceConfig")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).UpdateFolderIntelligenceConfig[0:len((*c.CallOptions).UpdateFolderIntelligenceConfig):len((*c.CallOptions).UpdateFolderIntelligenceConfig)], opts...)
 	var resp *controlpb.IntelligenceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2694,9 +2852,6 @@ func (c *storageControlGRPCClient) GetOrganizationIntelligenceConfig(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetOrganizationIntelligenceConfig")
 	}
@@ -2720,6 +2875,9 @@ func (c *storageControlGRPCClient) UpdateOrganizationIntelligenceConfig(ctx cont
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateOrganizationIntelligenceConfig")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).UpdateOrganizationIntelligenceConfig[0:len((*c.CallOptions).UpdateOrganizationIntelligenceConfig):len((*c.CallOptions).UpdateOrganizationIntelligenceConfig)], opts...)
 	var resp *controlpb.IntelligenceConfig
@@ -2751,9 +2909,6 @@ func (c *storageControlGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIamPolicy")
 	}
@@ -2787,9 +2942,6 @@ func (c *storageControlGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/SetIamPolicy")
 	}
@@ -2826,9 +2978,6 @@ func (c *storageControlGRPCClient) TestIamPermissions(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/TestIamPermissions")
 	}
@@ -2850,9 +2999,6 @@ func (c *storageControlGRPCClient) GetIntelligenceFinding(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIntelligenceFinding")
 	}
@@ -2874,9 +3020,6 @@ func (c *storageControlGRPCClient) ListIntelligenceFindings(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ListIntelligenceFindings")
 	}
@@ -2975,9 +3118,6 @@ func (c *storageControlGRPCClient) GetIntelligenceFindingRevision(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIntelligenceFindingRevision")
 	}
@@ -2999,9 +3139,6 @@ func (c *storageControlGRPCClient) ListIntelligenceFindingRevisions(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ListIntelligenceFindingRevisions")
 	}
@@ -3060,9 +3197,6 @@ func (c *storageControlGRPCClient) ViewObjectFullContext(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ViewObjectFullContext")
 	}
@@ -3096,6 +3230,11 @@ func (c *storageControlRESTClient) CreateFolder(ctx context.Context, req *contro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/folders", req.GetParent())
 
 	params := url.Values{}
@@ -3125,9 +3264,6 @@ func (c *storageControlRESTClient) CreateFolder(ctx context.Context, req *contro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateFolder")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/buckets/*}/folders")
@@ -3173,6 +3309,11 @@ func (c *storageControlRESTClient) DeleteFolder(ctx context.Context, req *contro
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3204,9 +3345,6 @@ func (c *storageControlRESTClient) DeleteFolder(ctx context.Context, req *contro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DeleteFolder")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/folders/**}")
@@ -3235,6 +3373,11 @@ func (c *storageControlRESTClient) GetFolder(ctx context.Context, req *controlpb
 	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -3268,9 +3411,6 @@ func (c *storageControlRESTClient) GetFolder(ctx context.Context, req *controlpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetFolder")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/folders/**}")
@@ -3324,6 +3464,11 @@ func (c *storageControlRESTClient) ListFolders(ctx context.Context, req *control
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/folders", req.GetParent())
@@ -3418,6 +3563,11 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
 
 	params := url.Values{}
@@ -3440,9 +3590,6 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/RenameFolder")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/folders/**}:rename")
@@ -3501,6 +3648,11 @@ func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:deleteRecursive", req.GetName())
 
 	params := url.Values{}
@@ -3523,9 +3675,6 @@ func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DeleteFolderRecursive")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/folders/**}:deleteRecursive")
@@ -3577,6 +3726,11 @@ func (c *storageControlRESTClient) GetStorageLayout(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3605,9 +3759,6 @@ func (c *storageControlRESTClient) GetStorageLayout(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetStorageLayout")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/storageLayout}")
@@ -3699,9 +3850,6 @@ func (c *storageControlRESTClient) CreateManagedFolder(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateManagedFolder")
 	}
@@ -3780,9 +3928,6 @@ func (c *storageControlRESTClient) DeleteManagedFolder(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DeleteManagedFolder")
 	}
@@ -3843,9 +3988,6 @@ func (c *storageControlRESTClient) GetManagedFolder(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetManagedFolder")
 	}
@@ -3968,6 +4110,9 @@ func (c *storageControlRESTClient) ListManagedFolders(ctx context.Context, req *
 // UpdateManagedFolder updates a managed folder. Currently, this RPC only supports updating the
 // rapid_cache_config field.
 func (c *storageControlRESTClient) UpdateManagedFolder(ctx context.Context, req *controlpb.UpdateManagedFolderRequest, opts ...gax.CallOption) (*controlpb.ManagedFolder, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -4138,9 +4283,6 @@ func (c *storageControlRESTClient) CreateAnywhereCache(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateAnywhereCache")
 	}
@@ -4342,9 +4484,6 @@ func (c *storageControlRESTClient) DisableAnywhereCache(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DisableAnywhereCache")
 	}
@@ -4414,9 +4553,6 @@ func (c *storageControlRESTClient) PauseAnywhereCache(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/PauseAnywhereCache")
 	}
@@ -4486,9 +4622,6 @@ func (c *storageControlRESTClient) ResumeAnywhereCache(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ResumeAnywhereCache")
 	}
@@ -4558,9 +4691,6 @@ func (c *storageControlRESTClient) GetAnywhereCache(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetAnywhereCache")
 	}
@@ -4679,6 +4809,9 @@ func (c *storageControlRESTClient) ListAnywhereCaches(ctx context.Context, req *
 
 // CreateRapidCache creates a Rapid Cache instance.
 func (c *storageControlRESTClient) CreateRapidCache(ctx context.Context, req *controlpb.CreateRapidCacheRequest, opts ...gax.CallOption) (*CreateRapidCacheOperation, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -4748,9 +4881,6 @@ func (c *storageControlRESTClient) CreateRapidCache(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateRapidCache")
 	}
@@ -4794,6 +4924,9 @@ func (c *storageControlRESTClient) CreateRapidCache(ctx context.Context, req *co
 
 // UpdateRapidCache updates a Rapid Cache instance.
 func (c *storageControlRESTClient) UpdateRapidCache(ctx context.Context, req *controlpb.UpdateRapidCacheRequest, opts ...gax.CallOption) (*UpdateRapidCacheOperation, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -4912,6 +5045,9 @@ func (c *storageControlRESTClient) UpdateRapidCache(ctx context.Context, req *co
 
 // DisableRapidCache disables a Rapid Cache instance.
 func (c *storageControlRESTClient) DisableRapidCache(ctx context.Context, req *controlpb.DisableRapidCacheRequest, opts ...gax.CallOption) (*DisableRapidCacheOperation, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -4942,9 +5078,6 @@ func (c *storageControlRESTClient) DisableRapidCache(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DisableRapidCache")
 	}
@@ -4988,6 +5121,9 @@ func (c *storageControlRESTClient) DisableRapidCache(ctx context.Context, req *c
 
 // GetRapidCache gets a Rapid Cache instance.
 func (c *storageControlRESTClient) GetRapidCache(ctx context.Context, req *controlpb.GetRapidCacheRequest, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -5018,9 +5154,6 @@ func (c *storageControlRESTClient) GetRapidCache(ctx context.Context, req *contr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetRapidCache")
 	}
@@ -5143,6 +5276,11 @@ func (c *storageControlRESTClient) GetProjectIntelligenceConfig(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5156,9 +5294,6 @@ func (c *storageControlRESTClient) GetProjectIntelligenceConfig(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetProjectIntelligenceConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/intelligenceConfig}")
@@ -5196,6 +5331,9 @@ func (c *storageControlRESTClient) GetProjectIntelligenceConfig(ctx context.Cont
 
 // UpdateProjectIntelligenceConfig updates the Project scoped singleton IntelligenceConfig resource.
 func (c *storageControlRESTClient) UpdateProjectIntelligenceConfig(ctx context.Context, req *controlpb.UpdateProjectIntelligenceConfigRequest, opts ...gax.CallOption) (*controlpb.IntelligenceConfig, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetIntelligenceConfig()
 	jsonReq, err := m.Marshal(body)
@@ -5205,6 +5343,11 @@ func (c *storageControlRESTClient) UpdateProjectIntelligenceConfig(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntelligenceConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntelligenceConfig().GetName())
@@ -5271,6 +5414,11 @@ func (c *storageControlRESTClient) GetFolderIntelligenceConfig(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5284,9 +5432,6 @@ func (c *storageControlRESTClient) GetFolderIntelligenceConfig(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetFolderIntelligenceConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=folders/*/locations/*/intelligenceConfig}")
@@ -5324,6 +5469,9 @@ func (c *storageControlRESTClient) GetFolderIntelligenceConfig(ctx context.Conte
 
 // UpdateFolderIntelligenceConfig updates the Folder scoped singleton IntelligenceConfig resource.
 func (c *storageControlRESTClient) UpdateFolderIntelligenceConfig(ctx context.Context, req *controlpb.UpdateFolderIntelligenceConfigRequest, opts ...gax.CallOption) (*controlpb.IntelligenceConfig, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetIntelligenceConfig()
 	jsonReq, err := m.Marshal(body)
@@ -5333,6 +5481,11 @@ func (c *storageControlRESTClient) UpdateFolderIntelligenceConfig(ctx context.Co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntelligenceConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntelligenceConfig().GetName())
@@ -5399,6 +5552,11 @@ func (c *storageControlRESTClient) GetOrganizationIntelligenceConfig(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5412,9 +5570,6 @@ func (c *storageControlRESTClient) GetOrganizationIntelligenceConfig(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetOrganizationIntelligenceConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/locations/*/intelligenceConfig}")
@@ -5452,6 +5607,9 @@ func (c *storageControlRESTClient) GetOrganizationIntelligenceConfig(ctx context
 
 // UpdateOrganizationIntelligenceConfig updates the Organization scoped singleton IntelligenceConfig resource.
 func (c *storageControlRESTClient) UpdateOrganizationIntelligenceConfig(ctx context.Context, req *controlpb.UpdateOrganizationIntelligenceConfigRequest, opts ...gax.CallOption) (*controlpb.IntelligenceConfig, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetIntelligenceConfig()
 	jsonReq, err := m.Marshal(body)
@@ -5461,6 +5619,11 @@ func (c *storageControlRESTClient) UpdateOrganizationIntelligenceConfig(ctx cont
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntelligenceConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntelligenceConfig().GetName())
@@ -5560,9 +5723,6 @@ func (c *storageControlRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIamPolicy")
 	}
@@ -5646,9 +5806,6 @@ func (c *storageControlRESTClient) SetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/SetIamPolicy")
 	}
@@ -5729,9 +5886,6 @@ func (c *storageControlRESTClient) TestIamPermissions(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/TestIamPermissions")
 	}
@@ -5772,6 +5926,11 @@ func (c *storageControlRESTClient) GetIntelligenceFinding(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5785,9 +5944,6 @@ func (c *storageControlRESTClient) GetIntelligenceFinding(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIntelligenceFinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/intelligenceFindings/*}")
@@ -5840,6 +5996,11 @@ func (c *storageControlRESTClient) ListIntelligenceFindings(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/intelligenceFindings", req.GetParent())
@@ -5924,6 +6085,11 @@ func (c *storageControlRESTClient) SummarizeIntelligenceFindings(ctx context.Con
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/intelligenceFindings:summarize", req.GetParent())
 
 		params := url.Values{}
@@ -5995,6 +6161,11 @@ func (c *storageControlRESTClient) GetIntelligenceFindingRevision(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -6008,9 +6179,6 @@ func (c *storageControlRESTClient) GetIntelligenceFindingRevision(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIntelligenceFindingRevision")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/intelligenceFindings/*/revisions/*}")
@@ -6063,6 +6231,11 @@ func (c *storageControlRESTClient) ListIntelligenceFindingRevisions(ctx context.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/revisions", req.GetParent())
@@ -6138,6 +6311,11 @@ func (c *storageControlRESTClient) ViewObjectFullContext(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:viewFullContext", req.GetName())
 
 	params := url.Values{}
@@ -6164,9 +6342,6 @@ func (c *storageControlRESTClient) ViewObjectFullContext(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ViewObjectFullContext")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/objects/**}:viewFullContext")

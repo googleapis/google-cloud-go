@@ -1490,74 +1490,74 @@ var File_google_cloud_discoveryengine_v1beta_data_store_proto protoreflect.FileD
 
 const file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/discoveryengine/v1beta/data_store.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a=google/cloud/discoveryengine/v1beta/cmek_config_service.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1aDgoogle/cloud/discoveryengine/v1beta/document_processing_config.proto\x1a0google/cloud/discoveryengine/v1beta/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96&\n" +
-	"\tDataStore\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12g\n" +
-	"\x11industry_vertical\x18\x03 \x01(\x0e25.google.cloud.discoveryengine.v1beta.IndustryVerticalB\x03\xe0A\x05R\x10industryVertical\x12X\n" +
-	"\x0esolution_types\x18\x05 \x03(\x0e21.google.cloud.discoveryengine.v1beta.SolutionTypeR\rsolutionTypes\x12/\n" +
-	"\x11default_schema_id\x18\a \x01(\tB\x03\xe0A\x03R\x0fdefaultSchemaId\x12h\n" +
-	"\x0econtent_config\x18\x06 \x01(\x0e2<.google.cloud.discoveryengine.v1beta.DataStore.ContentConfigB\x03\xe0A\x05R\rcontentConfig\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x81\x01\n" +
-	"\x1badvanced_site_search_config\x18\f \x01(\v2=.google.cloud.discoveryengine.v1beta.AdvancedSiteSearchConfigB\x03\xe0A\x01R\x18advancedSiteSearchConfig\x12V\n" +
-	"\rlanguage_info\x18\x0e \x01(\v21.google.cloud.discoveryengine.v1beta.LanguageInfoR\flanguageInfo\x12\xaf\x01\n" +
-	"+natural_language_query_understanding_config\x18\" \x01(\v2L.google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfigB\x03\xe0A\x01R'naturalLanguageQueryUnderstandingConfig\x12%\n" +
-	"\fkms_key_name\x18  \x01(\tB\x03\xe0A\x04R\n" +
-	"kmsKeyName\x12U\n" +
-	"\vcmek_config\x18\x12 \x01(\v2/.google.cloud.discoveryengine.v1beta.CmekConfigB\x03\xe0A\x03R\n" +
-	"cmekConfig\x12t\n" +
-	"\x12billing_estimation\x18\x17 \x01(\v2@.google.cloud.discoveryengine.v1beta.DataStore.BillingEstimationB\x03\xe0A\x03R\x11billingEstimation\x12$\n" +
-	"\vacl_enabled\x18\x18 \x01(\bB\x03\xe0A\x05R\n" +
+	"4google/cloud/discoveryengine/v1beta/data_store.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a=google/cloud/discoveryengine/v1beta/cmek_config_service.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1aDgoogle/cloud/discoveryengine/v1beta/document_processing_config.proto\x1a0google/cloud/discoveryengine/v1beta/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb5&\n" +
+	"\tDataStore\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12h\n" +
+	"\x11industry_vertical\x18\x03 \x01(\x0e25.google.cloud.discoveryengine.v1beta.IndustryVerticalB\x04\xe2A\x01\x05R\x10industryVertical\x12X\n" +
+	"\x0esolution_types\x18\x05 \x03(\x0e21.google.cloud.discoveryengine.v1beta.SolutionTypeR\rsolutionTypes\x120\n" +
+	"\x11default_schema_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\x0fdefaultSchemaId\x12i\n" +
+	"\x0econtent_config\x18\x06 \x01(\x0e2<.google.cloud.discoveryengine.v1beta.DataStore.ContentConfigB\x04\xe2A\x01\x05R\rcontentConfig\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\x82\x01\n" +
+	"\x1badvanced_site_search_config\x18\f \x01(\v2=.google.cloud.discoveryengine.v1beta.AdvancedSiteSearchConfigB\x04\xe2A\x01\x01R\x18advancedSiteSearchConfig\x12V\n" +
+	"\rlanguage_info\x18\x0e \x01(\v21.google.cloud.discoveryengine.v1beta.LanguageInfoR\flanguageInfo\x12\xb0\x01\n" +
+	"+natural_language_query_understanding_config\x18\" \x01(\v2L.google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfigB\x04\xe2A\x01\x01R'naturalLanguageQueryUnderstandingConfig\x12&\n" +
+	"\fkms_key_name\x18  \x01(\tB\x04\xe2A\x01\x04R\n" +
+	"kmsKeyName\x12V\n" +
+	"\vcmek_config\x18\x12 \x01(\v2/.google.cloud.discoveryengine.v1beta.CmekConfigB\x04\xe2A\x01\x03R\n" +
+	"cmekConfig\x12u\n" +
+	"\x12billing_estimation\x18\x17 \x01(\v2@.google.cloud.discoveryengine.v1beta.DataStore.BillingEstimationB\x04\xe2A\x01\x03R\x11billingEstimation\x12%\n" +
+	"\vacl_enabled\x18\x18 \x01(\bB\x04\xe2A\x01\x05R\n" +
 	"aclEnabled\x12_\n" +
 	"\x10workspace_config\x18\x19 \x01(\v24.google.cloud.discoveryengine.v1beta.WorkspaceConfigR\x0fworkspaceConfig\x12{\n" +
 	"\x1adocument_processing_config\x18\x1b \x01(\v2=.google.cloud.discoveryengine.v1beta.DocumentProcessingConfigR\x18documentProcessingConfig\x12T\n" +
-	"\x0fstarting_schema\x18\x1c \x01(\v2+.google.cloud.discoveryengine.v1beta.SchemaR\x0estartingSchema\x12t\n" +
-	"\x16healthcare_fhir_config\x18\x1d \x01(\v29.google.cloud.discoveryengine.v1beta.HealthcareFhirConfigB\x03\xe0A\x01R\x14healthcareFhirConfig\x12\x85\x01\n" +
-	"\x19serving_config_data_store\x18\x1e \x01(\v2E.google.cloud.discoveryengine.v1beta.DataStore.ServingConfigDataStoreB\x03\xe0A\x01R\x16servingConfigDataStore\x12q\n" +
-	"\x16identity_mapping_store\x18\x1f \x01(\tB;\xe0A\x05\xfaA5\n" +
-	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x14identityMappingStore\x12=\n" +
-	"\x19is_infobot_faq_data_store\x18% \x01(\bB\x03\xe0A\x01R\x15isInfobotFaqDataStore\x12\x81\x01\n" +
-	"\x17federated_search_config\x18& \x01(\v2D.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfigB\x03\xe0A\x01R\x15federatedSearchConfig\x12\x93\x01\n" +
-	"\x1dconfigurable_billing_approach\x18- \x01(\x0e2J.google.cloud.discoveryengine.v1beta.DataStore.ConfigurableBillingApproachB\x03\xe0A\x01R\x1bconfigurableBillingApproach\x12y\n" +
-	")configurable_billing_approach_update_time\x18. \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R%configurableBillingApproachUpdateTime\x1a\xb6\x03\n" +
+	"\x0fstarting_schema\x18\x1c \x01(\v2+.google.cloud.discoveryengine.v1beta.SchemaR\x0estartingSchema\x12u\n" +
+	"\x16healthcare_fhir_config\x18\x1d \x01(\v29.google.cloud.discoveryengine.v1beta.HealthcareFhirConfigB\x04\xe2A\x01\x01R\x14healthcareFhirConfig\x12\x86\x01\n" +
+	"\x19serving_config_data_store\x18\x1e \x01(\v2E.google.cloud.discoveryengine.v1beta.DataStore.ServingConfigDataStoreB\x04\xe2A\x01\x01R\x16servingConfigDataStore\x12r\n" +
+	"\x16identity_mapping_store\x18\x1f \x01(\tB<\xe2A\x01\x05\xfaA5\n" +
+	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x14identityMappingStore\x12>\n" +
+	"\x19is_infobot_faq_data_store\x18% \x01(\bB\x04\xe2A\x01\x01R\x15isInfobotFaqDataStore\x12\x82\x01\n" +
+	"\x17federated_search_config\x18& \x01(\v2D.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfigB\x04\xe2A\x01\x01R\x15federatedSearchConfig\x12\x94\x01\n" +
+	"\x1dconfigurable_billing_approach\x18- \x01(\x0e2J.google.cloud.discoveryengine.v1beta.DataStore.ConfigurableBillingApproachB\x04\xe2A\x01\x01R\x1bconfigurableBillingApproach\x12z\n" +
+	")configurable_billing_approach_update_time\x18. \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R%configurableBillingApproachUpdateTime\x1a\xb6\x03\n" +
 	"\x11BillingEstimation\x120\n" +
 	"\x14structured_data_size\x18\x01 \x01(\x03R\x12structuredDataSize\x124\n" +
 	"\x16unstructured_data_size\x18\x02 \x01(\x03R\x14unstructuredDataSize\x12*\n" +
 	"\x11website_data_size\x18\x03 \x01(\x03R\x0fwebsiteDataSize\x12Y\n" +
 	"\x1bstructured_data_update_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x18structuredDataUpdateTime\x12]\n" +
 	"\x1dunstructured_data_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x1aunstructuredDataUpdateTime\x12S\n" +
-	"\x18website_data_update_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x15websiteDataUpdateTime\x1aO\n" +
-	"\x16ServingConfigDataStore\x125\n" +
-	"\x14disabled_for_serving\x18\x01 \x01(\bB\x03\xe0A\x01R\x12disabledForServing\x1a\x88\f\n" +
+	"\x18website_data_update_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x15websiteDataUpdateTime\x1aP\n" +
+	"\x16ServingConfigDataStore\x126\n" +
+	"\x14disabled_for_serving\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x12disabledForServing\x1a\x95\f\n" +
 	"\x15FederatedSearchConfig\x12|\n" +
 	"\x0falloy_db_config\x18\x01 \x01(\v2R.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfigH\x00R\ralloyDbConfig\x12\x95\x01\n" +
 	"\x18third_party_oauth_config\x18\x02 \x01(\v2Z.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.ThirdPartyOauthConfigH\x00R\x15thirdPartyOauthConfig\x12\x84\x01\n" +
-	"\x11notebooklm_config\x18\x03 \x01(\v2U.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.NotebooklmConfigH\x00R\x10notebooklmConfig\x1a\x9a\a\n" +
-	"\rAlloyDbConfig\x12\xab\x01\n" +
-	"\x19alloydb_connection_config\x18\x01 \x01(\v2j.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfigB\x03\xe0A\x02R\x17alloydbConnectionConfig\x12\xa7\x01\n" +
-	"\x14alloydb_ai_nl_config\x18\x02 \x01(\v2q.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbAiNaturalLanguageConfigB\x03\xe0A\x01R\x11alloydbAiNlConfig\x12,\n" +
-	"\x0freturned_fields\x18\x03 \x03(\tB\x03\xe0A\x01R\x0ereturnedFields\x1a\xb9\x03\n" +
-	"\x17AlloyDbConnectionConfig\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1f\n" +
-	"\bdatabase\x18\x02 \x01(\tB\x03\xe0A\x02R\bdatabase\x12\x17\n" +
-	"\x04user\x18\x03 \x01(\tB\x03\xe0A\x02R\x04user\x12\x1f\n" +
-	"\bpassword\x18\x04 \x01(\tB\x03\xe0A\x02R\bpassword\x12\x95\x01\n" +
-	"\tauth_mode\x18\x05 \x01(\x0e2s.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfig.AuthModeB\x03\xe0A\x01R\bauthMode\x12$\n" +
-	"\venable_psvs\x18\x06 \x01(\bB\x03\xe0A\x01R\n" +
+	"\x11notebooklm_config\x18\x03 \x01(\v2U.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.NotebooklmConfigH\x00R\x10notebooklmConfig\x1a\xa4\a\n" +
+	"\rAlloyDbConfig\x12\xac\x01\n" +
+	"\x19alloydb_connection_config\x18\x01 \x01(\v2j.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfigB\x04\xe2A\x01\x02R\x17alloydbConnectionConfig\x12\xa8\x01\n" +
+	"\x14alloydb_ai_nl_config\x18\x02 \x01(\v2q.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbAiNaturalLanguageConfigB\x04\xe2A\x01\x01R\x11alloydbAiNlConfig\x12-\n" +
+	"\x0freturned_fields\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x0ereturnedFields\x1a\xbf\x03\n" +
+	"\x17AlloyDbConnectionConfig\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12 \n" +
+	"\bdatabase\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bdatabase\x12\x18\n" +
+	"\x04user\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04user\x12 \n" +
+	"\bpassword\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\bpassword\x12\x96\x01\n" +
+	"\tauth_mode\x18\x05 \x01(\x0e2s.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfig.AuthModeB\x04\xe2A\x01\x01R\bauthMode\x12%\n" +
+	"\venable_psvs\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\n" +
 	"enablePsvs\"d\n" +
 	"\bAuthMode\x12\x19\n" +
 	"\x15AUTH_MODE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19AUTH_MODE_SERVICE_ACCOUNT\x10\x01\x12\x1e\n" +
-	"\x1aAUTH_MODE_END_USER_ACCOUNT\x10\x02\x1aG\n" +
-	"\x1eAlloyDbAiNaturalLanguageConfig\x12%\n" +
-	"\fnl_config_id\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"nlConfigId\x1aa\n" +
-	"\x15ThirdPartyOauthConfig\x12\x1e\n" +
-	"\bapp_name\x18\x01 \x01(\tB\x03\xe0A\x01R\aappName\x12(\n" +
-	"\rinstance_name\x18\x02 \x01(\tB\x03\xe0A\x01R\finstanceName\x1a<\n" +
-	"\x10NotebooklmConfig\x12(\n" +
-	"\rsearch_config\x18\x01 \x01(\tB\x03\xe0A\x02R\fsearchConfigB\x14\n" +
+	"\x1aAUTH_MODE_END_USER_ACCOUNT\x10\x02\x1aH\n" +
+	"\x1eAlloyDbAiNaturalLanguageConfig\x12&\n" +
+	"\fnl_config_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"nlConfigId\x1ac\n" +
+	"\x15ThirdPartyOauthConfig\x12\x1f\n" +
+	"\bapp_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\aappName\x12)\n" +
+	"\rinstance_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\finstanceName\x1a=\n" +
+	"\x10NotebooklmConfig\x12)\n" +
+	"\rsearch_config\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fsearchConfigB\x14\n" +
 	"\x12data_source_config\"\x7f\n" +
 	"\rContentConfig\x12\x1e\n" +
 	"\x1aCONTENT_CONFIG_UNSPECIFIED\x10\x00\x12\x0e\n" +
@@ -1575,23 +1575,23 @@ const file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDesc = "" +
 	"\x15disable_initial_index\x18\x03 \x01(\bH\x00R\x13disableInitialIndex\x88\x01\x01\x12?\n" +
 	"\x19disable_automatic_refresh\x18\x04 \x01(\bH\x01R\x17disableAutomaticRefresh\x88\x01\x01B\x18\n" +
 	"\x16_disable_initial_indexB\x1c\n" +
-	"\x1a_disable_automatic_refresh\"\xb0\x01\n" +
+	"\x1a_disable_automatic_refresh\"\xb3\x01\n" +
 	"\fLanguageInfo\x12#\n" +
-	"\rlanguage_code\x18\x01 \x01(\tR\flanguageCode\x12=\n" +
-	"\x18normalized_language_code\x18\x02 \x01(\tB\x03\xe0A\x03R\x16normalizedLanguageCode\x12\x1f\n" +
-	"\blanguage\x18\x03 \x01(\tB\x03\xe0A\x03R\blanguage\x12\x1b\n" +
-	"\x06region\x18\x04 \x01(\tB\x03\xe0A\x03R\x06region\"\xc9\x01\n" +
+	"\rlanguage_code\x18\x01 \x01(\tR\flanguageCode\x12>\n" +
+	"\x18normalized_language_code\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x16normalizedLanguageCode\x12 \n" +
+	"\blanguage\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\blanguage\x12\x1c\n" +
+	"\x06region\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06region\"\xc9\x01\n" +
 	"'NaturalLanguageQueryUnderstandingConfig\x12e\n" +
 	"\x04mode\x18\x01 \x01(\x0e2Q.google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig.ModeR\x04mode\"7\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
-	"\aENABLED\x10\x02\"\xc8\x03\n" +
+	"\aENABLED\x10\x02\"\xcb\x03\n" +
 	"\x0fWorkspaceConfig\x12M\n" +
-	"\x04type\x18\x01 \x01(\x0e29.google.cloud.discoveryengine.v1beta.WorkspaceConfig.TypeR\x04type\x121\n" +
-	"\x12dasher_customer_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x10dasherCustomerId\x12B\n" +
-	"\x1bsuper_admin_service_account\x18\x04 \x01(\tB\x03\xe0A\x01R\x18superAdminServiceAccount\x12>\n" +
-	"\x19super_admin_email_address\x18\x05 \x01(\tB\x03\xe0A\x01R\x16superAdminEmailAddress\"\xae\x01\n" +
+	"\x04type\x18\x01 \x01(\x0e29.google.cloud.discoveryengine.v1beta.WorkspaceConfig.TypeR\x04type\x122\n" +
+	"\x12dasher_customer_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x10dasherCustomerId\x12C\n" +
+	"\x1bsuper_admin_service_account\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x18superAdminServiceAccount\x12?\n" +
+	"\x19super_admin_email_address\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x16superAdminEmailAddress\"\xae\x01\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fGOOGLE_DRIVE\x10\x01\x12\x0f\n" +

@@ -426,6 +426,57 @@ func NewAttachedClustersClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "gkemulticloud",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkemulticloud/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkemulticloud.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAttachedCluster = append(client.CallOptions.CreateAttachedCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAttachedCluster = append(client.CallOptions.UpdateAttachedCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportAttachedCluster = append(client.CallOptions.ImportAttachedCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAttachedCluster = append(client.CallOptions.GetAttachedCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAttachedClusters = append(client.CallOptions.ListAttachedClusters, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAttachedCluster = append(client.CallOptions.DeleteAttachedCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAttachedServerConfig = append(client.CallOptions.GetAttachedServerConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateAttachedClusterInstallManifest = append(client.CallOptions.GenerateAttachedClusterInstallManifest, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateAttachedClusterAgentToken = append(client.CallOptions.GenerateAttachedClusterAgentToken, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "gkemulticloud",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkemulticloud/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkemulticloud.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAttachedCluster = append(client.CallOptions.CreateAttachedCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAttachedCluster = append(client.CallOptions.UpdateAttachedCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ImportAttachedCluster = append(client.CallOptions.ImportAttachedCluster, gax.WithClientLogging(logging))
+		client.CallOptions.GetAttachedCluster = append(client.CallOptions.GetAttachedCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ListAttachedClusters = append(client.CallOptions.ListAttachedClusters, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAttachedCluster = append(client.CallOptions.DeleteAttachedCluster, gax.WithClientLogging(logging))
+		client.CallOptions.GetAttachedServerConfig = append(client.CallOptions.GetAttachedServerConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateAttachedClusterInstallManifest = append(client.CallOptions.GenerateAttachedClusterInstallManifest, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateAttachedClusterAgentToken = append(client.CallOptions.GenerateAttachedClusterAgentToken, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -473,9 +524,6 @@ func (c *attachedClustersGRPCClient) CreateAttachedCluster(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AttachedClusters/CreateAttachedCluster")
 	}
@@ -530,9 +578,6 @@ func (c *attachedClustersGRPCClient) ImportAttachedCluster(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AttachedClusters/ImportAttachedCluster")
 	}
@@ -560,9 +605,6 @@ func (c *attachedClustersGRPCClient) GetAttachedCluster(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AttachedClusters/GetAttachedCluster")
 	}
@@ -584,9 +626,6 @@ func (c *attachedClustersGRPCClient) ListAttachedClusters(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AttachedClusters/ListAttachedClusters")
 	}
@@ -636,9 +675,6 @@ func (c *attachedClustersGRPCClient) DeleteAttachedCluster(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AttachedClusters/DeleteAttachedCluster")
 	}
@@ -666,9 +702,6 @@ func (c *attachedClustersGRPCClient) GetAttachedServerConfig(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AttachedClusters/GetAttachedServerConfig")
 	}
@@ -690,9 +723,6 @@ func (c *attachedClustersGRPCClient) GenerateAttachedClusterInstallManifest(ctx 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AttachedClusters/GenerateAttachedClusterInstallManifest")
 	}
@@ -714,9 +744,6 @@ func (c *attachedClustersGRPCClient) GenerateAttachedClusterAgentToken(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAttachedCluster()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AttachedClusters/GenerateAttachedClusterAgentToken")
 	}

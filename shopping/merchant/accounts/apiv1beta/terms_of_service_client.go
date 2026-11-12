@@ -273,6 +273,37 @@ func NewTermsOfServiceClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.RetrieveLatestTermsOfService = append(client.CallOptions.RetrieveLatestTermsOfService, gax.WithClientMetrics(metrics))
 		client.CallOptions.AcceptTermsOfService = append(client.CallOptions.AcceptTermsOfService, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTermsOfService = append(client.CallOptions.GetTermsOfService, gax.WithClientTracing(tracing))
+		client.CallOptions.RetrieveLatestTermsOfService = append(client.CallOptions.RetrieveLatestTermsOfService, gax.WithClientTracing(tracing))
+		client.CallOptions.AcceptTermsOfService = append(client.CallOptions.AcceptTermsOfService, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTermsOfService = append(client.CallOptions.GetTermsOfService, gax.WithClientLogging(logging))
+		client.CallOptions.RetrieveLatestTermsOfService = append(client.CallOptions.RetrieveLatestTermsOfService, gax.WithClientLogging(logging))
+		client.CallOptions.AcceptTermsOfService = append(client.CallOptions.AcceptTermsOfService, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -366,6 +397,37 @@ func NewTermsOfServiceRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.RetrieveLatestTermsOfService = append(callOpts.RetrieveLatestTermsOfService, gax.WithClientMetrics(metrics))
 		callOpts.AcceptTermsOfService = append(callOpts.AcceptTermsOfService, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTermsOfService = append(callOpts.GetTermsOfService, gax.WithClientTracing(tracing))
+		callOpts.RetrieveLatestTermsOfService = append(callOpts.RetrieveLatestTermsOfService, gax.WithClientTracing(tracing))
+		callOpts.AcceptTermsOfService = append(callOpts.AcceptTermsOfService, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTermsOfService = append(callOpts.GetTermsOfService, gax.WithClientLogging(logging))
+		callOpts.RetrieveLatestTermsOfService = append(callOpts.RetrieveLatestTermsOfService, gax.WithClientLogging(logging))
+		callOpts.AcceptTermsOfService = append(callOpts.AcceptTermsOfService, gax.WithClientLogging(logging))
+	}
 
 	return &TermsOfServiceClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -412,9 +474,6 @@ func (c *termsOfServiceGRPCClient) GetTermsOfService(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.TermsOfServiceService/GetTermsOfService")
 	}
@@ -454,9 +513,6 @@ func (c *termsOfServiceGRPCClient) AcceptTermsOfService(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.TermsOfServiceService/AcceptTermsOfService")
 	}
@@ -475,6 +531,11 @@ func (c *termsOfServiceRESTClient) GetTermsOfService(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -488,9 +549,6 @@ func (c *termsOfServiceRESTClient) GetTermsOfService(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.TermsOfServiceService/GetTermsOfService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=termsOfService/*}")
@@ -586,6 +644,11 @@ func (c *termsOfServiceRESTClient) AcceptTermsOfService(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v:accept", req.GetName())
 
 	params := url.Values{}
@@ -601,9 +664,6 @@ func (c *termsOfServiceRESTClient) AcceptTermsOfService(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.TermsOfServiceService/AcceptTermsOfService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=termsOfService/*}:accept")

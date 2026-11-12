@@ -152,11 +152,10 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyRPCMethod.String("echo.Echoer/Echo"),
 					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
-					attribute.String("error.type", "CLIENT_TIMEOUT"),
 					attribute.String("rpc.response.status_code", "DEADLINE_EXCEEDED"),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{keyServerPort, attribute.Key("status.message"), attribute.Key("exception.type")},
+			wantAttrKeys: []attribute.Key{keyServerPort, attribute.Key("error.type"), attribute.Key("status.message"), attribute.Key("exception.type")},
 		},
 		{
 			name:      "telemetry enabled client cancelled",
@@ -1066,6 +1065,7 @@ func TestExtractHostPort(t *testing.T) {
 		{"dns:///[::1]:8080", "::1", 8080},
 		{"google.com:foo", "google.com", 0},
 		{"dns://8.8.8.8/lb.example.com:443", "lb.example.com", 443},
+		{"google-c2p:///storage-direct.googleapis.com?force-xds", "storage-direct.googleapis.com", 0},
 	}
 
 	for _, tt := range tests {

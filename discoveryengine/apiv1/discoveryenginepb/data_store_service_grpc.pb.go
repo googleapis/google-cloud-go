@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package discoveryenginepb
 import (
 	context "context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -40,6 +41,8 @@ const (
 	DataStoreService_ListDataStores_FullMethodName  = "/google.cloud.discoveryengine.v1.DataStoreService/ListDataStores"
 	DataStoreService_DeleteDataStore_FullMethodName = "/google.cloud.discoveryengine.v1.DataStoreService/DeleteDataStore"
 	DataStoreService_UpdateDataStore_FullMethodName = "/google.cloud.discoveryengine.v1.DataStoreService/UpdateDataStore"
+	DataStoreService_GetIamPolicy_FullMethodName    = "/google.cloud.discoveryengine.v1.DataStoreService/GetIamPolicy"
+	DataStoreService_SetIamPolicy_FullMethodName    = "/google.cloud.discoveryengine.v1.DataStoreService/SetIamPolicy"
 )
 
 // DataStoreServiceClient is the client API for DataStoreService service.
@@ -63,6 +66,25 @@ type DataStoreServiceClient interface {
 	DeleteDataStore(ctx context.Context, in *DeleteDataStoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a [DataStore][google.cloud.discoveryengine.v1.DataStore]
 	UpdateDataStore(ctx context.Context, in *UpdateDataStoreRequest, opts ...grpc.CallOption) (*DataStore, error)
+	// Gets the IAM access control policy for a
+	// [DataStore][google.cloud.discoveryengine.v1.DataStore]. A `NOT_FOUND` error
+	// is returned if the resource does not exist. An empty policy is returned if
+	// the resource exists but does not have a policy set on it.
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
+	// Sets the IAM access control policy for a
+	// [DataStore][google.cloud.discoveryengine.v1.DataStore]. A `NOT_FOUND` error
+	// is returned if the resource does not exist.
+	//
+	// **Important:** When setting a policy directly on a DataStore resource,
+	// the only recommended roles in the bindings are:
+	// `roles/discoveryengine.admin`
+	// `roles/discoveryengine.agentspaceAdmin`
+	// `roles/discoveryengine.viewer`
+	// `roles/discoveryengine.agentspaceViewer`
+	// `roles/discoveryengine.user`
+	// `roles/discoveryengine.agentspaceUser`
+	// Attempting to grant any other role will result in a warning in logging.
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 }
 
 type dataStoreServiceClient struct {
@@ -118,6 +140,24 @@ func (c *dataStoreServiceClient) UpdateDataStore(ctx context.Context, in *Update
 	return out, nil
 }
 
+func (c *dataStoreServiceClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
+	err := c.cc.Invoke(ctx, DataStoreService_GetIamPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataStoreServiceClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
+	err := c.cc.Invoke(ctx, DataStoreService_SetIamPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataStoreServiceServer is the server API for DataStoreService service.
 // All implementations should embed UnimplementedDataStoreServiceServer
 // for forward compatibility
@@ -139,6 +179,25 @@ type DataStoreServiceServer interface {
 	DeleteDataStore(context.Context, *DeleteDataStoreRequest) (*longrunningpb.Operation, error)
 	// Updates a [DataStore][google.cloud.discoveryengine.v1.DataStore]
 	UpdateDataStore(context.Context, *UpdateDataStoreRequest) (*DataStore, error)
+	// Gets the IAM access control policy for a
+	// [DataStore][google.cloud.discoveryengine.v1.DataStore]. A `NOT_FOUND` error
+	// is returned if the resource does not exist. An empty policy is returned if
+	// the resource exists but does not have a policy set on it.
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
+	// Sets the IAM access control policy for a
+	// [DataStore][google.cloud.discoveryengine.v1.DataStore]. A `NOT_FOUND` error
+	// is returned if the resource does not exist.
+	//
+	// **Important:** When setting a policy directly on a DataStore resource,
+	// the only recommended roles in the bindings are:
+	// `roles/discoveryengine.admin`
+	// `roles/discoveryengine.agentspaceAdmin`
+	// `roles/discoveryengine.viewer`
+	// `roles/discoveryengine.agentspaceViewer`
+	// `roles/discoveryengine.user`
+	// `roles/discoveryengine.agentspaceUser`
+	// Attempting to grant any other role will result in a warning in logging.
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 }
 
 // UnimplementedDataStoreServiceServer should be embedded to have forward compatible implementations.
@@ -159,6 +218,12 @@ func (UnimplementedDataStoreServiceServer) DeleteDataStore(context.Context, *Del
 }
 func (UnimplementedDataStoreServiceServer) UpdateDataStore(context.Context, *UpdateDataStoreRequest) (*DataStore, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDataStore not implemented")
+}
+func (UnimplementedDataStoreServiceServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
+}
+func (UnimplementedDataStoreServiceServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
 
 // UnsafeDataStoreServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -262,6 +327,42 @@ func _DataStoreService_UpdateDataStore_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataStoreService_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.GetIamPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataStoreServiceServer).GetIamPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataStoreService_GetIamPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataStoreServiceServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataStoreService_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.SetIamPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataStoreServiceServer).SetIamPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataStoreService_SetIamPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataStoreServiceServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DataStoreService_ServiceDesc is the grpc.ServiceDesc for DataStoreService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -288,6 +389,14 @@ var DataStoreService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateDataStore",
 			Handler:    _DataStoreService_UpdateDataStore_Handler,
+		},
+		{
+			MethodName: "GetIamPolicy",
+			Handler:    _DataStoreService_GetIamPolicy_Handler,
+		},
+		{
+			MethodName: "SetIamPolicy",
+			Handler:    _DataStoreService_SetIamPolicy_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

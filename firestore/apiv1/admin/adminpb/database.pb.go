@@ -1205,46 +1205,46 @@ var File_google_firestore_admin_v1_database_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_database_proto_rawDesc = "" +
 	"\n" +
-	"(google/firestore/admin/v1/database.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/firestore/admin/v1/realtime_updates.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbe\x1d\n" +
+	"(google/firestore/admin/v1/database.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/firestore/admin/v1/realtime_updates.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcd\x1d\n" +
 	"\bDatabase\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"deleteTime\x12\x1f\n" +
 	"\vlocation_id\x18\t \x01(\tR\n" +
 	"locationId\x12D\n" +
 	"\x04type\x18\n" +
 	" \x01(\x0e20.google.firestore.admin.v1.Database.DatabaseTypeR\x04type\x12^\n" +
-	"\x10concurrency_mode\x18\x0f \x01(\x0e23.google.firestore.admin.v1.Database.ConcurrencyModeR\x0fconcurrencyMode\x12X\n" +
-	"\x18version_retention_period\x18\x11 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x16versionRetentionPeriod\x12S\n" +
-	"\x15earliest_version_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13earliestVersionTime\x12\x8b\x01\n" +
+	"\x10concurrency_mode\x18\x0f \x01(\x0e23.google.firestore.admin.v1.Database.ConcurrencyModeR\x0fconcurrencyMode\x12Y\n" +
+	"\x18version_retention_period\x18\x11 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x16versionRetentionPeriod\x12T\n" +
+	"\x15earliest_version_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13earliestVersionTime\x12\x8b\x01\n" +
 	"!point_in_time_recovery_enablement\x18\x15 \x01(\x0e2A.google.firestore.admin.v1.Database.PointInTimeRecoveryEnablementR\x1dpointInTimeRecoveryEnablement\x12{\n" +
-	"\x1bapp_engine_integration_mode\x18\x13 \x01(\x0e2<.google.firestore.admin.v1.Database.AppEngineIntegrationModeR\x18appEngineIntegrationMode\x12\"\n" +
+	"\x1bapp_engine_integration_mode\x18\x13 \x01(\x0e2<.google.firestore.admin.v1.Database.AppEngineIntegrationModeR\x18appEngineIntegrationMode\x12#\n" +
 	"\n" +
-	"key_prefix\x18\x14 \x01(\tB\x03\xe0A\x03R\tkeyPrefix\x12q\n" +
-	"\x17delete_protection_state\x18\x16 \x01(\x0e29.google.firestore.admin.v1.Database.DeleteProtectionStateR\x15deleteProtectionState\x12T\n" +
-	"\vcmek_config\x18\x17 \x01(\v2..google.firestore.admin.v1.Database.CmekConfigB\x03\xe0A\x01R\n" +
-	"cmekConfig\x12$\n" +
-	"\vprevious_id\x18\x19 \x01(\tB\x03\xe0A\x03R\n" +
-	"previousId\x12T\n" +
-	"\vsource_info\x18\x1a \x01(\v2..google.firestore.admin.v1.Database.SourceInfoB\x03\xe0A\x03R\n" +
-	"sourceInfo\x12L\n" +
-	"\x04tags\x18\x1d \x03(\v2-.google.firestore.admin.v1.Database.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x12%\n" +
-	"\tfree_tier\x18\x1e \x01(\bB\x03\xe0A\x03H\x00R\bfreeTier\x88\x01\x01\x12\x12\n" +
-	"\x04etag\x18c \x01(\tR\x04etag\x12c\n" +
-	"\x10database_edition\x18\x1c \x01(\x0e23.google.firestore.admin.v1.Database.DatabaseEditionB\x03\xe0A\x05R\x0fdatabaseEdition\x12g\n" +
-	"\x15realtime_updates_mode\x18\x1f \x01(\x0e2..google.firestore.admin.v1.RealtimeUpdatesModeB\x03\xe0A\x05R\x13realtimeUpdatesMode\x12t\n" +
-	"\x1afirestore_data_access_mode\x18! \x01(\x0e22.google.firestore.admin.v1.Database.DataAccessModeB\x03\xe0A\x01R\x17firestoreDataAccessMode\x12\x85\x01\n" +
-	"#mongodb_compatible_data_access_mode\x18\" \x01(\x0e22.google.firestore.admin.v1.Database.DataAccessModeB\x03\xe0A\x01R\x1fmongodbCompatibleDataAccessMode\x1af\n" +
+	"key_prefix\x18\x14 \x01(\tB\x04\xe2A\x01\x03R\tkeyPrefix\x12q\n" +
+	"\x17delete_protection_state\x18\x16 \x01(\x0e29.google.firestore.admin.v1.Database.DeleteProtectionStateR\x15deleteProtectionState\x12U\n" +
+	"\vcmek_config\x18\x17 \x01(\v2..google.firestore.admin.v1.Database.CmekConfigB\x04\xe2A\x01\x01R\n" +
+	"cmekConfig\x12%\n" +
+	"\vprevious_id\x18\x19 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"previousId\x12U\n" +
+	"\vsource_info\x18\x1a \x01(\v2..google.firestore.admin.v1.Database.SourceInfoB\x04\xe2A\x01\x03R\n" +
+	"sourceInfo\x12I\n" +
+	"\x04tags\x18\x1d \x03(\v2-.google.firestore.admin.v1.Database.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x12&\n" +
+	"\tfree_tier\x18\x1e \x01(\bB\x04\xe2A\x01\x03H\x00R\bfreeTier\x88\x01\x01\x12\x12\n" +
+	"\x04etag\x18c \x01(\tR\x04etag\x12d\n" +
+	"\x10database_edition\x18\x1c \x01(\x0e23.google.firestore.admin.v1.Database.DatabaseEditionB\x04\xe2A\x01\x05R\x0fdatabaseEdition\x12h\n" +
+	"\x15realtime_updates_mode\x18\x1f \x01(\x0e2..google.firestore.admin.v1.RealtimeUpdatesModeB\x04\xe2A\x01\x05R\x13realtimeUpdatesMode\x12u\n" +
+	"\x1afirestore_data_access_mode\x18! \x01(\x0e22.google.firestore.admin.v1.Database.DataAccessModeB\x04\xe2A\x01\x01R\x17firestoreDataAccessMode\x12\x86\x01\n" +
+	"#mongodb_compatible_data_access_mode\x18\" \x01(\x0e22.google.firestore.admin.v1.Database.DataAccessModeB\x04\xe2A\x01\x01R\x1fmongodbCompatibleDataAccessMode\x1ah\n" +
 	"\n" +
-	"CmekConfig\x12%\n" +
-	"\fkms_key_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"kmsKeyName\x121\n" +
-	"\x12active_key_version\x18\x02 \x03(\tB\x03\xe0A\x03R\x10activeKeyVersion\x1a\x82\x02\n" +
+	"CmekConfig\x12&\n" +
+	"\fkms_key_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"kmsKeyName\x122\n" +
+	"\x12active_key_version\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x10activeKeyVersion\x1a\x82\x02\n" +
 	"\n" +
 	"SourceInfo\x12U\n" +
 	"\x06backup\x18\x01 \x01(\v2;.google.firestore.admin.v1.Database.SourceInfo.BackupSourceH\x00R\x06backup\x12E\n" +
@@ -1253,15 +1253,15 @@ const file_google_firestore_admin_v1_database_proto_rawDesc = "" +
 	"\fBackupSource\x12<\n" +
 	"\x06backup\x18\x01 \x01(\tB$\xfaA!\n" +
 	"\x1ffirestore.googleapis.com/BackupR\x06backupB\b\n" +
-	"\x06source\x1a\xe0\x04\n" +
+	"\x06source\x1a\xe1\x04\n" +
 	"\x10EncryptionConfig\x12\x91\x01\n" +
 	"\x19google_default_encryption\x18\x01 \x01(\v2S.google.firestore.admin.v1.Database.EncryptionConfig.GoogleDefaultEncryptionOptionsH\x00R\x17googleDefaultEncryption\x12\x82\x01\n" +
 	"\x15use_source_encryption\x18\x02 \x01(\v2L.google.firestore.admin.v1.Database.EncryptionConfig.SourceEncryptionOptionsH\x00R\x13useSourceEncryption\x12\x97\x01\n" +
 	"\x1bcustomer_managed_encryption\x18\x03 \x01(\v2U.google.firestore.admin.v1.Database.EncryptionConfig.CustomerManagedEncryptionOptionsH\x00R\x19customerManagedEncryption\x1a \n" +
 	"\x1eGoogleDefaultEncryptionOptions\x1a\x19\n" +
-	"\x17SourceEncryptionOptions\x1aI\n" +
-	" CustomerManagedEncryptionOptions\x12%\n" +
-	"\fkms_key_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x17SourceEncryptionOptions\x1aJ\n" +
+	" CustomerManagedEncryptionOptions\x12&\n" +
+	"\fkms_key_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"kmsKeyNameB\x11\n" +
 	"\x0fencryption_type\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +

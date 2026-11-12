@@ -400,6 +400,45 @@ func NewCloudProductRegistryReadClient(ctx context.Context, opts ...option.Clien
 		client.CallOptions.ListLogicalProductVariants = append(client.CallOptions.ListLogicalProductVariants, gax.WithClientMetrics(metrics))
 		client.CallOptions.LookupEntity = append(client.CallOptions.LookupEntity, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudproductregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/productregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudproductregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProductSuite = append(client.CallOptions.GetProductSuite, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProductSuites = append(client.CallOptions.ListProductSuites, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLogicalProduct = append(client.CallOptions.GetLogicalProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLogicalProducts = append(client.CallOptions.ListLogicalProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLogicalProductVariant = append(client.CallOptions.GetLogicalProductVariant, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLogicalProductVariants = append(client.CallOptions.ListLogicalProductVariants, gax.WithClientTracing(tracing))
+		client.CallOptions.LookupEntity = append(client.CallOptions.LookupEntity, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudproductregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/productregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudproductregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProductSuite = append(client.CallOptions.GetProductSuite, gax.WithClientLogging(logging))
+		client.CallOptions.ListProductSuites = append(client.CallOptions.ListProductSuites, gax.WithClientLogging(logging))
+		client.CallOptions.GetLogicalProduct = append(client.CallOptions.GetLogicalProduct, gax.WithClientLogging(logging))
+		client.CallOptions.ListLogicalProducts = append(client.CallOptions.ListLogicalProducts, gax.WithClientLogging(logging))
+		client.CallOptions.GetLogicalProductVariant = append(client.CallOptions.GetLogicalProductVariant, gax.WithClientLogging(logging))
+		client.CallOptions.ListLogicalProductVariants = append(client.CallOptions.ListLogicalProductVariants, gax.WithClientLogging(logging))
+		client.CallOptions.LookupEntity = append(client.CallOptions.LookupEntity, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -498,6 +537,45 @@ func NewCloudProductRegistryReadRESTClient(ctx context.Context, opts ...option.C
 		callOpts.ListLogicalProductVariants = append(callOpts.ListLogicalProductVariants, gax.WithClientMetrics(metrics))
 		callOpts.LookupEntity = append(callOpts.LookupEntity, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudproductregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/productregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudproductregistry.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProductSuite = append(callOpts.GetProductSuite, gax.WithClientTracing(tracing))
+		callOpts.ListProductSuites = append(callOpts.ListProductSuites, gax.WithClientTracing(tracing))
+		callOpts.GetLogicalProduct = append(callOpts.GetLogicalProduct, gax.WithClientTracing(tracing))
+		callOpts.ListLogicalProducts = append(callOpts.ListLogicalProducts, gax.WithClientTracing(tracing))
+		callOpts.GetLogicalProductVariant = append(callOpts.GetLogicalProductVariant, gax.WithClientTracing(tracing))
+		callOpts.ListLogicalProductVariants = append(callOpts.ListLogicalProductVariants, gax.WithClientTracing(tracing))
+		callOpts.LookupEntity = append(callOpts.LookupEntity, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudproductregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/productregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudproductregistry.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProductSuite = append(callOpts.GetProductSuite, gax.WithClientLogging(logging))
+		callOpts.ListProductSuites = append(callOpts.ListProductSuites, gax.WithClientLogging(logging))
+		callOpts.GetLogicalProduct = append(callOpts.GetLogicalProduct, gax.WithClientLogging(logging))
+		callOpts.ListLogicalProducts = append(callOpts.ListLogicalProducts, gax.WithClientLogging(logging))
+		callOpts.GetLogicalProductVariant = append(callOpts.GetLogicalProductVariant, gax.WithClientLogging(logging))
+		callOpts.ListLogicalProductVariants = append(callOpts.ListLogicalProductVariants, gax.WithClientLogging(logging))
+		callOpts.LookupEntity = append(callOpts.LookupEntity, gax.WithClientLogging(logging))
+	}
 
 	return &CloudProductRegistryReadClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -544,9 +622,6 @@ func (c *cloudProductRegistryReadGRPCClient) GetProductSuite(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudproductregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.productregistry.v1.CloudProductRegistryReadService/GetProductSuite")
 	}
@@ -614,9 +689,6 @@ func (c *cloudProductRegistryReadGRPCClient) GetLogicalProduct(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudproductregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.productregistry.v1.CloudProductRegistryReadService/GetLogicalProduct")
 	}
@@ -684,9 +756,6 @@ func (c *cloudProductRegistryReadGRPCClient) GetLogicalProductVariant(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudproductregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.productregistry.v1.CloudProductRegistryReadService/GetLogicalProductVariant")
 	}
@@ -708,9 +777,6 @@ func (c *cloudProductRegistryReadGRPCClient) ListLogicalProductVariants(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudproductregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.productregistry.v1.CloudProductRegistryReadService/ListLogicalProductVariants")
 	}
@@ -782,6 +848,11 @@ func (c *cloudProductRegistryReadRESTClient) GetProductSuite(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -795,9 +866,6 @@ func (c *cloudProductRegistryReadRESTClient) GetProductSuite(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudproductregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.productregistry.v1.CloudProductRegistryReadService/GetProductSuite")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=productSuites/*}")
@@ -917,6 +985,11 @@ func (c *cloudProductRegistryReadRESTClient) GetLogicalProduct(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -930,9 +1003,6 @@ func (c *cloudProductRegistryReadRESTClient) GetLogicalProduct(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudproductregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.productregistry.v1.CloudProductRegistryReadService/GetLogicalProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=logicalProducts/*}")
@@ -1055,6 +1125,11 @@ func (c *cloudProductRegistryReadRESTClient) GetLogicalProductVariant(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1068,9 +1143,6 @@ func (c *cloudProductRegistryReadRESTClient) GetLogicalProductVariant(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudproductregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.productregistry.v1.CloudProductRegistryReadService/GetLogicalProductVariant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=logicalProducts/*/variants/*}")
@@ -1123,6 +1195,11 @@ func (c *cloudProductRegistryReadRESTClient) ListLogicalProductVariants(ctx cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/variants", req.GetParent())
@@ -1188,6 +1265,11 @@ func (c *cloudProductRegistryReadRESTClient) ListLogicalProductVariants(ctx cont
 func (c *cloudProductRegistryReadRESTClient) LookupEntity(ctx context.Context, req *productregistrypb.LookupEntityRequest, opts ...gax.CallOption) (*productregistrypb.LookupEntityResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLookupUri(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:lookupEntity", req.GetLookupUri())

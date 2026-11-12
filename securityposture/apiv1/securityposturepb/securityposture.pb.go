@@ -2186,34 +2186,34 @@ var File_google_cloud_securityposture_v1_securityposture_proto protoreflect.File
 
 const file_google_cloud_securityposture_v1_securityposture_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/securityposture/v1/securityposture.proto\x12\x1fgoogle.cloud.securityposture.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/securityposture/v1/org_policy_constraints.proto\x1a5google/cloud/securityposture/v1/sha_constraints.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\x12(\n" +
-	"\rerror_message\x18\b \x01(\tB\x03\xe0A\x03R\ferrorMessage\"\xca\x06\n" +
-	"\aPosture\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12I\n" +
-	"\x05state\x18\x02 \x01(\x0e2..google.cloud.securityposture.v1.Posture.StateB\x03\xe0A\x02R\x05state\x12'\n" +
-	"\vrevision_id\x18\x03 \x01(\tB\x06\xe0A\x05\xe0A\x03R\n" +
-	"revisionId\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12P\n" +
-	"\vpolicy_sets\x18\a \x03(\v2*.google.cloud.securityposture.v1.PolicySetB\x03\xe0A\x02R\n" +
-	"policySets\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\x12`\n" +
-	"\vannotations\x18\t \x03(\v29.google.cloud.securityposture.v1.Posture.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12%\n" +
+	"5google/cloud/securityposture/v1/securityposture.proto\x12\x1fgoogle.cloud.securityposture.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/securityposture/v1/org_policy_constraints.proto\x1a5google/cloud/securityposture/v1/sha_constraints.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x87\x03\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\x12)\n" +
+	"\rerror_message\x18\b \x01(\tB\x04\xe2A\x01\x03R\ferrorMessage\"\xd0\x06\n" +
+	"\aPosture\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12J\n" +
+	"\x05state\x18\x02 \x01(\x0e2..google.cloud.securityposture.v1.Posture.StateB\x04\xe2A\x01\x02R\x05state\x12&\n" +
+	"\vrevision_id\x18\x03 \x01(\tB\x05\xe2A\x02\x05\x03R\n" +
+	"revisionId\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Q\n" +
+	"\vpolicy_sets\x18\a \x03(\v2*.google.cloud.securityposture.v1.PolicySetB\x04\xe2A\x01\x02R\n" +
+	"policySets\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12a\n" +
+	"\vannotations\x18\t \x03(\v29.google.cloud.securityposture.v1.Posture.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12&\n" +
 	"\vreconciling\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\vreconciling\x1a>\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"E\n" +
@@ -2224,90 +2224,90 @@ const file_google_cloud_securityposture_v1_securityposture_proto_rawDesc = "" +
 	"\x05DRAFT\x10\x02\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x03:\x88\x01\xeaA\x84\x01\n" +
-	"&securityposture.googleapis.com/Posture\x12Dorganizations/{organization}/locations/{location}/postures/{posture}*\bpostures2\apostureR\x01\x01\"\xa5\x01\n" +
-	"\tPolicySet\x12'\n" +
-	"\rpolicy_set_id\x18\x01 \x01(\tB\x03\xe0A\x02R\vpolicySetId\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12H\n" +
-	"\bpolicies\x18\x03 \x03(\v2'.google.cloud.securityposture.v1.PolicyB\x03\xe0A\x02R\bpolicies\"\xed\x02\n" +
-	"\x06Policy\x12 \n" +
-	"\tpolicy_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bpolicyId\x12r\n" +
-	"\x14compliance_standards\x18\x02 \x03(\v2:.google.cloud.securityposture.v1.Policy.ComplianceStandardB\x03\xe0A\x01R\x13complianceStandards\x12P\n" +
+	"&securityposture.googleapis.com/Posture\x12Dorganizations/{organization}/locations/{location}/postures/{posture}*\bpostures2\apostureR\x01\x01\"\xa8\x01\n" +
+	"\tPolicySet\x12(\n" +
+	"\rpolicy_set_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vpolicySetId\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12I\n" +
+	"\bpolicies\x18\x03 \x03(\v2'.google.cloud.securityposture.v1.PolicyB\x04\xe2A\x01\x02R\bpolicies\"\xf3\x02\n" +
+	"\x06Policy\x12!\n" +
+	"\tpolicy_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bpolicyId\x12s\n" +
+	"\x14compliance_standards\x18\x02 \x03(\v2:.google.cloud.securityposture.v1.Policy.ComplianceStandardB\x04\xe2A\x01\x01R\x13complianceStandards\x12Q\n" +
 	"\n" +
-	"constraint\x18\x03 \x01(\v2+.google.cloud.securityposture.v1.ConstraintB\x03\xe0A\x02R\n" +
-	"constraint\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x1aT\n" +
-	"\x12ComplianceStandard\x12\x1f\n" +
-	"\bstandard\x18\x01 \x01(\tB\x03\xe0A\x01R\bstandard\x12\x1d\n" +
-	"\acontrol\x18\x02 \x01(\tB\x03\xe0A\x01R\acontrol\"\xc9\x04\n" +
+	"constraint\x18\x03 \x01(\v2+.google.cloud.securityposture.v1.ConstraintB\x04\xe2A\x01\x02R\n" +
+	"constraint\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x1aV\n" +
+	"\x12ComplianceStandard\x12 \n" +
+	"\bstandard\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bstandard\x12\x1e\n" +
+	"\acontrol\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\acontrol\"\xcd\x04\n" +
 	"\n" +
-	"Constraint\x12\x8e\x01\n" +
-	" security_health_analytics_module\x18\x03 \x01(\v2>.google.cloud.securityposture.v1.SecurityHealthAnalyticsModuleB\x03\xe0A\x01H\x00R\x1dsecurityHealthAnalyticsModule\x12\xa1\x01\n" +
-	"'security_health_analytics_custom_module\x18\x04 \x01(\v2D.google.cloud.securityposture.v1.SecurityHealthAnalyticsCustomModuleB\x03\xe0A\x01H\x00R#securityHealthAnalyticsCustomModule\x12o\n" +
-	"\x15org_policy_constraint\x18\x05 \x01(\v24.google.cloud.securityposture.v1.OrgPolicyConstraintB\x03\xe0A\x01H\x00R\x13orgPolicyConstraint\x12\x82\x01\n" +
-	"\x1corg_policy_constraint_custom\x18\x06 \x01(\v2:.google.cloud.securityposture.v1.OrgPolicyConstraintCustomB\x03\xe0A\x01H\x00R\x19orgPolicyConstraintCustomB\x10\n" +
-	"\x0eimplementation\"\x99\x01\n" +
-	"\x13ListPosturesRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&securityposture.googleapis.com/PostureR\x06parent\x12\x1b\n" +
+	"Constraint\x12\x8f\x01\n" +
+	" security_health_analytics_module\x18\x03 \x01(\v2>.google.cloud.securityposture.v1.SecurityHealthAnalyticsModuleB\x04\xe2A\x01\x01H\x00R\x1dsecurityHealthAnalyticsModule\x12\xa2\x01\n" +
+	"'security_health_analytics_custom_module\x18\x04 \x01(\v2D.google.cloud.securityposture.v1.SecurityHealthAnalyticsCustomModuleB\x04\xe2A\x01\x01H\x00R#securityHealthAnalyticsCustomModule\x12p\n" +
+	"\x15org_policy_constraint\x18\x05 \x01(\v24.google.cloud.securityposture.v1.OrgPolicyConstraintB\x04\xe2A\x01\x01H\x00R\x13orgPolicyConstraint\x12\x83\x01\n" +
+	"\x1corg_policy_constraint_custom\x18\x06 \x01(\v2:.google.cloud.securityposture.v1.OrgPolicyConstraintCustomB\x04\xe2A\x01\x01H\x00R\x19orgPolicyConstraintCustomB\x10\n" +
+	"\x0eimplementation\"\x9a\x01\n" +
+	"\x13ListPosturesRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&securityposture.googleapis.com/PostureR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa6\x01\n" +
 	"\x14ListPosturesResponse\x12D\n" +
 	"\bpostures\x18\x01 \x03(\v2(.google.cloud.securityposture.v1.PostureR\bpostures\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa7\x01\n" +
-	"\x1bListPostureRevisionsRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&securityposture.googleapis.com/PostureR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xaa\x01\n" +
+	"\x1bListPostureRevisionsRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&securityposture.googleapis.com/PostureR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8e\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8e\x01\n" +
 	"\x1cListPostureRevisionsResponse\x12F\n" +
 	"\trevisions\x18\x01 \x03(\v2(.google.cloud.securityposture.v1.PostureR\trevisions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"}\n" +
-	"\x11GetPostureRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&securityposture.googleapis.com/PostureR\x04name\x12$\n" +
-	"\vrevision_id\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
-	"revisionId\"\xcb\x01\n" +
-	"\x14CreatePostureRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&securityposture.googleapis.com/PostureR\x06parent\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x7f\n" +
+	"\x11GetPostureRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&securityposture.googleapis.com/PostureR\x04name\x12%\n" +
+	"\vrevision_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"revisionId\"\xce\x01\n" +
+	"\x14CreatePostureRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&securityposture.googleapis.com/PostureR\x06parent\x12#\n" +
 	"\n" +
-	"posture_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tpostureId\x12G\n" +
-	"\aposture\x18\x03 \x01(\v2(.google.cloud.securityposture.v1.PostureB\x03\xe0A\x02R\aposture\"\xc7\x01\n" +
-	"\x14UpdatePostureRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12G\n" +
-	"\aposture\x18\x02 \x01(\v2(.google.cloud.securityposture.v1.PostureB\x03\xe0A\x02R\aposture\x12$\n" +
-	"\vrevision_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"revisionId\"s\n" +
-	"\x14DeletePostureRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&securityposture.googleapis.com/PostureR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xa4\x01\n" +
-	"\x15ExtractPostureRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&securityposture.googleapis.com/PostureR\x06parent\x12\"\n" +
+	"posture_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tpostureId\x12H\n" +
+	"\aposture\x18\x03 \x01(\v2(.google.cloud.securityposture.v1.PostureB\x04\xe2A\x01\x02R\aposture\"\xca\x01\n" +
+	"\x14UpdatePostureRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12H\n" +
+	"\aposture\x18\x02 \x01(\v2(.google.cloud.securityposture.v1.PostureB\x04\xe2A\x01\x02R\aposture\x12%\n" +
+	"\vrevision_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"revisionId\"u\n" +
+	"\x14DeletePostureRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&securityposture.googleapis.com/PostureR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xa7\x01\n" +
+	"\x15ExtractPostureRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&securityposture.googleapis.com/PostureR\x06parent\x12#\n" +
 	"\n" +
-	"posture_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tpostureId\x12\x1f\n" +
-	"\bworkload\x18\x03 \x01(\tB\x03\xe0A\x02R\bworkload\"\x92\t\n" +
-	"\x11PostureDeployment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12,\n" +
-	"\x0ftarget_resource\x18\r \x01(\tB\x03\xe0A\x02R\x0etargetResource\x12S\n" +
-	"\x05state\x18\x02 \x01(\x0e28.google.cloud.securityposture.v1.PostureDeployment.StateB\x03\xe0A\x03R\x05state\x12\"\n" +
+	"posture_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tpostureId\x12 \n" +
+	"\bworkload\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bworkload\"\xa0\t\n" +
+	"\x11PostureDeployment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12-\n" +
+	"\x0ftarget_resource\x18\r \x01(\tB\x04\xe2A\x01\x02R\x0etargetResource\x12T\n" +
+	"\x05state\x18\x02 \x01(\x0e28.google.cloud.securityposture.v1.PostureDeployment.StateB\x04\xe2A\x01\x03R\x05state\x12#\n" +
 	"\n" +
-	"posture_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tpostureId\x123\n" +
-	"\x13posture_revision_id\x18\x04 \x01(\tB\x03\xe0A\x02R\x11postureRevisionId\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\x12j\n" +
-	"\vannotations\x18\t \x03(\v2C.google.cloud.securityposture.v1.PostureDeployment.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12%\n" +
+	"posture_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tpostureId\x124\n" +
+	"\x13posture_revision_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x11postureRevisionId\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12k\n" +
+	"\vannotations\x18\t \x03(\v2C.google.cloud.securityposture.v1.PostureDeployment.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12&\n" +
 	"\vreconciling\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\vreconciling\x121\n" +
-	"\x12desired_posture_id\x18\v \x01(\tB\x03\xe0A\x03R\x10desiredPostureId\x12B\n" +
-	"\x1bdesired_posture_revision_id\x18\f \x01(\tB\x03\xe0A\x03R\x18desiredPostureRevisionId\x12,\n" +
-	"\x0ffailure_message\x18\x0e \x01(\tB\x03\xe0A\x03R\x0efailureMessage\x1a>\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x122\n" +
+	"\x12desired_posture_id\x18\v \x01(\tB\x04\xe2A\x01\x03R\x10desiredPostureId\x12C\n" +
+	"\x1bdesired_posture_revision_id\x18\f \x01(\tB\x04\xe2A\x01\x03R\x18desiredPostureRevisionId\x12-\n" +
+	"\x0ffailure_message\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x0efailureMessage\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8d\x01\n" +
@@ -2321,39 +2321,39 @@ const file_google_cloud_securityposture_v1_securityposture_proto_rawDesc = "" +
 	"\rCREATE_FAILED\x10\x05\x12\x11\n" +
 	"\rUPDATE_FAILED\x10\x06\x12\x11\n" +
 	"\rDELETE_FAILED\x10\a:\xbb\x01\xeaA\xb7\x01\n" +
-	"0securityposture.googleapis.com/PostureDeployment\x12Yorganizations/{organization}/locations/{location}/postureDeployments/{posture_deployment}*\x12postureDeployments2\x11postureDeploymentR\x01\x01\"\xd4\x01\n" +
-	"\x1dListPostureDeploymentsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120securityposture.googleapis.com/PostureDeploymentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"0securityposture.googleapis.com/PostureDeployment\x12Yorganizations/{organization}/locations/{location}/postureDeployments/{posture_deployment}*\x12postureDeployments2\x11postureDeploymentR\x01\x01\"\xd8\x01\n" +
+	"\x1dListPostureDeploymentsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120securityposture.googleapis.com/PostureDeploymentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xcf\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xcf\x01\n" +
 	"\x1eListPostureDeploymentsResponse\x12c\n" +
 	"\x13posture_deployments\x18\x01 \x03(\v22.google.cloud.securityposture.v1.PostureDeploymentR\x12postureDeployments\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"k\n" +
-	"\x1bGetPostureDeploymentRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0securityposture.googleapis.com/PostureDeploymentR\x04name\"\x93\x02\n" +
-	"\x1eCreatePostureDeploymentRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120securityposture.googleapis.com/PostureDeploymentR\x06parent\x127\n" +
-	"\x15posture_deployment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x13postureDeploymentId\x12f\n" +
-	"\x12posture_deployment\x18\x03 \x01(\v22.google.cloud.securityposture.v1.PostureDeploymentB\x03\xe0A\x02R\x11postureDeployment\"\xca\x01\n" +
-	"\x1eUpdatePostureDeploymentRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12f\n" +
-	"\x12posture_deployment\x18\x02 \x01(\v22.google.cloud.securityposture.v1.PostureDeploymentB\x03\xe0A\x02R\x11postureDeployment\"\x87\x01\n" +
-	"\x1eDeletePostureDeploymentRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0securityposture.googleapis.com/PostureDeploymentR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\x8c\x04\n" +
-	"\x0fPostureTemplate\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12$\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"revisionId\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12Q\n" +
-	"\x05state\x18\x04 \x01(\x0e26.google.cloud.securityposture.v1.PostureTemplate.StateB\x03\xe0A\x03R\x05state\x12P\n" +
-	"\vpolicy_sets\x18\x05 \x03(\v2*.google.cloud.securityposture.v1.PolicySetB\x03\xe0A\x03R\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"l\n" +
+	"\x1bGetPostureDeploymentRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0securityposture.googleapis.com/PostureDeploymentR\x04name\"\x96\x02\n" +
+	"\x1eCreatePostureDeploymentRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120securityposture.googleapis.com/PostureDeploymentR\x06parent\x128\n" +
+	"\x15posture_deployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13postureDeploymentId\x12g\n" +
+	"\x12posture_deployment\x18\x03 \x01(\v22.google.cloud.securityposture.v1.PostureDeploymentB\x04\xe2A\x01\x02R\x11postureDeployment\"\xcc\x01\n" +
+	"\x1eUpdatePostureDeploymentRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12g\n" +
+	"\x12posture_deployment\x18\x02 \x01(\v22.google.cloud.securityposture.v1.PostureDeploymentB\x04\xe2A\x01\x02R\x11postureDeployment\"\x89\x01\n" +
+	"\x1eDeletePostureDeploymentRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0securityposture.googleapis.com/PostureDeploymentR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x8f\x04\n" +
+	"\x0fPostureTemplate\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12%\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"revisionId\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12R\n" +
+	"\x05state\x18\x04 \x01(\x0e26.google.cloud.securityposture.v1.PostureTemplate.StateB\x04\xe2A\x01\x03R\x05state\x12Q\n" +
+	"\vpolicy_sets\x18\x05 \x03(\v2*.google.cloud.securityposture.v1.PolicySetB\x04\xe2A\x01\x03R\n" +
 	"policySets\":\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
@@ -2361,20 +2361,20 @@ const file_google_cloud_securityposture_v1_securityposture_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x01\x12\x0e\n" +
 	"\n" +
 	"DEPRECATED\x10\x02:\xae\x01\xeaA\xaa\x01\n" +
-	".securityposture.googleapis.com/PostureTemplate\x12Uorganizations/{organization}/locations/{location}/postureTemplates/{posture_template}*\x10postureTemplates2\x0fpostureTemplate\"\xd0\x01\n" +
-	"\x1bListPostureTemplatesRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.securityposture.googleapis.com/PostureTemplateR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	".securityposture.googleapis.com/PostureTemplate\x12Uorganizations/{organization}/locations/{location}/postureTemplates/{posture_template}*\x10postureTemplates2\x0fpostureTemplate\"\xd4\x01\n" +
+	"\x1bListPostureTemplatesRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.securityposture.googleapis.com/PostureTemplateR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa5\x01\n" +
 	"\x1cListPostureTemplatesResponse\x12]\n" +
 	"\x11posture_templates\x18\x01 \x03(\v20.google.cloud.securityposture.v1.PostureTemplateR\x10postureTemplates\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8d\x01\n" +
-	"\x19GetPostureTemplateRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".securityposture.googleapis.com/PostureTemplateR\x04name\x12$\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8f\x01\n" +
+	"\x19GetPostureTemplateRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".securityposture.googleapis.com/PostureTemplateR\x04name\x12%\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"revisionId2\x94\x1a\n" +
 	"\x0fSecurityPosture\x12\xbf\x01\n" +
 	"\fListPostures\x124.google.cloud.securityposture.v1.ListPosturesRequest\x1a5.google.cloud.securityposture.v1.ListPosturesResponse\"B\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1/{parent=organizations/*/locations/*}/postures\x12\xdc\x01\n" +

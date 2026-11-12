@@ -896,31 +896,31 @@ var File_google_maps_geocode_v4_geocode_service_proto protoreflect.FileDescripto
 
 const file_google_maps_geocode_v4_geocode_service_proto_rawDesc = "" +
 	"\n" +
-	",google/maps/geocode/v4/geocode_service.proto\x12\x16google.maps.geocode.v4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/geo/type/viewport.proto\x1a\x18google/type/latlng.proto\x1a google/type/localized_text.proto\x1a google/type/postal_address.proto\"\x90\x03\n" +
+	",google/maps/geocode/v4/geocode_service.proto\x12\x16google.maps.geocode.v4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/geo/type/viewport.proto\x1a\x18google/type/latlng.proto\x1a google/type/localized_text.proto\x1a google/type/postal_address.proto\"\x93\x03\n" +
 	"\x15GeocodeAddressRequest\x12%\n" +
 	"\raddress_query\x18\x01 \x01(\tH\x00R\faddressQuery\x126\n" +
-	"\aaddress\x18\x02 \x01(\v2\x1a.google.type.PostalAddressH\x00R\aaddress\x12d\n" +
-	"\rlocation_bias\x18\x03 \x01(\v2:.google.maps.geocode.v4.GeocodeAddressRequest.LocationBiasB\x03\xe0A\x01R\flocationBias\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12$\n" +
-	"\vregion_code\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
+	"\aaddress\x18\x02 \x01(\v2\x1a.google.type.PostalAddressH\x00R\aaddress\x12e\n" +
+	"\rlocation_bias\x18\x03 \x01(\v2:.google.maps.geocode.v4.GeocodeAddressRequest.LocationBiasB\x04\xe2A\x01\x01R\flocationBias\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12%\n" +
+	"\vregion_code\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"regionCode\x1aQ\n" +
 	"\fLocationBias\x129\n" +
 	"\trectangle\x18\x01 \x01(\v2\x19.google.geo.type.ViewportH\x00R\trectangleB\x06\n" +
 	"\x04typeB\x0f\n" +
-	"\raddress_input\"\xcb\x02\n" +
+	"\raddress_input\"\xcf\x02\n" +
 	"\x16GeocodeLocationRequest\x12'\n" +
 	"\x0elocation_query\x18\x01 \x01(\tH\x00R\rlocationQuery\x121\n" +
-	"\blocation\x18\x02 \x01(\v2\x13.google.type.LatLngH\x00R\blocation\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12$\n" +
-	"\vregion_code\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x12\x19\n" +
-	"\x05types\x18\x05 \x03(\tB\x03\xe0A\x01R\x05types\x12X\n" +
-	"\vgranularity\x18\x06 \x03(\x0e21.google.maps.geocode.v4.GeocodeResult.GranularityB\x03\xe0A\x01R\vgranularityB\x10\n" +
-	"\x0elocation_input\"\x80\x01\n" +
-	"\x13GeocodePlaceRequest\x12\x19\n" +
-	"\x05place\x18\x01 \x01(\tB\x03\xe0A\x02R\x05place\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12$\n" +
-	"\vregion_code\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
+	"\blocation\x18\x02 \x01(\v2\x13.google.type.LatLngH\x00R\blocation\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12%\n" +
+	"\vregion_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x12\x1a\n" +
+	"\x05types\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x05types\x12Y\n" +
+	"\vgranularity\x18\x06 \x03(\x0e21.google.maps.geocode.v4.GeocodeResult.GranularityB\x04\xe2A\x01\x01R\vgranularityB\x10\n" +
+	"\x0elocation_input\"\x83\x01\n" +
+	"\x13GeocodePlaceRequest\x12\x1a\n" +
+	"\x05place\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05place\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12%\n" +
+	"\vregion_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"regionCode\"P\n" +
 	"\bPlusCode\x12\x1f\n" +
 	"\vglobal_code\x18\x01 \x01(\tR\n" +

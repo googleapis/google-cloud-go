@@ -26,6 +26,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
@@ -111,6 +112,9 @@ func TestNewCredentials_ServiceAccount(t *testing.T) {
 	if tok.Value != wantTok {
 		t.Errorf("got %q, want %q", tok.Value, wantTok)
 	}
+	if wantExp := time.Unix(expiry, 0); !tok.Expiry.Equal(wantExp) {
+		t.Errorf("tok.Expiry = %v, want %v", tok.Expiry, wantExp)
+	}
 	if got, _ := creds.UniverseDomain(ctx); got != internal.DefaultUniverseDomain {
 		t.Errorf("got %q, want %q", got, internal.DefaultUniverseDomain)
 	}
@@ -120,7 +124,7 @@ func TestNewCredentials_ServiceAccount_UniverseDomain(t *testing.T) {
 	wantAudience := "aud"
 	wantClientEmail := "gopher@fake_project.iam.gserviceaccount.com"
 	wantUniverseDomain := "example.com"
-	wantTok := "id-token"
+	wantTok, _ := createRS256JWT(t)
 	client := &http.Client{
 		Transport: RoundTripFn(func(req *http.Request) *http.Response {
 			defer req.Body.Close()
@@ -179,6 +183,9 @@ func TestNewCredentials_ServiceAccount_UniverseDomain(t *testing.T) {
 	}
 	if tok.Value != wantTok {
 		t.Errorf("got %q, want %q", tok.Value, wantTok)
+	}
+	if wantExp := time.Unix(expiry, 0); !tok.Expiry.Equal(wantExp) {
+		t.Errorf("tok.Expiry = %v, want %v", tok.Expiry, wantExp)
 	}
 	if got, _ := creds.UniverseDomain(ctx); got != wantUniverseDomain {
 		t.Errorf("got %q, want %q", got, wantUniverseDomain)
@@ -274,6 +281,9 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 			}
 			if tok.Value != wantTok {
 				t.Errorf("got %q, want %q", tok.Value, wantTok)
+			}
+			if wantExp := time.Unix(expiry, 0); !tok.Expiry.Equal(wantExp) {
+				t.Errorf("tok.Expiry = %v, want %v", tok.Expiry, wantExp)
 			}
 			// Assertions for JSON and UniverseDomain propagation
 			if len(creds.JSON()) == 0 {

@@ -722,23 +722,23 @@ var File_google_cloud_dataplex_v1_cmek_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_cmek_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/dataplex/v1/cmek.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf8\a\n" +
-	"\x10EncryptionConfig\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\b\xfaA*\n" +
-	"(dataplex.googleapis.com/EncryptionConfigR\x04name\x12\x15\n" +
-	"\x03key\x18\x02 \x01(\tB\x03\xe0A\x01R\x03key\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12j\n" +
-	"\x10encryption_state\x18\x05 \x01(\x0e2:.google.cloud.dataplex.v1.EncryptionConfig.EncryptionStateB\x03\xe0A\x03R\x0fencryptionState\x12\x12\n" +
-	"\x04etag\x18\x06 \x01(\tR\x04etag\x12g\n" +
-	"\x0ffailure_details\x18\a \x01(\v29.google.cloud.dataplex.v1.EncryptionConfig.FailureDetailsB\x03\xe0A\x03R\x0efailureDetails\x12C\n" +
-	"\x1benable_metastore_encryption\x18\b \x01(\bB\x03\xe0A\x01R\x19enableMetastoreEncryption\x1a\xea\x01\n" +
-	"\x0eFailureDetails\x12g\n" +
+	"#google/cloud/dataplex/v1/cmek.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\b\n" +
+	"\x10EncryptionConfig\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\b\xfaA*\n" +
+	"(dataplex.googleapis.com/EncryptionConfigR\x04name\x12\x16\n" +
+	"\x03key\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03key\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12k\n" +
+	"\x10encryption_state\x18\x05 \x01(\x0e2:.google.cloud.dataplex.v1.EncryptionConfig.EncryptionStateB\x04\xe2A\x01\x03R\x0fencryptionState\x12\x12\n" +
+	"\x04etag\x18\x06 \x01(\tR\x04etag\x12h\n" +
+	"\x0ffailure_details\x18\a \x01(\v29.google.cloud.dataplex.v1.EncryptionConfig.FailureDetailsB\x04\xe2A\x01\x03R\x0efailureDetails\x12D\n" +
+	"\x1benable_metastore_encryption\x18\b \x01(\bB\x04\xe2A\x01\x01R\x19enableMetastoreEncryption\x1a\xec\x01\n" +
+	"\x0eFailureDetails\x12h\n" +
 	"\n" +
-	"error_code\x18\x01 \x01(\x0e2C.google.cloud.dataplex.v1.EncryptionConfig.FailureDetails.ErrorCodeB\x03\xe0A\x03R\terrorCode\x12(\n" +
-	"\rerror_message\x18\x02 \x01(\tB\x03\xe0A\x03R\ferrorMessage\"E\n" +
+	"error_code\x18\x01 \x01(\x0e2C.google.cloud.dataplex.v1.EncryptionConfig.FailureDetails.ErrorCodeB\x04\xe2A\x01\x03R\terrorCode\x12)\n" +
+	"\rerror_message\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\ferrorMessage\"E\n" +
 	"\tErrorCode\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\x12\n" +
 	"\x0eINTERNAL_ERROR\x10\x01\x12\x17\n" +
@@ -750,30 +750,30 @@ const file_google_cloud_dataplex_v1_cmek_proto_rawDesc = "" +
 	"\tCOMPLETED\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03:\x87\x01\xeaA\x83\x01\n" +
-	"(dataplex.googleapis.com/EncryptionConfig\x12Worganizations/{organization}/locations/{location}/encryptionConfigs/{encryption_config}\"\x82\x02\n" +
-	"\x1dCreateEncryptionConfigRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",dataplex.googleapis.com/OrganizationLocationR\x06parent\x125\n" +
-	"\x14encryption_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12encryptionConfigId\x12\\\n" +
-	"\x11encryption_config\x18\x03 \x01(\v2*.google.cloud.dataplex.v1.EncryptionConfigB\x03\xe0A\x02R\x10encryptionConfig\"b\n" +
-	"\x1aGetEncryptionConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dataplex.googleapis.com/EncryptionConfigR\x04name\"\xbf\x01\n" +
-	"\x1dUpdateEncryptionConfigRequest\x12\\\n" +
-	"\x11encryption_config\x18\x01 \x01(\v2*.google.cloud.dataplex.v1.EncryptionConfigB\x03\xe0A\x02R\x10encryptionConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"~\n" +
-	"\x1dDeleteEncryptionConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dataplex.googleapis.com/EncryptionConfigR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xeb\x01\n" +
-	"\x1cListEncryptionConfigsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(dataplex.googleapis.com/EncryptionConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"(dataplex.googleapis.com/EncryptionConfig\x12Worganizations/{organization}/locations/{location}/encryptionConfigs/{encryption_config}\"\x85\x02\n" +
+	"\x1dCreateEncryptionConfigRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",dataplex.googleapis.com/OrganizationLocationR\x06parent\x126\n" +
+	"\x14encryption_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12encryptionConfigId\x12]\n" +
+	"\x11encryption_config\x18\x03 \x01(\v2*.google.cloud.dataplex.v1.EncryptionConfigB\x04\xe2A\x01\x02R\x10encryptionConfig\"c\n" +
+	"\x1aGetEncryptionConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dataplex.googleapis.com/EncryptionConfigR\x04name\"\xc1\x01\n" +
+	"\x1dUpdateEncryptionConfigRequest\x12]\n" +
+	"\x11encryption_config\x18\x01 \x01(\v2*.google.cloud.dataplex.v1.EncryptionConfigB\x04\xe2A\x01\x02R\x10encryptionConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x80\x01\n" +
+	"\x1dDeleteEncryptionConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dataplex.googleapis.com/EncryptionConfigR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xf0\x01\n" +
+	"\x1cListEncryptionConfigsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(dataplex.googleapis.com/EncryptionConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xff\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xff\x01\n" +
 	"\x1dListEncryptionConfigsResponse\x12Y\n" +
 	"\x12encryption_configs\x18\x01 \x03(\v2*.google.cloud.dataplex.v1.EncryptionConfigR\x11encryptionConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12[\n" +

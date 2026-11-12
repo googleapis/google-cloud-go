@@ -329,26 +329,26 @@ var File_google_shopping_merchant_accounts_v1_homepage_proto protoreflect.FileDe
 
 const file_google_shopping_merchant_accounts_v1_homepage_proto_rawDesc = "" +
 	"\n" +
-	"3google/shopping/merchant/accounts/v1/homepage.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xc2\x01\n" +
-	"\bHomepage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1a\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x02H\x00R\x03uri\x88\x01\x01\x12\x1d\n" +
-	"\aclaimed\x18\x03 \x01(\bB\x03\xe0A\x03R\aclaimed:Z\xeaAW\n" +
+	"3google/shopping/merchant/accounts/v1/homepage.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xc5\x01\n" +
+	"\bHomepage\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1b\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x00R\x03uri\x88\x01\x01\x12\x1e\n" +
+	"\aclaimed\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\aclaimed:Z\xeaAW\n" +
 	"#merchantapi.googleapis.com/Homepage\x12\x1baccounts/{account}/homepage*\thomepages2\bhomepageB\x06\n" +
-	"\x04_uri\"U\n" +
-	"\x12GetHomepageRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#merchantapi.googleapis.com/HomepageR\x04name\"\xaa\x01\n" +
-	"\x15UpdateHomepageRequest\x12O\n" +
-	"\bhomepage\x18\x01 \x01(\v2..google.shopping.merchant.accounts.v1.HomepageB\x03\xe0A\x02R\bhomepage\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"z\n" +
-	"\x14ClaimHomepageRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#merchantapi.googleapis.com/HomepageR\x04name\x12!\n" +
-	"\toverwrite\x18\x02 \x01(\bB\x03\xe0A\x01R\toverwrite\"Y\n" +
-	"\x16UnclaimHomepageRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x04_uri\"V\n" +
+	"\x12GetHomepageRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#merchantapi.googleapis.com/HomepageR\x04name\"\xac\x01\n" +
+	"\x15UpdateHomepageRequest\x12P\n" +
+	"\bhomepage\x18\x01 \x01(\v2..google.shopping.merchant.accounts.v1.HomepageB\x04\xe2A\x01\x02R\bhomepage\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"|\n" +
+	"\x14ClaimHomepageRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#merchantapi.googleapis.com/HomepageR\x04name\x12\"\n" +
+	"\toverwrite\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\toverwrite\"Z\n" +
+	"\x16UnclaimHomepageRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#merchantapi.googleapis.com/HomepageR\x04name2\xdd\x06\n" +
 	"\x0fHomepageService\x12\xaf\x01\n" +
 	"\vGetHomepage\x128.google.shopping.merchant.accounts.v1.GetHomepageRequest\x1a..google.shopping.merchant.accounts.v1.Homepage\"6\xdaA\x04name\x82\xd3\xe4\x93\x02)\x12'/accounts/v1/{name=accounts/*/homepage}\x12\xd8\x01\n" +

@@ -777,44 +777,44 @@ var File_google_cloud_commerce_consumer_procurement_v1_license_management_servic
 
 const file_google_cloud_commerce_consumer_procurement_v1_license_management_service_proto_rawDesc = "" +
 	"\n" +
-	"Ngoogle/cloud/commerce/consumer/procurement/v1/license_management_service.proto\x12-google.cloud.commerce.consumer.procurement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x03\n" +
+	"Ngoogle/cloud/commerce/consumer/procurement/v1/license_management_service.proto\x12-google.cloud.commerce.consumer.procurement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\x03\n" +
 	"\x12AssignmentProtocol\x12\x8e\x01\n" +
 	"\x16manual_assignment_type\x18\x02 \x01(\v2V.google.cloud.commerce.consumer.procurement.v1.AssignmentProtocol.ManualAssignmentTypeH\x00R\x14manualAssignmentType\x12\x88\x01\n" +
 	"\x14auto_assignment_type\x18\x03 \x01(\v2T.google.cloud.commerce.consumer.procurement.v1.AssignmentProtocol.AutoAssignmentTypeH\x00R\x12autoAssignmentType\x1a\x16\n" +
-	"\x14ManualAssignmentType\x1af\n" +
-	"\x12AutoAssignmentType\x12P\n" +
-	"\x14inactive_license_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x12inactiveLicenseTtlB\x11\n" +
-	"\x0fassignment_type\"\xbe\x03\n" +
-	"\vLicensePool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x86\x01\n" +
-	"\x1blicense_assignment_protocol\x18\x02 \x01(\v2A.google.cloud.commerce.consumer.procurement.v1.AssignmentProtocolB\x03\xe0A\x02R\x19licenseAssignmentProtocol\x12;\n" +
-	"\x17available_license_count\x18\x03 \x01(\x05B\x03\xe0A\x03R\x15availableLicenseCount\x123\n" +
-	"\x13total_license_count\x18\x04 \x01(\x05B\x03\xe0A\x03R\x11totalLicenseCount:\x9a\x01\xeaA\x96\x01\n" +
-	";cloudcommerceconsumerprocurement.googleapis.com/LicensePool\x12<billingAccounts/{billing_account}/orders/{order}/licensePool*\flicensePools2\vlicensePool\"0\n" +
-	"\x15GetLicensePoolRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\xc0\x01\n" +
-	"\x18UpdateLicensePoolRequest\x12b\n" +
-	"\flicense_pool\x18\x01 \x01(\v2:.google.cloud.commerce.consumer.procurement.v1.LicensePoolB\x03\xe0A\x02R\vlicensePool\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"O\n" +
-	"\rAssignRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12!\n" +
-	"\tusernames\x18\x02 \x03(\tB\x03\xe0A\x02R\tusernames\"\x10\n" +
-	"\x0eAssignResponse\"Q\n" +
-	"\x0fUnassignRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12!\n" +
-	"\tusernames\x18\x02 \x03(\tB\x03\xe0A\x02R\tusernames\"\x12\n" +
-	"\x10UnassignResponse\"\x82\x01\n" +
-	"\x1dEnumerateLicensedUsersRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x14ManualAssignmentType\x1ag\n" +
+	"\x12AutoAssignmentType\x12Q\n" +
+	"\x14inactive_license_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x12inactiveLicenseTtlB\x11\n" +
+	"\x0fassignment_type\"\xc2\x03\n" +
+	"\vLicensePool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x87\x01\n" +
+	"\x1blicense_assignment_protocol\x18\x02 \x01(\v2A.google.cloud.commerce.consumer.procurement.v1.AssignmentProtocolB\x04\xe2A\x01\x02R\x19licenseAssignmentProtocol\x12<\n" +
+	"\x17available_license_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x15availableLicenseCount\x124\n" +
+	"\x13total_license_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\x11totalLicenseCount:\x9a\x01\xeaA\x96\x01\n" +
+	";cloudcommerceconsumerprocurement.googleapis.com/LicensePool\x12<billingAccounts/{billing_account}/orders/{order}/licensePool*\flicensePools2\vlicensePool\"1\n" +
+	"\x15GetLicensePoolRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\xc2\x01\n" +
+	"\x18UpdateLicensePoolRequest\x12c\n" +
+	"\flicense_pool\x18\x01 \x01(\v2:.google.cloud.commerce.consumer.procurement.v1.LicensePoolB\x04\xe2A\x01\x02R\vlicensePool\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"Q\n" +
+	"\rAssignRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\"\n" +
+	"\tusernames\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\tusernames\"\x10\n" +
+	"\x0eAssignResponse\"S\n" +
+	"\x0fUnassignRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\"\n" +
+	"\tusernames\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\tusernames\"\x12\n" +
+	"\x10UnassignResponse\"\x85\x01\n" +
+	"\x1dEnumerateLicensedUsersRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xbb\x01\n" +
 	"\fLicensedUser\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12@\n" +
-	"\vassign_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"assignTime\x12K\n" +
-	"\x11recent_usage_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0frecentUsageTime\"\xac\x01\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12A\n" +
+	"\vassign_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"assignTime\x12L\n" +
+	"\x11recent_usage_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0frecentUsageTime\"\xac\x01\n" +
 	"\x1eEnumerateLicensedUsersResponse\x12b\n" +
 	"\x0elicensed_users\x18\x01 \x03(\v2;.google.cloud.commerce.consumer.procurement.v1.LicensedUserR\rlicensedUsers\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xc3\n" +

@@ -253,6 +253,120 @@
         }
       }
     },
+    "CompanionAgents": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CompanionAgentsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCompanionAgent": {
+              "methods": [
+                "CreateCompanionAgent"
+              ]
+            },
+            "DeleteCompanionAgent": {
+              "methods": [
+                "DeleteCompanionAgent"
+              ]
+            },
+            "GetCompanionAgent": {
+              "methods": [
+                "GetCompanionAgent"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCompanionAgents": {
+              "methods": [
+                "ListCompanionAgents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCompanionAgent": {
+              "methods": [
+                "UpdateCompanionAgent"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CompanionAgentsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCompanionAgent": {
+              "methods": [
+                "CreateCompanionAgent"
+              ]
+            },
+            "DeleteCompanionAgent": {
+              "methods": [
+                "DeleteCompanionAgent"
+              ]
+            },
+            "GetCompanionAgent": {
+              "methods": [
+                "GetCompanionAgent"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCompanionAgents": {
+              "methods": [
+                "ListCompanionAgents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCompanionAgent": {
+              "methods": [
+                "UpdateCompanionAgent"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Contexts": {
       "clients": {
         "grpc": {
@@ -1821,6 +1935,11 @@
                 "StreamingAnalyzeContent"
               ]
             },
+            "StreamingReactiveCompanionSuggestions": {
+              "methods": [
+                "StreamingReactiveCompanionSuggestions"
+              ]
+            },
             "SuggestArticles": {
               "methods": [
                 "SuggestArticles"
@@ -1914,6 +2033,11 @@
             "StreamingAnalyzeContent": {
               "methods": [
                 "StreamingAnalyzeContent"
+              ]
+            },
+            "StreamingReactiveCompanionSuggestions": {
+              "methods": [
+                "StreamingReactiveCompanionSuggestions"
               ]
             },
             "SuggestArticles": {

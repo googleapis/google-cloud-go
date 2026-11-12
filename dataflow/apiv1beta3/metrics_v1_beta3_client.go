@@ -234,6 +234,37 @@ func NewMetricsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.GetJobExecutionDetails = append(client.CallOptions.GetJobExecutionDetails, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetStageExecutionDetails = append(client.CallOptions.GetStageExecutionDetails, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetJobMetrics = append(client.CallOptions.GetJobMetrics, gax.WithClientTracing(tracing))
+		client.CallOptions.GetJobExecutionDetails = append(client.CallOptions.GetJobExecutionDetails, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStageExecutionDetails = append(client.CallOptions.GetStageExecutionDetails, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetJobMetrics = append(client.CallOptions.GetJobMetrics, gax.WithClientLogging(logging))
+		client.CallOptions.GetJobExecutionDetails = append(client.CallOptions.GetJobExecutionDetails, gax.WithClientLogging(logging))
+		client.CallOptions.GetStageExecutionDetails = append(client.CallOptions.GetStageExecutionDetails, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -326,6 +357,37 @@ func NewMetricsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.GetJobMetrics = append(callOpts.GetJobMetrics, gax.WithClientMetrics(metrics))
 		callOpts.GetJobExecutionDetails = append(callOpts.GetJobExecutionDetails, gax.WithClientMetrics(metrics))
 		callOpts.GetStageExecutionDetails = append(callOpts.GetStageExecutionDetails, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.GetJobMetrics = append(callOpts.GetJobMetrics, gax.WithClientTracing(tracing))
+		callOpts.GetJobExecutionDetails = append(callOpts.GetJobExecutionDetails, gax.WithClientTracing(tracing))
+		callOpts.GetStageExecutionDetails = append(callOpts.GetStageExecutionDetails, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.GetJobMetrics = append(callOpts.GetJobMetrics, gax.WithClientLogging(logging))
+		callOpts.GetJobExecutionDetails = append(callOpts.GetJobExecutionDetails, gax.WithClientLogging(logging))
+		callOpts.GetStageExecutionDetails = append(callOpts.GetStageExecutionDetails, gax.WithClientLogging(logging))
 	}
 
 	return &MetricsV1Beta3Client{internalClient: c, CallOptions: callOpts}, nil
@@ -499,6 +561,13 @@ func (c *metricsV1Beta3RESTClient) GetJobMetrics(ctx context.Context, req *dataf
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+		req.GetJobId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/metrics", req.GetProjectId(), req.GetLocation(), req.GetJobId())
 
 	params := url.Values{}
@@ -573,6 +642,13 @@ func (c *metricsV1Beta3RESTClient) GetJobExecutionDetails(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetLocation(),
+			req.GetJobId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/executionDetails", req.GetProjectId(), req.GetLocation(), req.GetJobId())
@@ -654,6 +730,14 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetLocation(),
+			req.GetJobId(),
+			req.GetStageId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/stages/%v/executionDetails", req.GetProjectId(), req.GetLocation(), req.GetJobId(), req.GetStageId())

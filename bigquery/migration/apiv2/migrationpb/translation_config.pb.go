@@ -1753,11 +1753,11 @@ const file_google_cloud_bigquery_migration_v2_translation_config_proto_rawDesc =
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x16\n" +
 	"\x06schema\x18\x02 \x01(\tR\x06schema\x12\x1a\n" +
 	"\brelation\x18\x03 \x01(\tR\brelation\x12\x1c\n" +
-	"\tattribute\x18\x04 \x01(\tR\tattribute\"\x9f\x01\n" +
+	"\tattribute\x18\x04 \x01(\tR\tattribute\"\xa0\x01\n" +
 	"\tSourceEnv\x12)\n" +
 	"\x10default_database\x18\x01 \x01(\tR\x0fdefaultDatabase\x12,\n" +
-	"\x12schema_search_path\x18\x02 \x03(\tR\x10schemaSearchPath\x129\n" +
-	"\x16metadata_store_dataset\x18\x03 \x01(\tB\x03\xe0A\x01R\x14metadataStoreDatasetB\xd2\x01\n" +
+	"\x12schema_search_path\x18\x02 \x03(\tR\x10schemaSearchPath\x12:\n" +
+	"\x16metadata_store_dataset\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x14metadataStoreDatasetB\xd2\x01\n" +
 	"&com.google.cloud.bigquery.migration.v2B\x16TranslationConfigProtoP\x01ZDcloud.google.com/go/bigquery/migration/apiv2/migrationpb;migrationpb\xaa\x02\"Google.Cloud.BigQuery.Migration.V2\xca\x02\"Google\\Cloud\\BigQuery\\Migration\\V2b\x06proto3"
 
 var (

@@ -1547,22 +1547,22 @@ var File_google_cloud_dialogflow_cx_v3_entity_type_proto protoreflect.FileDescri
 
 const file_google_cloud_dialogflow_cx_v3_entity_type_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/dialogflow/cx/v3/entity_type.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/dialogflow/cx/v3/inline.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x98\a\n" +
+	"/google/cloud/dialogflow/cx/v3/entity_type.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/dialogflow/cx/v3/inline.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x9d\a\n" +
 	"\n" +
 	"EntityType\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12G\n" +
-	"\x04kind\x18\x03 \x01(\x0e2..google.cloud.dialogflow.cx.v3.EntityType.KindB\x03\xe0A\x02R\x04kind\x12k\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12H\n" +
+	"\x04kind\x18\x03 \x01(\x0e2..google.cloud.dialogflow.cx.v3.EntityType.KindB\x04\xe2A\x01\x02R\x04kind\x12k\n" +
 	"\x13auto_expansion_mode\x18\x04 \x01(\x0e2;.google.cloud.dialogflow.cx.v3.EntityType.AutoExpansionModeR\x11autoExpansionMode\x12L\n" +
 	"\bentities\x18\x05 \x03(\v20.google.cloud.dialogflow.cx.v3.EntityType.EntityR\bentities\x12c\n" +
 	"\x10excluded_phrases\x18\x06 \x03(\v28.google.cloud.dialogflow.cx.v3.EntityType.ExcludedPhraseR\x0fexcludedPhrases\x126\n" +
 	"\x17enable_fuzzy_extraction\x18\a \x01(\bR\x15enableFuzzyExtraction\x12\x16\n" +
-	"\x06redact\x18\t \x01(\bR\x06redact\x1aD\n" +
-	"\x06Entity\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\tB\x03\xe0A\x02R\x05value\x12\x1f\n" +
-	"\bsynonyms\x18\x02 \x03(\tB\x03\xe0A\x02R\bsynonyms\x1a+\n" +
-	"\x0eExcludedPhrase\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\tB\x03\xe0A\x02R\x05value\"J\n" +
+	"\x06redact\x18\t \x01(\bR\x06redact\x1aF\n" +
+	"\x06Entity\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05value\x12 \n" +
+	"\bsynonyms\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\bsynonyms\x1a,\n" +
+	"\x0eExcludedPhrase\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05value\"J\n" +
 	"\x04Kind\x12\x14\n" +
 	"\x10KIND_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bKIND_MAP\x10\x01\x12\r\n" +
@@ -1571,15 +1571,15 @@ const file_google_cloud_dialogflow_cx_v3_entity_type_proto_rawDesc = "" +
 	"\x11AutoExpansionMode\x12#\n" +
 	"\x1fAUTO_EXPANSION_MODE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bAUTO_EXPANSION_MODE_DEFAULT\x10\x01:{\xeaAx\n" +
-	"$dialogflow.googleapis.com/EntityType\x12Pprojects/{project}/locations/{location}/agents/{agent}/entityTypes/{entity_type}\"\xe9\x03\n" +
-	"\x18ExportEntityTypesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12&\n" +
-	"\fentity_types\x18\x02 \x03(\tB\x03\xe0A\x02R\ventityTypes\x12/\n" +
-	"\x10entity_types_uri\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x0eentityTypesUri\x12D\n" +
-	"\x1bentity_types_content_inline\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\x18entityTypesContentInline\x12h\n" +
-	"\vdata_format\x18\x05 \x01(\x0e2B.google.cloud.dialogflow.cx.v3.ExportEntityTypesRequest.DataFormatB\x03\xe0A\x01R\n" +
-	"dataFormat\x12(\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x03\xe0A\x01R\flanguageCode\"E\n" +
+	"$dialogflow.googleapis.com/EntityType\x12Pprojects/{project}/locations/{location}/agents/{agent}/entityTypes/{entity_type}\"\xef\x03\n" +
+	"\x18ExportEntityTypesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12'\n" +
+	"\fentity_types\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\ventityTypes\x120\n" +
+	"\x10entity_types_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x0eentityTypesUri\x12E\n" +
+	"\x1bentity_types_content_inline\x18\x04 \x01(\bB\x04\xe2A\x01\x01H\x00R\x18entityTypesContentInline\x12i\n" +
+	"\vdata_format\x18\x05 \x01(\x0e2B.google.cloud.dialogflow.cx.v3.ExportEntityTypesRequest.DataFormatB\x04\xe2A\x01\x01R\n" +
+	"dataFormat\x12)\n" +
+	"\rlanguage_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"E\n" +
 	"\n" +
 	"DataFormat\x12\x1b\n" +
 	"\x17DATA_FORMAT_UNSPECIFIED\x10\x00\x12\b\n" +
@@ -1590,13 +1590,13 @@ const file_google_cloud_dialogflow_cx_v3_entity_type_proto_rawDesc = "" +
 	"\x10entity_types_uri\x18\x01 \x01(\tH\x00R\x0eentityTypesUri\x12d\n" +
 	"\x14entity_types_content\x18\x02 \x01(\v20.google.cloud.dialogflow.cx.v3.InlineDestinationH\x00R\x12entityTypesContentB\x17\n" +
 	"\x15exported_entity_types\"\x1b\n" +
-	"\x19ExportEntityTypesMetadata\"\xb6\x04\n" +
-	"\x18ImportEntityTypesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12*\n" +
+	"\x19ExportEntityTypesMetadata\"\xb9\x04\n" +
+	"\x18ImportEntityTypesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12*\n" +
 	"\x10entity_types_uri\x18\x02 \x01(\tH\x00R\x0eentityTypesUri\x12_\n" +
-	"\x14entity_types_content\x18\x03 \x01(\v2+.google.cloud.dialogflow.cx.v3.InlineSourceH\x00R\x12entityTypesContent\x12k\n" +
-	"\fmerge_option\x18\x04 \x01(\x0e2C.google.cloud.dialogflow.cx.v3.ImportEntityTypesRequest.MergeOptionB\x03\xe0A\x02R\vmergeOption\x12Z\n" +
-	"\x12target_entity_type\x18\x05 \x01(\tB,\xe0A\x01\xfaA&\n" +
+	"\x14entity_types_content\x18\x03 \x01(\v2+.google.cloud.dialogflow.cx.v3.InlineSourceH\x00R\x12entityTypesContent\x12l\n" +
+	"\fmerge_option\x18\x04 \x01(\x0e2C.google.cloud.dialogflow.cx.v3.ImportEntityTypesRequest.MergeOptionB\x04\xe2A\x01\x02R\vmergeOption\x12[\n" +
+	"\x12target_entity_type\x18\x05 \x01(\tB-\xe2A\x01\x01\xfaA&\n" +
 	"$dialogflow.googleapis.com/EntityTypeR\x10targetEntityType\"n\n" +
 	"\vMergeOption\x12\x1c\n" +
 	"\x18MERGE_OPTION_UNSPECIFIED\x10\x00\x12\v\n" +
@@ -1614,33 +1614,33 @@ const file_google_cloud_dialogflow_cx_v3_entity_type_proto_rawDesc = "" +
 	"\x14ConflictingResources\x129\n" +
 	"\x19entity_type_display_names\x18\x01 \x03(\tR\x16entityTypeDisplayNames\x120\n" +
 	"\x14entity_display_names\x18\x02 \x03(\tR\x12entityDisplayNames\"\x1b\n" +
-	"\x19ImportEntityTypesMetadata\"\xbf\x01\n" +
-	"\x16ListEntityTypesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12#\n" +
+	"\x19ImportEntityTypesMetadata\"\xc0\x01\n" +
+	"\x16ListEntityTypesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x8f\x01\n" +
 	"\x17ListEntityTypesResponse\x12L\n" +
 	"\fentity_types\x18\x01 \x03(\v2).google.cloud.dialogflow.cx.v3.EntityTypeR\ventityTypes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"}\n" +
-	"\x14GetEntityTypeRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"~\n" +
+	"\x14GetEntityTypeRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$dialogflow.googleapis.com/EntityTypeR\x04name\x12#\n" +
-	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\xd5\x01\n" +
-	"\x17CreateEntityTypeRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12O\n" +
-	"\ventity_type\x18\x02 \x01(\v2).google.cloud.dialogflow.cx.v3.EntityTypeB\x03\xe0A\x02R\n" +
+	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\xd7\x01\n" +
+	"\x17CreateEntityTypeRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12P\n" +
+	"\ventity_type\x18\x02 \x01(\v2).google.cloud.dialogflow.cx.v3.EntityTypeB\x04\xe2A\x01\x02R\n" +
 	"entityType\x12#\n" +
-	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"\xcc\x01\n" +
-	"\x17UpdateEntityTypeRequest\x12O\n" +
-	"\ventity_type\x18\x01 \x01(\v2).google.cloud.dialogflow.cx.v3.EntityTypeB\x03\xe0A\x02R\n" +
+	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"\xcd\x01\n" +
+	"\x17UpdateEntityTypeRequest\x12P\n" +
+	"\ventity_type\x18\x01 \x01(\v2).google.cloud.dialogflow.cx.v3.EntityTypeB\x04\xe2A\x01\x02R\n" +
 	"entityType\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"q\n" +
-	"\x17DeleteEntityTypeRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"updateMask\"r\n" +
+	"\x17DeleteEntityTypeRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$dialogflow.googleapis.com/EntityTypeR\x04name\x12\x14\n" +
 	"\x05force\x18\x02 \x01(\bR\x05force2\xef\f\n" +
 	"\vEntityTypes\x12\xb8\x01\n" +

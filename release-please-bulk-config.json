@@ -348,6 +348,11 @@
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/apiv1/snippet_metadata.google.cloud.backupdr.v1.json",
           "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.backupdr.v1beta.json",
+          "type": "json"
         }
       ]
     },
@@ -513,16 +518,6 @@
         {
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/apiv1/snippet_metadata.google.chat.v1.json",
-          "type": "json"
-        }
-      ]
-    },
-    "chronicle": {
-      "component": "chronicle",
-      "extra-files": [
-        {
-          "jsonpath": "$.clientLibrary.version",
-          "path": "examples/apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
           "type": "json"
         }
       ]
@@ -874,6 +869,16 @@
         {
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/apiv1/snippet_metadata.google.cloud.deploy.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "designcenter": {
+      "component": "designcenter",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.designcenter.v1.json",
           "type": "json"
         }
       ]
@@ -1626,6 +1631,11 @@
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/apiv1/snippet_metadata.google.cloud.networkservices.v1.json",
           "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.networkservices.v1beta1.json",
+          "type": "json"
         }
       ]
     },
@@ -1645,6 +1655,16 @@
         {
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/apiv2/snippet_metadata.google.cloud.notebooks.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "observability": {
+      "component": "observability",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.observability.v1.json",
           "type": "json"
         }
       ]
@@ -1947,6 +1967,11 @@
       "extra-files": [
         {
           "jsonpath": "$.clientLibrary.version",
+          "path": "examples/saasservicemgmt/apiv1/snippet_metadata.google.cloud.saasplatform.saasservicemgmt.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
           "path": "examples/saasservicemgmt/apiv1beta1/snippet_metadata.google.cloud.saasplatform.saasservicemgmt.v1beta1.json",
           "type": "json"
         }
@@ -2197,6 +2222,11 @@
         },
         {
           "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/loyaltycustomers/apiv1/snippet_metadata.google.shopping.merchant.loyaltycustomers.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
           "path": "examples/merchant/notifications/apiv1/snippet_metadata.google.shopping.merchant.notifications.v1.json",
           "type": "json"
         },
@@ -2258,6 +2288,11 @@
         {
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/merchant/reports/apiv1beta/snippet_metadata.google.shopping.merchant.reports.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/reviews/apiv1/snippet_metadata.google.shopping.merchant.reviews.v1.json",
           "type": "json"
         },
         {

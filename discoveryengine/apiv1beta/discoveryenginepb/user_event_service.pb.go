@@ -205,20 +205,20 @@ var File_google_cloud_discoveryengine_v1beta_user_event_service_proto protorefle
 
 const file_google_cloud_discoveryengine_v1beta_user_event_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1beta/user_event_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/discoveryengine/v1beta/import_config.proto\x1a6google/cloud/discoveryengine/v1beta/purge_config.proto\x1a4google/cloud/discoveryengine/v1beta/user_event.proto\x1a#google/longrunning/operations.proto\"\xea\x01\n" +
-	"\x15WriteUserEventRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12W\n" +
+	"<google/cloud/discoveryengine/v1beta/user_event_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/discoveryengine/v1beta/import_config.proto\x1a6google/cloud/discoveryengine/v1beta/purge_config.proto\x1a4google/cloud/discoveryengine/v1beta/user_event.proto\x1a#google/longrunning/operations.proto\"\xec\x01\n" +
+	"\x15WriteUserEventRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12X\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1beta.UserEventB\x03\xe0A\x02H\x00R\tuserEvent\x88\x01\x01\x12\x1f\n" +
+	"user_event\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1beta.UserEventB\x04\xe2A\x01\x02H\x00R\tuserEvent\x88\x01\x01\x12\x1f\n" +
 	"\vwrite_async\x18\x03 \x01(\bR\n" +
 	"writeAsyncB\r\n" +
-	"\v_user_event\"\xc5\x01\n" +
-	"\x17CollectUserEventRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\"\n" +
+	"\v_user_event\"\xc7\x01\n" +
+	"\x17CollectUserEventRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12#\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\tB\x03\xe0A\x02R\tuserEvent\x12\x15\n" +
+	"user_event\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tuserEvent\x12\x15\n" +
 	"\x03uri\x18\x03 \x01(\tH\x00R\x03uri\x88\x01\x01\x12\x15\n" +
 	"\x03ets\x18\x04 \x01(\x03H\x01R\x03ets\x88\x01\x01B\x06\n" +
 	"\x04_uriB\x06\n" +

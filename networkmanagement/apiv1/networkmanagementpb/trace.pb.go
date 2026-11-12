@@ -186,6 +186,8 @@ const (
 	Step_START_FROM_SERVERLESS_NEG Step_State = 31
 	// Initial state: packet originating from a DMS Private Connection.
 	Step_START_FROM_DMS_PRIVATE_CONNECTION Step_State = 48
+	// Initial state: packet originating from a Datastream Private Connection.
+	Step_START_FROM_DATASTREAM_PRIVATE_CONNECTION Step_State = 49
 	// Config checking state: verify ingress firewall rule.
 	Step_APPLY_INGRESS_FIREWALL_RULE Step_State = 4
 	// Config checking state: verify egress firewall rule.
@@ -225,8 +227,8 @@ const (
 	// Forwarding state: for packets originating from a serverless endpoint
 	// forwarded through Direct VPC egress.
 	Step_DIRECT_VPC_EGRESS_CONNECTION Step_State = 35
-	// Forwarding state: for packets originating from a serverless endpoint
-	// forwarded through public (external) connectivity.
+	// Forwarding state: for packets originating from a serverless
+	// endpoint forwarded through public (external) connectivity.
 	Step_SERVERLESS_EXTERNAL_CONNECTION Step_State = 36
 	// Forwarding state: Layer 7 packet inspection by the firewall endpoint
 	// based on the configured security profile group.
@@ -285,6 +287,7 @@ var (
 		30: "START_FROM_PSC_PUBLISHED_SERVICE",
 		31: "START_FROM_SERVERLESS_NEG",
 		48: "START_FROM_DMS_PRIVATE_CONNECTION",
+		49: "START_FROM_DATASTREAM_PRIVATE_CONNECTION",
 		4:  "APPLY_INGRESS_FIREWALL_RULE",
 		5:  "APPLY_EGRESS_FIREWALL_RULE",
 		6:  "APPLY_ROUTE",
@@ -317,54 +320,55 @@ var (
 		20: "VIEWER_PERMISSION_MISSING",
 	}
 	Step_State_value = map[string]int32{
-		"STATE_UNSPECIFIED":                 0,
-		"START_FROM_INSTANCE":               1,
-		"START_FROM_INTERNET":               2,
-		"START_FROM_GOOGLE_SERVICE":         27,
-		"START_FROM_PRIVATE_NETWORK":        3,
-		"START_FROM_GKE_MASTER":             21,
-		"START_FROM_CLOUD_SQL_INSTANCE":     22,
-		"START_FROM_GKE_POD":                39,
-		"START_FROM_REDIS_INSTANCE":         32,
-		"START_FROM_REDIS_CLUSTER":          33,
-		"START_FROM_CLOUD_FUNCTION":         23,
-		"START_FROM_APP_ENGINE_VERSION":     25,
-		"START_FROM_CLOUD_RUN_REVISION":     26,
-		"START_FROM_CLOUD_RUN_JOB":          50,
-		"START_FROM_STORAGE_BUCKET":         29,
-		"START_FROM_PSC_PUBLISHED_SERVICE":  30,
-		"START_FROM_SERVERLESS_NEG":         31,
-		"START_FROM_DMS_PRIVATE_CONNECTION": 48,
-		"APPLY_INGRESS_FIREWALL_RULE":       4,
-		"APPLY_EGRESS_FIREWALL_RULE":        5,
-		"APPLY_ROUTE":                       6,
-		"APPLY_FORWARDING_RULE":             7,
-		"ANALYZE_LOAD_BALANCER_BACKEND":     28,
-		"SPOOFING_APPROVED":                 8,
-		"ARRIVE_AT_INSTANCE":                9,
-		"ARRIVE_AT_INTERNAL_LOAD_BALANCER":  10,
-		"ARRIVE_AT_EXTERNAL_LOAD_BALANCER":  11,
-		"ARRIVE_AT_HYBRID_SUBNET":           38,
-		"ARRIVE_AT_VPN_GATEWAY":             12,
-		"ARRIVE_AT_VPN_TUNNEL":              13,
-		"ARRIVE_AT_INTERCONNECT_ATTACHMENT": 37,
-		"ARRIVE_AT_VPC_CONNECTOR":           24,
-		"ARRIVE_AT_GKE_POD":                 44,
-		"DIRECT_VPC_EGRESS_CONNECTION":      35,
-		"SERVERLESS_EXTERNAL_CONNECTION":    36,
-		"NGFW_PACKET_INSPECTION":            47,
-		"NAT":                               14,
-		"SKIP_GKE_POD_IP_MASQUERADING":      40,
-		"SKIP_GKE_INGRESS_NETWORK_POLICY":   41,
-		"SKIP_GKE_EGRESS_NETWORK_POLICY":    42,
-		"APPLY_INGRESS_GKE_NETWORK_POLICY":  45,
-		"APPLY_EGRESS_GKE_NETWORK_POLICY":   46,
-		"PROXY_CONNECTION":                  15,
-		"DELIVER":                           16,
-		"DROP":                              17,
-		"FORWARD":                           18,
-		"ABORT":                             19,
-		"VIEWER_PERMISSION_MISSING":         20,
+		"STATE_UNSPECIFIED":                        0,
+		"START_FROM_INSTANCE":                      1,
+		"START_FROM_INTERNET":                      2,
+		"START_FROM_GOOGLE_SERVICE":                27,
+		"START_FROM_PRIVATE_NETWORK":               3,
+		"START_FROM_GKE_MASTER":                    21,
+		"START_FROM_CLOUD_SQL_INSTANCE":            22,
+		"START_FROM_GKE_POD":                       39,
+		"START_FROM_REDIS_INSTANCE":                32,
+		"START_FROM_REDIS_CLUSTER":                 33,
+		"START_FROM_CLOUD_FUNCTION":                23,
+		"START_FROM_APP_ENGINE_VERSION":            25,
+		"START_FROM_CLOUD_RUN_REVISION":            26,
+		"START_FROM_CLOUD_RUN_JOB":                 50,
+		"START_FROM_STORAGE_BUCKET":                29,
+		"START_FROM_PSC_PUBLISHED_SERVICE":         30,
+		"START_FROM_SERVERLESS_NEG":                31,
+		"START_FROM_DMS_PRIVATE_CONNECTION":        48,
+		"START_FROM_DATASTREAM_PRIVATE_CONNECTION": 49,
+		"APPLY_INGRESS_FIREWALL_RULE":              4,
+		"APPLY_EGRESS_FIREWALL_RULE":               5,
+		"APPLY_ROUTE":                              6,
+		"APPLY_FORWARDING_RULE":                    7,
+		"ANALYZE_LOAD_BALANCER_BACKEND":            28,
+		"SPOOFING_APPROVED":                        8,
+		"ARRIVE_AT_INSTANCE":                       9,
+		"ARRIVE_AT_INTERNAL_LOAD_BALANCER":         10,
+		"ARRIVE_AT_EXTERNAL_LOAD_BALANCER":         11,
+		"ARRIVE_AT_HYBRID_SUBNET":                  38,
+		"ARRIVE_AT_VPN_GATEWAY":                    12,
+		"ARRIVE_AT_VPN_TUNNEL":                     13,
+		"ARRIVE_AT_INTERCONNECT_ATTACHMENT":        37,
+		"ARRIVE_AT_VPC_CONNECTOR":                  24,
+		"ARRIVE_AT_GKE_POD":                        44,
+		"DIRECT_VPC_EGRESS_CONNECTION":             35,
+		"SERVERLESS_EXTERNAL_CONNECTION":           36,
+		"NGFW_PACKET_INSPECTION":                   47,
+		"NAT":                                      14,
+		"SKIP_GKE_POD_IP_MASQUERADING":             40,
+		"SKIP_GKE_INGRESS_NETWORK_POLICY":          41,
+		"SKIP_GKE_EGRESS_NETWORK_POLICY":           42,
+		"APPLY_INGRESS_GKE_NETWORK_POLICY":         45,
+		"APPLY_EGRESS_GKE_NETWORK_POLICY":          46,
+		"PROXY_CONNECTION":                         15,
+		"DELIVER":                                  16,
+		"DROP":                                     17,
+		"FORWARD":                                  18,
+		"ABORT":                                    19,
+		"VIEWER_PERMISSION_MISSING":                20,
 	}
 )
 
@@ -1281,6 +1285,8 @@ const (
 	DeliverInfo_CLOUD_RUN_JOB DeliverInfo_Target = 20
 	// Target is a DMS Private Connection. Used only for return traces.
 	DeliverInfo_DMS_PRIVATE_CONNECTION DeliverInfo_Target = 21
+	// Target is a Datastream Private Connection. Used only for return traces.
+	DeliverInfo_DATASTREAM_PRIVATE_CONNECTION DeliverInfo_Target = 22
 )
 
 // Enum value maps for DeliverInfo_Target.
@@ -1307,29 +1313,31 @@ var (
 		19: "GKE_POD",
 		20: "CLOUD_RUN_JOB",
 		21: "DMS_PRIVATE_CONNECTION",
+		22: "DATASTREAM_PRIVATE_CONNECTION",
 	}
 	DeliverInfo_Target_value = map[string]int32{
-		"TARGET_UNSPECIFIED":     0,
-		"INSTANCE":               1,
-		"INTERNET":               2,
-		"GOOGLE_API":             3,
-		"GKE_MASTER":             4,
-		"CLOUD_SQL_INSTANCE":     5,
-		"PSC_PUBLISHED_SERVICE":  6,
-		"PSC_GOOGLE_API":         7,
-		"PSC_VPC_SC":             8,
-		"SERVERLESS_NEG":         9,
-		"STORAGE_BUCKET":         10,
-		"PRIVATE_NETWORK":        11,
-		"CLOUD_FUNCTION":         12,
-		"APP_ENGINE_VERSION":     13,
-		"CLOUD_RUN_REVISION":     14,
-		"GOOGLE_MANAGED_SERVICE": 15,
-		"REDIS_INSTANCE":         16,
-		"REDIS_CLUSTER":          17,
-		"GKE_POD":                19,
-		"CLOUD_RUN_JOB":          20,
-		"DMS_PRIVATE_CONNECTION": 21,
+		"TARGET_UNSPECIFIED":            0,
+		"INSTANCE":                      1,
+		"INTERNET":                      2,
+		"GOOGLE_API":                    3,
+		"GKE_MASTER":                    4,
+		"CLOUD_SQL_INSTANCE":            5,
+		"PSC_PUBLISHED_SERVICE":         6,
+		"PSC_GOOGLE_API":                7,
+		"PSC_VPC_SC":                    8,
+		"SERVERLESS_NEG":                9,
+		"STORAGE_BUCKET":                10,
+		"PRIVATE_NETWORK":               11,
+		"CLOUD_FUNCTION":                12,
+		"APP_ENGINE_VERSION":            13,
+		"CLOUD_RUN_REVISION":            14,
+		"GOOGLE_MANAGED_SERVICE":        15,
+		"REDIS_INSTANCE":                16,
+		"REDIS_CLUSTER":                 17,
+		"GKE_POD":                       19,
+		"CLOUD_RUN_JOB":                 20,
+		"DMS_PRIVATE_CONNECTION":        21,
+		"DATASTREAM_PRIVATE_CONNECTION": 22,
 	}
 )
 
@@ -1916,6 +1924,8 @@ const (
 	DropInfo_DROPPED_INSIDE_CLOUD_SQL_SERVICE DropInfo_Cause = 19
 	// Packet was dropped inside DMS Private Connection.
 	DropInfo_DROPPED_INSIDE_DMS_PRIVATE_CONNECTION DropInfo_Cause = 114
+	// Packet was dropped inside Datastream Private Connection.
+	DropInfo_DROPPED_INSIDE_DATASTREAM_PRIVATE_CONNECTION DropInfo_Cause = 115
 	// Packet was dropped because there is no peering between the originating
 	// network and the Google Managed Services Network.
 	DropInfo_GOOGLE_MANAGED_SERVICE_NO_PEERING DropInfo_Cause = 20
@@ -2166,6 +2176,7 @@ var (
 		18:  "DROPPED_INSIDE_GKE_SERVICE",
 		19:  "DROPPED_INSIDE_CLOUD_SQL_SERVICE",
 		114: "DROPPED_INSIDE_DMS_PRIVATE_CONNECTION",
+		115: "DROPPED_INSIDE_DATASTREAM_PRIVATE_CONNECTION",
 		20:  "GOOGLE_MANAGED_SERVICE_NO_PEERING",
 		38:  "GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT",
 		36:  "GKE_PSC_ENDPOINT_MISSING",
@@ -2276,6 +2287,7 @@ var (
 		"DROPPED_INSIDE_GKE_SERVICE":                                 18,
 		"DROPPED_INSIDE_CLOUD_SQL_SERVICE":                           19,
 		"DROPPED_INSIDE_DMS_PRIVATE_CONNECTION":                      114,
+		"DROPPED_INSIDE_DATASTREAM_PRIVATE_CONNECTION":               115,
 		"GOOGLE_MANAGED_SERVICE_NO_PEERING":                          20,
 		"GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT":                     38,
 		"GKE_PSC_ENDPOINT_MISSING":                                   36,
@@ -2864,6 +2876,7 @@ type Step struct {
 	//	*Step_ServerlessNeg
 	//	*Step_NgfwPacketInspection
 	//	*Step_DmsPrivateConnection
+	//	*Step_DatastreamPrivateConnection
 	StepInfo      isStep_StepInfo `protobuf_oneof:"step_info"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3277,6 +3290,15 @@ func (x *Step) GetDmsPrivateConnection() *PrivateConnectionInfo {
 	return nil
 }
 
+func (x *Step) GetDatastreamPrivateConnection() *PrivateConnectionInfo {
+	if x != nil {
+		if x, ok := x.StepInfo.(*Step_DatastreamPrivateConnection); ok {
+			return x.DatastreamPrivateConnection
+		}
+	}
+	return nil
+}
+
 type isStep_StepInfo interface {
 	isStep_StepInfo()
 }
@@ -3480,6 +3502,11 @@ type Step_DmsPrivateConnection struct {
 	DmsPrivateConnection *PrivateConnectionInfo `protobuf:"bytes,43,opt,name=dms_private_connection,json=dmsPrivateConnection,proto3,oneof"`
 }
 
+type Step_DatastreamPrivateConnection struct {
+	// Display information of a Datastream Private Connection.
+	DatastreamPrivateConnection *PrivateConnectionInfo `protobuf:"bytes,44,opt,name=datastream_private_connection,json=datastreamPrivateConnection,proto3,oneof"`
+}
+
 func (*Step_Instance) isStep_StepInfo() {}
 
 func (*Step_Firewall) isStep_StepInfo() {}
@@ -3556,16 +3583,20 @@ func (*Step_NgfwPacketInspection) isStep_StepInfo() {}
 
 func (*Step_DmsPrivateConnection) isStep_StepInfo() {}
 
+func (*Step_DatastreamPrivateConnection) isStep_StepInfo() {}
+
 // For display only. Metadata associated with a Compute Engine instance.
 type InstanceInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a Compute Engine instance.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a Compute Engine instance.
+	// URI of a Compute Engine instance in format
+	// "projects/{project}/zones/{zone}/instances/{instance}"
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Name of the network interface of a Compute Engine instance.
 	Interface string `protobuf:"bytes,3,opt,name=interface,proto3" json:"interface,omitempty"`
-	// URI of a Compute Engine network.
+	// URI of a Compute Engine network in format
+	// "projects/{project}/global/networks/{network}"
 	NetworkUri string `protobuf:"bytes,4,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	// Internal IP address of the network interface.
 	InternalIp string `protobuf:"bytes,5,opt,name=internal_ip,json=internalIp,proto3" json:"internal_ip,omitempty"`
@@ -3577,7 +3608,9 @@ type InstanceInfo struct {
 	//
 	// Deprecated: Marked as deprecated in google/cloud/networkmanagement/v1/trace.proto.
 	ServiceAccount string `protobuf:"bytes,8,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
-	// URI of the PSC network attachment the NIC is attached to (if relevant).
+	// URI of the PSC network attachment the NIC is attached to (if relevant) in
+	// format
+	// "projects/{project}/regions/{region}/networkAttachments/{network_attachment}"
 	PscNetworkAttachmentUri string `protobuf:"bytes,9,opt,name=psc_network_attachment_uri,json=pscNetworkAttachmentUri,proto3" json:"psc_network_attachment_uri,omitempty"`
 	// Indicates whether the Compute Engine instance is running.
 	// Deprecated: use the `status` field instead.
@@ -3704,9 +3737,11 @@ type NetworkInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a Compute Engine network.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a Compute Engine network.
+	// URI of a Compute Engine network in format
+	// "projects/{project}/global/networks/{network}"
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
-	// URI of the subnet matching the source IP address of the test.
+	// URI of the subnet matching the source IP address of the test in format
+	// "projects/{project}/regions/{region}/subnetworks/{subnetwork}"
 	MatchedSubnetUri string `protobuf:"bytes,5,opt,name=matched_subnet_uri,json=matchedSubnetUri,proto3" json:"matched_subnet_uri,omitempty"`
 	// The IP range of the subnet matching the source IP address of the test.
 	MatchedIpRange string `protobuf:"bytes,4,opt,name=matched_ip_range,json=matchedIpRange,proto3" json:"matched_ip_range,omitempty"`
@@ -3788,8 +3823,9 @@ type FirewallInfo struct {
 	// The display name of the firewall rule. This field might be empty for
 	// firewall policy rules.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// The URI of the firewall rule. This field is not applicable to implied
-	// VPC firewall rules.
+	// The URI of the firewall rule in format
+	// "projects/{project}/global/firewalls/{firewall}". This field is not
+	// applicable to implied VPC firewall rules.
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Possible values: INGRESS, EGRESS
 	Direction string `protobuf:"bytes,3,opt,name=direction,proto3" json:"direction,omitempty"`
@@ -3797,7 +3833,8 @@ type FirewallInfo struct {
 	Action string `protobuf:"bytes,4,opt,name=action,proto3" json:"action,omitempty"`
 	// The priority of the firewall rule.
 	Priority int32 `protobuf:"varint,5,opt,name=priority,proto3" json:"priority,omitempty"`
-	// The URI of the VPC network that the firewall rule is associated with.
+	// The URI of the VPC network that the firewall rule is associated with in
+	// format "projects/{project}/global/networks/{network}".
 	// This field is not applicable to hierarchical firewall policy rules.
 	NetworkUri string `protobuf:"bytes,6,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	// The target tags defined by the VPC firewall rule. This field is not
@@ -3812,6 +3849,12 @@ type FirewallInfo struct {
 	// The URI of the firewall policy that this rule is associated with.
 	// This field is not applicable to VPC firewall rules and implied VPC firewall
 	// rules.
+	// Format:
+	// * `locations/global/firewallPolicies/{policy_id}` (hierarchical policy)
+	// * `projects/{project_id}/global/firewallPolicies/{policy_id}` (global
+	// network firewall policy)
+	// * `projects/{project_id}/regions/{region}/firewallPolicies/{policy_id}`
+	// (regional network firewall policy)
 	PolicyUri string `protobuf:"bytes,11,opt,name=policy_uri,json=policyUri,proto3" json:"policy_uri,omitempty"`
 	// The firewall rule's type.
 	FirewallRuleType FirewallInfo_FirewallRuleType `protobuf:"varint,10,opt,name=firewall_rule_type,json=firewallRuleType,proto3,enum=google.cloud.networkmanagement.v1.FirewallInfo_FirewallRuleType" json:"firewall_rule_type,omitempty"`
@@ -3960,8 +4003,9 @@ type RouteInfo struct {
 	RouteScope RouteInfo_RouteScope `protobuf:"varint,14,opt,name=route_scope,json=routeScope,proto3,enum=google.cloud.networkmanagement.v1.RouteInfo_RouteScope" json:"route_scope,omitempty"`
 	// Name of a route.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a route. SUBNET, STATIC, PEERING_SUBNET (only for peering network)
-	// and POLICY_BASED routes only.
+	// URI of a route in format
+	// "projects/{project}/global/routes/{route}". SUBNET, STATIC,
+	// PEERING_SUBNET (only for peering network) and POLICY_BASED routes only.
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Region of the route. DYNAMIC, PEERING_DYNAMIC, POLICY_BASED and ADVERTISED
 	// routes only. If set for POLICY_BASED route, this is a region of VLAN
@@ -3977,7 +4021,8 @@ type RouteInfo struct {
 	//
 	// Deprecated: Marked as deprecated in google/cloud/networkmanagement/v1/trace.proto.
 	NextHop string `protobuf:"bytes,4,opt,name=next_hop,json=nextHop,proto3" json:"next_hop,omitempty"`
-	// URI of a VPC network where route is located.
+	// URI of a VPC network where route is located in format
+	// "projects/{project}/global/networks/{network}".
 	NetworkUri string `protobuf:"bytes,5,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	// Priority of the route.
 	Priority int32 `protobuf:"varint,6,opt,name=priority,proto3" json:"priority,omitempty"`
@@ -3991,14 +4036,19 @@ type RouteInfo struct {
 	SrcPortRanges []string `protobuf:"bytes,12,rep,name=src_port_ranges,json=srcPortRanges,proto3" json:"src_port_ranges,omitempty"`
 	// Protocols of the route. POLICY_BASED routes only.
 	Protocols []string `protobuf:"bytes,13,rep,name=protocols,proto3" json:"protocols,omitempty"`
-	// URI of the NCC Hub the route is advertised by. PEERING_SUBNET and
+	// URI of the NCC Hub the route is advertised by in format
+	// "projects/{project}/locations/global/hubs/{hub}". PEERING_SUBNET and
 	// PEERING_DYNAMIC routes that are advertised by NCC Hub only.
 	NccHubUri *string `protobuf:"bytes,15,opt,name=ncc_hub_uri,json=nccHubUri,proto3,oneof" json:"ncc_hub_uri,omitempty"`
-	// URI of the destination NCC Spoke. PEERING_SUBNET and PEERING_DYNAMIC routes
-	// that are advertised by NCC Hub only.
+	// URI of the destination NCC Spoke in format
+	// "projects/{project}/locations/{location}/spokes/{spoke}" (regional) or
+	// "projects/{project}/locations/global/spokes/{spoke}" (global).
+	// PEERING_SUBNET and PEERING_DYNAMIC routes that are advertised by NCC Hub
+	// only.
 	NccSpokeUri *string `protobuf:"bytes,16,opt,name=ncc_spoke_uri,json=nccSpokeUri,proto3,oneof" json:"ncc_spoke_uri,omitempty"`
 	// For ADVERTISED dynamic routes, the URI of the Cloud Router that advertised
-	// the corresponding IP prefix.
+	// the corresponding IP prefix in format
+	// "projects/{project}/regions/{region}/routers/{router}".
 	AdvertisedRouteSourceRouterUri *string `protobuf:"bytes,17,opt,name=advertised_route_source_router_uri,json=advertisedRouteSourceRouterUri,proto3,oneof" json:"advertised_route_source_router_uri,omitempty"`
 	// For ADVERTISED routes, the URI of their next hop, i.e. the URI of the
 	// hybrid endpoint (VPN tunnel, Interconnect attachment, NCC router appliance)
@@ -4010,16 +4060,20 @@ type RouteInfo struct {
 	AdvertisedRouteNextHopUri *string `protobuf:"bytes,18,opt,name=advertised_route_next_hop_uri,json=advertisedRouteNextHopUri,proto3,oneof" json:"advertised_route_next_hop_uri,omitempty"`
 	// URI of the next hop resource.
 	NextHopUri string `protobuf:"bytes,20,opt,name=next_hop_uri,json=nextHopUri,proto3" json:"next_hop_uri,omitempty"`
-	// URI of a VPC network where the next hop resource is located.
+	// URI of a VPC network where the next hop resource is located in format
+	// "projects/{project}/global/networks/{network}".
 	NextHopNetworkUri string `protobuf:"bytes,21,opt,name=next_hop_network_uri,json=nextHopNetworkUri,proto3" json:"next_hop_network_uri,omitempty"`
 	// For PEERING_SUBNET and PEERING_STATIC routes, the URI of the originating
 	// SUBNET/STATIC route.
+	// Format: `projects/{project_id}/global/routes/{route_id}`
 	OriginatingRouteUri string `protobuf:"bytes,22,opt,name=originating_route_uri,json=originatingRouteUri,proto3" json:"originating_route_uri,omitempty"`
 	// For PEERING_SUBNET, PEERING_STATIC and PEERING_DYNAMIC routes, the name of
 	// the originating SUBNET/STATIC/DYNAMIC route.
 	OriginatingRouteDisplayName string `protobuf:"bytes,23,opt,name=originating_route_display_name,json=originatingRouteDisplayName,proto3" json:"originating_route_display_name,omitempty"`
 	// For PEERING_SUBNET and PEERING_DYNAMIC routes that are advertised by NCC
 	// Hub, the URI of the corresponding route in NCC Hub's routing table.
+	// Format:
+	// `projects/{project_id}/locations/global/hubs/{hub_id}/routeTables/{route_table_id}/routes/{route_id}`
 	NccHubRouteUri string `protobuf:"bytes,24,opt,name=ncc_hub_route_uri,json=nccHubRouteUri,proto3" json:"ncc_hub_route_uri,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -4290,7 +4344,10 @@ type ForwardingRuleInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of the forwarding rule.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of the forwarding rule.
+	// URI of the forwarding rule in format
+	// "projects/{project}/global/forwardingRules/{forwarding_rule}" (global) or
+	// "projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}"
+	// (regional).
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Protocol defined in the forwarding rule that matches the packet.
 	MatchedProtocol string `protobuf:"bytes,3,opt,name=matched_protocol,json=matchedProtocol,proto3" json:"matched_protocol,omitempty"`
@@ -4300,7 +4357,8 @@ type ForwardingRuleInfo struct {
 	Vip string `protobuf:"bytes,4,opt,name=vip,proto3" json:"vip,omitempty"`
 	// Target type of the forwarding rule.
 	Target string `protobuf:"bytes,5,opt,name=target,proto3" json:"target,omitempty"`
-	// Network URI.
+	// URI of a VPC network where the forwarding rule is located in format
+	// "projects/{project}/global/networks/{network}".
 	NetworkUri string `protobuf:"bytes,7,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	// Region of the forwarding rule. Set only for regional forwarding rules.
 	Region string `protobuf:"bytes,8,opt,name=region,proto3" json:"region,omitempty"`
@@ -4308,7 +4366,8 @@ type ForwardingRuleInfo struct {
 	// forwarding rules not related to load balancers (like PSC forwarding rules).
 	LoadBalancerName string `protobuf:"bytes,9,opt,name=load_balancer_name,json=loadBalancerName,proto3" json:"load_balancer_name,omitempty"`
 	// URI of the PSC service attachment this forwarding rule targets (if
-	// applicable).
+	// applicable) in format
+	// "projects/{project}/regions/{region}/serviceAttachments/{service_attachment}".
 	PscServiceAttachmentUri string `protobuf:"bytes,10,opt,name=psc_service_attachment_uri,json=pscServiceAttachmentUri,proto3" json:"psc_service_attachment_uri,omitempty"`
 	// PSC Google API target this forwarding rule targets (if applicable).
 	PscGoogleApiTarget string `protobuf:"bytes,11,opt,name=psc_google_api_target,json=pscGoogleApiTarget,proto3" json:"psc_google_api_target,omitempty"`
@@ -4438,7 +4497,12 @@ type LoadBalancerInfo struct {
 	Backends []*LoadBalancerBackend `protobuf:"bytes,3,rep,name=backends,proto3" json:"backends,omitempty"`
 	// Type of load balancer's backend configuration.
 	BackendType LoadBalancerInfo_BackendType `protobuf:"varint,4,opt,name=backend_type,json=backendType,proto3,enum=google.cloud.networkmanagement.v1.LoadBalancerInfo_BackendType" json:"backend_type,omitempty"`
-	// Backend configuration URI.
+	// URI of the backend associated with the load balancer.
+	// Format:
+	// * `projects/{project_id}/regions/{region}/backendServices/{backend_service_id}`
+	// * `projects/{project_id}/global/backendServices/{backend_service_id}`
+	// * `projects/{project_id}/regions/{region}/targetPools/{target_pool_id}`
+	// * `projects/{project_id}/zones/{zone}/targetInstances/{target_instance_id}`
 	BackendUri    string `protobuf:"bytes,5,opt,name=backend_uri,json=backendUri,proto3" json:"backend_uri,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -4515,7 +4579,15 @@ type LoadBalancerBackend struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a Compute Engine instance or network endpoint.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a Compute Engine instance or network endpoint.
+	// URI of the backend instance or network endpoint.
+	// Format:
+	// * `projects/{project_id}/zones/{zone}/instances/{instance_id}` (instance)
+	// * `projects/{project_id}/zones/{zone}/networkEndpointGroups/{neg_id}`
+	// (zonal NEG)
+	// * `projects/{project_id}/regions/{region}/networkEndpointGroups/{neg_id}`
+	// (regional NEG)
+	// * `projects/{project_id}/global/networkEndpointGroups/{neg_id}` (global
+	// NEG)
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// State of the health check firewall configuration.
 	HealthCheckFirewallState LoadBalancerBackend_HealthCheckFirewallState `protobuf:"varint,3,opt,name=health_check_firewall_state,json=healthCheckFirewallState,proto3,enum=google.cloud.networkmanagement.v1.LoadBalancerBackend_HealthCheckFirewallState" json:"health_check_firewall_state,omitempty"`
@@ -4597,7 +4669,9 @@ type HybridSubnetInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a hybrid subnet.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a hybrid subnet.
+	// URI of the hybrid subnet.
+	// Format:
+	// `projects/{project_id}/regions/{region}/subnetworks/{subnetwork_id}`
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Name of a Google Cloud region where the hybrid subnet is configured.
 	Region        string `protobuf:"bytes,3,opt,name=region,proto3" json:"region,omitempty"`
@@ -4661,15 +4735,21 @@ type VpnGatewayInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a VPN gateway.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a VPN gateway.
+	// URI of the VPN gateway.
+	// Format:
+	// * `projects/{project_id}/regions/{region}/vpnGateways/{vpn_gateway_id}` (HA
+	// VPN gateway)
+	// * `projects/{project_id}/regions/{region}/targetVpnGateways/{target_vpn_gateway_id}` (Classic VPN gateway)
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
-	// URI of a Compute Engine network where the VPN gateway is configured.
+	// URI of the VPC network where the VPN gateway is configured.
+	// Format: `projects/{project_id}/global/networks/{network_id}`
 	NetworkUri string `protobuf:"bytes,3,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	// IP address of the VPN gateway.
 	IpAddress string `protobuf:"bytes,4,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
-	// A VPN tunnel that is associated with this VPN gateway.
+	// URI of the VPN tunnel associated with the VPN gateway.
 	// There may be multiple VPN tunnels configured on a VPN gateway, and only
 	// the one relevant to the test is displayed.
+	// Format: `projects/{project_id}/regions/{region}/vpnTunnels/{vpn_tunnel_id}`
 	VpnTunnelUri string `protobuf:"bytes,5,opt,name=vpn_tunnel_uri,json=vpnTunnelUri,proto3" json:"vpn_tunnel_uri,omitempty"`
 	// Name of a Google Cloud region where this VPN gateway is configured.
 	Region        string `protobuf:"bytes,6,opt,name=region,proto3" json:"region,omitempty"`
@@ -4754,17 +4834,28 @@ type VpnTunnelInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a VPN tunnel.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a VPN tunnel.
+	// URI of the VPN tunnel.
+	// Format: `projects/{project_id}/regions/{region}/vpnTunnels/{vpn_tunnel_id}`
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// URI of the VPN gateway at local end of the tunnel.
+	// Format:
+	// * `projects/{project_id}/regions/{region}/vpnGateways/{vpn_gateway_id}` (HA
+	// VPN gateway)
+	// * `projects/{project_id}/regions/{region}/targetVpnGateways/{target_vpn_gateway_id}` (Classic VPN gateway)
 	SourceGateway string `protobuf:"bytes,3,opt,name=source_gateway,json=sourceGateway,proto3" json:"source_gateway,omitempty"`
 	// URI of a VPN gateway at remote end of the tunnel.
+	// Format:
+	// * `projects/{project_id}/regions/{region}/vpnGateways/{vpn_gateway_id}`
+	// (GCP HA VPN gateway)
+	// * `projects/{project_id}/global/peerVpnGateways/{peer_vpn_gateway_id}` (GCP
+	// peer VPN gateway)
 	RemoteGateway string `protobuf:"bytes,4,opt,name=remote_gateway,json=remoteGateway,proto3" json:"remote_gateway,omitempty"`
 	// Remote VPN gateway's IP address.
 	RemoteGatewayIp string `protobuf:"bytes,5,opt,name=remote_gateway_ip,json=remoteGatewayIp,proto3" json:"remote_gateway_ip,omitempty"`
 	// Local VPN gateway's IP address.
 	SourceGatewayIp string `protobuf:"bytes,6,opt,name=source_gateway_ip,json=sourceGatewayIp,proto3" json:"source_gateway_ip,omitempty"`
-	// URI of a Compute Engine network where the VPN tunnel is configured.
+	// URI of the VPC network where the VPN tunnel is configured.
+	// Format: `projects/{project_id}/global/networks/{network_id}`
 	NetworkUri string `protobuf:"bytes,7,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	// Name of a Google Cloud region where this VPN tunnel is configured.
 	Region string `protobuf:"bytes,8,opt,name=region,proto3" json:"region,omitempty"`
@@ -4872,15 +4963,18 @@ type InterconnectAttachmentInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of an Interconnect attachment.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of an Interconnect attachment.
+	// URI of the Interconnect attachment.
+	// Format:
+	// `projects/{project_id}/regions/{region}/interconnectAttachments/{attachment_id}`
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
-	// URI of the Interconnect where the Interconnect attachment is
-	// configured.
+	// URI of the Interconnect.
+	// Format: `projects/{project_id}/global/interconnects/{interconnect_id}`
 	InterconnectUri string `protobuf:"bytes,3,opt,name=interconnect_uri,json=interconnectUri,proto3" json:"interconnect_uri,omitempty"`
 	// Name of a Google Cloud region where the Interconnect attachment is
 	// configured.
 	Region string `protobuf:"bytes,4,opt,name=region,proto3" json:"region,omitempty"`
 	// URI of the Cloud Router to be used for dynamic routing.
+	// Format: `projects/{project_id}/regions/{region}/routers/{router_id}`
 	CloudRouterUri string `protobuf:"bytes,5,opt,name=cloud_router_uri,json=cloudRouterUri,proto3" json:"cloud_router_uri,omitempty"`
 	// The type of interconnect attachment this is.
 	Type InterconnectAttachmentInfo_Type `protobuf:"varint,6,opt,name=type,proto3,enum=google.cloud.networkmanagement.v1.InterconnectAttachmentInfo_Type" json:"type,omitempty"`
@@ -4985,8 +5079,10 @@ type EndpointInfo struct {
 	// Destination port. Only valid when protocol is TCP or UDP.
 	DestinationPort int32 `protobuf:"varint,5,opt,name=destination_port,json=destinationPort,proto3" json:"destination_port,omitempty"`
 	// URI of the network where this packet originates from.
+	// Format: `projects/{project_id}/global/networks/{network_id}`
 	SourceNetworkUri string `protobuf:"bytes,6,opt,name=source_network_uri,json=sourceNetworkUri,proto3" json:"source_network_uri,omitempty"`
 	// URI of the network where this packet is sent to.
+	// Format: `projects/{project_id}/global/networks/{network_id}`
 	DestinationNetworkUri string `protobuf:"bytes,7,opt,name=destination_network_uri,json=destinationNetworkUri,proto3" json:"destination_network_uri,omitempty"`
 	// URI of the source telemetry agent this packet originates from.
 	SourceAgentUri string `protobuf:"bytes,8,opt,name=source_agent_uri,json=sourceAgentUri,proto3" json:"source_agent_uri,omitempty"`
@@ -5086,6 +5182,9 @@ type DeliverInfo struct {
 	// Target type where the packet is delivered to.
 	Target DeliverInfo_Target `protobuf:"varint,1,opt,name=target,proto3,enum=google.cloud.networkmanagement.v1.DeliverInfo_Target" json:"target,omitempty"`
 	// URI of the resource that the packet is delivered to.
+	// For example:
+	// * `"projects/{project}/zones/{zone}/instances/{instance}"`
+	// * `"projects/{project}/regions/{region}/networkEndpointGroups/{network_endpoint_group}"`
 	ResourceUri string `protobuf:"bytes,2,opt,name=resource_uri,json=resourceUri,proto3" json:"resource_uri,omitempty"`
 	// IP address of the target (if applicable).
 	IpAddress string `protobuf:"bytes,3,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
@@ -5179,6 +5278,11 @@ type ForwardInfo struct {
 	// Target type where this packet is forwarded to.
 	Target ForwardInfo_Target `protobuf:"varint,1,opt,name=target,proto3,enum=google.cloud.networkmanagement.v1.ForwardInfo_Target" json:"target,omitempty"`
 	// URI of the resource that the packet is forwarded to.
+	// Format:
+	// * `projects/{project_id}/global/networks/{network_id}` (VPC peering
+	// network)
+	// * `projects/{project_id}/regions/{region}/vpnGateways/{vpn_gateway_id}`
+	// (VPN gateway)
 	ResourceUri string `protobuf:"bytes,2,opt,name=resource_uri,json=resourceUri,proto3" json:"resource_uri,omitempty"`
 	// IP address of the target (if applicable).
 	IpAddress     string `protobuf:"bytes,3,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
@@ -5243,6 +5347,10 @@ type AbortInfo struct {
 	// Causes that the analysis is aborted.
 	Cause AbortInfo_Cause `protobuf:"varint,1,opt,name=cause,proto3,enum=google.cloud.networkmanagement.v1.AbortInfo_Cause" json:"cause,omitempty"`
 	// URI of the resource that caused the abort.
+	// Format:
+	// * `projects/{project_id}/global/networks/{network_id}` (VPC network)
+	// * `projects/{project_id}/zones/{zone}/instances/{instance_id}` (VM
+	// instance)
 	ResourceUri string `protobuf:"bytes,2,opt,name=resource_uri,json=resourceUri,proto3" json:"resource_uri,omitempty"`
 	// IP address that caused the abort.
 	IpAddress string `protobuf:"bytes,4,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
@@ -5317,6 +5425,9 @@ type DropInfo struct {
 	// Cause that the packet is dropped.
 	Cause DropInfo_Cause `protobuf:"varint,1,opt,name=cause,proto3,enum=google.cloud.networkmanagement.v1.DropInfo_Cause" json:"cause,omitempty"`
 	// URI of the resource that caused the drop.
+	// Format:
+	// * `projects/{project_id}/global/firewalls/{firewall_id}` (firewall rule)
+	// * `projects/{project_id}/global/routes/{route_id}` (route)
 	ResourceUri string `protobuf:"bytes,2,opt,name=resource_uri,json=resourceUri,proto3" json:"resource_uri,omitempty"`
 	// Source IP address of the dropped packet (if relevant).
 	SourceIp string `protobuf:"bytes,3,opt,name=source_ip,json=sourceIp,proto3" json:"source_ip,omitempty"`
@@ -5415,9 +5526,15 @@ func (x *DropInfo) GetDestinationGeolocationCode() string {
 // cluster master.
 type GKEMasterInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// URI of a GKE cluster.
+	// URI of the GKE cluster.
+	// Format:
+	// * `projects/{project_id}/locations/{location}/clusters/{cluster_id}`
+	// (regional cluster)
+	// * `projects/{project_id}/zones/{zone}/clusters/{cluster_id}` (zonal
+	// cluster)
 	ClusterUri string `protobuf:"bytes,2,opt,name=cluster_uri,json=clusterUri,proto3" json:"cluster_uri,omitempty"`
-	// URI of a GKE cluster network.
+	// URI of the GKE cluster network.
+	// Format: `projects/{project_id}/global/networks/{network_id}`
 	ClusterNetworkUri string `protobuf:"bytes,4,opt,name=cluster_network_uri,json=clusterNetworkUri,proto3" json:"cluster_network_uri,omitempty"`
 	// Internal IP address of a GKE cluster control plane.
 	InternalIp string `protobuf:"bytes,5,opt,name=internal_ip,json=internalIp,proto3" json:"internal_ip,omitempty"`
@@ -5508,6 +5625,7 @@ type GkePodInfo struct {
 	// relevant to the trace.
 	IpAddress string `protobuf:"bytes,2,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
 	// URI of the network containing the GKE Pod.
+	// Format: `projects/{project_id}/global/networks/{network_id}`
 	NetworkUri    string `protobuf:"bytes,3,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -5751,10 +5869,11 @@ type CloudSQLInstanceInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a Cloud SQL instance.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a Cloud SQL instance.
+	// URI of a Cloud SQL instance in format
+	// "projects/{project}/instances/{instance}"
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// URI of a Cloud SQL instance network or empty string if the instance does
-	// not have one.
+	// not have one. In format "projects/{project}/global/networks/{network}".
 	NetworkUri string `protobuf:"bytes,4,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	// Internal IP address of a Cloud SQL instance.
 	InternalIp string `protobuf:"bytes,5,opt,name=internal_ip,json=internalIp,proto3" json:"internal_ip,omitempty"`
@@ -5843,9 +5962,11 @@ type RedisInstanceInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a Cloud Redis Instance.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a Cloud Redis Instance.
+	// URI of a Cloud Redis Instance in format
+	// "projects/{project}/locations/{location}/instances/{instance}"
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
-	// URI of a Cloud Redis Instance network.
+	// URI of a Cloud Redis Instance network in format
+	// "projects/{project}/global/networks/{network}".
 	NetworkUri string `protobuf:"bytes,3,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	// Primary endpoint IP address of a Cloud Redis Instance.
 	PrimaryEndpointIp string `protobuf:"bytes,4,opt,name=primary_endpoint_ip,json=primaryEndpointIp,proto3" json:"primary_endpoint_ip,omitempty"`
@@ -6028,7 +6149,9 @@ type CloudFunctionInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a Cloud Function.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a Cloud Function.
+	// URI of the Cloud Function.
+	// Format:
+	// `projects/{project_id}/locations/{location}/functions/{function_id}`
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Location in which the Cloud Function is deployed.
 	Location string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
@@ -6101,11 +6224,15 @@ type CloudRunRevisionInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a Cloud Run revision.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a Cloud Run revision.
+	// URI of the Cloud Run revision.
+	// Format:
+	// `projects/{project_id}/locations/{location}/revisions/{revision_id}`
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Location in which this revision is deployed.
 	Location string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	// URI of Cloud Run service this revision belongs to.
+	// Format: `projects/{project_id}/locations/{location}/services/{service_id}`
+	// Mutually exclusive with `worker_pool_uri`.
 	ServiceUri    string `protobuf:"bytes,5,opt,name=service_uri,json=serviceUri,proto3" json:"service_uri,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -6174,7 +6301,8 @@ type CloudRunJobInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of a Cloud Run job.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of a Cloud Run job.
+	// URI of the Cloud Run job.
+	// Format: `projects/{project_id}/locations/{location}/jobs/{job_id}`
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Location in which this job is deployed.
 	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
@@ -6238,7 +6366,8 @@ type AppEngineVersionInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of an App Engine version.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// URI of an App Engine version.
+	// URI of the App Engine version.
+	// Format: `apps/{app_id}/services/{service_id}/versions/{version_id}`
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Runtime of the App Engine version.
 	Runtime string `protobuf:"bytes,3,opt,name=runtime,proto3" json:"runtime,omitempty"`
@@ -6312,6 +6441,8 @@ type VpcConnectorInfo struct {
 	// Name of a VPC connector.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// URI of a VPC connector.
+	// Format:
+	// `projects/{project_id}/locations/{location}/connectors/{connector_id}`
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Location in which the VPC connector is deployed.
 	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
@@ -6374,9 +6505,12 @@ func (x *VpcConnectorInfo) GetLocation() string {
 // connection.
 type DirectVpcEgressConnectionInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// URI of direct access network.
+	// URI of the VPC network for direct egress.
+	// Format: `projects/{project_id}/global/networks/{network_id}`
 	NetworkUri string `protobuf:"bytes,1,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
-	// URI of direct access subnetwork.
+	// URI of the subnetwork for direct egress.
+	// Format:
+	// `projects/{project_id}/regions/{region}/subnetworks/{subnetwork_id}`
 	SubnetworkUri string `protobuf:"bytes,2,opt,name=subnetwork_uri,json=subnetworkUri,proto3" json:"subnetwork_uri,omitempty"`
 	// Selected IP range.
 	SelectedIpRange string `protobuf:"bytes,3,opt,name=selected_ip_range,json=selectedIpRange,proto3" json:"selected_ip_range,omitempty"`
@@ -6506,7 +6640,8 @@ type NatInfo struct {
 	Type NatInfo_Type `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.networkmanagement.v1.NatInfo_Type" json:"type,omitempty"`
 	// IP protocol in string format, for example: "TCP", "UDP", "ICMP".
 	Protocol string `protobuf:"bytes,2,opt,name=protocol,proto3" json:"protocol,omitempty"`
-	// URI of the network where NAT translation takes place.
+	// URI of the VPC network where NAT translation takes place.
+	// Format: `projects/{project_id}/global/networks/{network_id}`
 	NetworkUri string `protobuf:"bytes,3,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	// Source IP address before NAT translation.
 	OldSourceIp string `protobuf:"bytes,4,opt,name=old_source_ip,json=oldSourceIp,proto3" json:"old_source_ip,omitempty"`
@@ -6526,7 +6661,8 @@ type NatInfo struct {
 	// Destination port after NAT translation. Only valid when protocol is TCP or
 	// UDP.
 	NewDestinationPort int32 `protobuf:"varint,11,opt,name=new_destination_port,json=newDestinationPort,proto3" json:"new_destination_port,omitempty"`
-	// Uri of the Cloud Router. Only valid when type is CLOUD_NAT.
+	// URI of the Cloud Router. Only valid when type is CLOUD_NAT.
+	// Format: `projects/{project_id}/regions/{region}/routers/{router_id}`
 	RouterUri string `protobuf:"bytes,12,opt,name=router_uri,json=routerUri,proto3" json:"router_uri,omitempty"`
 	// The name of Cloud NAT Gateway. Only valid when type is CLOUD_NAT.
 	NatGatewayName string `protobuf:"bytes,13,opt,name=nat_gateway_name,json=natGatewayName,proto3" json:"nat_gateway_name,omitempty"`
@@ -6688,9 +6824,12 @@ type ProxyConnectionInfo struct {
 	// Destination port of a new connection. Only valid when protocol is TCP or
 	// UDP.
 	NewDestinationPort int32 `protobuf:"varint,9,opt,name=new_destination_port,json=newDestinationPort,proto3" json:"new_destination_port,omitempty"`
-	// Uri of proxy subnet.
+	// URI of the proxy subnet.
+	// Format:
+	// `projects/{project_id}/regions/{region}/subnetworks/{subnetwork_id}`
 	SubnetUri string `protobuf:"bytes,10,opt,name=subnet_uri,json=subnetUri,proto3" json:"subnet_uri,omitempty"`
-	// URI of the network where connection is proxied.
+	// URI of the VPC network where connection is proxied.
+	// Format: `projects/{project_id}/global/networks/{network_id}`
 	NetworkUri    string `protobuf:"bytes,11,opt,name=network_uri,json=networkUri,proto3" json:"network_uri,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -6810,23 +6949,43 @@ type LoadBalancerBackendInfo struct {
 	// the instance group backends, or an IP address and port for zonal network
 	// endpoint group backends.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// URI of the backend instance (if applicable). Populated for instance group
-	// backends, and zonal NEG backends.
+	// URI of the backend instance (if applicable) in format
+	// "projects/{project}/zones/{zone}/instances/{instance}". Populated for
+	// instance group backends, and zonal NEG backends.
 	InstanceUri string `protobuf:"bytes,2,opt,name=instance_uri,json=instanceUri,proto3" json:"instance_uri,omitempty"`
-	// URI of the backend service this backend belongs to (if applicable).
+	// URI of the backend service this backend belongs to (if applicable) in
+	// format
+	// "projects/{project}/regions/{region}/backendServices/{backend_service}"
+	// (regional) or "projects/{project}/global/backendServices/{backend_service}"
+	// (global).
 	BackendServiceUri string `protobuf:"bytes,3,opt,name=backend_service_uri,json=backendServiceUri,proto3" json:"backend_service_uri,omitempty"`
-	// URI of the instance group this backend belongs to (if applicable).
+	// URI of the instance group this backend belongs to (if applicable) in
+	// format "projects/{project}/zones/{zone}/instanceGroups/{instance_group}".
 	InstanceGroupUri string `protobuf:"bytes,4,opt,name=instance_group_uri,json=instanceGroupUri,proto3" json:"instance_group_uri,omitempty"`
-	// URI of the network endpoint group this backend belongs to (if applicable).
+	// URI of the network endpoint group this backend belongs to (if applicable)
+	// Format:
+	// * `projects/{project_id}/zones/{zone}/networkEndpointGroups/{neg_id}`
+	// (zonal NEG)
+	// * `projects/{project_id}/regions/{region}/networkEndpointGroups/{neg_id}`
+	// (regional NEG)
+	// * `projects/{project_id}/global/networkEndpointGroups/{neg_id}` (global
+	// NEG)
 	NetworkEndpointGroupUri string `protobuf:"bytes,5,opt,name=network_endpoint_group_uri,json=networkEndpointGroupUri,proto3" json:"network_endpoint_group_uri,omitempty"`
-	// URI of the backend bucket this backend targets (if applicable).
+	// URI of the backend bucket this backend targets (if applicable) in format
+	// "projects/{project}/global/backendBuckets/{backend_bucket}".
 	BackendBucketUri string `protobuf:"bytes,8,opt,name=backend_bucket_uri,json=backendBucketUri,proto3" json:"backend_bucket_uri,omitempty"`
 	// URI of the PSC service attachment this PSC NEG backend targets (if
-	// applicable).
+	// applicable) in format
+	// "projects/{project}/regions/{region}/serviceAttachments/{service_attachment}".
 	PscServiceAttachmentUri string `protobuf:"bytes,9,opt,name=psc_service_attachment_uri,json=pscServiceAttachmentUri,proto3" json:"psc_service_attachment_uri,omitempty"`
 	// PSC Google API target this PSC NEG backend targets (if applicable).
 	PscGoogleApiTarget string `protobuf:"bytes,10,opt,name=psc_google_api_target,json=pscGoogleApiTarget,proto3" json:"psc_google_api_target,omitempty"`
 	// URI of the health check attached to this backend (if applicable).
+	// Format:
+	// * `projects/{project_id}/global/healthChecks/{health_check_id}`
+	// * `projects/{project_id}/regions/{region}/healthChecks/{health_check_id}`
+	// * `projects/{project_id}/global/httpHealthChecks/{health_check_id}`
+	// (legacy)
 	HealthCheckUri string `protobuf:"bytes,6,opt,name=health_check_uri,json=healthCheckUri,proto3" json:"health_check_uri,omitempty"`
 	// Output only. Health check firewalls configuration state for the backend.
 	// This is a result of the static firewall analysis (verifying that health
@@ -6989,7 +7148,8 @@ func (x *StorageBucketInfo) GetBucket() string {
 // group backend.
 type ServerlessNegInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// URI of the serverless network endpoint group.
+	// URI of the serverless network endpoint group in format
+	// "projects/{project}/regions/{region}/networkEndpointGroups/{network_endpoint_group}".
 	NegUri        string `protobuf:"bytes,1,opt,name=neg_uri,json=negUri,proto3" json:"neg_uri,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -7038,6 +7198,8 @@ type NgfwPacketInspectionInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// URI of the security profile group associated with this firewall packet
 	// inspection.
+	// Format:
+	// `organizations/{organization_id}/locations/global/securityProfileGroups/{security_profile_group_id}`
 	SecurityProfileGroupUri string `protobuf:"bytes,1,opt,name=security_profile_group_uri,json=securityProfileGroupUri,proto3" json:"security_profile_group_uri,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
@@ -7135,7 +7297,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x05Trace\x12T\n" +
 	"\rendpoint_info\x18\x01 \x01(\v2/.google.cloud.networkmanagement.v1.EndpointInfoR\fendpointInfo\x12=\n" +
 	"\x05steps\x18\x02 \x03(\v2'.google.cloud.networkmanagement.v1.StepR\x05steps\x12(\n" +
-	"\x10forward_trace_id\x18\x04 \x01(\x05R\x0eforwardTraceId\"\xd3(\n" +
+	"\x10forward_trace_id\x18\x04 \x01(\x05R\x0eforwardTraceId\"\x81*\n" +
 	"\x04Step\x12 \n" +
 	"\vdescription\x18\x01 \x01(\tR\vdescription\x12C\n" +
 	"\x05state\x18\x02 \x01(\x0e2-.google.cloud.networkmanagement.v1.Step.StateR\x05state\x12\x1f\n" +
@@ -7184,8 +7346,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x0estorage_bucket\x18\x1c \x01(\v24.google.cloud.networkmanagement.v1.StorageBucketInfoH\x00R\rstorageBucket\x12]\n" +
 	"\x0eserverless_neg\x18\x1d \x01(\v24.google.cloud.networkmanagement.v1.ServerlessNegInfoH\x00R\rserverlessNeg\x12s\n" +
 	"\x16ngfw_packet_inspection\x18* \x01(\v2;.google.cloud.networkmanagement.v1.NgfwPacketInspectionInfoH\x00R\x14ngfwPacketInspection\x12p\n" +
-	"\x16dms_private_connection\x18+ \x01(\v28.google.cloud.networkmanagement.v1.PrivateConnectionInfoH\x00R\x14dmsPrivateConnection\"\xf5\n" +
-	"\n" +
+	"\x16dms_private_connection\x18+ \x01(\v28.google.cloud.networkmanagement.v1.PrivateConnectionInfoH\x00R\x14dmsPrivateConnection\x12~\n" +
+	"\x1ddatastream_private_connection\x18, \x01(\v28.google.cloud.networkmanagement.v1.PrivateConnectionInfoH\x00R\x1bdatastreamPrivateConnection\"\xa3\v\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13START_FROM_INSTANCE\x10\x01\x12\x17\n" +
@@ -7204,7 +7366,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x19START_FROM_STORAGE_BUCKET\x10\x1d\x12$\n" +
 	" START_FROM_PSC_PUBLISHED_SERVICE\x10\x1e\x12\x1d\n" +
 	"\x19START_FROM_SERVERLESS_NEG\x10\x1f\x12%\n" +
-	"!START_FROM_DMS_PRIVATE_CONNECTION\x100\x12\x1f\n" +
+	"!START_FROM_DMS_PRIVATE_CONNECTION\x100\x12,\n" +
+	"(START_FROM_DATASTREAM_PRIVATE_CONNECTION\x101\x12\x1f\n" +
 	"\x1bAPPLY_INGRESS_FIREWALL_RULE\x10\x04\x12\x1e\n" +
 	"\x1aAPPLY_EGRESS_FIREWALL_RULE\x10\x05\x12\x0f\n" +
 	"\vAPPLY_ROUTE\x10\x06\x12\x19\n" +
@@ -7479,7 +7642,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x10destination_port\x18\x05 \x01(\x05R\x0fdestinationPort\x12,\n" +
 	"\x12source_network_uri\x18\x06 \x01(\tR\x10sourceNetworkUri\x126\n" +
 	"\x17destination_network_uri\x18\a \x01(\tR\x15destinationNetworkUri\x12(\n" +
-	"\x10source_agent_uri\x18\b \x01(\tR\x0esourceAgentUri\"\xd9\a\n" +
+	"\x10source_agent_uri\x18\b \x01(\tR\x0esourceAgentUri\"\xfc\a\n" +
 	"\vDeliverInfo\x12M\n" +
 	"\x06target\x18\x01 \x01(\x0e25.google.cloud.networkmanagement.v1.DeliverInfo.TargetR\x06target\x12!\n" +
 	"\fresource_uri\x18\x02 \x01(\tR\vresourceUri\x12'\n" +
@@ -7487,7 +7650,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"ip_address\x18\x03 \x01(\tB\b\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12%\n" +
 	"\x0estorage_bucket\x18\x04 \x01(\tR\rstorageBucket\x121\n" +
 	"\x15psc_google_api_target\x18\x05 \x01(\tR\x12pscGoogleApiTarget\x12p\n" +
-	"\x13google_service_type\x18\x06 \x01(\x0e2@.google.cloud.networkmanagement.v1.DeliverInfo.GoogleServiceTypeR\x11googleServiceType\"\xb3\x03\n" +
+	"\x13google_service_type\x18\x06 \x01(\x0e2@.google.cloud.networkmanagement.v1.DeliverInfo.GoogleServiceTypeR\x11googleServiceType\"\xd6\x03\n" +
 	"\x06Target\x12\x16\n" +
 	"\x12TARGET_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bINSTANCE\x10\x01\x12\f\n" +
@@ -7513,7 +7676,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\rREDIS_CLUSTER\x10\x11\x12\v\n" +
 	"\aGKE_POD\x10\x13\x12\x11\n" +
 	"\rCLOUD_RUN_JOB\x10\x14\x12\x1a\n" +
-	"\x16DMS_PRIVATE_CONNECTION\x10\x15\"\xac\x01\n" +
+	"\x16DMS_PRIVATE_CONNECTION\x10\x15\x12!\n" +
+	"\x1dDATASTREAM_PRIVATE_CONNECTION\x10\x16\"\xac\x01\n" +
 	"\x11GoogleServiceType\x12#\n" +
 	"\x1fGOOGLE_SERVICE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03IAP\x10\x01\x12$\n" +
@@ -7592,7 +7756,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	")UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG\x10\x1f\x12\x1b\n" +
 	"\x17NO_SERVERLESS_IP_RANGES\x10%\x12 \n" +
 	"\x1cIP_VERSION_PROTOCOL_MISMATCH\x10(\x12%\n" +
-	"!GKE_POD_UNKNOWN_ENDPOINT_LOCATION\x10)\"\x8d$\n" +
+	"!GKE_POD_UNKNOWN_ENDPOINT_LOCATION\x10)\"\xbf$\n" +
 	"\bDropInfo\x12G\n" +
 	"\x05cause\x18\x01 \x01(\x0e21.google.cloud.networkmanagement.v1.DropInfo.CauseR\x05cause\x12!\n" +
 	"\fresource_uri\x18\x02 \x01(\tR\vresourceUri\x12\x1b\n" +
@@ -7600,7 +7764,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x0edestination_ip\x18\x04 \x01(\tR\rdestinationIp\x12\x16\n" +
 	"\x06region\x18\x05 \x01(\tR\x06region\x126\n" +
 	"\x17source_geolocation_code\x18\x06 \x01(\tR\x15sourceGeolocationCode\x12@\n" +
-	"\x1cdestination_geolocation_code\x18\a \x01(\tR\x1adestinationGeolocationCode\"\xbe!\n" +
+	"\x1cdestination_geolocation_code\x18\a \x01(\tR\x1adestinationGeolocationCode\"\xf0!\n" +
 	"\x05Cause\x12\x15\n" +
 	"\x11CAUSE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18UNKNOWN_EXTERNAL_ADDRESS\x10\x01\x12\x19\n" +
@@ -7642,7 +7806,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"&CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS\x10\x11\x12\x1e\n" +
 	"\x1aDROPPED_INSIDE_GKE_SERVICE\x10\x12\x12$\n" +
 	" DROPPED_INSIDE_CLOUD_SQL_SERVICE\x10\x13\x12)\n" +
-	"%DROPPED_INSIDE_DMS_PRIVATE_CONNECTION\x10r\x12%\n" +
+	"%DROPPED_INSIDE_DMS_PRIVATE_CONNECTION\x10r\x120\n" +
+	",DROPPED_INSIDE_DATASTREAM_PRIVATE_CONNECTION\x10s\x12%\n" +
 	"!GOOGLE_MANAGED_SERVICE_NO_PEERING\x10\x14\x12*\n" +
 	"&GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT\x10&\x12\x1c\n" +
 	"\x18GKE_PSC_ENDPOINT_MISSING\x10$\x12$\n" +
@@ -7859,7 +8024,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"subnet_uri\x18\n" +
 	" \x01(\tR\tsubnetUri\x12\x1f\n" +
 	"\vnetwork_uri\x18\v \x01(\tR\n" +
-	"networkUri\"\xb3\x06\n" +
+	"networkUri\"\xb4\x06\n" +
 	"\x17LoadBalancerBackendInfo\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\finstance_uri\x18\x02 \x01(\tR\vinstanceUri\x12.\n" +
@@ -7870,8 +8035,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x1apsc_service_attachment_uri\x18\t \x01(\tR\x17pscServiceAttachmentUri\x121\n" +
 	"\x15psc_google_api_target\x18\n" +
 	" \x01(\tR\x12pscGoogleApiTarget\x12(\n" +
-	"\x10health_check_uri\x18\x06 \x01(\tR\x0ehealthCheckUri\x12\xad\x01\n" +
-	"#health_check_firewalls_config_state\x18\a \x01(\x0e2Z.google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.HealthCheckFirewallsConfigStateB\x03\xe0A\x03R\x1fhealthCheckFirewallsConfigState\"\xcd\x01\n" +
+	"\x10health_check_uri\x18\x06 \x01(\tR\x0ehealthCheckUri\x12\xae\x01\n" +
+	"#health_check_firewalls_config_state\x18\a \x01(\x0e2Z.google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.HealthCheckFirewallsConfigStateB\x04\xe2A\x01\x03R\x1fhealthCheckFirewallsConfigState\"\xcd\x01\n" +
 	"\x1fHealthCheckFirewallsConfigState\x123\n" +
 	"/HEALTH_CHECK_FIREWALLS_CONFIG_STATE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14FIREWALLS_CONFIGURED\x10\x01\x12\"\n" +
@@ -8025,34 +8190,35 @@ var file_google_cloud_networkmanagement_v1_trace_proto_depIdxs = []int32{
 	62, // 38: google.cloud.networkmanagement.v1.Step.serverless_neg:type_name -> google.cloud.networkmanagement.v1.ServerlessNegInfo
 	63, // 39: google.cloud.networkmanagement.v1.Step.ngfw_packet_inspection:type_name -> google.cloud.networkmanagement.v1.NgfwPacketInspectionInfo
 	64, // 40: google.cloud.networkmanagement.v1.Step.dms_private_connection:type_name -> google.cloud.networkmanagement.v1.PrivateConnectionInfo
-	2,  // 41: google.cloud.networkmanagement.v1.InstanceInfo.status:type_name -> google.cloud.networkmanagement.v1.InstanceInfo.Status
-	3,  // 42: google.cloud.networkmanagement.v1.FirewallInfo.firewall_rule_type:type_name -> google.cloud.networkmanagement.v1.FirewallInfo.FirewallRuleType
-	4,  // 43: google.cloud.networkmanagement.v1.FirewallInfo.target_type:type_name -> google.cloud.networkmanagement.v1.FirewallInfo.TargetType
-	5,  // 44: google.cloud.networkmanagement.v1.RouteInfo.route_type:type_name -> google.cloud.networkmanagement.v1.RouteInfo.RouteType
-	6,  // 45: google.cloud.networkmanagement.v1.RouteInfo.next_hop_type:type_name -> google.cloud.networkmanagement.v1.RouteInfo.NextHopType
-	7,  // 46: google.cloud.networkmanagement.v1.RouteInfo.route_scope:type_name -> google.cloud.networkmanagement.v1.RouteInfo.RouteScope
-	8,  // 47: google.cloud.networkmanagement.v1.GoogleServiceInfo.google_service_type:type_name -> google.cloud.networkmanagement.v1.GoogleServiceInfo.GoogleServiceType
-	9,  // 48: google.cloud.networkmanagement.v1.LoadBalancerInfo.load_balancer_type:type_name -> google.cloud.networkmanagement.v1.LoadBalancerInfo.LoadBalancerType
-	33, // 49: google.cloud.networkmanagement.v1.LoadBalancerInfo.backends:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackend
-	10, // 50: google.cloud.networkmanagement.v1.LoadBalancerInfo.backend_type:type_name -> google.cloud.networkmanagement.v1.LoadBalancerInfo.BackendType
-	11, // 51: google.cloud.networkmanagement.v1.LoadBalancerBackend.health_check_firewall_state:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackend.HealthCheckFirewallState
-	12, // 52: google.cloud.networkmanagement.v1.VpnTunnelInfo.routing_type:type_name -> google.cloud.networkmanagement.v1.VpnTunnelInfo.RoutingType
-	13, // 53: google.cloud.networkmanagement.v1.InterconnectAttachmentInfo.type:type_name -> google.cloud.networkmanagement.v1.InterconnectAttachmentInfo.Type
-	14, // 54: google.cloud.networkmanagement.v1.DeliverInfo.target:type_name -> google.cloud.networkmanagement.v1.DeliverInfo.Target
-	15, // 55: google.cloud.networkmanagement.v1.DeliverInfo.google_service_type:type_name -> google.cloud.networkmanagement.v1.DeliverInfo.GoogleServiceType
-	16, // 56: google.cloud.networkmanagement.v1.ForwardInfo.target:type_name -> google.cloud.networkmanagement.v1.ForwardInfo.Target
-	17, // 57: google.cloud.networkmanagement.v1.AbortInfo.cause:type_name -> google.cloud.networkmanagement.v1.AbortInfo.Cause
-	18, // 58: google.cloud.networkmanagement.v1.DropInfo.cause:type_name -> google.cloud.networkmanagement.v1.DropInfo.Cause
-	19, // 59: google.cloud.networkmanagement.v1.IpMasqueradingSkippedInfo.reason:type_name -> google.cloud.networkmanagement.v1.IpMasqueradingSkippedInfo.Reason
-	20, // 60: google.cloud.networkmanagement.v1.GkeNetworkPolicySkippedInfo.reason:type_name -> google.cloud.networkmanagement.v1.GkeNetworkPolicySkippedInfo.Reason
-	21, // 61: google.cloud.networkmanagement.v1.NatInfo.type:type_name -> google.cloud.networkmanagement.v1.NatInfo.Type
-	22, // 62: google.cloud.networkmanagement.v1.NatInfo.cloud_nat_gateway_type:type_name -> google.cloud.networkmanagement.v1.NatInfo.CloudNatGatewayType
-	23, // 63: google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.health_check_firewalls_config_state:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.HealthCheckFirewallsConfigState
-	64, // [64:64] is the sub-list for method output_type
-	64, // [64:64] is the sub-list for method input_type
-	64, // [64:64] is the sub-list for extension type_name
-	64, // [64:64] is the sub-list for extension extendee
-	0,  // [0:64] is the sub-list for field type_name
+	64, // 41: google.cloud.networkmanagement.v1.Step.datastream_private_connection:type_name -> google.cloud.networkmanagement.v1.PrivateConnectionInfo
+	2,  // 42: google.cloud.networkmanagement.v1.InstanceInfo.status:type_name -> google.cloud.networkmanagement.v1.InstanceInfo.Status
+	3,  // 43: google.cloud.networkmanagement.v1.FirewallInfo.firewall_rule_type:type_name -> google.cloud.networkmanagement.v1.FirewallInfo.FirewallRuleType
+	4,  // 44: google.cloud.networkmanagement.v1.FirewallInfo.target_type:type_name -> google.cloud.networkmanagement.v1.FirewallInfo.TargetType
+	5,  // 45: google.cloud.networkmanagement.v1.RouteInfo.route_type:type_name -> google.cloud.networkmanagement.v1.RouteInfo.RouteType
+	6,  // 46: google.cloud.networkmanagement.v1.RouteInfo.next_hop_type:type_name -> google.cloud.networkmanagement.v1.RouteInfo.NextHopType
+	7,  // 47: google.cloud.networkmanagement.v1.RouteInfo.route_scope:type_name -> google.cloud.networkmanagement.v1.RouteInfo.RouteScope
+	8,  // 48: google.cloud.networkmanagement.v1.GoogleServiceInfo.google_service_type:type_name -> google.cloud.networkmanagement.v1.GoogleServiceInfo.GoogleServiceType
+	9,  // 49: google.cloud.networkmanagement.v1.LoadBalancerInfo.load_balancer_type:type_name -> google.cloud.networkmanagement.v1.LoadBalancerInfo.LoadBalancerType
+	33, // 50: google.cloud.networkmanagement.v1.LoadBalancerInfo.backends:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackend
+	10, // 51: google.cloud.networkmanagement.v1.LoadBalancerInfo.backend_type:type_name -> google.cloud.networkmanagement.v1.LoadBalancerInfo.BackendType
+	11, // 52: google.cloud.networkmanagement.v1.LoadBalancerBackend.health_check_firewall_state:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackend.HealthCheckFirewallState
+	12, // 53: google.cloud.networkmanagement.v1.VpnTunnelInfo.routing_type:type_name -> google.cloud.networkmanagement.v1.VpnTunnelInfo.RoutingType
+	13, // 54: google.cloud.networkmanagement.v1.InterconnectAttachmentInfo.type:type_name -> google.cloud.networkmanagement.v1.InterconnectAttachmentInfo.Type
+	14, // 55: google.cloud.networkmanagement.v1.DeliverInfo.target:type_name -> google.cloud.networkmanagement.v1.DeliverInfo.Target
+	15, // 56: google.cloud.networkmanagement.v1.DeliverInfo.google_service_type:type_name -> google.cloud.networkmanagement.v1.DeliverInfo.GoogleServiceType
+	16, // 57: google.cloud.networkmanagement.v1.ForwardInfo.target:type_name -> google.cloud.networkmanagement.v1.ForwardInfo.Target
+	17, // 58: google.cloud.networkmanagement.v1.AbortInfo.cause:type_name -> google.cloud.networkmanagement.v1.AbortInfo.Cause
+	18, // 59: google.cloud.networkmanagement.v1.DropInfo.cause:type_name -> google.cloud.networkmanagement.v1.DropInfo.Cause
+	19, // 60: google.cloud.networkmanagement.v1.IpMasqueradingSkippedInfo.reason:type_name -> google.cloud.networkmanagement.v1.IpMasqueradingSkippedInfo.Reason
+	20, // 61: google.cloud.networkmanagement.v1.GkeNetworkPolicySkippedInfo.reason:type_name -> google.cloud.networkmanagement.v1.GkeNetworkPolicySkippedInfo.Reason
+	21, // 62: google.cloud.networkmanagement.v1.NatInfo.type:type_name -> google.cloud.networkmanagement.v1.NatInfo.Type
+	22, // 63: google.cloud.networkmanagement.v1.NatInfo.cloud_nat_gateway_type:type_name -> google.cloud.networkmanagement.v1.NatInfo.CloudNatGatewayType
+	23, // 64: google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.health_check_firewalls_config_state:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.HealthCheckFirewallsConfigState
+	65, // [65:65] is the sub-list for method output_type
+	65, // [65:65] is the sub-list for method input_type
+	65, // [65:65] is the sub-list for extension type_name
+	65, // [65:65] is the sub-list for extension extendee
+	0,  // [0:65] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_networkmanagement_v1_trace_proto_init() }
@@ -8099,6 +8265,7 @@ func file_google_cloud_networkmanagement_v1_trace_proto_init() {
 		(*Step_ServerlessNeg)(nil),
 		(*Step_NgfwPacketInspection)(nil),
 		(*Step_DmsPrivateConnection)(nil),
+		(*Step_DatastreamPrivateConnection)(nil),
 	}
 	file_google_cloud_networkmanagement_v1_trace_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
