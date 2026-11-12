@@ -8,7 +8,7 @@ the updates. (See example output below.)
 The available flags are as follows:
 
 * `-q`: Optional. Enables quiet mode with no logging or program output. In the
-event of an error while in quiet mode, all logs that were surpressed are dumped
+event of an error while in quiet mode, all logs that were suppressed are dumped
 with the error, defaults to `false` (i.e. "verbose").
 * `-dep=[module]`: Required. The module dependency to be updated.
 * `-version=[version]`: Optional. The module version to update to, defaults to
