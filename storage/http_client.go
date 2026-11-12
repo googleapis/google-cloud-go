@@ -1002,18 +1002,24 @@ func (c *httpStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
+	parentCtx := ctx
 	ctx, _ = startSpan(ctx, "httpStorageClient.NewRangeReader", rpcSystemHTTPOpt)
 	defer func() { endSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
+	// Mid-stream reopens happen after this span ends, so trace them under
+	// the reader's span instead.
+	reopenCtx := withSpanFrom(ctx, parentCtx)
 
 	if c.config.useJSONforReads {
-		return c.newRangeReaderJSON(ctx, params, s)
+		return c.newRangeReaderJSON(ctx, reopenCtx, params, s)
 	}
-	return c.newRangeReaderXML(ctx, params, s)
+	return c.newRangeReaderXML(ctx, reopenCtx, params, s)
 }
 
-func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
+// newRangeReaderXML opens the reader using ctx. Later reopens of the reader,
+// after a failed read, use reopenCtx.
+func (c *httpStorageClient) newRangeReaderXML(ctx, reopenCtx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
 	u := &url.URL{
 		Scheme:  c.scheme,
 		Host:    c.xmlHost,
@@ -1043,7 +1049,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	// earlier attempts (e.g. gccl-attempt-count/1) do not leak into later ones.
 	baseXGoogHeader := slices.Clone(req.Header.Values(xGoogHeaderKey))
 
-	reopen := readerReopen(ctx, req.Header, params, s,
+	reopen := readerReopen(req.Header, params, s,
 		func(ctx context.Context) (*http.Response, error) {
 			req.Header.Del(xGoogHeaderKey)
 			for _, v := range baseXGoogHeader {
@@ -1071,14 +1077,18 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
 		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
 
-	res, err := reopen(0)
+	res, err := reopen(ctx, 0)
 	if err != nil {
 		return nil, err
 	}
-	return parseReadResponse(res, params, reopen)
+	return parseReadResponse(res, params, func(seen int64) (*http.Response, error) {
+		return reopen(reopenCtx, seen)
+	})
 }
 
-func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
+// newRangeReaderJSON opens the reader using ctx. Later reopens of the reader,
+// after a failed read, use reopenCtx.
+func (c *httpStorageClient) newRangeReaderJSON(ctx, reopenCtx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
 	call := c.raw.Objects.Get(params.bucket, params.object)
 
 	call.Projection("full")
@@ -1091,15 +1101,17 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 		return nil, err
 	}
 
-	reopen := readerReopen(ctx, call.Header(), params, s, func(ctx context.Context) (*http.Response, error) { return call.Context(ctx).Download() },
+	reopen := readerReopen(call.Header(), params, s, func(ctx context.Context) (*http.Response, error) { return call.Context(ctx).Download() },
 		func() error { return applyConds("NewReader", params.gen, params.conds, call) },
 		func() { call.Generation(params.gen) })
 
-	res, err := reopen(0)
+	res, err := reopen(ctx, 0)
 	if err != nil {
 		return nil, err
 	}
-	return parseReadResponse(res, params, reopen)
+	return parseReadResponse(res, params, func(seen int64) (*http.Response, error) {
+		return reopen(reopenCtx, seen)
+	})
 }
 
 // httpInternalWriter writes data for an HTTP upload. For single-shot uploads,
@@ -1579,11 +1591,11 @@ func setRangeReaderHeaders(h http.Header, params *newRangeReaderParams) error {
 	return nil
 }
 
-// readerReopen initiates a Read with offset and length, assuming we
-// have already read seen bytes.
-func readerReopen(ctx context.Context, header http.Header, params *newRangeReaderParams, s *settings,
-	doDownload func(context.Context) (*http.Response, error), applyConditions func() error, setGeneration func()) func(int64) (*http.Response, error) {
-	return func(seen int64) (*http.Response, error) {
+// readerReopen returns a function that initiates a Read with offset and
+// length, assuming we have already read seen bytes.
+func readerReopen(header http.Header, params *newRangeReaderParams, s *settings,
+	doDownload func(context.Context) (*http.Response, error), applyConditions func() error, setGeneration func()) func(context.Context, int64) (*http.Response, error) {
+	return func(ctx context.Context, seen int64) (*http.Response, error) {
 		// If the context has already expired, return immediately without making a
 		// call.
 		if err := ctx.Err(); err != nil {

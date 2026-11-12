@@ -124,14 +124,18 @@ func (o *ObjectHandle) NewReader(ctx context.Context, opts ...ReaderOption) (*Re
 // release.
 func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64, opts ...ReaderOption) (r *Reader, err error) {
 	// This span covers the life of the reader. It is closed via the context
-	// in Reader.Close.
+	// in Reader.Close, or here if the reader cannot be created.
 	readMode := "range"
 	if offset == 0 && length < 0 {
 		readMode = "full"
 	}
 	ctx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.Reader",
 		trace.WithAttributes(attribute.String("gcp.storage.read.mode", readMode)))
-	defer func() { endSpan(ctx, err) }()
+	defer func() {
+		if err != nil {
+			endSpan(ctx, err)
+		}
+	}()
 
 	if err := o.validate(); err != nil {
 		return nil, err
@@ -164,8 +168,8 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64,
 
 	r, err = o.c.tc.NewRangeReader(ctx, params, storageOpts...)
 
-	// Pass the context so that the span can be closed in Reader.Close, or close the
-	// span now if there is an error.
+	// Pass the context so that the span can be closed in Reader.Close. On error,
+	// the deferred call above closes the span now.
 	if err == nil {
 		r.ctx = ctx
 	}
@@ -402,9 +406,12 @@ type Reader struct {
 	object string
 
 	metricsState *metricsState
+	closeOnce    sync.Once // Guards recording metrics and ending the span in Close.
 }
 
 // Close closes the Reader. It must be called when done reading.
+// The Reader's metrics and trace span are recorded on the first call; if Close
+// is never called, the trace span is never ended.
 func (r *Reader) Close() error {
 	if !r.Attrs.Unfinalized && !r.Attrs.Decompressed {
 		if rem := atomic.LoadInt64(&r.remain); rem < 0 {
@@ -418,18 +425,29 @@ func (r *Reader) Close() error {
 	}
 	r.mu.Unlock()
 
+	r.closeOnce.Do(func() { r.finish(err) })
+	return err
+}
+
+// finish records the metrics for the read and ends the Object.Reader span
+// with err.
+func (r *Reader) finish(err error) {
+	ctx := r.ctx
+	if ctx == nil {
+		// Readers that were not created by NewRangeReader have no span.
+		ctx = context.Background()
+	}
 	if r.metricsState != nil {
 		if r.metricsState.metrics != nil {
 			if total := atomic.SwapInt64(&r.bytesRead, 0); total > 0 {
-				r.metricsState.metrics.responseBodySize.Record(r.ctx, total, metric.WithAttributes(attribute.String("rpc.system.name", r.metricsState.getSystemName()), attribute.String("rpc.method", "ReadObject"), attribute.String("server.address", stripPort(r.metricsState.getTarget()))))
+				r.metricsState.metrics.responseBodySize.Record(ctx, total, metric.WithAttributes(attribute.String("rpc.system.name", r.metricsState.getSystemName()), attribute.String("rpc.method", "ReadObject"), attribute.String("server.address", stripPort(r.metricsState.getTarget()))))
 			}
 		}
 		if r.metricsState.record != nil {
 			r.metricsState.record(err)
 		}
 	}
-	endSpan(r.ctx, err)
-	return err
+	endSpan(ctx, err)
 }
 
 func (r *Reader) Read(p []byte) (int, error) {
