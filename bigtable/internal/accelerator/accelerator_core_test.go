@@ -19,6 +19,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"sync"
 	"testing"
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -66,6 +67,11 @@ type mockSessionClient struct {
 	newAVCalled int
 	lastMVView  string
 	newMVCalled int
+
+	closeCalled     int
+	closeErr        error
+	loadListener    func(float64)
+	skipInitialLoad bool
 }
 
 func (m *mockSessionClient) OpenTable(name string) session.TableAPI {
@@ -92,9 +98,18 @@ func (m *mockSessionClient) SessionDebug() btransport.SessionDebugProvider { ret
 func (m *mockSessionClient) ChannelDebug() btransport.ChannelDebugProvider { return nil }
 func (m *mockSessionClient) ConfigDebug() btransport.ConfigDebugProvider   { return nil }
 
-func (m *mockSessionClient) AddSessionLoadListener(func(float64)) func() { return func() {} }
+func (m *mockSessionClient) AddSessionLoadListener(fn func(float64)) func() {
+	m.loadListener = fn
+	if !m.skipInitialLoad && fn != nil {
+		fn(1.0)
+	}
+	return func() { m.loadListener = nil }
+}
 
-func (m *mockSessionClient) Close() error { return nil }
+func (m *mockSessionClient) Close() error {
+	m.closeCalled++
+	return m.closeErr
+}
 
 // stubSessionClient swaps the package-level newSessionClient seam so NewChannel
 // builds a Channel backed by the given mock. Restores via t.Cleanup. Must NOT be
@@ -129,8 +144,8 @@ func newTestChannel(t *testing.T, sc *mockSessionClient) *Channel {
 
 func TestNewChannel_Constructs(t *testing.T) {
 	channel := newTestChannel(t, &mockSessionClient{table: &mockSessionTableAPI{}})
-	if channel.sc == nil {
-		t.Error("Channel.sc is nil after construction")
+	if len(channel.clients) != 1 {
+		t.Errorf("len(channel.clients) = %d; want 1", len(channel.clients))
 	}
 }
 
@@ -801,5 +816,200 @@ func TestComposeUserAgent(t *testing.T) {
 				t.Errorf("ComposeUserAgent(%q) = %q; want %q", tc.prefix, got, tc.want)
 			}
 		})
+	}
+}
+
+func TestProjectScopedChannel_RoutesMultipleInstancesAndAppProfiles(t *testing.T) {
+	orig := newSessionClient
+	clients := make(map[clientKey]*mockSessionClient)
+	newSessionClient = func(
+		_ context.Context,
+		project, instance, appProfile, _ string,
+		_ ...option.ClientOption,
+	) (session.Client, error) {
+		if project != "p" {
+			t.Errorf("newSessionClient project = %q; want p", project)
+		}
+		sc := &mockSessionClient{table: &mockSessionTableAPI{}}
+		clients[clientKey{instance: instance, appProfile: appProfile}] = sc
+		return sc, nil
+	}
+	t.Cleanup(func() { newSessionClient = orig })
+
+	channel, err := NewChannel(context.Background(), "p", "", "", "")
+	if err != nil {
+		t.Fatalf("NewChannel: %v", err)
+	}
+	t.Cleanup(func() { _ = channel.Close() })
+
+	// No session.Client dialed at startup when instance is empty.
+	if len(clients) != 0 {
+		t.Fatalf("expected 0 session clients before first RPC; got %d", len(clients))
+	}
+
+	// MutateRow on instance-a, default app profile.
+	if err := channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{
+			TableName: "projects/p/instances/inst-a/tables/t1",
+			RowKey:    []byte("k"),
+		}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("MutateRow(inst-a, default): %v", err)
+	}
+
+	// MutateRow on instance-a, app-profile-1.
+	if err := channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{
+			TableName:    "projects/p/instances/inst-a/tables/t1",
+			AppProfileId: "prof-1",
+			RowKey:       []byte("k"),
+		}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("MutateRow(inst-a, prof-1): %v", err)
+	}
+
+	// ReadRows on instance-b, app-profile-2.
+	stream, err := channel.NewStream(context.Background(), nil, v2pb.Bigtable_ReadRows_FullMethodName)
+	if err != nil {
+		t.Fatalf("NewStream: %v", err)
+	}
+	if err := stream.SendMsg(&v2pb.ReadRowsRequest{
+		TableName:    "projects/p/instances/inst-b/tables/t2",
+		AppProfileId: "prof-2",
+		Rows:         &v2pb.RowSet{RowKeys: [][]byte{[]byte("k")}},
+	}); err != nil {
+		t.Fatalf("SendMsg: %v", err)
+	}
+	if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); err != nil {
+		t.Fatalf("RecvMsg: %v", err)
+	}
+
+	if len(clients) != 3 {
+		t.Fatalf("expected 3 session clients for 3 (instance, appProfile) pairs; got %d", len(clients))
+	}
+	if sc := clients[clientKey{instance: "inst-a", appProfile: ""}]; sc == nil || sc.newTableCalled != 1 || sc.lastTableName != "t1" {
+		t.Errorf("client(inst-a, ''): %+v", sc)
+	}
+	if sc := clients[clientKey{instance: "inst-a", appProfile: "prof-1"}]; sc == nil || sc.newTableCalled != 1 || sc.lastTableName != "t1" {
+		t.Errorf("client(inst-a, 'prof-1'): %+v", sc)
+	}
+	if sc := clients[clientKey{instance: "inst-b", appProfile: "prof-2"}]; sc == nil || sc.newTableCalled != 1 || sc.lastTableName != "t2" {
+		t.Errorf("client(inst-b, 'prof-2'): %+v", sc)
+	}
+
+	// Wrong project is still rejected with InvalidArgument without dialing.
+	err = channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{
+			TableName: "projects/other/instances/inst-a/tables/t1",
+			RowKey:    []byte("k"),
+		}, &v2pb.MutateRowResponse{})
+	if got := status.Code(err); got != codes.InvalidArgument {
+		t.Fatalf("wrong project code = %v; want InvalidArgument", got)
+	}
+	if len(clients) != 3 {
+		t.Fatalf("expected no new session client for wrong project; got %d", len(clients))
+	}
+}
+
+func TestChannel_PinnedAppProfileEnforcement(t *testing.T) {
+	sc := &mockSessionClient{table: &mockSessionTableAPI{}}
+	channel := newTestChannel(t, sc) // pinned to project="p", instance="i", appProfile="ap"
+
+	// Empty request AppProfileId uses the pinned appProfile ("ap") and succeeds.
+	if err := channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{
+			TableName: "projects/p/instances/i/tables/t",
+			RowKey:    []byte("k"),
+		}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("MutateRow with empty app_profile_id: %v", err)
+	}
+
+	// Matching request AppProfileId ("ap") succeeds.
+	if err := channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{
+			TableName:    "projects/p/instances/i/tables/t",
+			AppProfileId: "ap",
+			RowKey:       []byte("k"),
+		}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("MutateRow with matching app_profile_id: %v", err)
+	}
+
+	// Mismatched request AppProfileId is rejected with InvalidArgument.
+	err := channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{
+			TableName:    "projects/p/instances/i/tables/t",
+			AppProfileId: "other-profile",
+			RowKey:       []byte("k"),
+		}, &v2pb.MutateRowResponse{})
+	if got := status.Code(err); got != codes.InvalidArgument {
+		t.Errorf("MutateRow with mismatched app_profile_id: code = %v, want InvalidArgument", got)
+	}
+}
+
+func TestChannel_SingleFlightAndMultiClientClose(t *testing.T) {
+	orig := newSessionClient
+	var (
+		mu      sync.Mutex
+		created = make(map[clientKey]*mockSessionClient)
+		calls   = make(map[clientKey]int)
+	)
+	newSessionClient = func(
+		_ context.Context,
+		_, instance, appProfile, _ string,
+		_ ...option.ClientOption,
+	) (session.Client, error) {
+		mu.Lock()
+		defer mu.Unlock()
+		k := clientKey{instance: instance, appProfile: appProfile}
+		calls[k]++
+		sc := &mockSessionClient{table: &mockSessionTableAPI{}}
+		created[k] = sc
+		return sc, nil
+	}
+	t.Cleanup(func() { newSessionClient = orig })
+
+	channel, err := NewChannel(context.Background(), "p", "", "", "")
+	if err != nil {
+		t.Fatalf("NewChannel: %v", err)
+	}
+	t.Cleanup(func() { _ = channel.Close() })
+
+	// Concurrent requests for the same (instance, appProfile) dial only once.
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			_, err := channel.getOrCreateSessionClient("inst-1", "prof-1")
+			if err != nil {
+				t.Errorf("getOrCreateSessionClient: %v", err)
+			}
+		}()
+	}
+	wg.Wait()
+
+	if got := calls[clientKey{instance: "inst-1", appProfile: "prof-1"}]; got != 1 {
+		t.Fatalf("newSessionClient calls for (inst-1, prof-1) = %d; want 1", got)
+	}
+
+	if _, err := channel.getOrCreateSessionClient("inst-2", ""); err != nil {
+		t.Fatalf("getOrCreateSessionClient(inst-2): %v", err)
+	}
+
+	// Closing the channel closes all cached clients.
+	if err := channel.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	if created[clientKey{instance: "inst-1", appProfile: "prof-1"}].closeCalled != 1 {
+		t.Errorf("expected inst-1 client to be closed on Channel.Close; closeCalled = %d",
+			created[clientKey{instance: "inst-1", appProfile: "prof-1"}].closeCalled)
+	}
+	if created[clientKey{instance: "inst-2", appProfile: ""}].closeCalled != 1 {
+		t.Errorf("expected inst-2 client to be closed on Channel.Close; closeCalled = %d",
+			created[clientKey{instance: "inst-2", appProfile: ""}].closeCalled)
 	}
 }

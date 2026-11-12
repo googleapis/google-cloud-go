@@ -182,6 +182,11 @@ const (
 	// path. Distinct from the null-config case, which emits
 	// tagClientConfigSessionConfigurationNull.
 	tagClientConfigSessionLoadZero = "client_config_session_load_zero"
+
+	// TagAcceleratorSessionDiverterError fires when the accelerator cannot
+	// resolve a session client or diverter for an incoming RPC (e.g. dial
+	// failure or inconsistent internal map state) and falls back to classic.
+	TagAcceleratorSessionDiverterError = "accelerator_session_diverter_error"
 )
 
 var (
@@ -246,6 +251,12 @@ func registerDebugTagCounter(meter metric.Meter) error {
 // wiring from TelemetryConfiguration.debug_tag_level.
 func setDebugTagLevelFloor(l debugLevel) {
 	debugTagLevelFloor.Store(int32(l))
+}
+
+// RecordDebugTag increments the debug_tags counter for `name` at Warn.
+// Exported for sibling internal packages (e.g. internal/accelerator).
+func RecordDebugTag(name string) {
+	recordDebugTag(name)
 }
 
 // recordDebugTag increments the debug_tags counter for `name` at Warn.

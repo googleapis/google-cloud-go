@@ -52,10 +52,11 @@ type CreateWorkerPoolRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The WorkerPool instance to create.
 	WorkerPool *WorkerPool `protobuf:"bytes,2,opt,name=worker_pool,json=workerPool,proto3" json:"worker_pool,omitempty"`
-	// Required. The unique identifier for the WorkerPool. It must begin with
+	// Optional. The unique identifier for the WorkerPool. It must begin with
 	// letter, and cannot end with hyphen; must contain fewer than 50 characters.
 	// The name of the worker pool becomes
 	// `{parent}/workerPools/{worker_pool_id}`.
+	// If not provided, the server will generate a unique `worker_pool_id`.
 	WorkerPoolId string `protobuf:"bytes,3,opt,name=worker_pool_id,json=workerPoolId,proto3" json:"worker_pool_id,omitempty"`
 	// Optional. Indicates that the request should be validated and default values
 	// populated, without persisting the request or creating any resources.
@@ -873,7 +874,7 @@ const file_google_cloud_run_v2_worker_pool_proto_rawDesc = "" +
 	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1drun.googleapis.com/WorkerPoolR\x06parent\x12F\n" +
 	"\vworker_pool\x18\x02 \x01(\v2\x1f.google.cloud.run.v2.WorkerPoolB\x04\xe2A\x01\x02R\n" +
 	"workerPool\x12*\n" +
-	"\x0eworker_pool_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fworkerPoolId\x12)\n" +
+	"\x0eworker_pool_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fworkerPoolId\x12)\n" +
 	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xae\x02\n" +
 	"\x17UpdateWorkerPoolRequest\x12A\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
@@ -950,7 +951,7 @@ const file_google_cloud_run_v2_worker_pool_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x81\x01\xeaA~\n" +
 	"\x1drun.googleapis.com/WorkerPool\x12Aprojects/{project}/locations/{location}/workerPools/{worker_pool}*\vworkerPools2\n" +
-	"workerPoolR\x01\x012\xbe\x0e\n" +
+	"workerPoolR\x01\x012\x90\x0f\n" +
 	"\vWorkerPools\x12\x98\x02\n" +
 	"\x10CreateWorkerPool\x12,.google.cloud.run.v2.CreateWorkerPoolRequest\x1a\x1d.google.longrunning.Operation\"\xb6\x01\xcaA\x18\n" +
 	"\n" +
@@ -973,7 +974,7 @@ const file_google_cloud_run_v2_worker_pool_proto_rawDesc = "" +
 	"\x04name\x12$projects/*/locations/{location=*}/**\x12\x93\x01\n" +
 	"\fGetIamPolicy\x12\".google.iam.v1.GetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"H\x82\xd3\xe4\x93\x02B\x12@/v2/{resource=projects/*/locations/*/workerPools/*}:getIamPolicy\x12\x96\x01\n" +
 	"\fSetIamPolicy\x12\".google.iam.v1.SetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"K\x82\xd3\xe4\x93\x02E:\x01*\"@/v2/{resource=projects/*/locations/*/workerPools/*}:setIamPolicy\x12\xbc\x01\n" +
-	"\x12TestIamPermissions\x12(.google.iam.v1.TestIamPermissionsRequest\x1a).google.iam.v1.TestIamPermissionsResponse\"Q\x82\xd3\xe4\x93\x02K:\x01*\"F/v2/{resource=projects/*/locations/*/workerPools/*}:testIamPermissions\x1aF\xcaA\x12run.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBW\n" +
+	"\x12TestIamPermissions\x12(.google.iam.v1.TestIamPermissionsRequest\x1a).google.iam.v1.TestIamPermissionsResponse\"Q\x82\xd3\xe4\x93\x02K:\x01*\"F/v2/{resource=projects/*/locations/*/workerPools/*}:testIamPermissions\x1a\x97\x01\xcaA\x12run.googleapis.com\xd2A\x7fhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/run,https://www.googleapis.com/auth/run.readonlyBW\n" +
 	"\x17com.google.cloud.run.v2B\x0fWorkerPoolProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
 
 var (

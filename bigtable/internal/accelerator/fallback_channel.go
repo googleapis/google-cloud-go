@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"sync"
 	"sync/atomic"
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -44,12 +45,15 @@ var _ channelConn = (*FallbackChannel)(nil)
 // FallbackChannel wraps a session Channel with a bigtable.Client classic
 // fallback. On codes.Unimplemented from the session backend (indicating the
 // instance does not support session serving) it transparently retries the RPC
-// via the classic path. A sticky atomic bool prevents re-trying session after
-// the first backend Unimplemented so subsequent RPCs skip session entirely.
+// via the classic path. A sticky breaker prevents re-trying session for that
+// instance after the first backend Unimplemented so subsequent RPCs to that
+// instance skip session entirely.
 //
-// The sticky flag is channel-scoped, not table-scoped: Unimplemented from the
+// The sticky flag is instance-scoped, not table-scoped: Unimplemented from the
 // session backend means the instance lacks session serving for all tables, so
-// routing everything classic after the first trip is correct.
+// routing everything for that instance to classic after the first trip is
+// correct while allowing other instances in a project-scoped daemon to continue
+// using the session path.
 //
 // UNIMPLEMENTED that originates inside the daemon (unsupported request shapes
 // from validateSingleRowReadRequest, or methods the daemon does not serve) is
@@ -58,9 +62,10 @@ var _ channelConn = (*FallbackChannel)(nil)
 // Unimplemented (from RecvMsg, after a valid session dispatch) trips the
 // sticky flag and redirects to classic.
 type FallbackChannel struct {
-	session *Channel
-	classic *classicFallback
-	tripped atomic.Bool
+	session          *Channel
+	classic          *classicFallback
+	tripped          atomic.Bool
+	trippedInstances sync.Map // instanceID (string) -> bool
 }
 
 // NewFallbackChannel constructs a FallbackChannel. It dials a new
@@ -76,8 +81,62 @@ func NewFallbackChannel(ctx context.Context, session *Channel, project, instance
 	return &FallbackChannel{session: session, classic: cf}, nil
 }
 
+func (fc *FallbackChannel) isPinnedInstance() bool {
+	if fc.session != nil {
+		return fc.session.instance != ""
+	}
+	if fc.classic != nil {
+		return fc.classic.instance != ""
+	}
+	return true
+}
+
+func (fc *FallbackChannel) isInstanceTripped(instanceID string) bool {
+	if fc.tripped.Load() {
+		return true
+	}
+	if instanceID != "" {
+		_, ok := fc.trippedInstances.Load(instanceID)
+		return ok
+	}
+	return false
+}
+
+func (fc *FallbackChannel) tripInstance(instanceID string) {
+	if fc.isPinnedInstance() || instanceID == "" {
+		fc.tripped.Store(true)
+	}
+	if instanceID != "" {
+		fc.trippedInstances.Store(instanceID, true)
+	}
+}
+
+func extractInstanceFromMutateRowReq(req *v2pb.MutateRowRequest) string {
+	if req == nil {
+		return ""
+	}
+	if req.TableName != "" {
+		return extractInstanceFromResourceName(req.TableName)
+	}
+	return extractInstanceFromResourceName(req.AuthorizedViewName)
+}
+
+func extractInstanceFromReadRowsReq(req *v2pb.ReadRowsRequest) string {
+	if req == nil {
+		return ""
+	}
+	if req.TableName != "" {
+		return extractInstanceFromResourceName(req.TableName)
+	}
+	if req.AuthorizedViewName != "" {
+		return extractInstanceFromResourceName(req.AuthorizedViewName)
+	}
+	return extractInstanceFromResourceName(req.MaterializedViewName)
+}
+
 // Invoke implements grpc.ClientConnInterface for unary RPCs (MutateRow).
-// Session is tried first unless the channel is already tripped; on
+// Session is tried first when the target instance is not tripped and the
+// server-driven SessionLoad diverter selects the session path; on
 // codes.Unimplemented the sticky flag is set and classic is used instead.
 func (fc *FallbackChannel) Invoke(ctx context.Context, method string, args, reply interface{}, opts ...grpc.CallOption) error {
 	if method != v2pb.Bigtable_MutateRow_FullMethodName {
@@ -88,7 +147,8 @@ func (fc *FallbackChannel) Invoke(ctx context.Context, method string, args, repl
 		return status.Errorf(codes.Internal, "accelerator fallback: unexpected request type %T for MutateRow", args)
 	}
 
-	if !fc.tripped.Load() {
+	instanceID := extractInstanceFromMutateRowReq(req)
+	if !fc.isInstanceTripped(instanceID) && fc.session.useSession(instanceID, req.GetAppProfileId()) {
 		err := fc.session.Invoke(ctx, method, args, reply, opts...)
 		if err == nil {
 			return nil
@@ -96,7 +156,7 @@ func (fc *FallbackChannel) Invoke(ctx context.Context, method string, args, repl
 		if status.Code(err) != codes.Unimplemented {
 			return err
 		}
-		fc.tripped.Store(true)
+		fc.tripInstance(instanceID)
 	}
 
 	resource, err := adapters.DefaultMutateRowRequestAdapter.ExtractResource(req)
@@ -201,11 +261,17 @@ func (s *fallbackReadRowsStream) SendMsg(m any) error {
 	s.req = req
 	s.sent = true
 
+	if s.inner != nil && s.fc != nil {
+		instanceID := extractInstanceFromReadRowsReq(req)
+		if s.fc.isInstanceTripped(instanceID) || !s.fc.session.useSession(instanceID, req.GetAppProfileId()) {
+			s.inner = nil
+		}
+	}
 	if s.inner == nil {
-		// Channel already tripped — validate shape before going classic.
-		// Without this call, a multi-row or range-scan request would reach
-		// classicFallback.ReadRow and return codes.Internal rather than
-		// codes.Unimplemented, breaking the caller's per-method native fallback.
+		// Target instance already tripped or diverted to classic via SessionLoad —
+		// validate shape before going classic. Without this call, a multi-row or
+		// range-scan request would reach classicFallback.ReadRow and return
+		// codes.Internal rather than codes.Unimplemented.
 		return validateSingleRowReadRequest(req)
 	}
 	// Forward to session. Any error — including Unimplemented for unsupported
@@ -243,8 +309,8 @@ func (s *fallbackReadRowsStream) RecvMsg(m any) error {
 			return nil
 		case status.Code(err) == codes.Unimplemented:
 			// Backend-originated Unimplemented: instance lacks session serving.
-			// Trip the sticky breaker and fall through to classic below.
-			s.fc.tripped.Store(true)
+			// Trip the sticky breaker for this instance and fall through to classic below.
+			s.fc.tripInstance(extractInstanceFromReadRowsReq(s.req))
 			s.inner = nil
 		default:
 			return s.terminate(err)

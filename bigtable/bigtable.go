@@ -1160,11 +1160,12 @@ func (ts Timestamp) TruncateToMilliseconds() Timestamp {
 func gaxInvokeWithRecorder(ctx context.Context, method string,
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
 	mt := metrics.FromContext(ctx)
-	attemptHeaderMD := metadata.New(nil)
-	attempTrailerMD := metadata.New(nil)
 	mt.SetMethod(method)
 
 	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
+		attemptHeaderMD := metadata.New(nil)
+		attemptTrailerMD := metadata.New(nil)
+
 		// Inject cookie and attempt information from prior attempts.
 		md := metadata.New(nil)
 		for k, v := range mt.Cookies() {
@@ -1178,10 +1179,10 @@ func gaxInvokeWithRecorder(ctx context.Context, method string,
 		// Per-attempt metric setup (RecordAttemptStart, blockingLatencyTracker)
 		// is owned by StatsHandler.TagRPC. f's headerMD / trailerMD are still
 		// needed for routing-cookie extraction below.
-		err := f(newCtx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+		err := f(newCtx, &attemptHeaderMD, &attemptTrailerMD, callSettings)
 
 		mt.ExtractCookiesFromMD(attemptHeaderMD, cookiePrefix)
-		mt.ExtractCookiesFromMD(attempTrailerMD, cookiePrefix)
+		mt.ExtractCookiesFromMD(attemptTrailerMD, cookiePrefix)
 		return err
 	}
 

@@ -346,7 +346,7 @@ type CmekConfig struct {
 	// `projects/{project}/locations/{location}/cmekConfig` or
 	// `projects/{project}/locations/{location}/cmekConfigs/{cmek_config}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// KMS key resource name which will be used to encrypt resources
+	// Required. KMS key resource name which will be used to encrypt resources
 	// `projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{keyId}`.
 	KmsKey string `protobuf:"bytes,2,opt,name=kms_key,json=kmsKey,proto3" json:"kms_key,omitempty"`
 	// Output only. KMS key version resource name which will be used to encrypt
@@ -738,11 +738,11 @@ const file_google_cloud_discoveryengine_v1_cmek_config_service_proto_rawDesc = "
 	")discoveryengine.googleapis.com/CmekConfigR\x04name\"W\n" +
 	"\x0fSingleRegionKey\x12D\n" +
 	"\akms_key\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
-	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\"\xc7\b\n" +
+	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\"\xcb\b\n" +
 	"\n" +
 	"CmekConfig\x12\x18\n" +
-	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12@\n" +
-	"\akms_key\x18\x02 \x01(\tB'\xfaA$\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12D\n" +
+	"\akms_key\x18\x02 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\x12Z\n" +
 	"\x0fkms_key_version\x18\x06 \x01(\tB2\xe2A\x01\x03\xfaA+\n" +
 	")cloudkms.googleapis.com/CryptoKeyVersionsR\rkmsKeyVersion\x12M\n" +
