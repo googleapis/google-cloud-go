@@ -617,6 +617,269 @@ func TestRetryReverseReadRows(t *testing.T) {
 	}
 }
 
+func TestReadRows_EmptyLastScannedRowKey_ForwardRangeRetry(t *testing.T) {
+	var attempt int
+	errInjector := func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, next grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "ReadRows") {
+			return next(srv, ss)
+		}
+		req := new(btpb.ReadRowsRequest)
+		if err := ss.RecvMsg(req); err != nil {
+			return err
+		}
+		attempt++
+		switch attempt {
+		case 1:
+			if err := writeReadRowsResponse(ss, "a", "b"); err != nil {
+				return err
+			}
+			// A non-nil empty []byte{} LastScannedRowKey must not overwrite prevRowKey to "".
+			if err := ss.SendMsg(&btpb.ReadRowsResponse{LastScannedRowKey: []byte{}}); err != nil {
+				return err
+			}
+			return status.Error(codes.Unavailable, "transient failure")
+		case 2:
+			if got := string(req.GetRows().GetRowRanges()[0].GetStartKeyOpen()); got != "b" {
+				t.Errorf("retry StartKeyOpen = %q, want %q", got, "b")
+			}
+			return writeReadRowsResponse(ss, "c", "d")
+		default:
+			return status.Errorf(codes.Internal, "unexpected attempt %d", attempt)
+		}
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	if err != nil {
+		t.Fatalf("setupDefaultFakeServer() failed: %v", err)
+	}
+	t.Cleanup(cleanup)
+
+	var got []string
+	if err := tbl.ReadRows(t.Context(), NewRange("a", "z"), func(r Row) bool {
+		got = append(got, r.Key())
+		return true
+	}); err != nil {
+		t.Fatalf("ReadRows(NewRange(\"a\", \"z\")) unexpected error: %v", err)
+	}
+	want := []string{"a", "b", "c", "d"}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("ReadRows(NewRange(\"a\", \"z\")) keys diff (-want +got):\n%s", diff)
+	}
+}
+
+func TestReadRows_EmptyLastScannedRowKey_ReverseRowListRetry(t *testing.T) {
+	var attempt int
+	errInjector := func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, next grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "ReadRows") {
+			return next(srv, ss)
+		}
+		req := new(btpb.ReadRowsRequest)
+		if err := ss.RecvMsg(req); err != nil {
+			return err
+		}
+		attempt++
+		switch attempt {
+		case 1:
+			if err := writeReadRowsResponse(ss, "d", "c"); err != nil {
+				return err
+			}
+			// A non-nil empty []byte{} must not wipe prevRowKey to "", which would make
+			// RowList.retainRowsBefore("") drop all remaining keys.
+			if err := ss.SendMsg(&btpb.ReadRowsResponse{LastScannedRowKey: []byte{}}); err != nil {
+				return err
+			}
+			return status.Error(codes.Unavailable, "transient failure")
+		case 2:
+			var gotKeys []string
+			for _, k := range req.GetRows().GetRowKeys() {
+				gotKeys = append(gotKeys, string(k))
+			}
+			wantKeys := []string{"a", "b"}
+			if diff := cmp.Diff(wantKeys, gotKeys); diff != "" {
+				t.Errorf("retry RowKeys diff (-want +got):\n%s", diff)
+			}
+			return writeReadRowsResponse(ss, "b", "a")
+		default:
+			return status.Errorf(codes.Internal, "unexpected attempt %d", attempt)
+		}
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	if err != nil {
+		t.Fatalf("setupDefaultFakeServer() failed: %v", err)
+	}
+	t.Cleanup(cleanup)
+
+	var got []string
+	if err := tbl.ReadRows(t.Context(), RowList{"a", "b", "c", "d"}, func(r Row) bool {
+		got = append(got, r.Key())
+		return true
+	}, ReverseScan()); err != nil {
+		t.Fatalf("ReadRows(RowList, ReverseScan) unexpected error: %v", err)
+	}
+	want := []string{"d", "c", "b", "a"}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("ReadRows(RowList, ReverseScan) keys diff (-want +got):\n%s", diff)
+	}
+}
+
+func TestReadRows_OutOfOrderAcrossRetryFails(t *testing.T) {
+	var attempt int
+	errInjector := func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, next grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "ReadRows") {
+			return next(srv, ss)
+		}
+		req := new(btpb.ReadRowsRequest)
+		if err := ss.RecvMsg(req); err != nil {
+			return err
+		}
+		attempt++
+		switch attempt {
+		case 1:
+			if err := writeReadRowsResponse(ss, "m"); err != nil {
+				return err
+			}
+			return status.Error(codes.Unavailable, "transient failure")
+		case 2:
+			// Send an out-of-order LastScannedRowKey <= "m" on the retry stream.
+			return ss.SendMsg(&btpb.ReadRowsResponse{LastScannedRowKey: []byte("d")})
+		default:
+			return status.Errorf(codes.Internal, "unexpected attempt %d", attempt)
+		}
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	if err != nil {
+		t.Fatalf("setupDefaultFakeServer() failed: %v", err)
+	}
+	t.Cleanup(cleanup)
+
+	var got []string
+	err = tbl.ReadRows(t.Context(), NewRange("a", "z"), func(r Row) bool {
+		got = append(got, r.Key())
+		return true
+	})
+	if err == nil {
+		t.Errorf("ReadRows(NewRange(\"a\", \"z\")) = nil, want non-nil out-of-order error")
+	}
+	if attempt != 2 {
+		t.Errorf("ReadRows(NewRange(\"a\", \"z\")) attempts = %d, want 2", attempt)
+	}
+	want := []string{"m"}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("ReadRows(NewRange(\"a\", \"z\")) yielded keys diff (-want +got):\n%s", diff)
+	}
+}
+
+func TestReadRows_OutOfOrderLastScannedRowKeyFailsWithoutRetry(t *testing.T) {
+	tests := []struct {
+		name      string
+		reversed  bool
+		responses []*btpb.ReadRowsResponse
+		wantYield []string
+	}{
+		{
+			name:     "forward_out_of_order_scanned_key",
+			reversed: false,
+			responses: []*btpb.ReadRowsResponse{
+				readRowsChunkResponse("m"),
+				{LastScannedRowKey: []byte("d")},
+			},
+			wantYield: []string{"m"},
+		},
+		{
+			name:     "forward_chunk_out_of_order_after_scanned_key",
+			reversed: false,
+			responses: []*btpb.ReadRowsResponse{
+				readRowsChunkResponse("b"),
+				{LastScannedRowKey: []byte("m")},
+				readRowsChunkResponse("f"),
+			},
+			wantYield: []string{"b"},
+		},
+		{
+			name:     "reverse_out_of_order_scanned_key",
+			reversed: true,
+			responses: []*btpb.ReadRowsResponse{
+				readRowsChunkResponse("f"),
+				{LastScannedRowKey: []byte("m")},
+			},
+			wantYield: []string{"f"},
+		},
+		{
+			name:     "reverse_chunk_out_of_order_after_scanned_key",
+			reversed: true,
+			responses: []*btpb.ReadRowsResponse{
+				readRowsChunkResponse("m"),
+				{LastScannedRowKey: []byte("f")},
+				readRowsChunkResponse("h"),
+			},
+			wantYield: []string{"m"},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			attempts := 0
+			errInjector := func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, next grpc.StreamHandler) error {
+				if !strings.HasSuffix(info.FullMethod, "ReadRows") {
+					return next(srv, ss)
+				}
+				req := new(btpb.ReadRowsRequest)
+				if err := ss.RecvMsg(req); err != nil {
+					return err
+				}
+				attempts++
+				for _, resp := range tc.responses {
+					if err := ss.SendMsg(resp); err != nil {
+						return err
+					}
+				}
+				return nil
+			}
+
+			tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+			if err != nil {
+				t.Fatalf("setupDefaultFakeServer() failed: %v", err)
+			}
+			t.Cleanup(cleanup)
+
+			var opts []ReadOption
+			if tc.reversed {
+				opts = append(opts, ReverseScan())
+			}
+
+			var gotYield []string
+			err = tbl.ReadRows(t.Context(), NewClosedRange("a", "z"), func(r Row) bool {
+				gotYield = append(gotYield, r.Key())
+				return true
+			}, opts...)
+			if err == nil {
+				t.Errorf("ReadRows(%s) = nil, want non-nil out-of-order error", tc.name)
+			}
+			if attempts != 1 {
+				t.Errorf("ReadRows(%s) attempts = %d, want 1 (unretryable)", tc.name, attempts)
+			}
+			if diff := cmp.Diff(tc.wantYield, gotYield); diff != "" {
+				t.Errorf("ReadRows(%s) yielded keys diff (-want +got):\n%s", tc.name, diff)
+			}
+		})
+	}
+}
+
+func readRowsChunkResponse(rowKeys ...string) *btpb.ReadRowsResponse {
+	chunks := make([]*btpb.ReadRowsResponse_CellChunk, 0, len(rowKeys))
+	for _, key := range rowKeys {
+		chunks = append(chunks, &btpb.ReadRowsResponse_CellChunk{
+			RowKey:     []byte(key),
+			FamilyName: &wrapperspb.StringValue{Value: "fm"},
+			Qualifier:  &wrapperspb.BytesValue{Value: []byte("col")},
+			RowStatus:  &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true},
+		})
+	}
+	return &btpb.ReadRowsResponse{Chunks: chunks}
+}
+
 func writeReadRowsResponse(ss grpc.ServerStream, rowKeys ...string) error {
 	var chunks []*btpb.ReadRowsResponse_CellChunk
 	for _, key := range rowKeys {
