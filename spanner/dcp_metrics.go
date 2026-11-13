@@ -40,40 +40,40 @@ type dcpMetrics struct {
 	registration           metric.Registration
 }
 
-func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
-	if !IsOpenTelemetryMetricsEnabled() {
+func newDCPMetrics(p *dynamicChannelPool, sc *sessionClient, mp metric.MeterProvider) *dcpMetrics {
+	if !IsOpenTelemetryMetricsEnabled() || sc == nil {
 		return nil
 	}
 	if mp == nil {
 		mp = otel.GetMeterProvider()
 	}
-	_, instance, database, err := parseDatabaseName(p.sc.database)
+	_, instance, database, err := parseDatabaseName(sc.database)
 	if err != nil {
-		logf(p.sc.logger, "spanner_dcp: failed to parse database name for OpenTelemetry metrics: %v", err)
+		logf(sc.logger, "spanner_dcp: failed to parse database name for OpenTelemetry metrics: %v", err)
 		return nil
 	}
 	m := &dcpMetrics{
 		attrs: []attribute.KeyValue{
-			attributeKeyClientID.String(p.sc.id),
+			attributeKeyClientID.String(sc.id),
 			attributeKeyDatabase.String(database),
 			attributeKeyInstance.String(instance),
 			attributeKeyLibVersion.String(internal.Version),
 		},
 	}
 	meter := mp.Meter(OtInstrumentationScope, metric.WithInstrumentationVersion(internal.Version))
-	if m.numChannels, err = dcpInt64ObservableGauge(meter, p.sc.logger, "num_channels", "Number of active channels currently in the dynamic channel pool.", "{channel}"); err != nil {
+	if m.numChannels, err = dcpInt64ObservableGauge(meter, sc.logger, "num_channels", "Number of active channels currently in the dynamic channel pool.", "{channel}"); err != nil {
 		return nil
 	}
-	if m.drainingChannelCount, err = dcpInt64ObservableGauge(meter, p.sc.logger, "draining_channel_count", "Number of channels currently draining in the dynamic channel pool.", "{channel}"); err != nil {
+	if m.drainingChannelCount, err = dcpInt64ObservableGauge(meter, sc.logger, "draining_channel_count", "Number of channels currently draining in the dynamic channel pool.", "{channel}"); err != nil {
 		return nil
 	}
-	if m.maxAllowedChannels, err = dcpInt64ObservableGauge(meter, p.sc.logger, "max_allowed_channels", "Maximum number of channels allowed in the dynamic channel pool.", "{channel}"); err != nil {
+	if m.maxAllowedChannels, err = dcpInt64ObservableGauge(meter, sc.logger, "max_allowed_channels", "Maximum number of channels allowed in the dynamic channel pool.", "{channel}"); err != nil {
 		return nil
 	}
-	if m.activeRPCCount, err = dcpInt64ObservableGauge(meter, p.sc.logger, "active_rpc_count", "Number of RPCs currently active on the dynamic channel pool.", "{rpc}"); err != nil {
+	if m.activeRPCCount, err = dcpInt64ObservableGauge(meter, sc.logger, "active_rpc_count", "Number of RPCs currently active on the dynamic channel pool.", "{rpc}"); err != nil {
 		return nil
 	}
-	if m.maxActiveRPCPerChannel, err = dcpInt64ObservableGauge(meter, p.sc.logger, "max_active_rpc_per_channel", "Maximum number of RPCs currently active on any channel in the dynamic channel pool.", "{rpc}"); err != nil {
+	if m.maxActiveRPCPerChannel, err = dcpInt64ObservableGauge(meter, sc.logger, "max_active_rpc_per_channel", "Maximum number of RPCs currently active on any channel in the dynamic channel pool.", "{rpc}"); err != nil {
 		return nil
 	}
 
@@ -83,7 +83,7 @@ func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
 		metric.WithUnit("{channel}"),
 	)
 	if err != nil {
-		logf(p.sc.logger, "Error during registering instrument for metric %s, error: %v", dcpMetricsPrefix+"channel_pool_scaling", err)
+		logf(sc.logger, "Error during registering instrument for metric %s, error: %v", dcpMetricsPrefix+"channel_pool_scaling", err)
 		return nil
 	}
 
@@ -91,10 +91,10 @@ func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
 		func(ctx context.Context, o metric.Observer) error {
 			attrs := metric.WithAttributes(m.attrs...)
 			o.ObserveInt64(m.numChannels, int64(p.Num()), attrs)
-			o.ObserveInt64(m.drainingChannelCount, p.drainingCount.Load(), attrs)
-			o.ObserveInt64(m.maxAllowedChannels, int64(p.cfg.DCPMaxChannels), attrs)
-			o.ObserveInt64(m.activeRPCCount, int64(p.totalRPCLoad.Load()), attrs)
-			o.ObserveInt64(m.maxActiveRPCPerChannel, p.maxActiveRPCPerChannel(), attrs)
+			o.ObserveInt64(m.drainingChannelCount, p.DrainingCount.Load(), attrs)
+			o.ObserveInt64(m.maxAllowedChannels, int64(p.Cfg.DCPMaxChannels), attrs)
+			o.ObserveInt64(m.activeRPCCount, int64(p.TotalRPCLoad.Load()), attrs)
+			o.ObserveInt64(m.maxActiveRPCPerChannel, p.MaxActiveRPCPerChannel(), attrs)
 			return nil
 		},
 		m.numChannels,
@@ -104,21 +104,11 @@ func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
 		m.maxActiveRPCPerChannel,
 	)
 	if err != nil {
-		logf(p.sc.logger, "spanner_dcp: failed to register OpenTelemetry metric callback: %v", err)
+		logf(sc.logger, "spanner_dcp: failed to register OpenTelemetry metric callback: %v", err)
 		return nil
 	}
 	m.registration = reg
 	return m
-}
-
-func (p *dynamicChannelPool) maxActiveRPCPerChannel() int64 {
-	var max int32
-	for _, e := range p.getEntries() {
-		if load := e.rpcLoad(); load > max {
-			max = load
-		}
-	}
-	return int64(max)
 }
 
 func dcpInt64ObservableGauge(meter metric.Meter, logger *log.Logger, name, desc, unit string) (metric.Int64ObservableGauge, error) {
@@ -130,11 +120,11 @@ func dcpInt64ObservableGauge(meter metric.Meter, logger *log.Logger, name, desc,
 	return instrument, err
 }
 
-func (m *dcpMetrics) recordScaleUp(ctx context.Context, channels int64) {
+func (m *dcpMetrics) RecordScaleUp(ctx context.Context, channels int64) {
 	m.recordScaling(ctx, channels, "up")
 }
 
-func (m *dcpMetrics) recordScaleDown(ctx context.Context, channels int64) {
+func (m *dcpMetrics) RecordScaleDown(ctx context.Context, channels int64) {
 	m.recordScaling(ctx, channels, "down")
 }
 
@@ -148,7 +138,7 @@ func (m *dcpMetrics) recordScaling(ctx context.Context, channels int64, directio
 	m.channelPoolScaling.Add(ctx, channels, metric.WithAttributes(attrs...))
 }
 
-func (m *dcpMetrics) close(logger *log.Logger) {
+func (m *dcpMetrics) Close(logger *log.Logger) {
 	if m == nil || m.registration == nil {
 		return
 	}
