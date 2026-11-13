@@ -1007,3 +1007,37 @@ func TestSessionList_CheckoutWithPicker_AtomicPickAndDequeue(t *testing.T) {
 		checkInvariants(t, sl)
 	})
 }
+
+func TestSessionPool_RecordTimeSeriesPreservesRetiredSessionRpcs(t *testing.T) {
+	p := newTestPool(t, 1, 10)
+	p.debugEnabled = true
+
+	sh1 := injectActiveSession(t, p, "s1", time.Now())
+	sh2 := injectActiveSession(t, p, "s2", time.Now())
+	sh1.session.okRpcs.Store(100)
+	sh1.session.errorRpcs.Store(10)
+
+	p.recordTimeSeries()
+
+	// Retire sh1 and advance sh2; delta must reflect +20 OK / +5 Err rather than going negative.
+	p.sl.OnSessionClosed(sh1)
+	sh2.session.okRpcs.Store(20)
+	sh2.session.errorRpcs.Store(5)
+
+	time.Sleep(5 * time.Millisecond)
+	p.recordTimeSeries()
+
+	p.m.timeSeriesMu.Lock()
+	samples := append([]TimeSeriesSample(nil), p.m.timeSeries...)
+	p.m.timeSeriesMu.Unlock()
+
+	if len(samples) != 2 {
+		t.Fatalf("len(samples) = %d, want 2", len(samples))
+	}
+	if samples[1].OkPerSec <= 0 {
+		t.Errorf("OkPerSec = %v, want > 0 after retiring session and serving 20 more OK RPCs", samples[1].OkPerSec)
+	}
+	if samples[1].ErrPerSec <= 0 {
+		t.Errorf("ErrPerSec = %v, want > 0 after retiring session and serving 5 more Err RPCs", samples[1].ErrPerSec)
+	}
+}
