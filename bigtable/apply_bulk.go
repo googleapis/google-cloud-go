@@ -46,6 +46,9 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/ApplyBulk")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	if t.materializedView != "" {
+		return nil, errMaterializedViewWrite
+	}
 	if len(rowKeys) != len(muts) {
 		return nil, fmt.Errorf("mismatched rowKeys and mutation array lengths: %d, %d", len(rowKeys), len(muts))
 	}
