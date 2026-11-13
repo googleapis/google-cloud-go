@@ -236,6 +236,9 @@ func dispatch[Args any, R any, Resp interface {
 	proto.Message
 }](ctx context.Context, t *sessionTable, spec opSpec[Args, R, Resp]) (Resp, error) {
 	var zero Resp
+	if t.closed.Load() {
+		return zero, fmt.Errorf("session %s pool open: %w", spec.method, ErrClientClosed)
+	}
 	pool, poolErr := spec.pool.get()
 	if poolErr != nil {
 		return zero, fmt.Errorf("session %s pool open: %w", spec.method, poolErr)
