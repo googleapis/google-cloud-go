@@ -48,6 +48,10 @@ const (
 	PowerOfTwoLeastInFlightLBPolicy = "power_of_two_least_in_flight"
 	// BigtableConnectionPoolEnvVar is the env var for enabling Bigtable Connection Pool.
 	BigtableConnectionPoolEnvVar = "CBT_BIGTABLE_CONN_POOL"
+	// DisableSessionAwareChannelPoolEnvVar is the env var escape hatch to revert
+	// the session client's channel pool sizer from SessionAwareScaleMonitor back
+	// to the classic RPC-load-driven DynamicScaleMonitor.
+	DisableSessionAwareChannelPoolEnvVar = "CBT_DISABLE_SESSION_AWARE_CHANNEL_POOL"
 )
 
 var schemeRegexp = regexp.MustCompile("^(http://|https://|passthrough:///)")
@@ -253,6 +257,22 @@ func EnableBigtableConnectionPool() bool {
 		return true
 	}
 	return enableBigtableConnPool
+}
+
+// DisableSessionAwareChannelPool reports whether the session client's
+// SessionAwareScaleMonitor has been disabled via
+// CBT_DISABLE_SESSION_AWARE_CHANNEL_POOL, reverting channel-pool sizing to
+// DynamicScaleMonitor.
+func DisableSessionAwareChannelPool() bool {
+	val := os.Getenv(DisableSessionAwareChannelPoolEnvVar)
+	if val == "" {
+		return false
+	}
+	disabled, err := strconv.ParseBool(val)
+	if err != nil {
+		return false
+	}
+	return disabled
 }
 
 // Logf logs the given message to the given logger, or the standard logger if

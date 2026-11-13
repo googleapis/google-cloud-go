@@ -1,0 +1,503 @@
+// Copyright 2026 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package internal
+
+import (
+	"context"
+	"sync/atomic"
+	"testing"
+	"time"
+
+	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btopt "cloud.google.com/go/bigtable/internal/option"
+)
+
+// TestComputeTarget_FormulaAndClamps exercises the pure sizing function
+// across the corner cases the monitor relies on: cold-start (0 sessions
+// -> min), typical scale-up (crosses softMax boundary), overflow clamp
+// (target > max), and unusable configs (softMax<=0, max<=0, min>max).
+func TestComputeTarget_FormulaAndClamps(t *testing.T) {
+	cases := []struct {
+		name              string
+		sessions          int
+		softMax, min, max int
+		want              int
+	}{
+		{"cold-start-min", 0, 4, 2, 8, 2},
+		{"one-session-min", 1, 4, 2, 8, 2},
+		{"headroom-boundary", 4, 4, 2, 8, 2},
+		{"crosses-softmax", 8, 4, 2, 8, 4},
+		{"grows-to-mid", 12, 4, 2, 8, 6},
+		{"clamps-at-max", 32, 4, 2, 8, 8},
+		{"clamps-at-max-way-over", 1000, 4, 2, 8, 8},
+		{"softmax-zero-returns-zero", 100, 0, 2, 8, 0},
+		{"softmax-negative-returns-zero", 100, -1, 2, 8, 0},
+		{"max-zero-returns-zero", 10, 4, 0, 0, 0},
+		{"inverted-bounds-returns-zero", 10, 4, 8, 2, 0},
+		{"zero-min-floors-at-one", 0, 4, 0, 8, 1},
+		{"softmax-one-headroom-scales", 3, 1, 1, 10, 6},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := ComputeTarget(tc.sessions, tc.softMax, tc.min, tc.max)
+			if got != tc.want {
+				t.Errorf("ComputeTarget(sessions=%d, softMax=%d, min=%d, max=%d) = %d, want %d",
+					tc.sessions, tc.softMax, tc.min, tc.max, got, tc.want)
+			}
+		})
+	}
+}
+
+// TestComputeTarget_HeadroomMatchesConstant guards against a silent
+// change to SessionAwareHeadroom — the sizing behavior is documented
+// as HEADROOM=2 across languages, so any bump needs to be intentional
+// (and this test forces it into the PR).
+func TestComputeTarget_HeadroomMatchesConstant(t *testing.T) {
+	if got := SessionAwareHeadroom; got != 2 {
+		t.Errorf("SessionAwareHeadroom = %d, want 2 (cross-language contract)", got)
+	}
+}
+
+// scaleDecisionRecorder is a stand-in for the pool's mutation side.
+// It exposes the same "have vs target -> grow/shrink delta" contract
+// the monitor drives, but records the decision instead of dialing.
+type scaleDecisionRecorder struct {
+	have    atomic.Int32
+	adds    atomic.Int32
+	removes atomic.Int32
+	lastAdd atomic.Int32
+	lastRem atomic.Int32
+}
+
+// reconcile mirrors SessionAwareScaleMonitor.tick's grow/shrink branch
+// so we can assert what the monitor would drive without wiring a
+// real pool. Reads ComputeTarget for the pure formula.
+func (r *scaleDecisionRecorder) reconcile(sessions, softMax, minConns, maxConns int) {
+	target := ComputeTarget(sessions, softMax, minConns, maxConns)
+	if target <= 0 {
+		return
+	}
+	have := int(r.have.Load())
+	switch {
+	case target > have:
+		delta := target - have
+		r.adds.Add(1)
+		r.lastAdd.Store(int32(delta))
+		r.have.Store(int32(target))
+	case target < have:
+		delta := have - target
+		r.removes.Add(1)
+		r.lastRem.Store(int32(delta))
+		r.have.Store(int32(target))
+	}
+}
+
+// TestSessionAwareScaleMonitor_ScaleUpOnSessionRamp drives session count
+// upward and asserts the recorder observes growth deltas that would
+// bring the pool from min to max on a big-enough ramp. Uses
+// scaleDecisionRecorder (not a real pool) so the test is
+// deterministic and doesn't dial network.
+func TestSessionAwareScaleMonitor_ScaleUpOnSessionRamp(t *testing.T) {
+	r := &scaleDecisionRecorder{}
+	r.have.Store(2) // start at min
+
+	// softMax=4 min=2 max=8. Ramp session count 0..32 and assert the
+	// pool reaches 8 (ceiling) by ramp end.
+	for sessions := 0; sessions <= 32; sessions += 4 {
+		r.reconcile(sessions, 4, 2, 8)
+	}
+	if got := r.have.Load(); got != 8 {
+		t.Errorf("final pool size = %d, want 8 (should reach max)", got)
+	}
+	if got := r.adds.Load(); got == 0 {
+		t.Error("adds counter = 0, want > 0 (never grew)")
+	}
+}
+
+// TestSessionAwareScaleMonitor_ScaleDownOnSessionRetire drives session
+// count downward from a saturated state and asserts the recorder
+// shrinks back to the floor.
+func TestSessionAwareScaleMonitor_ScaleDownOnSessionRetire(t *testing.T) {
+	r := &scaleDecisionRecorder{}
+	r.have.Store(8) // start at max
+
+	for sessions := 32; sessions >= 0; sessions -= 4 {
+		r.reconcile(sessions, 4, 2, 8)
+	}
+	if got := r.have.Load(); got != 2 {
+		t.Errorf("final pool size = %d, want 2 (should reach min floor)", got)
+	}
+	if got := r.removes.Load(); got == 0 {
+		t.Error("removes counter = 0, want > 0 (never shrunk)")
+	}
+}
+
+// TestSessionAwareScaleMonitor_ConfigUpdateResizes fixes session count
+// and changes softMax mid-run; the next reconcile must retarget.
+func TestSessionAwareScaleMonitor_ConfigUpdateResizes(t *testing.T) {
+	r := &scaleDecisionRecorder{}
+	r.have.Store(2)
+
+	// sessions=20, softMax=4 -> target=ceil(40/4)=10, clamped to max=8.
+	r.reconcile(20, 4, 2, 8)
+	if got := r.have.Load(); got != 8 {
+		t.Fatalf("after first reconcile: pool=%d, want 8", got)
+	}
+
+	// softMax doubles to 8 -> target=ceil(40/8)=5. Pool should shrink.
+	r.reconcile(20, 8, 2, 8)
+	if got := r.have.Load(); got != 5 {
+		t.Errorf("after softMax bump: pool=%d, want 5", got)
+	}
+}
+
+// TestSessionAwareScaleMonitor_OnConfigStoresSnapshot exercises the
+// OnConfig callback: the atomic snapshot is loadable and reflects
+// every field. Runs against a real monitor instance so any drift in
+// the OnConfig<->tick contract is caught.
+func TestSessionAwareScaleMonitor_OnConfigStoresSnapshot(t *testing.T) {
+	m := NewSessionAwareScaleMonitor(nil)
+
+	// Nil config returns an error — no snapshot stored, no panic.
+	if err := m.OnConfig(nil); err == nil {
+		t.Error("OnConfig(nil) = nil, want error")
+	}
+	if got := m.config.Load(); got != nil {
+		t.Errorf("OnConfig(nil) stored %+v, want no store", got)
+	}
+
+	// Valid config populates all three fields.
+	if err := m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{
+		MinServerCount:        3,
+		MaxServerCount:        12,
+		PerServerSessionCount: 6,
+	}); err != nil {
+		t.Fatalf("OnConfig(valid) unexpected error: %v", err)
+	}
+	snap := m.config.Load()
+	if snap == nil {
+		t.Fatal("OnConfig(valid) stored nil")
+	}
+	if snap.minServerCount != 3 || snap.maxServerCount != 12 || snap.perServerSessionCount != 6 {
+		t.Errorf("snapshot = {minServerCount=%d maxServerCount=%d perServerSessionCount=%d}, want {3 12 6}",
+			snap.minServerCount, snap.maxServerCount, snap.perServerSessionCount)
+	}
+
+	// Unset (zero) fields fall back to defaultClientConfig's ChannelConfiguration.
+	defaults := defaultClientConfig.GetSessionConfiguration().GetChannelConfiguration()
+	if err := m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{}); err != nil {
+		t.Fatalf("OnConfig(empty) unexpected error: %v", err)
+	}
+	snap = m.config.Load()
+	if snap == nil {
+		t.Fatal("OnConfig(empty) stored nil")
+	}
+	if snap.minServerCount != int(defaults.GetMinServerCount()) ||
+		snap.maxServerCount != int(defaults.GetMaxServerCount()) ||
+		snap.perServerSessionCount != int(defaults.GetPerServerSessionCount()) {
+		t.Errorf("snapshot from empty proto = %+v, want defaults {%d %d %d}",
+			snap, defaults.GetMinServerCount(), defaults.GetMaxServerCount(), defaults.GetPerServerSessionCount())
+	}
+
+	// Negative values or max < min return an error and leave the prior valid snapshot intact.
+	invalidConfigs := []struct {
+		name string
+		cfg  *spb.SessionClientConfiguration_ChannelPoolConfiguration
+	}{
+		{
+			name: "negative_min",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: -1, MaxServerCount: 10, PerServerSessionCount: 4},
+		},
+		{
+			name: "negative_max",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: 2, MaxServerCount: -5, PerServerSessionCount: 4},
+		},
+		{
+			name: "negative_per_server_sessions",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: 2, MaxServerCount: 10, PerServerSessionCount: -2},
+		},
+		{
+			name: "max_less_than_min",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: 10, MaxServerCount: 4, PerServerSessionCount: 4},
+		},
+		{
+			name: "min_exceeds_default_max",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: defaults.GetMaxServerCount() + 5},
+		},
+	}
+	for _, tc := range invalidConfigs {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := m.OnConfig(tc.cfg); err == nil {
+				t.Errorf("OnConfig(%+v) = nil, want validation error", tc.cfg)
+			}
+			if got := m.config.Load(); got != snap {
+				t.Errorf("invalid OnConfig overwrote previous valid snapshot: got %+v, want %+v", got, snap)
+			}
+		})
+	}
+}
+
+// TestSessionAwareScaleMonitor_StartStopExitsCleanly verifies the
+// production Start/Stop lifecycle: Start spawns the tick goroutine,
+// Stop cancels the context and blocks on the goroutine's exit via
+// the done channel. If either half were racy, Stop would either
+// deadlock (goroutine never exits) or return before the goroutine
+// finishes (Stop returning while the tick is mid-formula).
+func TestSessionAwareScaleMonitor_StartStopExitsCleanly(t *testing.T) {
+	m := NewSessionAwareScaleMonitor(nil)
+	m.tickInterval = 10 * time.Millisecond
+	// No config set — tick short-circuits, so a nil pool is safe.
+	m.Start(context.Background())
+
+	// Let a couple of ticks land.
+	time.Sleep(30 * time.Millisecond)
+
+	// Stop must return promptly (< 1s is generous) and the done
+	// channel must be closed by the goroutine's defer.
+	stopDone := make(chan struct{})
+	go func() {
+		m.Stop()
+		close(stopDone)
+	}()
+	select {
+	case <-stopDone:
+	case <-time.After(time.Second):
+		t.Fatal("Stop did not return within 1s (goroutine leak)")
+	}
+
+	// Double-Stop must be a no-op, not a panic.
+	m.Stop()
+}
+
+// TestSessionAwareScaleMonitor_StopBeforeStartIsNoOp ensures calling
+// Stop on an unstarted monitor returns immediately instead of
+// deadlocking on <-m.done.
+func TestSessionAwareScaleMonitor_StopBeforeStartIsNoOp(t *testing.T) {
+	m := NewSessionAwareScaleMonitor(nil)
+	done := make(chan struct{})
+	go func() {
+		m.Stop()
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("Stop before Start blocked")
+	}
+}
+
+// TestSessionAwareScaleMonitor_TickForTest_NoConfigIsNoOp asserts the
+// tick short-circuits before touching the pool when no config has been
+// received. Uses the test-only constructor so the ticker is disabled
+// and we can drive tick manually. A nil pool must be safe here —
+// tick() returns before calling pool.TotalStreamCount, so no panic.
+func TestSessionAwareScaleMonitor_TickForTest_NoConfigIsNoOp(t *testing.T) {
+	m := NewSessionAwareScaleMonitorForTest(nil)
+	m.Start(context.Background())
+	defer m.Stop()
+
+	// If tick didn't short-circuit on nil config, this would panic on
+	// pool.TotalStreamCount(). The test passing means short-circuit
+	// works.
+	m.TickForTest()
+}
+
+// TestSessionAwareScaleMonitor_RealPoolScaleUpAndDown drives a real
+// BigtableChannelPool backed by an in-process gRPC server through
+// scale-up and scale-down ticks, verifying TotalStreamCount + addConnections
+// + removeConnections end-to-end.
+func TestSessionAwareScaleMonitor_RealPoolScaleUpAndDown(t *testing.T) {
+	addr := setupTestServer(t, &fakeService{})
+	dial := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	pool, err := NewBigtableChannelPool(
+		context.Background(),
+		2,
+		btopt.RoundRobin,
+		dial,
+		time.Now(),
+		WithChannelPrimer(NoOpChannelPrimer{}),
+		WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)),
+	)
+	if err != nil {
+		t.Fatalf("NewBigtableChannelPool: %v", err)
+	}
+	defer pool.Close()
+
+	m := NewSessionAwareScaleMonitorForTest(pool)
+	m.Start(context.Background())
+	defer m.Stop()
+
+	m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{
+		MinServerCount:        2,
+		MaxServerCount:        6,
+		PerServerSessionCount: 4,
+	})
+
+	// Put 6 streams on each of the 2 conns -> 12 streams total.
+	// target = ceil(12*2 / 4) = 6 -> grows pool from 2 to 6.
+	setConnLoads(pool.getConns(), 0, 6)
+	if got := pool.TotalStreamCount(); got != 12 {
+		t.Fatalf("TotalStreamCount = %d, want 12", got)
+	}
+	m.TickForTest()
+	if got := pool.Num(); got != 6 {
+		t.Fatalf("after scale-up tick: pool.Num() = %d, want 6", got)
+	}
+
+	// Clear all streams -> 0 streams -> target = min = 2 -> shrinks pool from 6 to 2.
+	setConnLoads(pool.getConns(), 0, 0)
+	m.TickForTest()
+	if got := pool.Num(); got != 2 {
+		t.Fatalf("after scale-down tick: pool.Num() = %d, want 2", got)
+	}
+}
+
+// TestSessionAwareScaleMonitor_ShrinkPrefersIdleAndLeastStreamedConns verifies
+// that shrinking drains idle (0 active streams) and least-streamed channels
+// first rather than evicting older channels that carry active sessions.
+func TestSessionAwareScaleMonitor_ShrinkPrefersIdleAndLeastStreamedConns(t *testing.T) {
+	addr := setupTestServer(t, &fakeService{})
+	dial := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	pool, err := NewBigtableChannelPool(
+		context.Background(),
+		4,
+		btopt.RoundRobin,
+		dial,
+		time.Now(),
+		WithChannelPrimer(NoOpChannelPrimer{}),
+		WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)),
+	)
+	if err != nil {
+		t.Fatalf("NewBigtableChannelPool: %v", err)
+	}
+	defer pool.Close()
+
+	// Make the first two (oldest) connections carry active sessions (3 and 1),
+	// while the two newer connections have 0 active streams.
+	conns := pool.getConns()
+	if len(conns) != 4 {
+		t.Fatalf("initial pool size = %d, want 4", len(conns))
+	}
+	busyOldest := conns[0]
+	busySecond := conns[1]
+	idleThird := conns[2]
+	idleFourth := conns[3]
+	busyOldest.streamingLoad.Store(3)
+	busySecond.streamingLoad.Store(1)
+	idleThird.streamingLoad.Store(0)
+	idleFourth.streamingLoad.Store(0)
+
+	m := NewSessionAwareScaleMonitorForTest(pool)
+	m.Start(context.Background())
+	defer m.Stop()
+
+	// total streams = 4, perServerSessionCount = 4 -> target = ceil(4*2 / 4) = 2.
+	// Shrinking from 4 -> 2 must drain the 2 idle connections and keep the 2 busy ones.
+	m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{
+		MinServerCount:        2,
+		MaxServerCount:        6,
+		PerServerSessionCount: 4,
+	})
+	m.TickForTest()
+
+	remaining := pool.getConns()
+	if len(remaining) != 2 {
+		t.Fatalf("remaining conns = %d, want 2", len(remaining))
+	}
+	keepSet := map[*connEntry]bool{remaining[0]: true, remaining[1]: true}
+	if !keepSet[busyOldest] || !keepSet[busySecond] {
+		t.Errorf("shrink evicted busy connections; kept streamingLoads=[%d, %d], want busy conns (3, 1)",
+			remaining[0].streamingLoad.Load(), remaining[1].streamingLoad.Load())
+	}
+	if !idleThird.isDraining() || !idleFourth.isDraining() {
+		t.Errorf("idle connections not marked draining: third=%v fourth=%v",
+			idleThird.isDraining(), idleFourth.isDraining())
+	}
+	// Reset simulated loads so pool.Close() drains cleanly without waiting on phantom streams.
+	busyOldest.streamingLoad.Store(0)
+	busySecond.streamingLoad.Store(0)
+}
+
+// TestTotalStreamCount_IncludesDrainingConnections verifies that connections
+// removed from p.conns while draining still contribute their active
+// streamingLoad to TotalStreamCount until waitForDrainAndClose finishes.
+func TestTotalStreamCount_IncludesDrainingConnections(t *testing.T) {
+	addr := setupTestServer(t, &fakeService{})
+	dial := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	pool, err := NewBigtableChannelPool(
+		context.Background(),
+		3,
+		btopt.RoundRobin,
+		dial,
+		time.Now(),
+		WithChannelPrimer(NoOpChannelPrimer{}),
+		WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)),
+	)
+	if err != nil {
+		t.Fatalf("NewBigtableChannelPool: %v", err)
+	}
+	defer pool.Close()
+
+	conns := pool.getConns()
+	conns[0].streamingLoad.Store(4)
+	conns[1].streamingLoad.Store(3)
+	drainingConn := conns[2]
+	drainingConn.streamingLoad.Store(2)
+
+	if got := pool.TotalStreamCount(); got != 9 {
+		t.Fatalf("initial TotalStreamCount = %d, want 9", got)
+	}
+
+	// Shrink from 3 -> 2: drainingConn (least-streamed with 2 streams) is
+	// removed from p.getConns() immediately while its 2 streams are still live.
+	if !pool.removeLeastStreamedConnections(1, 1, 1) {
+		t.Fatal("removeLeastStreamedConnections returned false, want true")
+	}
+	if got := pool.Num(); got != 2 {
+		t.Fatalf("pool.Num() after shrink = %d, want 2", got)
+	}
+	if !drainingConn.isDraining() {
+		t.Fatal("expected evicted connection to be marked draining")
+	}
+	if got := pool.TotalStreamCount(); got != 9 {
+		t.Fatalf("TotalStreamCount while connection is draining = %d, want 9 (must include 2 draining streams)", got)
+	}
+
+	// Finish the 2 streams on the draining connection and wait for
+	// waitForDrainAndClose (250ms tick) to close and deregister it.
+	drainingConn.streamingLoad.Store(0)
+	deadline := time.Now().Add(2 * time.Second)
+	for {
+		pool.drainingMu.Lock()
+		nDraining := len(pool.drainingConns)
+		pool.drainingMu.Unlock()
+		if nDraining == 0 {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("drainingConns still has %d entries after streams drained", nDraining)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	if got := pool.TotalStreamCount(); got != 7 {
+		t.Errorf("TotalStreamCount after draining conn closed = %d, want 7", got)
+	}
+
+	conns[0].streamingLoad.Store(0)
+	conns[1].streamingLoad.Store(0)
+}
