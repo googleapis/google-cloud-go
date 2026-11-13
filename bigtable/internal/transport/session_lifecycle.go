@@ -211,8 +211,11 @@ func (s *Session) Close(ctx context.Context, req *spb.CloseSessionRequest) error
 		}
 	}
 
-	// If ForceClose raced us during the drain, our work is done.
-	if s.State() == StateClosed {
+	// Advance to WaitServerClose BEFORE sending CloseSessionRequest so a
+	// fast server EOF arriving immediately in readLoop -> handleClose
+	// captures prevStateAtClose == StateWaitServerClose rather than
+	// StateClosing (which would falsely increment consecutiveFailures).
+	if _, ok := s.transitionTo(StateWaitServerClose, isState(StateClosing)); !ok {
 		return nil
 	}
 
@@ -220,17 +223,17 @@ func (s *Session) Close(ctx context.Context, req *spb.CloseSessionRequest) error
 		Payload: &spb.SessionRequest_CloseSession{CloseSession: req},
 	}
 	if err := s.Send(closeReq); err != nil {
+		// Roll state back to StateClosing BEFORE ForceClose so ForceClose's
+		// transitionTo(StateClosed, ...) captures prevStateAtClose == StateClosing
+		// before firing notifyClosed / OnClose hooks.
+		s.transitionTo(StateClosing, isState(StateWaitServerClose))
+		s.setCloseErr(err)
 		s.ForceClose(&spb.CloseSessionRequest{
 			Reason:      spb.CloseSessionRequest_CLOSE_SESSION_REASON_ERROR,
 			Description: "failed to send close session request",
 		})
 		return fmt.Errorf("send close session request: %w", err)
 	}
-	// Advance to WaitServerClose so the pool monitor can see we're waiting
-	// on the server. handleClose accepts StateWaitServerClose → Closed
-	// and will capture WSC as prevStateAtClose — that's the signal
-	// noteAbnormalCloseIfAny reads to skip the abnormal-close counter.
-	s.transitionTo(StateWaitServerClose, isState(StateClosing))
 	return nil
 }
 

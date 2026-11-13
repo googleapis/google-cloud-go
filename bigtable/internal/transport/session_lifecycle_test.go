@@ -658,3 +658,94 @@ func TestHooks_FiredInSpecOrder(t *testing.T) {
 		t.Errorf("hook order = %v, want %v", got, want)
 	}
 }
+
+func TestClose_FastServerEOFDuringSendMarksWaitServerClose(t *testing.T) {
+	p := newTestPool(t, 1, 10)
+	p.consecutiveFailureThreshold.Store(1)
+
+	stream := newFakeStream()
+	var s *Session
+	stream.sendFn = func(req *spb.SessionRequest) error {
+		if req.GetCloseSession() != nil {
+			stream.Close()
+			waitFor(t, time.Second, func() bool { return s.State() == StateClosed }, "StateClosed inside Send")
+		}
+		return nil
+	}
+
+	sh := newSessionHandle(nil, time.Now())
+	s = NewSession("fast-eof", stream, SessionHooks{
+		OnStart:   p.onStart,
+		OnActive:  func(_ *Session) { p.onActive(sh) },
+		OnClosing: func(_ *Session) { p.onClosing(sh) },
+		OnClose:   func(_ *Session, err error) { p.onClose(sh, err) },
+	}, SessionTypeTable)
+	sh.session = s
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := s.Start(ctx, &spb.OpenSessionRequest{}); err != nil {
+		t.Fatalf("Start: %v", err)
+	}
+	stream.recv <- recvOp{resp: &spb.SessionResponse{
+		Payload: &spb.SessionResponse_OpenSession{OpenSession: &spb.OpenSessionResponse{}},
+	}}
+	waitFor(t, time.Second, func() bool { return s.State() == StateReady }, "StateReady")
+
+	if err := s.Close(context.Background(), &spb.CloseSessionRequest{
+		Reason: spb.CloseSessionRequest_CLOSE_SESSION_REASON_USER,
+	}); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	s.WaitGoroutines()
+
+	if got := State(s.prevStateAtClose.Load()); got != StateWaitServerClose {
+		t.Errorf("prevStateAtClose = %v, want %v", got, StateWaitServerClose)
+	}
+	if got := p.consecutiveFailures.Load(); got != 0 {
+		t.Errorf("consecutiveFailures = %d, want 0 (clean close must not count as abnormal)", got)
+	}
+}
+
+func TestClose_SendFailureStillCountsAbnormalClose(t *testing.T) {
+	p := newTestPool(t, 1, 10)
+	sendErr := status.Error(codes.Unavailable, "broken pipe")
+	stream := newFakeStream()
+	stream.sendFn = func(req *spb.SessionRequest) error {
+		if req.GetCloseSession() != nil {
+			return sendErr
+		}
+		return nil
+	}
+
+	sh := newSessionHandle(nil, time.Now())
+	s := NewSession("close-send-err", stream, SessionHooks{
+		OnStart:   p.onStart,
+		OnActive:  func(_ *Session) { p.onActive(sh) },
+		OnClosing: func(_ *Session) { p.onClosing(sh) },
+		OnClose:   func(_ *Session, err error) { p.onClose(sh, err) },
+	}, SessionTypeTable)
+	sh.session = s
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := s.Start(ctx, &spb.OpenSessionRequest{}); err != nil {
+		t.Fatalf("Start: %v", err)
+	}
+	stream.recv <- recvOp{resp: &spb.SessionResponse{
+		Payload: &spb.SessionResponse_OpenSession{OpenSession: &spb.OpenSessionResponse{}},
+	}}
+	waitFor(t, time.Second, func() bool { return s.State() == StateReady }, "StateReady")
+
+	if err := s.Close(context.Background(), &spb.CloseSessionRequest{
+		Reason: spb.CloseSessionRequest_CLOSE_SESSION_REASON_USER,
+	}); err == nil {
+		t.Fatal("Close succeeded, want send error")
+	}
+	stream.Close()
+	s.WaitGoroutines()
+
+	if got := p.consecutiveFailures.Load(); got != 1 {
+		t.Errorf("consecutiveFailures = %d, want 1 after CloseSessionRequest send error", got)
+	}
+}
