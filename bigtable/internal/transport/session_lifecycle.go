@@ -55,14 +55,18 @@ func (s *Session) Start(ctx context.Context, req *spb.OpenSessionRequest) error 
 		// other transport-side loss. errors.Is still resolves the
 		// underlying send error via sessionErr.Unwrap.
 		//
-		// TODO(sushanb): distinguish Unimplemented from generic
-		// transport failure so the client can fall back to the unary
-		// (non-session) path when the server rejects OpenSession
-		// with codes.Unimplemented. Today every Send failure — network
-		// drop, backpressure, Unimplemented — is folded into
-		// Unavailable, which retries indefinitely against a server
-		// that will never accept the RPC. Follow-up when the fallback
-		// path lands.
+		// A server rejecting the RPC as UNIMPLEMENTED does NOT reach
+		// this branch — gRPC bidi streams surface the server's status
+		// on Recv, not on Send (Send typically returns io.EOF when the
+		// server has already terminated the stream, and the actual
+		// status is retrieved on the next Recv). The Recv-side
+		// UNIMPLEMENTED preservation is enforced by
+		// TestReadLoop_RecvUnimplemented_SurfacesToWaiterViaConsecutiveFailure
+		// in session_pool_consecutive_failures_test.go: handleClose
+		// stamps the raw Recv err onto s.closeErr, which
+		// SessionPoolImpl.abnormalClose captures into
+		// lastAbnormalCloseErr, and consecutiveFailureError.GRPCStatus
+		// then surfaces the code intact to any waiter parked on Invoke.
 		return unavailable(err, "session OpenSession request failed: %v", err)
 	}
 
