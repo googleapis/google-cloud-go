@@ -29,6 +29,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/storage/experimental"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -131,6 +132,11 @@ type grpcStorageClient struct {
 	dpDiag         string
 	metrics        *clientMetrics
 	metricsCleanup func()
+
+	// bufferPool allocates memory for parallel uploads. It is the pool set
+	// through experimental.WithBufferPool or, if none was set, the SDK's
+	// defaultBufferPool, which is closed when the client is closed.
+	bufferPool experimental.BufferPool
 
 	// configFeatureAttributes tracks client-level features that are enabled for this
 	// client instance.
@@ -240,12 +246,17 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		}
 	}
 
+	bufferPool := config.bufferPool
+	if bufferPool == nil {
+		bufferPool = newDefaultBufferPool()
+	}
 	c := &grpcStorageClient{
 		settings:       s,
 		config:         &config,
 		metrics:        clientMetrics,
 		metricsCleanup: metricsCleanup,
 		readStallMgr:   bd,
+		bufferPool:     bufferPool,
 	}
 	// Add routing interceptors to inject headers.
 	ui, si := c.routingInterceptors()
@@ -258,9 +269,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		// that it sees the attempt span: both google.golang.org/api/transport/grpc
 		// (dial.go) and cloud.google.com/go/auth/grpctransport (grpctransport.go)
 		// add their otelgrpc handler before the caller's dial options.
-		// See retryAttemptStatsHandler.
+		// See attemptStatsHandler.
 		s.clientOption = append(s.clientOption,
-			option.WithGRPCDialOption(grpc.WithStatsHandler(retryAttemptStatsHandler{})))
+			option.WithGRPCDialOption(grpc.WithStatsHandler(attemptStatsHandler{})))
 	}
 	c.dpDiag = directPathDiagnostic(ctx, s.clientOption...)
 	g, err := gapic.NewClient(ctx, s.clientOption...)
@@ -382,6 +393,10 @@ func (c *grpcStorageClient) Close() error {
 	}
 	if c.metricsCleanup != nil {
 		c.metricsCleanup()
+	}
+	// Only close the SDK-owned defaultBufferPool; custom pools are managed by the caller.
+	if pool, ok := c.bufferPool.(*defaultBufferPool); ok {
+		pool.close()
 	}
 	return c.raw.Close()
 }
@@ -1443,6 +1458,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 				databufs: databufs,
 			}
 			err = decoder.readFullObjectResponse()
+			recordBidiReadPayload(stream, decoder, err)
 			return err
 		}
 
@@ -1544,6 +1560,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			Metageneration:  obj.GetMetageneration(),
 			Generation:      obj.GetGeneration(),
 			CRC32C:          wantCRC,
+			Unfinalized:     !finalized,
 		},
 		objectMetadata: &metadata,
 		reader: &gRPCReader{
@@ -1563,12 +1580,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			finalized:       finalized,
 			negativeOffset:  negativeOffset,
 		},
-		checkCRC:    checkCRC,
-		handle:      &handle,
-		remain:      remain,
-		unfinalized: !finalized,
-		bucket:      params.bucket,
-		object:      params.object,
+		checkCRC: checkCRC,
+		handle:   &handle,
+		remain:   remain,
+		bucket:   params.bucket,
+		object:   params.object,
 	}
 
 	// For a zero-length request, explicitly close the stream and set remaining
@@ -1968,7 +1984,9 @@ func (r *gRPCReader) recv() error {
 	}
 
 	r.currMsg = &readResponseDecoder{databufs: databufs}
-	return r.currMsg.readFullObjectResponse()
+	err = r.currMsg.readFullObjectResponse()
+	recordBidiReadPayload(r.stream, r.currMsg, err)
+	return err
 }
 
 // ReadObjectResponse field and subfield numbers.

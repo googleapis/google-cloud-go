@@ -116,8 +116,9 @@ type CreateJobRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Job instance to create.
 	Job *Job `protobuf:"bytes,2,opt,name=job,proto3" json:"job,omitempty"`
-	// Required. The unique identifier for the Job. The name of the job becomes
+	// Optional. The unique identifier for the Job. The name of the job becomes
 	// {parent}/jobs/{job_id}.
+	// If not provided, the server will generate a unique `job_id`.
 	JobId string `protobuf:"bytes,3,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
 	// Indicates that the request should be validated and default values
 	// populated, without persisting the request or creating any resources.
@@ -696,6 +697,8 @@ type Job struct {
 	//	*Job_StartExecutionToken
 	//	*Job_RunExecutionToken
 	CreateExecution isJob_CreateExecution `protobuf_oneof:"create_execution"`
+	// Optional. The functional type of the Job.
+	FunctionalType FunctionalType `protobuf:"varint,31,opt,name=functional_type,json=functionalType,proto3,enum=google.cloud.run.v2.FunctionalType" json:"functional_type,omitempty"`
 	// Optional. A system-generated fingerprint for this version of the
 	// resource. May be used to detect modification conflict during updates.
 	Etag          string `protobuf:"bytes,99,opt,name=etag,proto3" json:"etag,omitempty"`
@@ -919,6 +922,13 @@ func (x *Job) GetRunExecutionToken() string {
 	return ""
 }
 
+func (x *Job) GetFunctionalType() FunctionalType {
+	if x != nil {
+		return x.FunctionalType
+	}
+	return FunctionalType_FUNCTIONAL_TYPE_UNSPECIFIED
+}
+
 func (x *Job) GetEtag() string {
 	if x != nil {
 		return x.Etag
@@ -1043,9 +1053,12 @@ type RunJobRequest_Overrides struct {
 	// Duration in seconds the task may be active before the system will
 	// actively try to mark it failed and kill associated containers. Will
 	// replace existing timeout_seconds value.
-	Timeout       *durationpb.Duration `protobuf:"bytes,4,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Timeout *durationpb.Duration `protobuf:"bytes,4,opt,name=timeout,proto3" json:"timeout,omitempty"`
+	// Optional. If true, the system will start the execution within the next 12
+	// hours depending on available capacity.
+	DelayExecution *bool `protobuf:"varint,6,opt,name=delay_execution,json=delayExecution,proto3,oneof" json:"delay_execution,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *RunJobRequest_Overrides) Reset() {
@@ -1097,6 +1110,13 @@ func (x *RunJobRequest_Overrides) GetTimeout() *durationpb.Duration {
 		return x.Timeout
 	}
 	return nil
+}
+
+func (x *RunJobRequest_Overrides) GetDelayExecution() bool {
+	if x != nil && x.DelayExecution != nil {
+		return *x.DelayExecution
+	}
+	return false
 }
 
 // Per-container override specification.
@@ -1182,7 +1202,7 @@ const file_google_cloud_run_v2_job_proto_rawDesc = "" +
 	"\x10CreateJobRequest\x127\n" +
 	"\x06parent\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\x12\x16run.googleapis.com/JobR\x06parent\x120\n" +
 	"\x03job\x18\x02 \x01(\v2\x18.google.cloud.run.v2.JobB\x04\xe2A\x01\x02R\x03job\x12\x1b\n" +
-	"\x06job_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\x12#\n" +
+	"\x06job_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05jobId\x12#\n" +
 	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"D\n" +
 	"\rGetJobRequest\x123\n" +
 	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
@@ -1204,24 +1224,26 @@ const file_google_cloud_run_v2_job_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
 	"\x16run.googleapis.com/JobR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag\"\xba\x04\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag\"\x82\x05\n" +
 	"\rRunJobRequest\x123\n" +
 	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
 	"\x16run.googleapis.com/JobR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\x12\n" +
 	"\x04etag\x18\x03 \x01(\tR\x04etag\x12J\n" +
-	"\toverrides\x18\x04 \x01(\v2,.google.cloud.run.v2.RunJobRequest.OverridesR\toverrides\x1a\xee\x02\n" +
+	"\toverrides\x18\x04 \x01(\v2,.google.cloud.run.v2.RunJobRequest.OverridesR\toverrides\x1a\xb6\x03\n" +
 	"\tOverrides\x12o\n" +
 	"\x13container_overrides\x18\x01 \x03(\v2>.google.cloud.run.v2.RunJobRequest.Overrides.ContainerOverrideR\x12containerOverrides\x12#\n" +
 	"\n" +
 	"task_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\ttaskCount\x123\n" +
-	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x1a\x95\x01\n" +
+	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x122\n" +
+	"\x0fdelay_execution\x18\x06 \x01(\bB\x04\xe2A\x01\x01H\x00R\x0edelayExecution\x88\x01\x01\x1a\x95\x01\n" +
 	"\x11ContainerOverride\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\x04args\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x04args\x12-\n" +
 	"\x03env\x18\x03 \x03(\v2\x1b.google.cloud.run.v2.EnvVarR\x03env\x12#\n" +
 	"\n" +
-	"clear_args\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\tclearArgs\"\xfd\f\n" +
+	"clear_args\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\tclearArgsB\x12\n" +
+	"\x10_delay_execution\"\xd1\r\n" +
 	"\x03Job\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
 	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12$\n" +
@@ -1256,7 +1278,8 @@ const file_google_cloud_run_v2_job_proto_rawDesc = "" +
 	"\vreconciling\x18\x17 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12)\n" +
 	"\rsatisfies_pzs\x18\x19 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x124\n" +
 	"\x15start_execution_token\x18\x1a \x01(\tH\x00R\x13startExecutionToken\x120\n" +
-	"\x13run_execution_token\x18\x1b \x01(\tH\x00R\x11runExecutionToken\x12\x18\n" +
+	"\x13run_execution_token\x18\x1b \x01(\tH\x00R\x11runExecutionToken\x12R\n" +
+	"\x0ffunctional_type\x18\x1f \x01(\x0e2#.google.cloud.run.v2.FunctionalTypeB\x04\xe2A\x01\x01R\x0efunctionalType\x12\x18\n" +
 	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -1281,7 +1304,7 @@ const file_google_cloud_run_v2_job_proto_rawDesc = "" +
 	"\x10EXECUTION_FAILED\x10\x02\x12\x15\n" +
 	"\x11EXECUTION_RUNNING\x10\x03\x12\x15\n" +
 	"\x11EXECUTION_PENDING\x10\x04\x12\x17\n" +
-	"\x13EXECUTION_CANCELLED\x10\x052\x8a\x0e\n" +
+	"\x13EXECUTION_CANCELLED\x10\x052\xdc\x0e\n" +
 	"\x04Jobs\x12\xdd\x01\n" +
 	"\tCreateJob\x12%.google.cloud.run.v2.CreateJobRequest\x1a\x1d.google.longrunning.Operation\"\x89\x01\xcaA\n" +
 	"\n" +
@@ -1304,7 +1327,7 @@ const file_google_cloud_run_v2_job_proto_rawDesc = "" +
 	"\x04name\x12$projects/*/locations/{location=*}/**\x12\x8c\x01\n" +
 	"\fGetIamPolicy\x12\".google.iam.v1.GetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"A\x82\xd3\xe4\x93\x02;\x129/v2/{resource=projects/*/locations/*/jobs/*}:getIamPolicy\x12\x8f\x01\n" +
 	"\fSetIamPolicy\x12\".google.iam.v1.SetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"D\x82\xd3\xe4\x93\x02>:\x01*\"9/v2/{resource=projects/*/locations/*/jobs/*}:setIamPolicy\x12\xb5\x01\n" +
-	"\x12TestIamPermissions\x12(.google.iam.v1.TestIamPermissionsRequest\x1a).google.iam.v1.TestIamPermissionsResponse\"J\x82\xd3\xe4\x93\x02D:\x01*\"?/v2/{resource=projects/*/locations/*/jobs/*}:testIamPermissions\x1aF\xcaA\x12run.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBP\n" +
+	"\x12TestIamPermissions\x12(.google.iam.v1.TestIamPermissionsRequest\x1a).google.iam.v1.TestIamPermissionsResponse\"J\x82\xd3\xe4\x93\x02D:\x01*\"?/v2/{resource=projects/*/locations/*/jobs/*}:testIamPermissions\x1a\x97\x01\xcaA\x12run.googleapis.com\xd2A\x7fhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/run,https://www.googleapis.com/auth/run.readonlyBP\n" +
 	"\x17com.google.cloud.run.v2B\bJobProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
 
 var (
@@ -1341,14 +1364,15 @@ var file_google_cloud_run_v2_job_proto_goTypes = []any{
 	(*BinaryAuthorization)(nil),              // 16: google.cloud.run.v2.BinaryAuthorization
 	(*ExecutionTemplate)(nil),                // 17: google.cloud.run.v2.ExecutionTemplate
 	(*Condition)(nil),                        // 18: google.cloud.run.v2.Condition
-	(*durationpb.Duration)(nil),              // 19: google.protobuf.Duration
-	(*EnvVar)(nil),                           // 20: google.cloud.run.v2.EnvVar
-	(*iampb.GetIamPolicyRequest)(nil),        // 21: google.iam.v1.GetIamPolicyRequest
-	(*iampb.SetIamPolicyRequest)(nil),        // 22: google.iam.v1.SetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),  // 23: google.iam.v1.TestIamPermissionsRequest
-	(*longrunningpb.Operation)(nil),          // 24: google.longrunning.Operation
-	(*iampb.Policy)(nil),                     // 25: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil), // 26: google.iam.v1.TestIamPermissionsResponse
+	(FunctionalType)(0),                      // 19: google.cloud.run.v2.FunctionalType
+	(*durationpb.Duration)(nil),              // 20: google.protobuf.Duration
+	(*EnvVar)(nil),                           // 21: google.cloud.run.v2.EnvVar
+	(*iampb.GetIamPolicyRequest)(nil),        // 22: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 23: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 24: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),          // 25: google.longrunning.Operation
+	(*iampb.Policy)(nil),                     // 26: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 27: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_run_v2_job_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.run.v2.CreateJobRequest.job:type_name -> google.cloud.run.v2.Job
@@ -1367,36 +1391,37 @@ var file_google_cloud_run_v2_job_proto_depIdxs = []int32{
 	18, // 13: google.cloud.run.v2.Job.terminal_condition:type_name -> google.cloud.run.v2.Condition
 	18, // 14: google.cloud.run.v2.Job.conditions:type_name -> google.cloud.run.v2.Condition
 	9,  // 15: google.cloud.run.v2.Job.latest_created_execution:type_name -> google.cloud.run.v2.ExecutionReference
-	14, // 16: google.cloud.run.v2.ExecutionReference.create_time:type_name -> google.protobuf.Timestamp
-	14, // 17: google.cloud.run.v2.ExecutionReference.completion_time:type_name -> google.protobuf.Timestamp
-	14, // 18: google.cloud.run.v2.ExecutionReference.delete_time:type_name -> google.protobuf.Timestamp
-	0,  // 19: google.cloud.run.v2.ExecutionReference.completion_status:type_name -> google.cloud.run.v2.ExecutionReference.CompletionStatus
-	11, // 20: google.cloud.run.v2.RunJobRequest.Overrides.container_overrides:type_name -> google.cloud.run.v2.RunJobRequest.Overrides.ContainerOverride
-	19, // 21: google.cloud.run.v2.RunJobRequest.Overrides.timeout:type_name -> google.protobuf.Duration
-	20, // 22: google.cloud.run.v2.RunJobRequest.Overrides.ContainerOverride.env:type_name -> google.cloud.run.v2.EnvVar
-	1,  // 23: google.cloud.run.v2.Jobs.CreateJob:input_type -> google.cloud.run.v2.CreateJobRequest
-	2,  // 24: google.cloud.run.v2.Jobs.GetJob:input_type -> google.cloud.run.v2.GetJobRequest
-	4,  // 25: google.cloud.run.v2.Jobs.ListJobs:input_type -> google.cloud.run.v2.ListJobsRequest
-	3,  // 26: google.cloud.run.v2.Jobs.UpdateJob:input_type -> google.cloud.run.v2.UpdateJobRequest
-	6,  // 27: google.cloud.run.v2.Jobs.DeleteJob:input_type -> google.cloud.run.v2.DeleteJobRequest
-	7,  // 28: google.cloud.run.v2.Jobs.RunJob:input_type -> google.cloud.run.v2.RunJobRequest
-	21, // 29: google.cloud.run.v2.Jobs.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	22, // 30: google.cloud.run.v2.Jobs.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	23, // 31: google.cloud.run.v2.Jobs.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	24, // 32: google.cloud.run.v2.Jobs.CreateJob:output_type -> google.longrunning.Operation
-	8,  // 33: google.cloud.run.v2.Jobs.GetJob:output_type -> google.cloud.run.v2.Job
-	5,  // 34: google.cloud.run.v2.Jobs.ListJobs:output_type -> google.cloud.run.v2.ListJobsResponse
-	24, // 35: google.cloud.run.v2.Jobs.UpdateJob:output_type -> google.longrunning.Operation
-	24, // 36: google.cloud.run.v2.Jobs.DeleteJob:output_type -> google.longrunning.Operation
-	24, // 37: google.cloud.run.v2.Jobs.RunJob:output_type -> google.longrunning.Operation
-	25, // 38: google.cloud.run.v2.Jobs.GetIamPolicy:output_type -> google.iam.v1.Policy
-	25, // 39: google.cloud.run.v2.Jobs.SetIamPolicy:output_type -> google.iam.v1.Policy
-	26, // 40: google.cloud.run.v2.Jobs.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	32, // [32:41] is the sub-list for method output_type
-	23, // [23:32] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	19, // 16: google.cloud.run.v2.Job.functional_type:type_name -> google.cloud.run.v2.FunctionalType
+	14, // 17: google.cloud.run.v2.ExecutionReference.create_time:type_name -> google.protobuf.Timestamp
+	14, // 18: google.cloud.run.v2.ExecutionReference.completion_time:type_name -> google.protobuf.Timestamp
+	14, // 19: google.cloud.run.v2.ExecutionReference.delete_time:type_name -> google.protobuf.Timestamp
+	0,  // 20: google.cloud.run.v2.ExecutionReference.completion_status:type_name -> google.cloud.run.v2.ExecutionReference.CompletionStatus
+	11, // 21: google.cloud.run.v2.RunJobRequest.Overrides.container_overrides:type_name -> google.cloud.run.v2.RunJobRequest.Overrides.ContainerOverride
+	20, // 22: google.cloud.run.v2.RunJobRequest.Overrides.timeout:type_name -> google.protobuf.Duration
+	21, // 23: google.cloud.run.v2.RunJobRequest.Overrides.ContainerOverride.env:type_name -> google.cloud.run.v2.EnvVar
+	1,  // 24: google.cloud.run.v2.Jobs.CreateJob:input_type -> google.cloud.run.v2.CreateJobRequest
+	2,  // 25: google.cloud.run.v2.Jobs.GetJob:input_type -> google.cloud.run.v2.GetJobRequest
+	4,  // 26: google.cloud.run.v2.Jobs.ListJobs:input_type -> google.cloud.run.v2.ListJobsRequest
+	3,  // 27: google.cloud.run.v2.Jobs.UpdateJob:input_type -> google.cloud.run.v2.UpdateJobRequest
+	6,  // 28: google.cloud.run.v2.Jobs.DeleteJob:input_type -> google.cloud.run.v2.DeleteJobRequest
+	7,  // 29: google.cloud.run.v2.Jobs.RunJob:input_type -> google.cloud.run.v2.RunJobRequest
+	22, // 30: google.cloud.run.v2.Jobs.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	23, // 31: google.cloud.run.v2.Jobs.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	24, // 32: google.cloud.run.v2.Jobs.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	25, // 33: google.cloud.run.v2.Jobs.CreateJob:output_type -> google.longrunning.Operation
+	8,  // 34: google.cloud.run.v2.Jobs.GetJob:output_type -> google.cloud.run.v2.Job
+	5,  // 35: google.cloud.run.v2.Jobs.ListJobs:output_type -> google.cloud.run.v2.ListJobsResponse
+	25, // 36: google.cloud.run.v2.Jobs.UpdateJob:output_type -> google.longrunning.Operation
+	25, // 37: google.cloud.run.v2.Jobs.DeleteJob:output_type -> google.longrunning.Operation
+	25, // 38: google.cloud.run.v2.Jobs.RunJob:output_type -> google.longrunning.Operation
+	26, // 39: google.cloud.run.v2.Jobs.GetIamPolicy:output_type -> google.iam.v1.Policy
+	26, // 40: google.cloud.run.v2.Jobs.SetIamPolicy:output_type -> google.iam.v1.Policy
+	27, // 41: google.cloud.run.v2.Jobs.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	33, // [33:42] is the sub-list for method output_type
+	24, // [24:33] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_job_proto_init() }
@@ -1413,6 +1438,7 @@ func file_google_cloud_run_v2_job_proto_init() {
 		(*Job_StartExecutionToken)(nil),
 		(*Job_RunExecutionToken)(nil),
 	}
+	file_google_cloud_run_v2_job_proto_msgTypes[9].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

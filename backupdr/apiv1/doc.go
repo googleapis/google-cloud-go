@@ -54,11 +54,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &backupdrpb.CreateBackupPlanRequest{
+//	req := &backupdrpb.CreateAutoProtectionPolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/backupdr/apiv1/backupdrpb#CreateBackupPlanRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/backupdr/apiv1/backupdrpb#CreateAutoProtectionPolicyRequest.
 //	}
-//	op, err := c.CreateBackupPlan(ctx, req)
+//	op, err := c.CreateAutoProtectionPolicy(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

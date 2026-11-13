@@ -268,6 +268,7 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	} else if resp != nil {
 		recordUploadIDFromHeader(ctx, resp.Header)
 	}
+	recordHTTPWritePayload(req, resp)
 	return resp, err
 }
 
@@ -1610,6 +1611,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 		var res *http.Response
 		err = run(ctx, func(ctx context.Context) error {
 			res, err = doDownload(ctx)
+			recordHTTPReadPayload(ctx, res, start, params.length)
 			if err != nil {
 				return formatObjectErr(err)
 			}

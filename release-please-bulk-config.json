@@ -1967,6 +1967,11 @@
       "extra-files": [
         {
           "jsonpath": "$.clientLibrary.version",
+          "path": "examples/saasservicemgmt/apiv1/snippet_metadata.google.cloud.saasplatform.saasservicemgmt.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
           "path": "examples/saasservicemgmt/apiv1beta1/snippet_metadata.google.cloud.saasplatform.saasservicemgmt.v1beta1.json",
           "type": "json"
         }

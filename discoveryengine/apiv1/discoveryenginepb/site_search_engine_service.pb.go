@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -2525,7 +2525,7 @@ const file_google_cloud_discoveryengine_v1_site_search_engine_service_proto_rawD
 	"\ftarget_sites\x18\x01 \x03(\v2+.google.cloud.discoveryengine.v1.TargetSiteR\vtargetSites\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize2\x8f/\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize2\x8d0\n" +
 	"\x17SiteSearchEngineService\x12\xa8\x02\n" +
 	"\x13GetSiteSearchEngine\x12;.google.cloud.discoveryengine.v1.GetSiteSearchEngineRequest\x1a1.google.cloud.discoveryengine.v1.SiteSearchEngine\"\xa0\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\x92\x01ZO\x12M/v1/{name=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}\x12?/v1/{name=projects/*/locations/*/dataStores/*/siteSearchEngine}\x12\xbb\x03\n" +
 	"\x10CreateTargetSite\x128.google.cloud.discoveryengine.v1.CreateTargetSiteRequest\x1a\x1d.google.longrunning.Operation\"\xcd\x02\xcaAf\n" +
@@ -2551,7 +2551,7 @@ const file_google_cloud_discoveryengine_v1_site_search_engine_service_proto_rawD
 	"3google.cloud.discoveryengine.v1.RecrawlUrisResponse\x123google.cloud.discoveryengine.v1.RecrawlUrisMetadata\x82\xd3\xe4\x93\x02\xcc\x01:\x01*Zl:\x01*\"g/v1/{site_search_engine=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:recrawlUris\"Y/v1/{site_search_engine=projects/*/locations/*/dataStores/*/siteSearchEngine}:recrawlUris\x12\xef\x02\n" +
 	"\x16BatchVerifyTargetSites\x12>.google.cloud.discoveryengine.v1.BatchVerifyTargetSitesRequest\x1a\x1d.google.longrunning.Operation\"\xf5\x01\xcaA\x80\x01\n" +
 	">google.cloud.discoveryengine.v1.BatchVerifyTargetSitesResponse\x12>google.cloud.discoveryengine.v1.BatchVerifyTargetSitesMetadata\x82\xd3\xe4\x93\x02k:\x01*\"f/v1/{parent=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:batchVerifyTargetSites\x12\xb2\x02\n" +
-	"\x1dFetchDomainVerificationStatus\x12E.google.cloud.discoveryengine.v1.FetchDomainVerificationStatusRequest\x1aF.google.cloud.discoveryengine.v1.FetchDomainVerificationStatusResponse\"\x81\x01\x82\xd3\xe4\x93\x02{\x12y/v1/{site_search_engine=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:fetchDomainVerificationStatus\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8f\x02\n" +
+	"\x1dFetchDomainVerificationStatus\x12E.google.cloud.discoveryengine.v1.FetchDomainVerificationStatusRequest\x1aF.google.cloud.discoveryengine.v1.FetchDomainVerificationStatusResponse\"\x81\x01\x82\xd3\xe4\x93\x02{\x12y/v1/{site_search_engine=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:fetchDomainVerificationStatus\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x8f\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x1cSiteSearchEngineServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (

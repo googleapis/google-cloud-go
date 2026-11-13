@@ -355,7 +355,11 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 
 // processRetry is responsible for evaluating and re-enqueing an append.
 // If the append is not retried, it is marked complete.
-func (ms *ManagedStream) processRetry(pw *pendingWrite, appendResp *storagepb.AppendRowsResponse, initialErr error) {
+//
+// backoff false skips the pause before the first re-enqueue only. The caller passes false when
+// it has already backed off for the same failure, such as the later writes queued on a stream
+// that failed; any further retry of this write still pauses.
+func (ms *ManagedStream) processRetry(pw *pendingWrite, appendResp *storagepb.AppendRowsResponse, initialErr error, backoff bool) {
 	err := initialErr
 	for {
 		pause, shouldRetry := ms.statelessRetryer().Retry(err, pw.attemptCount)
@@ -364,7 +368,22 @@ func (ms *ManagedStream) processRetry(pw *pendingWrite, appendResp *storagepb.Ap
 			pw.markDone(appendResp, err)
 			return
 		}
-		time.Sleep(pause)
+		if backoff {
+			time.Sleep(pause)
+		}
+		backoff = true
+		// A closed writer never accepts the re-enqueue, and its terminal error
+		// (io.EOF on Close) satisfies the retry predicate without advancing the
+		// attempt count. Finalize here, or this loop never ends and blocks the
+		// connection's receive processor along with every append queued behind it.
+		ms.mu.Lock()
+		closedErr := ms.err
+		ms.mu.Unlock()
+		if closedErr != nil {
+			pw.markDone(appendResp, closedErr)
+			return
+		}
+
 		err = ms.appendWithRetry(pw)
 		if err != nil {
 			// Re-enqueue failed, send it through the loop again.

@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"cloud.google.com/go/storage/experimental"
 	"golang.org/x/net/http2"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
@@ -251,7 +250,7 @@ func initializeGRPCClient(ctx context.Context, config clientConfig) (*storage.Cl
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithReadBufferSize(config.readBufferSize)))
 	}
 	if config.useGRPCBidiReads {
-		opts = append(opts, experimental.WithGRPCBidiReads())
+		opts = append(opts, storage.WithGRPCBidiReads())
 	}
 
 	client, err := storage.NewGRPCClient(ctx, opts...)

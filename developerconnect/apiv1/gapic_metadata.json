@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddGitRepositoryLinkPullRequestComment": {
+              "methods": [
+                "AddGitRepositoryLinkPullRequestComment"
+              ]
+            },
+            "AddGitRepositoryLinkPullRequestReviewComment": {
+              "methods": [
+                "AddGitRepositoryLinkPullRequestReviewComment"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -60,6 +70,11 @@
                 "DeleteUser"
               ]
             },
+            "DiffGitRepositoryLinkCommit": {
+              "methods": [
+                "DiffGitRepositoryLinkCommit"
+              ]
+            },
             "FetchAccessToken": {
               "methods": [
                 "FetchAccessToken"
@@ -73,6 +88,31 @@
             "FetchGitRefs": {
               "methods": [
                 "FetchGitRefs"
+              ]
+            },
+            "FetchGitRepositoryLinkCommit": {
+              "methods": [
+                "FetchGitRepositoryLinkCommit"
+              ]
+            },
+            "FetchGitRepositoryLinkCommitList": {
+              "methods": [
+                "FetchGitRepositoryLinkCommitList"
+              ]
+            },
+            "FetchGitRepositoryLinkFileBlame": {
+              "methods": [
+                "FetchGitRepositoryLinkFileBlame"
+              ]
+            },
+            "FetchGitRepositoryLinkPullRequest": {
+              "methods": [
+                "FetchGitRepositoryLinkPullRequest"
+              ]
+            },
+            "FetchGitRepositoryLinkPullRequestList": {
+              "methods": [
+                "FetchGitRepositoryLinkPullRequestList"
               ]
             },
             "FetchLinkableGitRepositories": {
@@ -153,6 +193,16 @@
             "ListUsers": {
               "methods": [
                 "ListUsers"
+              ]
+            },
+            "ModifyGitRepositoryLinkPullRequest": {
+              "methods": [
+                "ModifyGitRepositoryLinkPullRequest"
+              ]
+            },
+            "OpenGitRepositoryLinkPullRequest": {
+              "methods": [
+                "OpenGitRepositoryLinkPullRequest"
               ]
             },
             "StartOAuth": {
@@ -175,6 +225,16 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddGitRepositoryLinkPullRequestComment": {
+              "methods": [
+                "AddGitRepositoryLinkPullRequestComment"
+              ]
+            },
+            "AddGitRepositoryLinkPullRequestReviewComment": {
+              "methods": [
+                "AddGitRepositoryLinkPullRequestReviewComment"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -225,6 +285,11 @@
                 "DeleteUser"
               ]
             },
+            "DiffGitRepositoryLinkCommit": {
+              "methods": [
+                "DiffGitRepositoryLinkCommit"
+              ]
+            },
             "FetchAccessToken": {
               "methods": [
                 "FetchAccessToken"
@@ -238,6 +303,31 @@
             "FetchGitRefs": {
               "methods": [
                 "FetchGitRefs"
+              ]
+            },
+            "FetchGitRepositoryLinkCommit": {
+              "methods": [
+                "FetchGitRepositoryLinkCommit"
+              ]
+            },
+            "FetchGitRepositoryLinkCommitList": {
+              "methods": [
+                "FetchGitRepositoryLinkCommitList"
+              ]
+            },
+            "FetchGitRepositoryLinkFileBlame": {
+              "methods": [
+                "FetchGitRepositoryLinkFileBlame"
+              ]
+            },
+            "FetchGitRepositoryLinkPullRequest": {
+              "methods": [
+                "FetchGitRepositoryLinkPullRequest"
+              ]
+            },
+            "FetchGitRepositoryLinkPullRequestList": {
+              "methods": [
+                "FetchGitRepositoryLinkPullRequestList"
               ]
             },
             "FetchLinkableGitRepositories": {
@@ -318,6 +408,16 @@
             "ListUsers": {
               "methods": [
                 "ListUsers"
+              ]
+            },
+            "ModifyGitRepositoryLinkPullRequest": {
+              "methods": [
+                "ModifyGitRepositoryLinkPullRequest"
+              ]
+            },
+            "OpenGitRepositoryLinkPullRequest": {
+              "methods": [
+                "OpenGitRepositoryLinkPullRequest"
               ]
             },
             "StartOAuth": {

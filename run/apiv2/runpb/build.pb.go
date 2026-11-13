@@ -65,8 +65,8 @@ type SubmitBuildRequest struct {
 	// Optional. The service account to use for the build. If not set, the default
 	// Cloud Build service account for the project will be used.
 	ServiceAccount string `protobuf:"bytes,6,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
-	// Optional. Name of the Cloud Build Custom Worker Pool that should be used to
-	// build the function. The format of this field is
+	// Optional. Name of the Cloud Build private pool that should be used to build
+	// the function. The format of this field is
 	// `projects/{project}/locations/{region}/workerPools/{workerPool}` where
 	// `{project}` and `{region}` are the project id and region respectively where
 	// the worker pool is defined and `{workerPool}` is the short name of the
@@ -571,9 +571,9 @@ const file_google_cloud_run_v2_build_proto_rawDesc = "" +
 	"\x06object\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06object\x12$\n" +
 	"\n" +
 	"generation\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\n" +
-	"generation2\xf1\x01\n" +
+	"generation2\x95\x02\n" +
 	"\x06Builds\x12\x9e\x01\n" +
-	"\vSubmitBuild\x12'.google.cloud.run.v2.SubmitBuildRequest\x1a(.google.cloud.run.v2.SubmitBuildResponse\"<\x82\xd3\xe4\x93\x026:\x01*\"1/v2/{parent=projects/*/locations/*}/builds:submit\x1aF\xcaA\x12run.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xc3\x01\xeaAn\n" +
+	"\vSubmitBuild\x12'.google.cloud.run.v2.SubmitBuildRequest\x1a(.google.cloud.run.v2.SubmitBuildResponse\"<\x82\xd3\xe4\x93\x026:\x01*\"1/v2/{parent=projects/*/locations/*}/builds:submit\x1aj\xcaA\x12run.googleapis.com\xd2ARhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/runB\xc3\x01\xeaAn\n" +
 	")cloudbuild.googleapis.com/BuildWorkerPool\x12Aprojects/{project}/locations/{location}/workerPools/{worker_pool}\n" +
 	"\x17com.google.cloud.run.v2B\n" +
 	"BuildProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"

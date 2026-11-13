@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -826,7 +826,8 @@ func (x *PurgeCompletionSuggestionsRequest) GetParent() string {
 
 // Response message for
 // [CompletionService.PurgeCompletionSuggestions][google.cloud.discoveryengine.v1.CompletionService.PurgeCompletionSuggestions]
-// method.
+// method. If the long running operation is successfully done, then this
+// message is returned by the google.longrunning.Operations.response field.
 type PurgeCompletionSuggestionsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Whether the completion suggestions were successfully purged.
