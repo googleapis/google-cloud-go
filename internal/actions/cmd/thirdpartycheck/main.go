@@ -46,6 +46,7 @@ var (
 		"gopkg.in/yaml",
 		"github.com/go-git/go-git",
 		"github.com/apache/arrow/go",
+		"github.com/apache/arrow-go",         // arrow project changed their structure for go.
 		"github.com/cloudprober/cloudprober", // https://github.com/googleapis/google-cloud-go/issues/9377
 
 		// Third party deps (temporary exception(s)).
