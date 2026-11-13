@@ -322,6 +322,15 @@ type builtinMetricsTracerFactory struct {
 	meterProvider metric.MeterProvider
 }
 
+// nativeMeterProvider returns the meter provider of the native Cloud
+// Monitoring metrics, or nil when they are disabled.
+func (tf *builtinMetricsTracerFactory) nativeMeterProvider() metric.MeterProvider {
+	if tf == nil {
+		return nil
+	}
+	return tf.meterProvider
+}
+
 func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression string, isAFEBuiltInMetricEnabled, isEnableGRPCBuiltInMetrics bool, metricsProvider, clientMetricsProvider metric.MeterProvider, opts ...option.ClientOption) (tracerFactory *builtinMetricsTracerFactory, err error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
@@ -458,18 +467,6 @@ func builtInMeterProviderOptions(project, compression string, clientAttributes [
 					return false
 				},
 			},
-		))
-	}
-	skippedEEFMetrics := []string{
-		"eef.probe_result",
-		"eef.error_ratio",
-		"eef.current_channel",
-		"eef.channel_downtime",
-	}
-	for _, m := range skippedEEFMetrics {
-		views = append(views, sdkmetric.NewView(
-			sdkmetric.Instrument{Name: m},
-			sdkmetric.Stream{Aggregation: sdkmetric.AggregationDrop{}},
 		))
 	}
 	eefMetricsToEnable := []string{

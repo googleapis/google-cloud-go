@@ -974,7 +974,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				cancel,
 				nil,
 				test.rpc,
-				mc.(*grpcSpannerClient),
+				asGRPCSpannerClient(mc),
 				false,
 				false,
 			)
@@ -1276,7 +1276,7 @@ func TestRsdBlockingStates(t *testing.T) {
 				cancel,
 				nil,
 				test.rpc,
-				mc.(*grpcSpannerClient),
+				asGRPCSpannerClient(mc),
 				false,
 				false,
 			)
@@ -1458,7 +1458,7 @@ func TestQueueBytes(t *testing.T) {
 			sr.rpcReceiver = r
 			return sr, err
 		},
-		mc.(*grpcSpannerClient),
+		asGRPCSpannerClient(mc),
 		false,
 		false,
 	)
@@ -1561,7 +1561,7 @@ func TestResumeToken(t *testing.T) {
 				return sr, err
 			},
 			nil,
-			func(error) {}, mc.(*grpcSpannerClient))
+			func(error) {}, asGRPCSpannerClient(mc))
 	}
 
 	// Establish a stream to mock cloud spanner server.
@@ -1708,7 +1708,7 @@ func TestGrpcReconnect(t *testing.T) {
 
 		},
 		nil,
-		func(error) {}, mc.(*grpcSpannerClient))
+		func(error) {}, asGRPCSpannerClient(mc))
 	defer iter.Stop()
 	for {
 		_, err := iter.Next()
@@ -1767,7 +1767,7 @@ func TestRetryResourceExhaustedWithoutRetryInfo(t *testing.T) {
 
 		},
 		nil,
-		func(error) {}, mc.(*grpcSpannerClient))
+		func(error) {}, asGRPCSpannerClient(mc))
 	defer iter.Stop()
 	for {
 		_, err := iter.Next()
@@ -1833,7 +1833,7 @@ func TestRetryResourceExhaustedWithRetryInfo(t *testing.T) {
 
 		},
 		nil,
-		func(error) {}, mc.(*grpcSpannerClient))
+		func(error) {}, asGRPCSpannerClient(mc))
 	defer iter.Stop()
 	for {
 		_, err := iter.Next()
@@ -1885,7 +1885,7 @@ func TestCancelTimeout(t *testing.T) {
 				}, opts...)
 			},
 			nil,
-			func(error) {}, mc.(*grpcSpannerClient))
+			func(error) {}, asGRPCSpannerClient(mc))
 		defer iter.Stop()
 		for {
 			_, err = iter.Next()
@@ -1922,7 +1922,7 @@ func TestCancelTimeout(t *testing.T) {
 				}, opts...)
 			},
 			nil,
-			func(error) {}, mc.(*grpcSpannerClient))
+			func(error) {}, asGRPCSpannerClient(mc))
 		defer iter.Stop()
 		for {
 			_, err = iter.Next()
@@ -2073,7 +2073,7 @@ func TestRowIteratorDo(t *testing.T) {
 			}, opts...)
 		},
 		nil,
-		func(error) {}, mc.(*grpcSpannerClient))
+		func(error) {}, asGRPCSpannerClient(mc))
 	err = iter.Do(func(r *Row) error { nRows++; return nil })
 	if err != nil {
 		t.Errorf("Using Do: %v", err)
@@ -2110,7 +2110,7 @@ func TestRowIteratorDoWithError(t *testing.T) {
 			}, opts...)
 		},
 		nil,
-		func(error) {}, mc.(*grpcSpannerClient))
+		func(error) {}, asGRPCSpannerClient(mc))
 	injected := errors.New("Failed iterator")
 	err = iter.Do(func(r *Row) error { return injected })
 	if err != injected {
@@ -2146,7 +2146,7 @@ func TestIteratorStopEarly(t *testing.T) {
 			}, opts...)
 		},
 		nil,
-		func(error) {}, mc.(*grpcSpannerClient))
+		func(error) {}, asGRPCSpannerClient(mc))
 	_, err = iter.Next()
 	if err != nil {
 		t.Fatalf("before Stop: %v", err)
