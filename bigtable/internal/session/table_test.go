@@ -694,3 +694,34 @@ func TestSessionTable_Close_BeforeLazyOpen_EarlyBail(t *testing.T) {
 		t.Errorf("release called %d times, want 1 (Close's own release only; guardOpen never entered inner)", releaseCalls.Load())
 	}
 }
+
+func TestSessionTable_PostCloseAfterLazyOpenReturnsErrClientClosed(t *testing.T) {
+	readInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionReadRowResponse{}}}
+	writeInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionMutateRowResponse{}}}
+	tbl, _ := newTestTable(t, readInv, writeInv)
+
+	// Warm both lazyPools before Close() so guardOpen will not run again.
+	if _, err := tbl.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("k")}); err != nil {
+		t.Fatalf("pre-Close ReadRow: %v", err)
+	}
+	if _, err := tbl.MutateRow(context.Background(), &btpb.SessionMutateRowRequest{Key: []byte("k")}); err != nil {
+		t.Fatalf("pre-Close MutateRow: %v", err)
+	}
+
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+
+	if _, err := tbl.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("k")}); !errors.Is(err, ErrClientClosed) {
+		t.Errorf("post-Close ReadRow err = %v, want ErrClientClosed", err)
+	}
+	if _, err := tbl.MutateRow(context.Background(), &btpb.SessionMutateRowRequest{Key: []byte("k")}); !errors.Is(err, ErrClientClosed) {
+		t.Errorf("post-Close MutateRow err = %v, want ErrClientClosed", err)
+	}
+	if got := readInv.callCount(); got != 1 {
+		t.Errorf("readInv calls = %d, want 1 (post-Close ReadRow must not invoke cached pool)", got)
+	}
+	if got := writeInv.callCount(); got != 1 {
+		t.Errorf("writeInv calls = %d, want 1 (post-Close MutateRow must not invoke cached pool)", got)
+	}
+}
