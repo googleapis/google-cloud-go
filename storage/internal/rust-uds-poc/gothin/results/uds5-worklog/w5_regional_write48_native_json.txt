@@ -1,0 +1,3 @@
+backend=go-json-range bucket=cpriti-thickthin-poc-usw1 vcpus=192
+backend        sli                            p50       p90       p99       max      mean      MiB/s  cpu s/GiB cpu ms/op   cpu %  peak MiB
+go-json-range  bidiwrite-200m-48t       42.37276s 43.742593s 44.671754s 46.376762s 42.064129s      227.1       5.67   1106.81    0.7%      2035

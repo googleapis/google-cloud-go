@@ -1,0 +1,93 @@
+### 0. artifact sizes and link types
+-rwxr-xr-x 2 root root 20862256 Nov  2 05:45 /opt/poc2/gcs_uds/server/target/release/gcs-core-server
+/opt/poc2/gcs_uds/server/target/release/gcs-core-server: ELF 64-bit LSB pie executable
+	linux-vdso.so.1 (0x00007ffcdad1e000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f6a90057000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f6a8ff77000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f6a8ec1e000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f6a9007f000)
+stripped: 17306920 bytes
+-rwxr-xr-x 2 root root 21021152 Nov  2 05:49 /opt/poc2/gcs_uds/server/target/x86_64-unknown-linux-musl/release/gcs-core-server
+/opt/poc2/gcs_uds/server/target/x86_64-unknown-linux-musl/release/gcs-core-server: ELF 64-bit LSB pie executable
+	statically linked
+stripped: 17442376 bytes
+-rwxr-xr-x 1 root root 46715060 Nov  2 05:49 /opt/poc2/gothin/bin/bench2_uds_noembed
+/opt/poc2/gothin/bin/bench2_uds_noembed: ELF 64-bit LSB executable
+	not a dynamic executable
+stripped: 31710968 bytes
+-rwxr-xr-x 1 root root 51062480 Nov  2 05:20 /opt/poc/gothin/bin/bench2_native
+/opt/poc/gothin/bin/bench2_native: ELF 64-bit LSB executable
+	not a dynamic executable
+stripped: 34874136 bytes
+### 1. glibc symbol requirement of the glibc build
+GLIBC_2.32
+GLIBC_2.33
+GLIBC_2.34
+### 2. FROM scratch emulation: run each server inside an empty chroot (no libc, no /etc/ssl, no /tmp)
+chroot: failed to run command ‘/server’: No such file or directory
+exit=127
+RESULT scratch-glibc: FAIL as expected (dynamic loader /lib64/ld-linux missing in FROM scratch): chroot: failed to run command ‘/server’: No such file or directory
+
+thread 'gcs-core' (22795) panicked at /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/reqwest-0.13.5/src/async_impl/client.rs:2524:38:
+Client::new(): reqwest::Error { kind: Builder, source: General("No CA certificates were loaded from the system") }
+RESULT scratch-musl: FAIL: 
+### 3. noexec: extract embedded binary to a noexec tmpfs and exec it (what //go:embed + exec would do)
+/opt/poc2/gcs_uds/packaging_tests.sh: line 36: /mnt/noexec/server: Permission denied
+RESULT noexec-exec: FAIL as expected (rc=126): /opt/poc2/gcs_uds/packaging_tests.sh: line 36: /mnt/noexec/server: Permission denied
+### 3b. memfd_create + fexecve fallback (no filesystem involved)
+gcs-core-server 0.1.0
+RESULT memfd-exec: PASS (works on this kernel; blocked where vm.memfd_noexec=2 / seccomp MDWE)
+vm.memfd_noexec=n/a kernel=6.1.0-54-cloud-amd64
+### 4. read-only root emulation: socket dir on a read-only mount
+[2m2026-11-02T06:49:35.392471Z[0m [31mERROR[0m [2mgcs_core_server[0m[2m:[0m shm side channel: Read-only file system (os error 30)
+Error: Os { code: 30, kind: ReadOnlyFilesystem, message: "Read-only file system" }
+RESULT readonly-socket-dir: FAIL as expected: [2m2026-11-02T06:49:35.392471Z[0m [31mERROR[0m [2mgcs_core_server[0m[2m:[0m shm side channel: Read-only file system (os error 30)
+### 4b. abstract socket needs no filesystem
+RESULT abstract-socket: PASS (Linux only; visible to every process in the netns, hence the peer-UID check)
+### 5. UDS path length limit (sun_path 108 bytes on Linux, 104 on macOS)
+path length=115
+[2m2026-11-02T06:49:36.446833Z[0m [31mERROR[0m [2mgcs_core_server[0m[2m:[0m shm side channel: path must be shorter than SUN_LEN
+Error: Error { kind: InvalidInput, message: "path must be shorter than SUN_LEN" }
+RESULT uds-path-108: FAIL as expected: [2m2026-11-02T06:49:36.446833Z[0m [31mERROR[0m [2mgcs_core_server[0m[2m:[0m shm side channel: path must be shorter than SUN_LEN
+### 6. peer-UID check: connect as another user
+panic: sidecar not reachable on /tmp/peer.sock: rpc error: code = PermissionDenied desc = peer uid 65534 != server uid 0
+
+goroutine 1 [running]:
+RESULT peer-uid: PASS (other uid rejected)
+### 7. orphan handling: kill -9 the Go parent, sidecar should exit via PR_SET_PDEATHSIG
+go pid=22918 sidecar pid=22925
+RESULT orphan-pdeathsig: PASS (sidecar exited with parent)
+ls: cannot access '/tmp/orphan.sock': No such file or directory
+### 8. stale socket: leave a dead socket file, start again
+RESULT stale-socket: PASS (removed stale file: gcs-core-server pid=22954 listening on /tmp/stale.sock)
+### 9. PID 1 semantics: Go app as init in a new pid namespace, SIGTERM to the app
+    PID    PPID COMMAND
+      1       0 bash
+      2       1 bench2_uds_noem
+      9       2 gcs-core-server
+     25       1 ps
+    PID    PPID COMMAND
+      1       0 ps
+RESULT pid1-zombie: PASS/INFO (see ps output above)
+### 10. idle exit
+RESULT idle-exit: PASS (exited after 2s idle, rc=0)
+### 11. Go thin client cross-compiles with CGO_ENABLED=0 (the whole point)
+cross linux/arm64: ok 44483220 bytes
+cross darwin/arm64: ok 46348098 bytes
+# poc/gothin/bench2
+bench2/resources.go:16:20: undefined: syscall.Getrusage
+stat: cannot statx '/tmp/xc-windows-amd64': No such file or directory
+cross windows/amd64: ok  bytes
+cross linux/s390x: ok 47693848 bytes
+cross freebsd/amd64: ok 46365594 bytes
+### 12. Rust server cross-compile needs per-target toolchains (same as FFI case)
+warning: aws-lc-sys@0.47.0: Compiler family detection failed due to error: ToolNotFound: failed to find tool "aarch64-linux-gnu-gcc": No such file or directory (os error 2)
+warning: aws-lc-sys@0.47.0: Compiler family detection failed due to error: ToolNotFound: failed to find tool "aarch64-linux-gnu-gcc": No such file or directory (os error 2)
+warning: aws-lc-sys@0.47.0: Compiler family detection failed due to error: ToolNotFound: failed to find tool "aarch64-linux-gnu-gcc": No such file or directory (os error 2)
+### 13. //go:embed size impact: module zip with 6 platform binaries
+6 platform binaries (stripped musl size each): 65319994 bytes compressed; single platform: 34874136 bytes
+=== packaging tests done ===
+gcs-core-server pid=48721 listening on /tmp/emb2.sock
+client init: 68.819395ms (sidecar spawn 35.760422ms, pid 48721, owned=true, how=embedded:memfd:/proc/self/fd/3, session=false)
+backend=go-uds-json bucket=cpriti-thickthin-poc-asse1 parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB

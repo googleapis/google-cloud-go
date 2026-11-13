@@ -1,0 +1,9 @@
+client init: 35.423765ms (sidecar pid 7669, conns 32)
+backend=go-uds-grpc bucket=cpriti-thickthin-poc-usw1 vcpus=192
+backend        sli                            p50       p90       p99       max      mean      MiB/s  cpu s/GiB cpu ms/op   cpu %  peak MiB
+go-uds-grpc    open                     214.557ms 233.084ms 233.084ms 299.702ms  212.23ms        0.0       0.00     15.33    0.0%        78
+go-uds-grpc    read50x2x4/serial          4.8078s  4.86428s  4.86428s 5.038348s 4.828893s       20.6       2.56    249.62    0.0%       212
+go-uds-grpc    read50x2x4/concurrent    3.250109s  3.39508s  3.39508s  3.42807s 3.271896s       30.5       2.85    278.52    0.0%       422
+go-uds-grpc    random8k                  40.373ms  43.559ms  53.993ms  96.951ms  40.448ms        0.2      46.99      0.36    0.0%       434
+go-uds-grpc    list-objects-100          94.433ms 159.365ms 159.365ms 249.038ms 123.927ms        0.0       0.00      0.81    0.0%       435
+go-uds-grpc    list-buckets-100         942.374ms 965.756ms 965.756ms 1.002101s 952.115ms        0.0       0.00      5.47    0.0%       442

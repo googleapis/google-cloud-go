@@ -1,0 +1,22 @@
+gcs-core-server pid=2349 listening on /tmp/gcs-core-0/core.sock
+client init: 24.96413ms (sidecar spawn 22.078082ms, pid 2349, owned=true, how=, session=false)
+backend=go-uds-grpcR-jsonW bucket=cpriti-thickthin-poc-asse1 parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-uds-grpcR-jsonW whole  write   1MiB         88ms      98ms     132ms      93ms       11.3      3.0      5.36        78
+go-uds-grpcR-jsonW whole  read    1MiB         60ms      81ms     104ms      62ms       16.7      1.0      5.36        78
+go-uds-grpcR-jsonW whole  write   16MiB       280ms     332ms     478ms     298ms       57.1     10.0      2.95       151
+go-uds-grpcR-jsonW whole  read    16MiB       140ms     201ms     301ms     156ms      114.1      1.0      2.95       151
+go-uds-grpcR-jsonW whole  write   128MiB     1.618s    1.883s     1.93s    1.669s       79.1     66.0      2.71       425
+go-uds-grpcR-jsonW whole  read    128MiB      738ms     977ms    1.477s     776ms      173.5      1.0      2.71       425
+go-uds-grpcR-jsonW whole  write   512MiB     5.923s    6.177s    6.254s    5.835s       86.4    258.0      2.77      1458
+go-uds-grpcR-jsonW whole  read    512MiB     2.621s     3.41s    5.319s    2.757s      195.4      1.0      2.77      1458
+go-uds-grpcR-jsonW 32k    write   1MiB         87ms     103ms     115ms      89ms       11.4      3.0      3.59      1431
+go-uds-grpcR-jsonW 32k    read    1MiB         55ms      71ms     124ms      59ms       18.1      1.0      3.59      1431
+go-uds-grpcR-jsonW 32k    write   16MiB       313ms     358ms     362ms     309ms       51.1     11.0      3.04      2105
+go-uds-grpcR-jsonW 32k    read    16MiB       134ms     170ms     207ms     140ms      119.3      1.0      3.04      2105
+go-uds-grpcR-jsonW 32k    write   128MiB     1.806s    1.942s    2.051s    1.804s       70.9   3595.0      2.90      2245
+go-uds-grpcR-jsonW 32k    read    128MiB      701ms     853ms     922ms     700ms      182.6      1.0      2.90      2245
+go-uds-grpcR-jsonW 32k    write   512MiB     6.905s    7.287s    7.433s     6.93s       74.1  15883.0      2.95      1667
+go-uds-grpcR-jsonW 32k    read    512MiB     2.744s    3.609s    4.505s    2.837s      186.6      1.0      2.95      1667
+go-uds-grpcR-jsonW -      list    -            71ms      82ms     100ms      73ms          -      1.0   3.40ms/call   1667  (objects=1000)
+sidecar: rss=96 MiB peak=96 MiB threads=10 | cpu split whole run: go=52.0s sidecar=98.2s

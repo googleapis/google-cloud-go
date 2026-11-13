@@ -1,0 +1,11 @@
+backend=go-grpc-cp-append bucket=cpriti-zb-central1-b parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-grpc-cp-append whole  write   1MiB        139ms     158ms     165ms     135ms        7.2      0.0      5.70        94
+go-grpc-cp-append whole  read    1MiB         33ms      43ms      65ms      34ms       30.2      0.0      5.70        94
+go-grpc-cp-append whole  write   16MiB       159ms     176ms     181ms     162ms      100.8      0.0      2.69       189
+go-grpc-cp-append whole  read    16MiB        81ms     112ms     145ms      88ms      197.4      0.0      2.69       189
+go-grpc-cp-append whole  write   128MiB      456ms     677ms    1.036s     553ms      280.8      0.0      2.22       517
+go-grpc-cp-append whole  read    128MiB      492ms     741ms     913ms     546ms      260.1      0.0      2.22       517
+go-grpc-cp-append whole  write   512MiB      1.33s    2.259s    3.638s    1.727s      385.0      0.0      2.29      1544
+go-grpc-cp-append whole  read    512MiB     1.794s    2.939s    3.318s    2.025s      285.4      0.0      2.29      1544
+go-grpc-cp-append -      list    -              0s        0s        0s        0s          -      0.0   0.00ms/call   1544  (objects=0)

@@ -1,0 +1,14 @@
+gcs-core-server pid=11998 listening on /tmp/gcs-core-0/core.sock
+client init: 23.777583ms (sidecar spawn 20.404744ms, pid 11998, owned=true, how=, session=false)
+backend=go-uds-json-protodecode bucket=cpriti-thickthin-poc-asse1 parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-uds-json-protodecode whole  write   1MiB         99ms     115ms     133ms     103ms       10.1      3.0      4.93        81
+go-uds-json-protodecode whole  read    1MiB         45ms      93ms     306ms      63ms       22.1      1.0      4.93        81
+go-uds-json-protodecode whole  write   16MiB       329ms     525ms     724ms     392ms       48.6     10.0      3.00       193
+go-uds-json-protodecode whole  read    16MiB       118ms     165ms     473ms     136ms      136.1      1.0      3.00       193
+go-uds-json-protodecode whole  write   128MiB     1.592s    1.741s    1.821s    1.616s       80.4     66.0      2.89       855
+go-uds-json-protodecode whole  read    128MiB      553ms     700ms     806ms     567ms      231.5      1.0      2.89       855
+go-uds-json-protodecode whole  write   512MiB     5.849s    6.364s    6.584s    5.959s       87.5    258.0      2.87      2376
+go-uds-json-protodecode whole  read    512MiB     1.998s    2.809s    3.228s    2.119s      256.2      1.0      2.87      2376
+go-uds-json-protodecode -      list    -              0s        0s        0s        0s          -      0.0   0.19ms/call   2344  (objects=0)
+sidecar: rss=45 MiB peak=45 MiB threads=9

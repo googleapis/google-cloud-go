@@ -1,0 +1,6 @@
+backend=go-json-range bucket=cpriti-thickthin-poc-asse1
+backend      sli                          p50       p90       p99       max  cpu s/GiB cpu ms/op  peak MiB
+go-json-range open                    26.907ms  32.831ms  32.831ms  45.474ms       0.00      4.06        32
+go-json-range read50x2x4/serial      2.076225s 2.083429s 2.083429s 2.098386s       3.03    296.19       140
+go-json-range read50x2x4/concurrent  538.242ms 561.971ms 561.971ms 610.653ms       3.23    314.97       207
+go-json-range random8k                28.364ms  38.642ms  49.967ms   71.35ms      28.62      0.22       207

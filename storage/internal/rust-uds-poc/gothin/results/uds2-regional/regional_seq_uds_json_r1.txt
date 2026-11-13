@@ -1,0 +1,25 @@
+gcs-core-server pid=9849 listening on /tmp/gcs-core-0/core.sock
+client init: 24.873719ms (sidecar spawn 21.056165ms, pid 9849, owned=true, how=, session=false)
+backend=go-uds-json bucket=cpriti-thickthin-poc-asse1 parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-uds-json whole  write   1MiB         76ms     106ms     124ms      85ms       13.1      3.0      4.09        74
+go-uds-json whole  read    1MiB         40ms      52ms      60ms      41ms       25.3      1.0      4.09        74
+go-uds-json whole  write   16MiB       260ms     471ms     667ms     330ms       61.6     10.0      2.68       181
+go-uds-json whole  read    16MiB       116ms     141ms     214ms     116ms      137.8      1.0      2.68       181
+go-uds-json whole  write   128MiB     1.578s    1.751s     1.76s    1.615s       81.1     66.0      2.63       478
+go-uds-json whole  read    128MiB      682ms     952ms    1.548s     747ms      187.8      1.0      2.63       478
+go-uds-json whole  write   512MiB     6.055s    6.278s    6.477s    6.085s       84.6    258.0      2.62      1515
+go-uds-json whole  read    512MiB     2.499s    3.253s    4.002s    2.614s      204.9      1.0      2.62      1515
+panic: Cannot free freed buffer
+
+goroutine 233 [running]:
+google.golang.org/grpc/mem.(*buffer).Free(0x1527920?)
+	/root/go/pkg/mod/google.golang.org/grpc@v1.84.0/mem/buffers.go:158 +0x125
+google.golang.org/grpc/mem.BufferSlice.Free(...)
+	/root/go/pkg/mod/google.golang.org/grpc@v1.84.0/mem/buffer_slice.go:71
+poc/gothin/udsthin.(*Reader).Close(0x3b623c9a08f0)
+	/opt/poc2/gothin/udsthin/udsthin.go:419 +0x3a
+poc/gothin/bench2.Run[...].func2()
+	/opt/poc2/gothin/bench2/bench2.go:219 +0x80d
+created by poc/gothin/bench2.Run[...] in goroutine 1
+	/opt/poc2/gothin/bench2/bench2.go:168 +0x74d

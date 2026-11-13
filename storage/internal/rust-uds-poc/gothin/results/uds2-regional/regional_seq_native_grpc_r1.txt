@@ -1,0 +1,19 @@
+backend=go-grpc-cp bucket=cpriti-thickthin-poc-asse1 parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-grpc-cp whole  write   1MiB        104ms     133ms     133ms     112ms        9.7      0.0      5.49        80
+go-grpc-cp whole  read    1MiB         55ms      76ms      96ms      58ms       18.1      0.0      5.49        80
+go-grpc-cp whole  write   16MiB       284ms     336ms     364ms     293ms       56.3      0.0      2.86       178
+go-grpc-cp whole  read    16MiB       126ms     193ms     293ms     144ms      127.0      0.0      2.86       178
+go-grpc-cp whole  write   128MiB       1.2s    1.513s    1.754s    1.269s      106.7      0.0      2.34       516
+go-grpc-cp whole  read    128MiB      616ms     790ms     921ms     652ms      207.9      0.0      2.34       516
+go-grpc-cp whole  write   512MiB     5.459s    6.039s    6.892s    5.364s       93.8      0.0      2.44      1544
+go-grpc-cp whole  read    512MiB     2.197s    2.843s    3.656s    2.349s      233.0      0.0      2.44      1544
+go-grpc-cp 32k    write   1MiB        106ms     114ms     136ms     109ms        9.4      0.0      4.27      1545
+go-grpc-cp 32k    read    1MiB         48ms      60ms      77ms      50ms       20.8      0.0      4.27      1545
+go-grpc-cp 32k    write   16MiB       256ms     282ms     388ms     269ms       62.5      0.0      2.73       198
+go-grpc-cp 32k    read    16MiB       122ms     148ms     177ms     129ms      130.9      0.0      2.73       198
+go-grpc-cp 32k    write   128MiB     1.502s    2.022s     2.15s    1.553s       85.2      0.0      2.27       431
+go-grpc-cp 32k    read    128MiB      647ms     748ms     977ms     658ms      197.7      0.0      2.27       431
+go-grpc-cp 32k    write   512MiB     4.525s    7.235s    7.255s    4.977s      113.2      0.0      2.36      1053
+go-grpc-cp 32k    read    512MiB     2.377s    3.121s    3.466s    2.435s      215.4      0.0      2.36      1053
+go-grpc-cp -      list    -            66ms      77ms      78ms      68ms          -      0.0   2.58ms/call   1071  (objects=1000)

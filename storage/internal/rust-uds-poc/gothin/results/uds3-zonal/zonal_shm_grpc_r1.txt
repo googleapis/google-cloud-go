@@ -1,0 +1,5 @@
+gcs-core-server pid=2002 listening on /tmp/shmg1.sock
+client init: 23.70805ms (sidecar spawn 20.542132ms, pid 2002, owned=true, how=, session=false)
+grpc-chunks (copy into p)    p50=553ms     min=401ms       231.6 MiB/s  cpu 2.96 s/GiB (Go 0.84 + sidecar 2.12)
+shm (copy into p)            p50=593ms     min=442ms       215.7 MiB/s  cpu 1.78 s/GiB (Go 0.19 + sidecar 1.59)
+shm (zero-copy, lend slice)  p50=628ms     min=440ms       203.9 MiB/s  cpu 1.61 s/GiB (Go 0.04 + sidecar 1.58)

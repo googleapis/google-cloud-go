@@ -1,0 +1,6 @@
+backend=go-json-range bucket=cpriti-zb-central1-b
+backend      sli                          p50       p90       p99       max  cpu s/GiB cpu ms/op  peak MiB
+go-json-range open                    25.527ms  25.536ms  25.536ms  43.933ms       0.00      4.13        32
+go-json-range read50x2x4/serial      3.853406s 3.928906s 3.928906s 4.431527s       3.20    312.29       144
+go-json-range read50x2x4/concurrent   427.75ms 430.494ms 430.494ms 433.126ms       3.16    308.71       208
+go-json-range random8k                 26.66ms   66.26ms 154.657ms 182.192ms      37.90      0.29       208

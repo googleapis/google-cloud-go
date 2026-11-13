@@ -1,0 +1,6 @@
+backend=go-grpc-mrd bucket=cpriti-thickthin-poc-asse1
+backend      sli                          p50       p90       p99       max  cpu s/GiB cpu ms/op  peak MiB
+go-grpc-mrd  open                    30.571ms   43.77ms   43.77ms  57.454ms       0.00      4.86        36
+go-grpc-mrd  read50x2x4/serial      709.568ms 873.447ms 873.447ms 1.134072s       2.84    277.60       147
+go-grpc-mrd  read50x2x4/concurrent  347.528ms 418.973ms 418.973ms 480.753ms       2.79    272.49       153
+go-grpc-mrd  random8k                 3.237ms   5.699ms  12.754ms  20.861ms      12.05      0.09       156

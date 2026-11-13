@@ -1,0 +1,8 @@
+gcs-core-server pid=3162 listening on /run/core.sock
+READY /run/core.sock
+exit=0
+--- without CA certs:
+
+thread 'gcs-core' (3356) panicked at /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/reqwest-0.13.5/src/async_impl/client.rs:2524:38:
+Client::new(): reqwest::Error { kind: Builder, source: General("No CA certificates were loaded from the system") }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

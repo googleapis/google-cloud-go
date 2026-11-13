@@ -1,0 +1,9 @@
+gcs-core-server pid=2792 listening on /tmp/gcs-core-0/core.sock
+client init: 24.727587ms (sidecar spawn 19.79678ms, pid 2792, owned=true, how=, session=false)
+missing object -> errors.Is(ErrObjectNotExist)=true (storage: object doesn't exist)
+create -> err=rpc error: code = Unimplemented desc = the service reports an error with code UNIMPLEMENTED described as: Appendable objects are not supported for this request.
+DoesNotExist on existing -> googleapi.Error=false code=0 (rpc error: code = Unimplemented desc = the service reports an error with code UNIMPLEMENTED described as: Appendable objects are not supported for this request.)
+range read -> attrs={Size:1 StartOffset:0 ContentType: ContentEncoding: CacheControl: LastModified:0001-01-01 00:00:00 +0000 UTC Generation:1793598555933263 Metageneration:1 CRC32C:2839306131 Decompressed:false} remain=0 data="x"
+64MiB write -> rpc error: code = Unimplemented desc = the service reports an error with code UNIMPLEMENTED described as: Appendable objects are not supported for this request.
+ctx timeout 30ms mid-stream -> after 30ms copied=0 err=context deadline exceeded ctxErr=true
+open+readAt 8KiB@1MiB -> n=8192 err=<nil> in 23.769ms (attrs size=67108864)

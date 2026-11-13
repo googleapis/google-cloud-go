@@ -1,0 +1,4 @@
+backend=go-grpc-mrd bucket=cpriti-thickthin-poc-zonal-usw1a vcpus=192
+backend        sli                            p50       p90       p99       max      mean      MiB/s  cpu s/GiB cpu ms/op   cpu %  peak MiB
+go-grpc-mrd    bidiread-16m-48t         546.256ms 605.385ms 784.438ms 2.499672s 556.277ms     1376.2       2.80     45.52    2.0%      1913
+go-grpc-mrd    bidiread-200m-48t         6.83048s  7.50675s 9.401041s 18.034399s 6.957496s     1376.2       2.80    553.29    2.0%      1913

@@ -1,0 +1,139 @@
+backend=go-grpc-cp bucket=cpriti-zb-central1-b parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+go-grpc-cp whole  write   1MiB           0s        0s        0s        0s        0.0      0.0      0.00        90
+go-grpc-cp whole  read    1MiB           0s        0s        0s        0s        0.0      0.0      0.00        90
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+go-grpc-cp whole  write   16MiB          0s        0s        0s        0s        0.0      0.0      0.00       164
+go-grpc-cp whole  read    16MiB          0s        0s        0s        0s        0.0      0.0      0.00       164
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+go-grpc-cp whole  write   128MiB         0s        0s        0s        0s        0.0      0.0      0.00       276
+go-grpc-cp whole  read    128MiB         0s        0s        0s        0s        0.0      0.0      0.00       276
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+go-grpc-cp whole  write   512MiB         0s        0s        0s        0s        0.0      0.0      0.00       792
+go-grpc-cp whole  read    512MiB         0s        0s        0s        0s        0.0      0.0      0.00       792
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+go-grpc-cp 32k    write   1MiB           0s        0s        0s        0s        0.0      0.0      0.00       795
+go-grpc-cp 32k    read    1MiB           0s        0s        0s        0s        0.0      0.0      0.00       795
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+write: rpc error: code = InvalidArgument desc = This bucket type only supports appendable objects.
+go-grpc-cp 32k    write   16MiB          0s        0s        0s        0s        0.0      0.0      0.00       970
+go-grpc-cp 32k    read    16MiB          0s        0s        0s        0s        0.0      0.0      0.00       970
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+go-grpc-cp 32k    write   128MiB         0s        0s        0s        0s        0.0      0.0      0.00      1262
+go-grpc-cp 32k    read    128MiB         0s        0s        0s        0s        0.0      0.0      0.00      1262
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = InvalidArgument desc = Zonal buckets are incompatible with resumable upload.
+error details: name = BadRequest field =  desc = Zonal buckets are incompatible with resumable upload.
+go-grpc-cp 32k    write   512MiB         0s        0s        0s        0s        0.0      0.0      0.00      1774
+go-grpc-cp 32k    read    512MiB         0s        0s        0s        0s        0.0      0.0      0.00      1774
+go-grpc-cp -      list    -            82ms     113ms     455ms     124ms          -      0.0   2.79ms/call   1701  (objects=1000)

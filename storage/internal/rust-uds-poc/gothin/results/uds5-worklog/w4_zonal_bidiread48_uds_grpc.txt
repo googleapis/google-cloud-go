@@ -1,0 +1,5 @@
+client init: 36.10379ms (sidecar pid 7235, conns 32)
+backend=go-uds-grpc bucket=cpriti-thickthin-poc-zonal-usw1a vcpus=192
+backend        sli                            p50       p90       p99       max      mean      MiB/s  cpu s/GiB cpu ms/op   cpu %  peak MiB
+go-uds-grpc    bidiread-16m-48t          541.96ms 589.558ms 651.319ms 1.387493s 543.438ms     1401.4       3.19     51.97    2.3%      2846
+go-uds-grpc    bidiread-200m-48t        6.805349s 7.104724s  7.79367s 8.731686s 6.798841s     1401.4       3.19    631.16    2.3%      2846

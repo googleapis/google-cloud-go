@@ -1,0 +1,44 @@
+gcs-core-server pid=9702 listening on /tmp/gcs-core-0/core.sock
+client init: 25.655166ms (sidecar spawn 21.157336ms, pid 9702, owned=true, how=, session=false)
+backend=go-uds-json-protodecode bucket=cpriti-zb-central1-b parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-uds-json-protodecode whole  write   1MiB        107ms     208ms     213ms     143ms        9.4      3.0      5.71        83
+go-uds-json-protodecode whole  read    1MiB         54ms     145ms     170ms      84ms       18.5      1.0      5.71        83
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+go-uds-json-protodecode whole  write   16MiB          0s        0s        0s        0s        0.0      0.0      0.00       117
+go-uds-json-protodecode whole  read    16MiB          0s        0s        0s        0s        0.0      0.0      0.00       117
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+go-uds-json-protodecode whole  write   128MiB         0s        0s        0s        0s        0.0      0.0      0.00       242
+go-uds-json-protodecode whole  read    128MiB         0s        0s        0s        0s        0.0      0.0      0.00       242
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+go-uds-json-protodecode whole  write   512MiB         0s        0s        0s        0s        0.0      0.0      0.00       753
+go-uds-json-protodecode whole  read    512MiB         0s        0s        0s        0s        0.0      0.0      0.00       753
+go-uds-json-protodecode -      list    -              0s        0s        0s        0s          -      0.0   0.22ms/call    742  (objects=0)
+sidecar: rss=21 MiB peak=21 MiB threads=10
