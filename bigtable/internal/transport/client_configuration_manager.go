@@ -146,6 +146,12 @@ type ClientConfigurationManager struct {
 	// callbacks firing after Close() returns.
 	pollsWG sync.WaitGroup
 
+	// notifyMu serializes listener delivery across addListener and poll() so
+	// callbacks never interleave or observe out-of-order configSeq values.
+	// Lock order: notifyMu -> mu -> per-listener diffMu.
+	notifyMu        sync.Mutex
+	lastNotifiedSeq int64
+
 	mu sync.RWMutex
 	// currentConfig is the manager's authoritative view of the client config.
 	// Starts as defaultConfig; every successful poll replaces it with the
@@ -227,17 +233,11 @@ func (m *ClientConfigurationManager) Start(ctx context.Context) {
 	btopt.Debugf(m.logger, "bigtable: starting client configuration manager for instance %q, app profile %q", m.instanceName, m.appProfileID)
 	m.ctx, m.cancel = context.WithCancel(ctx)
 
-	// Eager initial poll, scoped to m.ctx so Close()'s cancel reaches it too.
+	// Run the eager initial poll sequentially at the start of pollingLoop
+	// (pre-registered on pollsWG before returning so Close() immediately
+	// waits for it) so the initial poll can never race a periodic poll.
 	m.pollsWG.Add(1)
-	go func() {
-		defer m.pollsWG.Done()
-		pollCtx, cancel := context.WithTimeout(m.ctx, pollDeadline)
-		defer cancel()
-		m.poll(pollCtx)
-	}()
-
-	// Start background polling
-	go m.pollingLoop()
+	go m.pollingLoop(true)
 }
 
 // Close stops the polling process.
@@ -339,18 +339,22 @@ func (m *ClientConfigurationManager) Snapshot() ConfigSnapshot {
 // and their downstream consumers stay self-contained, so the invariant
 // holds today.
 func (m *ClientConfigurationManager) addListener(listener configListener) func() {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	m.notifyMu.Lock()
+	defer m.notifyMu.Unlock()
 
+	m.mu.Lock()
 	id := m.nextListenerID
 	m.nextListenerID++
 	if m.listeners == nil {
 		m.listeners = make(map[int]configListener)
 	}
 	m.listeners[id] = listener
+	cfgClone := proto.Clone(m.currentConfig).(*bigtablepb.ClientConfiguration)
+	seq := m.configSeq
+	m.mu.Unlock()
 
 	btopt.Debugf(m.logger, "bigtable: adding configuration listener (id: %d)", id)
-	listener(proto.Clone(m.currentConfig).(*bigtablepb.ClientConfiguration), m.configSeq)
+	listener(cfgClone, seq)
 
 	return func() {
 		m.mu.Lock()
@@ -376,19 +380,21 @@ func (m *ClientConfigurationManager) AddSessionPoolListener(listener func(*bigta
 	var (
 		diffMu  sync.Mutex
 		hasPrev bool
+		lastSeq int64
 		prev    *bigtablepb.SessionClientConfiguration_SessionPoolConfiguration
 	)
-	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, _ int64) {
+	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, seq int64) {
 		sp := cfg.GetSessionConfiguration().GetSessionPoolConfiguration()
 		if sp == nil {
 			sp = defaultClientConfig.GetSessionConfiguration().GetSessionPoolConfiguration()
 		}
 		diffMu.Lock()
-		if hasPrev && proto.Equal(prev, sp) {
+		if hasPrev && (seq < lastSeq || proto.Equal(prev, sp)) {
 			diffMu.Unlock()
 			return
 		}
 		hasPrev = true
+		lastSeq = seq
 		prev = sp
 		diffMu.Unlock()
 		listener(sp)
@@ -421,6 +427,7 @@ func (m *ClientConfigurationManager) AddSessionLoadListener(listener func(load f
 	var (
 		diffMu  sync.Mutex
 		hasPrev bool
+		lastSeq int64
 		prev    float64
 	)
 	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, seq int64) {
@@ -429,11 +436,12 @@ func (m *ClientConfigurationManager) AddSessionLoadListener(listener func(load f
 		}
 		load := float64(cfg.GetSessionConfiguration().GetSessionLoad())
 		diffMu.Lock()
-		if hasPrev && prev == load {
+		if hasPrev && (seq < lastSeq || prev == load) {
 			diffMu.Unlock()
 			return
 		}
 		hasPrev = true
+		lastSeq = seq
 		prev = load
 		diffMu.Unlock()
 		listener(load)
@@ -442,7 +450,15 @@ func (m *ClientConfigurationManager) AddSessionLoadListener(listener func(load f
 
 // pollingLoop continuously polls the Bigtable control plane at the configured interval.
 // It enforces a minimum interval (minPollingInterval) to protect the control plane from DDoSes.
-func (m *ClientConfigurationManager) pollingLoop() {
+func (m *ClientConfigurationManager) pollingLoop(runInitialPoll bool) {
+	if runInitialPoll {
+		func() {
+			defer m.pollsWG.Done()
+			pollCtx, cancel := context.WithTimeout(m.ctx, pollDeadline)
+			defer cancel()
+			m.poll(pollCtx)
+		}()
+	}
 	for {
 		m.mu.RLock()
 		cfg := m.currentConfig
@@ -558,10 +574,8 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 
 		// Suppress listener fires after Close() has begun teardown — the
 		// SessionPools they target may already be Close'd.
-		if listeners != nil && !m.isClosed() {
-			for _, l := range listeners {
-				l(proto.Clone(cfgToNotify).(*bigtablepb.ClientConfiguration), seq)
-			}
+		if listeners != nil {
+			m.notifyListeners(listeners, cfgToNotify, seq)
 		}
 		return
 	}
@@ -633,12 +647,20 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	cfgToNotify := m.currentConfig
 	m.mu.Unlock()
 
-	// Suppress listener fires after Close() has begun teardown — the
-	// SessionPools they target may already be Close'd.
+	m.notifyListeners(listeners, cfgToNotify, seq)
+}
+
+func (m *ClientConfigurationManager) notifyListeners(listeners []configListener, cfg *bigtablepb.ClientConfiguration, seq int64) {
 	if m.isClosed() {
 		return
 	}
+	m.notifyMu.Lock()
+	defer m.notifyMu.Unlock()
+	if m.isClosed() || seq <= m.lastNotifiedSeq {
+		return
+	}
+	m.lastNotifiedSeq = seq
 	for _, l := range listeners {
-		l(proto.Clone(cfgToNotify).(*bigtablepb.ClientConfiguration), seq)
+		l(proto.Clone(cfg).(*bigtablepb.ClientConfiguration), seq)
 	}
 }
