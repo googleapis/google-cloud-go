@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -657,4 +658,48 @@ func TestHooks_FiredInSpecOrder(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("hook order = %v, want %v", got, want)
 	}
+}
+
+func TestInvoke_SendErrorAfterConcurrentDrainFiresOnSlotDrainedOnce(t *testing.T) {
+	var drained atomic.Int32
+	var s *Session
+	sendErr := errors.New("broken pipe after write")
+	stream := newFakeStream()
+	stream.sendFn = func(req *spb.SessionRequest) error {
+		if vrpc := req.GetVirtualRpc(); vrpc != nil {
+			stream.recv <- recvOp{resp: &spb.SessionResponse{
+				Payload: &spb.SessionResponse_VirtualRpc{
+					VirtualRpc: &spb.VirtualRpcResponse{
+						RpcId:   vrpc.GetRpcId(),
+						Payload: []byte("ok"),
+					},
+				},
+			}}
+			waitFor(t, time.Second, func() bool { return s.activeVRPC() == nil }, "slot drained by readLoop")
+			return sendErr
+		}
+		return nil
+	}
+
+	s = NewSession("send-race", stream, SessionHooks{
+		OnSlotDrained: func() { drained.Add(1) },
+	}, SessionTypeTable)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := s.Start(ctx, &spb.OpenSessionRequest{}); err != nil {
+		t.Fatalf("Start: %v", err)
+	}
+	stream.recv <- recvOp{resp: &spb.SessionResponse{
+		Payload: &spb.SessionResponse_OpenSession{OpenSession: &spb.OpenSessionResponse{}},
+	}}
+	waitFor(t, time.Second, func() bool { return s.State() == StateReady }, "StateReady")
+
+	if _, err := s.Invoke(context.Background(), newRoundTripDesc(), "req"); err == nil {
+		t.Fatal("Invoke succeeded, want Send error")
+	}
+	if got := drained.Load(); got != 1 {
+		t.Errorf("OnSlotDrained fired %d times, want 1", got)
+	}
+	stream.Close()
+	s.WaitGoroutines()
 }
