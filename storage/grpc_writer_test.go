@@ -271,12 +271,13 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 }
 
 type mockSender struct {
-	mu               sync.Mutex
-	requests         []gRPCBidiWriteRequest
-	errResult        error
-	wg               sync.WaitGroup // Waits for all async operations to complete.
-	failOnData       bool
-	respondToAllData bool
+	mu                   sync.Mutex
+	requests             []gRPCBidiWriteRequest
+	errResult            error
+	wg                   sync.WaitGroup // Waits for all async operations to complete.
+	failOnData           bool
+	respondToAllData     bool
+	waitBeforeRequestAck <-chan struct{}
 }
 
 func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
@@ -300,6 +301,13 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 			m.mu.Unlock()
 
 			if req.requestAck {
+				if m.waitBeforeRequestAck != nil {
+					select {
+					case <-m.waitBeforeRequestAck:
+					case <-ctx.Done():
+						return
+					}
+				}
 				select {
 				case cs.requestAcks <- struct{}{}:
 				case <-ctx.Done():
@@ -1822,6 +1830,88 @@ func TestGRPCWriter_ZeroByteFlushWaitsForFirstAck(t *testing.T) {
 	if w.awaitingFirstAck {
 		t.Fatal("awaitingFirstAck still set after the ack")
 	}
+}
+
+func TestGRPCWriter_ChunkRetryDeadline_QueuedCommandDoesNotArmIdleStopwatch(t *testing.T) {
+	t.Run("ProgressCallbackEnqueuesCommand", func(t *testing.T) {
+		clk := newFakeClock()
+		deadline := 100 * time.Millisecond
+		var w *gRPCWriter
+		var expiresInCallback time.Time
+		var attemptsInCallback int
+		w = &gRPCWriter{
+			budget:           testBudget(clk, deadline),
+			awaitingFirstAck: true,
+			buf:              make([]byte, 500, 1000),
+			bufUnsentIdx:     350,
+			writeQuantum:     350,
+			chunkSize:        1000,
+			writesChan:       make(chan gRPCWriterCommand, 2),
+			setSize:          func(int64) {},
+			setObj:           func(*ObjectAttrs) {},
+			progress: func(offset int64) {
+				expiresInCallback = w.budget.expiresAt
+				attemptsInCallback = w.budget.attempts
+				w.writesChan <- &checkTimerCmd{timerCh: make(chan time.Time, 1)}
+			},
+		}
+		w.budget.attempts = 3
+		w.budget.start()
+		w.writesChan <- &checkTimerCmd{timerCh: make(chan time.Time, 1)}
+
+		w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 350})
+		if !expiresInCallback.IsZero() || attemptsInCallback != 0 {
+			t.Fatalf("expected budget to be reset before progress callback ran, got attempts=%d expiresAt=%v", attemptsInCallback, expiresInCallback)
+		}
+		if !w.budget.expiresAt.IsZero() {
+			t.Fatalf("expected stopwatch to be stopped after all sent bytes were acked, got expiresAt=%v", w.budget.expiresAt)
+		}
+	})
+
+	t.Run("CommandQueuedBeforeHandleReturns", func(t *testing.T) {
+		ctx := context.Background()
+		clk := newFakeClock()
+		deadline := 100 * time.Millisecond
+		// Hold requestAck until offset 1350 is acked so handleCompletion runs
+		// while w.currentCommand != nil and writesChan is already non-empty.
+		ack1350 := make(chan struct{})
+		timerCh := make(chan time.Time, 1)
+		sender := &mockSender{respondToAllData: true, waitBeforeRequestAck: ack1350}
+		var w *gRPCWriter
+		w = &gRPCWriter{
+			budget:           testBudget(clk, deadline),
+			streamSender:     sender,
+			settings:         &settings{},
+			awaitingFirstAck: true,
+			buf:              make([]byte, 0, 1000),
+			sendableUnits:    3,
+			writeQuantum:     350,
+			chunkSize:        1000,
+			lastSegmentStart: 700,
+			writesChan:       make(chan gRPCWriterCommand, 3),
+			setSize:          func(int64) {},
+			progress: func(offset int64) {
+				if offset == 1350 {
+					w.writesChan <- &checkTimerCmd{timerCh: timerCh}
+					close(ack1350)
+				}
+			},
+			setObj: func(*ObjectAttrs) {},
+		}
+		errCh := make(chan error, 1)
+		go func() { errCh <- w.writeLoop(ctx) }()
+
+		done := make(chan struct{})
+		w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 1500), done: done}
+		<-done
+
+		if expiresAt := <-timerCh; !expiresAt.IsZero() {
+			t.Fatalf("expected stopwatch to be stopped with 150 (< 350) unsent bytes, got expiresAt=%v", expiresAt)
+		}
+
+		w.writesChan <- &gRPCWriterCommandClose{err: context.Canceled}
+		<-errCh
+	})
 }
 
 // time.Timer.Stop cannot cancel a callback that has already started, so a
