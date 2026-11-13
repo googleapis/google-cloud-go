@@ -130,6 +130,9 @@ const (
 	// SessionEventClose fires from handleClose on stream tear-down.
 	// Message carries reason, age, in-flight count, last rpc id, raw err.
 	SessionEventClose SessionEventKind = "close"
+	// SessionEventGoAway fires from handleGoAway when the server initiates
+	// a graceful session drain.
+	SessionEventGoAway SessionEventKind = "goaway"
 	// SessionEventHBMissed fires from the heartbeat watchdog when it force-
 	// closes. Message carries in-flight count and last-frame age.
 	SessionEventHBMissed SessionEventKind = "hb-missed"
