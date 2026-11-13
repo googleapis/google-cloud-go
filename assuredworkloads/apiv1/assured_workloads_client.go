@@ -951,6 +951,11 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/workloads", req.GetParent())
 
 	params := url.Values{}
@@ -1025,6 +1030,11 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkload().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetWorkload().GetName())
 
 	params := url.Values{}
@@ -1097,6 +1107,11 @@ func (c *restClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:restrictAllowedResources", req.GetName())
 
 	params := url.Values{}
@@ -1153,6 +1168,11 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1193,6 +1213,11 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1260,6 +1285,11 @@ func (c *restClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/workloads", req.GetParent())
@@ -1539,6 +1569,11 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1604,6 +1639,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

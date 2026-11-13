@@ -466,6 +466,11 @@ func (c *policyTagManagerSerializationRESTClient) ImportTaxonomies(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies:import", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -516,6 +521,11 @@ func (c *policyTagManagerSerializationRESTClient) ImportTaxonomies(ctx context.C
 func (c *policyTagManagerSerializationRESTClient) ExportTaxonomies(ctx context.Context, req *datacatalogpb.ExportTaxonomiesRequest, opts ...gax.CallOption) (*datacatalogpb.ExportTaxonomiesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies:export", req.GetParent())

@@ -860,6 +860,12 @@ func (c *datasetRESTClient) GetDataset(ctx context.Context, req *bigquerypb.GetD
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v", req.GetProjectId(), req.GetDatasetId())
 
 	params := url.Values{}
@@ -926,6 +932,11 @@ func (c *datasetRESTClient) InsertDataset(ctx context.Context, req *bigquerypb.I
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets", req.GetProjectId())
@@ -1000,6 +1011,12 @@ func (c *datasetRESTClient) PatchDataset(ctx context.Context, req *bigquerypb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v", req.GetProjectId(), req.GetDatasetId())
 
 	params := url.Values{}
@@ -1070,6 +1087,12 @@ func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *bigquerypb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v", req.GetProjectId(), req.GetDatasetId())
 
 	params := url.Values{}
@@ -1134,6 +1157,12 @@ func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *bigquerypb.D
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v", req.GetProjectId(), req.GetDatasetId())
 
 	params := url.Values{}
@@ -1191,6 +1220,11 @@ func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *bigquerypb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets", req.GetProjectId())
@@ -1281,6 +1315,12 @@ func (c *datasetRESTClient) UndeleteDataset(ctx context.Context, req *bigquerypb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v:undelete", req.GetProjectId(), req.GetDatasetId())

@@ -1070,6 +1070,11 @@ func (c *cmekRESTClient) CreateEncryptionConfig(ctx context.Context, req *datapl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/encryptionConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -1139,6 +1144,11 @@ func (c *cmekRESTClient) UpdateEncryptionConfig(ctx context.Context, req *datapl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEncryptionConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEncryptionConfig().GetName())
 
 	params := url.Values{}
@@ -1205,6 +1215,11 @@ func (c *cmekRESTClient) UpdateEncryptionConfig(ctx context.Context, req *datapl
 func (c *cmekRESTClient) DeleteEncryptionConfig(ctx context.Context, req *dataplexpb.DeleteEncryptionConfigRequest, opts ...gax.CallOption) (*DeleteEncryptionConfigOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1284,6 +1299,11 @@ func (c *cmekRESTClient) ListEncryptionConfigs(ctx context.Context, req *dataple
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/encryptionConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -1355,6 +1375,11 @@ func (c *cmekRESTClient) GetEncryptionConfig(ctx context.Context, req *dataplexp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1407,6 +1432,11 @@ func (c *cmekRESTClient) GetEncryptionConfig(ctx context.Context, req *dataplexp
 func (c *cmekRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1491,6 +1521,11 @@ func (c *cmekRESTClient) ListLocations(ctx context.Context, req *locationpb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1560,6 +1595,11 @@ func (c *cmekRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPoli
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1625,6 +1665,11 @@ func (c *cmekRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPoli
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -1693,6 +1738,11 @@ func (c *cmekRESTClient) TestIamPermissions(ctx context.Context, req *iampb.Test
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1753,6 +1803,11 @@ func (c *cmekRESTClient) CancelOperation(ctx context.Context, req *longrunningpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1792,6 +1847,11 @@ func (c *cmekRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1829,6 +1889,11 @@ func (c *cmekRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 func (c *cmekRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1896,6 +1961,11 @@ func (c *cmekRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

@@ -431,6 +431,11 @@ func (c *orderTrackingSignalsRESTClient) CreateOrderTrackingSignal(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/ordertracking/v1/%v/orderTrackingSignals", req.GetParent())
 
 	params := url.Values{}

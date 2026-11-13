@@ -309,6 +309,11 @@ func (c *machineTypesRESTClient) AggregatedList(ctx context.Context, req *comput
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/machineTypes", req.GetProject())
 
 		params := url.Values{}
@@ -395,6 +400,13 @@ func (c *machineTypesRESTClient) Get(ctx context.Context, req *computepb.GetMach
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetMachineType(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/machineTypes/%v", req.GetProject(), req.GetZone(), req.GetMachineType())
 
 	// Build HTTP headers from client and context metadata.
@@ -456,6 +468,12 @@ func (c *machineTypesRESTClient) List(ctx context.Context, req *computepb.ListMa
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/machineTypes", req.GetProject(), req.GetZone())

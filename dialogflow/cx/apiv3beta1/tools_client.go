@@ -1366,6 +1366,11 @@ func (c *toolsRESTClient) CreateTool(ctx context.Context, req *cxpb.CreateToolRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/tools", req.GetParent())
 
 	params := url.Values{}
@@ -1432,6 +1437,11 @@ func (c *toolsRESTClient) ListTools(ctx context.Context, req *cxpb.ListToolsRequ
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/tools", req.GetParent())
@@ -1505,6 +1515,11 @@ func (c *toolsRESTClient) ExportTools(ctx context.Context, req *cxpb.ExportTools
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/tools:export", req.GetParent())
 
 	params := url.Values{}
@@ -1564,6 +1579,11 @@ func (c *toolsRESTClient) ExportTools(ctx context.Context, req *cxpb.ExportTools
 func (c *toolsRESTClient) GetTool(ctx context.Context, req *cxpb.GetToolRequest, opts ...gax.CallOption) (*cxpb.Tool, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -1627,6 +1647,11 @@ func (c *toolsRESTClient) UpdateTool(ctx context.Context, req *cxpb.UpdateToolRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTool().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetTool().GetName())
 
 	params := url.Values{}
@@ -1688,6 +1713,11 @@ func (c *toolsRESTClient) DeleteTool(ctx context.Context, req *cxpb.DeleteToolRe
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1742,6 +1772,11 @@ func (c *toolsRESTClient) ListToolVersions(ctx context.Context, req *cxpb.ListTo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/versions", req.GetParent())
@@ -1817,6 +1852,11 @@ func (c *toolsRESTClient) CreateToolVersion(ctx context.Context, req *cxpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/versions", req.GetParent())
 
 	params := url.Values{}
@@ -1870,6 +1910,11 @@ func (c *toolsRESTClient) CreateToolVersion(ctx context.Context, req *cxpb.Creat
 func (c *toolsRESTClient) GetToolVersion(ctx context.Context, req *cxpb.GetToolVersionRequest, opts ...gax.CallOption) (*cxpb.ToolVersion, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -1927,6 +1972,11 @@ func (c *toolsRESTClient) DeleteToolVersion(ctx context.Context, req *cxpb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1974,6 +2024,11 @@ func (c *toolsRESTClient) RestoreToolVersion(ctx context.Context, req *cxpb.Rest
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:restore", req.GetName())
@@ -2028,6 +2083,11 @@ func (c *toolsRESTClient) RestoreToolVersion(ctx context.Context, req *cxpb.Rest
 func (c *toolsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -2112,6 +2172,11 @@ func (c *toolsRESTClient) ListLocations(ctx context.Context, req *locationpb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2180,6 +2245,11 @@ func (c *toolsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2217,6 +2287,11 @@ func (c *toolsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 func (c *toolsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -2284,6 +2359,11 @@ func (c *toolsRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())

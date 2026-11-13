@@ -356,6 +356,12 @@ func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteF
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetFirewall(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
 	params := url.Values{}
@@ -419,6 +425,12 @@ func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewal
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetFirewall(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
 	// Build HTTP headers from client and context metadata.
@@ -474,6 +486,11 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/firewalls", req.GetProject())
@@ -551,6 +568,11 @@ func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirew
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/firewalls", req.GetProject())
@@ -636,6 +658,12 @@ func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFir
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetFirewall(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
 	params := url.Values{}
@@ -706,6 +734,12 @@ func (c *firewallsRESTClient) TestIamPermissions(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/firewalls/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -763,6 +797,12 @@ func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateF
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetFirewall(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())

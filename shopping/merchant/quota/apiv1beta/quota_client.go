@@ -468,6 +468,11 @@ func (c *restClient) ListQuotaGroups(ctx context.Context, req *quotapb.ListQuota
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/quota/v1beta/%v/quotas", req.GetParent())
 
 		params := url.Values{}

@@ -3230,6 +3230,11 @@ func (c *storageControlRESTClient) CreateFolder(ctx context.Context, req *contro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/folders", req.GetParent())
 
 	params := url.Values{}
@@ -3304,6 +3309,11 @@ func (c *storageControlRESTClient) DeleteFolder(ctx context.Context, req *contro
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -3363,6 +3373,11 @@ func (c *storageControlRESTClient) GetFolder(ctx context.Context, req *controlpb
 	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -3449,6 +3464,11 @@ func (c *storageControlRESTClient) ListFolders(ctx context.Context, req *control
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/folders", req.GetParent())
@@ -3543,6 +3563,11 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
 
 	params := url.Values{}
@@ -3623,6 +3648,11 @@ func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:deleteRecursive", req.GetName())
 
 	params := url.Values{}
@@ -3694,6 +3724,11 @@ func (c *storageControlRESTClient) GetStorageLayout(ctx context.Context, req *co
 	}
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -5241,6 +5276,11 @@ func (c *storageControlRESTClient) GetProjectIntelligenceConfig(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5303,6 +5343,11 @@ func (c *storageControlRESTClient) UpdateProjectIntelligenceConfig(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntelligenceConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntelligenceConfig().GetName())
@@ -5369,6 +5414,11 @@ func (c *storageControlRESTClient) GetFolderIntelligenceConfig(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5431,6 +5481,11 @@ func (c *storageControlRESTClient) UpdateFolderIntelligenceConfig(ctx context.Co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntelligenceConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntelligenceConfig().GetName())
@@ -5497,6 +5552,11 @@ func (c *storageControlRESTClient) GetOrganizationIntelligenceConfig(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5559,6 +5619,11 @@ func (c *storageControlRESTClient) UpdateOrganizationIntelligenceConfig(ctx cont
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIntelligenceConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetIntelligenceConfig().GetName())
@@ -5861,6 +5926,11 @@ func (c *storageControlRESTClient) GetIntelligenceFinding(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -5926,6 +5996,11 @@ func (c *storageControlRESTClient) ListIntelligenceFindings(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/intelligenceFindings", req.GetParent())
@@ -6010,6 +6085,11 @@ func (c *storageControlRESTClient) SummarizeIntelligenceFindings(ctx context.Con
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/intelligenceFindings:summarize", req.GetParent())
 
 		params := url.Values{}
@@ -6081,6 +6161,11 @@ func (c *storageControlRESTClient) GetIntelligenceFindingRevision(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -6146,6 +6231,11 @@ func (c *storageControlRESTClient) ListIntelligenceFindingRevisions(ctx context.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/revisions", req.GetParent())
@@ -6219,6 +6309,11 @@ func (c *storageControlRESTClient) ListIntelligenceFindingRevisions(ctx context.
 func (c *storageControlRESTClient) ViewObjectFullContext(ctx context.Context, req *controlpb.ViewObjectFullContextRequest, opts ...gax.CallOption) (*controlpb.ObjectFullContext, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:viewFullContext", req.GetName())

@@ -877,6 +877,11 @@ func (c *backupDrProtectionSummaryRESTClient) ListResourceBackupConfigs(ctx cont
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/resourceBackupConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -946,6 +951,11 @@ func (c *backupDrProtectionSummaryRESTClient) ListResourceBackupConfigs(ctx cont
 func (c *backupDrProtectionSummaryRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1030,6 +1040,11 @@ func (c *backupDrProtectionSummaryRESTClient) ListLocations(ctx context.Context,
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1099,6 +1114,11 @@ func (c *backupDrProtectionSummaryRESTClient) GetIamPolicy(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1164,6 +1184,11 @@ func (c *backupDrProtectionSummaryRESTClient) SetIamPolicy(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:setIamPolicy", req.GetResource())
@@ -1232,6 +1257,11 @@ func (c *backupDrProtectionSummaryRESTClient) TestIamPermissions(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1292,6 +1322,11 @@ func (c *backupDrProtectionSummaryRESTClient) CancelOperation(ctx context.Contex
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1331,6 +1366,11 @@ func (c *backupDrProtectionSummaryRESTClient) DeleteOperation(ctx context.Contex
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1368,6 +1408,11 @@ func (c *backupDrProtectionSummaryRESTClient) DeleteOperation(ctx context.Contex
 func (c *backupDrProtectionSummaryRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1435,6 +1480,11 @@ func (c *backupDrProtectionSummaryRESTClient) ListOperations(ctx context.Context
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

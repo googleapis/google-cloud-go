@@ -1191,6 +1191,31 @@ func ExampleClient_PositionSection() {
 	_ = resp
 }
 
+func ExampleClient_ReplaceMessageCards() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := chat.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &chatpb.ReplaceMessageCardsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/chat/apiv1/chatpb#ReplaceMessageCardsRequest.
+	}
+	resp, err := c.ReplaceMessageCards(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_SearchMessages() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

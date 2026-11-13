@@ -1742,6 +1742,11 @@ func (c *restClient) ListConnectionProfiles(ctx context.Context, req *datastream
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/connectionProfiles", req.GetParent())
 
 		params := url.Values{}
@@ -1813,6 +1818,11 @@ func (c *restClient) GetConnectionProfile(ctx context.Context, req *datastreampb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1872,6 +1882,11 @@ func (c *restClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/connectionProfiles", req.GetParent())
@@ -1946,6 +1961,11 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConnectionProfile().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetConnectionProfile().GetName())
 
 	params := url.Values{}
@@ -2015,6 +2035,11 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 func (c *restClient) DeleteConnectionProfile(ctx context.Context, req *datastreampb.DeleteConnectionProfileRequest, opts ...gax.CallOption) (*DeleteConnectionProfileOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
@@ -2090,6 +2115,11 @@ func (c *restClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/connectionProfiles:discover", req.GetParent())
 
 	params := url.Values{}
@@ -2155,6 +2185,11 @@ func (c *restClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/streams", req.GetParent())
@@ -2228,6 +2263,11 @@ func (c *restClient) GetStream(ctx context.Context, req *datastreampb.GetStreamR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2287,6 +2327,11 @@ func (c *restClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/streams", req.GetParent())
@@ -2367,6 +2412,11 @@ func (c *restClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetStream().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetStream().GetName())
 
 	params := url.Values{}
@@ -2444,6 +2494,11 @@ func (c *restClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2512,6 +2567,11 @@ func (c *restClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetStream(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v:fetchErrors", req.GetStream())
@@ -2590,6 +2650,11 @@ func (c *restClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v:fetchStaticIps", req.GetName())
 
 		params := url.Values{}
@@ -2662,6 +2727,11 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/privateConnections", req.GetParent())
 
 	params := url.Values{}
@@ -2725,6 +2795,11 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 func (c *restClient) GetPrivateConnection(ctx context.Context, req *datastreampb.GetPrivateConnectionRequest, opts ...gax.CallOption) (*datastreampb.PrivateConnection, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
@@ -2793,6 +2868,11 @@ func (c *restClient) ListPrivateConnections(ctx context.Context, req *datastream
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/privateConnections", req.GetParent())
@@ -2864,6 +2944,11 @@ func (c *restClient) ListPrivateConnections(ctx context.Context, req *datastream
 func (c *restClient) DeletePrivateConnection(ctx context.Context, req *datastreampb.DeletePrivateConnectionRequest, opts ...gax.CallOption) (*DeletePrivateConnectionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
@@ -2941,6 +3026,11 @@ func (c *restClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/routes", req.GetParent())
 
 	params := url.Values{}
@@ -3004,6 +3094,11 @@ func (c *restClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 func (c *restClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteRequest, opts ...gax.CallOption) (*datastreampb.Route, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
@@ -3072,6 +3167,11 @@ func (c *restClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/routes", req.GetParent())
@@ -3143,6 +3243,11 @@ func (c *restClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 func (c *restClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRouteRequest, opts ...gax.CallOption) (*DeleteRouteOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())

@@ -403,6 +403,12 @@ func (c *interconnectAttachmentGroupsRESTClient) Delete(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnectAttachmentGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectAttachmentGroups/%v", req.GetProject(), req.GetInterconnectAttachmentGroup())
 
 	params := url.Values{}
@@ -467,6 +473,12 @@ func (c *interconnectAttachmentGroupsRESTClient) Get(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnectAttachmentGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectAttachmentGroups/%v", req.GetProject(), req.GetInterconnectAttachmentGroup())
 
 	// Build HTTP headers from client and context metadata.
@@ -515,6 +527,12 @@ func (c *interconnectAttachmentGroupsRESTClient) Get(ctx context.Context, req *c
 func (c *interconnectAttachmentGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectAttachmentGroups/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -574,6 +592,12 @@ func (c *interconnectAttachmentGroupsRESTClient) GetOperationalStatus(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnectAttachmentGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectAttachmentGroups/%v/getOperationalStatus", req.GetProject(), req.GetInterconnectAttachmentGroup())
 
 	// Build HTTP headers from client and context metadata.
@@ -629,6 +653,11 @@ func (c *interconnectAttachmentGroupsRESTClient) Insert(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectAttachmentGroups", req.GetProject())
@@ -705,6 +734,11 @@ func (c *interconnectAttachmentGroupsRESTClient) List(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectAttachmentGroups", req.GetProject())
@@ -787,6 +821,12 @@ func (c *interconnectAttachmentGroupsRESTClient) Patch(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnectAttachmentGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectAttachmentGroups/%v", req.GetProject(), req.GetInterconnectAttachmentGroup())
 
 	params := url.Values{}
@@ -861,6 +901,12 @@ func (c *interconnectAttachmentGroupsRESTClient) SetIamPolicy(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectAttachmentGroups/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -915,6 +961,12 @@ func (c *interconnectAttachmentGroupsRESTClient) TestIamPermissions(ctx context.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectAttachmentGroups/%v/testIamPermissions", req.GetProject(), req.GetResource())

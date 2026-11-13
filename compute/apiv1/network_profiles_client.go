@@ -270,6 +270,12 @@ func (c *networkProfilesRESTClient) Get(ctx context.Context, req *computepb.GetN
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetworkProfile(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networkProfiles/%v", req.GetProject(), req.GetNetworkProfile())
 
 	// Build HTTP headers from client and context metadata.
@@ -331,6 +337,11 @@ func (c *networkProfilesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networkProfiles", req.GetProject())

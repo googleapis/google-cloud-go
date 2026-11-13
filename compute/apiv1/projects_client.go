@@ -491,6 +491,11 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/disableXpnHost", req.GetProject())
 
 	params := url.Values{}
@@ -562,6 +567,11 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/disableXpnResource", req.GetProject())
 
 	params := url.Values{}
@@ -623,6 +633,11 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/enableXpnHost", req.GetProject())
@@ -697,6 +712,11 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/enableXpnResource", req.GetProject())
 
 	params := url.Values{}
@@ -768,6 +788,11 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v", req.GetProject())
 
 	// Build HTTP headers from client and context metadata.
@@ -816,6 +841,11 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnHost", req.GetProject())
@@ -879,6 +909,11 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnResources", req.GetProject())
@@ -968,6 +1003,11 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/listXpnHosts", req.GetProject())
@@ -1060,6 +1100,11 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/moveDisk", req.GetProject())
 
 	params := url.Values{}
@@ -1136,6 +1181,11 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/moveInstance", req.GetProject())
 
 	params := url.Values{}
@@ -1209,6 +1259,11 @@ func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setCloudArmorTier", req.GetProject())
 
 	params := url.Values{}
@@ -1278,6 +1333,11 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setCommonInstanceMetadata", req.GetProject())
@@ -1352,6 +1412,11 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setDefaultNetworkTier", req.GetProject())
 
 	params := url.Values{}
@@ -1422,6 +1487,11 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setUsageExportBucket", req.GetProject())

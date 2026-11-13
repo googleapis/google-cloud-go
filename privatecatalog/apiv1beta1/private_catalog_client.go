@@ -635,6 +635,11 @@ func (c *restClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.S
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetResource(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/catalogs:search", req.GetResource())
 
 		params := url.Values{}
@@ -717,6 +722,11 @@ func (c *restClient) SearchProducts(ctx context.Context, req *privatecatalogpb.S
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetResource(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/products:search", req.GetResource())
 
 		params := url.Values{}
@@ -797,6 +807,11 @@ func (c *restClient) SearchVersions(ctx context.Context, req *privatecatalogpb.S
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetResource(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/versions:search", req.GetResource())

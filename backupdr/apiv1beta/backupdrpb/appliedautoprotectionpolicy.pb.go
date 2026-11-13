@@ -368,10 +368,11 @@ var File_google_cloud_backupdr_v1beta_appliedautoprotectionpolicy_proto protoref
 
 const file_google_cloud_backupdr_v1beta_appliedautoprotectionpolicy_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/backupdr/v1beta/appliedautoprotectionpolicy.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/backupdr/v1beta/autoprotectionpolicy.proto\x1a>google/cloud/backupdr/v1beta/autoprotectionpolicybinding.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\a\n" +
+	">google/cloud/backupdr/v1beta/appliedautoprotectionpolicy.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/backupdr/v1beta/autoprotectionpolicy.proto\x1a>google/cloud/backupdr/v1beta/autoprotectionpolicybinding.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\a\n" +
 	"\x1bAppliedAutoProtectionPolicy\x12\x18\n" +
-	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12+\n" +
-	"\x0esource_binding\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rsourceBinding\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12c\n" +
+	"\x0esource_binding\x18\x02 \x01(\tB<\xe2A\x01\x03\xfaA5\n" +
+	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\rsourceBinding\x12H\n" +
 	"\bcriteria\x18\x03 \x01(\v2&.google.cloud.backupdr.v1beta.CriteriaB\x04\xe2A\x01\x03R\bcriteria\x12d\n" +
 	"\x13backup_plan_details\x18\x04 \x03(\v2..google.cloud.backupdr.v1beta.BackupPlanDetailB\x04\xe2A\x01\x03R\x11backupPlanDetails\x12A\n" +
 	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +

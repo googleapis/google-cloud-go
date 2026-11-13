@@ -471,6 +471,11 @@ func (c *exportRESTClient) ListProfiles(ctx context.Context, req *cloudprofilerp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/profiles", req.GetParent())
 
 		params := url.Values{}

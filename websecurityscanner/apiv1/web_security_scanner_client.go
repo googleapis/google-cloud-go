@@ -1182,6 +1182,11 @@ func (c *restClient) CreateScanConfig(ctx context.Context, req *websecurityscann
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/scanConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -1236,6 +1241,11 @@ func (c *restClient) DeleteScanConfig(ctx context.Context, req *websecurityscann
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1273,6 +1283,11 @@ func (c *restClient) DeleteScanConfig(ctx context.Context, req *websecurityscann
 func (c *restClient) GetScanConfig(ctx context.Context, req *websecurityscannerpb.GetScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1340,6 +1355,11 @@ func (c *restClient) ListScanConfigs(ctx context.Context, req *websecurityscanne
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/scanConfigs", req.GetParent())
@@ -1414,6 +1434,11 @@ func (c *restClient) UpdateScanConfig(ctx context.Context, req *websecurityscann
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetScanConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetScanConfig().GetName())
 
 	params := url.Values{}
@@ -1481,6 +1506,11 @@ func (c *restClient) StartScanRun(ctx context.Context, req *websecurityscannerpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
 
 	params := url.Values{}
@@ -1533,6 +1563,11 @@ func (c *restClient) StartScanRun(ctx context.Context, req *websecurityscannerpb
 func (c *restClient) GetScanRun(ctx context.Context, req *websecurityscannerpb.GetScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1601,6 +1636,11 @@ func (c *restClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/scanRuns", req.GetParent())
@@ -1674,6 +1714,11 @@ func (c *restClient) StopScanRun(ctx context.Context, req *websecurityscannerpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -1741,6 +1786,11 @@ func (c *restClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/crawledUrls", req.GetParent())
 
 		params := url.Values{}
@@ -1804,6 +1854,11 @@ func (c *restClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 func (c *restClient) GetFinding(ctx context.Context, req *websecurityscannerpb.GetFindingRequest, opts ...gax.CallOption) (*websecurityscannerpb.Finding, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1873,6 +1928,11 @@ func (c *restClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/findings", req.GetParent())
 
 		params := url.Values{}
@@ -1939,6 +1999,11 @@ func (c *restClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 func (c *restClient) ListFindingTypeStats(ctx context.Context, req *websecurityscannerpb.ListFindingTypeStatsRequest, opts ...gax.CallOption) (*websecurityscannerpb.ListFindingTypeStatsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/findingTypeStats", req.GetParent())

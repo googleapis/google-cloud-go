@@ -610,6 +610,11 @@ func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/projects/%v/traces", req.GetProjectId())
 
 		params := url.Values{}
@@ -698,6 +703,12 @@ func (c *restClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetTraceId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/traces/%v", req.GetProjectId(), req.GetTraceId())
 
 	params := url.Values{}
@@ -761,6 +772,11 @@ func (c *restClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/traces", req.GetProjectId())

@@ -42,16 +42,29 @@ var newRegionSslCertificatesClientHook clientHook
 
 // RegionSslCertificatesCallOptions contains the retry settings for each method of RegionSslCertificatesClient.
 type RegionSslCertificatesCallOptions struct {
-	Delete []gax.CallOption
-	Get    []gax.CallOption
-	Insert []gax.CallOption
-	List   []gax.CallOption
+	Delete             []gax.CallOption
+	FetchEncryptionKey []gax.CallOption
+	Get                []gax.CallOption
+	Insert             []gax.CallOption
+	List               []gax.CallOption
 }
 
 func defaultRegionSslCertificatesRESTCallOptions() *RegionSslCertificatesCallOptions {
 	return &RegionSslCertificatesCallOptions{
 		Delete: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		FetchEncryptionKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
 		},
 		Get: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -89,6 +102,7 @@ type internalRegionSslCertificatesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Delete(context.Context, *computepb.DeleteRegionSslCertificateRequest, ...gax.CallOption) (*Operation, error)
+	FetchEncryptionKey(context.Context, *computepb.FetchEncryptionKeyRegionSslCertificateRequest, ...gax.CallOption) (*computepb.SslCertificatesFetchEncryptionKeyResponse, error)
 	Get(context.Context, *computepb.GetRegionSslCertificateRequest, ...gax.CallOption) (*computepb.SslCertificate, error)
 	Insert(context.Context, *computepb.InsertRegionSslCertificateRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionSslCertificatesRequest, ...gax.CallOption) *SslCertificateIterator
@@ -134,6 +148,12 @@ func (c *RegionSslCertificatesClient) Connection() *grpc.ClientConn {
 // Delete deletes the specified SslCertificate resource in the region.
 func (c *RegionSslCertificatesClient) Delete(ctx context.Context, req *computepb.DeleteRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
+}
+
+// FetchEncryptionKey returns the public encryption key used to encrypt the TLS private key
+// before upload.
+func (c *RegionSslCertificatesClient) FetchEncryptionKey(ctx context.Context, req *computepb.FetchEncryptionKeyRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificatesFetchEncryptionKeyResponse, error) {
+	return c.internalClient.FetchEncryptionKey(ctx, req, opts...)
 }
 
 // Get returns the specified SslCertificate resource in the specified region. Get
@@ -217,6 +237,7 @@ func NewRegionSslCertificatesRESTClient(ctx context.Context, opts ...option.Clie
 		)
 
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.FetchEncryptionKey = append(callOpts.FetchEncryptionKey, gax.WithClientMetrics(metrics))
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
@@ -233,6 +254,7 @@ func NewRegionSslCertificatesRESTClient(ctx context.Context, opts ...option.Clie
 		)
 
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.FetchEncryptionKey = append(callOpts.FetchEncryptionKey, gax.WithClientTracing(tracing))
 		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
 		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
@@ -250,6 +272,7 @@ func NewRegionSslCertificatesRESTClient(ctx context.Context, opts ...option.Clie
 		)
 
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.FetchEncryptionKey = append(callOpts.FetchEncryptionKey, gax.WithClientLogging(logging))
 		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
 		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
@@ -316,6 +339,13 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSslCertificate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/%v", req.GetProject(), req.GetRegion(), req.GetSslCertificate())
 
 	params := url.Values{}
@@ -374,12 +404,75 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 	return op, nil
 }
 
+// FetchEncryptionKey returns the public encryption key used to encrypt the TLS private key
+// before upload.
+func (c *regionSslCertificatesRESTClient) FetchEncryptionKey(ctx context.Context, req *computepb.FetchEncryptionKeyRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificatesFetchEncryptionKeyResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/encryptionKey", req.GetProject(), req.GetRegion())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSslCertificates/FetchEncryptionKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/sslCertificates/encryptionKey")
+	}
+	opts = append((*c.CallOptions).FetchEncryptionKey[0:len((*c.CallOptions).FetchEncryptionKey):len((*c.CallOptions).FetchEncryptionKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.SslCertificatesFetchEncryptionKeyResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchEncryptionKey")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // Get returns the specified SslCertificate resource in the specified region. Get
 // a list of available SSL certificates by making a list()
 // request.
 func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSslCertificate(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/%v", req.GetProject(), req.GetRegion(), req.GetSslCertificate())
@@ -437,6 +530,12 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates", req.GetProject(), req.GetRegion())
@@ -515,6 +614,12 @@ func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *compute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates", req.GetProject(), req.GetRegion())

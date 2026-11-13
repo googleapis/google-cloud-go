@@ -995,6 +995,11 @@ func (c *cloudControlsPartnerCoreRESTClient) GetWorkload(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1060,6 +1065,11 @@ func (c *cloudControlsPartnerCoreRESTClient) ListWorkloads(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/workloads", req.GetParent())
@@ -1133,6 +1143,11 @@ func (c *cloudControlsPartnerCoreRESTClient) GetCustomer(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1198,6 +1213,11 @@ func (c *cloudControlsPartnerCoreRESTClient) ListCustomers(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/customers", req.GetParent())
@@ -1271,6 +1291,11 @@ func (c *cloudControlsPartnerCoreRESTClient) GetEkmConnections(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1323,6 +1348,11 @@ func (c *cloudControlsPartnerCoreRESTClient) GetEkmConnections(ctx context.Conte
 func (c *cloudControlsPartnerCoreRESTClient) GetPartnerPermissions(ctx context.Context, req *cloudcontrolspartnerpb.GetPartnerPermissionsRequest, opts ...gax.CallOption) (*cloudcontrolspartnerpb.PartnerPermissions, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1393,6 +1423,11 @@ func (c *cloudControlsPartnerCoreRESTClient) ListAccessApprovalRequests(ctx cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/accessApprovalRequests", req.GetParent())
@@ -1466,6 +1501,11 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartner(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1525,6 +1565,11 @@ func (c *cloudControlsPartnerCoreRESTClient) CreateCustomer(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/customers", req.GetParent())
@@ -1589,6 +1634,11 @@ func (c *cloudControlsPartnerCoreRESTClient) UpdateCustomer(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomer().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetCustomer().GetName())
 
 	params := url.Values{}
@@ -1648,6 +1698,11 @@ func (c *cloudControlsPartnerCoreRESTClient) UpdateCustomer(ctx context.Context,
 func (c *cloudControlsPartnerCoreRESTClient) DeleteCustomer(ctx context.Context, req *cloudcontrolspartnerpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())

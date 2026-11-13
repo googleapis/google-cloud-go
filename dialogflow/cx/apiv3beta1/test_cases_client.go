@@ -1514,6 +1514,11 @@ func (c *testCasesRESTClient) ListTestCases(ctx context.Context, req *cxpb.ListT
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases", req.GetParent())
 
 		params := url.Values{}
@@ -1588,6 +1593,11 @@ func (c *testCasesRESTClient) BatchDeleteTestCases(ctx context.Context, req *cxp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -1625,6 +1635,11 @@ func (c *testCasesRESTClient) BatchDeleteTestCases(ctx context.Context, req *cxp
 func (c *testCasesRESTClient) GetTestCase(ctx context.Context, req *cxpb.GetTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -1688,6 +1703,11 @@ func (c *testCasesRESTClient) CreateTestCase(ctx context.Context, req *cxpb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases", req.GetParent())
 
 	params := url.Values{}
@@ -1747,6 +1767,11 @@ func (c *testCasesRESTClient) UpdateTestCase(ctx context.Context, req *cxpb.Upda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTestCase().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetTestCase().GetName())
@@ -1826,6 +1851,11 @@ func (c *testCasesRESTClient) RunTestCase(ctx context.Context, req *cxpb.RunTest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:run", req.GetName())
 
 	params := url.Values{}
@@ -1903,6 +1933,11 @@ func (c *testCasesRESTClient) BatchRunTestCases(ctx context.Context, req *cxpb.B
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:batchRun", req.GetParent())
 
 	params := url.Values{}
@@ -1962,6 +1997,11 @@ func (c *testCasesRESTClient) BatchRunTestCases(ctx context.Context, req *cxpb.B
 func (c *testCasesRESTClient) CalculateCoverage(ctx context.Context, req *cxpb.CalculateCoverageRequest, opts ...gax.CallOption) (*cxpb.CalculateCoverageResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAgent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:calculateCoverage", req.GetAgent())
@@ -2035,6 +2075,11 @@ func (c *testCasesRESTClient) ImportTestCases(ctx context.Context, req *cxpb.Imp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:import", req.GetParent())
@@ -2115,6 +2160,11 @@ func (c *testCasesRESTClient) ExportTestCases(ctx context.Context, req *cxpb.Exp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:export", req.GetParent())
 
 	params := url.Values{}
@@ -2190,6 +2240,11 @@ func (c *testCasesRESTClient) ListTestCaseResults(ctx context.Context, req *cxpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/results", req.GetParent())
 
 		params := url.Values{}
@@ -2258,6 +2313,11 @@ func (c *testCasesRESTClient) GetTestCaseResult(ctx context.Context, req *cxpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2310,6 +2370,11 @@ func (c *testCasesRESTClient) GetTestCaseResult(ctx context.Context, req *cxpb.G
 func (c *testCasesRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -2394,6 +2459,11 @@ func (c *testCasesRESTClient) ListLocations(ctx context.Context, req *locationpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2462,6 +2532,11 @@ func (c *testCasesRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2499,6 +2574,11 @@ func (c *testCasesRESTClient) CancelOperation(ctx context.Context, req *longrunn
 func (c *testCasesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -2566,6 +2646,11 @@ func (c *testCasesRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())

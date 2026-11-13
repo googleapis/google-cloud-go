@@ -501,6 +501,11 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/protectedResourcesSummary", req.GetName())
 
 	params := url.Values{}
@@ -571,6 +576,11 @@ func (c *keyTrackingRESTClient) SearchProtectedResources(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetScope(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/protectedResources:search", req.GetScope())

@@ -104,6 +104,7 @@ type CallOptions struct {
 	ListCompilationResults             []gax.CallOption
 	GetCompilationResult               []gax.CallOption
 	CreateCompilationResult            []gax.CallOption
+	CreateCompilationResultLongRunning []gax.CallOption
 	QueryCompilationResultActions      []gax.CallOption
 	ListWorkflowConfigs                []gax.CallOption
 	GetWorkflowConfig                  []gax.CallOption
@@ -202,6 +203,7 @@ func defaultCallOptions() *CallOptions {
 		ListCompilationResults:             []gax.CallOption{},
 		GetCompilationResult:               []gax.CallOption{},
 		CreateCompilationResult:            []gax.CallOption{},
+		CreateCompilationResultLongRunning: []gax.CallOption{},
 		QueryCompilationResultActions:      []gax.CallOption{},
 		ListWorkflowConfigs:                []gax.CallOption{},
 		GetWorkflowConfig:                  []gax.CallOption{},
@@ -286,6 +288,7 @@ func defaultRESTCallOptions() *CallOptions {
 		ListCompilationResults:             []gax.CallOption{},
 		GetCompilationResult:               []gax.CallOption{},
 		CreateCompilationResult:            []gax.CallOption{},
+		CreateCompilationResultLongRunning: []gax.CallOption{},
 		QueryCompilationResultActions:      []gax.CallOption{},
 		ListWorkflowConfigs:                []gax.CallOption{},
 		GetWorkflowConfig:                  []gax.CallOption{},
@@ -377,6 +380,8 @@ type internalClient interface {
 	ListCompilationResults(context.Context, *dataformpb.ListCompilationResultsRequest, ...gax.CallOption) *CompilationResultIterator
 	GetCompilationResult(context.Context, *dataformpb.GetCompilationResultRequest, ...gax.CallOption) (*dataformpb.CompilationResult, error)
 	CreateCompilationResult(context.Context, *dataformpb.CreateCompilationResultRequest, ...gax.CallOption) (*dataformpb.CompilationResult, error)
+	CreateCompilationResultLongRunning(context.Context, *dataformpb.CreateCompilationResultRequest, ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error)
+	CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation
 	QueryCompilationResultActions(context.Context, *dataformpb.QueryCompilationResultActionsRequest, ...gax.CallOption) *CompilationResultActionIterator
 	ListWorkflowConfigs(context.Context, *dataformpb.ListWorkflowConfigsRequest, ...gax.CallOption) *WorkflowConfigIterator
 	GetWorkflowConfig(context.Context, *dataformpb.GetWorkflowConfigRequest, ...gax.CallOption) (*dataformpb.WorkflowConfig, error)
@@ -770,6 +775,18 @@ func (c *Client) CreateCompilationResult(ctx context.Context, req *dataformpb.Cr
 	return c.internalClient.CreateCompilationResult(ctx, req, opts...)
 }
 
+// CreateCompilationResultLongRunning creates a new CompilationResult in a given project and location
+// asynchronously.
+func (c *Client) CreateCompilationResultLongRunning(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error) {
+	return c.internalClient.CreateCompilationResultLongRunning(ctx, req, opts...)
+}
+
+// CreateCompilationResultLongRunningOperation returns a new CreateCompilationResultLongRunningOperation from a given name.
+// The name must be that of a previously created CreateCompilationResultLongRunningOperation, possibly from a different process.
+func (c *Client) CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation {
+	return c.internalClient.CreateCompilationResultLongRunningOperation(name)
+}
+
 // QueryCompilationResultActions returns CompilationResultActions in a given CompilationResult.
 func (c *Client) QueryCompilationResultActions(ctx context.Context, req *dataformpb.QueryCompilationResultActionsRequest, opts ...gax.CallOption) *CompilationResultActionIterator {
 	return c.internalClient.QueryCompilationResultActions(ctx, req, opts...)
@@ -1057,6 +1074,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCompilationResultLongRunning = append(client.CallOptions.CreateCompilationResultLongRunning, gax.WithClientMetrics(metrics))
 		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientMetrics(metrics))
@@ -1148,6 +1166,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientTracing(tracing))
 		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCompilationResultLongRunning = append(client.CallOptions.CreateCompilationResultLongRunning, gax.WithClientTracing(tracing))
 		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientTracing(tracing))
 		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientTracing(tracing))
 		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientTracing(tracing))
@@ -1240,6 +1259,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientLogging(logging))
 		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientLogging(logging))
 		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCompilationResultLongRunning = append(client.CallOptions.CreateCompilationResultLongRunning, gax.WithClientLogging(logging))
 		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientLogging(logging))
 		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientLogging(logging))
 		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientLogging(logging))
@@ -1426,6 +1446,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientMetrics(metrics))
 		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientMetrics(metrics))
 		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		callOpts.CreateCompilationResultLongRunning = append(callOpts.CreateCompilationResultLongRunning, gax.WithClientMetrics(metrics))
 		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
 		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
 		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientMetrics(metrics))
@@ -1517,6 +1538,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientTracing(tracing))
 		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientTracing(tracing))
 		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientTracing(tracing))
+		callOpts.CreateCompilationResultLongRunning = append(callOpts.CreateCompilationResultLongRunning, gax.WithClientTracing(tracing))
 		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientTracing(tracing))
 		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientTracing(tracing))
 		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientTracing(tracing))
@@ -1609,6 +1631,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientLogging(logging))
 		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientLogging(logging))
 		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientLogging(logging))
+		callOpts.CreateCompilationResultLongRunning = append(callOpts.CreateCompilationResultLongRunning, gax.WithClientLogging(logging))
 		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientLogging(logging))
 		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientLogging(logging))
 		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientLogging(logging))
@@ -3200,6 +3223,33 @@ func (c *gRPCClient) CreateCompilationResult(ctx context.Context, req *dataformp
 	return resp, nil
 }
 
+func (c *gRPCClient) CreateCompilationResultLongRunning(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateCompilationResultLongRunning")
+	}
+	opts = append((*c.CallOptions).CreateCompilationResultLongRunning[0:len((*c.CallOptions).CreateCompilationResultLongRunning):len((*c.CallOptions).CreateCompilationResultLongRunning)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateCompilationResultLongRunning, req, settings.GRPC, c.logger, "CreateCompilationResultLongRunning")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.CreateCompilationResultLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateCompilationResultLongRunningOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *gRPCClient) QueryCompilationResultActions(ctx context.Context, req *dataformpb.QueryCompilationResultActionsRequest, opts ...gax.CallOption) *CompilationResultActionIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3841,6 +3891,11 @@ func (c *restClient) GetTeamFolder(ctx context.Context, req *dataformpb.GetTeamF
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3900,6 +3955,11 @@ func (c *restClient) CreateTeamFolder(ctx context.Context, req *dataformpb.Creat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/teamFolders", req.GetParent())
@@ -3963,6 +4023,11 @@ func (c *restClient) UpdateTeamFolder(ctx context.Context, req *dataformpb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTeamFolder().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTeamFolder().GetName())
 
 	params := url.Values{}
@@ -4024,6 +4089,11 @@ func (c *restClient) DeleteTeamFolder(ctx context.Context, req *dataformpb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4068,6 +4138,11 @@ func (c *restClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.D
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deleteTree", req.GetName())
@@ -4142,6 +4217,11 @@ func (c *restClient) QueryTeamFolderContents(ctx context.Context, req *dataformp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetTeamFolder(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:queryContents", req.GetTeamFolder())
@@ -4229,6 +4309,11 @@ func (c *restClient) SearchTeamFolders(ctx context.Context, req *dataformpb.Sear
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetLocation(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/teamFolders:search", req.GetLocation())
 
 		params := url.Values{}
@@ -4300,6 +4385,11 @@ func (c *restClient) GetFolder(ctx context.Context, req *dataformpb.GetFolderReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4359,6 +4449,11 @@ func (c *restClient) CreateFolder(ctx context.Context, req *dataformpb.CreateFol
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/folders", req.GetParent())
@@ -4422,6 +4517,11 @@ func (c *restClient) UpdateFolder(ctx context.Context, req *dataformpb.UpdateFol
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFolder().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFolder().GetName())
 
 	params := url.Values{}
@@ -4483,6 +4583,11 @@ func (c *restClient) DeleteFolder(ctx context.Context, req *dataformpb.DeleteFol
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4527,6 +4632,11 @@ func (c *restClient) DeleteFolderTree(ctx context.Context, req *dataformpb.Delet
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deleteTree", req.GetName())
@@ -4601,6 +4711,11 @@ func (c *restClient) QueryFolderContents(ctx context.Context, req *dataformpb.Qu
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetFolder(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:queryFolderContents", req.GetFolder())
@@ -4689,6 +4804,11 @@ func (c *restClient) QueryUserRootContents(ctx context.Context, req *dataformpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetLocation(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:queryUserRootContents", req.GetLocation())
 
 		params := url.Values{}
@@ -4764,6 +4884,11 @@ func (c *restClient) MoveFolder(ctx context.Context, req *dataformpb.MoveFolderR
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
@@ -4843,6 +4968,11 @@ func (c *restClient) ListRepositories(ctx context.Context, req *dataformpb.ListR
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/repositories", req.GetParent())
 
 		params := url.Values{}
@@ -4914,6 +5044,11 @@ func (c *restClient) GetRepository(ctx context.Context, req *dataformpb.GetRepos
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4973,6 +5108,11 @@ func (c *restClient) CreateRepository(ctx context.Context, req *dataformpb.Creat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/repositories", req.GetParent())
@@ -5042,6 +5182,11 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *dataformpb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRepository().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRepository().GetName())
 
 	params := url.Values{}
@@ -5103,6 +5248,11 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5149,6 +5299,11 @@ func (c *restClient) MoveRepository(ctx context.Context, req *dataformpb.MoveRep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
@@ -5219,6 +5374,11 @@ func (c *restClient) CommitRepositoryChanges(ctx context.Context, req *dataformp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:commit", req.GetName())
 
 	params := url.Values{}
@@ -5272,6 +5432,11 @@ func (c *restClient) CommitRepositoryChanges(ctx context.Context, req *dataformp
 func (c *restClient) ReadRepositoryFile(ctx context.Context, req *dataformpb.ReadRepositoryFileRequest, opts ...gax.CallOption) (*dataformpb.ReadRepositoryFileResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:readFile", req.GetName())
@@ -5344,6 +5509,11 @@ func (c *restClient) QueryRepositoryDirectoryContents(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:queryDirectoryContents", req.GetName())
@@ -5431,6 +5601,11 @@ func (c *restClient) FetchRepositoryHistory(ctx context.Context, req *dataformpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchHistory", req.GetName())
 
 		params := url.Values{}
@@ -5496,6 +5671,11 @@ func (c *restClient) ComputeRepositoryAccessTokenStatus(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:computeAccessTokenStatus", req.GetName())
 
 	params := url.Values{}
@@ -5548,6 +5728,11 @@ func (c *restClient) ComputeRepositoryAccessTokenStatus(ctx context.Context, req
 func (c *restClient) FetchRemoteBranches(ctx context.Context, req *dataformpb.FetchRemoteBranchesRequest, opts ...gax.CallOption) (*dataformpb.FetchRemoteBranchesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchRemoteBranches", req.GetName())
@@ -5615,6 +5800,11 @@ func (c *restClient) ListWorkspaces(ctx context.Context, req *dataformpb.ListWor
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/workspaces", req.GetParent())
@@ -5688,6 +5878,11 @@ func (c *restClient) GetWorkspace(ctx context.Context, req *dataformpb.GetWorksp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5749,6 +5944,11 @@ func (c *restClient) CreateWorkspace(ctx context.Context, req *dataformpb.Create
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/workspaces", req.GetParent())
 
 	params := url.Values{}
@@ -5804,6 +6004,11 @@ func (c *restClient) DeleteWorkspace(ctx context.Context, req *dataformpb.Delete
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5847,6 +6052,11 @@ func (c *restClient) InstallNpmPackages(ctx context.Context, req *dataformpb.Ins
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkspace(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:installNpmPackages", req.GetWorkspace())
@@ -5909,6 +6119,11 @@ func (c *restClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:pull", req.GetName())
 
 	params := url.Values{}
@@ -5969,6 +6184,11 @@ func (c *restClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGit
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:push", req.GetName())
 
 	params := url.Values{}
@@ -6023,6 +6243,11 @@ func (c *restClient) FetchFileGitStatuses(ctx context.Context, req *dataformpb.F
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchFileGitStatuses", req.GetName())
 
 	params := url.Values{}
@@ -6075,6 +6300,11 @@ func (c *restClient) FetchFileGitStatuses(ctx context.Context, req *dataformpb.F
 func (c *restClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.FetchGitAheadBehindRequest, opts ...gax.CallOption) (*dataformpb.FetchGitAheadBehindResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchGitAheadBehind", req.GetName())
@@ -6140,6 +6370,11 @@ func (c *restClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:commit", req.GetName())
 
 	params := url.Values{}
@@ -6200,6 +6435,11 @@ func (c *restClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:reset", req.GetName())
 
 	params := url.Values{}
@@ -6252,6 +6492,11 @@ func (c *restClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 func (c *restClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFileDiffRequest, opts ...gax.CallOption) (*dataformpb.FetchFileDiffResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkspace(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchFileDiff", req.GetWorkspace())
@@ -6320,6 +6565,11 @@ func (c *restClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetWorkspace(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:queryDirectoryContents", req.GetWorkspace())
@@ -6406,6 +6656,11 @@ func (c *restClient) SearchFiles(ctx context.Context, req *dataformpb.SearchFile
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetWorkspace(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchFiles", req.GetWorkspace())
 
 		params := url.Values{}
@@ -6480,6 +6735,11 @@ func (c *restClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDire
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkspace(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:makeDirectory", req.GetWorkspace())
 
 	params := url.Values{}
@@ -6538,6 +6798,11 @@ func (c *restClient) RemoveDirectory(ctx context.Context, req *dataformpb.Remove
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkspace(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeDirectory", req.GetWorkspace())
@@ -6601,6 +6866,11 @@ func (c *restClient) MoveDirectory(ctx context.Context, req *dataformpb.MoveDire
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkspace(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:moveDirectory", req.GetWorkspace())
 
 	params := url.Values{}
@@ -6653,6 +6923,11 @@ func (c *restClient) MoveDirectory(ctx context.Context, req *dataformpb.MoveDire
 func (c *restClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileRequest, opts ...gax.CallOption) (*dataformpb.ReadFileResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkspace(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:readFile", req.GetWorkspace())
@@ -6719,6 +6994,11 @@ func (c *restClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkspace(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeFile", req.GetWorkspace())
 
 	params := url.Values{}
@@ -6779,6 +7059,11 @@ func (c *restClient) MoveFile(ctx context.Context, req *dataformpb.MoveFileReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkspace(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:moveFile", req.GetWorkspace())
 
 	params := url.Values{}
@@ -6837,6 +7122,11 @@ func (c *restClient) WriteFile(ctx context.Context, req *dataformpb.WriteFileReq
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkspace(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:writeFile", req.GetWorkspace())
@@ -6906,6 +7196,11 @@ func (c *restClient) ListReleaseConfigs(ctx context.Context, req *dataformpb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/releaseConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -6971,6 +7266,11 @@ func (c *restClient) GetReleaseConfig(ctx context.Context, req *dataformpb.GetRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7030,6 +7330,11 @@ func (c *restClient) CreateReleaseConfig(ctx context.Context, req *dataformpb.Cr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/releaseConfigs", req.GetParent())
@@ -7099,6 +7404,11 @@ func (c *restClient) UpdateReleaseConfig(ctx context.Context, req *dataformpb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetReleaseConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetReleaseConfig().GetName())
 
 	params := url.Values{}
@@ -7160,6 +7470,11 @@ func (c *restClient) DeleteReleaseConfig(ctx context.Context, req *dataformpb.De
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7210,6 +7525,11 @@ func (c *restClient) ListCompilationResults(ctx context.Context, req *dataformpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/compilationResults", req.GetParent())
@@ -7283,6 +7603,11 @@ func (c *restClient) GetCompilationResult(ctx context.Context, req *dataformpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7344,6 +7669,11 @@ func (c *restClient) CreateCompilationResult(ctx context.Context, req *dataformp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/compilationResults", req.GetParent())
 
 	params := url.Values{}
@@ -7392,6 +7722,80 @@ func (c *restClient) CreateCompilationResult(ctx context.Context, req *dataformp
 	return resp, nil
 }
 
+// CreateCompilationResultLongRunning creates a new CompilationResult in a given project and location
+// asynchronously.
+func (c *restClient) CreateCompilationResultLongRunning(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCompilationResult()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/compilationResults:createLongRunning", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateCompilationResultLongRunning")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/compilationResults:createLongRunning")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCompilationResultLongRunning")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.CreateCompilationResultLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateCompilationResultLongRunningOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // QueryCompilationResultActions returns CompilationResultActions in a given CompilationResult.
 func (c *restClient) QueryCompilationResultActions(ctx context.Context, req *dataformpb.QueryCompilationResultActionsRequest, opts ...gax.CallOption) *CompilationResultActionIterator {
 	it := &CompilationResultActionIterator{}
@@ -7409,6 +7813,11 @@ func (c *restClient) QueryCompilationResultActions(ctx context.Context, req *dat
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:query", req.GetName())
@@ -7492,6 +7901,11 @@ func (c *restClient) ListWorkflowConfigs(ctx context.Context, req *dataformpb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/workflowConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -7557,6 +7971,11 @@ func (c *restClient) GetWorkflowConfig(ctx context.Context, req *dataformpb.GetW
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7616,6 +8035,11 @@ func (c *restClient) CreateWorkflowConfig(ctx context.Context, req *dataformpb.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/workflowConfigs", req.GetParent())
@@ -7685,6 +8109,11 @@ func (c *restClient) UpdateWorkflowConfig(ctx context.Context, req *dataformpb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkflowConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetWorkflowConfig().GetName())
 
 	params := url.Values{}
@@ -7746,6 +8175,11 @@ func (c *restClient) DeleteWorkflowConfig(ctx context.Context, req *dataformpb.D
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7796,6 +8230,11 @@ func (c *restClient) ListWorkflowInvocations(ctx context.Context, req *dataformp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/workflowInvocations", req.GetParent())
@@ -7869,6 +8308,11 @@ func (c *restClient) GetWorkflowInvocation(ctx context.Context, req *dataformpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7930,6 +8374,11 @@ func (c *restClient) CreateWorkflowInvocation(ctx context.Context, req *dataform
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/workflowInvocations", req.GetParent())
 
 	params := url.Values{}
@@ -7984,6 +8433,11 @@ func (c *restClient) DeleteWorkflowInvocation(ctx context.Context, req *dataform
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8027,6 +8481,11 @@ func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
@@ -8096,6 +8555,11 @@ func (c *restClient) QueryWorkflowInvocationActions(ctx context.Context, req *da
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:query", req.GetName())
 
 		params := url.Values{}
@@ -8159,6 +8623,11 @@ func (c *restClient) QueryWorkflowInvocationActions(ctx context.Context, req *da
 func (c *restClient) GetConfig(ctx context.Context, req *dataformpb.GetConfigRequest, opts ...gax.CallOption) (*dataformpb.Config, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8227,6 +8696,11 @@ func (c *restClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateCon
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetConfig().GetName())
 
 	params := url.Values{}
@@ -8288,6 +8762,11 @@ func (c *restClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateCon
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -8356,6 +8835,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -8422,6 +8906,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -8474,6 +8963,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8558,6 +9052,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -8632,6 +9131,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -8671,6 +9175,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8708,6 +9217,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8777,6 +9291,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
 
 		params := url.Values{}
@@ -8840,6 +9359,24 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CreateCompilationResultLongRunningOperation returns a new CreateCompilationResultLongRunningOperation from a given name.
+// The name must be that of a previously created CreateCompilationResultLongRunningOperation, possibly from a different process.
+func (c *gRPCClient) CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation {
+	return &CreateCompilationResultLongRunningOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.CreateCompilationResultLongRunningOperation"),
+	}
+}
+
+// CreateCompilationResultLongRunningOperation returns a new CreateCompilationResultLongRunningOperation from a given name.
+// The name must be that of a previously created CreateCompilationResultLongRunningOperation, possibly from a different process.
+func (c *restClient) CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateCompilationResultLongRunningOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.CreateCompilationResultLongRunningOperation"),
+		pollPath: override,
+	}
 }
 
 // DeleteFolderTreeOperation returns a new DeleteFolderTreeOperation from a given name.

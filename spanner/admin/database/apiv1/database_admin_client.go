@@ -2449,6 +2449,11 @@ func (c *databaseAdminRESTClient) ListDatabases(ctx context.Context, req *databa
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
 
 		params := url.Values{}
@@ -2527,6 +2532,11 @@ func (c *databaseAdminRESTClient) CreateDatabase(ctx context.Context, req *datab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
 
 	params := url.Values{}
@@ -2586,6 +2596,11 @@ func (c *databaseAdminRESTClient) CreateDatabase(ctx context.Context, req *datab
 func (c *databaseAdminRESTClient) GetDatabase(ctx context.Context, req *databasepb.GetDatabaseRequest, opts ...gax.CallOption) (*databasepb.Database, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2688,6 +2703,11 @@ func (c *databaseAdminRESTClient) UpdateDatabase(ctx context.Context, req *datab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDatabase().GetName())
 
 	params := url.Values{}
@@ -2769,6 +2789,11 @@ func (c *databaseAdminRESTClient) UpdateDatabaseDdl(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/ddl", req.GetDatabase())
 
 	params := url.Values{}
@@ -2834,6 +2859,11 @@ func (c *databaseAdminRESTClient) DropDatabase(ctx context.Context, req *databas
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDatabase())
 
 	params := url.Values{}
@@ -2873,6 +2903,11 @@ func (c *databaseAdminRESTClient) DropDatabase(ctx context.Context, req *databas
 func (c *databaseAdminRESTClient) GetDatabaseDdl(ctx context.Context, req *databasepb.GetDatabaseDdlRequest, opts ...gax.CallOption) (*databasepb.GetDatabaseDdlResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/ddl", req.GetDatabase())
@@ -2939,6 +2974,11 @@ func (c *databaseAdminRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -3008,6 +3048,11 @@ func (c *databaseAdminRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3075,6 +3120,11 @@ func (c *databaseAdminRESTClient) TestIamPermissions(ctx context.Context, req *i
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
@@ -3147,6 +3197,11 @@ func (c *databaseAdminRESTClient) CreateBackup(ctx context.Context, req *databas
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
@@ -3238,6 +3293,11 @@ func (c *databaseAdminRESTClient) CopyBackup(ctx context.Context, req *databasep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backups:copy", req.GetParent())
 
 	params := url.Values{}
@@ -3298,6 +3358,11 @@ func (c *databaseAdminRESTClient) CopyBackup(ctx context.Context, req *databasep
 func (c *databaseAdminRESTClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3362,6 +3427,11 @@ func (c *databaseAdminRESTClient) UpdateBackup(ctx context.Context, req *databas
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackup().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackup().GetName())
 
 	params := url.Values{}
@@ -3424,6 +3494,11 @@ func (c *databaseAdminRESTClient) DeleteBackup(ctx context.Context, req *databas
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3476,6 +3551,11 @@ func (c *databaseAdminRESTClient) ListBackups(ctx context.Context, req *database
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
@@ -3568,6 +3648,11 @@ func (c *databaseAdminRESTClient) RestoreDatabase(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases:restore", req.GetParent())
 
 	params := url.Values{}
@@ -3647,6 +3732,11 @@ func (c *databaseAdminRESTClient) ListDatabaseOperations(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/databaseOperations", req.GetParent())
@@ -3739,6 +3829,11 @@ func (c *databaseAdminRESTClient) ListBackupOperations(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backupOperations", req.GetParent())
 
 		params := url.Values{}
@@ -3820,6 +3915,11 @@ func (c *databaseAdminRESTClient) ListDatabaseRoles(ctx context.Context, req *da
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/databaseRoles", req.GetParent())
 
 		params := url.Values{}
@@ -3891,6 +3991,11 @@ func (c *databaseAdminRESTClient) AddSplitPoints(ctx context.Context, req *datab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addSplitPoints", req.GetDatabase())
 
 	params := url.Values{}
@@ -3952,6 +4057,11 @@ func (c *databaseAdminRESTClient) CreateBackupSchedule(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backupSchedules", req.GetParent())
 
 	params := url.Values{}
@@ -4005,6 +4115,11 @@ func (c *databaseAdminRESTClient) CreateBackupSchedule(ctx context.Context, req 
 func (c *databaseAdminRESTClient) GetBackupSchedule(ctx context.Context, req *databasepb.GetBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4068,6 +4183,11 @@ func (c *databaseAdminRESTClient) UpdateBackupSchedule(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackupSchedule().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupSchedule().GetName())
 
 	params := url.Values{}
@@ -4129,6 +4249,11 @@ func (c *databaseAdminRESTClient) DeleteBackupSchedule(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4179,6 +4304,11 @@ func (c *databaseAdminRESTClient) ListBackupSchedules(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backupSchedules", req.GetParent())
@@ -4309,6 +4439,11 @@ func (c *databaseAdminRESTClient) CancelOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4348,6 +4483,11 @@ func (c *databaseAdminRESTClient) DeleteOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4385,6 +4525,11 @@ func (c *databaseAdminRESTClient) DeleteOperation(ctx context.Context, req *long
 func (c *databaseAdminRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4452,6 +4597,11 @@ func (c *databaseAdminRESTClient) ListOperations(ctx context.Context, req *longr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

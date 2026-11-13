@@ -266,6 +266,12 @@ func (c *zonesRESTClient) Get(ctx context.Context, req *computepb.GetZoneRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v", req.GetProject(), req.GetZone())
 
 	// Build HTTP headers from client and context metadata.
@@ -326,6 +332,11 @@ func (c *zonesRESTClient) List(ctx context.Context, req *computepb.ListZonesRequ
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones", req.GetProject())

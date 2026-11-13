@@ -818,6 +818,11 @@ func (c *restClient) ListAvailableVersions(ctx context.Context, req *datafusionp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
 
 		params := url.Values{}
@@ -899,6 +904,11 @@ func (c *restClient) ListInstances(ctx context.Context, req *datafusionpb.ListIn
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
 
 		params := url.Values{}
@@ -970,6 +980,11 @@ func (c *restClient) GetInstance(ctx context.Context, req *datafusionpb.GetInsta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1029,6 +1044,11 @@ func (c *restClient) CreateInstance(ctx context.Context, req *datafusionpb.Creat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
@@ -1091,6 +1111,11 @@ func (c *restClient) CreateInstance(ctx context.Context, req *datafusionpb.Creat
 func (c *restClient) DeleteInstance(ctx context.Context, req *datafusionpb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1159,6 +1184,11 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *datafusionpb.Updat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInstance().GetName())
@@ -1234,6 +1264,11 @@ func (c *restClient) RestartInstance(ctx context.Context, req *datafusionpb.Rest
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:restart", req.GetName())

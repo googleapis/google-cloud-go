@@ -395,6 +395,12 @@ func (c *targetSslProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetSslProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
@@ -458,6 +464,12 @@ func (c *targetSslProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetSslProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v", req.GetProject(), req.GetTargetSslProxy())
 
 	// Build HTTP headers from client and context metadata.
@@ -513,6 +525,11 @@ func (c *targetSslProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies", req.GetProject())
@@ -592,6 +609,11 @@ func (c *targetSslProxiesRESTClient) List(ctx context.Context, req *computepb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies", req.GetProject())
 
 		params := url.Values{}
@@ -669,6 +691,12 @@ func (c *targetSslProxiesRESTClient) SetBackendService(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetSslProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setBackendService", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
@@ -737,6 +765,12 @@ func (c *targetSslProxiesRESTClient) SetCertificateMap(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetSslProxy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setCertificateMap", req.GetProject(), req.GetTargetSslProxy())
@@ -809,6 +843,12 @@ func (c *targetSslProxiesRESTClient) SetProxyHeader(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetSslProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setProxyHeader", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
@@ -877,6 +917,12 @@ func (c *targetSslProxiesRESTClient) SetSslCertificates(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetSslProxy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setSslCertificates", req.GetProject(), req.GetTargetSslProxy())
@@ -952,6 +998,12 @@ func (c *targetSslProxiesRESTClient) SetSslPolicy(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetSslProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setSslPolicy", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
@@ -1020,6 +1072,12 @@ func (c *targetSslProxiesRESTClient) TestIamPermissions(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/testIamPermissions", req.GetProject(), req.GetResource())

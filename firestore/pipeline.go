@@ -251,6 +251,23 @@ func (p *Pipeline) Execute(ctx context.Context, opts ...ExecuteOption) *Pipeline
 		}
 	}
 
+	if newP.tx != nil {
+		if newP.tx.err != nil {
+			return &PipelineSnapshot{
+				iter: &PipelineResultIterator{err: newP.tx.err},
+			}
+		}
+		if len(newP.tx.writes) > 0 {
+			newP.tx.readAfterWrite = true
+			return &PipelineSnapshot{
+				iter: &PipelineResultIterator{err: errReadAfterWrite},
+			}
+		}
+	}
+
+	if newP.tx != nil || newP.executeSettings.Atomic {
+		ctx = withTransactionHeader(ctx)
+	}
 	ctx = withResourceHeader(ctx, newP.c.path())
 	ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(newP.c.path()))
 

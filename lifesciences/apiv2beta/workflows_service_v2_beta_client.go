@@ -761,6 +761,11 @@ func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/pipelines:run", req.GetParent())
 
 	params := url.Values{}
@@ -820,6 +825,11 @@ func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req 
 func (c *workflowsServiceV2BetaRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -887,6 +897,11 @@ func (c *workflowsServiceV2BetaRESTClient) ListLocations(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/locations", req.GetName())
@@ -973,6 +988,11 @@ func (c *workflowsServiceV2BetaRESTClient) CancelOperation(ctx context.Context, 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1016,6 +1036,11 @@ func (c *workflowsServiceV2BetaRESTClient) CancelOperation(ctx context.Context, 
 func (c *workflowsServiceV2BetaRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -1087,6 +1112,11 @@ func (c *workflowsServiceV2BetaRESTClient) ListOperations(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())

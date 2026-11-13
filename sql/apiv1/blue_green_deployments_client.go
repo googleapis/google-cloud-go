@@ -583,6 +583,11 @@ func (c *blueGreenDeploymentsRESTClient) CreateBlueGreenDeployment(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/blueGreenDeployments", req.GetParent())
 
 	params := url.Values{}
@@ -637,6 +642,11 @@ func (c *blueGreenDeploymentsRESTClient) CreateBlueGreenDeployment(ctx context.C
 func (c *blueGreenDeploymentsRESTClient) GetBlueGreenDeployment(ctx context.Context, req *sqlpb.GetBlueGreenDeploymentRequest, opts ...gax.CallOption) (*sqlpb.BlueGreenDeployment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -700,6 +710,11 @@ func (c *blueGreenDeploymentsRESTClient) SwitchoverBlueGreenDeployment(ctx conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:switchover", req.GetName())
@@ -767,6 +782,11 @@ func (c *blueGreenDeploymentsRESTClient) ListBlueGreenDeployments(ctx context.Co
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/blueGreenDeployments", req.GetParent())
@@ -838,6 +858,11 @@ func (c *blueGreenDeploymentsRESTClient) ListBlueGreenDeployments(ctx context.Co
 func (c *blueGreenDeploymentsRESTClient) DeleteBlueGreenDeployment(ctx context.Context, req *sqlpb.DeleteBlueGreenDeploymentRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

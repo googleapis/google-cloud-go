@@ -1822,6 +1822,11 @@ func (c *streamsRESTClient) ListClusters(ctx context.Context, req *visionaipb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
 
 		params := url.Values{}
@@ -1893,6 +1898,11 @@ func (c *streamsRESTClient) GetCluster(ctx context.Context, req *visionaipb.GetC
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1952,6 +1962,11 @@ func (c *streamsRESTClient) CreateCluster(ctx context.Context, req *visionaipb.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
@@ -2026,6 +2041,11 @@ func (c *streamsRESTClient) UpdateCluster(ctx context.Context, req *visionaipb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCluster().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCluster().GetName())
 
 	params := url.Values{}
@@ -2095,6 +2115,11 @@ func (c *streamsRESTClient) UpdateCluster(ctx context.Context, req *visionaipb.U
 func (c *streamsRESTClient) DeleteCluster(ctx context.Context, req *visionaipb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2174,6 +2199,11 @@ func (c *streamsRESTClient) ListStreams(ctx context.Context, req *visionaipb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/streams", req.GetParent())
 
 		params := url.Values{}
@@ -2245,6 +2275,11 @@ func (c *streamsRESTClient) GetStream(ctx context.Context, req *visionaipb.GetSt
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2304,6 +2339,11 @@ func (c *streamsRESTClient) CreateStream(ctx context.Context, req *visionaipb.Cr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/streams", req.GetParent())
@@ -2378,6 +2418,11 @@ func (c *streamsRESTClient) UpdateStream(ctx context.Context, req *visionaipb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetStream().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetStream().GetName())
 
 	params := url.Values{}
@@ -2447,6 +2492,11 @@ func (c *streamsRESTClient) UpdateStream(ctx context.Context, req *visionaipb.Up
 func (c *streamsRESTClient) DeleteStream(ctx context.Context, req *visionaipb.DeleteStreamRequest, opts ...gax.CallOption) (*DeleteStreamOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2519,6 +2569,11 @@ func (c *streamsRESTClient) GetStreamThumbnail(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetStream(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getThumbnail", req.GetStream())
 
 	params := url.Values{}
@@ -2586,6 +2641,11 @@ func (c *streamsRESTClient) GenerateStreamHlsToken(ctx context.Context, req *vis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetStream(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateStreamHlsToken", req.GetStream())
 
 	params := url.Values{}
@@ -2651,6 +2711,11 @@ func (c *streamsRESTClient) ListEvents(ctx context.Context, req *visionaipb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/events", req.GetParent())
@@ -2724,6 +2789,11 @@ func (c *streamsRESTClient) GetEvent(ctx context.Context, req *visionaipb.GetEve
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2783,6 +2853,11 @@ func (c *streamsRESTClient) CreateEvent(ctx context.Context, req *visionaipb.Cre
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/events", req.GetParent())
@@ -2857,6 +2932,11 @@ func (c *streamsRESTClient) UpdateEvent(ctx context.Context, req *visionaipb.Upd
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEvent().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEvent().GetName())
 
 	params := url.Values{}
@@ -2926,6 +3006,11 @@ func (c *streamsRESTClient) UpdateEvent(ctx context.Context, req *visionaipb.Upd
 func (c *streamsRESTClient) DeleteEvent(ctx context.Context, req *visionaipb.DeleteEventRequest, opts ...gax.CallOption) (*DeleteEventOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3005,6 +3090,11 @@ func (c *streamsRESTClient) ListSeries(ctx context.Context, req *visionaipb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/series", req.GetParent())
 
 		params := url.Values{}
@@ -3076,6 +3166,11 @@ func (c *streamsRESTClient) GetSeries(ctx context.Context, req *visionaipb.GetSe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3135,6 +3230,11 @@ func (c *streamsRESTClient) CreateSeries(ctx context.Context, req *visionaipb.Cr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/series", req.GetParent())
@@ -3209,6 +3309,11 @@ func (c *streamsRESTClient) UpdateSeries(ctx context.Context, req *visionaipb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSeries().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSeries().GetName())
 
 	params := url.Values{}
@@ -3278,6 +3383,11 @@ func (c *streamsRESTClient) UpdateSeries(ctx context.Context, req *visionaipb.Up
 func (c *streamsRESTClient) DeleteSeries(ctx context.Context, req *visionaipb.DeleteSeriesRequest, opts ...gax.CallOption) (*DeleteSeriesOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3351,6 +3461,11 @@ func (c *streamsRESTClient) MaterializeChannel(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/channels", req.GetParent())
 
 	params := url.Values{}
@@ -3414,6 +3529,11 @@ func (c *streamsRESTClient) MaterializeChannel(ctx context.Context, req *visiona
 func (c *streamsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3481,6 +3601,11 @@ func (c *streamsRESTClient) ListLocations(ctx context.Context, req *locationpb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -3557,6 +3682,11 @@ func (c *streamsRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3596,6 +3726,11 @@ func (c *streamsRESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3633,6 +3768,11 @@ func (c *streamsRESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 func (c *streamsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3700,6 +3840,11 @@ func (c *streamsRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

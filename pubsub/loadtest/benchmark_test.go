@@ -73,10 +73,8 @@ func runOnce(lts *PubServer) {
 	// we can ignore this too.
 	// The framework caps the number of outstanding calls to Execute at
 	// maxOutstandingPublishes. That is what we simulate here.
-	for i := 0; i < maxOutstandingPublishes; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range maxOutstandingPublishes {
+		wg.Go(func() {
 			for atomic.AddInt64(&nRequests, -1) >= 0 {
 				latencies, err := lts.publishBatch()
 				if err != nil {
@@ -84,7 +82,7 @@ func runOnce(lts *PubServer) {
 				}
 				atomic.AddInt64(&nPublished, int64(len(latencies)))
 			}
-		}()
+		})
 	}
 	wg.Wait()
 	sent := atomic.LoadInt64(&nPublished)
@@ -94,7 +92,7 @@ func runOnce(lts *PubServer) {
 }
 
 func perfClient(pubDelay time.Duration, nConns int, f interface {
-	Fatal(...interface{})
+	Fatal(...any)
 }) *pubsub.Client {
 	ctx := context.Background()
 	srv, err := newPerfServer(pubDelay)

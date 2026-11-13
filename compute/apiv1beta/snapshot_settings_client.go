@@ -271,6 +271,11 @@ func (c *snapshotSettingsRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshotSettings", req.GetProject())
 
 	// Build HTTP headers from client and context metadata.
@@ -325,6 +330,11 @@ func (c *snapshotSettingsRESTClient) Patch(ctx context.Context, req *computepb.P
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshotSettings", req.GetProject())

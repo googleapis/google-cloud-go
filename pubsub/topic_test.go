@@ -309,7 +309,7 @@ func TestListTopics(t *testing.T) {
 
 	var ids []string
 	numTopics := 4
-	for i := 0; i < numTopics; i++ {
+	for i := range numTopics {
 		id := fmt.Sprintf("t%d", i)
 		ids = append(ids, id)
 		mustCreateTopic(t, c, id)
@@ -839,11 +839,9 @@ func TestPublishFlowControl_Block(t *testing.T) {
 
 	// Sending a third message blocks because the messages are outstanding.
 	var publish3Completed sync.WaitGroup
-	publish3Completed.Add(1)
-	go func() {
+	publish3Completed.Go(func() {
 		publishSingleMessage(ctx, topic, "AAAAAA")
-		publish3Completed.Done()
-	}()
+	})
 
 	go func() {
 		sendResponse1.Done()
@@ -854,13 +852,11 @@ func TestPublishFlowControl_Block(t *testing.T) {
 	// Sending a fourth message blocks because although only one message has been sent,
 	// the third message claimed the tokens for outstanding bytes.
 	var publish4Completed sync.WaitGroup
-	publish4Completed.Add(1)
 
-	go func() {
+	publish4Completed.Go(func() {
 		publish3Completed.Wait()
 		publishSingleMessage(ctx, topic, "A")
-		publish4Completed.Done()
-	}()
+	})
 
 	publish3Completed.Wait()
 	addSingleResponse(srv, "3")

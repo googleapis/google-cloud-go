@@ -629,6 +629,11 @@ func (c *lfpStoreRESTClient) GetLfpStore(ctx context.Context, req *lfppb.GetLfpS
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/lfp/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -691,6 +696,11 @@ func (c *lfpStoreRESTClient) InsertLfpStore(ctx context.Context, req *lfppb.Inse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/lfp/v1beta/%v/lfpStores:insert", req.GetParent())
 
 	params := url.Values{}
@@ -745,6 +755,11 @@ func (c *lfpStoreRESTClient) DeleteLfpStore(ctx context.Context, req *lfppb.Dele
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/lfp/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -796,6 +811,11 @@ func (c *lfpStoreRESTClient) ListLfpStores(ctx context.Context, req *lfppb.ListL
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/lfp/v1beta/%v/lfpStores", req.GetParent())

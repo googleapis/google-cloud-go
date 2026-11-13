@@ -570,6 +570,11 @@ func (c *projectRESTClient) GetAlertConfig(ctx context.Context, req *retailpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -631,6 +636,11 @@ func (c *projectRESTClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAlertConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetAlertConfig().GetName())
 
 	params := url.Values{}
@@ -690,6 +700,11 @@ func (c *projectRESTClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 func (c *projectRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -757,6 +772,11 @@ func (c *projectRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())

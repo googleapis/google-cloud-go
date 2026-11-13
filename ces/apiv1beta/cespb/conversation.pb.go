@@ -409,9 +409,12 @@ type Conversation_Turn struct {
 	// input, agent responses and intermediate events during the processing.
 	Messages []*Message `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
 	// Optional. The root span of the action processing.
-	RootSpan      *Span `protobuf:"bytes,2,opt,name=root_span,json=rootSpan,proto3" json:"root_span,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	RootSpan *Span `protobuf:"bytes,2,opt,name=root_span,json=rootSpan,proto3" json:"root_span,omitempty"`
+	// Optional. The intended ground-truth text from the Simulated Caller
+	// (Polysynth). Only populated when word error rate metrics are enabled.
+	UserIntendedText string `protobuf:"bytes,3,opt,name=user_intended_text,json=userIntendedText,proto3" json:"user_intended_text,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *Conversation_Turn) Reset() {
@@ -458,11 +461,18 @@ func (x *Conversation_Turn) GetRootSpan() *Span {
 	return nil
 }
 
+func (x *Conversation_Turn) GetUserIntendedText() string {
+	if x != nil {
+		return x.UserIntendedText
+	}
+	return ""
+}
+
 var File_google_cloud_ces_v1beta_conversation_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_conversation_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/ces/v1beta/conversation.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\v\n" +
+	"*google/cloud/ces/v1beta/conversation.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\f\n" +
 	"\fConversation\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12?\n" +
 	"\n" +
@@ -487,10 +497,11 @@ const file_google_cloud_ces_v1beta_conversation_proto_rawDesc = "" +
 	"\x1dces.googleapis.com/AppVersionR\n" +
 	"appVersion\x12)\n" +
 	"\rlanguage_code\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\x12@\n" +
-	"\bmessages\x18\x02 \x03(\v2 .google.cloud.ces.v1beta.MessageB\x02\x18\x01R\bmessages\x1a\x8c\x01\n" +
+	"\bmessages\x18\x02 \x03(\v2 .google.cloud.ces.v1beta.MessageB\x02\x18\x01R\bmessages\x1a\xc0\x01\n" +
 	"\x04Turn\x12B\n" +
 	"\bmessages\x18\x01 \x03(\v2 .google.cloud.ces.v1beta.MessageB\x04\xe2A\x01\x01R\bmessages\x12@\n" +
-	"\troot_span\x18\x02 \x01(\v2\x1d.google.cloud.ces.v1beta.SpanB\x04\xe2A\x01\x01R\brootSpan\"P\n" +
+	"\troot_span\x18\x02 \x01(\v2\x1d.google.cloud.ces.v1beta.SpanB\x04\xe2A\x01\x01R\brootSpan\x122\n" +
+	"\x12user_intended_text\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10userIntendedText\"P\n" +
 	"\vChannelType\x12\x1c\n" +
 	"\x18CHANNEL_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TEXT\x10\x01\x12\t\n" +

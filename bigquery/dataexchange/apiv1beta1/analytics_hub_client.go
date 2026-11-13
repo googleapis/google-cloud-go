@@ -1469,6 +1469,11 @@ func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/dataExchanges", req.GetParent())
 
 		params := url.Values{}
@@ -1547,6 +1552,11 @@ func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetOrganization(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/dataExchanges", req.GetOrganization())
 
 		params := url.Values{}
@@ -1611,6 +1621,11 @@ func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *datae
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1665,6 +1680,11 @@ func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *da
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/dataExchanges", req.GetParent())
@@ -1728,6 +1748,11 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataExchange().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDataExchange().GetName())
 
 	params := url.Values{}
@@ -1788,6 +1813,11 @@ func (c *analyticsHubRESTClient) DeleteDataExchange(ctx context.Context, req *da
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1833,6 +1863,11 @@ func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexch
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/listings", req.GetParent())
@@ -1899,6 +1934,11 @@ func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchan
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1953,6 +1993,11 @@ func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexc
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/listings", req.GetParent())
@@ -2016,6 +2061,11 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetListing().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetListing().GetName())
 
 	params := url.Values{}
@@ -2076,6 +2126,11 @@ func (c *analyticsHubRESTClient) DeleteListing(ctx context.Context, req *dataexc
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -2119,6 +2174,11 @@ func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *data
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:subscribe", req.GetName())
@@ -2176,6 +2236,11 @@ func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -2229,6 +2294,11 @@ func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
@@ -2286,6 +2356,11 @@ func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -2333,6 +2408,11 @@ func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *ia
 func (c *analyticsHubRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2395,6 +2475,11 @@ func (c *analyticsHubRESTClient) ListLocations(ctx context.Context, req *locatio
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())

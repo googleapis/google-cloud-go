@@ -329,6 +329,12 @@ func (c *targetGrpcProxiesRESTClient) Delete(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetGrpcProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies/%v", req.GetProject(), req.GetTargetGrpcProxy())
 
 	params := url.Values{}
@@ -392,6 +398,12 @@ func (c *targetGrpcProxiesRESTClient) Get(ctx context.Context, req *computepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetGrpcProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies/%v", req.GetProject(), req.GetTargetGrpcProxy())
 
 	// Build HTTP headers from client and context metadata.
@@ -447,6 +459,11 @@ func (c *targetGrpcProxiesRESTClient) Insert(ctx context.Context, req *computepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies", req.GetProject())
@@ -523,6 +540,11 @@ func (c *targetGrpcProxiesRESTClient) List(ctx context.Context, req *computepb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies", req.GetProject())
@@ -603,6 +625,12 @@ func (c *targetGrpcProxiesRESTClient) Patch(ctx context.Context, req *computepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetTargetGrpcProxy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies/%v", req.GetProject(), req.GetTargetGrpcProxy())

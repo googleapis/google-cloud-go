@@ -102,9 +102,63 @@ func (WorkloadCapture_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDescGZIP(), []int{6, 0}
 }
 
+// Specifies the mode of the workload capture.
+type WorkloadCapture_WorkloadCaptureMode int32
+
+const (
+	// Default value. This value is unused.
+	WorkloadCapture_WORKLOAD_CAPTURE_MODE_UNSPECIFIED WorkloadCapture_WorkloadCaptureMode = 0
+	// Records and stores the workload without live replay.
+	WorkloadCapture_CAPTURE_ONLY WorkloadCapture_WorkloadCaptureMode = 1
+	// Records the workload and simultaneously replays it on a live replay
+	// instance.
+	WorkloadCapture_CAPTURE_AND_LIVE_REPLAY WorkloadCapture_WorkloadCaptureMode = 2
+)
+
+// Enum value maps for WorkloadCapture_WorkloadCaptureMode.
+var (
+	WorkloadCapture_WorkloadCaptureMode_name = map[int32]string{
+		0: "WORKLOAD_CAPTURE_MODE_UNSPECIFIED",
+		1: "CAPTURE_ONLY",
+		2: "CAPTURE_AND_LIVE_REPLAY",
+	}
+	WorkloadCapture_WorkloadCaptureMode_value = map[string]int32{
+		"WORKLOAD_CAPTURE_MODE_UNSPECIFIED": 0,
+		"CAPTURE_ONLY":                      1,
+		"CAPTURE_AND_LIVE_REPLAY":           2,
+	}
+)
+
+func (x WorkloadCapture_WorkloadCaptureMode) Enum() *WorkloadCapture_WorkloadCaptureMode {
+	p := new(WorkloadCapture_WorkloadCaptureMode)
+	*p = x
+	return p
+}
+
+func (x WorkloadCapture_WorkloadCaptureMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (WorkloadCapture_WorkloadCaptureMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_enumTypes[1].Descriptor()
+}
+
+func (WorkloadCapture_WorkloadCaptureMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_enumTypes[1]
+}
+
+func (x WorkloadCapture_WorkloadCaptureMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use WorkloadCapture_WorkloadCaptureMode.Descriptor instead.
+func (WorkloadCapture_WorkloadCaptureMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDescGZIP(), []int{6, 1}
+}
+
 // Request to start recording traffic from the primary instance (captured
 // workload).
-type SqlWorkloadCapturesStartRequest struct {
+type WorkloadCapturesStartRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
@@ -116,20 +170,20 @@ type SqlWorkloadCapturesStartRequest struct {
 	sizeCache                   protoimpl.SizeCache
 }
 
-func (x *SqlWorkloadCapturesStartRequest) Reset() {
-	*x = SqlWorkloadCapturesStartRequest{}
+func (x *WorkloadCapturesStartRequest) Reset() {
+	*x = WorkloadCapturesStartRequest{}
 	mi := &file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SqlWorkloadCapturesStartRequest) String() string {
+func (x *WorkloadCapturesStartRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SqlWorkloadCapturesStartRequest) ProtoMessage() {}
+func (*WorkloadCapturesStartRequest) ProtoMessage() {}
 
-func (x *SqlWorkloadCapturesStartRequest) ProtoReflect() protoreflect.Message {
+func (x *WorkloadCapturesStartRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -141,26 +195,26 @@ func (x *SqlWorkloadCapturesStartRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SqlWorkloadCapturesStartRequest.ProtoReflect.Descriptor instead.
-func (*SqlWorkloadCapturesStartRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use WorkloadCapturesStartRequest.ProtoReflect.Descriptor instead.
+func (*WorkloadCapturesStartRequest) Descriptor() ([]byte, []int) {
 	return file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *SqlWorkloadCapturesStartRequest) GetProject() string {
+func (x *WorkloadCapturesStartRequest) GetProject() string {
 	if x != nil {
 		return x.Project
 	}
 	return ""
 }
 
-func (x *SqlWorkloadCapturesStartRequest) GetInstance() string {
+func (x *WorkloadCapturesStartRequest) GetInstance() string {
 	if x != nil {
 		return x.Instance
 	}
 	return ""
 }
 
-func (x *SqlWorkloadCapturesStartRequest) GetStartWorkloadCaptureContext() *StartWorkloadCaptureContext {
+func (x *WorkloadCapturesStartRequest) GetStartWorkloadCaptureContext() *StartWorkloadCaptureContext {
 	if x != nil {
 		return x.StartWorkloadCaptureContext
 	}
@@ -168,7 +222,7 @@ func (x *SqlWorkloadCapturesStartRequest) GetStartWorkloadCaptureContext() *Star
 }
 
 // Request to stop recording traffic from the primary instance.
-type SqlWorkloadCapturesStopRequest struct {
+type WorkloadCapturesStopRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
@@ -180,20 +234,20 @@ type SqlWorkloadCapturesStopRequest struct {
 	sizeCache                  protoimpl.SizeCache
 }
 
-func (x *SqlWorkloadCapturesStopRequest) Reset() {
-	*x = SqlWorkloadCapturesStopRequest{}
+func (x *WorkloadCapturesStopRequest) Reset() {
+	*x = WorkloadCapturesStopRequest{}
 	mi := &file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SqlWorkloadCapturesStopRequest) String() string {
+func (x *WorkloadCapturesStopRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SqlWorkloadCapturesStopRequest) ProtoMessage() {}
+func (*WorkloadCapturesStopRequest) ProtoMessage() {}
 
-func (x *SqlWorkloadCapturesStopRequest) ProtoReflect() protoreflect.Message {
+func (x *WorkloadCapturesStopRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -205,26 +259,26 @@ func (x *SqlWorkloadCapturesStopRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SqlWorkloadCapturesStopRequest.ProtoReflect.Descriptor instead.
-func (*SqlWorkloadCapturesStopRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use WorkloadCapturesStopRequest.ProtoReflect.Descriptor instead.
+func (*WorkloadCapturesStopRequest) Descriptor() ([]byte, []int) {
 	return file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SqlWorkloadCapturesStopRequest) GetProject() string {
+func (x *WorkloadCapturesStopRequest) GetProject() string {
 	if x != nil {
 		return x.Project
 	}
 	return ""
 }
 
-func (x *SqlWorkloadCapturesStopRequest) GetInstance() string {
+func (x *WorkloadCapturesStopRequest) GetInstance() string {
 	if x != nil {
 		return x.Instance
 	}
 	return ""
 }
 
-func (x *SqlWorkloadCapturesStopRequest) GetStopWorkloadCaptureContext() *StopWorkloadCaptureContext {
+func (x *WorkloadCapturesStopRequest) GetStopWorkloadCaptureContext() *StopWorkloadCaptureContext {
 	if x != nil {
 		return x.StopWorkloadCaptureContext
 	}
@@ -233,7 +287,7 @@ func (x *SqlWorkloadCapturesStopRequest) GetStopWorkloadCaptureContext() *StopWo
 
 // Request to start executing a captured workload on a replay instance (the
 // Cloud SQL instance where the recorded SQL queries are executed).
-type SqlWorkloadCapturesStartReplayRequest struct {
+type WorkloadCapturesStartReplayRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
@@ -247,20 +301,20 @@ type SqlWorkloadCapturesStartReplayRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *SqlWorkloadCapturesStartReplayRequest) Reset() {
-	*x = SqlWorkloadCapturesStartReplayRequest{}
+func (x *WorkloadCapturesStartReplayRequest) Reset() {
+	*x = WorkloadCapturesStartReplayRequest{}
 	mi := &file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SqlWorkloadCapturesStartReplayRequest) String() string {
+func (x *WorkloadCapturesStartReplayRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SqlWorkloadCapturesStartReplayRequest) ProtoMessage() {}
+func (*WorkloadCapturesStartReplayRequest) ProtoMessage() {}
 
-func (x *SqlWorkloadCapturesStartReplayRequest) ProtoReflect() protoreflect.Message {
+func (x *WorkloadCapturesStartReplayRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -272,33 +326,33 @@ func (x *SqlWorkloadCapturesStartReplayRequest) ProtoReflect() protoreflect.Mess
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SqlWorkloadCapturesStartReplayRequest.ProtoReflect.Descriptor instead.
-func (*SqlWorkloadCapturesStartReplayRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use WorkloadCapturesStartReplayRequest.ProtoReflect.Descriptor instead.
+func (*WorkloadCapturesStartReplayRequest) Descriptor() ([]byte, []int) {
 	return file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *SqlWorkloadCapturesStartReplayRequest) GetProject() string {
+func (x *WorkloadCapturesStartReplayRequest) GetProject() string {
 	if x != nil {
 		return x.Project
 	}
 	return ""
 }
 
-func (x *SqlWorkloadCapturesStartReplayRequest) GetInstance() string {
+func (x *WorkloadCapturesStartReplayRequest) GetInstance() string {
 	if x != nil {
 		return x.Instance
 	}
 	return ""
 }
 
-func (x *SqlWorkloadCapturesStartReplayRequest) GetStartWorkloadReplayContext() *StartWorkloadReplayContext {
+func (x *WorkloadCapturesStartReplayRequest) GetStartWorkloadReplayContext() *StartWorkloadReplayContext {
 	if x != nil {
 		return x.StartWorkloadReplayContext
 	}
 	return nil
 }
 
-func (x *SqlWorkloadCapturesStartReplayRequest) GetWorkloadId() string {
+func (x *WorkloadCapturesStartReplayRequest) GetWorkloadId() string {
 	if x != nil {
 		return x.WorkloadId
 	}
@@ -307,7 +361,7 @@ func (x *SqlWorkloadCapturesStartReplayRequest) GetWorkloadId() string {
 
 // Request to stop an active workload replay on a target Cloud SQL replay
 // instance.
-type SqlWorkloadCapturesStopReplayRequest struct {
+type WorkloadCapturesStopReplayRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Project ID of the project that contains the target replay
 	// instance.
@@ -321,20 +375,20 @@ type SqlWorkloadCapturesStopReplayRequest struct {
 	sizeCache                 protoimpl.SizeCache
 }
 
-func (x *SqlWorkloadCapturesStopReplayRequest) Reset() {
-	*x = SqlWorkloadCapturesStopReplayRequest{}
+func (x *WorkloadCapturesStopReplayRequest) Reset() {
+	*x = WorkloadCapturesStopReplayRequest{}
 	mi := &file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SqlWorkloadCapturesStopReplayRequest) String() string {
+func (x *WorkloadCapturesStopReplayRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SqlWorkloadCapturesStopReplayRequest) ProtoMessage() {}
+func (*WorkloadCapturesStopReplayRequest) ProtoMessage() {}
 
-func (x *SqlWorkloadCapturesStopReplayRequest) ProtoReflect() protoreflect.Message {
+func (x *WorkloadCapturesStopReplayRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -346,26 +400,26 @@ func (x *SqlWorkloadCapturesStopReplayRequest) ProtoReflect() protoreflect.Messa
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SqlWorkloadCapturesStopReplayRequest.ProtoReflect.Descriptor instead.
-func (*SqlWorkloadCapturesStopReplayRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use WorkloadCapturesStopReplayRequest.ProtoReflect.Descriptor instead.
+func (*WorkloadCapturesStopReplayRequest) Descriptor() ([]byte, []int) {
 	return file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *SqlWorkloadCapturesStopReplayRequest) GetProject() string {
+func (x *WorkloadCapturesStopReplayRequest) GetProject() string {
 	if x != nil {
 		return x.Project
 	}
 	return ""
 }
 
-func (x *SqlWorkloadCapturesStopReplayRequest) GetInstance() string {
+func (x *WorkloadCapturesStopReplayRequest) GetInstance() string {
 	if x != nil {
 		return x.Instance
 	}
 	return ""
 }
 
-func (x *SqlWorkloadCapturesStopReplayRequest) GetStopWorkloadReplayContext() *StopWorkloadReplayContext {
+func (x *WorkloadCapturesStopReplayRequest) GetStopWorkloadReplayContext() *StopWorkloadReplayContext {
 	if x != nil {
 		return x.StopWorkloadReplayContext
 	}
@@ -500,7 +554,9 @@ type WorkloadCapture struct {
 	// Output only. The retention period in days for the captured workload.
 	RetentionDays *int32 `protobuf:"varint,7,opt,name=retention_days,json=retentionDays,proto3,oneof" json:"retention_days,omitempty"`
 	// Output only. The base backup ID associated with the workload capture.
-	BackupId      *string `protobuf:"bytes,8,opt,name=backup_id,json=backupId,proto3,oneof" json:"backup_id,omitempty"`
+	BackupId *string `protobuf:"bytes,8,opt,name=backup_id,json=backupId,proto3,oneof" json:"backup_id,omitempty"`
+	// Output only. The capture mode of the workload capture.
+	CaptureMode   WorkloadCapture_WorkloadCaptureMode `protobuf:"varint,13,opt,name=capture_mode,json=captureMode,proto3,enum=google.cloud.sql.v1beta4.WorkloadCapture_WorkloadCaptureMode" json:"capture_mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -591,26 +647,33 @@ func (x *WorkloadCapture) GetBackupId() string {
 	return ""
 }
 
+func (x *WorkloadCapture) GetCaptureMode() WorkloadCapture_WorkloadCaptureMode {
+	if x != nil {
+		return x.CaptureMode
+	}
+	return WorkloadCapture_WORKLOAD_CAPTURE_MODE_UNSPECIFIED
+}
+
 var File_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto protoreflect.FileDescriptor
 
 const file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/sql/v1beta4/cloud_sql_workload_captures.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe6\x01\n" +
-	"\x1fSqlWorkloadCapturesStartRequest\x12\x1e\n" +
+	":google/cloud/sql/v1beta4/cloud_sql_workload_captures.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe3\x01\n" +
+	"\x1cWorkloadCapturesStartRequest\x12\x1e\n" +
 	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
 	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x80\x01\n" +
-	"\x1estart_workload_capture_context\x18d \x01(\v25.google.cloud.sql.v1beta4.StartWorkloadCaptureContextB\x04\xe2A\x01\x01R\x1bstartWorkloadCaptureContext\"\xe1\x01\n" +
-	"\x1eSqlWorkloadCapturesStopRequest\x12\x1e\n" +
+	"\x1estart_workload_capture_context\x18d \x01(\v25.google.cloud.sql.v1beta4.StartWorkloadCaptureContextB\x04\xe2A\x01\x01R\x1bstartWorkloadCaptureContext\"\xde\x01\n" +
+	"\x1bWorkloadCapturesStopRequest\x12\x1e\n" +
 	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
 	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12}\n" +
-	"\x1dstop_workload_capture_context\x18d \x01(\v24.google.cloud.sql.v1beta4.StopWorkloadCaptureContextB\x04\xe2A\x01\x01R\x1astopWorkloadCaptureContext\"\x8f\x02\n" +
-	"%SqlWorkloadCapturesStartReplayRequest\x12\x1e\n" +
+	"\x1dstop_workload_capture_context\x18d \x01(\v24.google.cloud.sql.v1beta4.StopWorkloadCaptureContextB\x04\xe2A\x01\x01R\x1astopWorkloadCaptureContext\"\x8c\x02\n" +
+	"\"WorkloadCapturesStartReplayRequest\x12\x1e\n" +
 	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
 	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12}\n" +
 	"\x1dstart_workload_replay_context\x18d \x01(\v24.google.cloud.sql.v1beta4.StartWorkloadReplayContextB\x04\xe2A\x01\x02R\x1astartWorkloadReplayContext\x12%\n" +
 	"\vworkload_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
-	"workloadId\"\xe4\x01\n" +
-	"$SqlWorkloadCapturesStopReplayRequest\x12\x1e\n" +
+	"workloadId\"\xe1\x01\n" +
+	"!WorkloadCapturesStopReplayRequest\x12\x1e\n" +
 	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
 	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12z\n" +
 	"\x1cstop_workload_replay_context\x18d \x01(\v23.google.cloud.sql.v1beta4.StopWorkloadReplayContextB\x04\xe2A\x01\x01R\x19stopWorkloadReplayContext\"b\n" +
@@ -619,20 +682,21 @@ const file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDesc = 
 	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\"\x8a\x01\n" +
 	"\x1cWorkloadCapturesListResponse\x12V\n" +
 	"\x11workload_captures\x18\x01 \x03(\v2).google.cloud.sql.v1beta4.WorkloadCaptureR\x10workloadCaptures\x12\x12\n" +
-	"\x04kind\x18\x02 \x01(\tR\x04kind\"\xb7\x05\n" +
+	"\x04kind\x18\x02 \x01(\tR\x04kind\"\x8c\a\n" +
 	"\x0fWorkloadCapture\x12%\n" +
 	"\vworkload_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"workloadId\x12R\n" +
 	"\x0fsource_instance\x18\x02 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceR\x0esourceInstance\x12k\n" +
+	" cloudsql.googleapis.com/InstanceR\x0esourceInstance\x12k\n" +
 	"\x16workload_capture_state\x18\x03 \x01(\x0e2/.google.cloud.sql.v1beta4.WorkloadCapture.StateB\x04\xe2A\x01\x03R\x14workloadCaptureState\x12?\n" +
 	"\n" +
 	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
 	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12W\n" +
 	"\x0freplay_instance\x18\x06 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceH\x00R\x0ereplayInstance\x88\x01\x01\x120\n" +
+	" cloudsql.googleapis.com/InstanceH\x00R\x0ereplayInstance\x88\x01\x01\x120\n" +
 	"\x0eretention_days\x18\a \x01(\x05B\x04\xe2A\x01\x03H\x01R\rretentionDays\x88\x01\x01\x12&\n" +
-	"\tbackup_id\x18\b \x01(\tB\x04\xe2A\x01\x03H\x02R\bbackupId\x88\x01\x01\"V\n" +
+	"\tbackup_id\x18\b \x01(\tB\x04\xe2A\x01\x03H\x02R\bbackupId\x88\x01\x01\x12f\n" +
+	"\fcapture_mode\x18\r \x01(\x0e2=.google.cloud.sql.v1beta4.WorkloadCapture.WorkloadCaptureModeB\x04\xe2A\x01\x03R\vcaptureMode\"V\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\r\n" +
@@ -640,17 +704,21 @@ const file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDesc = 
 	"\n" +
 	"\x06FAILED\x10\x03\x12\x0e\n" +
 	"\n" +
-	"TERMINATED\x10\x04B\x12\n" +
+	"TERMINATED\x10\x04\"k\n" +
+	"\x13WorkloadCaptureMode\x12%\n" +
+	"!WORKLOAD_CAPTURE_MODE_UNSPECIFIED\x10\x00\x12\x10\n" +
+	"\fCAPTURE_ONLY\x10\x01\x12\x1b\n" +
+	"\x17CAPTURE_AND_LIVE_REPLAY\x10\x02B\x12\n" +
 	"\x10_replay_instanceB\x11\n" +
 	"\x0f_retention_daysB\f\n" +
 	"\n" +
-	"_backup_id2\x98\t\n" +
-	"\x1aSqlWorkloadCapturesService\x12\xbf\x01\n" +
-	"\x05Start\x129.google.cloud.sql.v1beta4.SqlWorkloadCapturesStartRequest\x1a#.google.cloud.sql.v1beta4.Operation\"V\x82\xd3\xe4\x93\x02P:\x01*\"K/sql/v1beta4/projects/{project}/instances/{instance}/workloadCaptures:start\x12\xbc\x01\n" +
-	"\x04Stop\x128.google.cloud.sql.v1beta4.SqlWorkloadCapturesStopRequest\x1a#.google.cloud.sql.v1beta4.Operation\"U\x82\xd3\xe4\x93\x02O:\x01*\"J/sql/v1beta4/projects/{project}/instances/{instance}/workloadCaptures:stop\x12\xdf\x01\n" +
-	"\vStartReplay\x12?.google.cloud.sql.v1beta4.SqlWorkloadCapturesStartReplayRequest\x1a#.google.cloud.sql.v1beta4.Operation\"j\x82\xd3\xe4\x93\x02d:\x01*\"_/sql/v1beta4/projects/{project}/instances/{instance}/workloadCaptures/{workload_id}:startReplay\x12\xce\x01\n" +
+	"_backup_id2\x8c\t\n" +
+	"\x1aSqlWorkloadCapturesService\x12\xbc\x01\n" +
+	"\x05Start\x126.google.cloud.sql.v1beta4.WorkloadCapturesStartRequest\x1a#.google.cloud.sql.v1beta4.Operation\"V\x82\xd3\xe4\x93\x02P:\x01*\"K/sql/v1beta4/projects/{project}/instances/{instance}/workloadCaptures:start\x12\xb9\x01\n" +
+	"\x04Stop\x125.google.cloud.sql.v1beta4.WorkloadCapturesStopRequest\x1a#.google.cloud.sql.v1beta4.Operation\"U\x82\xd3\xe4\x93\x02O:\x01*\"J/sql/v1beta4/projects/{project}/instances/{instance}/workloadCaptures:stop\x12\xdc\x01\n" +
+	"\vStartReplay\x12<.google.cloud.sql.v1beta4.WorkloadCapturesStartReplayRequest\x1a#.google.cloud.sql.v1beta4.Operation\"j\x82\xd3\xe4\x93\x02d:\x01*\"_/sql/v1beta4/projects/{project}/instances/{instance}/workloadCaptures/{workload_id}:startReplay\x12\xcb\x01\n" +
 	"\n" +
-	"StopReplay\x12>.google.cloud.sql.v1beta4.SqlWorkloadCapturesStopReplayRequest\x1a#.google.cloud.sql.v1beta4.Operation\"[\x82\xd3\xe4\x93\x02U:\x01*\"P/sql/v1beta4/projects/{project}/instances/{instance}/workloadCaptures:stopReplay\x12\xc7\x01\n" +
+	"StopReplay\x12;.google.cloud.sql.v1beta4.WorkloadCapturesStopReplayRequest\x1a#.google.cloud.sql.v1beta4.Operation\"[\x82\xd3\xe4\x93\x02U:\x01*\"P/sql/v1beta4/projects/{project}/instances/{instance}/workloadCaptures:stopReplay\x12\xc7\x01\n" +
 	"\x04List\x128.google.cloud.sql.v1beta4.SqlWorkloadCapturesListRequest\x1a6.google.cloud.sql.v1beta4.WorkloadCapturesListResponse\"M\x82\xd3\xe4\x93\x02G\x12E/sql/v1beta4/projects/{project}/instances/{instance}/workloadCaptures\x1a|\xcaA\x17sqladmin.googleapis.com\xd2A_https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/sqlservice.adminBo\n" +
 	"\x1ccom.google.cloud.sql.v1beta4B\x1dCloudSqlWorkloadCapturesProtoP\x01Z.cloud.google.com/go/sql/apiv1beta4/sqlpb;sqlpbb\x06proto3"
 
@@ -666,48 +734,50 @@ func file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDescGZIP
 	return file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDescData
 }
 
-var file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_goTypes = []any{
-	(WorkloadCapture_State)(0),                    // 0: google.cloud.sql.v1beta4.WorkloadCapture.State
-	(*SqlWorkloadCapturesStartRequest)(nil),       // 1: google.cloud.sql.v1beta4.SqlWorkloadCapturesStartRequest
-	(*SqlWorkloadCapturesStopRequest)(nil),        // 2: google.cloud.sql.v1beta4.SqlWorkloadCapturesStopRequest
-	(*SqlWorkloadCapturesStartReplayRequest)(nil), // 3: google.cloud.sql.v1beta4.SqlWorkloadCapturesStartReplayRequest
-	(*SqlWorkloadCapturesStopReplayRequest)(nil),  // 4: google.cloud.sql.v1beta4.SqlWorkloadCapturesStopReplayRequest
-	(*SqlWorkloadCapturesListRequest)(nil),        // 5: google.cloud.sql.v1beta4.SqlWorkloadCapturesListRequest
-	(*WorkloadCapturesListResponse)(nil),          // 6: google.cloud.sql.v1beta4.WorkloadCapturesListResponse
-	(*WorkloadCapture)(nil),                       // 7: google.cloud.sql.v1beta4.WorkloadCapture
-	(*StartWorkloadCaptureContext)(nil),           // 8: google.cloud.sql.v1beta4.StartWorkloadCaptureContext
-	(*StopWorkloadCaptureContext)(nil),            // 9: google.cloud.sql.v1beta4.StopWorkloadCaptureContext
-	(*StartWorkloadReplayContext)(nil),            // 10: google.cloud.sql.v1beta4.StartWorkloadReplayContext
-	(*StopWorkloadReplayContext)(nil),             // 11: google.cloud.sql.v1beta4.StopWorkloadReplayContext
-	(*timestamppb.Timestamp)(nil),                 // 12: google.protobuf.Timestamp
-	(*Operation)(nil),                             // 13: google.cloud.sql.v1beta4.Operation
+	(WorkloadCapture_State)(0),                 // 0: google.cloud.sql.v1beta4.WorkloadCapture.State
+	(WorkloadCapture_WorkloadCaptureMode)(0),   // 1: google.cloud.sql.v1beta4.WorkloadCapture.WorkloadCaptureMode
+	(*WorkloadCapturesStartRequest)(nil),       // 2: google.cloud.sql.v1beta4.WorkloadCapturesStartRequest
+	(*WorkloadCapturesStopRequest)(nil),        // 3: google.cloud.sql.v1beta4.WorkloadCapturesStopRequest
+	(*WorkloadCapturesStartReplayRequest)(nil), // 4: google.cloud.sql.v1beta4.WorkloadCapturesStartReplayRequest
+	(*WorkloadCapturesStopReplayRequest)(nil),  // 5: google.cloud.sql.v1beta4.WorkloadCapturesStopReplayRequest
+	(*SqlWorkloadCapturesListRequest)(nil),     // 6: google.cloud.sql.v1beta4.SqlWorkloadCapturesListRequest
+	(*WorkloadCapturesListResponse)(nil),       // 7: google.cloud.sql.v1beta4.WorkloadCapturesListResponse
+	(*WorkloadCapture)(nil),                    // 8: google.cloud.sql.v1beta4.WorkloadCapture
+	(*StartWorkloadCaptureContext)(nil),        // 9: google.cloud.sql.v1beta4.StartWorkloadCaptureContext
+	(*StopWorkloadCaptureContext)(nil),         // 10: google.cloud.sql.v1beta4.StopWorkloadCaptureContext
+	(*StartWorkloadReplayContext)(nil),         // 11: google.cloud.sql.v1beta4.StartWorkloadReplayContext
+	(*StopWorkloadReplayContext)(nil),          // 12: google.cloud.sql.v1beta4.StopWorkloadReplayContext
+	(*timestamppb.Timestamp)(nil),              // 13: google.protobuf.Timestamp
+	(*Operation)(nil),                          // 14: google.cloud.sql.v1beta4.Operation
 }
 var file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_depIdxs = []int32{
-	8,  // 0: google.cloud.sql.v1beta4.SqlWorkloadCapturesStartRequest.start_workload_capture_context:type_name -> google.cloud.sql.v1beta4.StartWorkloadCaptureContext
-	9,  // 1: google.cloud.sql.v1beta4.SqlWorkloadCapturesStopRequest.stop_workload_capture_context:type_name -> google.cloud.sql.v1beta4.StopWorkloadCaptureContext
-	10, // 2: google.cloud.sql.v1beta4.SqlWorkloadCapturesStartReplayRequest.start_workload_replay_context:type_name -> google.cloud.sql.v1beta4.StartWorkloadReplayContext
-	11, // 3: google.cloud.sql.v1beta4.SqlWorkloadCapturesStopReplayRequest.stop_workload_replay_context:type_name -> google.cloud.sql.v1beta4.StopWorkloadReplayContext
-	7,  // 4: google.cloud.sql.v1beta4.WorkloadCapturesListResponse.workload_captures:type_name -> google.cloud.sql.v1beta4.WorkloadCapture
+	9,  // 0: google.cloud.sql.v1beta4.WorkloadCapturesStartRequest.start_workload_capture_context:type_name -> google.cloud.sql.v1beta4.StartWorkloadCaptureContext
+	10, // 1: google.cloud.sql.v1beta4.WorkloadCapturesStopRequest.stop_workload_capture_context:type_name -> google.cloud.sql.v1beta4.StopWorkloadCaptureContext
+	11, // 2: google.cloud.sql.v1beta4.WorkloadCapturesStartReplayRequest.start_workload_replay_context:type_name -> google.cloud.sql.v1beta4.StartWorkloadReplayContext
+	12, // 3: google.cloud.sql.v1beta4.WorkloadCapturesStopReplayRequest.stop_workload_replay_context:type_name -> google.cloud.sql.v1beta4.StopWorkloadReplayContext
+	8,  // 4: google.cloud.sql.v1beta4.WorkloadCapturesListResponse.workload_captures:type_name -> google.cloud.sql.v1beta4.WorkloadCapture
 	0,  // 5: google.cloud.sql.v1beta4.WorkloadCapture.workload_capture_state:type_name -> google.cloud.sql.v1beta4.WorkloadCapture.State
-	12, // 6: google.cloud.sql.v1beta4.WorkloadCapture.start_time:type_name -> google.protobuf.Timestamp
-	12, // 7: google.cloud.sql.v1beta4.WorkloadCapture.end_time:type_name -> google.protobuf.Timestamp
-	1,  // 8: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.Start:input_type -> google.cloud.sql.v1beta4.SqlWorkloadCapturesStartRequest
-	2,  // 9: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.Stop:input_type -> google.cloud.sql.v1beta4.SqlWorkloadCapturesStopRequest
-	3,  // 10: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.StartReplay:input_type -> google.cloud.sql.v1beta4.SqlWorkloadCapturesStartReplayRequest
-	4,  // 11: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.StopReplay:input_type -> google.cloud.sql.v1beta4.SqlWorkloadCapturesStopReplayRequest
-	5,  // 12: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.List:input_type -> google.cloud.sql.v1beta4.SqlWorkloadCapturesListRequest
-	13, // 13: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.Start:output_type -> google.cloud.sql.v1beta4.Operation
-	13, // 14: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.Stop:output_type -> google.cloud.sql.v1beta4.Operation
-	13, // 15: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.StartReplay:output_type -> google.cloud.sql.v1beta4.Operation
-	13, // 16: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.StopReplay:output_type -> google.cloud.sql.v1beta4.Operation
-	6,  // 17: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.List:output_type -> google.cloud.sql.v1beta4.WorkloadCapturesListResponse
-	13, // [13:18] is the sub-list for method output_type
-	8,  // [8:13] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	13, // 6: google.cloud.sql.v1beta4.WorkloadCapture.start_time:type_name -> google.protobuf.Timestamp
+	13, // 7: google.cloud.sql.v1beta4.WorkloadCapture.end_time:type_name -> google.protobuf.Timestamp
+	1,  // 8: google.cloud.sql.v1beta4.WorkloadCapture.capture_mode:type_name -> google.cloud.sql.v1beta4.WorkloadCapture.WorkloadCaptureMode
+	2,  // 9: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.Start:input_type -> google.cloud.sql.v1beta4.WorkloadCapturesStartRequest
+	3,  // 10: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.Stop:input_type -> google.cloud.sql.v1beta4.WorkloadCapturesStopRequest
+	4,  // 11: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.StartReplay:input_type -> google.cloud.sql.v1beta4.WorkloadCapturesStartReplayRequest
+	5,  // 12: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.StopReplay:input_type -> google.cloud.sql.v1beta4.WorkloadCapturesStopReplayRequest
+	6,  // 13: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.List:input_type -> google.cloud.sql.v1beta4.SqlWorkloadCapturesListRequest
+	14, // 14: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.Start:output_type -> google.cloud.sql.v1beta4.Operation
+	14, // 15: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.Stop:output_type -> google.cloud.sql.v1beta4.Operation
+	14, // 16: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.StartReplay:output_type -> google.cloud.sql.v1beta4.Operation
+	14, // 17: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.StopReplay:output_type -> google.cloud.sql.v1beta4.Operation
+	7,  // 18: google.cloud.sql.v1beta4.SqlWorkloadCapturesService.List:output_type -> google.cloud.sql.v1beta4.WorkloadCapturesListResponse
+	14, // [14:19] is the sub-list for method output_type
+	9,  // [9:14] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_init() }
@@ -722,7 +792,7 @@ func file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDesc), len(file_google_cloud_sql_v1beta4_cloud_sql_workload_captures_proto_rawDesc)),
-			NumEnums:      1,
+			NumEnums:      2,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,

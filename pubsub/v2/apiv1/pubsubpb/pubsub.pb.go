@@ -509,6 +509,8 @@ const (
 	Compression_COMPRESSION_ALGORITHM_UNSPECIFIED Compression_CompressionAlgorithm = 0
 	// ZLIB compression.
 	Compression_ZLIB Compression_CompressionAlgorithm = 1
+	// Zstd compression.
+	Compression_ZSTD Compression_CompressionAlgorithm = 3
 )
 
 // Enum value maps for Compression_CompressionAlgorithm.
@@ -516,10 +518,12 @@ var (
 	Compression_CompressionAlgorithm_name = map[int32]string{
 		0: "COMPRESSION_ALGORITHM_UNSPECIFIED",
 		1: "ZLIB",
+		3: "ZSTD",
 	}
 	Compression_CompressionAlgorithm_value = map[string]int32{
 		"COMPRESSION_ALGORITHM_UNSPECIFIED": 0,
 		"ZLIB":                              1,
+		"ZSTD":                              3,
 	}
 )
 
@@ -8139,13 +8143,14 @@ const file_google_pubsub_v1_pubsub_proto_rawDesc = "" +
 	"\afailure\"T\n" +
 	"\rJavaScriptUDF\x12)\n" +
 	"\rfunction_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ffunctionName\x12\x18\n" +
-	"\x04code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04code\"\xf8\x02\n" +
+	"\x04code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04code\"\x82\x03\n" +
 	"\vCompression\x12m\n" +
 	"\x15compression_algorithm\x18\x01 \x01(\x0e22.google.pubsub.v1.Compression.CompressionAlgorithmB\x04\xe2A\x01\x02R\x14compressionAlgorithm\x12^\n" +
-	"\x10compression_mode\x18\x02 \x01(\x0e2-.google.pubsub.v1.Compression.CompressionModeB\x04\xe2A\x01\x02R\x0fcompressionMode\"G\n" +
+	"\x10compression_mode\x18\x02 \x01(\x0e2-.google.pubsub.v1.Compression.CompressionModeB\x04\xe2A\x01\x02R\x0fcompressionMode\"Q\n" +
 	"\x14CompressionAlgorithm\x12%\n" +
 	"!COMPRESSION_ALGORITHM_UNSPECIFIED\x10\x00\x12\b\n" +
-	"\x04ZLIB\x10\x01\"Q\n" +
+	"\x04ZLIB\x10\x01\x12\b\n" +
+	"\x04ZSTD\x10\x03\"Q\n" +
 	"\x0fCompressionMode\x12 \n" +
 	"\x1cCOMPRESSION_MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCOMPRESS\x10\x01\x12\x0e\n" +

@@ -43,11 +43,12 @@ var newSslCertificatesClientHook clientHook
 
 // SslCertificatesCallOptions contains the retry settings for each method of SslCertificatesClient.
 type SslCertificatesCallOptions struct {
-	AggregatedList []gax.CallOption
-	Delete         []gax.CallOption
-	Get            []gax.CallOption
-	Insert         []gax.CallOption
-	List           []gax.CallOption
+	AggregatedList     []gax.CallOption
+	Delete             []gax.CallOption
+	FetchEncryptionKey []gax.CallOption
+	Get                []gax.CallOption
+	Insert             []gax.CallOption
+	List               []gax.CallOption
 }
 
 func defaultSslCertificatesRESTCallOptions() *SslCertificatesCallOptions {
@@ -66,6 +67,18 @@ func defaultSslCertificatesRESTCallOptions() *SslCertificatesCallOptions {
 		},
 		Delete: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		FetchEncryptionKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
 		},
 		Get: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -104,6 +117,7 @@ type internalSslCertificatesClient interface {
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListSslCertificatesRequest, ...gax.CallOption) *SslCertificatesScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteSslCertificateRequest, ...gax.CallOption) (*Operation, error)
+	FetchEncryptionKey(context.Context, *computepb.FetchEncryptionKeySslCertificateRequest, ...gax.CallOption) (*computepb.SslCertificatesFetchEncryptionKeyResponse, error)
 	Get(context.Context, *computepb.GetSslCertificateRequest, ...gax.CallOption) (*computepb.SslCertificate, error)
 	Insert(context.Context, *computepb.InsertSslCertificateRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListSslCertificatesRequest, ...gax.CallOption) *SslCertificateIterator
@@ -158,6 +172,12 @@ func (c *SslCertificatesClient) AggregatedList(ctx context.Context, req *compute
 // Delete deletes the specified SslCertificate resource.
 func (c *SslCertificatesClient) Delete(ctx context.Context, req *computepb.DeleteSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
+}
+
+// FetchEncryptionKey returns the public encryption key used to encrypt the TLS private key
+// before upload.
+func (c *SslCertificatesClient) FetchEncryptionKey(ctx context.Context, req *computepb.FetchEncryptionKeySslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificatesFetchEncryptionKeyResponse, error) {
+	return c.internalClient.FetchEncryptionKey(ctx, req, opts...)
 }
 
 // Get returns the specified SslCertificate resource.
@@ -240,6 +260,7 @@ func NewSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.FetchEncryptionKey = append(callOpts.FetchEncryptionKey, gax.WithClientMetrics(metrics))
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
@@ -257,6 +278,7 @@ func NewSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.FetchEncryptionKey = append(callOpts.FetchEncryptionKey, gax.WithClientTracing(tracing))
 		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
 		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
@@ -275,6 +297,7 @@ func NewSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.FetchEncryptionKey = append(callOpts.FetchEncryptionKey, gax.WithClientLogging(logging))
 		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
 		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
@@ -356,6 +379,11 @@ func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *com
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/sslCertificates", req.GetProject())
@@ -441,6 +469,12 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSslCertificate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
 
 	params := url.Values{}
@@ -498,10 +532,71 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	return op, nil
 }
 
+// FetchEncryptionKey returns the public encryption key used to encrypt the TLS private key
+// before upload.
+func (c *sslCertificatesRESTClient) FetchEncryptionKey(ctx context.Context, req *computepb.FetchEncryptionKeySslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificatesFetchEncryptionKeyResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/encryptionKey", req.GetProject())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.SslCertificates/FetchEncryptionKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/sslCertificates/encryptionKey")
+	}
+	opts = append((*c.CallOptions).FetchEncryptionKey[0:len((*c.CallOptions).FetchEncryptionKey):len((*c.CallOptions).FetchEncryptionKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.SslCertificatesFetchEncryptionKeyResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchEncryptionKey")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // Get returns the specified SslCertificate resource.
 func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSslCertificate(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
@@ -559,6 +654,11 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates", req.GetProject())
@@ -636,6 +736,11 @@ func (c *sslCertificatesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates", req.GetProject())

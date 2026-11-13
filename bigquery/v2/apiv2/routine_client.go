@@ -715,6 +715,13 @@ func (c *routineRESTClient) GetRoutine(ctx context.Context, req *bigquerypb.GetR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetRoutineId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/routines/%v", req.GetProjectId(), req.GetDatasetId(), req.GetRoutineId())
 
 	// Build HTTP headers from client and context metadata.
@@ -771,6 +778,12 @@ func (c *routineRESTClient) InsertRoutine(ctx context.Context, req *bigquerypb.I
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/routines", req.GetProjectId(), req.GetDatasetId())
@@ -832,6 +845,13 @@ func (c *routineRESTClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetRoutineId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/routines/%v", req.GetProjectId(), req.GetDatasetId(), req.GetRoutineId())
 
 	// Build HTTP headers from client and context metadata.
@@ -883,6 +903,13 @@ func (c *routineRESTClient) DeleteRoutine(ctx context.Context, req *bigquerypb.D
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetRoutineId(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/routines/%v", req.GetProjectId(), req.GetDatasetId(), req.GetRoutineId())
 
 	// Build HTTP headers from client and context metadata.
@@ -931,6 +958,12 @@ func (c *routineRESTClient) ListRoutines(ctx context.Context, req *bigquerypb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetDatasetId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/routines", req.GetProjectId(), req.GetDatasetId())

@@ -1166,6 +1166,11 @@ func (c *restClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLocation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:searchDomains", req.GetLocation())
 
 	params := url.Values{}
@@ -1220,6 +1225,11 @@ func (c *restClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 func (c *restClient) RetrieveRegisterParameters(ctx context.Context, req *domainspb.RetrieveRegisterParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveRegisterParametersResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLocation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:retrieveRegisterParameters", req.GetLocation())
@@ -1295,6 +1305,11 @@ func (c *restClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:register", req.GetParent())
 
 	params := url.Values{}
@@ -1358,6 +1373,11 @@ func (c *restClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 func (c *restClient) RetrieveTransferParameters(ctx context.Context, req *domainspb.RetrieveTransferParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveTransferParametersResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLocation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:retrieveTransferParameters", req.GetLocation())
@@ -1440,6 +1460,11 @@ func (c *restClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:transfer", req.GetParent())
 
 	params := url.Values{}
@@ -1514,6 +1539,11 @@ func (c *restClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations", req.GetParent())
 
 		params := url.Values{}
@@ -1582,6 +1612,11 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1648,6 +1683,11 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRegistration().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRegistration().GetName())
@@ -1724,6 +1764,11 @@ func (c *restClient) ConfigureManagementSettings(ctx context.Context, req *domai
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRegistration(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:configureManagementSettings", req.GetRegistration())
 
 	params := url.Values{}
@@ -1789,6 +1834,11 @@ func (c *restClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRegistration(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:configureDnsSettings", req.GetRegistration())
@@ -1857,6 +1907,11 @@ func (c *restClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRegistration(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:configureContactSettings", req.GetRegistration())
@@ -1932,6 +1987,11 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:export", req.GetName())
@@ -2015,6 +2075,11 @@ func (c *restClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2080,6 +2145,11 @@ func (c *restClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRegistration(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:retrieveAuthorizationCode", req.GetRegistration())
 
 	params := url.Values{}
@@ -2141,6 +2211,11 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRegistration(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:resetAuthorizationCode", req.GetRegistration())

@@ -681,6 +681,11 @@ func (c *userRESTClient) GetUser(ctx context.Context, req *accountspb.GetUserReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -743,6 +748,11 @@ func (c *userRESTClient) CreateUser(ctx context.Context, req *accountspb.CreateU
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/users", req.GetParent())
 
 	params := url.Values{}
@@ -799,6 +809,11 @@ func (c *userRESTClient) DeleteUser(ctx context.Context, req *accountspb.DeleteU
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -844,6 +859,11 @@ func (c *userRESTClient) UpdateUser(ctx context.Context, req *accountspb.UpdateU
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUser().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetUser().GetName())
@@ -918,6 +938,11 @@ func (c *userRESTClient) ListUsers(ctx context.Context, req *accountspb.ListUser
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/users", req.GetParent())

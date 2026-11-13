@@ -271,6 +271,12 @@ func (c *regionDiskSettingsRESTClient) Get(ctx context.Context, req *computepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/diskSettings", req.GetProject(), req.GetRegion())
 
 	// Build HTTP headers from client and context metadata.
@@ -325,6 +331,12 @@ func (c *regionDiskSettingsRESTClient) Patch(ctx context.Context, req *computepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/diskSettings", req.GetProject(), req.GetRegion())

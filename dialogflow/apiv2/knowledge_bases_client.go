@@ -949,6 +949,11 @@ func (c *knowledgeBasesRESTClient) ListKnowledgeBases(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/knowledgeBases", req.GetParent())
 
 		params := url.Values{}
@@ -1017,6 +1022,11 @@ func (c *knowledgeBasesRESTClient) GetKnowledgeBase(ctx context.Context, req *di
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1078,6 +1088,11 @@ func (c *knowledgeBasesRESTClient) CreateKnowledgeBase(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/knowledgeBases", req.GetParent())
 
 	params := url.Values{}
@@ -1132,6 +1147,11 @@ func (c *knowledgeBasesRESTClient) DeleteKnowledgeBase(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1179,6 +1199,11 @@ func (c *knowledgeBasesRESTClient) UpdateKnowledgeBase(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetKnowledgeBase().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetKnowledgeBase().GetName())
@@ -1240,6 +1265,11 @@ func (c *knowledgeBasesRESTClient) UpdateKnowledgeBase(ctx context.Context, req 
 func (c *knowledgeBasesRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1324,6 +1354,11 @@ func (c *knowledgeBasesRESTClient) ListLocations(ctx context.Context, req *locat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1392,6 +1427,11 @@ func (c *knowledgeBasesRESTClient) CancelOperation(ctx context.Context, req *lon
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1429,6 +1469,11 @@ func (c *knowledgeBasesRESTClient) CancelOperation(ctx context.Context, req *lon
 func (c *knowledgeBasesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1496,6 +1541,11 @@ func (c *knowledgeBasesRESTClient) ListOperations(ctx context.Context, req *long
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())

@@ -441,6 +441,11 @@ func (c *lfpInventoryRESTClient) InsertLfpInventory(ctx context.Context, req *lf
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/lfp/v1/%v/lfpInventories:insert", req.GetParent())
 
 	params := url.Values{}

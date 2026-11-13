@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/commerceproducer/v0.7.0...commerceproducer/v0.7.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/commerceproducer/v0.6.0...commerceproducer/v0.7.0) (2026-10-22)
 
 

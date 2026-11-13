@@ -588,6 +588,11 @@ func (c *predictionApiKeyRegistryRESTClient) CreatePredictionApiKeyRegistration(
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/predictionApiKeyRegistrations", req.GetParent())
 
 	params := url.Values{}
@@ -655,6 +660,11 @@ func (c *predictionApiKeyRegistryRESTClient) ListPredictionApiKeyRegistrations(c
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/predictionApiKeyRegistrations", req.GetParent())
 
 		params := url.Values{}
@@ -718,6 +728,11 @@ func (c *predictionApiKeyRegistryRESTClient) ListPredictionApiKeyRegistrations(c
 func (c *predictionApiKeyRegistryRESTClient) DeletePredictionApiKeyRegistration(ctx context.Context, req *recommendationenginepb.DeletePredictionApiKeyRegistrationRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())

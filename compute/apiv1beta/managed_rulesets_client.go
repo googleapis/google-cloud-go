@@ -266,6 +266,12 @@ func (c *managedRulesetsRESTClient) Get(ctx context.Context, req *computepb.GetM
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetManagedRuleset(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/managedRulesets/%v", req.GetProject(), req.GetManagedRuleset())
 
 	// Build HTTP headers from client and context metadata.
@@ -326,6 +332,11 @@ func (c *managedRulesetsRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/managedRulesets", req.GetProject())

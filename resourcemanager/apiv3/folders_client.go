@@ -1166,6 +1166,11 @@ func (c *foldersRESTClient) GetFolder(ctx context.Context, req *resourcemanagerp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -1510,6 +1515,11 @@ func (c *foldersRESTClient) UpdateFolder(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFolder().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetFolder().GetName())
 
 	params := url.Values{}
@@ -1600,6 +1610,11 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:move", req.GetName())
 
 	params := url.Values{}
@@ -1669,6 +1684,11 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 func (c *foldersRESTClient) DeleteFolder(ctx context.Context, req *resourcemanagerpb.DeleteFolderRequest, opts ...gax.CallOption) (*DeleteFolderOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -1748,6 +1768,11 @@ func (c *foldersRESTClient) UndeleteFolder(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:undelete", req.GetName())
 
 	params := url.Values{}
@@ -1819,6 +1844,11 @@ func (c *foldersRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1881,6 +1911,11 @@ func (c *foldersRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:setIamPolicy", req.GetResource())
@@ -1947,6 +1982,11 @@ func (c *foldersRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1999,6 +2039,11 @@ func (c *foldersRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 func (c *foldersRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())

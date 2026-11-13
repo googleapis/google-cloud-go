@@ -1054,6 +1054,11 @@ func (c *dataObjectRESTClient) CreateDataObject(ctx context.Context, req *vector
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataObjects", req.GetParent())
 
 	params := url.Values{}
@@ -1115,6 +1120,11 @@ func (c *dataObjectRESTClient) BatchCreateDataObjects(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataObjects:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1167,6 +1177,11 @@ func (c *dataObjectRESTClient) BatchCreateDataObjects(ctx context.Context, req *
 func (c *dataObjectRESTClient) GetDataObject(ctx context.Context, req *vectorsearchpb.GetDataObjectRequest, opts ...gax.CallOption) (*vectorsearchpb.DataObject, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1228,6 +1243,11 @@ func (c *dataObjectRESTClient) UpdateDataObject(ctx context.Context, req *vector
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataObject().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataObject().GetName())
@@ -1297,6 +1317,11 @@ func (c *dataObjectRESTClient) BatchUpdateDataObjects(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataObjects:batchUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -1351,6 +1376,11 @@ func (c *dataObjectRESTClient) DeleteDataObject(ctx context.Context, req *vector
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1399,6 +1429,11 @@ func (c *dataObjectRESTClient) BatchDeleteDataObjects(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataObjects:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -1436,6 +1471,11 @@ func (c *dataObjectRESTClient) BatchDeleteDataObjects(ctx context.Context, req *
 func (c *dataObjectRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1520,6 +1560,11 @@ func (c *dataObjectRESTClient) ListLocations(ctx context.Context, req *locationp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1594,6 +1639,11 @@ func (c *dataObjectRESTClient) CancelOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1633,6 +1683,11 @@ func (c *dataObjectRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1670,6 +1725,11 @@ func (c *dataObjectRESTClient) DeleteOperation(ctx context.Context, req *longrun
 func (c *dataObjectRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1737,6 +1797,11 @@ func (c *dataObjectRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

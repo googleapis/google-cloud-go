@@ -1034,6 +1034,11 @@ func (c *restClient) CreateMapConfig(ctx context.Context, req *mapmanagementpb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/mapConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -1086,6 +1091,11 @@ func (c *restClient) CreateMapConfig(ctx context.Context, req *mapmanagementpb.C
 func (c *restClient) GetMapConfig(ctx context.Context, req *mapmanagementpb.GetMapConfigRequest, opts ...gax.CallOption) (*mapmanagementpb.MapConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -1153,6 +1163,11 @@ func (c *restClient) ListMapConfigs(ctx context.Context, req *mapmanagementpb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/mapConfigs", req.GetParent())
@@ -1227,6 +1242,11 @@ func (c *restClient) UpdateMapConfig(ctx context.Context, req *mapmanagementpb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMapConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetMapConfig().GetName())
 
 	params := url.Values{}
@@ -1288,6 +1308,11 @@ func (c *restClient) DeleteMapConfig(ctx context.Context, req *mapmanagementpb.D
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1335,6 +1360,11 @@ func (c *restClient) CreateStyleConfig(ctx context.Context, req *mapmanagementpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/styleConfigs", req.GetParent())
@@ -1389,6 +1419,11 @@ func (c *restClient) CreateStyleConfig(ctx context.Context, req *mapmanagementpb
 func (c *restClient) GetStyleConfig(ctx context.Context, req *mapmanagementpb.GetStyleConfigRequest, opts ...gax.CallOption) (*mapmanagementpb.StyleConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -1456,6 +1491,11 @@ func (c *restClient) ListStyleConfigs(ctx context.Context, req *mapmanagementpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/styleConfigs", req.GetParent())
@@ -1536,6 +1576,11 @@ func (c *restClient) UpdateStyleConfig(ctx context.Context, req *mapmanagementpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetStyleConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetStyleConfig().GetName())
 
 	params := url.Values{}
@@ -1597,6 +1642,11 @@ func (c *restClient) DeleteStyleConfig(ctx context.Context, req *mapmanagementpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1641,6 +1691,11 @@ func (c *restClient) CreateMapContextConfig(ctx context.Context, req *mapmanagem
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/mapContextConfigs", req.GetParent())
@@ -1695,6 +1750,11 @@ func (c *restClient) CreateMapContextConfig(ctx context.Context, req *mapmanagem
 func (c *restClient) GetMapContextConfig(ctx context.Context, req *mapmanagementpb.GetMapContextConfigRequest, opts ...gax.CallOption) (*mapmanagementpb.MapContextConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -1762,6 +1822,11 @@ func (c *restClient) ListMapContextConfigs(ctx context.Context, req *mapmanageme
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/mapContextConfigs", req.GetParent())
@@ -1836,6 +1901,11 @@ func (c *restClient) UpdateMapContextConfig(ctx context.Context, req *mapmanagem
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMapContextConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetMapContextConfig().GetName())
 
 	params := url.Values{}
@@ -1895,6 +1965,11 @@ func (c *restClient) UpdateMapContextConfig(ctx context.Context, req *mapmanagem
 func (c *restClient) DeleteMapContextConfig(ctx context.Context, req *mapmanagementpb.DeleteMapContextConfigRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())

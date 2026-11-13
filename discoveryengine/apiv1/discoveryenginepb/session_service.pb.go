@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,14 +41,14 @@ var File_google_cloud_discoveryengine_v1_session_service_proto protoreflect.File
 
 const file_google_cloud_discoveryengine_v1_session_service_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/discoveryengine/v1/session_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aCgoogle/cloud/discoveryengine/v1/conversational_search_service.proto\x1a-google/cloud/discoveryengine/v1/session.proto\x1a\x1bgoogle/protobuf/empty.proto2\xda\x0e\n" +
+	"5google/cloud/discoveryengine/v1/session_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aCgoogle/cloud/discoveryengine/v1/conversational_search_service.proto\x1a-google/cloud/discoveryengine/v1/session.proto\x1a\x1bgoogle/protobuf/empty.proto2\x99\x10\n" +
 	"\x0eSessionService\x12\xf4\x02\n" +
 	"\rCreateSession\x125.google.cloud.discoveryengine.v1.CreateSessionRequest\x1a(.google.cloud.discoveryengine.v1.Session\"\x81\x02\xdaA\x0eparent,session\x82\xd3\xe4\x93\x02\xe9\x01:\asessionZR:\asession\"G/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/sessionsZO:\asession\"D/v1/{parent=projects/*/locations/*/collections/*/engines/*}/sessions\"9/v1/{parent=projects/*/locations/*/dataStores/*}/sessions\x12\xbd\x02\n" +
 	"\rDeleteSession\x125.google.cloud.discoveryengine.v1.DeleteSessionRequest\x1a\x16.google.protobuf.Empty\"\xdc\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xce\x01ZI*G/v1/{name=projects/*/locations/*/collections/*/dataStores/*/sessions/*}ZF*D/v1/{name=projects/*/locations/*/collections/*/engines/*/sessions/*}*9/v1/{name=projects/*/locations/*/dataStores/*/sessions/*}\x12\x91\x03\n" +
 	"\rUpdateSession\x125.google.cloud.discoveryengine.v1.UpdateSessionRequest\x1a(.google.cloud.discoveryengine.v1.Session\"\x9e\x02\xdaA\x13session,update_mask\x82\xd3\xe4\x93\x02\x81\x02:\asessionZZ:\asession2O/v1/{session.name=projects/*/locations/*/collections/*/dataStores/*/sessions/*}ZW:\asession2L/v1/{session.name=projects/*/locations/*/collections/*/engines/*/sessions/*}2A/v1/{session.name=projects/*/locations/*/dataStores/*/sessions/*}\x12\xc9\x02\n" +
 	"\n" +
 	"GetSession\x122.google.cloud.discoveryengine.v1.GetSessionRequest\x1a(.google.cloud.discoveryengine.v1.Session\"\xdc\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xce\x01ZI\x12G/v1/{name=projects/*/locations/*/collections/*/dataStores/*/sessions/*}ZF\x12D/v1/{name=projects/*/locations/*/collections/*/engines/*/sessions/*}\x129/v1/{name=projects/*/locations/*/dataStores/*/sessions/*}\x12\xdc\x02\n" +
-	"\fListSessions\x124.google.cloud.discoveryengine.v1.ListSessionsRequest\x1a5.google.cloud.discoveryengine.v1.ListSessionsResponse\"\xde\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xce\x01ZI\x12G/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/sessionsZF\x12D/v1/{parent=projects/*/locations/*/collections/*/engines/*}/sessions\x129/v1/{parent=projects/*/locations/*/dataStores/*}/sessions\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x86\x02\n" +
+	"\fListSessions\x124.google.cloud.discoveryengine.v1.ListSessionsRequest\x1a5.google.cloud.discoveryengine.v1.ListSessionsResponse\"\xde\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xce\x01ZI\x12G/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/sessionsZF\x12D/v1/{parent=projects/*/locations/*/collections/*/engines/*}/sessions\x129/v1/{parent=projects/*/locations/*/dataStores/*}/sessions\x1a\x90\x02\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xeb\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.assist.readwrite,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x86\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x13SessionServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var file_google_cloud_discoveryengine_v1_session_service_proto_goTypes = []any{

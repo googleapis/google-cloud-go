@@ -1,5 +1,19 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/longrunning/v1.4.1...longrunning/v1.5.0) (2026-11-03)
+
+
+### Features
+
+* **longrunning:** Add a helper for IBV ([#20807](https://github.com/googleapis/google-cloud-go/issues/20807)) ([f20abf1](https://github.com/googleapis/google-cloud-go/commit/f20abf1e43e3d5a0276f967412b1bf691eee6c29))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/longrunning/v1.4.0...longrunning/v1.4.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/longrunning/v1.3.0...longrunning/v1.4.0) (2026-10-22)
 
 

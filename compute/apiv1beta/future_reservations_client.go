@@ -378,6 +378,11 @@ func (c *futureReservationsRESTClient) AggregatedList(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/futureReservations", req.GetProject())
 
 		params := url.Values{}
@@ -464,6 +469,13 @@ func (c *futureReservationsRESTClient) Cancel(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetFutureReservation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/futureReservations/%v/cancel", req.GetProject(), req.GetZone(), req.GetFutureReservation())
 
 	params := url.Values{}
@@ -526,6 +538,13 @@ func (c *futureReservationsRESTClient) Cancel(ctx context.Context, req *computep
 func (c *futureReservationsRESTClient) Delete(ctx context.Context, req *computepb.DeleteFutureReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetFutureReservation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/futureReservations/%v", req.GetProject(), req.GetZone(), req.GetFutureReservation())
@@ -592,6 +611,13 @@ func (c *futureReservationsRESTClient) Get(ctx context.Context, req *computepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetFutureReservation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/futureReservations/%v", req.GetProject(), req.GetZone(), req.GetFutureReservation())
 
 	// Build HTTP headers from client and context metadata.
@@ -646,6 +672,12 @@ func (c *futureReservationsRESTClient) Insert(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/futureReservations", req.GetProject(), req.GetZone())
@@ -726,6 +758,12 @@ func (c *futureReservationsRESTClient) List(ctx context.Context, req *computepb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/futureReservations", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
@@ -804,6 +842,13 @@ func (c *futureReservationsRESTClient) Update(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetFutureReservation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/futureReservations/%v", req.GetProject(), req.GetZone(), req.GetFutureReservation())

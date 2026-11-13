@@ -884,6 +884,9 @@ func TestNewRangeReaderRemainEmulated(t *testing.T) {
 						if err != nil {
 							t.Fatalf("NewRangeReader: %v", err)
 						}
+						if r.Attrs.Unfinalized {
+							t.Errorf("Attrs.Unfinalized = true, want false")
+						}
 						if got := r.Remain(); got != tc.wantLen {
 							t.Errorf("Remain() before read = %d, want %d", got, tc.wantLen)
 						}
@@ -1884,6 +1887,12 @@ func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 	if err != nil {
 		t.Errorf("NewRangeReader: %v", err)
 	}
+	if !r.Attrs.Unfinalized {
+		t.Errorf("Attrs.Unfinalized = false, want true")
+	}
+	if got := r.Remain(); got != -1 {
+		t.Errorf("Remain() = %d, want -1", got)
+	}
 
 	// Copy exactly the same amount of bytes as object size. This would
 	// trigger a seen == size check for the next copy.
@@ -2482,6 +2491,9 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("error opening multirangedownloader: %v", err)
 		}
+		if reader.Attrs.Unfinalized {
+			t.Errorf("Attrs.Unfinalized = true, want false")
+		}
 		callback1 := func(x, y int64, err error) {
 			res[0].offset = x
 			res[0].limit = y
@@ -2696,6 +2708,85 @@ func TestMRDAddSanityCheckEmulated(t *testing.T) {
 		}
 		if err = reader.Close(); status.Code(err) != codes.OutOfRange {
 			t.Errorf("Unexpected err while closing reader %v", err)
+		}
+	})
+}
+
+// TestMRDAddDuringAndAfterFailureEmulated checks that Adds issued during and
+// after a permanent failure all receive a callback and do not race with
+// shutdown. Run with -race.
+func TestMRDAddDuringAndAfterFailureEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		setBidiReads(t, client)
+		content := make([]byte, 5000)
+		rand.New(rand.NewSource(0)).Read(content)
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		objectName := fmt.Sprintf("%d-object", time.Now().UnixNano())
+		w := veneerClient.Bucket(bucket).Object(objectName).NewWriter(context.Background())
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		params := &newMultiRangeDownloaderParams{
+			bucket: bucket,
+			object: objectName,
+			gen:    defaultGen,
+		}
+		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+
+		var added, called atomic.Int64
+		var sawOutOfRange atomic.Bool
+		add := func(offset int64) {
+			added.Add(1)
+			reader.Add(io.Discard, offset, 100, func(_, _ int64, cbErr error) {
+				if status.Code(cbErr) == codes.OutOfRange {
+					sawOutOfRange.Store(true)
+				}
+				called.Add(1)
+			})
+		}
+
+		// Offset > object size: OutOfRange fails the only stream (default
+		// minConnections=1), which fails the manager and cancels its context.
+		add(10000)
+		// Phase 1: keep adding until the manager has failed, so Adds race shutdown.
+		// Pace the loop so it does not queue tens of thousands of ranges before
+		// the emulator reports the out-of-range read.
+		deadline := time.Now().Add(10 * time.Second)
+		for reader.Error() == nil && time.Now().Before(deadline) {
+			add(10)
+			time.Sleep(time.Millisecond)
+		}
+		if reader.Error() == nil {
+			t.Fatal("downloader did not enter permanent error state within 10s")
+		}
+		// Phase 2: Adds after failure take the fast-fail path and run their
+		// callbacks from this goroutine while cleanup() may still be waiting.
+		for i := 0; i < 1000; i++ {
+			add(10)
+		}
+
+		// Wait covers the callbacks of every Add above.
+		reader.Wait()
+		if got, want := called.Load(), added.Load(); got != want {
+			t.Errorf("callbacks fired = %d, want %d", got, want)
+		}
+		if err := reader.Close(); status.Code(err) != codes.OutOfRange {
+			t.Errorf("Close: got %v, want OutOfRange", err)
+		}
+		if !sawOutOfRange.Load() {
+			t.Error("expected at least one callback to report OutOfRange")
 		}
 	})
 }

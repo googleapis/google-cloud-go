@@ -340,6 +340,12 @@ func (c *externalVpnGatewaysRESTClient) Delete(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetExternalVpnGateway(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/externalVpnGateways/%v", req.GetProject(), req.GetExternalVpnGateway())
 
 	params := url.Values{}
@@ -404,6 +410,12 @@ func (c *externalVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetExternalVpnGateway(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/externalVpnGateways/%v", req.GetProject(), req.GetExternalVpnGateway())
 
 	// Build HTTP headers from client and context metadata.
@@ -459,6 +471,11 @@ func (c *externalVpnGatewaysRESTClient) Insert(ctx context.Context, req *compute
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/externalVpnGateways", req.GetProject())
@@ -536,6 +553,11 @@ func (c *externalVpnGatewaysRESTClient) List(ctx context.Context, req *computepb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/externalVpnGateways", req.GetProject())
@@ -620,6 +642,12 @@ func (c *externalVpnGatewaysRESTClient) SetLabels(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/externalVpnGateways/%v/setLabels", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -681,6 +709,12 @@ func (c *externalVpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/externalVpnGateways/%v/testIamPermissions", req.GetProject(), req.GetResource())

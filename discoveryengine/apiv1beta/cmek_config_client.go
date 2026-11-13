@@ -791,6 +791,11 @@ func (c *cmekConfigRESTClient) UpdateCmekConfig(ctx context.Context, req *discov
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetConfig().GetName())
 
 	params := url.Values{}
@@ -855,6 +860,11 @@ func (c *cmekConfigRESTClient) GetCmekConfig(ctx context.Context, req *discovery
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -910,6 +920,11 @@ func (c *cmekConfigRESTClient) ListCmekConfigs(ctx context.Context, req *discove
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/cmekConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -962,6 +977,11 @@ func (c *cmekConfigRESTClient) ListCmekConfigs(ctx context.Context, req *discove
 func (c *cmekConfigRESTClient) DeleteCmekConfig(ctx context.Context, req *discoveryenginepb.DeleteCmekConfigRequest, opts ...gax.CallOption) (*DeleteCmekConfigOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1031,6 +1051,11 @@ func (c *cmekConfigRESTClient) CancelOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1068,6 +1093,11 @@ func (c *cmekConfigRESTClient) CancelOperation(ctx context.Context, req *longrun
 func (c *cmekConfigRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1135,6 +1165,11 @@ func (c *cmekConfigRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

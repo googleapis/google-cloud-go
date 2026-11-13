@@ -597,6 +597,11 @@ func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/skus", req.GetParent())
 
 		params := url.Values{}

@@ -2248,6 +2248,11 @@ func (c *restClient) InitializeZone(ctx context.Context, req *edgenetworkpb.Init
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:initialize", req.GetName())
 
 	params := url.Values{}
@@ -2316,6 +2321,11 @@ func (c *restClient) ListZones(ctx context.Context, req *edgenetworkpb.ListZones
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/zones", req.GetParent())
@@ -2392,6 +2402,11 @@ func (c *restClient) GetZone(ctx context.Context, req *edgenetworkpb.GetZoneRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2457,6 +2472,11 @@ func (c *restClient) ListNetworks(ctx context.Context, req *edgenetworkpb.ListNe
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/networks", req.GetParent())
@@ -2530,6 +2550,11 @@ func (c *restClient) GetNetwork(ctx context.Context, req *edgenetworkpb.GetNetwo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2582,6 +2607,11 @@ func (c *restClient) GetNetwork(ctx context.Context, req *edgenetworkpb.GetNetwo
 func (c *restClient) DiagnoseNetwork(ctx context.Context, req *edgenetworkpb.DiagnoseNetworkRequest, opts ...gax.CallOption) (*edgenetworkpb.DiagnoseNetworkResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:diagnose", req.GetName())
@@ -2643,6 +2673,11 @@ func (c *restClient) CreateNetwork(ctx context.Context, req *edgenetworkpb.Creat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/networks", req.GetParent())
@@ -2708,6 +2743,11 @@ func (c *restClient) CreateNetwork(ctx context.Context, req *edgenetworkpb.Creat
 func (c *restClient) DeleteNetwork(ctx context.Context, req *edgenetworkpb.DeleteNetworkRequest, opts ...gax.CallOption) (*DeleteNetworkOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2787,6 +2827,11 @@ func (c *restClient) ListSubnets(ctx context.Context, req *edgenetworkpb.ListSub
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/subnets", req.GetParent())
 
 		params := url.Values{}
@@ -2858,6 +2903,11 @@ func (c *restClient) GetSubnet(ctx context.Context, req *edgenetworkpb.GetSubnet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2917,6 +2967,11 @@ func (c *restClient) CreateSubnet(ctx context.Context, req *edgenetworkpb.Create
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/subnets", req.GetParent())
@@ -2991,6 +3046,11 @@ func (c *restClient) UpdateSubnet(ctx context.Context, req *edgenetworkpb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubnet().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSubnet().GetName())
 
 	params := url.Values{}
@@ -3060,6 +3120,11 @@ func (c *restClient) UpdateSubnet(ctx context.Context, req *edgenetworkpb.Update
 func (c *restClient) DeleteSubnet(ctx context.Context, req *edgenetworkpb.DeleteSubnetRequest, opts ...gax.CallOption) (*DeleteSubnetOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3139,6 +3204,11 @@ func (c *restClient) ListInterconnects(ctx context.Context, req *edgenetworkpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/interconnects", req.GetParent())
 
 		params := url.Values{}
@@ -3210,6 +3280,11 @@ func (c *restClient) GetInterconnect(ctx context.Context, req *edgenetworkpb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3262,6 +3337,11 @@ func (c *restClient) GetInterconnect(ctx context.Context, req *edgenetworkpb.Get
 func (c *restClient) DiagnoseInterconnect(ctx context.Context, req *edgenetworkpb.DiagnoseInterconnectRequest, opts ...gax.CallOption) (*edgenetworkpb.DiagnoseInterconnectResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:diagnose", req.GetName())
@@ -3329,6 +3409,11 @@ func (c *restClient) ListInterconnectAttachments(ctx context.Context, req *edgen
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/interconnectAttachments", req.GetParent())
@@ -3402,6 +3487,11 @@ func (c *restClient) GetInterconnectAttachment(ctx context.Context, req *edgenet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3461,6 +3551,11 @@ func (c *restClient) CreateInterconnectAttachment(ctx context.Context, req *edge
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/interconnectAttachments", req.GetParent())
@@ -3526,6 +3621,11 @@ func (c *restClient) CreateInterconnectAttachment(ctx context.Context, req *edge
 func (c *restClient) DeleteInterconnectAttachment(ctx context.Context, req *edgenetworkpb.DeleteInterconnectAttachmentRequest, opts ...gax.CallOption) (*DeleteInterconnectAttachmentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3605,6 +3705,11 @@ func (c *restClient) ListRouters(ctx context.Context, req *edgenetworkpb.ListRou
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/routers", req.GetParent())
 
 		params := url.Values{}
@@ -3676,6 +3781,11 @@ func (c *restClient) GetRouter(ctx context.Context, req *edgenetworkpb.GetRouter
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3728,6 +3838,11 @@ func (c *restClient) GetRouter(ctx context.Context, req *edgenetworkpb.GetRouter
 func (c *restClient) DiagnoseRouter(ctx context.Context, req *edgenetworkpb.DiagnoseRouterRequest, opts ...gax.CallOption) (*edgenetworkpb.DiagnoseRouterResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:diagnose", req.GetName())
@@ -3789,6 +3904,11 @@ func (c *restClient) CreateRouter(ctx context.Context, req *edgenetworkpb.Create
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/routers", req.GetParent())
@@ -3863,6 +3983,11 @@ func (c *restClient) UpdateRouter(ctx context.Context, req *edgenetworkpb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRouter().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRouter().GetName())
 
 	params := url.Values{}
@@ -3934,6 +4059,11 @@ func (c *restClient) DeleteRouter(ctx context.Context, req *edgenetworkpb.Delete
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3996,6 +4126,11 @@ func (c *restClient) DeleteRouter(ctx context.Context, req *edgenetworkpb.Delete
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4063,6 +4198,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -4139,6 +4279,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4178,6 +4323,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4215,6 +4365,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4282,6 +4437,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

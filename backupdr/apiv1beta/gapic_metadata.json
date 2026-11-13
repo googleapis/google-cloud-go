@@ -45,6 +45,21 @@
                 "CreateManagementServer"
               ]
             },
+            "CreateRestoreTemplate": {
+              "methods": [
+                "CreateRestoreTemplate"
+              ]
+            },
+            "CreateRestoreVerificationPlan": {
+              "methods": [
+                "CreateRestoreVerificationPlan"
+              ]
+            },
+            "CreateRestoreVerificationPlanAssociation": {
+              "methods": [
+                "CreateRestoreVerificationPlanAssociation"
+              ]
+            },
             "DeleteAutoProtectionPolicy": {
               "methods": [
                 "DeleteAutoProtectionPolicy"
@@ -78,6 +93,21 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteRestoreTemplate": {
+              "methods": [
+                "DeleteRestoreTemplate"
+              ]
+            },
+            "DeleteRestoreVerificationPlan": {
+              "methods": [
+                "DeleteRestoreVerificationPlan"
+              ]
+            },
+            "DeleteRestoreVerificationPlanAssociation": {
+              "methods": [
+                "DeleteRestoreVerificationPlanAssociation"
               ]
             },
             "FetchBackupPlanAssociationsForResourceType": {
@@ -170,6 +200,26 @@
                 "GetOperation"
               ]
             },
+            "GetRestoreTemplate": {
+              "methods": [
+                "GetRestoreTemplate"
+              ]
+            },
+            "GetRestoreTemplateExecution": {
+              "methods": [
+                "GetRestoreTemplateExecution"
+              ]
+            },
+            "GetRestoreVerificationPlan": {
+              "methods": [
+                "GetRestoreVerificationPlan"
+              ]
+            },
+            "GetRestoreVerificationPlanAssociation": {
+              "methods": [
+                "GetRestoreVerificationPlanAssociation"
+              ]
+            },
             "InitializeService": {
               "methods": [
                 "InitializeService"
@@ -250,9 +300,34 @@
                 "ListOperations"
               ]
             },
+            "ListRestoreTemplateExecutions": {
+              "methods": [
+                "ListRestoreTemplateExecutions"
+              ]
+            },
+            "ListRestoreTemplates": {
+              "methods": [
+                "ListRestoreTemplates"
+              ]
+            },
+            "ListRestoreVerificationPlanAssociations": {
+              "methods": [
+                "ListRestoreVerificationPlanAssociations"
+              ]
+            },
+            "ListRestoreVerificationPlans": {
+              "methods": [
+                "ListRestoreVerificationPlans"
+              ]
+            },
             "RestoreBackup": {
               "methods": [
                 "RestoreBackup"
+              ]
+            },
+            "RunRestoreTemplate": {
+              "methods": [
+                "RunRestoreTemplate"
               ]
             },
             "SetIamPolicy": {
@@ -268,6 +343,16 @@
             "TriggerBackup": {
               "methods": [
                 "TriggerBackup"
+              ]
+            },
+            "TriggerRestoreCleanup": {
+              "methods": [
+                "TriggerRestoreCleanup"
+              ]
+            },
+            "TriggerRestoreVerification": {
+              "methods": [
+                "TriggerRestoreVerification"
               ]
             },
             "UpdateAutoProtectionPolicy": {
@@ -298,6 +383,11 @@
             "UpdateDataSource": {
               "methods": [
                 "UpdateDataSource"
+              ]
+            },
+            "UpdateRestoreTemplate": {
+              "methods": [
+                "UpdateRestoreTemplate"
               ]
             }
           }
@@ -340,6 +430,21 @@
                 "CreateManagementServer"
               ]
             },
+            "CreateRestoreTemplate": {
+              "methods": [
+                "CreateRestoreTemplate"
+              ]
+            },
+            "CreateRestoreVerificationPlan": {
+              "methods": [
+                "CreateRestoreVerificationPlan"
+              ]
+            },
+            "CreateRestoreVerificationPlanAssociation": {
+              "methods": [
+                "CreateRestoreVerificationPlanAssociation"
+              ]
+            },
             "DeleteAutoProtectionPolicy": {
               "methods": [
                 "DeleteAutoProtectionPolicy"
@@ -373,6 +478,21 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteRestoreTemplate": {
+              "methods": [
+                "DeleteRestoreTemplate"
+              ]
+            },
+            "DeleteRestoreVerificationPlan": {
+              "methods": [
+                "DeleteRestoreVerificationPlan"
+              ]
+            },
+            "DeleteRestoreVerificationPlanAssociation": {
+              "methods": [
+                "DeleteRestoreVerificationPlanAssociation"
               ]
             },
             "FetchBackupPlanAssociationsForResourceType": {
@@ -465,6 +585,26 @@
                 "GetOperation"
               ]
             },
+            "GetRestoreTemplate": {
+              "methods": [
+                "GetRestoreTemplate"
+              ]
+            },
+            "GetRestoreTemplateExecution": {
+              "methods": [
+                "GetRestoreTemplateExecution"
+              ]
+            },
+            "GetRestoreVerificationPlan": {
+              "methods": [
+                "GetRestoreVerificationPlan"
+              ]
+            },
+            "GetRestoreVerificationPlanAssociation": {
+              "methods": [
+                "GetRestoreVerificationPlanAssociation"
+              ]
+            },
             "InitializeService": {
               "methods": [
                 "InitializeService"
@@ -545,9 +685,34 @@
                 "ListOperations"
               ]
             },
+            "ListRestoreTemplateExecutions": {
+              "methods": [
+                "ListRestoreTemplateExecutions"
+              ]
+            },
+            "ListRestoreTemplates": {
+              "methods": [
+                "ListRestoreTemplates"
+              ]
+            },
+            "ListRestoreVerificationPlanAssociations": {
+              "methods": [
+                "ListRestoreVerificationPlanAssociations"
+              ]
+            },
+            "ListRestoreVerificationPlans": {
+              "methods": [
+                "ListRestoreVerificationPlans"
+              ]
+            },
             "RestoreBackup": {
               "methods": [
                 "RestoreBackup"
+              ]
+            },
+            "RunRestoreTemplate": {
+              "methods": [
+                "RunRestoreTemplate"
               ]
             },
             "SetIamPolicy": {
@@ -563,6 +728,16 @@
             "TriggerBackup": {
               "methods": [
                 "TriggerBackup"
+              ]
+            },
+            "TriggerRestoreCleanup": {
+              "methods": [
+                "TriggerRestoreCleanup"
+              ]
+            },
+            "TriggerRestoreVerification": {
+              "methods": [
+                "TriggerRestoreVerification"
               ]
             },
             "UpdateAutoProtectionPolicy": {
@@ -593,6 +768,11 @@
             "UpdateDataSource": {
               "methods": [
                 "UpdateDataSource"
+              ]
+            },
+            "UpdateRestoreTemplate": {
+              "methods": [
+                "UpdateRestoreTemplate"
               ]
             }
           }

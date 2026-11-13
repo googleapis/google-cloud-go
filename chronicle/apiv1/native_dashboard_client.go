@@ -1099,6 +1099,11 @@ func (c *nativeDashboardRESTClient) CreateNativeDashboard(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/nativeDashboards", req.GetParent())
 
 	params := url.Values{}
@@ -1151,6 +1156,11 @@ func (c *nativeDashboardRESTClient) CreateNativeDashboard(ctx context.Context, r
 func (c *nativeDashboardRESTClient) GetNativeDashboard(ctx context.Context, req *chroniclepb.GetNativeDashboardRequest, opts ...gax.CallOption) (*chroniclepb.NativeDashboard, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1221,6 +1231,11 @@ func (c *nativeDashboardRESTClient) ListNativeDashboards(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/nativeDashboards", req.GetParent())
@@ -1298,6 +1313,11 @@ func (c *nativeDashboardRESTClient) UpdateNativeDashboard(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetNativeDashboard().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetNativeDashboard().GetName())
 
 	params := url.Values{}
@@ -1365,6 +1385,11 @@ func (c *nativeDashboardRESTClient) DuplicateNativeDashboard(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:duplicate", req.GetName())
 
 	params := url.Values{}
@@ -1419,6 +1444,11 @@ func (c *nativeDashboardRESTClient) DeleteNativeDashboard(ctx context.Context, r
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1462,6 +1492,11 @@ func (c *nativeDashboardRESTClient) AddChart(ctx context.Context, req *chronicle
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addChart", req.GetName())
@@ -1524,6 +1559,11 @@ func (c *nativeDashboardRESTClient) RemoveChart(ctx context.Context, req *chroni
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeChart", req.GetName())
 
 	params := url.Values{}
@@ -1582,6 +1622,11 @@ func (c *nativeDashboardRESTClient) EditChart(ctx context.Context, req *chronicl
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:editChart", req.GetName())
@@ -1644,6 +1689,11 @@ func (c *nativeDashboardRESTClient) DuplicateChart(ctx context.Context, req *chr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:duplicateChart", req.GetName())
 
 	params := url.Values{}
@@ -1702,6 +1752,11 @@ func (c *nativeDashboardRESTClient) ExportNativeDashboards(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/nativeDashboards:export", req.GetParent())
@@ -1764,6 +1819,11 @@ func (c *nativeDashboardRESTClient) ImportNativeDashboards(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/nativeDashboards:import", req.GetParent())
 
 	params := url.Values{}
@@ -1824,6 +1884,11 @@ func (c *nativeDashboardRESTClient) CancelOperation(ctx context.Context, req *lo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1863,6 +1928,11 @@ func (c *nativeDashboardRESTClient) DeleteOperation(ctx context.Context, req *lo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1900,6 +1970,11 @@ func (c *nativeDashboardRESTClient) DeleteOperation(ctx context.Context, req *lo
 func (c *nativeDashboardRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1967,6 +2042,11 @@ func (c *nativeDashboardRESTClient) ListOperations(ctx context.Context, req *lon
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

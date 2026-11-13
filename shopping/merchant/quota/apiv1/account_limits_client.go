@@ -510,7 +510,12 @@ func (c *accountLimitsRESTClient) GetAccountLimit(ctx context.Context, req *quot
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/quota/v1/%v", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
@@ -525,7 +530,7 @@ func (c *accountLimitsRESTClient) GetAccountLimit(ctx context.Context, req *quot
 	headers := gax.BuildHeaders(ctx, hds...)
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.quota.v1.AccountLimitsService/GetAccountLimit")
-		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/limits/*}")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/quota/v1/{name=accounts/*/limits/*}")
 	}
 	opts = append((*c.CallOptions).GetAccountLimit[0:len((*c.CallOptions).GetAccountLimit):len((*c.CallOptions).GetAccountLimit)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -577,7 +582,12 @@ func (c *accountLimitsRESTClient) ListAccountLimits(ctx context.Context, req *qu
 		if err != nil {
 			return nil, "", err
 		}
-		baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/limits", req.GetParent())
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/quota/v1/%v/limits", req.GetParent())
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")

@@ -668,6 +668,11 @@ func (c *dashboardsRESTClient) CreateDashboard(ctx context.Context, req *dashboa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dashboards", req.GetParent())
 
 	params := url.Values{}
@@ -742,6 +747,11 @@ func (c *dashboardsRESTClient) ListDashboards(ctx context.Context, req *dashboar
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dashboards", req.GetParent())
 
 		params := url.Values{}
@@ -811,6 +821,11 @@ func (c *dashboardsRESTClient) GetDashboard(ctx context.Context, req *dashboardp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -869,6 +884,11 @@ func (c *dashboardsRESTClient) DeleteDashboard(ctx context.Context, req *dashboa
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -917,6 +937,11 @@ func (c *dashboardsRESTClient) UpdateDashboard(ctx context.Context, req *dashboa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDashboard().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDashboard().GetName())

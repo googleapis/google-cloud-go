@@ -2969,6 +2969,11 @@ func (c *certificateAuthorityRESTClient) CreateCertificate(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/certificates", req.GetParent())
 
 	params := url.Values{}
@@ -3033,6 +3038,11 @@ func (c *certificateAuthorityRESTClient) CreateCertificate(ctx context.Context, 
 func (c *certificateAuthorityRESTClient) GetCertificate(ctx context.Context, req *privatecapb.GetCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3100,6 +3110,11 @@ func (c *certificateAuthorityRESTClient) ListCertificates(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/certificates", req.GetParent())
@@ -3179,6 +3194,11 @@ func (c *certificateAuthorityRESTClient) RevokeCertificate(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:revoke", req.GetName())
 
 	params := url.Values{}
@@ -3240,6 +3260,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCertificate().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCertificate().GetName())
@@ -3321,6 +3346,11 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:activate", req.GetName())
 
 	params := url.Values{}
@@ -3389,6 +3419,11 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/certificateAuthorities", req.GetParent())
@@ -3463,6 +3498,11 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:disable", req.GetName())
 
 	params := url.Values{}
@@ -3529,6 +3569,11 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enable", req.GetName())
@@ -3602,6 +3647,11 @@ func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetch", req.GetName())
 
 	params := url.Values{}
@@ -3655,6 +3705,11 @@ func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx contex
 func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3723,6 +3778,11 @@ func (c *certificateAuthorityRESTClient) ListCertificateAuthorities(ctx context.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/certificateAuthorities", req.GetParent())
@@ -3804,6 +3864,11 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:undelete", req.GetName())
 
 	params := url.Values{}
@@ -3864,6 +3929,11 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx contex
 func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.Context, req *privatecapb.DeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*DeleteCertificateAuthorityOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3947,6 +4017,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCertificateAuthority().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCertificateAuthority().GetName())
 
 	params := url.Values{}
@@ -4025,6 +4100,11 @@ func (c *certificateAuthorityRESTClient) CreateCaPool(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/caPools", req.GetParent())
 
 	params := url.Values{}
@@ -4095,6 +4175,11 @@ func (c *certificateAuthorityRESTClient) UpdateCaPool(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCaPool().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCaPool().GetName())
@@ -4168,6 +4253,11 @@ func (c *certificateAuthorityRESTClient) GetCaPool(ctx context.Context, req *pri
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4233,6 +4323,11 @@ func (c *certificateAuthorityRESTClient) ListCaPools(ctx context.Context, req *p
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/caPools", req.GetParent())
@@ -4304,6 +4399,11 @@ func (c *certificateAuthorityRESTClient) ListCaPools(ctx context.Context, req *p
 func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *privatecapb.DeleteCaPoolRequest, opts ...gax.CallOption) (*DeleteCaPoolOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4382,6 +4482,11 @@ func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCaPool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchCaCerts", req.GetCaPool())
 
 	params := url.Values{}
@@ -4435,6 +4540,11 @@ func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *
 func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4503,6 +4613,11 @@ func (c *certificateAuthorityRESTClient) ListCertificateRevocationLists(ctx cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/certificateRevocationLists", req.GetParent())
@@ -4582,6 +4697,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCertificateRevocationList().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCertificateRevocationList().GetName())
@@ -4664,6 +4784,11 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplate(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/certificateTemplates", req.GetParent())
 
 	params := url.Values{}
@@ -4730,6 +4855,11 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4793,6 +4923,11 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.C
 func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Context, req *privatecapb.GetCertificateTemplateRequest, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4861,6 +4996,11 @@ func (c *certificateAuthorityRESTClient) ListCertificateTemplates(ctx context.Co
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/certificateTemplates", req.GetParent())
@@ -4942,6 +5082,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCertificateTemplate().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCertificateTemplate().GetName())
 
 	params := url.Values{}
@@ -5011,6 +5156,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 func (c *certificateAuthorityRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5095,6 +5245,11 @@ func (c *certificateAuthorityRESTClient) ListLocations(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -5164,6 +5319,11 @@ func (c *certificateAuthorityRESTClient) GetIamPolicy(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -5229,6 +5389,11 @@ func (c *certificateAuthorityRESTClient) SetIamPolicy(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -5297,6 +5462,11 @@ func (c *certificateAuthorityRESTClient) TestIamPermissions(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -5357,6 +5527,11 @@ func (c *certificateAuthorityRESTClient) CancelOperation(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -5396,6 +5571,11 @@ func (c *certificateAuthorityRESTClient) DeleteOperation(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5433,6 +5613,11 @@ func (c *certificateAuthorityRESTClient) DeleteOperation(ctx context.Context, re
 func (c *certificateAuthorityRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5500,6 +5685,11 @@ func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

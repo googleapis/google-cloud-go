@@ -743,6 +743,11 @@ func (c *restClient) CreateContact(ctx context.Context, req *essentialcontactspb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/contacts", req.GetParent())
 
 	params := url.Values{}
@@ -803,6 +808,11 @@ func (c *restClient) UpdateContact(ctx context.Context, req *essentialcontactspb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetContact().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetContact().GetName())
@@ -879,6 +889,11 @@ func (c *restClient) ListContacts(ctx context.Context, req *essentialcontactspb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/contacts", req.GetParent())
 
 		params := url.Values{}
@@ -944,6 +959,11 @@ func (c *restClient) GetContact(ctx context.Context, req *essentialcontactspb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -998,6 +1018,11 @@ func (c *restClient) DeleteContact(ctx context.Context, req *essentialcontactspb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1050,6 +1075,11 @@ func (c *restClient) ComputeContacts(ctx context.Context, req *essentialcontacts
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/contacts:compute", req.GetParent())
@@ -1127,6 +1157,11 @@ func (c *restClient) SendTestMessage(ctx context.Context, req *essentialcontacts
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/contacts:sendTestMessage", req.GetResource())

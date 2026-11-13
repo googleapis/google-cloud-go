@@ -2737,6 +2737,11 @@ func (c *aMLRESTClient) ListInstances(ctx context.Context, req *financialservice
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
 
 		params := url.Values{}
@@ -2808,6 +2813,11 @@ func (c *aMLRESTClient) GetInstance(ctx context.Context, req *financialservicesp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2867,6 +2877,11 @@ func (c *aMLRESTClient) CreateInstance(ctx context.Context, req *financialservic
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
@@ -2941,6 +2956,11 @@ func (c *aMLRESTClient) UpdateInstance(ctx context.Context, req *financialservic
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInstance().GetName())
 
 	params := url.Values{}
@@ -3010,6 +3030,11 @@ func (c *aMLRESTClient) UpdateInstance(ctx context.Context, req *financialservic
 func (c *aMLRESTClient) DeleteInstance(ctx context.Context, req *financialservicespb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3085,6 +3110,11 @@ func (c *aMLRESTClient) ImportRegisteredParties(ctx context.Context, req *financ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:importRegisteredParties", req.GetName())
 
 	params := url.Values{}
@@ -3153,6 +3183,11 @@ func (c *aMLRESTClient) ExportRegisteredParties(ctx context.Context, req *financ
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportRegisteredParties", req.GetName())
@@ -3229,6 +3264,11 @@ func (c *aMLRESTClient) ListDatasets(ctx context.Context, req *financialservices
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/datasets", req.GetParent())
 
 		params := url.Values{}
@@ -3300,6 +3340,11 @@ func (c *aMLRESTClient) GetDataset(ctx context.Context, req *financialservicespb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3359,6 +3404,11 @@ func (c *aMLRESTClient) CreateDataset(ctx context.Context, req *financialservice
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/datasets", req.GetParent())
@@ -3433,6 +3483,11 @@ func (c *aMLRESTClient) UpdateDataset(ctx context.Context, req *financialservice
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataset().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataset().GetName())
 
 	params := url.Values{}
@@ -3502,6 +3557,11 @@ func (c *aMLRESTClient) UpdateDataset(ctx context.Context, req *financialservice
 func (c *aMLRESTClient) DeleteDataset(ctx context.Context, req *financialservicespb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3581,6 +3641,11 @@ func (c *aMLRESTClient) ListModels(ctx context.Context, req *financialservicespb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/models", req.GetParent())
 
 		params := url.Values{}
@@ -3652,6 +3717,11 @@ func (c *aMLRESTClient) GetModel(ctx context.Context, req *financialservicespb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3711,6 +3781,11 @@ func (c *aMLRESTClient) CreateModel(ctx context.Context, req *financialservicesp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/models", req.GetParent())
@@ -3783,6 +3858,11 @@ func (c *aMLRESTClient) UpdateModel(ctx context.Context, req *financialservicesp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetModel().GetName())
@@ -3865,6 +3945,11 @@ func (c *aMLRESTClient) ExportModelMetadata(ctx context.Context, req *financials
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportMetadata", req.GetModel())
 
 	params := url.Values{}
@@ -3924,6 +4009,11 @@ func (c *aMLRESTClient) ExportModelMetadata(ctx context.Context, req *financials
 func (c *aMLRESTClient) DeleteModel(ctx context.Context, req *financialservicespb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4003,6 +4093,11 @@ func (c *aMLRESTClient) ListEngineConfigs(ctx context.Context, req *financialser
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/engineConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -4074,6 +4169,11 @@ func (c *aMLRESTClient) GetEngineConfig(ctx context.Context, req *financialservi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4133,6 +4233,11 @@ func (c *aMLRESTClient) CreateEngineConfig(ctx context.Context, req *financialse
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/engineConfigs", req.GetParent())
@@ -4205,6 +4310,11 @@ func (c *aMLRESTClient) UpdateEngineConfig(ctx context.Context, req *financialse
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEngineConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEngineConfig().GetName())
@@ -4287,6 +4397,11 @@ func (c *aMLRESTClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEngineConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportMetadata", req.GetEngineConfig())
 
 	params := url.Values{}
@@ -4346,6 +4461,11 @@ func (c *aMLRESTClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 func (c *aMLRESTClient) DeleteEngineConfig(ctx context.Context, req *financialservicespb.DeleteEngineConfigRequest, opts ...gax.CallOption) (*DeleteEngineConfigOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4410,6 +4530,11 @@ func (c *aMLRESTClient) DeleteEngineConfig(ctx context.Context, req *financialse
 func (c *aMLRESTClient) GetEngineVersion(ctx context.Context, req *financialservicespb.GetEngineVersionRequest, opts ...gax.CallOption) (*financialservicespb.EngineVersion, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4477,6 +4602,11 @@ func (c *aMLRESTClient) ListEngineVersions(ctx context.Context, req *financialse
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/engineVersions", req.GetParent())
@@ -4563,6 +4693,11 @@ func (c *aMLRESTClient) ListPredictionResults(ctx context.Context, req *financia
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/predictionResults", req.GetParent())
 
 		params := url.Values{}
@@ -4634,6 +4769,11 @@ func (c *aMLRESTClient) GetPredictionResult(ctx context.Context, req *financials
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4693,6 +4833,11 @@ func (c *aMLRESTClient) CreatePredictionResult(ctx context.Context, req *financi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/predictionResults", req.GetParent())
@@ -4765,6 +4910,11 @@ func (c *aMLRESTClient) UpdatePredictionResult(ctx context.Context, req *financi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPredictionResult().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPredictionResult().GetName())
@@ -4847,6 +4997,11 @@ func (c *aMLRESTClient) ExportPredictionResultMetadata(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPredictionResult(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportMetadata", req.GetPredictionResult())
 
 	params := url.Values{}
@@ -4906,6 +5061,11 @@ func (c *aMLRESTClient) ExportPredictionResultMetadata(ctx context.Context, req 
 func (c *aMLRESTClient) DeletePredictionResult(ctx context.Context, req *financialservicespb.DeletePredictionResultRequest, opts ...gax.CallOption) (*DeletePredictionResultOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4985,6 +5145,11 @@ func (c *aMLRESTClient) ListBacktestResults(ctx context.Context, req *financials
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backtestResults", req.GetParent())
 
 		params := url.Values{}
@@ -5056,6 +5221,11 @@ func (c *aMLRESTClient) GetBacktestResult(ctx context.Context, req *financialser
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5115,6 +5285,11 @@ func (c *aMLRESTClient) CreateBacktestResult(ctx context.Context, req *financial
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backtestResults", req.GetParent())
@@ -5187,6 +5362,11 @@ func (c *aMLRESTClient) UpdateBacktestResult(ctx context.Context, req *financial
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBacktestResult().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBacktestResult().GetName())
@@ -5269,6 +5449,11 @@ func (c *aMLRESTClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBacktestResult(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportMetadata", req.GetBacktestResult())
 
 	params := url.Values{}
@@ -5328,6 +5513,11 @@ func (c *aMLRESTClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 func (c *aMLRESTClient) DeleteBacktestResult(ctx context.Context, req *financialservicespb.DeleteBacktestResultRequest, opts ...gax.CallOption) (*DeleteBacktestResultOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5392,6 +5582,11 @@ func (c *aMLRESTClient) DeleteBacktestResult(ctx context.Context, req *financial
 func (c *aMLRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5459,6 +5654,11 @@ func (c *aMLRESTClient) ListLocations(ctx context.Context, req *locationpb.ListL
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -5535,6 +5735,11 @@ func (c *aMLRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -5574,6 +5779,11 @@ func (c *aMLRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5611,6 +5821,11 @@ func (c *aMLRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 func (c *aMLRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5678,6 +5893,11 @@ func (c *aMLRESTClient) ListOperations(ctx context.Context, req *longrunningpb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

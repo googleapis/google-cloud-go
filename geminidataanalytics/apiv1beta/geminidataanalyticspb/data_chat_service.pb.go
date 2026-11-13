@@ -44,8 +44,8 @@ const (
 type ChatRequest_ThinkingMode int32
 
 const (
-	// Unspecified thinking mode, agent will use THINKING mode by default except
-	// for BigQuery user defaulting to FAST mode by default.
+	// The default value. For BigQuery and Looker data sources, the agent uses
+	// FAST. For all other data sources, the agent uses THINKING.
 	ChatRequest_THINKING_MODE_UNSPECIFIED ChatRequest_ThinkingMode = 0
 	// Fast mode, answers quickly.
 	ChatRequest_FAST ChatRequest_ThinkingMode = 1
@@ -892,9 +892,14 @@ type ListMessagesRequest struct {
 	// ListMessages allows filtering by:
 	//   - create_time (e.g., `createTime > "2025-01-28T06:51:56-08:00"`)
 	//   - update_time
-	Filter        string `protobuf:"bytes,5,opt,name=filter,proto3" json:"filter,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Filter string `protobuf:"bytes,5,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. If true, the wait for in-flight writes on the most recent turn is
+	// skipped. By default ListMessages waits for those writes to become durable
+	// so a caller reading right after a chat turn does not miss the tail of that
+	// turn's messages.
+	PendingWriteWaitSkipped bool `protobuf:"varint,7,opt,name=pending_write_wait_skipped,json=pendingWriteWaitSkipped,proto3" json:"pending_write_wait_skipped,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *ListMessagesRequest) Reset() {
@@ -953,6 +958,13 @@ func (x *ListMessagesRequest) GetFilter() string {
 		return x.Filter
 	}
 	return ""
+}
+
+func (x *ListMessagesRequest) GetPendingWriteWaitSkipped() bool {
+	if x != nil {
+		return x.PendingWriteWaitSkipped
+	}
+	return false
 }
 
 // Response for listing chat messages.
@@ -3760,14 +3772,15 @@ const file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_rawDe
 	"\x05Value\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x1aa\n" +
 	"\x03Row\x12Z\n" +
-	"\x06values\x18\x01 \x03(\v2B.google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.ValueR\x06values\"\xcd\x01\n" +
+	"\x06values\x18\x01 \x03(\v2B.google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.ValueR\x06values\"\x90\x02\n" +
 	"\x13ListMessagesRequest\x12P\n" +
 	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/geminidataanalytics.googleapis.com/ConversationR\x06parent\x12!\n" +
 	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
-	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x93\x01\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12A\n" +
+	"\x1apending_write_wait_skipped\x18\a \x01(\bB\x04\xe2A\x01\x01R\x17pendingWriteWaitSkipped\"\x93\x01\n" +
 	"\x14ListMessagesResponse\x12S\n" +
 	"\bmessages\x18\x01 \x03(\v27.google.cloud.geminidataanalytics.v1beta.StorageMessageR\bmessages\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"{\n" +

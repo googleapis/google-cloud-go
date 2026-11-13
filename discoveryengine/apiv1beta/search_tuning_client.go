@@ -698,6 +698,11 @@ func (c *searchTuningRESTClient) TrainCustomModel(ctx context.Context, req *disc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataStore(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:trainCustomModel", req.GetDataStore())
 
 	params := url.Values{}
@@ -757,6 +762,11 @@ func (c *searchTuningRESTClient) TrainCustomModel(ctx context.Context, req *disc
 func (c *searchTuningRESTClient) ListCustomModels(ctx context.Context, req *discoveryenginepb.ListCustomModelsRequest, opts ...gax.CallOption) (*discoveryenginepb.ListCustomModelsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataStore(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/customModels", req.GetDataStore())
@@ -819,6 +829,11 @@ func (c *searchTuningRESTClient) CancelOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -856,6 +871,11 @@ func (c *searchTuningRESTClient) CancelOperation(ctx context.Context, req *longr
 func (c *searchTuningRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -923,6 +943,11 @@ func (c *searchTuningRESTClient) ListOperations(ctx context.Context, req *longru
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

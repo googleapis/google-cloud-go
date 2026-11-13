@@ -1570,6 +1570,11 @@ func (c *firewallActivationRESTClient) ListFirewallEndpoints(ctx context.Context
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/firewallEndpoints", req.GetParent())
 
 		params := url.Values{}
@@ -1654,6 +1659,11 @@ func (c *firewallActivationRESTClient) ListProjectFirewallEndpoints(ctx context.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/firewallEndpoints", req.GetParent())
 
 		params := url.Values{}
@@ -1725,6 +1735,11 @@ func (c *firewallActivationRESTClient) GetFirewallEndpoint(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1777,6 +1792,11 @@ func (c *firewallActivationRESTClient) GetFirewallEndpoint(ctx context.Context, 
 func (c *firewallActivationRESTClient) GetProjectFirewallEndpoint(ctx context.Context, req *networksecuritypb.GetFirewallEndpointRequest, opts ...gax.CallOption) (*networksecuritypb.FirewallEndpoint, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1838,6 +1858,11 @@ func (c *firewallActivationRESTClient) CreateFirewallEndpoint(ctx context.Contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/firewallEndpoints", req.GetParent())
@@ -1912,6 +1937,11 @@ func (c *firewallActivationRESTClient) CreateProjectFirewallEndpoint(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/firewallEndpoints", req.GetParent())
 
 	params := url.Values{}
@@ -1977,6 +2007,11 @@ func (c *firewallActivationRESTClient) DeleteFirewallEndpoint(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2039,6 +2074,11 @@ func (c *firewallActivationRESTClient) DeleteFirewallEndpoint(ctx context.Contex
 func (c *firewallActivationRESTClient) DeleteProjectFirewallEndpoint(ctx context.Context, req *networksecuritypb.DeleteFirewallEndpointRequest, opts ...gax.CallOption) (*DeleteProjectFirewallEndpointOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2110,6 +2150,11 @@ func (c *firewallActivationRESTClient) UpdateFirewallEndpoint(ctx context.Contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallEndpoint().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFirewallEndpoint().GetName())
@@ -2188,6 +2233,11 @@ func (c *firewallActivationRESTClient) UpdateProjectFirewallEndpoint(ctx context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallEndpoint().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFirewallEndpoint().GetName())
@@ -2274,6 +2324,11 @@ func (c *firewallActivationRESTClient) ListFirewallEndpointAssociations(ctx cont
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/firewallEndpointAssociations", req.GetParent())
 
 		params := url.Values{}
@@ -2345,6 +2400,11 @@ func (c *firewallActivationRESTClient) GetFirewallEndpointAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2404,6 +2464,11 @@ func (c *firewallActivationRESTClient) CreateFirewallEndpointAssociation(ctx con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/firewallEndpointAssociations", req.GetParent())
@@ -2471,6 +2536,11 @@ func (c *firewallActivationRESTClient) CreateFirewallEndpointAssociation(ctx con
 func (c *firewallActivationRESTClient) DeleteFirewallEndpointAssociation(ctx context.Context, req *networksecuritypb.DeleteFirewallEndpointAssociationRequest, opts ...gax.CallOption) (*DeleteFirewallEndpointAssociationOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2544,6 +2614,11 @@ func (c *firewallActivationRESTClient) UpdateFirewallEndpointAssociation(ctx con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallEndpointAssociation().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFirewallEndpointAssociation().GetName())
 
 	params := url.Values{}
@@ -2613,6 +2688,11 @@ func (c *firewallActivationRESTClient) UpdateFirewallEndpointAssociation(ctx con
 func (c *firewallActivationRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2697,6 +2777,11 @@ func (c *firewallActivationRESTClient) ListLocations(ctx context.Context, req *l
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2766,6 +2851,11 @@ func (c *firewallActivationRESTClient) GetIamPolicy(ctx context.Context, req *ia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2831,6 +2921,11 @@ func (c *firewallActivationRESTClient) SetIamPolicy(ctx context.Context, req *ia
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -2899,6 +2994,11 @@ func (c *firewallActivationRESTClient) TestIamPermissions(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2959,6 +3059,11 @@ func (c *firewallActivationRESTClient) CancelOperation(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2998,6 +3103,11 @@ func (c *firewallActivationRESTClient) DeleteOperation(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3035,6 +3145,11 @@ func (c *firewallActivationRESTClient) DeleteOperation(ctx context.Context, req 
 func (c *firewallActivationRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3102,6 +3217,11 @@ func (c *firewallActivationRESTClient) ListOperations(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

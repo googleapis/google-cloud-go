@@ -753,6 +753,11 @@ func (c *developerKnowledgeRESTClient) GetDocument(ctx context.Context, req *dev
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}

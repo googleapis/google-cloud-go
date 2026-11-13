@@ -562,6 +562,12 @@ func (c *sqlWorkloadCapturesRESTClient) Start(ctx context.Context, req *sqlpb.Wo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/workloadCaptures:start", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -621,6 +627,12 @@ func (c *sqlWorkloadCapturesRESTClient) Stop(ctx context.Context, req *sqlpb.Wor
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/workloadCaptures:stop", req.GetProject(), req.GetInstance())
@@ -685,6 +697,13 @@ func (c *sqlWorkloadCapturesRESTClient) StartReplay(ctx context.Context, req *sq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetWorkloadId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/workloadCaptures/%v:startReplay", req.GetProject(), req.GetInstance(), req.GetWorkloadId())
 
 	params := url.Values{}
@@ -745,6 +764,12 @@ func (c *sqlWorkloadCapturesRESTClient) StopReplay(ctx context.Context, req *sql
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/workloadCaptures:stopReplay", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -797,6 +822,12 @@ func (c *sqlWorkloadCapturesRESTClient) StopReplay(ctx context.Context, req *sql
 func (c *sqlWorkloadCapturesRESTClient) List(ctx context.Context, req *sqlpb.SqlWorkloadCapturesListRequest, opts ...gax.CallOption) (*sqlpb.WorkloadCapturesListResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/workloadCaptures", req.GetProject(), req.GetInstance())

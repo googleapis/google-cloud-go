@@ -315,9 +315,22 @@ type RemoteAgentTool struct {
 	// Required. The description of the tool.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// Required. The agent card of the remote agent that this tool invokes.
-	AgentCard     *AgentCard `protobuf:"bytes,3,opt,name=agent_card,json=agentCard,proto3" json:"agent_card,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	AgentCard *AgentCard `protobuf:"bytes,3,opt,name=agent_card,json=agentCard,proto3" json:"agent_card,omitempty"`
+	// Optional. Authentication configuration for calling the remote agent.
+	ApiAuthentication *ApiAuthentication `protobuf:"bytes,4,opt,name=api_authentication,json=apiAuthentication,proto3" json:"api_authentication,omitempty"`
+	// Optional. When enabled, the interaction between the CXAS app and the remote
+	// agent will share the same context. If the remote agent returns a
+	// context_id, it will be persisted for the entirety of the session for this
+	// remote agent tool.
+	StatefulAgent bool `protobuf:"varint,5,opt,name=stateful_agent,json=statefulAgent,proto3" json:"stateful_agent,omitempty"`
+	// Optional. Mapping of input variable names of remote agent to GECX variable
+	// names.
+	InputVariableMapping map[string]string `protobuf:"bytes,6,rep,name=input_variable_mapping,json=inputVariableMapping,proto3" json:"input_variable_mapping,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Mapping of output variable names of remote agent to GECX variable
+	// names.
+	OutputVariableMapping map[string]string `protobuf:"bytes,7,rep,name=output_variable_mapping,json=outputVariableMapping,proto3" json:"output_variable_mapping,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *RemoteAgentTool) Reset() {
@@ -371,11 +384,39 @@ func (x *RemoteAgentTool) GetAgentCard() *AgentCard {
 	return nil
 }
 
+func (x *RemoteAgentTool) GetApiAuthentication() *ApiAuthentication {
+	if x != nil {
+		return x.ApiAuthentication
+	}
+	return nil
+}
+
+func (x *RemoteAgentTool) GetStatefulAgent() bool {
+	if x != nil {
+		return x.StatefulAgent
+	}
+	return false
+}
+
+func (x *RemoteAgentTool) GetInputVariableMapping() map[string]string {
+	if x != nil {
+		return x.InputVariableMapping
+	}
+	return nil
+}
+
+func (x *RemoteAgentTool) GetOutputVariableMapping() map[string]string {
+	if x != nil {
+		return x.OutputVariableMapping
+	}
+	return nil
+}
+
 var File_google_cloud_ces_v1_agent_card_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_agent_card_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/ces/v1/agent_card.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x8a\x02\n" +
+	"$google/cloud/ces/v1/agent_card.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/cloud/ces/v1/auth.proto\"\x8a\x02\n" +
 	"\tAgentCard\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
 	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12\\\n" +
@@ -396,12 +437,22 @@ const file_google_cloud_ces_v1_agent_card_proto_rawDesc = "" +
 	"\bexamples\x18\x05 \x03(\tR\bexamples\x12\x1f\n" +
 	"\vinput_modes\x18\x06 \x03(\tR\n" +
 	"inputModes\x12!\n" +
-	"\foutput_modes\x18\a \x03(\tR\voutputModes\"\x98\x01\n" +
+	"\foutput_modes\x18\a \x03(\tR\voutputModes\"\xb0\x05\n" +
 	"\x0fRemoteAgentTool\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
 	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12C\n" +
 	"\n" +
-	"agent_card\x18\x03 \x01(\v2\x1e.google.cloud.ces.v1.AgentCardB\x04\xe2A\x01\x02R\tagentCardBV\n" +
+	"agent_card\x18\x03 \x01(\v2\x1e.google.cloud.ces.v1.AgentCardB\x04\xe2A\x01\x02R\tagentCard\x12[\n" +
+	"\x12api_authentication\x18\x04 \x01(\v2&.google.cloud.ces.v1.ApiAuthenticationB\x04\xe2A\x01\x01R\x11apiAuthentication\x12+\n" +
+	"\x0estateful_agent\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\rstatefulAgent\x12z\n" +
+	"\x16input_variable_mapping\x18\x06 \x03(\v2>.google.cloud.ces.v1.RemoteAgentTool.InputVariableMappingEntryB\x04\xe2A\x01\x01R\x14inputVariableMapping\x12}\n" +
+	"\x17output_variable_mapping\x18\a \x03(\v2?.google.cloud.ces.v1.RemoteAgentTool.OutputVariableMappingEntryB\x04\xe2A\x01\x01R\x15outputVariableMapping\x1aG\n" +
+	"\x19InputVariableMappingEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aH\n" +
+	"\x1aOutputVariableMappingEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01BV\n" +
 	"\x17com.google.cloud.ces.v1B\x0eAgentCardProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (
@@ -416,22 +467,28 @@ func file_google_cloud_ces_v1_agent_card_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1_agent_card_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1_agent_card_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_cloud_ces_v1_agent_card_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_google_cloud_ces_v1_agent_card_proto_goTypes = []any{
-	(*AgentCard)(nil),       // 0: google.cloud.ces.v1.AgentCard
-	(*AgentInterface)(nil),  // 1: google.cloud.ces.v1.AgentInterface
-	(*AgentSkill)(nil),      // 2: google.cloud.ces.v1.AgentSkill
-	(*RemoteAgentTool)(nil), // 3: google.cloud.ces.v1.RemoteAgentTool
+	(*AgentCard)(nil),         // 0: google.cloud.ces.v1.AgentCard
+	(*AgentInterface)(nil),    // 1: google.cloud.ces.v1.AgentInterface
+	(*AgentSkill)(nil),        // 2: google.cloud.ces.v1.AgentSkill
+	(*RemoteAgentTool)(nil),   // 3: google.cloud.ces.v1.RemoteAgentTool
+	nil,                       // 4: google.cloud.ces.v1.RemoteAgentTool.InputVariableMappingEntry
+	nil,                       // 5: google.cloud.ces.v1.RemoteAgentTool.OutputVariableMappingEntry
+	(*ApiAuthentication)(nil), // 6: google.cloud.ces.v1.ApiAuthentication
 }
 var file_google_cloud_ces_v1_agent_card_proto_depIdxs = []int32{
 	1, // 0: google.cloud.ces.v1.AgentCard.supported_interfaces:type_name -> google.cloud.ces.v1.AgentInterface
 	2, // 1: google.cloud.ces.v1.AgentCard.skills:type_name -> google.cloud.ces.v1.AgentSkill
 	0, // 2: google.cloud.ces.v1.RemoteAgentTool.agent_card:type_name -> google.cloud.ces.v1.AgentCard
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	6, // 3: google.cloud.ces.v1.RemoteAgentTool.api_authentication:type_name -> google.cloud.ces.v1.ApiAuthentication
+	4, // 4: google.cloud.ces.v1.RemoteAgentTool.input_variable_mapping:type_name -> google.cloud.ces.v1.RemoteAgentTool.InputVariableMappingEntry
+	5, // 5: google.cloud.ces.v1.RemoteAgentTool.output_variable_mapping:type_name -> google.cloud.ces.v1.RemoteAgentTool.OutputVariableMappingEntry
+	6, // [6:6] is the sub-list for method output_type
+	6, // [6:6] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1_agent_card_proto_init() }
@@ -439,13 +496,14 @@ func file_google_cloud_ces_v1_agent_card_proto_init() {
 	if File_google_cloud_ces_v1_agent_card_proto != nil {
 		return
 	}
+	file_google_cloud_ces_v1_auth_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1_agent_card_proto_rawDesc), len(file_google_cloud_ces_v1_agent_card_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

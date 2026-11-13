@@ -1001,6 +1001,11 @@ func (c *jobRESTClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v/jobs", req.GetParent())
 
 	params := url.Values{}
@@ -1059,6 +1064,11 @@ func (c *jobRESTClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v/jobs:batchCreate", req.GetParent())
@@ -1123,6 +1133,11 @@ func (c *jobRESTClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v", req.GetName())
 
 	params := url.Values{}
@@ -1185,6 +1200,11 @@ func (c *jobRESTClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetJob().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v", req.GetJob().GetName())
@@ -1254,6 +1274,11 @@ func (c *jobRESTClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v/jobs:batchUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -1318,6 +1343,11 @@ func (c *jobRESTClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRe
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v", req.GetName())
 
 	params := url.Values{}
@@ -1361,6 +1391,11 @@ func (c *jobRESTClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v/jobs:batchDelete", req.GetParent())
@@ -1435,6 +1470,11 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v4/%v/jobs", req.GetParent())
@@ -1518,6 +1558,11 @@ func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v/jobs:search", req.GetParent())
 
 	params := url.Values{}
@@ -1589,6 +1634,11 @@ func (c *jobRESTClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v/jobs:searchForAlert", req.GetParent())
 
 	params := url.Values{}
@@ -1641,6 +1691,11 @@ func (c *jobRESTClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 func (c *jobRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v", req.GetName())

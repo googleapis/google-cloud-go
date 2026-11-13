@@ -756,6 +756,12 @@ func (c *jobsV1Beta3RESTClient) CreateJob(ctx context.Context, req *dataflowpb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs", req.GetProjectId(), req.GetLocation())
 
 	params := url.Values{}
@@ -820,6 +826,13 @@ func (c *jobsV1Beta3RESTClient) CreateJob(ctx context.Context, req *dataflowpb.C
 func (c *jobsV1Beta3RESTClient) GetJob(ctx context.Context, req *dataflowpb.GetJobRequest, opts ...gax.CallOption) (*dataflowpb.Job, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+		req.GetJobId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v", req.GetProjectId(), req.GetLocation(), req.GetJobId())
@@ -890,6 +903,13 @@ func (c *jobsV1Beta3RESTClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+		req.GetJobId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v", req.GetProjectId(), req.GetLocation(), req.GetJobId())
@@ -975,6 +995,12 @@ func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetLocation(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs", req.GetProjectId(), req.GetLocation())
@@ -1065,6 +1091,11 @@ func (c *jobsV1Beta3RESTClient) AggregatedListJobs(ctx context.Context, req *dat
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/jobs:aggregated", req.GetProjectId())
@@ -1201,6 +1232,13 @@ func (c *jobsV1Beta3RESTClient) SnapshotJob(ctx context.Context, req *dataflowpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+		req.GetJobId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v:snapshot", req.GetProjectId(), req.GetLocation(), req.GetJobId())

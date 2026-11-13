@@ -50,16 +50,16 @@ type SqlWorkloadCapturesServiceClient interface {
 	// a "captured workload". This workload can be replayed later on a different
 	// instance to safely test performance impacts, database upgrades,
 	// configuration changes etc. before applying them to production.
-	Start(ctx context.Context, in *SqlWorkloadCapturesStartRequest, opts ...grpc.CallOption) (*Operation, error)
+	Start(ctx context.Context, in *WorkloadCapturesStartRequest, opts ...grpc.CallOption) (*Operation, error)
 	// Stops capturing the query traffic and related operations executed on the
 	// primary instance.
-	Stop(ctx context.Context, in *SqlWorkloadCapturesStopRequest, opts ...grpc.CallOption) (*Operation, error)
+	Stop(ctx context.Context, in *WorkloadCapturesStopRequest, opts ...grpc.CallOption) (*Operation, error)
 	// Starts executing a captured workload on a separate Cloud SQL instance
 	// provisioned for workload replay. This target instance simulates the
 	// production environment without affecting the primary instance.
-	StartReplay(ctx context.Context, in *SqlWorkloadCapturesStartReplayRequest, opts ...grpc.CallOption) (*Operation, error)
+	StartReplay(ctx context.Context, in *WorkloadCapturesStartReplayRequest, opts ...grpc.CallOption) (*Operation, error)
 	// Stops an active workload replay on the target Cloud SQL replay instance.
-	StopReplay(ctx context.Context, in *SqlWorkloadCapturesStopReplayRequest, opts ...grpc.CallOption) (*Operation, error)
+	StopReplay(ctx context.Context, in *WorkloadCapturesStopReplayRequest, opts ...grpc.CallOption) (*Operation, error)
 	// Lists all captured workloads associated with the instance.
 	List(ctx context.Context, in *SqlWorkloadCapturesListRequest, opts ...grpc.CallOption) (*WorkloadCapturesListResponse, error)
 }
@@ -72,7 +72,7 @@ func NewSqlWorkloadCapturesServiceClient(cc grpc.ClientConnInterface) SqlWorkloa
 	return &sqlWorkloadCapturesServiceClient{cc}
 }
 
-func (c *sqlWorkloadCapturesServiceClient) Start(ctx context.Context, in *SqlWorkloadCapturesStartRequest, opts ...grpc.CallOption) (*Operation, error) {
+func (c *sqlWorkloadCapturesServiceClient) Start(ctx context.Context, in *WorkloadCapturesStartRequest, opts ...grpc.CallOption) (*Operation, error) {
 	out := new(Operation)
 	err := c.cc.Invoke(ctx, SqlWorkloadCapturesService_Start_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -81,7 +81,7 @@ func (c *sqlWorkloadCapturesServiceClient) Start(ctx context.Context, in *SqlWor
 	return out, nil
 }
 
-func (c *sqlWorkloadCapturesServiceClient) Stop(ctx context.Context, in *SqlWorkloadCapturesStopRequest, opts ...grpc.CallOption) (*Operation, error) {
+func (c *sqlWorkloadCapturesServiceClient) Stop(ctx context.Context, in *WorkloadCapturesStopRequest, opts ...grpc.CallOption) (*Operation, error) {
 	out := new(Operation)
 	err := c.cc.Invoke(ctx, SqlWorkloadCapturesService_Stop_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -90,7 +90,7 @@ func (c *sqlWorkloadCapturesServiceClient) Stop(ctx context.Context, in *SqlWork
 	return out, nil
 }
 
-func (c *sqlWorkloadCapturesServiceClient) StartReplay(ctx context.Context, in *SqlWorkloadCapturesStartReplayRequest, opts ...grpc.CallOption) (*Operation, error) {
+func (c *sqlWorkloadCapturesServiceClient) StartReplay(ctx context.Context, in *WorkloadCapturesStartReplayRequest, opts ...grpc.CallOption) (*Operation, error) {
 	out := new(Operation)
 	err := c.cc.Invoke(ctx, SqlWorkloadCapturesService_StartReplay_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -99,7 +99,7 @@ func (c *sqlWorkloadCapturesServiceClient) StartReplay(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *sqlWorkloadCapturesServiceClient) StopReplay(ctx context.Context, in *SqlWorkloadCapturesStopReplayRequest, opts ...grpc.CallOption) (*Operation, error) {
+func (c *sqlWorkloadCapturesServiceClient) StopReplay(ctx context.Context, in *WorkloadCapturesStopReplayRequest, opts ...grpc.CallOption) (*Operation, error) {
 	out := new(Operation)
 	err := c.cc.Invoke(ctx, SqlWorkloadCapturesService_StopReplay_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -126,16 +126,16 @@ type SqlWorkloadCapturesServiceServer interface {
 	// a "captured workload". This workload can be replayed later on a different
 	// instance to safely test performance impacts, database upgrades,
 	// configuration changes etc. before applying them to production.
-	Start(context.Context, *SqlWorkloadCapturesStartRequest) (*Operation, error)
+	Start(context.Context, *WorkloadCapturesStartRequest) (*Operation, error)
 	// Stops capturing the query traffic and related operations executed on the
 	// primary instance.
-	Stop(context.Context, *SqlWorkloadCapturesStopRequest) (*Operation, error)
+	Stop(context.Context, *WorkloadCapturesStopRequest) (*Operation, error)
 	// Starts executing a captured workload on a separate Cloud SQL instance
 	// provisioned for workload replay. This target instance simulates the
 	// production environment without affecting the primary instance.
-	StartReplay(context.Context, *SqlWorkloadCapturesStartReplayRequest) (*Operation, error)
+	StartReplay(context.Context, *WorkloadCapturesStartReplayRequest) (*Operation, error)
 	// Stops an active workload replay on the target Cloud SQL replay instance.
-	StopReplay(context.Context, *SqlWorkloadCapturesStopReplayRequest) (*Operation, error)
+	StopReplay(context.Context, *WorkloadCapturesStopReplayRequest) (*Operation, error)
 	// Lists all captured workloads associated with the instance.
 	List(context.Context, *SqlWorkloadCapturesListRequest) (*WorkloadCapturesListResponse, error)
 }
@@ -144,16 +144,16 @@ type SqlWorkloadCapturesServiceServer interface {
 type UnimplementedSqlWorkloadCapturesServiceServer struct {
 }
 
-func (UnimplementedSqlWorkloadCapturesServiceServer) Start(context.Context, *SqlWorkloadCapturesStartRequest) (*Operation, error) {
+func (UnimplementedSqlWorkloadCapturesServiceServer) Start(context.Context, *WorkloadCapturesStartRequest) (*Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Start not implemented")
 }
-func (UnimplementedSqlWorkloadCapturesServiceServer) Stop(context.Context, *SqlWorkloadCapturesStopRequest) (*Operation, error) {
+func (UnimplementedSqlWorkloadCapturesServiceServer) Stop(context.Context, *WorkloadCapturesStopRequest) (*Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Stop not implemented")
 }
-func (UnimplementedSqlWorkloadCapturesServiceServer) StartReplay(context.Context, *SqlWorkloadCapturesStartReplayRequest) (*Operation, error) {
+func (UnimplementedSqlWorkloadCapturesServiceServer) StartReplay(context.Context, *WorkloadCapturesStartReplayRequest) (*Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartReplay not implemented")
 }
-func (UnimplementedSqlWorkloadCapturesServiceServer) StopReplay(context.Context, *SqlWorkloadCapturesStopReplayRequest) (*Operation, error) {
+func (UnimplementedSqlWorkloadCapturesServiceServer) StopReplay(context.Context, *WorkloadCapturesStopReplayRequest) (*Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopReplay not implemented")
 }
 func (UnimplementedSqlWorkloadCapturesServiceServer) List(context.Context, *SqlWorkloadCapturesListRequest) (*WorkloadCapturesListResponse, error) {
@@ -172,7 +172,7 @@ func RegisterSqlWorkloadCapturesServiceServer(s grpc.ServiceRegistrar, srv SqlWo
 }
 
 func _SqlWorkloadCapturesService_Start_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SqlWorkloadCapturesStartRequest)
+	in := new(WorkloadCapturesStartRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -184,13 +184,13 @@ func _SqlWorkloadCapturesService_Start_Handler(srv interface{}, ctx context.Cont
 		FullMethod: SqlWorkloadCapturesService_Start_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SqlWorkloadCapturesServiceServer).Start(ctx, req.(*SqlWorkloadCapturesStartRequest))
+		return srv.(SqlWorkloadCapturesServiceServer).Start(ctx, req.(*WorkloadCapturesStartRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _SqlWorkloadCapturesService_Stop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SqlWorkloadCapturesStopRequest)
+	in := new(WorkloadCapturesStopRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -202,13 +202,13 @@ func _SqlWorkloadCapturesService_Stop_Handler(srv interface{}, ctx context.Conte
 		FullMethod: SqlWorkloadCapturesService_Stop_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SqlWorkloadCapturesServiceServer).Stop(ctx, req.(*SqlWorkloadCapturesStopRequest))
+		return srv.(SqlWorkloadCapturesServiceServer).Stop(ctx, req.(*WorkloadCapturesStopRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _SqlWorkloadCapturesService_StartReplay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SqlWorkloadCapturesStartReplayRequest)
+	in := new(WorkloadCapturesStartReplayRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -220,13 +220,13 @@ func _SqlWorkloadCapturesService_StartReplay_Handler(srv interface{}, ctx contex
 		FullMethod: SqlWorkloadCapturesService_StartReplay_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SqlWorkloadCapturesServiceServer).StartReplay(ctx, req.(*SqlWorkloadCapturesStartReplayRequest))
+		return srv.(SqlWorkloadCapturesServiceServer).StartReplay(ctx, req.(*WorkloadCapturesStartReplayRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _SqlWorkloadCapturesService_StopReplay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SqlWorkloadCapturesStopReplayRequest)
+	in := new(WorkloadCapturesStopReplayRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -238,7 +238,7 @@ func _SqlWorkloadCapturesService_StopReplay_Handler(srv interface{}, ctx context
 		FullMethod: SqlWorkloadCapturesService_StopReplay_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SqlWorkloadCapturesServiceServer).StopReplay(ctx, req.(*SqlWorkloadCapturesStopReplayRequest))
+		return srv.(SqlWorkloadCapturesServiceServer).StopReplay(ctx, req.(*WorkloadCapturesStopReplayRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

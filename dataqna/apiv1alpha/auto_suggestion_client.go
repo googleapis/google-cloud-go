@@ -456,6 +456,11 @@ func (c *autoSuggestionRESTClient) SuggestQueries(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:suggestQueries", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.

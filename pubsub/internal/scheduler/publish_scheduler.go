@@ -55,7 +55,7 @@ type PublishScheduler struct {
 	// workers does not restrict the amount of goroutines in the bundlers.
 	// Rather, it acts as the flow control for completion of bundler work.
 	workers chan struct{}
-	handle  func(bundle interface{})
+	handle  func(bundle any)
 	done    chan struct{}
 }
 
@@ -70,7 +70,7 @@ type PublishScheduler struct {
 // undelivered messages.
 //
 // The scheduler should be stopped only with FlushAndStop.
-func NewPublishScheduler(workers int, handle func(bundle interface{})) *PublishScheduler {
+func NewPublishScheduler(workers int, handle func(bundle any)) *PublishScheduler {
 	if workers == 0 {
 		workers = 10
 	}
@@ -95,7 +95,7 @@ func NewPublishScheduler(workers int, handle func(bundle interface{})) *PublishS
 // PublishScheduler.Add) faster than the bundler can publish them to the
 // Pub/Sub service, resulting in a backed up queue of Pub/Sub bundles. Each
 // item in the bundler queue is a goroutine.
-func (s *PublishScheduler) Add(key string, item interface{}, size int) error {
+func (s *PublishScheduler) Add(key string, item any, size int) error {
 	select {
 	case <-s.done:
 		return errors.New("draining")
@@ -109,7 +109,7 @@ func (s *PublishScheduler) Add(key string, item interface{}, size int) error {
 
 	if !ok {
 		s.outstanding.Store(key, 1)
-		b = bundler.NewBundler(item, func(bundle interface{}) {
+		b = bundler.NewBundler(item, func(bundle any) {
 			s.workers <- struct{}{}
 			s.handle(bundle)
 			<-s.workers
@@ -157,7 +157,7 @@ func (s *PublishScheduler) Add(key string, item interface{}, size int) error {
 // blocks until all items have been flushed.
 func (s *PublishScheduler) FlushAndStop() {
 	close(s.done)
-	s.bundlers.Range(func(_, bi interface{}) bool {
+	s.bundlers.Range(func(_, bi any) bool {
 		bi.(*bundler.Bundler).Flush()
 		return true
 	})
@@ -166,7 +166,7 @@ func (s *PublishScheduler) FlushAndStop() {
 // Flush waits until all bundlers are sent.
 func (s *PublishScheduler) Flush() {
 	var wg sync.WaitGroup
-	s.bundlers.Range(func(_, bi interface{}) bool {
+	s.bundlers.Range(func(_, bi any) bool {
 		wg.Add(1)
 		go func(b *bundler.Bundler) {
 			defer wg.Done()

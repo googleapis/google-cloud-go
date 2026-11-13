@@ -480,6 +480,11 @@ func (c *reportRESTClient) Search(ctx context.Context, req *reportspb.SearchRequ
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/reports/v1/%v/reports:search", req.GetParent())
 
 		params := url.Values{}

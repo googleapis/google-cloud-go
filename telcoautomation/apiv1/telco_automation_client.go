@@ -2330,6 +2330,11 @@ func (c *restClient) ListOrchestrationClusters(ctx context.Context, req *telcoau
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/orchestrationClusters", req.GetParent())
 
 		params := url.Values{}
@@ -2401,6 +2406,11 @@ func (c *restClient) GetOrchestrationCluster(ctx context.Context, req *telcoauto
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2460,6 +2470,11 @@ func (c *restClient) CreateOrchestrationCluster(ctx context.Context, req *telcoa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/orchestrationClusters", req.GetParent())
@@ -2525,6 +2540,11 @@ func (c *restClient) CreateOrchestrationCluster(ctx context.Context, req *telcoa
 func (c *restClient) DeleteOrchestrationCluster(ctx context.Context, req *telcoautomationpb.DeleteOrchestrationClusterRequest, opts ...gax.CallOption) (*DeleteOrchestrationClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2604,6 +2624,11 @@ func (c *restClient) ListEdgeSlms(ctx context.Context, req *telcoautomationpb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/edgeSlms", req.GetParent())
 
 		params := url.Values{}
@@ -2675,6 +2700,11 @@ func (c *restClient) GetEdgeSlm(ctx context.Context, req *telcoautomationpb.GetE
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2734,6 +2764,11 @@ func (c *restClient) CreateEdgeSlm(ctx context.Context, req *telcoautomationpb.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/edgeSlms", req.GetParent())
@@ -2799,6 +2834,11 @@ func (c *restClient) CreateEdgeSlm(ctx context.Context, req *telcoautomationpb.C
 func (c *restClient) DeleteEdgeSlm(ctx context.Context, req *telcoautomationpb.DeleteEdgeSlmRequest, opts ...gax.CallOption) (*DeleteEdgeSlmOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2872,6 +2912,11 @@ func (c *restClient) CreateBlueprint(ctx context.Context, req *telcoautomationpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/blueprints", req.GetParent())
 
 	params := url.Values{}
@@ -2936,6 +2981,11 @@ func (c *restClient) UpdateBlueprint(ctx context.Context, req *telcoautomationpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBlueprint().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBlueprint().GetName())
 
 	params := url.Values{}
@@ -2997,6 +3047,11 @@ func (c *restClient) GetBlueprint(ctx context.Context, req *telcoautomationpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3054,6 +3109,11 @@ func (c *restClient) DeleteBlueprint(ctx context.Context, req *telcoautomationpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3104,6 +3164,11 @@ func (c *restClient) ListBlueprints(ctx context.Context, req *telcoautomationpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/blueprints", req.GetParent())
@@ -3180,6 +3245,11 @@ func (c *restClient) ApproveBlueprint(ctx context.Context, req *telcoautomationp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:approve", req.GetName())
 
 	params := url.Values{}
@@ -3240,6 +3310,11 @@ func (c *restClient) ProposeBlueprint(ctx context.Context, req *telcoautomationp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:propose", req.GetName())
 
 	params := url.Values{}
@@ -3298,6 +3373,11 @@ func (c *restClient) RejectBlueprint(ctx context.Context, req *telcoautomationpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:reject", req.GetName())
@@ -3365,6 +3445,11 @@ func (c *restClient) ListBlueprintRevisions(ctx context.Context, req *telcoautom
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listRevisions", req.GetName())
@@ -3443,6 +3528,11 @@ func (c *restClient) SearchBlueprintRevisions(ctx context.Context, req *telcoaut
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/blueprints:searchRevisions", req.GetParent())
@@ -3524,6 +3614,11 @@ func (c *restClient) SearchDeploymentRevisions(ctx context.Context, req *telcoau
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deployments:searchRevisions", req.GetParent())
 
 		params := url.Values{}
@@ -3598,6 +3693,11 @@ func (c *restClient) DiscardBlueprintChanges(ctx context.Context, req *telcoauto
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:discard", req.GetName())
 
 	params := url.Values{}
@@ -3666,6 +3766,11 @@ func (c *restClient) ListPublicBlueprints(ctx context.Context, req *telcoautomat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/publicBlueprints", req.GetParent())
 
 		params := url.Values{}
@@ -3731,6 +3836,11 @@ func (c *restClient) GetPublicBlueprint(ctx context.Context, req *telcoautomatio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3790,6 +3900,11 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *telcoautomationp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/deployments", req.GetParent())
@@ -3856,6 +3971,11 @@ func (c *restClient) UpdateDeployment(ctx context.Context, req *telcoautomationp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDeployment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeployment().GetName())
 
 	params := url.Values{}
@@ -3915,6 +4035,11 @@ func (c *restClient) UpdateDeployment(ctx context.Context, req *telcoautomationp
 func (c *restClient) GetDeployment(ctx context.Context, req *telcoautomationpb.GetDeploymentRequest, opts ...gax.CallOption) (*telcoautomationpb.Deployment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3981,6 +4106,11 @@ func (c *restClient) RemoveDeployment(ctx context.Context, req *telcoautomationp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:remove", req.GetName())
 
 	params := url.Values{}
@@ -4031,6 +4161,11 @@ func (c *restClient) ListDeployments(ctx context.Context, req *telcoautomationpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deployments", req.GetParent())
@@ -4114,6 +4249,11 @@ func (c *restClient) ListDeploymentRevisions(ctx context.Context, req *telcoauto
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listRevisions", req.GetName())
 
 		params := url.Values{}
@@ -4187,6 +4327,11 @@ func (c *restClient) DiscardDeploymentChanges(ctx context.Context, req *telcoaut
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:discard", req.GetName())
 
 	params := url.Values{}
@@ -4247,6 +4392,11 @@ func (c *restClient) ApplyDeployment(ctx context.Context, req *telcoautomationpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:apply", req.GetName())
 
 	params := url.Values{}
@@ -4299,6 +4449,11 @@ func (c *restClient) ApplyDeployment(ctx context.Context, req *telcoautomationpb
 func (c *restClient) ComputeDeploymentStatus(ctx context.Context, req *telcoautomationpb.ComputeDeploymentStatusRequest, opts ...gax.CallOption) (*telcoautomationpb.ComputeDeploymentStatusResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:computeDeploymentStatus", req.GetName())
@@ -4362,6 +4517,11 @@ func (c *restClient) RollbackDeployment(ctx context.Context, req *telcoautomatio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rollback", req.GetName())
 
 	params := url.Values{}
@@ -4414,6 +4574,11 @@ func (c *restClient) RollbackDeployment(ctx context.Context, req *telcoautomatio
 func (c *restClient) GetHydratedDeployment(ctx context.Context, req *telcoautomationpb.GetHydratedDeploymentRequest, opts ...gax.CallOption) (*telcoautomationpb.HydratedDeployment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4481,6 +4646,11 @@ func (c *restClient) ListHydratedDeployments(ctx context.Context, req *telcoauto
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/hydratedDeployments", req.GetParent())
@@ -4555,6 +4725,11 @@ func (c *restClient) UpdateHydratedDeployment(ctx context.Context, req *telcoaut
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetHydratedDeployment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetHydratedDeployment().GetName())
 
 	params := url.Values{}
@@ -4622,6 +4797,11 @@ func (c *restClient) ApplyHydratedDeployment(ctx context.Context, req *telcoauto
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:apply", req.GetName())
 
 	params := url.Values{}
@@ -4674,6 +4854,11 @@ func (c *restClient) ApplyHydratedDeployment(ctx context.Context, req *telcoauto
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4741,6 +4926,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4817,6 +5007,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4856,6 +5051,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4893,6 +5093,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4960,6 +5165,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

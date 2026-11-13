@@ -743,6 +743,11 @@ func (c *bigQueryStorageRESTClient) CreateReadSession(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTableReference().GetProjectId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTableReference().GetProjectId())
 
 	// Build HTTP headers from client and context metadata.
@@ -798,6 +803,11 @@ func (c *bigQueryStorageRESTClient) CreateReadSession(ctx context.Context, req *
 func (c *bigQueryStorageRESTClient) ReadRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryStorage_ReadRowsClient, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetReadPosition().GetStream().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetReadPosition().GetStream().GetName())
@@ -910,6 +920,11 @@ func (c *bigQueryStorageRESTClient) BatchCreateReadSessionStreams(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetSession().GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -978,6 +993,11 @@ func (c *bigQueryStorageRESTClient) FinalizeStream(ctx context.Context, req *sto
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetStream().GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetStream().GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1022,6 +1042,11 @@ func (c *bigQueryStorageRESTClient) FinalizeStream(ctx context.Context, req *sto
 func (c *bigQueryStorageRESTClient) SplitReadStream(ctx context.Context, req *storagepb.SplitReadStreamRequest, opts ...gax.CallOption) (*storagepb.SplitReadStreamResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOriginalStream().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetOriginalStream().GetName())

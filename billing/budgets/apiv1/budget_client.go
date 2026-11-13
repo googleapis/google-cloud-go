@@ -697,6 +697,11 @@ func (c *budgetRESTClient) CreateBudget(ctx context.Context, req *budgetspb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/budgets", req.GetParent())
 
 	params := url.Values{}
@@ -760,6 +765,11 @@ func (c *budgetRESTClient) UpdateBudget(ctx context.Context, req *budgetspb.Upda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBudget().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBudget().GetName())
@@ -826,6 +836,11 @@ func (c *budgetRESTClient) UpdateBudget(ctx context.Context, req *budgetspb.Upda
 func (c *budgetRESTClient) GetBudget(ctx context.Context, req *budgetspb.GetBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -900,6 +915,11 @@ func (c *budgetRESTClient) ListBudgets(ctx context.Context, req *budgetspb.ListB
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/budgets", req.GetParent())
 
 		params := url.Values{}
@@ -966,6 +986,11 @@ func (c *budgetRESTClient) ListBudgets(ctx context.Context, req *budgetspb.ListB
 func (c *budgetRESTClient) DeleteBudget(ctx context.Context, req *budgetspb.DeleteBudgetRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

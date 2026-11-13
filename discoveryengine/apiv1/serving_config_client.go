@@ -45,7 +45,11 @@ var newServingConfigClientHook clientHook
 
 // ServingConfigCallOptions contains the retry settings for each method of ServingConfigClient.
 type ServingConfigCallOptions struct {
+	CreateServingConfig []gax.CallOption
+	DeleteServingConfig []gax.CallOption
 	UpdateServingConfig []gax.CallOption
+	GetServingConfig    []gax.CallOption
+	ListServingConfigs  []gax.CallOption
 	CancelOperation     []gax.CallOption
 	GetOperation        []gax.CallOption
 	ListOperations      []gax.CallOption
@@ -68,7 +72,11 @@ func defaultServingConfigGRPCClientOptions() []option.ClientOption {
 
 func defaultServingConfigCallOptions() *ServingConfigCallOptions {
 	return &ServingConfigCallOptions{
+		CreateServingConfig: []gax.CallOption{},
+		DeleteServingConfig: []gax.CallOption{},
 		UpdateServingConfig: []gax.CallOption{},
+		GetServingConfig:    []gax.CallOption{},
+		ListServingConfigs:  []gax.CallOption{},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -110,7 +118,11 @@ func defaultServingConfigCallOptions() *ServingConfigCallOptions {
 
 func defaultServingConfigRESTCallOptions() *ServingConfigCallOptions {
 	return &ServingConfigCallOptions{
+		CreateServingConfig: []gax.CallOption{},
+		DeleteServingConfig: []gax.CallOption{},
 		UpdateServingConfig: []gax.CallOption{},
+		GetServingConfig:    []gax.CallOption{},
+		ListServingConfigs:  []gax.CallOption{},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -152,7 +164,11 @@ type internalServingConfigClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	CreateServingConfig(context.Context, *discoveryenginepb.CreateServingConfigRequest, ...gax.CallOption) (*discoveryenginepb.ServingConfig, error)
+	DeleteServingConfig(context.Context, *discoveryenginepb.DeleteServingConfigRequest, ...gax.CallOption) error
 	UpdateServingConfig(context.Context, *discoveryenginepb.UpdateServingConfigRequest, ...gax.CallOption) (*discoveryenginepb.ServingConfig, error)
+	GetServingConfig(context.Context, *discoveryenginepb.GetServingConfigRequest, ...gax.CallOption) (*discoveryenginepb.ServingConfig, error)
+	ListServingConfigs(context.Context, *discoveryenginepb.ListServingConfigsRequest, ...gax.CallOption) *ServingConfigIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
@@ -194,11 +210,43 @@ func (c *ServingConfigClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
+// CreateServingConfig creates a ServingConfig.
+//
+// Note: The Google Cloud console works only with the default serving config.
+// Additional ServingConfigs can be created and managed only via the API.
+//
+// A maximum of 100
+// ServingConfigs are allowed
+// in an Engine, otherwise a
+// RESOURCE_EXHAUSTED error is returned.
+func (c *ServingConfigClient) CreateServingConfig(ctx context.Context, req *discoveryenginepb.CreateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+	return c.internalClient.CreateServingConfig(ctx, req, opts...)
+}
+
+// DeleteServingConfig deletes a ServingConfig.
+//
+// Returns a NOT_FOUND error if the ServingConfig does not exist.
+func (c *ServingConfigClient) DeleteServingConfig(ctx context.Context, req *discoveryenginepb.DeleteServingConfigRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteServingConfig(ctx, req, opts...)
+}
+
 // UpdateServingConfig updates a ServingConfig.
 //
 // Returns a NOT_FOUND error if the ServingConfig does not exist.
 func (c *ServingConfigClient) UpdateServingConfig(ctx context.Context, req *discoveryenginepb.UpdateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
 	return c.internalClient.UpdateServingConfig(ctx, req, opts...)
+}
+
+// GetServingConfig gets a ServingConfig.
+//
+// Returns a NotFound error if the ServingConfig does not exist.
+func (c *ServingConfigClient) GetServingConfig(ctx context.Context, req *discoveryenginepb.GetServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+	return c.internalClient.GetServingConfig(ctx, req, opts...)
+}
+
+// ListServingConfigs lists all ServingConfigs linked to this dataStore.
+func (c *ServingConfigClient) ListServingConfigs(ctx context.Context, req *discoveryenginepb.ListServingConfigsRequest, opts ...gax.CallOption) *ServingConfigIterator {
+	return c.internalClient.ListServingConfigs(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -288,7 +336,11 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 			}),
 		)
 
+		client.CallOptions.CreateServingConfig = append(client.CallOptions.CreateServingConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteServingConfig = append(client.CallOptions.DeleteServingConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateServingConfig = append(client.CallOptions.UpdateServingConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServingConfig = append(client.CallOptions.GetServingConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListServingConfigs = append(client.CallOptions.ListServingConfigs, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
@@ -304,7 +356,11 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 			}),
 		)
 
+		client.CallOptions.CreateServingConfig = append(client.CallOptions.CreateServingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteServingConfig = append(client.CallOptions.DeleteServingConfig, gax.WithClientTracing(tracing))
 		client.CallOptions.UpdateServingConfig = append(client.CallOptions.UpdateServingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetServingConfig = append(client.CallOptions.GetServingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServingConfigs = append(client.CallOptions.ListServingConfigs, gax.WithClientTracing(tracing))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
@@ -321,7 +377,11 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 			}),
 		)
 
+		client.CallOptions.CreateServingConfig = append(client.CallOptions.CreateServingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteServingConfig = append(client.CallOptions.DeleteServingConfig, gax.WithClientLogging(logging))
 		client.CallOptions.UpdateServingConfig = append(client.CallOptions.UpdateServingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetServingConfig = append(client.CallOptions.GetServingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListServingConfigs = append(client.CallOptions.ListServingConfigs, gax.WithClientLogging(logging))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
@@ -416,7 +476,11 @@ func NewServingConfigRESTClient(ctx context.Context, opts ...option.ClientOption
 			}),
 		)
 
+		callOpts.CreateServingConfig = append(callOpts.CreateServingConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteServingConfig = append(callOpts.DeleteServingConfig, gax.WithClientMetrics(metrics))
 		callOpts.UpdateServingConfig = append(callOpts.UpdateServingConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetServingConfig = append(callOpts.GetServingConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListServingConfigs = append(callOpts.ListServingConfigs, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
@@ -432,7 +496,11 @@ func NewServingConfigRESTClient(ctx context.Context, opts ...option.ClientOption
 			}),
 		)
 
+		callOpts.CreateServingConfig = append(callOpts.CreateServingConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteServingConfig = append(callOpts.DeleteServingConfig, gax.WithClientTracing(tracing))
 		callOpts.UpdateServingConfig = append(callOpts.UpdateServingConfig, gax.WithClientTracing(tracing))
+		callOpts.GetServingConfig = append(callOpts.GetServingConfig, gax.WithClientTracing(tracing))
+		callOpts.ListServingConfigs = append(callOpts.ListServingConfigs, gax.WithClientTracing(tracing))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
@@ -449,7 +517,11 @@ func NewServingConfigRESTClient(ctx context.Context, opts ...option.ClientOption
 			}),
 		)
 
+		callOpts.CreateServingConfig = append(callOpts.CreateServingConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteServingConfig = append(callOpts.DeleteServingConfig, gax.WithClientLogging(logging))
 		callOpts.UpdateServingConfig = append(callOpts.UpdateServingConfig, gax.WithClientLogging(logging))
+		callOpts.GetServingConfig = append(callOpts.GetServingConfig, gax.WithClientLogging(logging))
+		callOpts.ListServingConfigs = append(callOpts.ListServingConfigs, gax.WithClientLogging(logging))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
@@ -495,6 +567,44 @@ func (c *servingConfigRESTClient) Close() error {
 func (c *servingConfigRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
+func (c *servingConfigGRPCClient) CreateServingConfig(ctx context.Context, req *discoveryenginepb.CreateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.ServingConfigService/CreateServingConfig")
+	}
+	opts = append((*c.CallOptions).CreateServingConfig[0:len((*c.CallOptions).CreateServingConfig):len((*c.CallOptions).CreateServingConfig)], opts...)
+	var resp *discoveryenginepb.ServingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.servingConfigClient.CreateServingConfig, req, settings.GRPC, c.logger, "CreateServingConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *servingConfigGRPCClient) DeleteServingConfig(ctx context.Context, req *discoveryenginepb.DeleteServingConfigRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.ServingConfigService/DeleteServingConfig")
+	}
+	opts = append((*c.CallOptions).DeleteServingConfig[0:len((*c.CallOptions).DeleteServingConfig):len((*c.CallOptions).DeleteServingConfig)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.servingConfigClient.DeleteServingConfig, req, settings.GRPC, c.logger, "DeleteServingConfig")
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *servingConfigGRPCClient) UpdateServingConfig(ctx context.Context, req *discoveryenginepb.UpdateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config.name", url.QueryEscape(req.GetServingConfig().GetName()))}
 
@@ -514,6 +624,76 @@ func (c *servingConfigGRPCClient) UpdateServingConfig(ctx context.Context, req *
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *servingConfigGRPCClient) GetServingConfig(ctx context.Context, req *discoveryenginepb.GetServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.ServingConfigService/GetServingConfig")
+	}
+	opts = append((*c.CallOptions).GetServingConfig[0:len((*c.CallOptions).GetServingConfig):len((*c.CallOptions).GetServingConfig)], opts...)
+	var resp *discoveryenginepb.ServingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.servingConfigClient.GetServingConfig, req, settings.GRPC, c.logger, "GetServingConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *servingConfigGRPCClient) ListServingConfigs(ctx context.Context, req *discoveryenginepb.ListServingConfigsRequest, opts ...gax.CallOption) *ServingConfigIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.ServingConfigService/ListServingConfigs")
+	}
+	opts = append((*c.CallOptions).ListServingConfigs[0:len((*c.CallOptions).ListServingConfigs):len((*c.CallOptions).ListServingConfigs)], opts...)
+	it := &ServingConfigIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.ServingConfig, string, error) {
+		resp := &discoveryenginepb.ListServingConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.servingConfigClient.ListServingConfigs, req, settings.GRPC, c.logger, "ListServingConfigs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetServingConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *servingConfigGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
@@ -603,6 +783,127 @@ func (c *servingConfigGRPCClient) ListOperations(ctx context.Context, req *longr
 	return it
 }
 
+// CreateServingConfig creates a ServingConfig.
+//
+// Note: The Google Cloud console works only with the default serving config.
+// Additional ServingConfigs can be created and managed only via the API.
+//
+// A maximum of 100
+// ServingConfigs are allowed
+// in an Engine, otherwise a
+// RESOURCE_EXHAUSTED error is returned.
+func (c *servingConfigRESTClient) CreateServingConfig(ctx context.Context, req *discoveryenginepb.CreateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetServingConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/servingConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("servingConfigId", fmt.Sprintf("%v", req.GetServingConfigId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.ServingConfigService/CreateServingConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataStores/*}/servingConfigs")
+	}
+	opts = append((*c.CallOptions).CreateServingConfig[0:len((*c.CallOptions).CreateServingConfig):len((*c.CallOptions).CreateServingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.ServingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateServingConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteServingConfig deletes a ServingConfig.
+//
+// Returns a NOT_FOUND error if the ServingConfig does not exist.
+func (c *servingConfigRESTClient) DeleteServingConfig(ctx context.Context, req *discoveryenginepb.DeleteServingConfigRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.ServingConfigService/DeleteServingConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataStores/*/servingConfigs/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteServingConfig")
+		return err
+	}, opts...)
+}
+
 // UpdateServingConfig updates a ServingConfig.
 //
 // Returns a NOT_FOUND error if the ServingConfig does not exist.
@@ -616,6 +917,11 @@ func (c *servingConfigRESTClient) UpdateServingConfig(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServingConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetServingConfig().GetName())
@@ -673,6 +979,150 @@ func (c *servingConfigRESTClient) UpdateServingConfig(ctx context.Context, req *
 	return resp, nil
 }
 
+// GetServingConfig gets a ServingConfig.
+//
+// Returns a NotFound error if the ServingConfig does not exist.
+func (c *servingConfigRESTClient) GetServingConfig(ctx context.Context, req *discoveryenginepb.GetServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.ServingConfigService/GetServingConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataStores/*/servingConfigs/*}")
+	}
+	opts = append((*c.CallOptions).GetServingConfig[0:len((*c.CallOptions).GetServingConfig):len((*c.CallOptions).GetServingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.ServingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetServingConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListServingConfigs lists all ServingConfigs linked to this dataStore.
+func (c *servingConfigRESTClient) ListServingConfigs(ctx context.Context, req *discoveryenginepb.ListServingConfigsRequest, opts ...gax.CallOption) *ServingConfigIterator {
+	it := &ServingConfigIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.ServingConfig, string, error) {
+		resp := &discoveryenginepb.ListServingConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/servingConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServingConfigs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetServingConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *servingConfigRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -683,6 +1133,11 @@ func (c *servingConfigRESTClient) CancelOperation(ctx context.Context, req *long
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
@@ -722,6 +1177,11 @@ func (c *servingConfigRESTClient) CancelOperation(ctx context.Context, req *long
 func (c *servingConfigRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -789,6 +1249,11 @@ func (c *servingConfigRESTClient) ListOperations(ctx context.Context, req *longr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

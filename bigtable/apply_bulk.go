@@ -24,6 +24,7 @@ import (
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -79,10 +80,6 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	// entries. The absence of any errors means we should return nil.
 	var foundErr bool
 	for _, entry := range origEntries {
-		if entry.Err == nil && entry.TopLevelErr != nil {
-			// Populate per mutation error if top level error is not nil
-			entry.Err = entry.TopLevelErr
-		}
 		if entry.Err != nil {
 			foundErr = true
 		}
@@ -100,23 +97,53 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 	defer mt.RecordOperationCompletion()
 	ctx = metrics.NewContext(ctx, mt)
 
+	origLen := len(group)
+	var hasPerEntryResponse bool
+	var terminalErr error
 	err = gaxInvokeWithRecorder(ctx, "MutateRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		terminalErr = nil
 		attrMap["rowCount"] = len(group)
 		trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
-		err := t.doApplyBulk(ctx, group, headerMD, trailerMD, opts...)
-		if err != nil {
-			// We want to retry the entire request with the current group
-			return err
+		seenAny, rpcErr := t.doApplyBulk(ctx, group, headerMD, trailerMD, opts...)
+		if seenAny || rpcErr == nil {
+			hasPerEntryResponse = true
 		}
-		// Get the entries that need to be retried
+		// Preserve context errors (Canceled / DeadlineExceeded) as-is and
+		// stop retrying immediately so callers driving shutdown or timeout
+		// logic off the status code see the right signal.
+		if rpcErr != nil && ctx.Err() != nil {
+			terminalErr = rpcErr
+			return nil
+		}
+
+		// Narrow the group to entries whose error is retryable AND whose
+		// mutations are idempotent (no SetCell at ServerTime). Committed
+		// entries (Err=nil) and non-idempotent entries fall out of the retry
+		// set.
+		narrowed := len(group) < origLen
 		group = t.getApplyBulkRetries(group)
-		if len(group) > 0 && len(idempotentRetryCodes) > 0 {
-			// We have at least one mutation that needs to be retried.
-			// Return an arbitrary error that is retryable according to callOptions.
-			return status.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk")
+		if len(group) > 0 {
+			if rpcErr != nil && isRetryableApplyBulkErr(rpcErr) {
+				return rpcErr
+			}
+			if len(idempotentRetryCodes) > 0 {
+				// Return an arbitrary error that is retryable according to callOptions.
+				return status.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk")
+			}
+		}
+
+		// No entries are eligible for retry: return nil to gax so it never
+		// retries an un-narrowed or empty group. If the RPC failed before any
+		// per-entry progress or narrowing occurred, surface rpcErr as the
+		// group-level failure; otherwise let ApplyBulk collate per-entry Errs.
+		if rpcErr != nil && !hasPerEntryResponse && !narrowed {
+			terminalErr = rpcErr
 		}
 		return nil
 	}, t.c.retryOption)
+	if err == nil && terminalErr != nil {
+		err = terminalErr
+	}
 
 	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
 	mt.SetCurrOpStatus(statusCode)
@@ -127,8 +154,7 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 func (t *Table) getApplyBulkRetries(entries []*entryErr) []*entryErr {
 	var retryEntries []*entryErr
 	for _, entry := range entries {
-		err := entry.Err
-		if err != nil && isIdempotentRetryCode[status.Code(err)] && mutationsAreRetryable(entry.Entry.Mutations) {
+		if isRetryableApplyBulkErr(entry.Err) && mutationsAreRetryable(entry.Entry.Mutations) {
 			// There was an error and the entry is retryable.
 			retryEntries = append(retryEntries, entry)
 		}
@@ -136,18 +162,43 @@ func (t *Table) getApplyBulkRetries(entries []*entryErr) []*entryErr {
 	return retryEntries
 }
 
-// doApplyBulk does the work of a single ApplyBulk invocation
-func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD, trailerMD *metadata.MD, opts ...ApplyOption) error {
+// isRetryableApplyBulkErr mirrors bigtableRetryer's retryability rules so
+// getApplyBulkRetries and gax agree on which errors warrant a retry.
+func isRetryableApplyBulkErr(err error) bool {
+	if err == nil {
+		return false
+	}
+	if apiErr, ok := apierror.FromError(err); ok && apiErr != nil && apiErr.Details().RetryInfo != nil {
+		return true
+	}
+	st, ok := status.FromError(err)
+	if !ok {
+		return false
+	}
+	c := st.Code()
+	return isIdempotentRetryCode[c] ||
+		(c == codes.Internal && containsAny(err.Error(), retryableInternalErrMsgs))
+}
+
+func toGrpcStatusErr(err error) error {
+	if err == nil {
+		return nil
+	}
+	if _, ok := status.FromError(err); ok {
+		return err
+	}
+	_, statusErr := metrics.ConvertToGrpcStatusErr(err)
+	return statusErr
+}
+
+// doApplyBulk does the work of a single ApplyBulk invocation. seenAny reports
+// whether at least one per-entry MutateRowsResponse status was received.
+func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD, trailerMD *metadata.MD, opts ...ApplyOption) (seenAny bool, err error) {
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)
 		}
 	}
-
-	var topLevelErr error
-	defer func() {
-		populateTopLevelError(entryErrs, topLevelErr)
-	}()
 
 	entries := make([]*btpb.MutateRowsRequest_Entry, len(entryErrs))
 	for i, entryErr := range entryErrs {
@@ -165,8 +216,11 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
-		_, topLevelErr = metrics.ConvertToGrpcStatusErr(err)
-		return err
+		statusErr := toGrpcStatusErr(err)
+		for _, e := range entryErrs {
+			e.Err = statusErr
+		}
+		return false, err
 	}
 
 	// Ignore error since header is only being used to record builtin metrics
@@ -186,13 +240,24 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 		if err != nil {
 			*trailerMD = stream.Trailer()
-			_, topLevelErr = metrics.ConvertToGrpcStatusErr(err)
-			return err
+			// Attribute the stream error to each entry that did not receive a
+			// per-entry response. Entries that already received a response
+			// (seen=true) keep whatever Err the server set -- including nil
+			// for OK, which marks them as committed and lets applyGroup's
+			// narrowing step exclude them from retry.
+			statusErr := toGrpcStatusErr(err)
+			for i, s := range seen {
+				if !s {
+					entryErrs[i].Err = statusErr
+				}
+			}
+			return seenAny, err
 		}
 
 		for _, entry := range res.Entries {
 			if entry.Index >= 0 && int(entry.Index) < len(entryErrs) {
 				seen[entry.Index] = true
+				seenAny = true
 				s := entry.Status
 				if s == nil {
 					entryErrs[entry.Index].Err = status.Error(codes.Internal, "bigtable: missing status in response entry")
@@ -205,13 +270,7 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 		after(res)
 	}
-	return nil
-}
-
-func populateTopLevelError(entries []*entryErr, topLevelErr error) {
-	for _, entry := range entries {
-		entry.TopLevelErr = topLevelErr
-	}
+	return seenAny, nil
 }
 
 // groupEntries groups entries into groups of a specified size without breaking up
@@ -245,9 +304,4 @@ func groupEntries(entries []*entryErr, maxSize int) [][]*entryErr {
 type entryErr struct {
 	Entry *btpb.MutateRowsRequest_Entry
 	Err   error
-
-	// TopLevelErr is the error received either from
-	// 1. client.MutateRows
-	// 2. stream.Recv
-	TopLevelErr error
 }

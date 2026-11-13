@@ -1651,6 +1651,11 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *ser
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/environments", req.GetParent())
 
 	params := url.Values{}
@@ -1710,6 +1715,11 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *ser
 func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *servicepb.GetEnvironmentRequest, opts ...gax.CallOption) (*servicepb.Environment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1777,6 +1787,11 @@ func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *serv
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/environments", req.GetParent())
@@ -1851,6 +1866,11 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *ser
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1917,6 +1937,11 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *ser
 func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *servicepb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1986,6 +2011,11 @@ func (c *environmentsRESTClient) ExecuteAirflowCommand(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:executeAirflowCommand", req.GetEnvironment())
 
 	params := url.Values{}
@@ -2046,6 +2076,11 @@ func (c *environmentsRESTClient) StopAirflowCommand(ctx context.Context, req *se
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stopAirflowCommand", req.GetEnvironment())
 
 	params := url.Values{}
@@ -2104,6 +2139,11 @@ func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:pollAirflowCommand", req.GetEnvironment())
@@ -2175,6 +2215,11 @@ func (c *environmentsRESTClient) ListWorkloads(ctx context.Context, req *service
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/workloads", req.GetParent())
@@ -2253,6 +2298,11 @@ func (c *environmentsRESTClient) CheckUpgrade(ctx context.Context, req *servicep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:checkUpgrade", req.GetEnvironment())
 
 	params := url.Values{}
@@ -2324,6 +2374,11 @@ func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userWorkloadsSecrets", req.GetParent())
 
 	params := url.Values{}
@@ -2380,6 +2435,11 @@ func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, 
 func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req *servicepb.GetUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2450,6 +2510,11 @@ func (c *environmentsRESTClient) ListUserWorkloadsSecrets(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/userWorkloadsSecrets", req.GetParent())
@@ -2527,6 +2592,11 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsSecret(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUserWorkloadsSecret().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUserWorkloadsSecret().GetName())
 
 	params := url.Values{}
@@ -2584,6 +2654,11 @@ func (c *environmentsRESTClient) DeleteUserWorkloadsSecret(ctx context.Context, 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2631,6 +2706,11 @@ func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userWorkloadsConfigMaps", req.GetParent())
@@ -2688,6 +2768,11 @@ func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, req *servicepb.GetUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2758,6 +2843,11 @@ func (c *environmentsRESTClient) ListUserWorkloadsConfigMaps(ctx context.Context
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/userWorkloadsConfigMaps", req.GetParent())
@@ -2835,6 +2925,11 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsConfigMap(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUserWorkloadsConfigMap().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUserWorkloadsConfigMap().GetName())
 
 	params := url.Values{}
@@ -2892,6 +2987,11 @@ func (c *environmentsRESTClient) DeleteUserWorkloadsConfigMap(ctx context.Contex
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2938,6 +3038,11 @@ func (c *environmentsRESTClient) SaveSnapshot(ctx context.Context, req *servicep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:saveSnapshot", req.GetEnvironment())
@@ -3010,6 +3115,11 @@ func (c *environmentsRESTClient) LoadSnapshot(ctx context.Context, req *servicep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:loadSnapshot", req.GetEnvironment())
 
 	params := url.Values{}
@@ -3077,6 +3187,11 @@ func (c *environmentsRESTClient) DatabaseFailover(ctx context.Context, req *serv
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:databaseFailover", req.GetEnvironment())
 
 	params := url.Values{}
@@ -3138,6 +3253,11 @@ func (c *environmentsRESTClient) FetchDatabaseProperties(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchDatabaseProperties", req.GetEnvironment())
 
 	params := url.Values{}
@@ -3192,6 +3312,11 @@ func (c *environmentsRESTClient) DeleteOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3229,6 +3354,11 @@ func (c *environmentsRESTClient) DeleteOperation(ctx context.Context, req *longr
 func (c *environmentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3296,6 +3426,11 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

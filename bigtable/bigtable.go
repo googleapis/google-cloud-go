@@ -267,6 +267,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		} else {
 			cr = newChunkReader()
 		}
+		cr.lastKey = prevRowKey
 
 		// Ignore error since header is only being used to record builtin metrics
 		// Failure to record metrics should not fail the operation
@@ -336,8 +337,12 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 				}
 			}
 
-			if res.LastScannedRowKey != nil {
-				prevRowKey = string(res.LastScannedRowKey)
+			if len(res.LastScannedRowKey) > 0 {
+				if err := cr.ProcessLastScannedRowKey(res.LastScannedRowKey); err != nil {
+					// No need to prepare for a retry, this is an unretryable error.
+					return err
+				}
+				prevRowKey = cr.lastKey
 			}
 
 			// Handle any incoming RequestStats. This should happen at most once.
@@ -1160,11 +1165,12 @@ func (ts Timestamp) TruncateToMilliseconds() Timestamp {
 func gaxInvokeWithRecorder(ctx context.Context, method string,
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
 	mt := metrics.FromContext(ctx)
-	attemptHeaderMD := metadata.New(nil)
-	attempTrailerMD := metadata.New(nil)
 	mt.SetMethod(method)
 
 	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
+		attemptHeaderMD := metadata.New(nil)
+		attemptTrailerMD := metadata.New(nil)
+
 		// Inject cookie and attempt information from prior attempts.
 		md := metadata.New(nil)
 		for k, v := range mt.Cookies() {
@@ -1178,10 +1184,10 @@ func gaxInvokeWithRecorder(ctx context.Context, method string,
 		// Per-attempt metric setup (RecordAttemptStart, blockingLatencyTracker)
 		// is owned by StatsHandler.TagRPC. f's headerMD / trailerMD are still
 		// needed for routing-cookie extraction below.
-		err := f(newCtx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+		err := f(newCtx, &attemptHeaderMD, &attemptTrailerMD, callSettings)
 
 		mt.ExtractCookiesFromMD(attemptHeaderMD, cookiePrefix)
-		mt.ExtractCookiesFromMD(attempTrailerMD, cookiePrefix)
+		mt.ExtractCookiesFromMD(attemptTrailerMD, cookiePrefix)
 		return err
 	}
 

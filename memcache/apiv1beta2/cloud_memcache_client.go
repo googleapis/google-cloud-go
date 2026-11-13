@@ -1229,6 +1229,11 @@ func (c *cloudMemcacheRESTClient) ListInstances(ctx context.Context, req *memcac
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta2/%v/instances", req.GetParent())
 
 		params := url.Values{}
@@ -1300,6 +1305,11 @@ func (c *cloudMemcacheRESTClient) GetInstance(ctx context.Context, req *memcache
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1359,6 +1369,11 @@ func (c *cloudMemcacheRESTClient) CreateInstance(ctx context.Context, req *memca
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v/instances", req.GetParent())
@@ -1428,6 +1443,11 @@ func (c *cloudMemcacheRESTClient) UpdateInstance(ctx context.Context, req *memca
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetResource().GetName())
@@ -1507,6 +1527,11 @@ func (c *cloudMemcacheRESTClient) UpdateParameters(ctx context.Context, req *mem
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:updateParameters", req.GetName())
 
 	params := url.Values{}
@@ -1566,6 +1591,11 @@ func (c *cloudMemcacheRESTClient) UpdateParameters(ctx context.Context, req *mem
 func (c *cloudMemcacheRESTClient) DeleteInstance(ctx context.Context, req *memcachepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
@@ -1636,6 +1666,11 @@ func (c *cloudMemcacheRESTClient) ApplyParameters(ctx context.Context, req *memc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:applyParameters", req.GetName())
 
 	params := url.Values{}
@@ -1701,6 +1736,11 @@ func (c *cloudMemcacheRESTClient) ApplySoftwareUpdate(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:applySoftwareUpdate", req.GetInstance())
@@ -1770,6 +1810,11 @@ func (c *cloudMemcacheRESTClient) RescheduleMaintenance(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:rescheduleMaintenance", req.GetInstance())
 
 	params := url.Values{}
@@ -1829,6 +1874,11 @@ func (c *cloudMemcacheRESTClient) RescheduleMaintenance(ctx context.Context, req
 func (c *cloudMemcacheRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
@@ -1896,6 +1946,11 @@ func (c *cloudMemcacheRESTClient) ListLocations(ctx context.Context, req *locati
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta2/%v/locations", req.GetName())
@@ -1972,6 +2027,11 @@ func (c *cloudMemcacheRESTClient) CancelOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2011,6 +2071,11 @@ func (c *cloudMemcacheRESTClient) DeleteOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
 	params := url.Values{}
@@ -2048,6 +2113,11 @@ func (c *cloudMemcacheRESTClient) DeleteOperation(ctx context.Context, req *long
 func (c *cloudMemcacheRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
@@ -2115,6 +2185,11 @@ func (c *cloudMemcacheRESTClient) ListOperations(ctx context.Context, req *longr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta2/%v/operations", req.GetName())

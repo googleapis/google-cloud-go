@@ -794,6 +794,13 @@ func (c *tableRESTClient) GetTable(ctx context.Context, req *bigquerypb.GetTable
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetTableId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId())
 
 	params := url.Values{}
@@ -862,6 +869,12 @@ func (c *tableRESTClient) InsertTable(ctx context.Context, req *bigquerypb.Inser
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables", req.GetProjectId(), req.GetDatasetId())
 
 	// Build HTTP headers from client and context metadata.
@@ -925,6 +938,13 @@ func (c *tableRESTClient) PatchTable(ctx context.Context, req *bigquerypb.Update
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetTableId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId())
@@ -994,6 +1014,13 @@ func (c *tableRESTClient) UpdateTable(ctx context.Context, req *bigquerypb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetTableId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId())
 
 	params := url.Values{}
@@ -1053,6 +1080,13 @@ func (c *tableRESTClient) DeleteTable(ctx context.Context, req *bigquerypb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetTableId(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId())
 
 	// Build HTTP headers from client and context metadata.
@@ -1101,6 +1135,12 @@ func (c *tableRESTClient) ListTables(ctx context.Context, req *bigquerypb.ListTa
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetDatasetId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables", req.GetProjectId(), req.GetDatasetId())

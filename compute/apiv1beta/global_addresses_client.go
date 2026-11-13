@@ -350,6 +350,12 @@ func (c *globalAddressesRESTClient) Delete(ctx context.Context, req *computepb.D
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetAddress(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/addresses/%v", req.GetProject(), req.GetAddress())
 
 	params := url.Values{}
@@ -413,6 +419,12 @@ func (c *globalAddressesRESTClient) Get(ctx context.Context, req *computepb.GetG
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetAddress(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/addresses/%v", req.GetProject(), req.GetAddress())
 
 	// Build HTTP headers from client and context metadata.
@@ -468,6 +480,11 @@ func (c *globalAddressesRESTClient) Insert(ctx context.Context, req *computepb.I
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/addresses", req.GetProject())
@@ -544,6 +561,11 @@ func (c *globalAddressesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/addresses", req.GetProject())
@@ -626,6 +648,12 @@ func (c *globalAddressesRESTClient) Move(ctx context.Context, req *computepb.Mov
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetAddress(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/addresses/%v/move", req.GetProject(), req.GetAddress())
 
 	params := url.Values{}
@@ -697,6 +725,12 @@ func (c *globalAddressesRESTClient) SetLabels(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/addresses/%v/setLabels", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -758,6 +792,12 @@ func (c *globalAddressesRESTClient) TestIamPermissions(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/addresses/%v/testIamPermissions", req.GetProject(), req.GetResource())

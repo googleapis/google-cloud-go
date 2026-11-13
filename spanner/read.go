@@ -887,6 +887,10 @@ func errChunkedEmptyRow() error {
 	return spannerErrorf(codes.FailedPrecondition, "got invalid chunked PartialResultSet with empty Row")
 }
 
+func errMissingRowType() error {
+	return spannerErrorf(codes.Internal, "missing row_type in PartialResultSet metadata")
+}
+
 // add tries to merge a new PartialResultSet into buffered Row. It returns any
 // rows that have been completed as a result.
 func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.ResultSetMetadata, error) {
@@ -894,6 +898,9 @@ func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.R
 	p.observeMetadata(r.Metadata)
 	if len(r.Values) == 0 {
 		return nil, r.Metadata, nil
+	}
+	if len(p.row.fields) == 0 {
+		return nil, r.Metadata, errMissingRowType()
 	}
 	if p.chunked {
 		p.chunked = false
@@ -938,7 +945,7 @@ func (p *partialResultSetDecoder) observeMetadata(metadata *sppb.ResultSetMetada
 		return
 	}
 	// Metadata should only be returned in the first result.
-	if p.row.fields == nil {
+	if p.row.fields == nil && metadata.RowType != nil {
 		p.row.fields = metadata.RowType.Fields
 	}
 	if p.tx == nil && metadata.Transaction != nil {

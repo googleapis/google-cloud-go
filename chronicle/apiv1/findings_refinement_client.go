@@ -1095,6 +1095,11 @@ func (c *findingsRefinementRESTClient) GetFindingsRefinement(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1160,6 +1165,11 @@ func (c *findingsRefinementRESTClient) ListFindingsRefinements(ctx context.Conte
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/findingsRefinements", req.GetParent())
@@ -1234,6 +1244,11 @@ func (c *findingsRefinementRESTClient) CreateFindingsRefinement(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/findingsRefinements", req.GetParent())
 
 	params := url.Values{}
@@ -1293,6 +1308,11 @@ func (c *findingsRefinementRESTClient) UpdateFindingsRefinement(ctx context.Cont
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFindingsRefinement().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFindingsRefinement().GetName())
@@ -1356,6 +1376,11 @@ func (c *findingsRefinementRESTClient) GetFindingsRefinementDeployment(ctx conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1415,6 +1440,11 @@ func (c *findingsRefinementRESTClient) UpdateFindingsRefinementDeployment(ctx co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFindingsRefinementDeployment().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFindingsRefinementDeployment().GetName())
@@ -1491,6 +1521,11 @@ func (c *findingsRefinementRESTClient) ListAllFindingsRefinementDeployments(ctx 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetInstance(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listAllFindingsRefinementDeployments", req.GetInstance())
 
 		params := url.Values{}
@@ -1565,6 +1600,11 @@ func (c *findingsRefinementRESTClient) ComputeFindingsRefinementActivity(ctx con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:computeFindingsRefinementActivity", req.GetName())
 
 	params := url.Values{}
@@ -1623,6 +1663,11 @@ func (c *findingsRefinementRESTClient) ComputeAllFindingsRefinementActivities(ct
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:computeAllFindingsRefinementActivities", req.GetInstance())
@@ -1685,6 +1730,11 @@ func (c *findingsRefinementRESTClient) CancelOperation(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1724,6 +1774,11 @@ func (c *findingsRefinementRESTClient) DeleteOperation(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1761,6 +1816,11 @@ func (c *findingsRefinementRESTClient) DeleteOperation(ctx context.Context, req 
 func (c *findingsRefinementRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1828,6 +1888,11 @@ func (c *findingsRefinementRESTClient) ListOperations(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

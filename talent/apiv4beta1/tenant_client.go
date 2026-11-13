@@ -696,6 +696,11 @@ func (c *tenantRESTClient) CreateTenant(ctx context.Context, req *talentpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v/tenants", req.GetParent())
 
 	params := url.Values{}
@@ -748,6 +753,11 @@ func (c *tenantRESTClient) CreateTenant(ctx context.Context, req *talentpb.Creat
 func (c *tenantRESTClient) GetTenant(ctx context.Context, req *talentpb.GetTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
@@ -810,6 +820,11 @@ func (c *tenantRESTClient) UpdateTenant(ctx context.Context, req *talentpb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTenant().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetTenant().GetName())
 
 	params := url.Values{}
@@ -864,6 +879,11 @@ func (c *tenantRESTClient) DeleteTenant(ctx context.Context, req *talentpb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -914,6 +934,11 @@ func (c *tenantRESTClient) ListTenants(ctx context.Context, req *talentpb.ListTe
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v4beta1/%v/tenants", req.GetParent())
@@ -979,6 +1004,11 @@ func (c *tenantRESTClient) ListTenants(ctx context.Context, req *talentpb.ListTe
 func (c *tenantRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())

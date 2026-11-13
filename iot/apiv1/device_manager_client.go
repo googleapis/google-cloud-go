@@ -1402,6 +1402,11 @@ func (c *deviceManagerRESTClient) CreateDeviceRegistry(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/registries", req.GetParent())
 
 	params := url.Values{}
@@ -1454,6 +1459,11 @@ func (c *deviceManagerRESTClient) CreateDeviceRegistry(ctx context.Context, req 
 func (c *deviceManagerRESTClient) GetDeviceRegistry(ctx context.Context, req *iotpb.GetDeviceRegistryRequest, opts ...gax.CallOption) (*iotpb.DeviceRegistry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1517,6 +1527,11 @@ func (c *deviceManagerRESTClient) UpdateDeviceRegistry(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDeviceRegistry().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeviceRegistry().GetName())
 
 	params := url.Values{}
@@ -1578,6 +1593,11 @@ func (c *deviceManagerRESTClient) DeleteDeviceRegistry(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1628,6 +1648,11 @@ func (c *deviceManagerRESTClient) ListDeviceRegistries(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/registries", req.GetParent())
@@ -1702,6 +1727,11 @@ func (c *deviceManagerRESTClient) CreateDevice(ctx context.Context, req *iotpb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/devices", req.GetParent())
 
 	params := url.Values{}
@@ -1754,6 +1784,11 @@ func (c *deviceManagerRESTClient) CreateDevice(ctx context.Context, req *iotpb.C
 func (c *deviceManagerRESTClient) GetDevice(ctx context.Context, req *iotpb.GetDeviceRequest, opts ...gax.CallOption) (*iotpb.Device, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1824,6 +1859,11 @@ func (c *deviceManagerRESTClient) UpdateDevice(ctx context.Context, req *iotpb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDevice().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDevice().GetName())
 
 	params := url.Values{}
@@ -1885,6 +1925,11 @@ func (c *deviceManagerRESTClient) DeleteDevice(ctx context.Context, req *iotpb.D
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1935,6 +1980,11 @@ func (c *deviceManagerRESTClient) ListDevices(ctx context.Context, req *iotpb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/devices", req.GetParent())
@@ -2036,6 +2086,11 @@ func (c *deviceManagerRESTClient) ModifyCloudToDeviceConfig(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:modifyCloudToDeviceConfig", req.GetName())
 
 	params := url.Values{}
@@ -2089,6 +2144,11 @@ func (c *deviceManagerRESTClient) ModifyCloudToDeviceConfig(ctx context.Context,
 func (c *deviceManagerRESTClient) ListDeviceConfigVersions(ctx context.Context, req *iotpb.ListDeviceConfigVersionsRequest, opts ...gax.CallOption) (*iotpb.ListDeviceConfigVersionsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/configVersions", req.GetName())
@@ -2147,6 +2207,11 @@ func (c *deviceManagerRESTClient) ListDeviceConfigVersions(ctx context.Context, 
 func (c *deviceManagerRESTClient) ListDeviceStates(ctx context.Context, req *iotpb.ListDeviceStatesRequest, opts ...gax.CallOption) (*iotpb.ListDeviceStatesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/states", req.GetName())
@@ -2213,6 +2278,11 @@ func (c *deviceManagerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2275,6 +2345,11 @@ func (c *deviceManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2335,6 +2410,11 @@ func (c *deviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *i
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
@@ -2411,6 +2491,11 @@ func (c *deviceManagerRESTClient) SendCommandToDevice(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:sendCommandToDevice", req.GetName())
 
 	params := url.Values{}
@@ -2471,6 +2556,11 @@ func (c *deviceManagerRESTClient) BindDeviceToGateway(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:bindDeviceToGateway", req.GetParent())
 
 	params := url.Values{}
@@ -2529,6 +2619,11 @@ func (c *deviceManagerRESTClient) UnbindDeviceFromGateway(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:unbindDeviceFromGateway", req.GetParent())

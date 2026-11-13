@@ -743,6 +743,11 @@ func (c *restClient) GetDataSource(ctx context.Context, req *datasourcespb.GetDa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/datasources/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -808,6 +813,11 @@ func (c *restClient) ListDataSources(ctx context.Context, req *datasourcespb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/datasources/v1/%v/dataSources", req.GetParent())
@@ -883,6 +893,11 @@ func (c *restClient) CreateDataSource(ctx context.Context, req *datasourcespb.Cr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/datasources/v1/%v/dataSources", req.GetParent())
 
 	params := url.Values{}
@@ -943,6 +958,11 @@ func (c *restClient) UpdateDataSource(ctx context.Context, req *datasourcespb.Up
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataSource().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/datasources/v1/%v", req.GetDataSource().GetName())
@@ -1006,6 +1026,11 @@ func (c *restClient) DeleteDataSource(ctx context.Context, req *datasourcespb.De
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/datasources/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1053,6 +1078,11 @@ func (c *restClient) FetchDataSource(ctx context.Context, req *datasourcespb.Fet
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/datasources/v1/%v:fetch", req.GetName())

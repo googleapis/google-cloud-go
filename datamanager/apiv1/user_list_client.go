@@ -655,6 +655,11 @@ func (c *userListRESTClient) GetUserList(ctx context.Context, req *datamanagerpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -734,6 +739,11 @@ func (c *userListRESTClient) ListUserLists(ctx context.Context, req *datamanager
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/userLists", req.GetParent())
@@ -825,6 +835,11 @@ func (c *userListRESTClient) CreateUserList(ctx context.Context, req *datamanage
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userLists", req.GetParent())
 
 	params := url.Values{}
@@ -903,6 +918,11 @@ func (c *userListRESTClient) UpdateUserList(ctx context.Context, req *datamanage
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUserList().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUserList().GetName())
 
 	params := url.Values{}
@@ -979,6 +999,11 @@ func (c *userListRESTClient) UpdateUserList(ctx context.Context, req *datamanage
 func (c *userListRESTClient) DeleteUserList(ctx context.Context, req *datamanagerpb.DeleteUserListRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

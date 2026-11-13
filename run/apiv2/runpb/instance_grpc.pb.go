@@ -23,6 +23,7 @@ package runpb
 import (
 	context "context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,12 +36,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Instances_CreateInstance_FullMethodName = "/google.cloud.run.v2.Instances/CreateInstance"
-	Instances_DeleteInstance_FullMethodName = "/google.cloud.run.v2.Instances/DeleteInstance"
-	Instances_GetInstance_FullMethodName    = "/google.cloud.run.v2.Instances/GetInstance"
-	Instances_ListInstances_FullMethodName  = "/google.cloud.run.v2.Instances/ListInstances"
-	Instances_StopInstance_FullMethodName   = "/google.cloud.run.v2.Instances/StopInstance"
-	Instances_StartInstance_FullMethodName  = "/google.cloud.run.v2.Instances/StartInstance"
+	Instances_CreateInstance_FullMethodName     = "/google.cloud.run.v2.Instances/CreateInstance"
+	Instances_UpdateInstance_FullMethodName     = "/google.cloud.run.v2.Instances/UpdateInstance"
+	Instances_DeleteInstance_FullMethodName     = "/google.cloud.run.v2.Instances/DeleteInstance"
+	Instances_GetInstance_FullMethodName        = "/google.cloud.run.v2.Instances/GetInstance"
+	Instances_ListInstances_FullMethodName      = "/google.cloud.run.v2.Instances/ListInstances"
+	Instances_StopInstance_FullMethodName       = "/google.cloud.run.v2.Instances/StopInstance"
+	Instances_StartInstance_FullMethodName      = "/google.cloud.run.v2.Instances/StartInstance"
+	Instances_GetIamPolicy_FullMethodName       = "/google.cloud.run.v2.Instances/GetIamPolicy"
+	Instances_SetIamPolicy_FullMethodName       = "/google.cloud.run.v2.Instances/SetIamPolicy"
+	Instances_TestIamPermissions_FullMethodName = "/google.cloud.run.v2.Instances/TestIamPermissions"
 )
 
 // InstancesClient is the client API for Instances service.
@@ -49,9 +54,11 @@ const (
 type InstancesClient interface {
 	// Creates an Instance.
 	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Deletes a Instance
+	// Updates an Instance.
+	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes an Instance
 	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Gets a Instance
+	// Gets an Instance
 	GetInstance(ctx context.Context, in *GetInstanceRequest, opts ...grpc.CallOption) (*Instance, error)
 	// Lists Instances. Results are sorted by creation time, descending.
 	ListInstances(ctx context.Context, in *ListInstancesRequest, opts ...grpc.CallOption) (*ListInstancesResponse, error)
@@ -59,6 +66,16 @@ type InstancesClient interface {
 	StopInstance(ctx context.Context, in *StopInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Starts an Instance.
 	StartInstance(ctx context.Context, in *StartInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets the IAM Access Control policy currently in effect for the given
+	// Instance. This result does not include any inherited policies.
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
+	// Sets the IAM Access control policy for the specified Instance. Overwrites
+	// any existing policy.
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
+	// Returns permissions that a caller has on the specified Instance.
+	//
+	// There are no permissions required for making this API call.
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type instancesClient struct {
@@ -72,6 +89,15 @@ func NewInstancesClient(cc grpc.ClientConnInterface) InstancesClient {
 func (c *instancesClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, Instances_CreateInstance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *instancesClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Instances_UpdateInstance_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -123,15 +149,44 @@ func (c *instancesClient) StartInstance(ctx context.Context, in *StartInstanceRe
 	return out, nil
 }
 
+func (c *instancesClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
+	err := c.cc.Invoke(ctx, Instances_GetIamPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *instancesClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
+	err := c.cc.Invoke(ctx, Instances_SetIamPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *instancesClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
+	err := c.cc.Invoke(ctx, Instances_TestIamPermissions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InstancesServer is the server API for Instances service.
 // All implementations should embed UnimplementedInstancesServer
 // for forward compatibility
 type InstancesServer interface {
 	// Creates an Instance.
 	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error)
-	// Deletes a Instance
+	// Updates an Instance.
+	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error)
+	// Deletes an Instance
 	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
-	// Gets a Instance
+	// Gets an Instance
 	GetInstance(context.Context, *GetInstanceRequest) (*Instance, error)
 	// Lists Instances. Results are sorted by creation time, descending.
 	ListInstances(context.Context, *ListInstancesRequest) (*ListInstancesResponse, error)
@@ -139,6 +194,16 @@ type InstancesServer interface {
 	StopInstance(context.Context, *StopInstanceRequest) (*longrunningpb.Operation, error)
 	// Starts an Instance.
 	StartInstance(context.Context, *StartInstanceRequest) (*longrunningpb.Operation, error)
+	// Gets the IAM Access Control policy currently in effect for the given
+	// Instance. This result does not include any inherited policies.
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
+	// Sets the IAM Access control policy for the specified Instance. Overwrites
+	// any existing policy.
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
+	// Returns permissions that a caller has on the specified Instance.
+	//
+	// There are no permissions required for making this API call.
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedInstancesServer should be embedded to have forward compatible implementations.
@@ -147,6 +212,9 @@ type UnimplementedInstancesServer struct {
 
 func (UnimplementedInstancesServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInstance not implemented")
+}
+func (UnimplementedInstancesServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateInstance not implemented")
 }
 func (UnimplementedInstancesServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
@@ -162,6 +230,15 @@ func (UnimplementedInstancesServer) StopInstance(context.Context, *StopInstanceR
 }
 func (UnimplementedInstancesServer) StartInstance(context.Context, *StartInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartInstance not implemented")
+}
+func (UnimplementedInstancesServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
+}
+func (UnimplementedInstancesServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
+}
+func (UnimplementedInstancesServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
 // UnsafeInstancesServer may be embedded to opt out of forward compatibility for this service.
@@ -189,6 +266,24 @@ func _Instances_CreateInstance_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(InstancesServer).CreateInstance(ctx, req.(*CreateInstanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Instances_UpdateInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateInstanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstancesServer).UpdateInstance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Instances_UpdateInstance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstancesServer).UpdateInstance(ctx, req.(*UpdateInstanceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -283,6 +378,60 @@ func _Instances_StartInstance_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Instances_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.GetIamPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstancesServer).GetIamPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Instances_GetIamPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstancesServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Instances_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.SetIamPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstancesServer).SetIamPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Instances_SetIamPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstancesServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Instances_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.TestIamPermissionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstancesServer).TestIamPermissions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Instances_TestIamPermissions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstancesServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Instances_ServiceDesc is the grpc.ServiceDesc for Instances service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -293,6 +442,10 @@ var Instances_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateInstance",
 			Handler:    _Instances_CreateInstance_Handler,
+		},
+		{
+			MethodName: "UpdateInstance",
+			Handler:    _Instances_UpdateInstance_Handler,
 		},
 		{
 			MethodName: "DeleteInstance",
@@ -313,6 +466,18 @@ var Instances_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartInstance",
 			Handler:    _Instances_StartInstance_Handler,
+		},
+		{
+			MethodName: "GetIamPolicy",
+			Handler:    _Instances_GetIamPolicy_Handler,
+		},
+		{
+			MethodName: "SetIamPolicy",
+			Handler:    _Instances_SetIamPolicy_Handler,
+		},
+		{
+			MethodName: "TestIamPermissions",
+			Handler:    _Instances_TestIamPermissions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

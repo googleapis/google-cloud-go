@@ -3244,6 +3244,11 @@ func (c *backupForGKERESTClient) CreateBackupPlan(ctx context.Context, req *gkeb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backupPlans", req.GetParent())
 
 	params := url.Values{}
@@ -3319,6 +3324,11 @@ func (c *backupForGKERESTClient) ListBackupPlans(ctx context.Context, req *gkeba
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backupPlans", req.GetParent())
 
 		params := url.Values{}
@@ -3390,6 +3400,11 @@ func (c *backupForGKERESTClient) GetBackupPlan(ctx context.Context, req *gkeback
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3449,6 +3464,11 @@ func (c *backupForGKERESTClient) UpdateBackupPlan(ctx context.Context, req *gkeb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackupPlan().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupPlan().GetName())
@@ -3517,6 +3537,11 @@ func (c *backupForGKERESTClient) UpdateBackupPlan(ctx context.Context, req *gkeb
 func (c *backupForGKERESTClient) DeleteBackupPlan(ctx context.Context, req *gkebackuppb.DeleteBackupPlanRequest, opts ...gax.CallOption) (*DeleteBackupPlanOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3588,6 +3613,11 @@ func (c *backupForGKERESTClient) CreateBackupChannel(ctx context.Context, req *g
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backupChannels", req.GetParent())
@@ -3667,6 +3697,11 @@ func (c *backupForGKERESTClient) ListBackupChannels(ctx context.Context, req *gk
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backupChannels", req.GetParent())
 
 		params := url.Values{}
@@ -3738,6 +3773,11 @@ func (c *backupForGKERESTClient) GetBackupChannel(ctx context.Context, req *gkeb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3797,6 +3837,11 @@ func (c *backupForGKERESTClient) UpdateBackupChannel(ctx context.Context, req *g
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackupChannel().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupChannel().GetName())
@@ -3865,6 +3910,11 @@ func (c *backupForGKERESTClient) UpdateBackupChannel(ctx context.Context, req *g
 func (c *backupForGKERESTClient) DeleteBackupChannel(ctx context.Context, req *gkebackuppb.DeleteBackupChannelRequest, opts ...gax.CallOption) (*DeleteBackupChannelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3947,6 +3997,11 @@ func (c *backupForGKERESTClient) ListBackupPlanBindings(ctx context.Context, req
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backupPlanBindings", req.GetParent())
 
 		params := url.Values{}
@@ -4018,6 +4073,11 @@ func (c *backupForGKERESTClient) GetBackupPlanBinding(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4077,6 +4137,11 @@ func (c *backupForGKERESTClient) CreateBackup(ctx context.Context, req *gkebacku
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
@@ -4156,6 +4221,11 @@ func (c *backupForGKERESTClient) ListBackups(ctx context.Context, req *gkebackup
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
 
 		params := url.Values{}
@@ -4230,6 +4300,11 @@ func (c *backupForGKERESTClient) GetBackup(ctx context.Context, req *gkebackuppb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4289,6 +4364,11 @@ func (c *backupForGKERESTClient) UpdateBackup(ctx context.Context, req *gkebacku
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackup().GetName())
@@ -4357,6 +4437,11 @@ func (c *backupForGKERESTClient) UpdateBackup(ctx context.Context, req *gkebacku
 func (c *backupForGKERESTClient) DeleteBackup(ctx context.Context, req *gkebackuppb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4439,6 +4524,11 @@ func (c *backupForGKERESTClient) ListVolumeBackups(ctx context.Context, req *gke
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/volumeBackups", req.GetParent())
 
 		params := url.Values{}
@@ -4510,6 +4600,11 @@ func (c *backupForGKERESTClient) GetVolumeBackup(ctx context.Context, req *gkeba
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4569,6 +4664,11 @@ func (c *backupForGKERESTClient) CreateRestorePlan(ctx context.Context, req *gke
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/restorePlans", req.GetParent())
@@ -4646,6 +4746,11 @@ func (c *backupForGKERESTClient) ListRestorePlans(ctx context.Context, req *gkeb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/restorePlans", req.GetParent())
 
 		params := url.Values{}
@@ -4717,6 +4822,11 @@ func (c *backupForGKERESTClient) GetRestorePlan(ctx context.Context, req *gkebac
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4776,6 +4886,11 @@ func (c *backupForGKERESTClient) UpdateRestorePlan(ctx context.Context, req *gke
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRestorePlan().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRestorePlan().GetName())
@@ -4844,6 +4959,11 @@ func (c *backupForGKERESTClient) UpdateRestorePlan(ctx context.Context, req *gke
 func (c *backupForGKERESTClient) DeleteRestorePlan(ctx context.Context, req *gkebackuppb.DeleteRestorePlanRequest, opts ...gax.CallOption) (*DeleteRestorePlanOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4918,6 +5038,11 @@ func (c *backupForGKERESTClient) CreateRestoreChannel(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/restoreChannels", req.GetParent())
@@ -4997,6 +5122,11 @@ func (c *backupForGKERESTClient) ListRestoreChannels(ctx context.Context, req *g
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/restoreChannels", req.GetParent())
 
 		params := url.Values{}
@@ -5068,6 +5198,11 @@ func (c *backupForGKERESTClient) GetRestoreChannel(ctx context.Context, req *gke
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5127,6 +5262,11 @@ func (c *backupForGKERESTClient) UpdateRestoreChannel(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRestoreChannel().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRestoreChannel().GetName())
@@ -5195,6 +5335,11 @@ func (c *backupForGKERESTClient) UpdateRestoreChannel(ctx context.Context, req *
 func (c *backupForGKERESTClient) DeleteRestoreChannel(ctx context.Context, req *gkebackuppb.DeleteRestoreChannelRequest, opts ...gax.CallOption) (*DeleteRestoreChannelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5274,6 +5419,11 @@ func (c *backupForGKERESTClient) ListRestorePlanBindings(ctx context.Context, re
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/restorePlanBindings", req.GetParent())
 
 		params := url.Values{}
@@ -5345,6 +5495,11 @@ func (c *backupForGKERESTClient) GetRestorePlanBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5404,6 +5559,11 @@ func (c *backupForGKERESTClient) CreateRestore(ctx context.Context, req *gkeback
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/restores", req.GetParent())
@@ -5481,6 +5641,11 @@ func (c *backupForGKERESTClient) ListRestores(ctx context.Context, req *gkebacku
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/restores", req.GetParent())
 
 		params := url.Values{}
@@ -5552,6 +5717,11 @@ func (c *backupForGKERESTClient) GetRestore(ctx context.Context, req *gkebackupp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5611,6 +5781,11 @@ func (c *backupForGKERESTClient) UpdateRestore(ctx context.Context, req *gkeback
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRestore().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRestore().GetName())
@@ -5679,6 +5854,11 @@ func (c *backupForGKERESTClient) UpdateRestore(ctx context.Context, req *gkeback
 func (c *backupForGKERESTClient) DeleteRestore(ctx context.Context, req *gkebackuppb.DeleteRestoreRequest, opts ...gax.CallOption) (*DeleteRestoreOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5761,6 +5941,11 @@ func (c *backupForGKERESTClient) ListVolumeRestores(ctx context.Context, req *gk
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/volumeRestores", req.GetParent())
 
 		params := url.Values{}
@@ -5832,6 +6017,11 @@ func (c *backupForGKERESTClient) GetVolumeRestore(ctx context.Context, req *gkeb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5886,6 +6076,11 @@ func (c *backupForGKERESTClient) GetBackupIndexDownloadUrl(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getBackupIndexDownloadUrl", req.GetBackup())
 
 	params := url.Values{}
@@ -5938,6 +6133,11 @@ func (c *backupForGKERESTClient) GetBackupIndexDownloadUrl(ctx context.Context, 
 func (c *backupForGKERESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6005,6 +6205,11 @@ func (c *backupForGKERESTClient) ListLocations(ctx context.Context, req *locatio
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -6076,6 +6281,11 @@ func (c *backupForGKERESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -6141,6 +6351,11 @@ func (c *backupForGKERESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -6209,6 +6424,11 @@ func (c *backupForGKERESTClient) TestIamPermissions(ctx context.Context, req *ia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -6269,6 +6489,11 @@ func (c *backupForGKERESTClient) CancelOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -6308,6 +6533,11 @@ func (c *backupForGKERESTClient) DeleteOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6345,6 +6575,11 @@ func (c *backupForGKERESTClient) DeleteOperation(ctx context.Context, req *longr
 func (c *backupForGKERESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6412,6 +6647,11 @@ func (c *backupForGKERESTClient) ListOperations(ctx context.Context, req *longru
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

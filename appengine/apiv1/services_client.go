@@ -635,6 +635,11 @@ func (c *servicesRESTClient) ListServices(ctx context.Context, req *appenginepb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/services", req.GetParent())
 
 		params := url.Values{}
@@ -700,6 +705,11 @@ func (c *servicesRESTClient) GetService(ctx context.Context, req *appenginepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -759,6 +769,11 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *appenginepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -830,6 +845,11 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *appenginepb
 func (c *servicesRESTClient) DeleteService(ctx context.Context, req *appenginepb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

@@ -125,6 +125,8 @@ type internalSqlDatabasesClient interface {
 
 // SqlDatabasesClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to manage databases.
 type SqlDatabasesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlDatabasesClient
@@ -213,6 +215,8 @@ type sqlDatabasesGRPCClient struct {
 
 // NewSqlDatabasesClient creates a new sql databases service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service to manage databases.
 func NewSqlDatabasesClient(ctx context.Context, opts ...option.ClientOption) (*SqlDatabasesClient, error) {
 	clientOpts := defaultSqlDatabasesGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -351,6 +355,8 @@ type sqlDatabasesRESTClient struct {
 }
 
 // NewSqlDatabasesRESTClient creates a new sql databases service rest client.
+//
+// Service to manage databases.
 func NewSqlDatabasesRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlDatabasesClient, error) {
 	clientOpts := append(defaultSqlDatabasesRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -606,6 +612,13 @@ func (c *sqlDatabasesRESTClient) Delete(ctx context.Context, req *sqlpb.SqlDatab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/databases/%v", req.GetProject(), req.GetInstance(), req.GetDatabase())
 
 	params := url.Values{}
@@ -662,6 +675,13 @@ func (c *sqlDatabasesRESTClient) Delete(ctx context.Context, req *sqlpb.SqlDatab
 func (c *sqlDatabasesRESTClient) Get(ctx context.Context, req *sqlpb.SqlDatabasesGetRequest, opts ...gax.CallOption) (*sqlpb.Database, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/databases/%v", req.GetProject(), req.GetInstance(), req.GetDatabase())
@@ -731,6 +751,12 @@ func (c *sqlDatabasesRESTClient) Insert(ctx context.Context, req *sqlpb.SqlDatab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/databases", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -786,6 +812,12 @@ func (c *sqlDatabasesRESTClient) Insert(ctx context.Context, req *sqlpb.SqlDatab
 func (c *sqlDatabasesRESTClient) List(ctx context.Context, req *sqlpb.SqlDatabasesListRequest, opts ...gax.CallOption) (*sqlpb.DatabasesListResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/databases", req.GetProject(), req.GetInstance())
@@ -853,6 +885,13 @@ func (c *sqlDatabasesRESTClient) Patch(ctx context.Context, req *sqlpb.SqlDataba
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/databases/%v", req.GetProject(), req.GetInstance(), req.GetDatabase())
 
 	params := url.Values{}
@@ -916,6 +955,13 @@ func (c *sqlDatabasesRESTClient) Update(ctx context.Context, req *sqlpb.SqlDatab
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/projects/%v/instances/%v/databases/%v", req.GetProject(), req.GetInstance(), req.GetDatabase())

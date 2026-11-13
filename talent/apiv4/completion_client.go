@@ -467,6 +467,11 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *talentpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTenant(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v:completeQuery", req.GetTenant())
 
 	params := url.Values{}
@@ -535,6 +540,11 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *talentpb.
 func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4/%v", req.GetName())

@@ -482,6 +482,11 @@ func (c *businessInfoRESTClient) GetBusinessInfo(ctx context.Context, req *accou
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -542,6 +547,11 @@ func (c *businessInfoRESTClient) UpdateBusinessInfo(ctx context.Context, req *ac
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBusinessInfo().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetBusinessInfo().GetName())

@@ -415,6 +415,11 @@ func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/resourcePolicies", req.GetProject())
 
 		params := url.Values{}
@@ -501,6 +506,13 @@ func (c *resourcePoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResourcePolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResourcePolicy())
 
 	params := url.Values{}
@@ -565,6 +577,13 @@ func (c *resourcePoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResourcePolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResourcePolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -613,6 +632,13 @@ func (c *resourcePoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 func (c *resourcePoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/resourcePolicies/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -676,6 +702,12 @@ func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/resourcePolicies", req.GetProject(), req.GetRegion())
@@ -754,6 +786,12 @@ func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/resourcePolicies", req.GetProject(), req.GetRegion())
@@ -836,6 +874,13 @@ func (c *resourcePoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResourcePolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResourcePolicy())
 
 	params := url.Values{}
@@ -911,6 +956,13 @@ func (c *resourcePoliciesRESTClient) SetIamPolicy(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/resourcePolicies/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -965,6 +1017,13 @@ func (c *resourcePoliciesRESTClient) TestIamPermissions(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/resourcePolicies/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

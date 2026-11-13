@@ -546,6 +546,11 @@ func (c *partnerLinkRESTClient) CreatePartnerLink(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/partnerLinks", req.GetParent())
 
 	params := url.Values{}
@@ -610,6 +615,11 @@ func (c *partnerLinkRESTClient) DeletePartnerLink(ctx context.Context, req *data
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -670,6 +680,11 @@ func (c *partnerLinkRESTClient) SearchPartnerLinks(ctx context.Context, req *dat
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/partnerLinks:search", req.GetParent())

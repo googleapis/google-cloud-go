@@ -1308,6 +1308,11 @@ func (c *catalogRESTClient) ListCatalogs(ctx context.Context, req *retailpb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/catalogs", req.GetParent())
 
 		params := url.Values{}
@@ -1378,6 +1383,11 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCatalog().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetCatalog().GetName())
@@ -1482,6 +1492,11 @@ func (c *catalogRESTClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCatalog(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:setDefaultBranch", req.GetCatalog())
 
 	params := url.Values{}
@@ -1521,6 +1536,11 @@ func (c *catalogRESTClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 func (c *catalogRESTClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCatalog(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:getDefaultBranch", req.GetCatalog())
@@ -1575,6 +1595,11 @@ func (c *catalogRESTClient) GetDefaultBranch(ctx context.Context, req *retailpb.
 func (c *catalogRESTClient) GetCompletionConfig(ctx context.Context, req *retailpb.GetCompletionConfigRequest, opts ...gax.CallOption) (*retailpb.CompletionConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1639,6 +1664,11 @@ func (c *catalogRESTClient) UpdateCompletionConfig(ctx context.Context, req *ret
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCompletionConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetCompletionConfig().GetName())
 
 	params := url.Values{}
@@ -1698,6 +1728,11 @@ func (c *catalogRESTClient) UpdateCompletionConfig(ctx context.Context, req *ret
 func (c *catalogRESTClient) GetAttributesConfig(ctx context.Context, req *retailpb.GetAttributesConfigRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1767,6 +1802,11 @@ func (c *catalogRESTClient) UpdateAttributesConfig(ctx context.Context, req *ret
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAttributesConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetAttributesConfig().GetName())
@@ -1841,6 +1881,11 @@ func (c *catalogRESTClient) AddCatalogAttribute(ctx context.Context, req *retail
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAttributesConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:addCatalogAttribute", req.GetAttributesConfig())
 
 	params := url.Values{}
@@ -1906,6 +1951,11 @@ func (c *catalogRESTClient) RemoveCatalogAttribute(ctx context.Context, req *ret
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAttributesConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:removeCatalogAttribute", req.GetAttributesConfig())
 
 	params := url.Values{}
@@ -1966,6 +2016,11 @@ func (c *catalogRESTClient) BatchRemoveCatalogAttributes(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAttributesConfig(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:batchRemoveCatalogAttributes", req.GetAttributesConfig())
@@ -2035,6 +2090,11 @@ func (c *catalogRESTClient) ReplaceCatalogAttribute(ctx context.Context, req *re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAttributesConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:replaceCatalogAttribute", req.GetAttributesConfig())
 
 	params := url.Values{}
@@ -2087,6 +2147,11 @@ func (c *catalogRESTClient) ReplaceCatalogAttribute(ctx context.Context, req *re
 func (c *catalogRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -2154,6 +2219,11 @@ func (c *catalogRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())
