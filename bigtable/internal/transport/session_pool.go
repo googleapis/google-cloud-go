@@ -399,10 +399,11 @@ func (p *SessionPoolImpl) Stats() *PoolStats {
 		if sh == nil || sh.session == nil {
 			continue
 		}
-		if sh.session.State() == StateReady {
+		isReady := sh.session.State() == StateReady
+		if isReady {
 			ready++
 		}
-		if sh.outstanding.Load() > 0 {
+		if sh.outstanding.Load() > 0 || (isReady && sh.session.activeVRPC() != nil) {
 			inUse++
 		}
 	}
@@ -538,16 +539,24 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 	//
 	// noteVRpcOutcome feeds e2e latency (not including CheckoutSession).
 	var (
+		result     InvokeResult
 		invokeErr  error
 		backendDur time.Duration
 		latency    time.Duration
 	)
 	defer func() {
 		sh.DecOutstanding()
+		// If Session.Invoke returned before reaching claimSlot (e.g.
+		// desc.Encode failed), OnSlotDrained will never fire for this
+		// checkout. Return the idle Ready handle to its AFE queue so its
+		// capacity is not permanently leaked.
+		if result.RPCIDOnSession == 0 && sh.session.State() == StateReady {
+			p.sl.ReleaseToPool(sh)
+			p.signalFree()
+		}
 		p.noteVRpcOutcome(sh, latency-poolWait, backendDur, invokeErr == nil)
 	}()
 
-	var result InvokeResult
 	result, invokeErr = sh.session.Invoke(ctx, desc, req)
 	// PeerInfo is set once at session-open and never mutated; a shared
 	// read here lets callers stamp per-attempt transport labels without
