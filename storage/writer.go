@@ -496,7 +496,7 @@ func (w *Writer) openWriter() (err error) {
 	isIdempotent = isIdempotent || w.Append && w.o.gen > 0
 	opts := makeStorageOpts(isIdempotent, w.o.retry, w.o.userProject)
 	params := &openWriterParams{
-		ctx:                  w.ctx,
+		ctx:                  withWriterBytes(w.ctx, &w.bytesWritten),
 		chunkSize:            w.ChunkSize,
 		chunkRetryDeadline:   w.ChunkRetryDeadline,
 		chunkTransferTimeout: w.ChunkTransferTimeout,

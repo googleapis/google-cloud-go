@@ -1,5 +1,19 @@
 # Changes
 
+## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.8.1...pubsub/v2.9.0) (2026-11-10)
+
+
+### Features
+
+* Update API sources and regenerate ([#20873](https://github.com/googleapis/google-cloud-go/issues/20873)) ([3ded070](https://github.com/googleapis/google-cloud-go/commit/3ded070fa438a4c80823888872f0bef348412825))
+
+## [2.8.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.8.0...pubsub/v2.8.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
 ## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.7.0...pubsub/v2.8.0) (2026-10-21)
 
 

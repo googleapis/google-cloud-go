@@ -26,6 +26,7 @@ package internal
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -96,6 +97,8 @@ const (
 // per-method table because there is no other method that needs
 // special-casing in this file.
 const methodNameReadRows = "ReadRows"
+
+var errServerLatencyNotSet = errors.New("server latency not set")
 
 // OTel instrument names. These are the on-the-wire metric names Cloud
 // Monitoring stores; changing these strings would break dashboards.
@@ -392,6 +395,7 @@ func (a *AttemptTracer) setStatus(status string) {
 // will be recorded onto server_latencies at attempt completion.
 func (a *AttemptTracer) SetServerLatency(latency float64) {
 	a.serverLatency = latency
+	a.serverLatencyErr = nil
 }
 
 func (a *AttemptTracer) setServerLatencyErr(err error) {
@@ -460,6 +464,7 @@ func (mt *Tracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 	// never runs and there's no lastClusterID/lastZoneID to fall back on.
 	clusterID = FallbackString(clusterID, defaultCluster)
 	zoneID = FallbackString(zoneID, defaultZone)
+	tableID := FallbackString(mt.tableName, defaultTable)
 
 	// 4 fixed attributes below (method / table / cluster / zone) plus the
 	// per-client attributes plus this metric's additional attributes.
@@ -471,7 +476,7 @@ func (mt *Tracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 		// Add resource labels to otel metric labels.
 		// These will be used for creating the monitored resource but exporter
 		// will not add them to Google Cloud Monitoring metric labels
-		attribute.String(MetricLabelKeyTable, mt.tableName),
+		attribute.String(MetricLabelKeyTable, tableID),
 
 		attribute.String(MetricLabelKeyCluster, clusterID),
 		attribute.String(MetricLabelKeyZone, zoneID),
@@ -520,7 +525,11 @@ func (mt *Tracer) RecordAttemptStart() {
 	// Increment number of attempts
 	mt.currOp.incrementAttemptCount()
 
-	mt.currOp.currAttempt = AttemptTracer{}
+	mt.currOp.currAttempt = AttemptTracer{
+		clusterID:        defaultCluster,
+		zoneID:           defaultZone,
+		serverLatencyErr: errServerLatencyNotSet,
+	}
 
 	// record start time
 	mt.currOp.currAttempt.SetStartTime(time.Now())

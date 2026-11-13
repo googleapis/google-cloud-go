@@ -383,7 +383,7 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 	}
 	ctx := context.Background()
 	table := "`bigquery-public-data.samples.github_timeline`"
-	sql := fmt.Sprintf(`SELECT repository_url as url, repository_owner as owner, repository_forks as forks FROM %s`, table)
+	sql := fmt.Sprintf(`SELECT repository_url as url, repository_owner as owner, repository_forks as forks FROM %s WHERE repository_url IS NOT NULL`, table)
 	// Don't forceStorageAPI usage and still see internally Storage API is selected
 	q := storageOptimizedClient.Query(sql)
 	q.DisableQueryCache = true

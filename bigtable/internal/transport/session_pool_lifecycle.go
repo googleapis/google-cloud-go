@@ -563,22 +563,41 @@ func (p *SessionPoolImpl) startSlowMetricsLoop() {
 	})
 }
 
-// tickOnce runs one Tick with panic recovery + a debounce gate. The
-// tickPending CAS coalesces concurrent invocations to at most one
-// active Tick body so bursts of empty-pool kicks don't repeatedly
-// enter the sizer decision path before scalingInProgress rejects
-// them.
+// tickOnce runs Tick with panic recovery + a 3-state debounce gate
+// (0 = idle, 1 = running, 2 = running + rerun requested). Concurrent
+// invocations coalesce to at most one active Tick goroutine, while any
+// kick that arrives after an in-flight Tick has already sampled Stats()
+// marks state=2 so the active runner executes one trailing Tick pass
+// before exiting.
 func (p *SessionPoolImpl) tickOnce(ctx context.Context) {
-	if !p.tickPending.CompareAndSwap(false, true) {
-		return
+	for {
+		state := p.tickPending.Load()
+		if state == 2 {
+			return
+		}
+		if state == 1 {
+			if p.tickPending.CompareAndSwap(1, 2) {
+				return
+			}
+			continue
+		}
+		if p.tickPending.CompareAndSwap(0, 1) {
+			break
+		}
 	}
-	defer p.tickPending.Store(false)
 	defer func() {
 		if r := recover(); r != nil {
+			p.tickPending.Store(0)
 			btopt.Debugf(nil, "POOL %s Tick panic recovered: %v\n%s", p.poolName, r, debug.Stack())
 		}
 	}()
-	p.Tick(ctx)
+	for {
+		p.Tick(ctx)
+		if p.tickPending.CompareAndSwap(1, 0) {
+			return
+		}
+		p.tickPending.Store(1)
+	}
 }
 
 // spawnTickOnce is the guarded `go p.tickOnce(ctx)` used at every kick

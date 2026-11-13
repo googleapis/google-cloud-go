@@ -421,6 +421,10 @@ type CloudVmCluster struct {
 	// Format:
 	// projects/{project}/locations/{location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
 	BackupOdbSubnet string `protobuf:"bytes,15,opt,name=backup_odb_subnet,json=backupOdbSubnet,proto3" json:"backup_odb_subnet,omitempty"`
+	// Optional. Immutable. The name of the OdbDnsZone for using custom domain
+	// name for the VM Cluster. Format:
+	// projects/{project}/locations/{location}/odbNetworks/{odb_network}/odbDnsZones/{odb_dns_zone}
+	OdbDnsZone string `protobuf:"bytes,18,opt,name=odb_dns_zone,json=odbDnsZone,proto3" json:"odb_dns_zone,omitempty"`
 	// Output only. The identity connector details which will allow OCI to
 	// securely access the resources in the customer project.
 	IdentityConnector *IdentityConnector `protobuf:"bytes,16,opt,name=identity_connector,json=identityConnector,proto3" json:"identity_connector,omitempty"`
@@ -549,6 +553,13 @@ func (x *CloudVmCluster) GetOdbSubnet() string {
 func (x *CloudVmCluster) GetBackupOdbSubnet() string {
 	if x != nil {
 		return x.BackupOdbSubnet
+	}
+	return ""
+}
+
+func (x *CloudVmCluster) GetOdbDnsZone() string {
+	if x != nil {
+		return x.OdbDnsZone
 	}
 	return ""
 }
@@ -1004,8 +1015,7 @@ var File_google_cloud_oracledatabase_v1_vm_cluster_proto protoreflect.FileDescri
 
 const file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/oracledatabase/v1/vm_cluster.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xcb\n" +
-	"\n" +
+	"/google/cloud/oracledatabase/v1/vm_cluster.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xa1\v\n" +
 	"\x0eCloudVmCluster\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12x\n" +
 	"\x16exadata_infrastructure\x18\x02 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
@@ -1030,7 +1040,10 @@ const file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc = "" +
 	"odb_subnet\x18\x0e \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
 	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12\\\n" +
 	"\x11backup_odb_subnet\x18\x0f \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
-	"'oracledatabase.googleapis.com/OdbSubnetR\x0fbackupOdbSubnet\x12f\n" +
+	"'oracledatabase.googleapis.com/OdbSubnetR\x0fbackupOdbSubnet\x12T\n" +
+	"\fodb_dns_zone\x18\x12 \x01(\tB2\xe2A\x02\x01\x05\xfaA*\n" +
+	"(oracledatabase.googleapis.com/OdbDnsZoneR\n" +
+	"odbDnsZone\x12f\n" +
 	"\x12identity_connector\x18\x10 \x01(\v21.google.cloud.oracledatabase.v1.IdentityConnectorB\x04\xe2A\x01\x03R\x11identityConnector\x12x\n" +
 	"\x19exascale_db_storage_vault\x18\x11 \x01(\tB=\xe2A\x01\x01\xfaA6\n" +
 	"4oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x16exascaleDbStorageVault\x1a9\n" +

@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"net"
 	"sync/atomic"
 	"testing"
 
@@ -25,6 +26,9 @@ import (
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -471,8 +475,10 @@ func TestPoolKey_DisplayName(t *testing.T) {
 	}{
 		{"table read", poolKey{resourceName: "table:my-table", perm: permissionRead}, "my-table-READ"},
 		{"table write", poolKey{resourceName: "table:my-table", perm: permissionWrite}, "my-table-WRITE"},
+		{"table read-write", poolKey{resourceName: "table:my-table", perm: permissionReadWrite}, "my-table-READ_WRITE"},
 		{"authorized view read", poolKey{resourceName: "av:my-table:my-view", perm: permissionRead}, "my-table/my-view-READ"},
 		{"authorized view write", poolKey{resourceName: "av:my-table:my-view", perm: permissionWrite}, "my-table/my-view-WRITE"},
+		{"authorized view read-write", poolKey{resourceName: "av:my-table:my-view", perm: permissionReadWrite}, "my-table/my-view-READ_WRITE"},
 		{"authorized view — same view id, different tables must not collide",
 			poolKey{resourceName: "av:other-table:my-view", perm: permissionRead}, "other-table/my-view-READ"},
 		{"materialized view read", poolKey{resourceName: "mv:my-mat-view", perm: permissionRead}, "my-mat-view-READ"},
@@ -626,5 +632,201 @@ func TestCreateSessionPool_SingleOwnership_SameKeyDistinctPools(t *testing.T) {
 	}
 	if got := len(sc.sessionPools); got != 0 {
 		t.Errorf("after releaseB, sessionPools has %d entries, want 0", got)
+	}
+}
+
+// --- NewClient context & factory lifecycle -----------------------------------
+
+func TestNewClient_CancelledConstructorCtxFailsFast(t *testing.T) {
+	orig := newMetricsFactory
+	var factoryCalls atomic.Int32
+	newMetricsFactory = func(ctx context.Context, project, instance, appProfile, clientNameOverride string, mp metrics.MetricsProvider, opts ...option.ClientOption) (*metrics.Factory, error) {
+		factoryCalls.Add(1)
+		return orig(ctx, project, instance, appProfile, clientNameOverride, mp, opts...)
+	}
+	t.Cleanup(func() { newMetricsFactory = orig })
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{})
+	_, err := NewClient(ctx, "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff)
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("NewClient with cancelled ctx = %v, want context.Canceled", err)
+	}
+	if got := factoryCalls.Load(); got != 0 {
+		t.Errorf("newMetricsFactory called %d times on pre-cancelled ctx, want 0", got)
+	}
+}
+
+func TestNewClient_ShutsDownFactoryAndCancelsBackgroundCtxOnInitError(t *testing.T) {
+	orig := newMetricsFactory
+	var (
+		factoryCtx       context.Context
+		shutdownCalls    atomic.Int32
+		ctxErrAtShutdown error
+	)
+	newMetricsFactory = func(ctx context.Context, project, instance, appProfile, clientNameOverride string, _ metrics.MetricsProvider, _ ...option.ClientOption) (*metrics.Factory, error) {
+		factoryCtx = ctx
+		f := newTestFactory(t)
+		origShutdown := f.Shutdown
+		f.Shutdown = func() {
+			ctxErrAtShutdown = ctx.Err()
+			shutdownCalls.Add(1)
+			if origShutdown != nil {
+				origShutdown()
+			}
+		}
+		return f, nil
+	}
+	t.Cleanup(func() { newMetricsFactory = orig })
+
+	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{})
+	// Passing no endpoint option causes gtransport.Dial inside
+	// NewBigtableChannelPool to fail with an empty target error.
+	_, err := NewClient(context.Background(), "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff)
+	if err == nil {
+		t.Fatal("NewClient with no endpoint opts succeeded, want error")
+	}
+	if got := shutdownCalls.Load(); got != 1 {
+		t.Errorf("factory.Shutdown call count on init error = %d, want 1", got)
+	}
+	if ctxErrAtShutdown != nil {
+		t.Errorf("factoryCtx.Err() during Shutdown = %v, want nil (Shutdown must run before backgroundCtx cancel)", ctxErrAtShutdown)
+	}
+	if factoryCtx == nil || factoryCtx.Err() == nil {
+		t.Errorf("factoryCtx after NewClient error = %v (err=%v), want cancelled backgroundCtx", factoryCtx, func() error {
+			if factoryCtx == nil {
+				return nil
+			}
+			return factoryCtx.Err()
+		}())
+	}
+}
+
+func TestNewClient_DecouplesFromConstructorCtx(t *testing.T) {
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	srv := grpc.NewServer()
+	t.Cleanup(srv.Stop)
+	go func() { _ = srv.Serve(lis) }()
+
+	orig := newMetricsFactory
+	var (
+		factoryCtx       context.Context
+		shutdownCalls    atomic.Int32
+		ctxErrAtShutdown error
+	)
+	newMetricsFactory = func(ctx context.Context, project, instance, appProfile, clientNameOverride string, _ metrics.MetricsProvider, _ ...option.ClientOption) (*metrics.Factory, error) {
+		factoryCtx = ctx
+		f := newTestFactory(t)
+		origShutdown := f.Shutdown
+		f.Shutdown = func() {
+			ctxErrAtShutdown = ctx.Err()
+			shutdownCalls.Add(1)
+			if origShutdown != nil {
+				origShutdown()
+			}
+		}
+		return f, nil
+	}
+	t.Cleanup(func() { newMetricsFactory = orig })
+
+	initCtx, initCancel := context.WithCancel(context.Background())
+	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{})
+	c, err := NewClient(
+		initCtx, "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff,
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+	)
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+
+	// Cancel the constructor context immediately after NewClient returns,
+	// mirroring a caller that bounds client construction with WithTimeout.
+	initCancel()
+
+	sc := c.(*sessionClient)
+	if sc.cfg.BackgroundCtx.Err() != nil {
+		t.Errorf("BackgroundCtx.Err() after cancelling constructor ctx = %v, want nil", sc.cfg.BackgroundCtx.Err())
+	}
+	if factoryCtx == nil || factoryCtx.Err() != nil {
+		t.Errorf("factoryCtx.Err() after cancelling constructor ctx = %v, want nil", func() error {
+			if factoryCtx == nil {
+				return nil
+			}
+			return factoryCtx.Err()
+		}())
+	}
+	if bp := sc.ChannelPool(); bp == nil || bp.Num() != defaultSessionChannelPoolSize {
+		t.Errorf("ChannelPool after cancelling constructor ctx = %v (num=%d), want %d connections", bp, func() int {
+			if bp == nil {
+				return 0
+			}
+			return bp.Num()
+		}(), defaultSessionChannelPoolSize)
+	}
+
+	if err := c.Close(); err != nil {
+		t.Errorf("Close: %v", err)
+	}
+	if got := shutdownCalls.Load(); got != 1 {
+		t.Errorf("factory.Shutdown call count after Close = %d, want 1", got)
+	}
+	if ctxErrAtShutdown != nil {
+		t.Errorf("factoryCtx.Err() during Close's factory.Shutdown = %v, want nil", ctxErrAtShutdown)
+	}
+	if sc.cfg.BackgroundCtx.Err() == nil {
+		t.Error("BackgroundCtx not cancelled after Close")
+	}
+}
+
+func TestNewClient_MidInitConstructorCtxCancelAborts(t *testing.T) {
+	orig := newMetricsFactory
+	var shutdownCalls atomic.Int32
+	initCtx, initCancel := context.WithCancel(context.Background())
+	defer initCancel()
+
+	newMetricsFactory = func(ctx context.Context, project, instance, appProfile, clientNameOverride string, _ metrics.MetricsProvider, _ ...option.ClientOption) (*metrics.Factory, error) {
+		f := newTestFactory(t)
+		origShutdown := f.Shutdown
+		f.Shutdown = func() {
+			shutdownCalls.Add(1)
+			if origShutdown != nil {
+				origShutdown()
+			}
+		}
+		// Cancel the caller's constructor ctx mid-initialization (after the
+		// initial pre-cancelled check). context.AfterFunc propagates the
+		// cancellation to backgroundCtx for the duration of NewClient.
+		initCancel()
+		return f, nil
+	}
+	t.Cleanup(func() { newMetricsFactory = orig })
+
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	srv := grpc.NewServer()
+	t.Cleanup(srv.Stop)
+	go func() { _ = srv.Serve(lis) }()
+
+	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{})
+	_, err = NewClient(
+		initCtx, "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff,
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+	)
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("NewClient after mid-init ctx cancel = %v, want context.Canceled", err)
+	}
+	if got := shutdownCalls.Load(); got != 1 {
+		t.Errorf("factory.Shutdown call count on mid-init cancel = %d, want 1", got)
 	}
 }

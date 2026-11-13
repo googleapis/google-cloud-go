@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,8 +57,10 @@ type ProvisionProjectRequest struct {
 	//
 	// Acceptable version is `2022-11-23`, and this may change over time.
 	DataUseTermsVersion string `protobuf:"bytes,3,opt,name=data_use_terms_version,json=dataUseTermsVersion,proto3" json:"data_use_terms_version,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. Parameters for Agentspace.
+	SaasParams    *ProvisionProjectRequest_SaasParams `protobuf:"bytes,4,opt,name=saas_params,json=saasParams,proto3" json:"saas_params,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ProvisionProjectRequest) Reset() {
@@ -112,6 +114,13 @@ func (x *ProvisionProjectRequest) GetDataUseTermsVersion() string {
 	return ""
 }
 
+func (x *ProvisionProjectRequest) GetSaasParams() *ProvisionProjectRequest_SaasParams {
+	if x != nil {
+		return x.SaasParams
+	}
+	return nil
+}
+
 // Metadata associated with a project provision operation.
 type ProvisionProjectMetadata struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -149,20 +158,84 @@ func (*ProvisionProjectMetadata) Descriptor() ([]byte, []int) {
 	return file_google_cloud_discoveryengine_v1_project_service_proto_rawDescGZIP(), []int{1}
 }
 
+// Parameters for Agentspace.
+type ProvisionProjectRequest_SaasParams struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Set to `true` to specify that caller has read and would like to
+	// give consent to the [Terms for Agent Space quality of service].
+	AcceptBizQos bool `protobuf:"varint,1,opt,name=accept_biz_qos,json=acceptBizQos,proto3" json:"accept_biz_qos,omitempty"`
+	// Optional. Indicates if the current request is for Biz edition (= true) or
+	// not
+	// (= false).
+	IsBiz         bool `protobuf:"varint,2,opt,name=is_biz,json=isBiz,proto3" json:"is_biz,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProvisionProjectRequest_SaasParams) Reset() {
+	*x = ProvisionProjectRequest_SaasParams{}
+	mi := &file_google_cloud_discoveryengine_v1_project_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProvisionProjectRequest_SaasParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProvisionProjectRequest_SaasParams) ProtoMessage() {}
+
+func (x *ProvisionProjectRequest_SaasParams) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_project_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProvisionProjectRequest_SaasParams.ProtoReflect.Descriptor instead.
+func (*ProvisionProjectRequest_SaasParams) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_project_service_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *ProvisionProjectRequest_SaasParams) GetAcceptBizQos() bool {
+	if x != nil {
+		return x.AcceptBizQos
+	}
+	return false
+}
+
+func (x *ProvisionProjectRequest_SaasParams) GetIsBiz() bool {
+	if x != nil {
+		return x.IsBiz
+	}
+	return false
+}
+
 var File_google_cloud_discoveryengine_v1_project_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_project_service_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/discoveryengine/v1/project_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/discoveryengine/v1/project.proto\x1a#google/longrunning/operations.proto\"\xd2\x01\n" +
+	"5google/cloud/discoveryengine/v1/project_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/discoveryengine/v1/project.proto\x1a#google/longrunning/operations.proto\"\x95\x03\n" +
 	"\x17ProvisionProjectRequest\x12C\n" +
 	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&discoveryengine.googleapis.com/ProjectR\x04name\x127\n" +
 	"\x15accept_data_use_terms\x18\x02 \x01(\bB\x04\xe2A\x01\x02R\x12acceptDataUseTerms\x129\n" +
-	"\x16data_use_terms_version\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x13dataUseTermsVersion\"\x1a\n" +
-	"\x18ProvisionProjectMetadata2\xec\x02\n" +
-	"\x0eProjectService\x12\x85\x02\n" +
-	"\x10ProvisionProject\x128.google.cloud.discoveryengine.v1.ProvisionProjectRequest\x1a\x1d.google.longrunning.Operation\"\x97\x01\xcaAc\n" +
-	"'google.cloud.discoveryengine.v1.Project\x128google.cloud.discoveryengine.v1.ProvisionProjectMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/v1/{name=projects/*}:provision\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x86\x02\n" +
+	"\x16data_use_terms_version\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x13dataUseTermsVersion\x12j\n" +
+	"\vsaas_params\x18\x04 \x01(\v2C.google.cloud.discoveryengine.v1.ProvisionProjectRequest.SaasParamsB\x04\xe2A\x01\x01R\n" +
+	"saasParams\x1aU\n" +
+	"\n" +
+	"SaasParams\x12*\n" +
+	"\x0eaccept_biz_qos\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\facceptBizQos\x12\x1b\n" +
+	"\x06is_biz\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05isBiz\"\x1a\n" +
+	"\x18ProvisionProjectMetadata2\x9c\x04\n" +
+	"\x0eProjectService\x12\xb7\x02\n" +
+	"\x10ProvisionProject\x128.google.cloud.discoveryengine.v1.ProvisionProjectRequest\x1a\x1d.google.longrunning.Operation\"\xc9\x01\xcaAc\n" +
+	"'google.cloud.discoveryengine.v1.Project\x128google.cloud.discoveryengine.v1.ProvisionProjectMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02V:\x01*Z0:\x01*\"+/v1/{name=projects/*/locations/*}:provision\"\x1f/v1/{name=projects/*}:provision\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x86\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x13ProjectServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (
@@ -177,20 +250,22 @@ func file_google_cloud_discoveryengine_v1_project_service_proto_rawDescGZIP() []
 	return file_google_cloud_discoveryengine_v1_project_service_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_project_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_google_cloud_discoveryengine_v1_project_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_cloud_discoveryengine_v1_project_service_proto_goTypes = []any{
-	(*ProvisionProjectRequest)(nil),  // 0: google.cloud.discoveryengine.v1.ProvisionProjectRequest
-	(*ProvisionProjectMetadata)(nil), // 1: google.cloud.discoveryengine.v1.ProvisionProjectMetadata
-	(*longrunningpb.Operation)(nil),  // 2: google.longrunning.Operation
+	(*ProvisionProjectRequest)(nil),            // 0: google.cloud.discoveryengine.v1.ProvisionProjectRequest
+	(*ProvisionProjectMetadata)(nil),           // 1: google.cloud.discoveryengine.v1.ProvisionProjectMetadata
+	(*ProvisionProjectRequest_SaasParams)(nil), // 2: google.cloud.discoveryengine.v1.ProvisionProjectRequest.SaasParams
+	(*longrunningpb.Operation)(nil),            // 3: google.longrunning.Operation
 }
 var file_google_cloud_discoveryengine_v1_project_service_proto_depIdxs = []int32{
-	0, // 0: google.cloud.discoveryengine.v1.ProjectService.ProvisionProject:input_type -> google.cloud.discoveryengine.v1.ProvisionProjectRequest
-	2, // 1: google.cloud.discoveryengine.v1.ProjectService.ProvisionProject:output_type -> google.longrunning.Operation
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	2, // 0: google.cloud.discoveryengine.v1.ProvisionProjectRequest.saas_params:type_name -> google.cloud.discoveryengine.v1.ProvisionProjectRequest.SaasParams
+	0, // 1: google.cloud.discoveryengine.v1.ProjectService.ProvisionProject:input_type -> google.cloud.discoveryengine.v1.ProvisionProjectRequest
+	3, // 2: google.cloud.discoveryengine.v1.ProjectService.ProvisionProject:output_type -> google.longrunning.Operation
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_project_service_proto_init() }
@@ -205,7 +280,7 @@ func file_google_cloud_discoveryengine_v1_project_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_project_service_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_project_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

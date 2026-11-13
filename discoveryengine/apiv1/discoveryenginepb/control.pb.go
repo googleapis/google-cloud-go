@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -232,10 +232,6 @@ func (x *Condition) GetQueryRegex() string {
 // considered at serving time. Permitted actions dependent on `SolutionType`.
 type Control struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Actions are restricted by Vertical and Solution
-	//
-	// Required.
-	//
 	// Types that are valid to be assigned to Action:
 	//
 	//	*Control_BoostAction_

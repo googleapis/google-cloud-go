@@ -3,6 +3,20 @@
 
 
 
+## [1.86.2](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.86.1...bigquery/v1.86.2) (2026-11-05)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Back off once per failed stream ([#20809](https://github.com/googleapis/google-cloud-go/issues/20809)) ([831f6b3](https://github.com/googleapis/google-cloud-go/commit/831f6b383a9082567c694428ffb4035878c9e5c1)), refs [#20808](https://github.com/googleapis/google-cloud-go/issues/20808)
+
+## [1.86.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.86.0...bigquery/v1.86.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
 ## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.85.0...bigquery/v1.86.0) (2026-10-22)
 
 

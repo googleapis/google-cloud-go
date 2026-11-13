@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/datamanager/apiv1",
-    "version": "1.8.0"
+    "version": "1.9.0"
   },
   "snippets": [
     {
@@ -43,7 +43,7 @@
         "resultType": "*datamanagerpb.IngestAdEventsResponse",
         "shortName": "IngestAdEvents"
       },
-      "description": "IngestAdEvents uploads a list of\n[AdEvent][google.ads.datamanager.v1.AdEvent] resources to Google\nAnalytics.\n\nThis feature is only available to accounts on an allowlist.",
+      "description": "IngestAdEvents uploads a list of\n[AdEvent][google.ads.datamanager.v1.AdEvent] resources to Google\nAnalytics.\n\nThis feature is only available to accounts on an allowlist.\n\nAuthorization Headers: \n\nThis method also requires the following header to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Required) The resource name of the Data Partner account\nwhere the Google Account of the credentials is a user. Format: \n`accountTypes/DATA_PARTNER/accounts/{loginAccountId}`",
       "file": "IngestionClient/IngestAdEvents/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -561,6 +561,52 @@
         }
       ],
       "title": "datamanager SearchPartnerLinks Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.ReportingClient",
+          "shortName": "ReportingClient"
+        },
+        "fullName": "google.ads.datamanager.v1.ReportingClient.RetrievePartnerMatchReport",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.ReportingService.RetrievePartnerMatchReport",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.ReportingService",
+            "shortName": "ReportingService"
+          },
+          "shortName": "RetrievePartnerMatchReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.RetrievePartnerMatchReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "PartnerMatchReportEntryIterator",
+        "shortName": "RetrievePartnerMatchReport"
+      },
+      "description": "RetrievePartnerMatchReport retrieves a partner match report.\n\nThis feature is only available to data partners.",
+      "file": "ReportingClient/RetrievePartnerMatchReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_ReportingService_RetrievePartnerMatchReport_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datamanager RetrievePartnerMatchReport Sample"
     },
     {
       "clientMethod": {

@@ -87,10 +87,10 @@ type internalSqlWorkloadCapturesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Start(context.Context, *sqlpb.SqlWorkloadCapturesStartRequest, ...gax.CallOption) (*sqlpb.Operation, error)
-	Stop(context.Context, *sqlpb.SqlWorkloadCapturesStopRequest, ...gax.CallOption) (*sqlpb.Operation, error)
-	StartReplay(context.Context, *sqlpb.SqlWorkloadCapturesStartReplayRequest, ...gax.CallOption) (*sqlpb.Operation, error)
-	StopReplay(context.Context, *sqlpb.SqlWorkloadCapturesStopReplayRequest, ...gax.CallOption) (*sqlpb.Operation, error)
+	Start(context.Context, *sqlpb.WorkloadCapturesStartRequest, ...gax.CallOption) (*sqlpb.Operation, error)
+	Stop(context.Context, *sqlpb.WorkloadCapturesStopRequest, ...gax.CallOption) (*sqlpb.Operation, error)
+	StartReplay(context.Context, *sqlpb.WorkloadCapturesStartReplayRequest, ...gax.CallOption) (*sqlpb.Operation, error)
+	StopReplay(context.Context, *sqlpb.WorkloadCapturesStopReplayRequest, ...gax.CallOption) (*sqlpb.Operation, error)
 	List(context.Context, *sqlpb.SqlWorkloadCapturesListRequest, ...gax.CallOption) (*sqlpb.WorkloadCapturesListResponse, error)
 }
 
@@ -134,25 +134,25 @@ func (c *SqlWorkloadCapturesClient) Connection() *grpc.ClientConn {
 // a “captured workload”. This workload can be replayed later on a different
 // instance to safely test performance impacts, database upgrades,
 // configuration changes etc. before applying them to production.
-func (c *SqlWorkloadCapturesClient) Start(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStartRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *SqlWorkloadCapturesClient) Start(ctx context.Context, req *sqlpb.WorkloadCapturesStartRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	return c.internalClient.Start(ctx, req, opts...)
 }
 
 // Stop stops capturing the query traffic and related operations executed on the
 // primary instance.
-func (c *SqlWorkloadCapturesClient) Stop(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStopRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *SqlWorkloadCapturesClient) Stop(ctx context.Context, req *sqlpb.WorkloadCapturesStopRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	return c.internalClient.Stop(ctx, req, opts...)
 }
 
 // StartReplay starts executing a captured workload on a separate Cloud SQL instance
 // provisioned for workload replay. This target instance simulates the
 // production environment without affecting the primary instance.
-func (c *SqlWorkloadCapturesClient) StartReplay(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStartReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *SqlWorkloadCapturesClient) StartReplay(ctx context.Context, req *sqlpb.WorkloadCapturesStartReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	return c.internalClient.StartReplay(ctx, req, opts...)
 }
 
 // StopReplay stops an active workload replay on the target Cloud SQL replay instance.
-func (c *SqlWorkloadCapturesClient) StopReplay(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStopReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *SqlWorkloadCapturesClient) StopReplay(ctx context.Context, req *sqlpb.WorkloadCapturesStopReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	return c.internalClient.StopReplay(ctx, req, opts...)
 }
 
@@ -441,7 +441,7 @@ func (c *sqlWorkloadCapturesRESTClient) Close() error {
 func (c *sqlWorkloadCapturesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *sqlWorkloadCapturesGRPCClient) Start(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStartRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *sqlWorkloadCapturesGRPCClient) Start(ctx context.Context, req *sqlpb.WorkloadCapturesStartRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -462,7 +462,7 @@ func (c *sqlWorkloadCapturesGRPCClient) Start(ctx context.Context, req *sqlpb.Sq
 	return resp, nil
 }
 
-func (c *sqlWorkloadCapturesGRPCClient) Stop(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStopRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *sqlWorkloadCapturesGRPCClient) Stop(ctx context.Context, req *sqlpb.WorkloadCapturesStopRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -483,7 +483,7 @@ func (c *sqlWorkloadCapturesGRPCClient) Stop(ctx context.Context, req *sqlpb.Sql
 	return resp, nil
 }
 
-func (c *sqlWorkloadCapturesGRPCClient) StartReplay(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStartReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *sqlWorkloadCapturesGRPCClient) StartReplay(ctx context.Context, req *sqlpb.WorkloadCapturesStartReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()), "workload_id", url.QueryEscape(req.GetWorkloadId()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -504,7 +504,7 @@ func (c *sqlWorkloadCapturesGRPCClient) StartReplay(ctx context.Context, req *sq
 	return resp, nil
 }
 
-func (c *sqlWorkloadCapturesGRPCClient) StopReplay(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStopReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *sqlWorkloadCapturesGRPCClient) StopReplay(ctx context.Context, req *sqlpb.WorkloadCapturesStopReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance", url.QueryEscape(req.GetInstance()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -551,7 +551,7 @@ func (c *sqlWorkloadCapturesGRPCClient) List(ctx context.Context, req *sqlpb.Sql
 // a “captured workload”. This workload can be replayed later on a different
 // instance to safely test performance impacts, database upgrades,
 // configuration changes etc. before applying them to production.
-func (c *sqlWorkloadCapturesRESTClient) Start(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStartRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *sqlWorkloadCapturesRESTClient) Start(ctx context.Context, req *sqlpb.WorkloadCapturesStartRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -618,7 +618,7 @@ func (c *sqlWorkloadCapturesRESTClient) Start(ctx context.Context, req *sqlpb.Sq
 
 // Stop stops capturing the query traffic and related operations executed on the
 // primary instance.
-func (c *sqlWorkloadCapturesRESTClient) Stop(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStopRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *sqlWorkloadCapturesRESTClient) Stop(ctx context.Context, req *sqlpb.WorkloadCapturesStopRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -686,7 +686,7 @@ func (c *sqlWorkloadCapturesRESTClient) Stop(ctx context.Context, req *sqlpb.Sql
 // StartReplay starts executing a captured workload on a separate Cloud SQL instance
 // provisioned for workload replay. This target instance simulates the
 // production environment without affecting the primary instance.
-func (c *sqlWorkloadCapturesRESTClient) StartReplay(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStartReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *sqlWorkloadCapturesRESTClient) StartReplay(ctx context.Context, req *sqlpb.WorkloadCapturesStartReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -753,7 +753,7 @@ func (c *sqlWorkloadCapturesRESTClient) StartReplay(ctx context.Context, req *sq
 }
 
 // StopReplay stops an active workload replay on the target Cloud SQL replay instance.
-func (c *sqlWorkloadCapturesRESTClient) StopReplay(ctx context.Context, req *sqlpb.SqlWorkloadCapturesStopReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
+func (c *sqlWorkloadCapturesRESTClient) StopReplay(ctx context.Context, req *sqlpb.WorkloadCapturesStopReplayRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {

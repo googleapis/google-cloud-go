@@ -157,6 +157,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 				databufs: databufs,
 			}
 			err = decoder.readFullObjectResponse()
+			recordReadObjectPayload(stream, decoder, err)
 			return err
 		}
 
@@ -571,7 +572,9 @@ func (r *gRPCReadObjectReader) recv() error {
 	}
 
 	r.currMsg = &readObjectResponseDecoder{databufs: databufs}
-	return r.currMsg.readFullObjectResponse()
+	err = r.currMsg.readFullObjectResponse()
+	recordReadObjectPayload(r.stream, r.currMsg, err)
+	return err
 }
 
 // ReadObjectResponse field and subfield numbers.

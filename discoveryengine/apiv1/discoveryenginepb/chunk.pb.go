@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -255,6 +255,9 @@ type Chunk_DocumentMetadata struct {
 	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Title of the document.
 	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// The mime type of the document.
+	// https://www.iana.org/assignments/media-types/media-types.xhtml.
+	MimeType string `protobuf:"bytes,4,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
 	// Data representation.
 	// The structured JSON data for the document. It should conform to the
 	// registered [Schema][google.cloud.discoveryengine.v1.Schema] or an
@@ -304,6 +307,13 @@ func (x *Chunk_DocumentMetadata) GetUri() string {
 func (x *Chunk_DocumentMetadata) GetTitle() string {
 	if x != nil {
 		return x.Title
+	}
+	return ""
+}
+
+func (x *Chunk_DocumentMetadata) GetMimeType() string {
+	if x != nil {
+		return x.MimeType
 	}
 	return ""
 }
@@ -550,7 +560,7 @@ var File_google_cloud_discoveryengine_v1_chunk_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_chunk_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/discoveryengine/v1/chunk.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x99\x0e\n" +
+	"+google/cloud/discoveryengine/v1/chunk.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xb7\x0e\n" +
 	"\x05Chunk\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x18\n" +
@@ -562,10 +572,11 @@ const file_google_cloud_discoveryengine_v1_chunk_proto_rawDesc = "" +
 	"\x0echunk_metadata\x18\a \x01(\v24.google.cloud.discoveryengine.v1.Chunk.ChunkMetadataB\x04\xe2A\x01\x03R\rchunkMetadata\x12!\n" +
 	"\tdata_urls\x18\t \x03(\tB\x04\xe2A\x01\x03R\bdataUrls\x125\n" +
 	"\x13annotation_contents\x18\v \x03(\tB\x04\xe2A\x01\x03R\x12annotationContents\x12p\n" +
-	"\x13annotation_metadata\x18\f \x03(\v29.google.cloud.discoveryengine.v1.Chunk.AnnotationMetadataB\x04\xe2A\x01\x03R\x12annotationMetadata\x1at\n" +
+	"\x13annotation_metadata\x18\f \x03(\v29.google.cloud.discoveryengine.v1.Chunk.AnnotationMetadataB\x04\xe2A\x01\x03R\x12annotationMetadata\x1a\x91\x01\n" +
 	"\x10DocumentMetadata\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x128\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1b\n" +
+	"\tmime_type\x18\x04 \x01(\tR\bmimeType\x128\n" +
 	"\vstruct_data\x18\x03 \x01(\v2\x17.google.protobuf.StructR\n" +
 	"structData\x1aD\n" +
 	"\bPageSpan\x12\x1d\n" +

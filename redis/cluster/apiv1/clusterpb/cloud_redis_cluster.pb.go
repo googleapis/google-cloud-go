@@ -6286,7 +6286,13 @@ type ZoneDistributionConfig struct {
 	// Optional. When SINGLE ZONE distribution is selected, zone field would be
 	// used to allocate all resources in that zone. This is not applicable to
 	// MULTI_ZONE, and would be ignored for MULTI_ZONE clusters.
-	Zone          string `protobuf:"bytes,2,opt,name=zone,proto3" json:"zone,omitempty"`
+	Zone string `protobuf:"bytes,2,opt,name=zone,proto3" json:"zone,omitempty"`
+	// Optional. Specify the zones of a multi-zone cluster where Redis Cluster
+	// allocates resources. This flag isn't applicable for single-zone clusters.
+	Zones []string `protobuf:"bytes,3,rep,name=zones,proto3" json:"zones,omitempty"`
+	// Output only. The exact list of zones where the cluster currently has active
+	// VMs.
+	ActiveZones   []string `protobuf:"bytes,4,rep,name=active_zones,json=activeZones,proto3" json:"active_zones,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6333,6 +6339,20 @@ func (x *ZoneDistributionConfig) GetZone() string {
 		return x.Zone
 	}
 	return ""
+}
+
+func (x *ZoneDistributionConfig) GetZones() []string {
+	if x != nil {
+		return x.Zones
+	}
+	return nil
+}
+
+func (x *ZoneDistributionConfig) GetActiveZones() []string {
+	if x != nil {
+		return x.ActiveZones
+	}
+	return nil
 }
 
 // Request for rescheduling a cluster maintenance.
@@ -7702,10 +7722,12 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x1cPERSISTENCE_MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\a\n" +
 	"\x03RDB\x10\x02\x12\a\n" +
-	"\x03AOF\x10\x03\"\xf9\x01\n" +
+	"\x03AOF\x10\x03\"\xbe\x02\n" +
 	"\x16ZoneDistributionConfig\x12d\n" +
 	"\x04mode\x18\x01 \x01(\x0e2J.google.cloud.redis.cluster.v1.ZoneDistributionConfig.ZoneDistributionModeB\x04\xe2A\x01\x01R\x04mode\x12\x18\n" +
-	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04zone\"_\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04zone\x12\x1a\n" +
+	"\x05zones\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x05zones\x12'\n" +
+	"\factive_zones\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\vactiveZones\"_\n" +
 	"\x14ZoneDistributionMode\x12&\n" +
 	"\"ZONE_DISTRIBUTION_MODE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

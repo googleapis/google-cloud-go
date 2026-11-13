@@ -262,7 +262,7 @@ func TestTrackingTransport(t *testing.T) {
 
 	gotHeader := mock.gotReq.Header.Get(featureTrackerHeaderName)
 	wantFeatures := uint32(1<<featurePCU) | uint32(1<<featureMultistreamInMRD)
-	wantHeader := encodeUint32(wantFeatures)
+	wantHeader := encodeFeatureMask(wantFeatures)
 
 	if gotHeader != wantHeader {
 		t.Errorf("Header %s = %q; want %q", featureTrackerHeaderName, gotHeader, wantHeader)
@@ -271,6 +271,80 @@ func TestTrackingTransport(t *testing.T) {
 	// Verify original request was not modified.
 	if req.Header.Get(featureTrackerHeaderName) != "" {
 		t.Errorf("Original request header was modified")
+	}
+}
+
+// TestTrackingTransport_OwnsHeader verifies that the transport always rewrites
+// the feature header from its own bitmask: foreign or malformed values present
+// on the request (e.g. set via callctx for a different client) are either
+// replaced by the merged mask or dropped when there is nothing to report.
+func TestTrackingTransport_OwnsHeader(t *testing.T) {
+	foreign := strings.Repeat("Zm9v", 130) // ~390 bytes of non-mask payload.
+	tests := []struct {
+		desc        string
+		features    uint32
+		ctxFeatures []trackedFeature
+		reqHeader   []string
+		wantHeader  []string
+	}{
+		{
+			desc:       "no features, no header: untouched",
+			wantHeader: nil,
+		},
+		{
+			desc:       "no features, zero mask header: dropped",
+			reqHeader:  []string{encodeFeatureMask(0)},
+			wantHeader: nil,
+		},
+		{
+			desc:       "no features, foreign value: dropped",
+			reqHeader:  []string{foreign},
+			wantHeader: nil,
+		},
+		{
+			desc:       "features, foreign value: replaced by mask",
+			features:   uint32(1 << featurePCU),
+			reqHeader:  []string{foreign},
+			wantHeader: []string{encodeFeatureMask(uint32(1 << featurePCU))},
+		},
+		{
+			desc:        "legacy standard-alphabet value is merged and re-encoded",
+			ctxFeatures: []trackedFeature{featureMultistreamInMRD},
+			reqHeader:   []string{"AAAA+A=="}, // 0xF8 in standard base64 (bits 0 and 1 unset).
+			wantHeader:  []string{encodeFeatureMask(0xF8 | uint32(1<<featureMultistreamInMRD))},
+		},
+		{
+			desc:       "multiple values collapse to one",
+			reqHeader:  []string{encodeFeatureMask(1), encodeFeatureMask(2), foreign},
+			wantHeader: []string{encodeFeatureMask(3)},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			mock := &mockTransport{}
+			mock.addResult(&http.Response{Status: "200 OK"}, nil)
+			tt := &trackingTransport{base: mock, features: tc.features}
+
+			ctx := context.Background()
+			if len(tc.ctxFeatures) > 0 {
+				ctx = addFeatureAttributes(ctx, tc.ctxFeatures...)
+			}
+			req, _ := http.NewRequestWithContext(ctx, "GET", "http://example.com", nil)
+			for _, v := range tc.reqHeader {
+				req.Header.Add(featureTrackerHeaderName, v)
+			}
+
+			if _, err := tt.RoundTrip(req); err != nil {
+				t.Fatalf("RoundTrip failed: %v", err)
+			}
+			got := mock.gotReq.Header.Values(featureTrackerHeaderName)
+			if diff := cmp.Diff(tc.wantHeader, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("header %s mismatch (-want +got):\n%s", featureTrackerHeaderName, diff)
+			}
+			if diff := cmp.Diff(tc.reqHeader, req.Header.Values(featureTrackerHeaderName), cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("caller request header %s modified (-want +got):\n%s", featureTrackerHeaderName, diff)
+			}
+		})
 	}
 }
 

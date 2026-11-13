@@ -140,10 +140,14 @@ func defaultCallOptions() *CallOptions {
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		EnableManagedRotation: []gax.CallOption{},
-		RotateSecret:          []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
+		EnableManagedRotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RotateSecret: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
@@ -203,10 +207,14 @@ func defaultRESTCallOptions() *CallOptions {
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		EnableManagedRotation: []gax.CallOption{},
-		RotateSecret:          []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
+		EnableManagedRotation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RotateSecret: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 

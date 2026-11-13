@@ -93,8 +93,11 @@ type Tool struct {
 	GeneratedSummary string `protobuf:"bytes,15,opt,name=generated_summary,json=generatedSummary,proto3" json:"generated_summary,omitempty"`
 	// Optional. Configuration for tool behavior in fake mode.
 	ToolFakeConfig *ToolFakeConfig `protobuf:"bytes,20,opt,name=tool_fake_config,json=toolFakeConfig,proto3" json:"tool_fake_config,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Output only. Indicates whether the tool is read-only. If true, the tool
+	// cannot be modified by the user.
+	ReadOnly      bool `protobuf:"varint,29,opt,name=read_only,json=readOnly,proto3" json:"read_only,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Tool) Reset() {
@@ -305,6 +308,13 @@ func (x *Tool) GetToolFakeConfig() *ToolFakeConfig {
 	return nil
 }
 
+func (x *Tool) GetReadOnly() bool {
+	if x != nil {
+		return x.ReadOnly
+	}
+	return false
+}
+
 type isTool_ToolType interface {
 	isTool_ToolType()
 }
@@ -398,7 +408,7 @@ var File_google_cloud_ces_v1beta_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_tool_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/ces/v1beta/tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/ces/v1beta/agent_card.proto\x1a(google/cloud/ces/v1beta/agent_tool.proto\x1a-google/cloud/ces/v1beta/client_function.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a,google/cloud/ces/v1beta/connector_tool.proto\x1a-google/cloud/ces/v1beta/data_store_tool.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a.google/cloud/ces/v1beta/file_search_tool.proto\x1a0google/cloud/ces/v1beta/google_search_tool.proto\x1a&google/cloud/ces/v1beta/mcp_tool.proto\x1a+google/cloud/ces/v1beta/open_api_tool.proto\x1a-google/cloud/ces/v1beta/python_function.proto\x1a)google/cloud/ces/v1beta/system_tool.proto\x1a)google/cloud/ces/v1beta/widget_tool.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\f\n" +
+	"\"google/cloud/ces/v1beta/tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/ces/v1beta/agent_card.proto\x1a(google/cloud/ces/v1beta/agent_tool.proto\x1a-google/cloud/ces/v1beta/client_function.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a,google/cloud/ces/v1beta/connector_tool.proto\x1a-google/cloud/ces/v1beta/data_store_tool.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a.google/cloud/ces/v1beta/file_search_tool.proto\x1a0google/cloud/ces/v1beta/google_search_tool.proto\x1a&google/cloud/ces/v1beta/mcp_tool.proto\x1a+google/cloud/ces/v1beta/open_api_tool.proto\x1a-google/cloud/ces/v1beta/python_function.proto\x1a)google/cloud/ces/v1beta/system_tool.proto\x1a)google/cloud/ces/v1beta/widget_tool.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96\r\n" +
 	"\x04Tool\x12X\n" +
 	"\x0fclient_function\x18\x02 \x01(\v2'.google.cloud.ces.v1beta.ClientFunctionB\x04\xe2A\x01\x01H\x00R\x0eclientFunction\x12P\n" +
 	"\ropen_api_tool\x18\x03 \x01(\v2$.google.cloud.ces.v1beta.OpenApiToolB\x04\xe2A\x01\x01H\x00R\vopenApiTool\x12_\n" +
@@ -426,7 +436,8 @@ const file_google_cloud_ces_v1beta_tool_proto_rawDesc = "" +
 	"updateTime\x12\x12\n" +
 	"\x04etag\x18\x0e \x01(\tR\x04etag\x121\n" +
 	"\x11generated_summary\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x10generatedSummary\x12W\n" +
-	"\x10tool_fake_config\x18\x14 \x01(\v2'.google.cloud.ces.v1beta.ToolFakeConfigB\x04\xe2A\x01\x01R\x0etoolFakeConfig:j\xeaAg\n" +
+	"\x10tool_fake_config\x18\x14 \x01(\v2'.google.cloud.ces.v1beta.ToolFakeConfigB\x04\xe2A\x01\x01R\x0etoolFakeConfig\x12!\n" +
+	"\tread_only\x18\x1d \x01(\bB\x04\xe2A\x01\x03R\breadOnly:j\xeaAg\n" +
 	"\x17ces.googleapis.com/Tool\x12?projects/{project}/locations/{location}/apps/{app}/tools/{tool}*\x05tools2\x04toolB\v\n" +
 	"\ttool_typeBY\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\tToolProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"

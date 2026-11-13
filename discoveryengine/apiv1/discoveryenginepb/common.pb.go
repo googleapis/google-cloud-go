@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -112,6 +113,8 @@ const (
 	// It's used for Generative chat engine only, the associated data stores
 	// must enrolled with `SOLUTION_TYPE_CHAT` solution.
 	SolutionType_SOLUTION_TYPE_GENERATIVE_CHAT SolutionType = 4
+	// Used for AI Mode.
+	SolutionType_SOLUTION_TYPE_AI_MODE SolutionType = 5
 )
 
 // Enum value maps for SolutionType.
@@ -122,6 +125,7 @@ var (
 		2: "SOLUTION_TYPE_SEARCH",
 		3: "SOLUTION_TYPE_CHAT",
 		4: "SOLUTION_TYPE_GENERATIVE_CHAT",
+		5: "SOLUTION_TYPE_AI_MODE",
 	}
 	SolutionType_value = map[string]int32{
 		"SOLUTION_TYPE_UNSPECIFIED":     0,
@@ -129,6 +133,7 @@ var (
 		"SOLUTION_TYPE_SEARCH":          2,
 		"SOLUTION_TYPE_CHAT":            3,
 		"SOLUTION_TYPE_GENERATIVE_CHAT": 4,
+		"SOLUTION_TYPE_AI_MODE":         5,
 	}
 )
 
@@ -317,6 +322,283 @@ func (x SearchAddOn) Number() protoreflect.EnumNumber {
 // Deprecated: Use SearchAddOn.Descriptor instead.
 func (SearchAddOn) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{4}
+}
+
+// Subscription tier information.
+type SubscriptionTier int32
+
+const (
+	// Default value.
+	SubscriptionTier_SUBSCRIPTION_TIER_UNSPECIFIED SubscriptionTier = 0
+	// Search tier.
+	// Search tier can access Vertex AI Search features and NotebookLM features.
+	SubscriptionTier_SUBSCRIPTION_TIER_SEARCH SubscriptionTier = 1
+	// Gemini Enterprise Plus tier.
+	SubscriptionTier_SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT SubscriptionTier = 2
+	// NotebookLM tier.
+	// NotebookLM is a subscription tier can only access NotebookLM features.
+	SubscriptionTier_SUBSCRIPTION_TIER_NOTEBOOK_LM SubscriptionTier = 3
+	// Gemini Frontline worker tier.
+	SubscriptionTier_SUBSCRIPTION_TIER_FRONTLINE_WORKER SubscriptionTier = 4
+	// Gemini Business Starter tier.
+	SubscriptionTier_SUBSCRIPTION_TIER_AGENTSPACE_STARTER SubscriptionTier = 10
+	// Gemini Business tier.
+	SubscriptionTier_SUBSCRIPTION_TIER_AGENTSPACE_BUSINESS SubscriptionTier = 6
+	// Gemini Enterprise Standard tier.
+	SubscriptionTier_SUBSCRIPTION_TIER_ENTERPRISE SubscriptionTier = 7
+	// Gemini Enterprise Standard tier for emerging markets.
+	SubscriptionTier_SUBSCRIPTION_TIER_ENTERPRISE_EMERGING SubscriptionTier = 15
+	// Gemini Enterprise EDU tier.
+	SubscriptionTier_SUBSCRIPTION_TIER_EDU SubscriptionTier = 8
+	// Gemini Enterprise EDU Pro tier.
+	SubscriptionTier_SUBSCRIPTION_TIER_EDU_PRO SubscriptionTier = 9
+	// Gemini Enterprise EDU tier for emerging market only.
+	SubscriptionTier_SUBSCRIPTION_TIER_EDU_EMERGING SubscriptionTier = 11
+	// Gemini Enterprise EDU Pro tier for emerging market.
+	SubscriptionTier_SUBSCRIPTION_TIER_EDU_PRO_EMERGING SubscriptionTier = 12
+	// Gemini Frontline Starter tier.
+	SubscriptionTier_SUBSCRIPTION_TIER_FRONTLINE_STARTER SubscriptionTier = 13
+	// Represents the Gemini Enterprise Consumption-only tier: $0 subscription
+	// billed purely on usage (PAYG).
+	SubscriptionTier_SUBSCRIPTION_TIER_CONSUMPTION_ONLY SubscriptionTier = 16
+	// Gemini Enterprise EDU tier for government in emerging markets.
+	SubscriptionTier_SUBSCRIPTION_TIER_EDU_GOV_EMERGING SubscriptionTier = 17
+)
+
+// Enum value maps for SubscriptionTier.
+var (
+	SubscriptionTier_name = map[int32]string{
+		0:  "SUBSCRIPTION_TIER_UNSPECIFIED",
+		1:  "SUBSCRIPTION_TIER_SEARCH",
+		2:  "SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT",
+		3:  "SUBSCRIPTION_TIER_NOTEBOOK_LM",
+		4:  "SUBSCRIPTION_TIER_FRONTLINE_WORKER",
+		10: "SUBSCRIPTION_TIER_AGENTSPACE_STARTER",
+		6:  "SUBSCRIPTION_TIER_AGENTSPACE_BUSINESS",
+		7:  "SUBSCRIPTION_TIER_ENTERPRISE",
+		15: "SUBSCRIPTION_TIER_ENTERPRISE_EMERGING",
+		8:  "SUBSCRIPTION_TIER_EDU",
+		9:  "SUBSCRIPTION_TIER_EDU_PRO",
+		11: "SUBSCRIPTION_TIER_EDU_EMERGING",
+		12: "SUBSCRIPTION_TIER_EDU_PRO_EMERGING",
+		13: "SUBSCRIPTION_TIER_FRONTLINE_STARTER",
+		16: "SUBSCRIPTION_TIER_CONSUMPTION_ONLY",
+		17: "SUBSCRIPTION_TIER_EDU_GOV_EMERGING",
+	}
+	SubscriptionTier_value = map[string]int32{
+		"SUBSCRIPTION_TIER_UNSPECIFIED":          0,
+		"SUBSCRIPTION_TIER_SEARCH":               1,
+		"SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT": 2,
+		"SUBSCRIPTION_TIER_NOTEBOOK_LM":          3,
+		"SUBSCRIPTION_TIER_FRONTLINE_WORKER":     4,
+		"SUBSCRIPTION_TIER_AGENTSPACE_STARTER":   10,
+		"SUBSCRIPTION_TIER_AGENTSPACE_BUSINESS":  6,
+		"SUBSCRIPTION_TIER_ENTERPRISE":           7,
+		"SUBSCRIPTION_TIER_ENTERPRISE_EMERGING":  15,
+		"SUBSCRIPTION_TIER_EDU":                  8,
+		"SUBSCRIPTION_TIER_EDU_PRO":              9,
+		"SUBSCRIPTION_TIER_EDU_EMERGING":         11,
+		"SUBSCRIPTION_TIER_EDU_PRO_EMERGING":     12,
+		"SUBSCRIPTION_TIER_FRONTLINE_STARTER":    13,
+		"SUBSCRIPTION_TIER_CONSUMPTION_ONLY":     16,
+		"SUBSCRIPTION_TIER_EDU_GOV_EMERGING":     17,
+	}
+)
+
+func (x SubscriptionTier) Enum() *SubscriptionTier {
+	p := new(SubscriptionTier)
+	*p = x
+	return p
+}
+
+func (x SubscriptionTier) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SubscriptionTier) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_common_proto_enumTypes[5].Descriptor()
+}
+
+func (SubscriptionTier) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_common_proto_enumTypes[5]
+}
+
+func (x SubscriptionTier) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SubscriptionTier.Descriptor instead.
+func (SubscriptionTier) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{5}
+}
+
+// Subscription term.
+type SubscriptionTerm int32
+
+const (
+	// Default value, do not use.
+	SubscriptionTerm_SUBSCRIPTION_TERM_UNSPECIFIED SubscriptionTerm = 0
+	// 1 month.
+	SubscriptionTerm_SUBSCRIPTION_TERM_ONE_MONTH SubscriptionTerm = 1
+	// 1 year.
+	SubscriptionTerm_SUBSCRIPTION_TERM_ONE_YEAR SubscriptionTerm = 2
+	// 3 years.
+	SubscriptionTerm_SUBSCRIPTION_TERM_THREE_YEARS SubscriptionTerm = 3
+	// Custom term. Must set the end_date.
+	SubscriptionTerm_SUBSCRIPTION_TERM_CUSTOM SubscriptionTerm = 6
+)
+
+// Enum value maps for SubscriptionTerm.
+var (
+	SubscriptionTerm_name = map[int32]string{
+		0: "SUBSCRIPTION_TERM_UNSPECIFIED",
+		1: "SUBSCRIPTION_TERM_ONE_MONTH",
+		2: "SUBSCRIPTION_TERM_ONE_YEAR",
+		3: "SUBSCRIPTION_TERM_THREE_YEARS",
+		6: "SUBSCRIPTION_TERM_CUSTOM",
+	}
+	SubscriptionTerm_value = map[string]int32{
+		"SUBSCRIPTION_TERM_UNSPECIFIED": 0,
+		"SUBSCRIPTION_TERM_ONE_MONTH":   1,
+		"SUBSCRIPTION_TERM_ONE_YEAR":    2,
+		"SUBSCRIPTION_TERM_THREE_YEARS": 3,
+		"SUBSCRIPTION_TERM_CUSTOM":      6,
+	}
+)
+
+func (x SubscriptionTerm) Enum() *SubscriptionTerm {
+	p := new(SubscriptionTerm)
+	*p = x
+	return p
+}
+
+func (x SubscriptionTerm) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SubscriptionTerm) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_common_proto_enumTypes[6].Descriptor()
+}
+
+func (SubscriptionTerm) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_common_proto_enumTypes[6]
+}
+
+func (x SubscriptionTerm) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SubscriptionTerm.Descriptor instead.
+func (SubscriptionTerm) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{6}
+}
+
+// Identity Provider Type.
+type IdpConfig_IdpType int32
+
+const (
+	// Default value. ACL search not enabled.
+	IdpConfig_IDP_TYPE_UNSPECIFIED IdpConfig_IdpType = 0
+	// Google 1P provider.
+	IdpConfig_GSUITE IdpConfig_IdpType = 1
+	// Third party provider.
+	IdpConfig_THIRD_PARTY IdpConfig_IdpType = 2
+)
+
+// Enum value maps for IdpConfig_IdpType.
+var (
+	IdpConfig_IdpType_name = map[int32]string{
+		0: "IDP_TYPE_UNSPECIFIED",
+		1: "GSUITE",
+		2: "THIRD_PARTY",
+	}
+	IdpConfig_IdpType_value = map[string]int32{
+		"IDP_TYPE_UNSPECIFIED": 0,
+		"GSUITE":               1,
+		"THIRD_PARTY":          2,
+	}
+)
+
+func (x IdpConfig_IdpType) Enum() *IdpConfig_IdpType {
+	p := new(IdpConfig_IdpType)
+	*p = x
+	return p
+}
+
+func (x IdpConfig_IdpType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (IdpConfig_IdpType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_common_proto_enumTypes[7].Descriptor()
+}
+
+func (IdpConfig_IdpType) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_common_proto_enumTypes[7]
+}
+
+func (x IdpConfig_IdpType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use IdpConfig_IdpType.Descriptor instead.
+func (IdpConfig_IdpType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{4, 0}
+}
+
+// Session management policy that defines who will manage the
+// session.
+type SessionConfig_SessionManagementPolicy int32
+
+const (
+	// Default value.
+	SessionConfig_SESSION_MANAGEMENT_POLICY_UNSPECIFIED SessionConfig_SessionManagementPolicy = 0
+	// The session will be managed by the customer.
+	SessionConfig_NOT_MANAGED SessionConfig_SessionManagementPolicy = 1
+	// Sessions multi-tenancy will be controlled by Google using 1P or 3P
+	// identity providers.
+	SessionConfig_VERTEX_AI_MANAGED SessionConfig_SessionManagementPolicy = 2
+)
+
+// Enum value maps for SessionConfig_SessionManagementPolicy.
+var (
+	SessionConfig_SessionManagementPolicy_name = map[int32]string{
+		0: "SESSION_MANAGEMENT_POLICY_UNSPECIFIED",
+		1: "NOT_MANAGED",
+		2: "VERTEX_AI_MANAGED",
+	}
+	SessionConfig_SessionManagementPolicy_value = map[string]int32{
+		"SESSION_MANAGEMENT_POLICY_UNSPECIFIED": 0,
+		"NOT_MANAGED":                           1,
+		"VERTEX_AI_MANAGED":                     2,
+	}
+)
+
+func (x SessionConfig_SessionManagementPolicy) Enum() *SessionConfig_SessionManagementPolicy {
+	p := new(SessionConfig_SessionManagementPolicy)
+	*p = x
+	return p
+}
+
+func (x SessionConfig_SessionManagementPolicy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SessionConfig_SessionManagementPolicy) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_common_proto_enumTypes[8].Descriptor()
+}
+
+func (SessionConfig_SessionManagementPolicy) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_common_proto_enumTypes[8]
+}
+
+func (x SessionConfig_SessionManagementPolicy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SessionConfig_SessionManagementPolicy.Descriptor instead.
+func (SessionConfig_SessionManagementPolicy) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{8, 0}
 }
 
 // A floating point interval.
@@ -551,6 +833,10 @@ type UserInfo struct {
 	//
 	// The field must be a UTF-8 encoded string with a length limit of 128
 	// characters. Otherwise, an `INVALID_ARGUMENT` error is returned.
+	//
+	// Represents an opaque ID to the Search API. The Search API doesn't
+	// interpret the value in any way. This field is used to associate events
+	// with a user across sessions if the events are being uploaded.
 	UserId string `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	// User agent as included in the HTTP header.
 	//
@@ -565,9 +851,13 @@ type UserInfo struct {
 	// is set.
 	UserAgent string `protobuf:"bytes,2,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 	// Optional. IANA time zone, e.g. Europe/Budapest.
-	TimeZone      string `protobuf:"bytes,3,opt,name=time_zone,json=timeZone,proto3" json:"time_zone,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	TimeZone string `protobuf:"bytes,3,opt,name=time_zone,json=timeZone,proto3" json:"time_zone,omitempty"`
+	// Optional. Input only. Precise location of the user.
+	// It is used in Custom Ranking to calculate the distance between the user and
+	// the relevant documents.
+	PreciseLocation *UserInfo_PreciseLocation `protobuf:"bytes,4,opt,name=precise_location,json=preciseLocation,proto3" json:"precise_location,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *UserInfo) Reset() {
@@ -621,6 +911,13 @@ func (x *UserInfo) GetTimeZone() string {
 	return ""
 }
 
+func (x *UserInfo) GetPreciseLocation() *UserInfo_PreciseLocation {
+	if x != nil {
+		return x.PreciseLocation
+	}
+	return nil
+}
+
 // Double list.
 type DoubleList struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -667,6 +964,61 @@ func (x *DoubleList) GetValues() []float64 {
 	return nil
 }
 
+// Identity Provider Config.
+type IdpConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identity provider type configured.
+	IdpType IdpConfig_IdpType `protobuf:"varint,1,opt,name=idp_type,json=idpType,proto3,enum=google.cloud.discoveryengine.v1.IdpConfig_IdpType" json:"idp_type,omitempty"`
+	// External Identity provider config.
+	ExternalIdpConfig *IdpConfig_ExternalIdpConfig `protobuf:"bytes,2,opt,name=external_idp_config,json=externalIdpConfig,proto3" json:"external_idp_config,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *IdpConfig) Reset() {
+	*x = IdpConfig{}
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IdpConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IdpConfig) ProtoMessage() {}
+
+func (x *IdpConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IdpConfig.ProtoReflect.Descriptor instead.
+func (*IdpConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *IdpConfig) GetIdpType() IdpConfig_IdpType {
+	if x != nil {
+		return x.IdpType
+	}
+	return IdpConfig_IDP_TYPE_UNSPECIFIED
+}
+
+func (x *IdpConfig) GetExternalIdpConfig() *IdpConfig_ExternalIdpConfig {
+	if x != nil {
+		return x.ExternalIdpConfig
+	}
+	return nil
+}
+
 // Principal identifier of a user or a group.
 type Principal struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -684,7 +1036,7 @@ type Principal struct {
 
 func (x *Principal) Reset() {
 	*x = Principal{}
-	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[4]
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -696,7 +1048,7 @@ func (x *Principal) String() string {
 func (*Principal) ProtoMessage() {}
 
 func (x *Principal) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[4]
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -709,7 +1061,7 @@ func (x *Principal) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Principal.ProtoReflect.Descriptor instead.
 func (*Principal) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Principal) GetPrincipal() isPrincipal_Principal {
@@ -795,13 +1147,20 @@ type HealthcareFhirConfig struct {
 	// indexing mode which is slower but more capable of handling larger
 	// volume.
 	EnableStaticIndexingForBatchIngestion bool `protobuf:"varint,2,opt,name=enable_static_indexing_for_batch_ingestion,json=enableStaticIndexingForBatchIngestion,proto3" json:"enable_static_indexing_for_batch_ingestion,omitempty"`
-	unknownFields                         protoimpl.UnknownFields
-	sizeCache                             protoimpl.SizeCache
+	// Optional. Names of the Group resources to use as a basis for the initial
+	// patient filter, in format
+	// `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/fhir/Group/{group_id}`.
+	// The filter group must be a FHIR resource name of
+	// type Group, and the filter will be constructed from the direct members of
+	// the group which are Patient resources.
+	InitialFilterGroups []string `protobuf:"bytes,4,rep,name=initial_filter_groups,json=initialFilterGroups,proto3" json:"initial_filter_groups,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *HealthcareFhirConfig) Reset() {
 	*x = HealthcareFhirConfig{}
-	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -813,7 +1172,7 @@ func (x *HealthcareFhirConfig) String() string {
 func (*HealthcareFhirConfig) ProtoMessage() {}
 
 func (x *HealthcareFhirConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -826,7 +1185,7 @@ func (x *HealthcareFhirConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthcareFhirConfig.ProtoReflect.Descriptor instead.
 func (*HealthcareFhirConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *HealthcareFhirConfig) GetEnableConfigurableSchema() bool {
@@ -841,6 +1200,13 @@ func (x *HealthcareFhirConfig) GetEnableStaticIndexingForBatchIngestion() bool {
 		return x.EnableStaticIndexingForBatchIngestion
 	}
 	return false
+}
+
+func (x *HealthcareFhirConfig) GetInitialFilterGroups() []string {
+	if x != nil {
+		return x.InitialFilterGroups
+	}
+	return nil
 }
 
 // Promotion proto includes uri and other helping information to display the
@@ -873,7 +1239,7 @@ type SearchLinkPromotion struct {
 
 func (x *SearchLinkPromotion) Reset() {
 	*x = SearchLinkPromotion{}
-	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[6]
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -885,7 +1251,7 @@ func (x *SearchLinkPromotion) String() string {
 func (*SearchLinkPromotion) ProtoMessage() {}
 
 func (x *SearchLinkPromotion) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[6]
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -898,7 +1264,7 @@ func (x *SearchLinkPromotion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchLinkPromotion.ProtoReflect.Descriptor instead.
 func (*SearchLinkPromotion) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SearchLinkPromotion) GetTitle() string {
@@ -943,11 +1309,366 @@ func (x *SearchLinkPromotion) GetEnabled() bool {
 	return false
 }
 
+// Configuration for the session.
+type SessionConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Session management policy that defines who will manage the
+	// session.
+	SessionManagementPolicy SessionConfig_SessionManagementPolicy `protobuf:"varint,1,opt,name=session_management_policy,json=sessionManagementPolicy,proto3,enum=google.cloud.discoveryengine.v1.SessionConfig_SessionManagementPolicy" json:"session_management_policy,omitempty"`
+	// Optional. The TTL for the session. If unset, the default value is 60 days.
+	SessionTtl    *SessionConfig_SessionTtl `protobuf:"bytes,2,opt,name=session_ttl,json=sessionTtl,proto3" json:"session_ttl,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SessionConfig) Reset() {
+	*x = SessionConfig{}
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SessionConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionConfig) ProtoMessage() {}
+
+func (x *SessionConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionConfig.ProtoReflect.Descriptor instead.
+func (*SessionConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *SessionConfig) GetSessionManagementPolicy() SessionConfig_SessionManagementPolicy {
+	if x != nil {
+		return x.SessionManagementPolicy
+	}
+	return SessionConfig_SESSION_MANAGEMENT_POLICY_UNSPECIFIED
+}
+
+func (x *SessionConfig) GetSessionTtl() *SessionConfig_SessionTtl {
+	if x != nil {
+		return x.SessionTtl
+	}
+	return nil
+}
+
+// Contains the data protection policy config for a DataStore or a connector.
+type DataProtectionPolicy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Specifies the sensitive data protection policy for the connector
+	// source.
+	SensitiveDataProtectionPolicy *DataProtectionPolicy_SensitiveDataProtectionPolicy `protobuf:"bytes,1,opt,name=sensitive_data_protection_policy,json=sensitiveDataProtectionPolicy,proto3" json:"sensitive_data_protection_policy,omitempty"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
+}
+
+func (x *DataProtectionPolicy) Reset() {
+	*x = DataProtectionPolicy{}
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataProtectionPolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataProtectionPolicy) ProtoMessage() {}
+
+func (x *DataProtectionPolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataProtectionPolicy.ProtoReflect.Descriptor instead.
+func (*DataProtectionPolicy) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DataProtectionPolicy) GetSensitiveDataProtectionPolicy() *DataProtectionPolicy_SensitiveDataProtectionPolicy {
+	if x != nil {
+		return x.SensitiveDataProtectionPolicy
+	}
+	return nil
+}
+
+// Precise location info with multiple representation options.
+type UserInfo_PreciseLocation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Location:
+	//
+	//	*UserInfo_PreciseLocation_Point
+	//	*UserInfo_PreciseLocation_Address
+	Location      isUserInfo_PreciseLocation_Location `protobuf_oneof:"location"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserInfo_PreciseLocation) Reset() {
+	*x = UserInfo_PreciseLocation{}
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserInfo_PreciseLocation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserInfo_PreciseLocation) ProtoMessage() {}
+
+func (x *UserInfo_PreciseLocation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserInfo_PreciseLocation.ProtoReflect.Descriptor instead.
+func (*UserInfo_PreciseLocation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{2, 0}
+}
+
+func (x *UserInfo_PreciseLocation) GetLocation() isUserInfo_PreciseLocation_Location {
+	if x != nil {
+		return x.Location
+	}
+	return nil
+}
+
+func (x *UserInfo_PreciseLocation) GetPoint() *latlng.LatLng {
+	if x != nil {
+		if x, ok := x.Location.(*UserInfo_PreciseLocation_Point); ok {
+			return x.Point
+		}
+	}
+	return nil
+}
+
+func (x *UserInfo_PreciseLocation) GetAddress() string {
+	if x != nil {
+		if x, ok := x.Location.(*UserInfo_PreciseLocation_Address); ok {
+			return x.Address
+		}
+	}
+	return ""
+}
+
+type isUserInfo_PreciseLocation_Location interface {
+	isUserInfo_PreciseLocation_Location()
+}
+
+type UserInfo_PreciseLocation_Point struct {
+	// Optional. Location represented by a latitude/longitude point.
+	Point *latlng.LatLng `protobuf:"bytes,1,opt,name=point,proto3,oneof"`
+}
+
+type UserInfo_PreciseLocation_Address struct {
+	// Location represented by a natural language address. Will later be
+	// geocoded and converted to either a point or a polygon.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3,oneof"`
+}
+
+func (*UserInfo_PreciseLocation_Point) isUserInfo_PreciseLocation_Location() {}
+
+func (*UserInfo_PreciseLocation_Address) isUserInfo_PreciseLocation_Location() {}
+
+// Third party IDP Config.
+type IdpConfig_ExternalIdpConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Workforce pool name.
+	// Example: "locations/global/workforcePools/pool_id"
+	WorkforcePoolName string `protobuf:"bytes,1,opt,name=workforce_pool_name,json=workforcePoolName,proto3" json:"workforce_pool_name,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *IdpConfig_ExternalIdpConfig) Reset() {
+	*x = IdpConfig_ExternalIdpConfig{}
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IdpConfig_ExternalIdpConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IdpConfig_ExternalIdpConfig) ProtoMessage() {}
+
+func (x *IdpConfig_ExternalIdpConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IdpConfig_ExternalIdpConfig.ProtoReflect.Descriptor instead.
+func (*IdpConfig_ExternalIdpConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{4, 0}
+}
+
+func (x *IdpConfig_ExternalIdpConfig) GetWorkforcePoolName() string {
+	if x != nil {
+		return x.WorkforcePoolName
+	}
+	return ""
+}
+
+// Defines the TTL for sessions.
+type SessionConfig_SessionTtl struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// TTL can be either a number of days or indefinite.
+	//
+	// Types that are valid to be assigned to TimeInfo:
+	//
+	//	*SessionConfig_SessionTtl_Days
+	TimeInfo      isSessionConfig_SessionTtl_TimeInfo `protobuf_oneof:"time_info"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SessionConfig_SessionTtl) Reset() {
+	*x = SessionConfig_SessionTtl{}
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SessionConfig_SessionTtl) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionConfig_SessionTtl) ProtoMessage() {}
+
+func (x *SessionConfig_SessionTtl) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionConfig_SessionTtl.ProtoReflect.Descriptor instead.
+func (*SessionConfig_SessionTtl) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{8, 0}
+}
+
+func (x *SessionConfig_SessionTtl) GetTimeInfo() isSessionConfig_SessionTtl_TimeInfo {
+	if x != nil {
+		return x.TimeInfo
+	}
+	return nil
+}
+
+func (x *SessionConfig_SessionTtl) GetDays() int32 {
+	if x != nil {
+		if x, ok := x.TimeInfo.(*SessionConfig_SessionTtl_Days); ok {
+			return x.Days
+		}
+	}
+	return 0
+}
+
+type isSessionConfig_SessionTtl_TimeInfo interface {
+	isSessionConfig_SessionTtl_TimeInfo()
+}
+
+type SessionConfig_SessionTtl_Days struct {
+	// Defines the number of days for session TTL.
+	Days int32 `protobuf:"varint,1,opt,name=days,proto3,oneof"`
+}
+
+func (*SessionConfig_SessionTtl_Days) isSessionConfig_SessionTtl_TimeInfo() {}
+
+// Specifies a Sensitive Data Protection
+// (https://cloud.google.com/sensitive-data-protection/docs/sensitive-data-protection-overview)
+// policy.
+type DataProtectionPolicy_SensitiveDataProtectionPolicy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Specifies the resource name of the Sensitive Data Protection
+	// content policy.
+	Policy        string `protobuf:"bytes,1,opt,name=policy,proto3" json:"policy,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataProtectionPolicy_SensitiveDataProtectionPolicy) Reset() {
+	*x = DataProtectionPolicy_SensitiveDataProtectionPolicy{}
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataProtectionPolicy_SensitiveDataProtectionPolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataProtectionPolicy_SensitiveDataProtectionPolicy) ProtoMessage() {}
+
+func (x *DataProtectionPolicy_SensitiveDataProtectionPolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_common_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataProtectionPolicy_SensitiveDataProtectionPolicy.ProtoReflect.Descriptor instead.
+func (*DataProtectionPolicy_SensitiveDataProtectionPolicy) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP(), []int{9, 0}
+}
+
+func (x *DataProtectionPolicy_SensitiveDataProtectionPolicy) GetPolicy() string {
+	if x != nil {
+		return x.Policy
+	}
+	return ""
+}
+
 var File_google_cloud_discoveryengine_v1_common_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_common_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/discoveryengine/v1/common.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xae\x01\n" +
+	",google/cloud/discoveryengine/v1/common.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/type/latlng.proto\"\xae\x01\n" +
 	"\bInterval\x12\x1a\n" +
 	"\aminimum\x18\x01 \x01(\x01H\x00R\aminimum\x12-\n" +
 	"\x11exclusive_minimum\x18\x02 \x01(\x01H\x00R\x10exclusiveMinimum\x12\x1a\n" +
@@ -957,23 +1678,40 @@ const file_google_cloud_discoveryengine_v1_common_proto_rawDesc = "" +
 	"\x03max\"?\n" +
 	"\x0fCustomAttribute\x12\x12\n" +
 	"\x04text\x18\x01 \x03(\tR\x04text\x12\x18\n" +
-	"\anumbers\x18\x02 \x03(\x01R\anumbers\"e\n" +
+	"\anumbers\x18\x02 \x03(\x01R\anumbers\"\xc0\x02\n" +
 	"\bUserInfo\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
 	"user_agent\x18\x02 \x01(\tR\tuserAgent\x12!\n" +
-	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\"$\n" +
+	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12k\n" +
+	"\x10precise_location\x18\x04 \x01(\v29.google.cloud.discoveryengine.v1.UserInfo.PreciseLocationB\x05\xe2A\x02\x04\x01R\x0fpreciseLocation\x1al\n" +
+	"\x0fPreciseLocation\x121\n" +
+	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x01H\x00R\x05point\x12\x1a\n" +
+	"\aaddress\x18\x02 \x01(\tH\x00R\aaddressB\n" +
+	"\n" +
+	"\blocation\"$\n" +
 	"\n" +
 	"DoubleList\x12\x16\n" +
-	"\x06values\x18\x01 \x03(\x01R\x06values\"\x80\x01\n" +
+	"\x06values\x18\x01 \x03(\x01R\x06values\"\xcf\x02\n" +
+	"\tIdpConfig\x12M\n" +
+	"\bidp_type\x18\x01 \x01(\x0e22.google.cloud.discoveryengine.v1.IdpConfig.IdpTypeR\aidpType\x12l\n" +
+	"\x13external_idp_config\x18\x02 \x01(\v2<.google.cloud.discoveryengine.v1.IdpConfig.ExternalIdpConfigR\x11externalIdpConfig\x1aC\n" +
+	"\x11ExternalIdpConfig\x12.\n" +
+	"\x13workforce_pool_name\x18\x01 \x01(\tR\x11workforcePoolName\"@\n" +
+	"\aIdpType\x12\x18\n" +
+	"\x14IDP_TYPE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06GSUITE\x10\x01\x12\x0f\n" +
+	"\vTHIRD_PARTY\x10\x02\"\x80\x01\n" +
 	"\tPrincipal\x12\x19\n" +
 	"\auser_id\x18\x01 \x01(\tH\x00R\x06userId\x12\x1b\n" +
 	"\bgroup_id\x18\x02 \x01(\tH\x00R\agroupId\x12.\n" +
 	"\x12external_entity_id\x18\x03 \x01(\tH\x00R\x10externalEntityIdB\v\n" +
-	"\tprincipal\"\xaf\x01\n" +
+	"\tprincipal\"\xe9\x01\n" +
 	"\x14HealthcareFhirConfig\x12<\n" +
 	"\x1aenable_configurable_schema\x18\x01 \x01(\bR\x18enableConfigurableSchema\x12Y\n" +
-	"*enable_static_indexing_for_batch_ingestion\x18\x02 \x01(\bR%enableStaticIndexingForBatchIngestion\"\x82\x02\n" +
+	"*enable_static_indexing_for_batch_ingestion\x18\x02 \x01(\bR%enableStaticIndexingForBatchIngestion\x128\n" +
+	"\x15initial_filter_groups\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x13initialFilterGroups\"\x82\x02\n" +
 	"\x13SearchLinkPromotion\x12\x1a\n" +
 	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05title\x12\x16\n" +
 	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03uri\x12L\n" +
@@ -981,18 +1719,36 @@ const file_google_cloud_discoveryengine_v1_common_proto_rawDesc = "" +
 	"'discoveryengine.googleapis.com/DocumentR\bdocument\x12!\n" +
 	"\timage_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bimageUri\x12&\n" +
 	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1e\n" +
-	"\aenabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\aenabled*b\n" +
+	"\aenabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\aenabled\"\x9b\x03\n" +
+	"\rSessionConfig\x12\x88\x01\n" +
+	"\x19session_management_policy\x18\x01 \x01(\x0e2F.google.cloud.discoveryengine.v1.SessionConfig.SessionManagementPolicyB\x04\xe2A\x01\x01R\x17sessionManagementPolicy\x12`\n" +
+	"\vsession_ttl\x18\x02 \x01(\v29.google.cloud.discoveryengine.v1.SessionConfig.SessionTtlB\x04\xe2A\x01\x01R\n" +
+	"sessionTtl\x1a/\n" +
+	"\n" +
+	"SessionTtl\x12\x14\n" +
+	"\x04days\x18\x01 \x01(\x05H\x00R\x04daysB\v\n" +
+	"\ttime_info\"l\n" +
+	"\x17SessionManagementPolicy\x12)\n" +
+	"%SESSION_MANAGEMENT_POLICY_UNSPECIFIED\x10\x00\x12\x0f\n" +
+	"\vNOT_MANAGED\x10\x01\x12\x15\n" +
+	"\x11VERTEX_AI_MANAGED\x10\x02\"\x9f\x02\n" +
+	"\x14DataProtectionPolicy\x12\xa2\x01\n" +
+	" sensitive_data_protection_policy\x18\x01 \x01(\v2S.google.cloud.discoveryengine.v1.DataProtectionPolicy.SensitiveDataProtectionPolicyB\x04\xe2A\x01\x01R\x1dsensitiveDataProtectionPolicy\x1ab\n" +
+	"\x1dSensitiveDataProtectionPolicy\x12A\n" +
+	"\x06policy\x18\x01 \x01(\tB)\xe2A\x01\x01\xfaA\"\n" +
+	" dlp.googleapis.com/ContentPolicyR\x06policy*b\n" +
 	"\x10IndustryVertical\x12!\n" +
 	"\x1dINDUSTRY_VERTICAL_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERIC\x10\x01\x12\t\n" +
 	"\x05MEDIA\x10\x02\x12\x13\n" +
-	"\x0fHEALTHCARE_FHIR\x10\a*\xa4\x01\n" +
+	"\x0fHEALTHCARE_FHIR\x10\a*\xbf\x01\n" +
 	"\fSolutionType\x12\x1d\n" +
 	"\x19SOLUTION_TYPE_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cSOLUTION_TYPE_RECOMMENDATION\x10\x01\x12\x18\n" +
 	"\x14SOLUTION_TYPE_SEARCH\x10\x02\x12\x16\n" +
 	"\x12SOLUTION_TYPE_CHAT\x10\x03\x12!\n" +
-	"\x1dSOLUTION_TYPE_GENERATIVE_CHAT\x10\x04*h\n" +
+	"\x1dSOLUTION_TYPE_GENERATIVE_CHAT\x10\x04\x12\x19\n" +
+	"\x15SOLUTION_TYPE_AI_MODE\x10\x05*h\n" +
 	"\rSearchUseCase\x12\x1f\n" +
 	"\x1bSEARCH_USE_CASE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16SEARCH_USE_CASE_SEARCH\x10\x01\x12\x1a\n" +
@@ -1004,14 +1760,42 @@ const file_google_cloud_discoveryengine_v1_common_proto_rawDesc = "" +
 	"\x16SEARCH_TIER_ENTERPRISE\x10\x02*C\n" +
 	"\vSearchAddOn\x12\x1d\n" +
 	"\x19SEARCH_ADD_ON_UNSPECIFIED\x10\x00\x12\x15\n" +
-	"\x11SEARCH_ADD_ON_LLM\x10\x01B\xda\r\xeaA\xe6\x01\n" +
-	"%discoveryengine.googleapis.com/Branch\x12Qprojects/{project}/locations/{location}/dataStores/{data_store}/branches/{branch}\x12jprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/branches/{branch}\xeaAm\n" +
-	")discoveryengine.googleapis.com/Collection\x12@projects/{project}/locations/{location}/collections/{collection}\xeaAR\n" +
+	"\x11SEARCH_ADD_ON_LLM\x10\x01*\xeb\x04\n" +
+	"\x10SubscriptionTier\x12!\n" +
+	"\x1dSUBSCRIPTION_TIER_UNSPECIFIED\x10\x00\x12\x1c\n" +
+	"\x18SUBSCRIPTION_TIER_SEARCH\x10\x01\x12*\n" +
+	"&SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT\x10\x02\x12!\n" +
+	"\x1dSUBSCRIPTION_TIER_NOTEBOOK_LM\x10\x03\x12&\n" +
+	"\"SUBSCRIPTION_TIER_FRONTLINE_WORKER\x10\x04\x12(\n" +
+	"$SUBSCRIPTION_TIER_AGENTSPACE_STARTER\x10\n" +
+	"\x12)\n" +
+	"%SUBSCRIPTION_TIER_AGENTSPACE_BUSINESS\x10\x06\x12 \n" +
+	"\x1cSUBSCRIPTION_TIER_ENTERPRISE\x10\a\x12)\n" +
+	"%SUBSCRIPTION_TIER_ENTERPRISE_EMERGING\x10\x0f\x12\x19\n" +
+	"\x15SUBSCRIPTION_TIER_EDU\x10\b\x12\x1d\n" +
+	"\x19SUBSCRIPTION_TIER_EDU_PRO\x10\t\x12\"\n" +
+	"\x1eSUBSCRIPTION_TIER_EDU_EMERGING\x10\v\x12&\n" +
+	"\"SUBSCRIPTION_TIER_EDU_PRO_EMERGING\x10\f\x12'\n" +
+	"#SUBSCRIPTION_TIER_FRONTLINE_STARTER\x10\r\x12&\n" +
+	"\"SUBSCRIPTION_TIER_CONSUMPTION_ONLY\x10\x10\x12&\n" +
+	"\"SUBSCRIPTION_TIER_EDU_GOV_EMERGING\x10\x11*\xb7\x01\n" +
+	"\x10SubscriptionTerm\x12!\n" +
+	"\x1dSUBSCRIPTION_TERM_UNSPECIFIED\x10\x00\x12\x1f\n" +
+	"\x1bSUBSCRIPTION_TERM_ONE_MONTH\x10\x01\x12\x1e\n" +
+	"\x1aSUBSCRIPTION_TERM_ONE_YEAR\x10\x02\x12!\n" +
+	"\x1dSUBSCRIPTION_TERM_THREE_YEARS\x10\x03\x12\x1c\n" +
+	"\x18SUBSCRIPTION_TERM_CUSTOM\x10\x06B\x82\x14\xeaA\xe6\x01\n" +
+	"%discoveryengine.googleapis.com/Branch\x12Qprojects/{project}/locations/{location}/dataStores/{data_store}/branches/{branch}\x12jprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/branches/{branch}\xeaAR\n" +
 	"'discoveryengine.googleapis.com/Location\x12'projects/{project}/locations/{location}\xeaA}\n" +
 	".discoveryengine.googleapis.com/GroundingConfig\x12Kprojects/{project}/locations/{location}/groundingConfigs/{grounding_config}\xeaAw\n" +
-	",discoveryengine.googleapis.com/RankingConfig\x12Gprojects/{project}/locations/{location}/rankingConfigs/{ranking_config}\xeaAw\n" +
-	",discoveryengine.googleapis.com/LicenseConfig\x12Gprojects/{project}/locations/{location}/licenseConfigs/{license_config}\xeaAk\n" +
-	"(discoveryengine.googleapis.com/UserStore\x12?projects/{project}/locations/{location}/userStores/{user_store}\xeaAy\n" +
+	",discoveryengine.googleapis.com/RankingConfig\x12Gprojects/{project}/locations/{location}/rankingConfigs/{ranking_config}\xeaA\xd2\x02\n" +
+	"/discoveryengine.googleapis.com/CompletionConfig\x12Pprojects/{project}/locations/{location}/dataStores/{data_store}/completionConfig\x12iprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/completionConfig\x12bprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/completionConfig\xeaA\x9d\x01\n" +
+	":discoveryengine.googleapis.com/BillingAccountLicenseConfig\x12_billingAccounts/{billing_account}/billingAccountLicenseConfigs/{billing_account_license_config}\xeaAg\n" +
+	"'discoveryengine.googleapis.com/Notebook\x12<projects/{project}/locations/{location}/notebooks/{notebook}\xeaAt\n" +
+	"+networkservices.googleapis.com/AgentGateway\x12Eprojects/{project}/locations/{location}/agentGateways/{agent_gateway}\xeaAb\n" +
+	"\"modelarmor.googleapis.com/Template\x12<projects/{project}/locations/{location}/templates/{template}\xeaA\xc0\x01\n" +
+	" dlp.googleapis.com/ContentPolicy\x12Rorganizations/{organization}/locations/{location}/contentPolicies/{content_policy}\x12Hprojects/{project}/locations/{location}/contentPolicies/{content_policy}\xeaA|\n" +
+	"'servicedirectory.googleapis.com/Service\x12Qprojects/{project}/locations/{location}/namespaces/{namespace}/services/{service}\xeaAy\n" +
 	"#healthcare.googleapis.com/FhirStore\x12Rprojects/{project}/locations/{location}/datasets/{dataset}/fhirStores/{fhir_store}\xeaA\xa4\x01\n" +
 	"&healthcare.googleapis.com/FhirResource\x12zprojects/{project}/locations/{location}/datasets/{dataset}/fhirStores/{fhir_store}/fhir/{resource_type}/{fhir_resource_id}\xeaAy\n" +
 	"\"cloudkms.googleapis.com/CryptoKeys\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaA\xa7\x01\n" +
@@ -1030,28 +1814,47 @@ func file_google_cloud_discoveryengine_v1_common_proto_rawDescGZIP() []byte {
 	return file_google_cloud_discoveryengine_v1_common_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_google_cloud_discoveryengine_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_discoveryengine_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_google_cloud_discoveryengine_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_google_cloud_discoveryengine_v1_common_proto_goTypes = []any{
-	(IndustryVertical)(0),        // 0: google.cloud.discoveryengine.v1.IndustryVertical
-	(SolutionType)(0),            // 1: google.cloud.discoveryengine.v1.SolutionType
-	(SearchUseCase)(0),           // 2: google.cloud.discoveryengine.v1.SearchUseCase
-	(SearchTier)(0),              // 3: google.cloud.discoveryengine.v1.SearchTier
-	(SearchAddOn)(0),             // 4: google.cloud.discoveryengine.v1.SearchAddOn
-	(*Interval)(nil),             // 5: google.cloud.discoveryengine.v1.Interval
-	(*CustomAttribute)(nil),      // 6: google.cloud.discoveryengine.v1.CustomAttribute
-	(*UserInfo)(nil),             // 7: google.cloud.discoveryengine.v1.UserInfo
-	(*DoubleList)(nil),           // 8: google.cloud.discoveryengine.v1.DoubleList
-	(*Principal)(nil),            // 9: google.cloud.discoveryengine.v1.Principal
-	(*HealthcareFhirConfig)(nil), // 10: google.cloud.discoveryengine.v1.HealthcareFhirConfig
-	(*SearchLinkPromotion)(nil),  // 11: google.cloud.discoveryengine.v1.SearchLinkPromotion
+	(IndustryVertical)(0),                      // 0: google.cloud.discoveryengine.v1.IndustryVertical
+	(SolutionType)(0),                          // 1: google.cloud.discoveryengine.v1.SolutionType
+	(SearchUseCase)(0),                         // 2: google.cloud.discoveryengine.v1.SearchUseCase
+	(SearchTier)(0),                            // 3: google.cloud.discoveryengine.v1.SearchTier
+	(SearchAddOn)(0),                           // 4: google.cloud.discoveryengine.v1.SearchAddOn
+	(SubscriptionTier)(0),                      // 5: google.cloud.discoveryengine.v1.SubscriptionTier
+	(SubscriptionTerm)(0),                      // 6: google.cloud.discoveryengine.v1.SubscriptionTerm
+	(IdpConfig_IdpType)(0),                     // 7: google.cloud.discoveryengine.v1.IdpConfig.IdpType
+	(SessionConfig_SessionManagementPolicy)(0), // 8: google.cloud.discoveryengine.v1.SessionConfig.SessionManagementPolicy
+	(*Interval)(nil),                           // 9: google.cloud.discoveryengine.v1.Interval
+	(*CustomAttribute)(nil),                    // 10: google.cloud.discoveryengine.v1.CustomAttribute
+	(*UserInfo)(nil),                           // 11: google.cloud.discoveryengine.v1.UserInfo
+	(*DoubleList)(nil),                         // 12: google.cloud.discoveryengine.v1.DoubleList
+	(*IdpConfig)(nil),                          // 13: google.cloud.discoveryengine.v1.IdpConfig
+	(*Principal)(nil),                          // 14: google.cloud.discoveryengine.v1.Principal
+	(*HealthcareFhirConfig)(nil),               // 15: google.cloud.discoveryengine.v1.HealthcareFhirConfig
+	(*SearchLinkPromotion)(nil),                // 16: google.cloud.discoveryengine.v1.SearchLinkPromotion
+	(*SessionConfig)(nil),                      // 17: google.cloud.discoveryengine.v1.SessionConfig
+	(*DataProtectionPolicy)(nil),               // 18: google.cloud.discoveryengine.v1.DataProtectionPolicy
+	(*UserInfo_PreciseLocation)(nil),           // 19: google.cloud.discoveryengine.v1.UserInfo.PreciseLocation
+	(*IdpConfig_ExternalIdpConfig)(nil),        // 20: google.cloud.discoveryengine.v1.IdpConfig.ExternalIdpConfig
+	(*SessionConfig_SessionTtl)(nil),           // 21: google.cloud.discoveryengine.v1.SessionConfig.SessionTtl
+	(*DataProtectionPolicy_SensitiveDataProtectionPolicy)(nil), // 22: google.cloud.discoveryengine.v1.DataProtectionPolicy.SensitiveDataProtectionPolicy
+	(*latlng.LatLng)(nil), // 23: google.type.LatLng
 }
 var file_google_cloud_discoveryengine_v1_common_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	19, // 0: google.cloud.discoveryengine.v1.UserInfo.precise_location:type_name -> google.cloud.discoveryengine.v1.UserInfo.PreciseLocation
+	7,  // 1: google.cloud.discoveryengine.v1.IdpConfig.idp_type:type_name -> google.cloud.discoveryengine.v1.IdpConfig.IdpType
+	20, // 2: google.cloud.discoveryengine.v1.IdpConfig.external_idp_config:type_name -> google.cloud.discoveryengine.v1.IdpConfig.ExternalIdpConfig
+	8,  // 3: google.cloud.discoveryengine.v1.SessionConfig.session_management_policy:type_name -> google.cloud.discoveryengine.v1.SessionConfig.SessionManagementPolicy
+	21, // 4: google.cloud.discoveryengine.v1.SessionConfig.session_ttl:type_name -> google.cloud.discoveryengine.v1.SessionConfig.SessionTtl
+	22, // 5: google.cloud.discoveryengine.v1.DataProtectionPolicy.sensitive_data_protection_policy:type_name -> google.cloud.discoveryengine.v1.DataProtectionPolicy.SensitiveDataProtectionPolicy
+	23, // 6: google.cloud.discoveryengine.v1.UserInfo.PreciseLocation.point:type_name -> google.type.LatLng
+	7,  // [7:7] is the sub-list for method output_type
+	7,  // [7:7] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_common_proto_init() }
@@ -1065,18 +1868,25 @@ func file_google_cloud_discoveryengine_v1_common_proto_init() {
 		(*Interval_Maximum)(nil),
 		(*Interval_ExclusiveMaximum)(nil),
 	}
-	file_google_cloud_discoveryengine_v1_common_proto_msgTypes[4].OneofWrappers = []any{
+	file_google_cloud_discoveryengine_v1_common_proto_msgTypes[5].OneofWrappers = []any{
 		(*Principal_UserId)(nil),
 		(*Principal_GroupId)(nil),
 		(*Principal_ExternalEntityId)(nil),
+	}
+	file_google_cloud_discoveryengine_v1_common_proto_msgTypes[10].OneofWrappers = []any{
+		(*UserInfo_PreciseLocation_Point)(nil),
+		(*UserInfo_PreciseLocation_Address)(nil),
+	}
+	file_google_cloud_discoveryengine_v1_common_proto_msgTypes[12].OneofWrappers = []any{
+		(*SessionConfig_SessionTtl_Days)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_common_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_common_proto_rawDesc)),
-			NumEnums:      5,
-			NumMessages:   7,
+			NumEnums:      9,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
