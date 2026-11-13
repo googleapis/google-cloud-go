@@ -658,3 +658,43 @@ func TestHooks_FiredInSpecOrder(t *testing.T) {
 		t.Errorf("hook order = %v, want %v", got, want)
 	}
 }
+
+func TestGoAway_RecordsDebugEventAndTracksCloseGoroutine(t *testing.T) {
+	streamCtx, streamCancel := context.WithCancel(context.Background())
+	defer streamCancel()
+	stream := newFakeStream().bindCtx(streamCtx)
+
+	s := NewSession("goaway-event", stream, SessionHooks{}, SessionTypeTable,
+		WithSessionDebugEnabled(true))
+	if err := s.Start(streamCtx, &spb.OpenSessionRequest{}); err != nil {
+		t.Fatalf("Start: %v", err)
+	}
+	stream.recv <- recvOp{resp: &spb.SessionResponse{
+		Payload: &spb.SessionResponse_OpenSession{OpenSession: &spb.OpenSessionResponse{}},
+	}}
+	waitFor(t, time.Second, func() bool { return s.State() == StateReady }, "StateReady")
+
+	stream.recv <- recvOp{resp: &spb.SessionResponse{
+		Payload: &spb.SessionResponse_GoAway{
+			GoAway: &spb.GoAwayResponse{
+				Reason:      "server_drain",
+				Description: "maintenance",
+			},
+		},
+	}}
+	waitFor(t, time.Second, func() bool { return s.State() == StateWaitServerClose }, "StateWaitServerClose")
+	stream.Close()
+	s.WaitGoroutines()
+
+	events := s.snapshotEvents()
+	found := false
+	for _, ev := range events {
+		if ev.Kind == SessionEventGoAway {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("snapshotEvents() = %+v, want at least one %q event", events, SessionEventGoAway)
+	}
+}
