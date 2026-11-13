@@ -19,8 +19,10 @@ import (
 	"encoding/base64"
 	"errors"
 	"net"
+	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
@@ -826,5 +828,59 @@ func TestNewClient_MidInitConstructorCtxCancelAborts(t *testing.T) {
 	}
 	if got := shutdownCalls.Load(); got != 1 {
 		t.Errorf("factory.Shutdown call count on mid-init cancel = %d, want 1", got)
+	}
+}
+
+type configRecordingServer struct {
+	btpb.UnimplementedBigtableServer
+	once    sync.Once
+	firstMD chan metadata.MD
+}
+
+func (s *configRecordingServer) GetClientConfiguration(ctx context.Context, _ *btpb.GetClientConfigurationRequest) (*btpb.ClientConfiguration, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	s.once.Do(func() {
+		s.firstMD <- md.Copy()
+	})
+	return &btpb.ClientConfiguration{}, nil
+}
+
+func TestNewClient_DirectAccessProbeSendsRoutingHeaders(t *testing.T) {
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	fakeSrv := &configRecordingServer{firstMD: make(chan metadata.MD, 1)}
+	srv := grpc.NewServer()
+	btpb.RegisterBigtableServer(srv, fakeSrv)
+	t.Cleanup(srv.Stop)
+	go func() { _ = srv.Serve(lis) }()
+
+	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{EnableDirectAccess: true})
+	c, err := NewClient(
+		context.Background(), "p", "i", "profile with spaces", "", metrics.NoopMetricsProvider{}, ff,
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+	)
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer c.Close()
+
+	select {
+	case md := <-fakeSrv.firstMD:
+		if got := md.Get(resourcePrefixHeader); len(got) != 1 || got[0] != "projects/p/instances/i" {
+			t.Errorf("%s on initial probe = %v, want [projects/p/instances/i]", resourcePrefixHeader, got)
+		}
+		wantParam := "instance_name=projects%2Fp%2Finstances%2Fi&app_profile_id=profile+with+spaces"
+		if got := md.Get(requestParamsHeader); len(got) != 1 || got[0] != wantParam {
+			t.Errorf("%s on initial probe = %v, want [%s]", requestParamsHeader, got, wantParam)
+		}
+		if len(md.Get(btransport.FeatureFlagsHeader)) != 1 {
+			t.Errorf("%s missing on initial probe: %v", btransport.FeatureFlagsHeader, md)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("timed out waiting for initial GetClientConfiguration probe")
 	}
 }
