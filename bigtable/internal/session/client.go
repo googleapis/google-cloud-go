@@ -804,6 +804,16 @@ func (sc *sessionClient) createSessionPool(
 		} else {
 			sc.sessionPoolsMu.Unlock()
 			unregister()
+			_ = pool.Close()
+			return nil, nil
+		}
+	} else {
+		sc.sessionPoolsMu.Lock()
+		cur, stillThere := sc.sessionPools[id]
+		sc.sessionPoolsMu.Unlock()
+		if !stillThere || cur != mp {
+			_ = pool.Close()
+			return nil, nil
 		}
 	}
 

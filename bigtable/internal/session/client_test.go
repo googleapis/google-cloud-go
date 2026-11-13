@@ -21,6 +21,7 @@ import (
 	"net"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
@@ -826,5 +827,78 @@ func TestNewClient_MidInitConstructorCtxCancelAborts(t *testing.T) {
 	}
 	if got := shutdownCalls.Load(); got != 1 {
 		t.Errorf("factory.Shutdown call count on mid-init cancel = %d, want 1", got)
+	}
+}
+
+type blockingConfigClient struct {
+	btpb.BigtableClient
+}
+
+func (b *blockingConfigClient) GetClientConfiguration(ctx context.Context, _ *btpb.GetClientConfigurationRequest, _ ...grpc.CallOption) (*btpb.ClientConfiguration, error) {
+	<-ctx.Done()
+	return nil, ctx.Err()
+}
+
+func TestCreateSessionPool_RacingClientCloseReturnsNilWithoutStartingPool(t *testing.T) {
+	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	sc.configManager = btransport.NewClientConfigurationManager(&blockingConfigClient{}, sc.fullInstanceName(), "test-profile", nil, nil)
+
+	holdingConfigLock := make(chan struct{})
+	releaseConfigLock := make(chan struct{})
+	holderDone := make(chan struct{})
+	go func() {
+		defer close(holderDone)
+		unreg := sc.configManager.AddSessionPoolListener(func(*btpb.SessionClientConfiguration_SessionPoolConfiguration) {
+			close(holdingConfigLock)
+			<-releaseConfigLock
+		})
+		defer unreg()
+	}()
+	<-holdingConfigLock
+
+	var (
+		gotPool    *btransport.SessionPoolImpl
+		gotRelease func() error
+		createDone = make(chan struct{})
+	)
+	go func() {
+		defer close(createDone)
+		gotPool, gotRelease = sc.createSessionPool(
+			poolKey{resourceName: "table:t", perm: permissionRead},
+			func(context.Context) (btransport.Stream, error) { return nil, errors.New("never dials") },
+			&btpb.OpenSessionRequest{},
+			nil,
+			btransport.SessionTypeTable,
+		)
+	}()
+
+	// Wait until createSessionPool has inserted its entry into sc.sessionPools
+	// and is blocked on configManager.AddSessionPoolListener.
+	deadline := time.Now().Add(2 * time.Second)
+	for {
+		sc.sessionPoolsMu.Lock()
+		n := len(sc.sessionPools)
+		sc.sessionPoolsMu.Unlock()
+		if n == 1 {
+			break
+		}
+		if time.Now().After(deadline) {
+			close(releaseConfigLock)
+			t.Fatal("timed out waiting for createSessionPool to insert into sessionPools")
+		}
+		time.Sleep(time.Millisecond)
+	}
+
+	// Close the client while createSessionPool is mid-flight between unlock and re-lock.
+	if err := sc.Close(); err != nil {
+		close(releaseConfigLock)
+		t.Fatalf("sc.Close: %v", err)
+	}
+	close(releaseConfigLock)
+	<-holderDone
+	<-createDone
+
+	if gotPool != nil || gotRelease != nil {
+		t.Fatalf("createSessionPool racing Close returned (pool=%v, releaseNonNil=%v), want (nil, false) so closed pool is not started or cached", gotPool, gotRelease != nil)
 	}
 }
