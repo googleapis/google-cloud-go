@@ -446,9 +446,23 @@ func (m *ClientConfigurationManager) pollingLoop() {
 	for {
 		m.mu.RLock()
 		cfg := m.currentConfig
+		validUntil := m.validUntil
+		isDefault := cfg == m.defaultConfig
 		m.mu.RUnlock()
 
 		if cfg.GetStopPolling() {
+			if !isDefault {
+				if wait := time.Until(validUntil); wait > 0 {
+					timer := time.NewTimer(wait)
+					select {
+					case <-m.ctx.Done():
+						timer.Stop()
+						return
+					case <-timer.C:
+					}
+				}
+				m.expireToDefaultIfNeeded()
+			}
 			btopt.Debugf(m.logger, "bigtable: server requested polling stop; exiting pollingLoop")
 			return
 		}
@@ -517,9 +531,11 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	pollStart := time.Now()
 	resp, err := m.fetchClientConfiguration(ctx)
 
-	// Caller cancelled (typically Close()). Don't trigger fallback-to-default
-	// or fire any listeners — pools they target are about to be torn down.
-	if ctx.Err() != nil {
+	// Manager shutting down (Close() or parent ctx cancelled). Don't trigger
+	// fallback-to-default or fire any listeners — pools they target are about
+	// to be torn down. Per-poll pollDeadline timeouts on ctx still proceed to
+	// record the failure and enforce validUntil lease expiry.
+	if (m.ctx != nil && m.ctx.Err() != nil) || m.isClosed() {
 		return
 	}
 
@@ -635,6 +651,38 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 
 	// Suppress listener fires after Close() has begun teardown — the
 	// SessionPools they target may already be Close'd.
+	if m.isClosed() {
+		return
+	}
+	for _, l := range listeners {
+		l(proto.Clone(cfgToNotify).(*bigtablepb.ClientConfiguration), seq)
+	}
+}
+
+// expireToDefaultIfNeeded reverts a non-default configuration back to
+// defaultConfig once its validUntil lease has elapsed (used when StopPolling
+// halts periodic polls while a finite-validity server config is active).
+func (m *ClientConfigurationManager) expireToDefaultIfNeeded() {
+	if (m.ctx != nil && m.ctx.Err() != nil) || m.isClosed() {
+		return
+	}
+	m.mu.Lock()
+	if m.currentConfig == m.defaultConfig || time.Now().Before(m.validUntil) {
+		m.mu.Unlock()
+		return
+	}
+	btopt.Debugf(m.logger, "bigtable: stopped-polling client configuration validity window expired, falling back to default config")
+	m.currentConfig = m.defaultConfig
+	m.configSeq++
+	seq := m.configSeq
+	m.validUntil = time.Now().Add(validityDuration(m.defaultConfig))
+	listeners := make([]configListener, 0, len(m.listeners))
+	for _, l := range m.listeners {
+		listeners = append(listeners, l)
+	}
+	cfgToNotify := m.currentConfig
+	m.mu.Unlock()
+
 	if m.isClosed() {
 		return
 	}
