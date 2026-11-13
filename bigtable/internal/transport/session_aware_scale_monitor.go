@@ -16,6 +16,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -109,35 +110,49 @@ func NewSessionAwareScaleMonitor(pool *BigtableChannelPool) *SessionAwareScaleMo
 	}
 }
 
-// OnConfig accepts a ChannelPoolConfiguration update — designed as
-// the callback registered with ClientConfigurationManager.
-// AddChannelPoolConfigListener. nil config is ignored. Any unset or
-// non-positive field falls back to defaultClientConfig's
-// ChannelConfiguration so partial server configs inherit client defaults.
-func (m *SessionAwareScaleMonitor) OnConfig(cfg *spb.SessionClientConfiguration_ChannelPoolConfiguration) {
+// OnConfig validates and applies a ChannelPoolConfiguration update —
+// designed for registration with ClientConfigurationManager.
+// AddChannelPoolConfigListener. Unset (zero) fields fall back to
+// defaultClientConfig's ChannelConfiguration; if any resolved value is
+// non-positive or maxServerCount < minServerCount, OnConfig returns an
+// error and leaves any previously stored snapshot untouched.
+func (m *SessionAwareScaleMonitor) OnConfig(cfg *spb.SessionClientConfiguration_ChannelPoolConfiguration) error {
 	if cfg == nil {
-		return
+		return fmt.Errorf("bigtable_connpool: ChannelPoolConfiguration cannot be nil")
 	}
 	defaults := defaultClientConfig.GetSessionConfiguration().GetChannelConfiguration()
 	minServers := int(cfg.GetMinServerCount())
 	maxServers := int(cfg.GetMaxServerCount())
 	perServerSessions := int(cfg.GetPerServerSessionCount())
 	if defaults != nil {
-		if maxServers <= 0 {
+		if minServers == 0 {
+			minServers = int(defaults.GetMinServerCount())
+		}
+		if maxServers == 0 {
 			maxServers = int(defaults.GetMaxServerCount())
 		}
-		if minServers <= 0 {
-			minServers = min(int(defaults.GetMinServerCount()), maxServers)
-		}
-		if perServerSessions <= 0 {
+		if perServerSessions == 0 {
 			perServerSessions = int(defaults.GetPerServerSessionCount())
 		}
+	}
+	if minServers <= 0 || maxServers <= 0 || perServerSessions <= 0 {
+		return fmt.Errorf(
+			"bigtable_connpool: ChannelPoolConfiguration values must be positive (min_server_count=%d, max_server_count=%d, per_server_session_count=%d)",
+			minServers, maxServers, perServerSessions,
+		)
+	}
+	if maxServers < minServers {
+		return fmt.Errorf(
+			"bigtable_connpool: ChannelPoolConfiguration max_server_count (%d) must not be less than min_server_count (%d)",
+			maxServers, minServers,
+		)
 	}
 	m.config.Store(&channelPoolConfigSnapshot{
 		minServerCount:        minServers,
 		maxServerCount:        maxServers,
 		perServerSessionCount: perServerSessions,
 	})
+	return nil
 }
 
 // Start begins the tick loop under ctx. The goroutine exits when ctx

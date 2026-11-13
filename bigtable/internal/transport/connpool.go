@@ -375,6 +375,8 @@ func (e *connEntry) markAsDraining() bool {
 // waitForDrainAndClose waits for a connection's in-flight request count to drop to zero
 // before closing it. It runs in a separate goroutine.
 func (p *BigtableChannelPool) waitForDrainAndClose(entry *connEntry) {
+	defer p.finishDraining(entry)
+
 	// Create a context with a drain timeout
 	ctx, cancel := context.WithTimeout(p.poolCtx, maxDrainingTimeout)
 	defer cancel()
@@ -428,6 +430,13 @@ type BigtableChannelPool struct {
 	selectFunc func() (*connEntry, error) // returns *connEntry
 
 	dialMu sync.Mutex // Serializes dial/replace/resize operations
+
+	// drainingMu guards drainingConns, which tracks connections marked
+	// draining so TotalStreamCount continues counting their live streams
+	// after removeConnectionsOrdered / replaceConnection removes them from
+	// p.conns while waitForDrainAndClose waits for streams to finish.
+	drainingMu    sync.Mutex
+	drainingConns map[*connEntry]struct{}
 
 	poolCtx    context.Context    // Context for the pool's background tasks
 	poolCancel context.CancelFunc // Function to cancel the poolCtx
@@ -660,18 +669,49 @@ func (p *BigtableChannelPool) Num() int {
 	return len(p.getConns())
 }
 
+func (p *BigtableChannelPool) startDraining(entry *connEntry) bool {
+	p.drainingMu.Lock()
+	defer p.drainingMu.Unlock()
+	if !entry.markAsDraining() {
+		return false
+	}
+	if p.drainingConns == nil {
+		p.drainingConns = make(map[*connEntry]struct{})
+	}
+	p.drainingConns[entry] = struct{}{}
+	return true
+}
+
+func (p *BigtableChannelPool) finishDraining(entry *connEntry) {
+	p.drainingMu.Lock()
+	delete(p.drainingConns, entry)
+	p.drainingMu.Unlock()
+}
+
 // TotalStreamCount returns the total number of in-flight streaming RPCs
 // across every channel in the pool — the sum of each connEntry's
-// streamingLoad. Sessions are bidi streams (one streaming RPC per open
-// session), so on session-mode traffic this equals the total session
-// count riding on the pool. SessionAwareScaleMonitor uses this as its
-// input signal, avoiding the need to reach across the session pool
-// boundary to sum per-resource session counts.
+// streamingLoad across both active (p.conns) and draining connections
+// that have already been removed from p.conns while awaiting graceful
+// close. Sessions are bidi streams (one streaming RPC per open session),
+// so on session-mode traffic this equals the total session count riding
+// on the pool. SessionAwareScaleMonitor uses this as its input signal,
+// avoiding the need to reach across the session pool boundary to sum
+// per-resource session counts.
 func (p *BigtableChannelPool) TotalStreamCount() int {
+	p.drainingMu.Lock()
+	defer p.drainingMu.Unlock()
+
 	conns := p.getConns()
 	total := 0
 	for _, entry := range conns {
-		total += int(entry.streamingLoad.Load())
+		if entry != nil {
+			total += int(entry.streamingLoad.Load())
+		}
+	}
+	for entry := range p.drainingConns {
+		if !slices.Contains(conns, entry) {
+			total += int(entry.streamingLoad.Load())
+		}
 	}
 	return total
 }
@@ -688,6 +728,9 @@ func (p *BigtableChannelPool) Close() error {
 
 	// immediately store zero-length slice
 	p.conns.Store((&[]*connEntry{}))
+	p.drainingMu.Lock()
+	p.drainingConns = nil
+	p.drainingMu.Unlock()
 
 	for _, entry := range conns {
 		if err := entry.conn.Close(); err != nil {
@@ -708,7 +751,7 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 	// Mark the connection
 	// if it is marked,
 	// it means another routine (health eviction or dynamic scale down) took over it.
-	if !oldEntry.markAsDraining() {
+	if !p.startDraining(oldEntry) {
 		return
 	}
 
@@ -1088,8 +1131,9 @@ func (p *BigtableChannelPool) removeConnectionsOrdered(decreaseDelta, minConns, 
 	// Select the top non-draining connections to mark for draining.
 	connsToDrain := make([]*connEntry, 0, cappedDecrease)
 	for i := 0; i < cappedDecrease; i++ {
-		connsToDrain = append(connsToDrain, entries[i].entry)
-		entries[i].entry.markAsDraining()
+		if p.startDraining(entries[i].entry) {
+			connsToDrain = append(connsToDrain, entries[i].entry)
+		}
 	}
 
 	// Build the slice of connections to keep

@@ -170,18 +170,22 @@ func TestSessionAwareScaleMonitor_ConfigUpdateResizes(t *testing.T) {
 func TestSessionAwareScaleMonitor_OnConfigStoresSnapshot(t *testing.T) {
 	m := NewSessionAwareScaleMonitor(nil)
 
-	// Nil config is ignored — no snapshot stored, no panic.
-	m.OnConfig(nil)
+	// Nil config returns an error — no snapshot stored, no panic.
+	if err := m.OnConfig(nil); err == nil {
+		t.Error("OnConfig(nil) = nil, want error")
+	}
 	if got := m.config.Load(); got != nil {
 		t.Errorf("OnConfig(nil) stored %+v, want no store", got)
 	}
 
 	// Valid config populates all three fields.
-	m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{
+	if err := m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{
 		MinServerCount:        3,
 		MaxServerCount:        12,
 		PerServerSessionCount: 6,
-	})
+	}); err != nil {
+		t.Fatalf("OnConfig(valid) unexpected error: %v", err)
+	}
 	snap := m.config.Load()
 	if snap == nil {
 		t.Fatal("OnConfig(valid) stored nil")
@@ -191,9 +195,11 @@ func TestSessionAwareScaleMonitor_OnConfigStoresSnapshot(t *testing.T) {
 			snap.minServerCount, snap.maxServerCount, snap.perServerSessionCount)
 	}
 
-	// Unset / non-positive fields fall back to defaultClientConfig's ChannelConfiguration.
+	// Unset (zero) fields fall back to defaultClientConfig's ChannelConfiguration.
 	defaults := defaultClientConfig.GetSessionConfiguration().GetChannelConfiguration()
-	m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{})
+	if err := m.OnConfig(&spb.SessionClientConfiguration_ChannelPoolConfiguration{}); err != nil {
+		t.Fatalf("OnConfig(empty) unexpected error: %v", err)
+	}
 	snap = m.config.Load()
 	if snap == nil {
 		t.Fatal("OnConfig(empty) stored nil")
@@ -203,6 +209,43 @@ func TestSessionAwareScaleMonitor_OnConfigStoresSnapshot(t *testing.T) {
 		snap.perServerSessionCount != int(defaults.GetPerServerSessionCount()) {
 		t.Errorf("snapshot from empty proto = %+v, want defaults {%d %d %d}",
 			snap, defaults.GetMinServerCount(), defaults.GetMaxServerCount(), defaults.GetPerServerSessionCount())
+	}
+
+	// Negative values or max < min return an error and leave the prior valid snapshot intact.
+	invalidConfigs := []struct {
+		name string
+		cfg  *spb.SessionClientConfiguration_ChannelPoolConfiguration
+	}{
+		{
+			name: "negative_min",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: -1, MaxServerCount: 10, PerServerSessionCount: 4},
+		},
+		{
+			name: "negative_max",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: 2, MaxServerCount: -5, PerServerSessionCount: 4},
+		},
+		{
+			name: "negative_per_server_sessions",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: 2, MaxServerCount: 10, PerServerSessionCount: -2},
+		},
+		{
+			name: "max_less_than_min",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: 10, MaxServerCount: 4, PerServerSessionCount: 4},
+		},
+		{
+			name: "min_exceeds_default_max",
+			cfg:  &spb.SessionClientConfiguration_ChannelPoolConfiguration{MinServerCount: defaults.GetMaxServerCount() + 5},
+		},
+	}
+	for _, tc := range invalidConfigs {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := m.OnConfig(tc.cfg); err == nil {
+				t.Errorf("OnConfig(%+v) = nil, want validation error", tc.cfg)
+			}
+			if got := m.config.Load(); got != snap {
+				t.Errorf("invalid OnConfig overwrote previous valid snapshot: got %+v, want %+v", got, snap)
+			}
+		})
 	}
 }
 
@@ -387,4 +430,74 @@ func TestSessionAwareScaleMonitor_ShrinkPrefersIdleAndLeastStreamedConns(t *test
 	// Reset simulated loads so pool.Close() drains cleanly without waiting on phantom streams.
 	busyOldest.streamingLoad.Store(0)
 	busySecond.streamingLoad.Store(0)
+}
+
+// TestTotalStreamCount_IncludesDrainingConnections verifies that connections
+// removed from p.conns while draining still contribute their active
+// streamingLoad to TotalStreamCount until waitForDrainAndClose finishes.
+func TestTotalStreamCount_IncludesDrainingConnections(t *testing.T) {
+	addr := setupTestServer(t, &fakeService{})
+	dial := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	pool, err := NewBigtableChannelPool(
+		context.Background(),
+		3,
+		btopt.RoundRobin,
+		dial,
+		time.Now(),
+		WithChannelPrimer(NoOpChannelPrimer{}),
+		WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)),
+	)
+	if err != nil {
+		t.Fatalf("NewBigtableChannelPool: %v", err)
+	}
+	defer pool.Close()
+
+	conns := pool.getConns()
+	conns[0].streamingLoad.Store(4)
+	conns[1].streamingLoad.Store(3)
+	drainingConn := conns[2]
+	drainingConn.streamingLoad.Store(2)
+
+	if got := pool.TotalStreamCount(); got != 9 {
+		t.Fatalf("initial TotalStreamCount = %d, want 9", got)
+	}
+
+	// Shrink from 3 -> 2: drainingConn (least-streamed with 2 streams) is
+	// removed from p.getConns() immediately while its 2 streams are still live.
+	if !pool.removeLeastStreamedConnections(1, 1, 1) {
+		t.Fatal("removeLeastStreamedConnections returned false, want true")
+	}
+	if got := pool.Num(); got != 2 {
+		t.Fatalf("pool.Num() after shrink = %d, want 2", got)
+	}
+	if !drainingConn.isDraining() {
+		t.Fatal("expected evicted connection to be marked draining")
+	}
+	if got := pool.TotalStreamCount(); got != 9 {
+		t.Fatalf("TotalStreamCount while connection is draining = %d, want 9 (must include 2 draining streams)", got)
+	}
+
+	// Finish the 2 streams on the draining connection and wait for
+	// waitForDrainAndClose (250ms tick) to close and deregister it.
+	drainingConn.streamingLoad.Store(0)
+	deadline := time.Now().Add(2 * time.Second)
+	for {
+		pool.drainingMu.Lock()
+		nDraining := len(pool.drainingConns)
+		pool.drainingMu.Unlock()
+		if nDraining == 0 {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("drainingConns still has %d entries after streams drained", nDraining)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	if got := pool.TotalStreamCount(); got != 7 {
+		t.Errorf("TotalStreamCount after draining conn closed = %d, want 7", got)
+	}
+
+	conns[0].streamingLoad.Store(0)
+	conns[1].streamingLoad.Store(0)
 }

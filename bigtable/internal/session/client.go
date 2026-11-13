@@ -1061,7 +1061,12 @@ func (sc *sessionClient) registerScaleMonitor(pool *btransport.BigtableChannelPo
 		sc.managedChannelPool.Dsm.Stop()
 		sc.managedChannelPool.Dsm = nil
 	}
-	sc.scaleMonitor = btransport.NewSessionAwareScaleMonitor(pool)
-	sc.scaleMonitorUnreg = sc.configManager.AddChannelPoolConfigListener(sc.scaleMonitor.OnConfig)
-	sc.scaleMonitor.Start(sc.cfg.BackgroundCtx)
+	sam := btransport.NewSessionAwareScaleMonitor(pool)
+	sc.scaleMonitor = sam
+	sc.scaleMonitorUnreg = sc.configManager.AddChannelPoolConfigListener(func(cfg *btpb.SessionClientConfiguration_ChannelPoolConfiguration) {
+		if err := sam.OnConfig(cfg); err != nil {
+			btopt.Debugf(nil, "bigtable_session: ignoring invalid ChannelPoolConfiguration update: %v", err)
+		}
+	})
+	sam.Start(sc.cfg.BackgroundCtx)
 }
