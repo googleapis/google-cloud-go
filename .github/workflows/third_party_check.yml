@@ -51,6 +51,6 @@ jobs:
         persist-credentials: false
     - run: |
         cd internal/actions
-        go run ./internal/actions/cmd/thirdpartycheck -q --dir=${{ github.workspace }} -mod ${MATRIX_MODS}/go.mod
+        go run ./cmd/thirdpartycheck -q --dir=${{ github.workspace }} -mod ${MATRIX_MODS}/go.mod
       env:
         MATRIX_MODS: ${{ matrix.mods }}
