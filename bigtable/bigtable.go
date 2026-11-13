@@ -793,16 +793,19 @@ type FullReadStats struct {
 // REQUEST_STATS_FULL. That is the only stats view currently supported.
 func makeFullReadStats(reqStats *btpb.RequestStats) FullReadStats {
 	statsView := reqStats.GetFullReadStatsView()
-	readStats := statsView.ReadIterationStats
-	latencyStats := statsView.RequestLatencyStats
+	readStats := statsView.GetReadIterationStats()
+	latencyStats := statsView.GetRequestLatencyStats()
 	return FullReadStats{
 		ReadIterationStats: ReadIterationStats{
-			CellsReturnedCount: readStats.CellsReturnedCount,
-			CellsSeenCount:     readStats.CellsSeenCount,
-			RowsReturnedCount:  readStats.RowsReturnedCount,
-			RowsSeenCount:      readStats.RowsSeenCount},
+			CellsReturnedCount: readStats.GetCellsReturnedCount(),
+			CellsSeenCount:     readStats.GetCellsSeenCount(),
+			RowsReturnedCount:  readStats.GetRowsReturnedCount(),
+			RowsSeenCount:      readStats.GetRowsSeenCount(),
+		},
 		RequestLatencyStats: RequestLatencyStats{
-			FrontendServerLatency: latencyStats.FrontendServerLatency.AsDuration()}}
+			FrontendServerLatency: latencyStats.GetFrontendServerLatency().AsDuration(),
+		},
+	}
 }
 
 // FullReadStatsFunc describes a callback that receives a FullReadStats for evaluation.
