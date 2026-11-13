@@ -449,6 +449,68 @@ func TestOpenMaterializedView_ProducesNilSessionShim(t *testing.T) {
 	}
 }
 
+// TestOpenFactories_RoutingHeaders pins the x-goog-request-params
+// header value emitted by each Open* factory to the proto routing
+// annotation on google.bigtable.v2.Bigtable (and the Java generated
+// stub's RequestParamsBuilder). Routing extractors by request shape:
+//
+//	table_name            -> key=table_name, value=table resource name
+//	authorized_view_name  -> key=table_name, value=parent-table resource
+//	                        (strip "/authorizedViews/<v>" tail)
+//	materialized_view_name-> key=name,       value=parent-instance resource
+//	                        (strip "/materializedViews/<v>" tail)
+//
+// Guards against regressing OpenMaterializedView back to using
+// table_name=<fake-table>/<MV-id>, which was shipped briefly and
+// never matched any proto routing template.
+func TestOpenFactories_RoutingHeaders(t *testing.T) {
+	c := newBareClientForOpenTests(t, 0.0)
+
+	tests := []struct {
+		name       string
+		md         metadata.MD
+		wantPrefix string
+		wantParams string
+	}{
+		{
+			name:       "Open",
+			md:         c.Open("mytable").md,
+			wantPrefix: "projects/p/instances/i/tables/mytable",
+			wantParams: "table_name=projects%2Fp%2Finstances%2Fi%2Ftables%2Fmytable&app_profile_id=ap",
+		},
+		{
+			name:       "OpenTable",
+			md:         c.OpenTable("mytable").(*TableShim).classic.(*tableImpl).md,
+			wantPrefix: "projects/p/instances/i/tables/mytable",
+			wantParams: "table_name=projects%2Fp%2Finstances%2Fi%2Ftables%2Fmytable&app_profile_id=ap",
+		},
+		{
+			name:       "OpenAuthorizedView",
+			md:         c.OpenAuthorizedView("mytable", "myview").(*TableShim).classic.(*tableImpl).md,
+			wantPrefix: "projects/p/instances/i/tables/mytable/authorizedViews/myview",
+			wantParams: "table_name=projects%2Fp%2Finstances%2Fi%2Ftables%2Fmytable&app_profile_id=ap",
+		},
+		{
+			name:       "OpenMaterializedView",
+			md:         c.OpenMaterializedView("myview").(*TableShim).classic.(*tableImpl).md,
+			wantPrefix: "projects/p/instances/i/materializedViews/myview",
+			wantParams: "name=projects%2Fp%2Finstances%2Fi&app_profile_id=ap",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			prefix := tc.md.Get(resourcePrefixHeader)
+			if len(prefix) != 1 || prefix[0] != tc.wantPrefix {
+				t.Errorf("%s header = %v, want [%q]", resourcePrefixHeader, prefix, tc.wantPrefix)
+			}
+			params := tc.md.Get(requestParamsHeader)
+			if len(params) != 1 || params[0] != tc.wantParams {
+				t.Errorf("%s header = %v, want [%q]", requestParamsHeader, params, tc.wantParams)
+			}
+		})
+	}
+}
+
 // TestOpenFactories_ShareOneClientDiverter pins that every Open*
 // factory returns a shim referencing the SAME *Diverter — so a future
 // SetSessionLoad call from a ConfigurationManager updates every open
