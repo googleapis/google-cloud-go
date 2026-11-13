@@ -454,10 +454,16 @@ func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_Se
 	// its own atomics.
 	p.sizer.UpdateConfig(config)
 
-	// Budget was bootstrapped with a placeholder; UpdateConfig on
+	// Budget was bootstrapped with defaultPoolConfig(); UpdateConfig on
 	// registration replaces it with the server-driven ceiling + penalty.
+	// When NewSessionCreationPenalty is omitted (nil), pass -1 so
+	// AdaptiveSessionThrottler preserves its current penalty instead of
+	// zeroing it out via nil.AsDuration() == 0.
 	if budget := int(config.GetNewSessionCreationBudget()); budget > 0 {
-		penalty := config.GetNewSessionCreationPenalty().AsDuration()
+		penalty := time.Duration(-1)
+		if pProto := config.GetNewSessionCreationPenalty(); pProto != nil {
+			penalty = pProto.AsDuration()
+		}
 		p.budget.UpdateConfig(budget, penalty)
 	}
 
