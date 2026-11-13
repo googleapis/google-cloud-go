@@ -15,21 +15,26 @@
 package regionalaccessboundary
 
 import (
+	"bytes"
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"reflect"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/retry"
+	"cloud.google.com/go/auth/internal/transport/cert"
 	"cloud.google.com/go/compute/metadata"
 )
 
@@ -161,13 +166,13 @@ func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var server *httptest.Server
 			var url string
-			requestCount := 0
+			var requestCount atomic.Int32
 
 			if tt.serverResponse != nil {
 				server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					requestCount++
+					requestCount.Add(1)
 					// Use second response if it's a retry
-					if tt.secondResponse != nil && requestCount > 1 {
+					if tt.secondResponse != nil && requestCount.Load() > 1 {
 						w.Header().Set("Content-Type", "application/json")
 						w.WriteHeader(tt.secondResponse.status)
 						fmt.Fprint(w, tt.secondResponse.body)
@@ -202,8 +207,8 @@ func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 
 			data, err := fetchRegionalAccessBoundaryData(tt.ctx, client, url, tt.token, nil)
 
-			if tt.wantRequestCount > 0 && requestCount != tt.wantRequestCount {
-				t.Errorf("fetchRegionalAccessBoundaryData() requestCount = %d, want %d", requestCount, tt.wantRequestCount)
+			if tt.wantRequestCount > 0 && requestCount.Load() != int32(tt.wantRequestCount) {
+				t.Errorf("fetchRegionalAccessBoundaryData() requestCount = %d, want %d", requestCount.Load(), tt.wantRequestCount)
 			}
 
 			if tt.wantErr != "" {
@@ -227,66 +232,8 @@ func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 	}
 }
 
-func TestIsRegionalAccessBoundaryEnabled(t *testing.T) {
-	envVar := "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
-
-	tests := []struct {
-		name   string
-		envVal string
-		want   bool
-	}{
-		{
-			name:   "env empty/unset",
-			envVal: "",
-			want:   false,
-		},
-		{
-			name:   "env true",
-			envVal: "true",
-			want:   true,
-		},
-		{
-			name:   "env 1",
-			envVal: "1",
-			want:   true,
-		},
-		{
-			name:   "env false",
-			envVal: "false",
-			want:   false,
-		},
-		{
-			name:   "env 0",
-			envVal: "0",
-			want:   false,
-		},
-		{
-			name:   "env invalid",
-			envVal: "invalid",
-			want:   false,
-		},
-		{
-			name:   "env uppercase TRUE",
-			envVal: "TRUE",
-			want:   true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Setenv(envVar, tt.envVal)
-
-			got, err := isRegionalAccessBoundaryEnabled()
-			if err != nil {
-				t.Fatalf("isRegionalAccessBoundaryEnabled() unexpected error: %v", err)
-			}
-			if got != tt.want {
-				t.Errorf("isRegionalAccessBoundaryEnabled() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestServiceAccountConfig(t *testing.T) {
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 	saEmail := "test-sa@example.iam.gserviceaccount.com"
 	ud := "example.com"
 
@@ -328,7 +275,7 @@ func TestServiceAccountConfig(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				cfg := NewServiceAccountConfigProvider(tt.saEmail, tt.ud)
-				url, err := cfg.GetRegionalAccessBoundaryEndpoint(context.Background())
+				url, err := cfg.GetRegionalAccessBoundaryEndpoint(context.Background(), false)
 				if (err != nil && err.Error() != tt.wantErr) || (err == nil && tt.wantErr != "") {
 					t.Errorf("GetRegionalAccessBoundaryEndpoint() error = %v, wantErr %q", err, tt.wantErr)
 					return
@@ -373,6 +320,7 @@ func TestServiceAccountConfig(t *testing.T) {
 }
 
 func TestGCEConfigProvider(t *testing.T) {
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 	defaultTestEmail := "test-sa@example.iam.gserviceaccount.com"
 	defaultTestUD := "example.com"
 	defaultExpectedEndpoint := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, defaultTestEmail)
@@ -471,7 +419,7 @@ func TestGCEConfigProvider(t *testing.T) {
 					http.NotFound(w, r)
 				}
 			},
-			wantErrEndpoint: "regionalaccessboundary: GCE config: failed to get service account email: metadata: GCE metadata \"instance/service-accounts/default/email\" not defined",
+			wantErrEndpoint: "regionalaccessboundary: skip lookup",
 			expectedUD:      defaultTestUD,
 		},
 		{
@@ -511,13 +459,13 @@ func TestGCEConfigProvider(t *testing.T) {
 				udp := &internal.ComputeUniverseDomainProvider{
 					MetadataClient: mdClient,
 				}
-				provider = NewGCEConfigProvider(udp)
+				provider = NewGCEConfigProvider(udp, nil)
 			} else {
 				t.Setenv("GCE_METADATA_HOST", "")
-				provider = NewGCEConfigProvider(tt.gceUDP)
+				provider = NewGCEConfigProvider(tt.gceUDP, nil)
 			}
 
-			endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
+			endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx, false)
 			if tt.wantErrEndpoint != "" {
 				if err == nil {
 					t.Errorf("GetRegionalAccessBoundaryEndpoint() error = nil, want  %q", tt.wantErrEndpoint)
@@ -548,9 +496,9 @@ func TestGCEConfigProvider(t *testing.T) {
 
 func TestGCEConfigProvider_CachesResults(t *testing.T) {
 
-	var requestCount int
+	var requestCount atomic.Int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestCount++
+		requestCount.Add(1)
 		switch r.URL.Path {
 		case "/computeMetadata/v1/instance/service-accounts/default/email":
 			w.Write([]byte("test-sa@example.com"))
@@ -566,24 +514,26 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
 	mdClient := metadata.NewClient(server.Client())
 	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
-	provider := NewGCEConfigProvider(udp)
+	provider := NewGCEConfigProvider(udp, nil)
 
 	for i := 0; i < 5; i++ {
 		t.Run(fmt.Sprintf("call-%d", i+1), func(t *testing.T) {
-			provider.GetRegionalAccessBoundaryEndpoint(context.Background())
+			provider.GetRegionalAccessBoundaryEndpoint(context.Background(), false)
 			provider.GetUniverseDomain(context.Background())
 			// The actual number of requests to the metadata server is 2 (one for email, one for UD)
-			if requestCount > 2 {
-				t.Errorf("expected metadata server to be called at most 2 times, but was called %d times", requestCount)
+			if m := requestCount.Load(); m > 2 {
+				t.Errorf("expected metadata server to be called at most 2 times, but was called %d times", m)
 			}
 		})
 	}
 }
 
 func TestGCEConfigProvider_TransientFailure(t *testing.T) {
-	var failMDS bool = true
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+	var failMDS atomic.Bool
+	failMDS.Store(true)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if failMDS {
+		if failMDS.Load() {
 			http.Error(w, "metadata server down", http.StatusInternalServerError)
 			return
 		}
@@ -600,21 +550,21 @@ func TestGCEConfigProvider_TransientFailure(t *testing.T) {
 	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
 	mdClient := metadata.NewClient(server.Client())
 	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
-	provider := NewGCEConfigProvider(udp)
+	provider := NewGCEConfigProvider(udp, nil)
 
 	ctx := context.Background()
 
 	// First call should fail (MDS down)
-	_, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
+	_, err := provider.GetRegionalAccessBoundaryEndpoint(ctx, false)
 	if err == nil {
 		t.Fatal("GetRegionalAccessBoundaryEndpoint() expected error on first call, got nil")
 	}
 
 	// Enable success for the next call
-	failMDS = false
+	failMDS.Store(false)
 
 	// Second call should succeed (MDS up)
-	endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
+	endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx, false)
 	if err != nil {
 		t.Fatalf("GetRegionalAccessBoundaryEndpoint() unexpected error on second call: %v", err)
 	}
@@ -636,7 +586,7 @@ type mockConfigProvider struct {
 	endpointCallCh      chan struct{}
 }
 
-func (m *mockConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
+func (m *mockConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context, clientCertProvided bool) (string, error) {
 	m.mu.Lock()
 	m.endpointCallCount++
 	m.mu.Unlock()
@@ -889,4 +839,482 @@ func TestDataProvider_GetHeaderValue(t *testing.T) {
 			t.Errorf("Cooldown expiry was not set after endpoint failure")
 		}
 	})
+}
+
+func TestGCEConfigProvider_NonGSAIdentity_BypassesLookup(t *testing.T) {
+	ctx := context.Background()
+	nonGSAEmail := "project.svc.id.goog"
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/computeMetadata/v1/instance/service-accounts/default/email":
+			w.Write([]byte(nonGSAEmail))
+		case "/computeMetadata/v1/universe/universe-domain":
+			w.Write([]byte("googleapis.com"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	parsedURL, _ := url.Parse(server.URL)
+	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+	mdClient := metadata.NewClient(server.Client())
+	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
+
+	var logBuf bytes.Buffer
+	logger := slog.New(slog.NewJSONHandler(&logBuf, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
+
+	gceConfig := NewGCEConfigProvider(udp, logger)
+
+	// Fetch endpoint first time - should log and return error
+	endpoint, err := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx, false)
+	if !errors.Is(err, ErrSkipRegionalAccessBoundary) {
+		t.Fatalf("expected ErrSkipRegionalAccessBoundary, got %v", err)
+	}
+	if endpoint != "" {
+		t.Errorf("expected empty endpoint, got %q", endpoint)
+	}
+
+	// Verify that the INFO log message was logged
+	logStr := logBuf.String()
+	if !strings.Contains(logStr, "RAB lookup is skipped for this instance") {
+		t.Errorf("expected log buffer to contain 'RAB lookup is skipped for this instance', got:\n%s", logStr)
+	}
+
+	// Reset log buffer to check one-time logging
+	logBuf.Reset()
+
+	// Fetch endpoint second time - should silently return SkipRegionalAccessBoundary without logging again
+	endpoint2, err2 := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx, false)
+	if !errors.Is(err2, ErrSkipRegionalAccessBoundary) {
+		t.Fatalf("second call: expected ErrSkipRegionalAccessBoundary, got %v", err2)
+	}
+	if endpoint2 != "" {
+		t.Errorf("second call: expected empty endpoint, got %q", endpoint2)
+	}
+	if logBuf.Len() > 0 {
+		t.Errorf("expected no log output on second call, got:\n%s", logBuf.String())
+	}
+}
+
+func TestDataProvider_GetHeaderValue_BypassesNonGSA(t *testing.T) {
+	ctx := context.Background()
+	nonGSAEmail := "project.svc.id.goog[ns/sa]"
+
+	var mdsRequestCount atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mdsRequestCount.Add(1)
+		switch r.URL.Path {
+		case "/computeMetadata/v1/instance/service-accounts/default/email":
+			w.Write([]byte(nonGSAEmail))
+		case "/computeMetadata/v1/universe/universe-domain":
+			w.Write([]byte("googleapis.com"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	parsedURL, _ := url.Parse(server.URL)
+	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+	mdClient := metadata.NewClient(server.Client())
+	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
+
+	gceConfig := NewGCEConfigProvider(udp, nil)
+	token := &auth.Token{Value: "base-token"}
+	provider, err := NewProvider(server.Client(), gceConfig, nil, &mockTokenProvider{TokenToReturn: token})
+	if err != nil {
+		t.Fatalf("NewProvider() failed: %v", err)
+	}
+
+	// First call triggers background fetchAsync which fetches metadata email and detects invalid format.
+	val := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+	if val != "" {
+		t.Errorf("First call expected empty header, got %q", val)
+	}
+
+	// Wait for the async fetch to run, identify the invalid identity, and update provider.skipLookup to true.
+	deadline := time.Now().Add(1 * time.Second)
+	skipLookupSet := false
+	for time.Now().Before(deadline) {
+		provider.mu.RLock()
+		if provider.skipLookup {
+			skipLookupSet = true
+			provider.mu.RUnlock()
+			break
+		}
+		provider.mu.RUnlock()
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	if !skipLookupSet {
+		t.Fatal("skipLookup was not set on DataProvider after detecting invalid identity")
+	}
+
+	// Reset request count to check that no more calls are made to MDS.
+	mdsRequestCount.Store(0)
+
+	// Second and subsequent calls should immediately return empty string, bypassing all fetches.
+	for i := 0; i < 5; i++ {
+		val2 := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+		if val2 != "" {
+			t.Errorf("Call %d: expected empty header, got %q", i+2, val2)
+		}
+	}
+
+	if m := mdsRequestCount.Load(); m > 0 {
+		t.Errorf("expected zero MDS metadata calls during bypass, got %d", m)
+	}
+}
+
+func TestDataProvider_GetHeaderValue_BypassesMissingSA(t *testing.T) {
+	ctx := context.Background()
+
+	var mdsRequestCount atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mdsRequestCount.Add(1)
+		switch r.URL.Path {
+		case "/computeMetadata/v1/instance/service-accounts/default/email":
+			http.NotFound(w, r) // returns metadata.NotDefinedError
+		case "/computeMetadata/v1/universe/universe-domain":
+			w.Write([]byte("googleapis.com"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	parsedURL, _ := url.Parse(server.URL)
+	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+	mdClient := metadata.NewClient(server.Client())
+	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
+
+	gceConfig := NewGCEConfigProvider(udp, nil)
+	token := &auth.Token{Value: "base-token"}
+	provider, err := NewProvider(server.Client(), gceConfig, nil, &mockTokenProvider{TokenToReturn: token})
+	if err != nil {
+		t.Fatalf("NewProvider() failed: %v", err)
+	}
+
+	// First call triggers background fetchAsync which fetches metadata email, gets 404 (NotDefinedError),
+	// and returns ErrSkipRegionalAccessBoundary.
+	val := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+	if val != "" {
+		t.Errorf("First call expected empty header, got %q", val)
+	}
+
+	// Wait for the async fetch to run and update provider.skipLookup to true.
+	deadline := time.Now().Add(1 * time.Second)
+	skipLookupSet := false
+	for time.Now().Before(deadline) {
+		provider.mu.RLock()
+		if provider.skipLookup {
+			skipLookupSet = true
+			provider.mu.RUnlock()
+			break
+		}
+		provider.mu.RUnlock()
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	if !skipLookupSet {
+		t.Fatal("skipLookup was not set on DataProvider after detecting missing GCE SA")
+	}
+
+	// Reset request count to check that no more calls are made to MDS.
+	mdsRequestCount.Store(0)
+
+	// Second and subsequent calls should immediately return empty string, bypassing all fetches.
+	for i := 0; i < 5; i++ {
+		val2 := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+		if val2 != "" {
+			t.Errorf("Call %d: expected empty header, got %q", i+2, val2)
+		}
+	}
+
+	if m := mdsRequestCount.Load(); m > 0 {
+		t.Errorf("expected zero MDS metadata calls during bypass, got %d", m)
+	}
+}
+
+func TestResolveLocalMTLSEndpoint(t *testing.T) {
+	base := "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/foo/allowedLocations"
+	mtls := "https://iamcredentials.mtls.googleapis.com/v1/projects/-/serviceAccounts/foo/allowedLocations"
+
+	defaultProvider, _ := cert.DefaultProvider()
+	hasClientCert := defaultProvider != nil
+
+	tests := []struct {
+		name               string
+		envUseMTLSEndpoint string
+		envUseMTLS         string
+		envUseClientCert   string
+		want               string
+	}{
+		{
+			name:               "always env var forces mtls",
+			envUseMTLSEndpoint: "always",
+			want:               mtls,
+		},
+		{
+			name:               "never env var forces base",
+			envUseMTLSEndpoint: "never",
+			want:               base,
+		},
+		{
+			name:       "always legacy env var forces mtls",
+			envUseMTLS: "always",
+			want:       mtls,
+		},
+		{
+			name:             "client cert disabled env var forces base",
+			envUseClientCert: "false",
+			want:             base,
+		},
+		{
+			name:             "client cert enabled env var checks client cert availability",
+			envUseClientCert: "true",
+			want: func() string {
+				if hasClientCert {
+					return mtls
+				}
+				return base
+			}(),
+		},
+		{
+			name:             "client cert invalid env var forces base",
+			envUseClientCert: "invalid",
+			want:             base,
+		},
+		{
+			name:               "auto env var checks client cert availability",
+			envUseMTLSEndpoint: "auto",
+			want: func() string {
+				if hasClientCert {
+					return mtls
+				}
+				return base
+			}(),
+		},
+		{
+			name:               "MTLSEndpoint env var takes precedence over legacy MTLS env var",
+			envUseMTLSEndpoint: "never",
+			envUseMTLS:         "always",
+			want:               base,
+		},
+		{
+			name:               "invalid env var value forces base (never)",
+			envUseMTLSEndpoint: "invalid_value",
+			want:               base,
+		},
+		{
+			name: "default when no env vars checks client cert availability",
+			want: func() string {
+				if hasClientCert {
+					return mtls
+				}
+				return base
+			}(),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.envUseMTLSEndpoint != "" {
+				t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", tt.envUseMTLSEndpoint)
+			}
+			if tt.envUseMTLS != "" {
+				t.Setenv("GOOGLE_API_USE_MTLS", tt.envUseMTLS)
+			}
+			if tt.envUseClientCert != "" {
+				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", tt.envUseClientCert)
+			}
+
+			got, err := resolveLocalMTLSEndpoint(base, mtls)
+			if err != nil {
+				t.Fatalf("resolveLocalMTLSEndpoint() unexpected error: %v", err)
+			}
+			if got != tt.want {
+				t.Errorf("resolveLocalMTLSEndpoint() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDataProvider_GetHeaderValue_BypassesNonDefaultUniverse(t *testing.T) {
+	ctx := context.Background()
+	mockConfig := &mockConfigProvider{
+		universeToReturn: "custom-universe.com",
+		endpointCallCh:   make(chan struct{}, 1),
+	}
+	token := &auth.Token{Value: "base-token"}
+	provider, err := NewProvider(http.DefaultClient, mockConfig, nil, &mockTokenProvider{TokenToReturn: token})
+	if err != nil {
+		t.Fatalf("NewProvider() failed: %v", err)
+	}
+
+	val := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+	if val != "" {
+		t.Errorf("expected empty header for non-default universe, got %q", val)
+	}
+
+	// Verify that the endpoint builder was never called to trigger background fetch
+	select {
+	case <-mockConfig.endpointCallCh:
+		t.Error("GetHeaderValue triggered Allowed Locations fetch on non-default universe domain, want skip")
+	case <-time.After(100 * time.Millisecond):
+		// Success: no fetch was initiated
+	}
+}
+
+func TestMaybeCloneClientWithMTLS(t *testing.T) {
+	fakeProvider := func(*tls.CertificateRequestInfo) (*tls.Certificate, error) {
+		return nil, nil
+	}
+
+	t.Run("nil transport", func(t *testing.T) {
+		client := &http.Client{}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		if cloned == nil {
+			t.Fatal("expected non-nil client")
+		}
+		if cloned == client {
+			t.Error("expected a new client pointer, got the same")
+		}
+		trans, ok := cloned.Transport.(*http.Transport)
+		if !ok {
+			t.Fatalf("expected cloned transport to be *http.Transport, got %T", cloned.Transport)
+		}
+		if trans.TLSClientConfig == nil {
+			t.Fatal("expected non-nil TLSClientConfig")
+		}
+		if reflect.ValueOf(trans.TLSClientConfig.GetClientCertificate).Pointer() != reflect.ValueOf(fakeProvider).Pointer() {
+			t.Error("provider callback did not match")
+		}
+	})
+
+	t.Run("existing http.Transport", func(t *testing.T) {
+		originalTrans := &http.Transport{
+			ForceAttemptHTTP2: true,
+			TLSClientConfig: &tls.Config{
+				ServerName: "original",
+			},
+		}
+		client := &http.Client{Transport: originalTrans}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		if cloned == nil {
+			t.Fatal("expected non-nil client")
+		}
+		if cloned == client {
+			t.Error("expected a new client pointer, got the same")
+		}
+		trans, ok := cloned.Transport.(*http.Transport)
+		if !ok {
+			t.Fatalf("expected cloned transport to be *http.Transport, got %T", cloned.Transport)
+		}
+		if trans == originalTrans {
+			t.Error("expected a cloned transport pointer, got the same")
+		}
+		if trans.TLSClientConfig.ServerName != "original" {
+			t.Errorf("expected ServerName to be preserved as 'original', got %q", trans.TLSClientConfig.ServerName)
+		}
+		if reflect.ValueOf(trans.TLSClientConfig.GetClientCertificate).Pointer() != reflect.ValueOf(fakeProvider).Pointer() {
+			t.Error("provider callback did not match")
+		}
+	})
+
+	t.Run("pre-configured client certs are preserved", func(t *testing.T) {
+		existingProvider := func(*tls.CertificateRequestInfo) (*tls.Certificate, error) {
+			return &tls.Certificate{}, nil
+		}
+		originalTrans := &http.Transport{
+			TLSClientConfig: &tls.Config{
+				GetClientCertificate: existingProvider,
+			},
+		}
+		client := &http.Client{Transport: originalTrans}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		trans := cloned.Transport.(*http.Transport)
+		if reflect.ValueOf(trans.TLSClientConfig.GetClientCertificate).Pointer() != reflect.ValueOf(existingProvider).Pointer() {
+			t.Error("expected existing client cert provider to be preserved, but it was overwritten")
+		}
+	})
+
+	t.Run("pre-configured Certificates are preserved", func(t *testing.T) {
+		originalTrans := &http.Transport{
+			TLSClientConfig: &tls.Config{
+				Certificates: []tls.Certificate{{}},
+			},
+		}
+		client := &http.Client{Transport: originalTrans}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		trans := cloned.Transport.(*http.Transport)
+		if trans.TLSClientConfig.GetClientCertificate != nil {
+			t.Error("expected GetClientCertificate to remain nil when Certificates are pre-configured")
+		}
+	})
+
+	t.Run("custom RoundTripper is returned as-is", func(t *testing.T) {
+		customTrans := &fakeRoundTripper{}
+		client := &http.Client{Transport: customTrans}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		if cloned != client {
+			t.Error("expected client to be returned unmodified for custom RoundTripper")
+		}
+	})
+
+	t.Run("nil transport with non-cloneable default transport", func(t *testing.T) {
+		oldDefault := http.DefaultTransport
+		defer func() { http.DefaultTransport = oldDefault }()
+		http.DefaultTransport = &fakeRoundTripper{}
+
+		client := &http.Client{}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		trans, ok := cloned.Transport.(*http.Transport)
+		if !ok {
+			t.Fatalf("expected cloned transport to be *http.Transport, got %T", cloned.Transport)
+		}
+		if trans.TLSClientConfig == nil {
+			t.Fatal("expected non-nil TLSClientConfig")
+		}
+		if reflect.ValueOf(trans.TLSClientConfig.GetClientCertificate).Pointer() != reflect.ValueOf(fakeProvider).Pointer() {
+			t.Error("provider callback did not match")
+		}
+	})
+
+	t.Run("nil client input", func(t *testing.T) {
+		cloned := maybeCloneClientWithMTLS(nil, fakeProvider)
+		if cloned != nil {
+			t.Errorf("expected nil client, got %v", cloned)
+		}
+	})
+
+	t.Run("clone returns nil", func(t *testing.T) {
+		client := &http.Client{Transport: &fakeCloneableTransport{clone: nil}}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		if cloned != client {
+			t.Error("expected client to be returned unmodified when clone is nil")
+		}
+	})
+}
+
+type fakeRoundTripper struct{}
+
+func (f *fakeRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	return nil, nil
+}
+
+type fakeCloneableTransport struct {
+	clone *http.Transport
+}
+
+func (f *fakeCloneableTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	return nil, nil
+}
+
+func (f *fakeCloneableTransport) Clone() *http.Transport {
+	return f.clone
 }
