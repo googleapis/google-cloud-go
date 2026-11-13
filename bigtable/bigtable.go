@@ -28,6 +28,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
+	"cloud.google.com/go/bigtable/internal/session"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -49,7 +50,10 @@ const (
 	cookiePrefix = "x-goog-cbt-cookie-"
 )
 
-var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
+var (
+	errNegativeRowLimit      = errors.New("bigtable: row limit cannot be negative")
+	errMaterializedViewWrite = fmt.Errorf("bigtable: write operations are not supported on materialized views: %w", session.ErrWriteNotSupported)
+)
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
 
@@ -913,6 +917,9 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 // tableImpl.Apply (which bypasses the divertible gate) and by the
 // gate in Table.Apply when no divertible shim is wired.
 func (t *Table) applyClassic(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
+	if t.materializedView != "" {
+		return errMaterializedViewWrite
+	}
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/Apply")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -927,6 +934,9 @@ func (t *Table) applyClassic(ctx context.Context, row string, m *Mutation, opts 
 }
 
 func (t *Table) apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
+	if t.materializedView != "" {
+		return errMaterializedViewWrite
+	}
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)

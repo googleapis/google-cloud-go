@@ -1167,3 +1167,66 @@ func TestTableShim_ReadRows_SingleRowRangeRoutesToSession(t *testing.T) {
 		})
 	}
 }
+
+func TestTableShim_Apply_ErrWriteNotSupportedPreservesBreakerCount(t *testing.T) {
+	classic := &mockClassicTable{}
+	sess := &mockSessionTable{
+		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+			return nil, status.Error(codes.Unimplemented, "unimpl")
+		},
+		mutateRowFn: func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
+			return nil, session.ErrWriteNotSupported
+		},
+	}
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
+	withThreshold(t, shim, 3)
+
+	for i := 0; i < 2; i++ {
+		if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
+			t.Fatalf("ReadRow #%d unexpected error: %v", i+1, err)
+		}
+	}
+	if got := shim.breaker.Count(); got != 2 {
+		t.Fatalf("breaker.Count() = %d, want 2", got)
+	}
+
+	mut := NewMutation()
+	mut.Set("fam", "col", 1000, []byte("v"))
+	err := shim.Apply(context.Background(), "r", mut)
+	if !errors.Is(err, session.ErrWriteNotSupported) {
+		t.Fatalf("Apply err = %v, want errors.Is(_, ErrWriteNotSupported)", err)
+	}
+	if classic.applyCalls != 0 {
+		t.Errorf("classic.applyCalls = %d, want 0", classic.applyCalls)
+	}
+	if got := shim.breaker.Count(); got != 2 {
+		t.Errorf("breaker.Count() after ErrWriteNotSupported = %d, want 2", got)
+	}
+
+	if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
+		t.Fatalf("ReadRow #3 unexpected error: %v", err)
+	}
+	if !shim.breaker.Bypass() {
+		t.Errorf("breaker.Bypass() = false, want true after 3 Unimplemented reads")
+	}
+}
+
+func TestMaterializedView_ClassicWriteMethodsRejectLocally(t *testing.T) {
+	c := newBareClientForOpenTests(t, 0.0)
+	mv := c.OpenMaterializedView("myview")
+
+	mut := NewMutation()
+	mut.Set("fam", "col", 1000, []byte("v"))
+
+	if err := mv.Apply(context.Background(), "r1", mut); !errors.Is(err, session.ErrWriteNotSupported) {
+		t.Errorf("Apply err = %v, want errors.Is(_, ErrWriteNotSupported)", err)
+	}
+	if _, err := mv.ApplyBulk(context.Background(), []string{"r1"}, []*Mutation{mut}); !errors.Is(err, session.ErrWriteNotSupported) {
+		t.Errorf("ApplyBulk err = %v, want errors.Is(_, ErrWriteNotSupported)", err)
+	}
+	rmw := NewReadModifyWrite()
+	rmw.Increment("fam", "col", 1)
+	if _, err := mv.ApplyReadModifyWrite(context.Background(), "r1", rmw); !errors.Is(err, session.ErrWriteNotSupported) {
+		t.Errorf("ApplyReadModifyWrite err = %v, want errors.Is(_, ErrWriteNotSupported)", err)
+	}
+}

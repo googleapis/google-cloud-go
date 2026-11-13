@@ -28,6 +28,9 @@ import (
 // ApplyReadModifyWrite applies a ReadModifyWrite to a specific row.
 // It returns the newly written cells.
 func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
+	if t.materializedView != "" {
+		return nil, errMaterializedViewWrite
+	}
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 
 	mt := t.newBuiltinMetricsTracer(ctx, false)
@@ -41,6 +44,9 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 }
 
 func (t *Table) applyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
+	if t.materializedView != "" {
+		return nil, errMaterializedViewWrite
+	}
 	req := &btpb.ReadModifyWriteRowRequest{
 		AppProfileId: t.c.appProfile,
 		RowKey:       []byte(row),
