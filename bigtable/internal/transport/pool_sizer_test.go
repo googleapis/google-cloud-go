@@ -15,6 +15,8 @@
 package internal
 
 import (
+	"context"
+	"errors"
 	"math"
 	"sync"
 	"sync/atomic"
@@ -22,6 +24,10 @@ import (
 	"time"
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 // fixedFetcher returns the same *PoolStats on every call. Pass nil to
@@ -470,5 +476,41 @@ func TestPoolSizer_ConcurrentDecideAndUpdateConfig(t *testing.T) {
 
 	if callCount.Load() == 0 {
 		t.Error("fetcher never called; Decide loop may have short-circuited")
+	}
+}
+
+func TestSessionPool_SynchronousStreamFactoryFailureTripsBreaker(t *testing.T) {
+	dialErr := status.Error(codes.Unimplemented, "sessions unsupported")
+	pool := NewSessionPoolImpl(
+		1,
+		"sync-fail-pool",
+		func(ctx context.Context) (Stream, error) {
+			return nil, dialErr
+		},
+		&spb.OpenSessionRequest{},
+		metadata.MD{},
+		SessionTypeTable,
+		false,
+	)
+	t.Cleanup(func() { _ = pool.Close() })
+
+	pool.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount:                    1,
+		MaxSessionCount:                    4,
+		NewSessionCreationBudget:           4,
+		NewSessionCreationPenalty:          durationpb.New(5 * time.Millisecond),
+		ConsecutiveSessionFailureThreshold: 2,
+	})
+	pool.Start()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	_, err := pool.CheckoutSession(ctx)
+	if !errors.Is(err, ErrConsecutiveFailures) {
+		t.Fatalf("CheckoutSession err = %v, want errors.Is(_, ErrConsecutiveFailures)", err)
+	}
+	if got := status.Code(err); got != codes.Unimplemented {
+		t.Errorf("status.Code(err) = %v, want %v", got, codes.Unimplemented)
 	}
 }
