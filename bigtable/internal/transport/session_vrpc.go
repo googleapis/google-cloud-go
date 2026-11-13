@@ -149,21 +149,13 @@ func (s *Session) Invoke(ctx context.Context, desc VRpcDescriptor, req interface
 	// (SentAt - attemptStart) without double-counting encode/setup overhead.
 	result.SentAt = time.Now()
 	if sendErr := s.Send(sessionReq); sendErr != nil {
-		// Synchronous Send failed: no server response is ever coming,
-		// so this call must free the slot itself. Other paths don't need
-		// this branch — sendMessage there is async and failures come
-		// back through the response observer — but Go's Send is
-		// synchronous, so an early drain is on the Invoke path.
-		s.drainSlot(rpc)
-		// Drain is the sole "session became free" signal. Fire the pool
-		// wake here as well — ReleaseToPool's inExpectedCount guard
-		// (session_list.go) drops the re-enqueue when OnSessionClosing
-		// already dropped this handle in the teardown that the Send
-		// failure typically kicks off, so an unguarded emit here is safe
-		// against the concurrent-teardown race gemini flagged.
-		s.hooks.onSlotDrained()
-		if State(s.state.Load()) == StateClosing {
-			s.signalQuiescent()
+		// Synchronous Send failed: free the slot if readLoop / teardown
+		// has not already drained it, and fire onSlotDrained at most once.
+		if _, _, ok := s.drainSlot(rpc); ok {
+			s.hooks.onSlotDrained()
+			if State(s.state.Load()) == StateClosing {
+				s.signalQuiescent()
+			}
 		}
 		return result, tagErr(StateTransportFailure, fmt.Errorf("send vRPC request: %w", sendErr))
 	}
