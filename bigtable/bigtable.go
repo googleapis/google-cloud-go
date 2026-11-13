@@ -973,13 +973,13 @@ func (t *Table) apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
 	}
 	if m.mtrue != nil {
-		if m.mtrue.cond != nil {
+		if m.mtrue.isConditional {
 			return errors.New("bigtable: conditional mutations cannot be nested")
 		}
 		req.TrueMutations = m.mtrue.ops
 	}
 	if m.mfalse != nil {
-		if m.mfalse.cond != nil {
+		if m.mfalse.isConditional {
 			return errors.New("bigtable: conditional mutations cannot be nested")
 		}
 		req.FalseMutations = m.mfalse.ops
