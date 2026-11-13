@@ -445,6 +445,16 @@ func (r RowList) retainRowsAfter(lastRowKey string) RowSet {
 }
 
 func (r RowList) retainRowsBefore(lastRowKey string) RowSet {
+	// Mirror the sentinel guard in RowRange.retainRowsBefore and
+	// RowRangeList.retainRowsBefore: an empty lastRowKey means no row has
+	// been received yet (e.g. a reversed scan whose first attempt errored
+	// before any chunk arrived). Without this guard the loop below filters
+	// every key out -- no key is lexicographically less than "" -- and the
+	// retry closure's `!arg.valid()` short-circuit then returns success
+	// with zero rows, silently losing the entire result set.
+	if lastRowKey == "" {
+		return r
+	}
 	var retryKeys RowList
 	for _, key := range r {
 		if key < lastRowKey {

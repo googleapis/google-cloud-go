@@ -416,6 +416,176 @@ func TestRetainRowsAfter(t *testing.T) {
 	}
 }
 
+// TestRetainRowsBefore verifies the sentinel behavior of each
+// RowSet implementation's retainRowsBefore when called with the
+// empty-string lastRowKey -- which happens on a reversed-scan retry
+// that errored before any row chunk was received. All three
+// implementations must return the full set unchanged; filtering with
+// `key < ""` would otherwise drop every row and the ReadRows retry
+// closure's `!arg.valid()` short-circuit would silently return 0 rows.
+func TestRetainRowsBefore(t *testing.T) {
+	t.Run("RowRange empty lastRowKey", func(t *testing.T) {
+		r := NewRange("a", "z")
+		got := r.retainRowsBefore("")
+		if !testutil.Equal(r, got, cmp.AllowUnexported(RowRange{})) {
+			t.Errorf("RowRange: got %v, want %v (unchanged)", got, r)
+		}
+	})
+	t.Run("RowRangeList empty lastRowKey", func(t *testing.T) {
+		r := RowRangeList{NewRange("a", "d"), NewRange("e", "g")}
+		got := r.retainRowsBefore("")
+		if !testutil.Equal(r, got, cmp.AllowUnexported(RowRange{})) {
+			t.Errorf("RowRangeList: got %v, want %v (unchanged)", got, r)
+		}
+	})
+	t.Run("RowList empty lastRowKey", func(t *testing.T) {
+		r := RowList{"a", "b", "c"}
+		got := r.retainRowsBefore("")
+		// Prior to the fix this returned an empty RowList, which the
+		// retry site at bigtable.go:243 would treat as a "no API call
+		// needed" short-circuit -- silently losing every row the caller
+		// asked for.
+		if !testutil.Equal(r, got) {
+			t.Errorf("RowList: got %v, want %v (unchanged -- silent data loss on reversed-scan pre-first-row retry)", got, r)
+		}
+	})
+	t.Run("RowList non-empty lastRowKey still filters", func(t *testing.T) {
+		r := RowList{"a", "b", "c", "d"}
+		got := r.retainRowsBefore("c")
+		want := RowList{"a", "b"}
+		if !testutil.Equal(want, got) {
+			t.Errorf("RowList: got %v, want %v", got, want)
+		}
+	})
+}
+
+// TestRetryReverseScanRowListPreFirstRowFailure exercises the data-loss
+// regression end-to-end: a reversed ReadRows over a RowList that errors
+// with a retryable code BEFORE any row chunk is delivered must retry
+// with the original row set, NOT with an empty RowList that short-
+// circuits past the server and returns 0 rows with a nil error.
+func TestRetryReverseScanRowListPreFirstRowFailure(t *testing.T) {
+	ctx := context.Background()
+
+	attempts := 0
+	var attempt2Keys []string
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "ReadRows") {
+			return handler(srv, ss)
+		}
+		req := new(btpb.ReadRowsRequest)
+		must(ss.RecvMsg(req))
+		attempts++
+		switch attempts {
+		case 1:
+			if !req.Reversed {
+				t.Errorf("attempt 1: req.Reversed = false, want true")
+			}
+			if got, want := len(req.Rows.RowKeys), 3; got != want {
+				t.Fatalf("attempt 1: req.Rows.RowKeys len = %d, want %d", got, want)
+			}
+			// Fail BEFORE sending any row chunk.
+			return status.Errorf(codes.Unavailable, "injected pre-first-row failure")
+		case 2:
+			for _, k := range req.Rows.RowKeys {
+				attempt2Keys = append(attempt2Keys, string(k))
+			}
+			must(writeReadRowsResponse(ss, "c", "b", "a"))
+			return nil
+		}
+		t.Fatalf("unexpected extra attempt %d", attempts)
+		return nil
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	var got []string
+	if err := tbl.ReadRows(ctx, RowList{"a", "b", "c"}, func(r Row) bool {
+		got = append(got, r.Key())
+		return true
+	}, ReverseScan()); err != nil {
+		t.Fatalf("ReadRows returned err: %v", err)
+	}
+	if attempts != 2 {
+		t.Errorf("attempts = %d, want 2 (retry must actually hit the server)", attempts)
+	}
+	want := []string{"c", "b", "a"}
+	if !testutil.Equal(got, want) {
+		t.Errorf("rows seen = %v, want %v (silent data loss if empty)", got, want)
+	}
+	wantKeys := []string{"a", "b", "c"}
+	if !testutil.Equal(attempt2Keys, wantKeys) {
+		t.Errorf("attempt 2 req.Rows.RowKeys = %v, want %v (full RowList must survive the retry narrow when no row seen yet)", attempt2Keys, wantKeys)
+	}
+}
+
+// TestRetryForwardScanRowListPreFirstRowFailure is the forward-direction
+// counterpart to TestRetryReverseScanRowListPreFirstRowFailure. It
+// exercises the forward-scan RowList retry path, which this fix does
+// NOT touch, to confirm the pre-existing behavior is preserved:
+// retainRowsAfter("") on a RowList accidentally works because `key > ""`
+// is true for every non-empty key, so the retry retains the full set.
+func TestRetryForwardScanRowListPreFirstRowFailure(t *testing.T) {
+	ctx := context.Background()
+
+	attempts := 0
+	var attempt2Keys []string
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "ReadRows") {
+			return handler(srv, ss)
+		}
+		req := new(btpb.ReadRowsRequest)
+		must(ss.RecvMsg(req))
+		attempts++
+		switch attempts {
+		case 1:
+			if req.Reversed {
+				t.Errorf("attempt 1: req.Reversed = true, want false")
+			}
+			if got, want := len(req.Rows.RowKeys), 3; got != want {
+				t.Fatalf("attempt 1: req.Rows.RowKeys len = %d, want %d", got, want)
+			}
+			return status.Errorf(codes.Unavailable, "injected pre-first-row failure")
+		case 2:
+			for _, k := range req.Rows.RowKeys {
+				attempt2Keys = append(attempt2Keys, string(k))
+			}
+			must(writeReadRowsResponse(ss, "a", "b", "c"))
+			return nil
+		}
+		t.Fatalf("unexpected extra attempt %d", attempts)
+		return nil
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	var got []string
+	if err := tbl.ReadRows(ctx, RowList{"a", "b", "c"}, func(r Row) bool {
+		got = append(got, r.Key())
+		return true
+	}); err != nil {
+		t.Fatalf("ReadRows returned err: %v", err)
+	}
+	if attempts != 2 {
+		t.Errorf("attempts = %d, want 2", attempts)
+	}
+	wantRows := []string{"a", "b", "c"}
+	if !testutil.Equal(got, wantRows) {
+		t.Errorf("rows seen = %v, want %v", got, wantRows)
+	}
+	if !testutil.Equal(attempt2Keys, wantRows) {
+		t.Errorf("attempt 2 req.Rows.RowKeys = %v, want %v (full RowList must survive forward retry too)", attempt2Keys, wantRows)
+	}
+}
+
 func TestRetryReadRows(t *testing.T) {
 	ctx := context.Background()
 
