@@ -1075,6 +1075,43 @@ var methods = map[string][]retryFunc{
 	},
 }
 
+// emulatorHostURL returns the testbench's HTTP endpoint, as used by the Retry
+// Test API.
+//
+// STORAGE_EMULATOR_HOST may be set with or without a scheme; NewClient accepts
+// both and supplies "http" when it is missing, so the test harness has to do
+// the same. url.Parse on a bare "host:port" yields Scheme="host", which is not
+// a usable endpoint.
+func emulatorHostURL(host string) (*url.URL, error) {
+	if !strings.Contains(host, "://") {
+		return &url.URL{Scheme: "http", Host: host}, nil
+	}
+	return url.Parse(host)
+}
+
+func TestEmulatorHostURL(t *testing.T) {
+	for _, tc := range []struct {
+		host string
+		want string
+	}{
+		// The form that used to parse as Scheme="localhost" and break every
+		// test that talks to the Retry Test API.
+		{"localhost:9000", "http://localhost:9000"},
+		{"127.0.0.1:9000", "http://127.0.0.1:9000"},
+		{"http://localhost:9000", "http://localhost:9000"},
+		{"https://localhost:9000", "https://localhost:9000"},
+	} {
+		got, err := emulatorHostURL(tc.host)
+		if err != nil {
+			t.Errorf("emulatorHostURL(%q): %v", tc.host, err)
+			continue
+		}
+		if got.String() != tc.want {
+			t.Errorf("emulatorHostURL(%q) = %q, want %q", tc.host, got, tc.want)
+		}
+	}
+}
+
 func TestRetryConformance(t *testing.T) {
 	// This endpoint is used only to call the testbench retry test API, which is HTTP
 	// based. The endpoint called by the client library is determined inside of the
@@ -1083,9 +1120,9 @@ func TestRetryConformance(t *testing.T) {
 	if host == "" {
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
 	}
-	endpoint, err := url.Parse(host)
+	endpoint, err := emulatorHostURL(host)
 	if err != nil {
-		t.Fatalf("error parsing emulator host (make sure it includes the scheme such as http://host): %v", err)
+		t.Fatalf("parsing emulator host %q: %v", host, err)
 	}
 
 	ctx := context.Background()
@@ -1269,22 +1306,22 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 
 	et.host.Path = "retry_test"
 	resp, err := c.Post(et.host.String(), "application/json", buf)
-	if resp != nil && resp.StatusCode == 501 {
+	if err != nil {
+		et.Fatalf("creating retry test: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 501 {
 		et.T.Skip("This retry test case is not yet supported in the testbench.")
 	}
-	if err != nil || resp.StatusCode != 200 {
-		var respBody string
-		if body, err := io.ReadAll(resp.Body); err != nil {
-			respBody = string(body)
+	if resp.StatusCode != 200 {
+		body, readErr := io.ReadAll(resp.Body)
+		if readErr != nil {
+			et.Fatalf("creating retry test: status %s; reading body: %v", resp.Status, readErr)
 		}
-		et.Fatalf("creating retry test: err: %v, resp: %+v, resp body: %v", err, resp, respBody)
+		et.Fatalf("creating retry test: status %s; body: %s", resp.Status, body)
 	}
-	defer func() {
-		closeErr := resp.Body.Close()
-		if err == nil {
-			err = closeErr
-		}
-	}()
+
 	testRes := struct {
 		TestID string `json:"id"`
 	}{}
@@ -1317,15 +1354,15 @@ func (et *emulatorTest) check() {
 	et.host.Path = strings.Join([]string{"retry_test", et.id}, "/")
 	c := http.DefaultClient
 	resp, err := c.Get(et.host.String())
-	if err != nil || resp.StatusCode != 200 {
-		et.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
+	if err != nil {
+		et.Fatalf("getting retry test: %v", err)
 	}
-	defer func() {
-		closeErr := resp.Body.Close()
-		if err == nil {
-			err = closeErr
-		}
-	}()
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		et.Fatalf("getting retry test: status %s", resp.Status)
+	}
+
 	testRes := struct {
 		Instructions map[string][]string
 		Completed    bool
