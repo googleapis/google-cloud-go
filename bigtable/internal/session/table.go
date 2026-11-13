@@ -23,6 +23,7 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -273,15 +274,21 @@ func dispatch[Args any, R any, Resp interface {
 	ctx = btransport.WithVRpcMetadata(ctx, spec.desc.Method(), 0)
 	chained := btransport.ChainInterceptors(retryInterceptor)
 	res, err := chained(ctx, spec.args, baseHandler)
-	if ownedTracer {
-		mt.SetCurrOpStatus(metrics.GrpcCodeOf(err))
-	}
 	if err != nil {
+		if ownedTracer {
+			mt.SetCurrOpStatus(metrics.GrpcCodeOf(err))
+		}
 		return zero, fmt.Errorf("session %s vRPC: %w", spec.method, err)
 	}
 	resp, ok := res.(Resp)
 	if !ok || resp == nil {
+		if ownedTracer {
+			mt.SetCurrOpStatus(codes.Internal)
+		}
 		return zero, fmt.Errorf("session %s: missing response payload (%T)", spec.method, res)
+	}
+	if ownedTracer {
+		mt.SetCurrOpStatus(codes.OK)
 	}
 	return resp, nil
 }

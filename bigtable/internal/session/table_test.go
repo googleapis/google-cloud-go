@@ -694,3 +694,40 @@ func TestSessionTable_Close_BeforeLazyOpen_EarlyBail(t *testing.T) {
 		t.Errorf("release called %d times, want 1 (Close's own release only; guardOpen never entered inner)", releaseCalls.Load())
 	}
 }
+
+func TestSessionTable_PropagatesClusterZoneToOpMetricsAndRecordsInternalOnNilPayload(t *testing.T) {
+	t.Run("cluster_and_zone_propagate_to_operation_latencies", func(t *testing.T) {
+		inv := &fakeInvoker{
+			result: btransport.InvokeResult{
+				Response: &btpb.SessionReadRowResponse{},
+				ClusterInfo: &btpb.ClusterInformation{
+					ClusterId: "session-cluster-1",
+					ZoneId:    "us-east4-a",
+				},
+			},
+		}
+		tbl, reader := newTestTable(t, inv, nil)
+		if _, err := tbl.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("row1")}); err != nil {
+			t.Fatalf("ReadRow: %v", err)
+		}
+		if got := sampleAttribute(t, reader, "operation_latencies", "cluster"); got != "session-cluster-1" {
+			t.Errorf("operation_latencies cluster = %q, want session-cluster-1", got)
+		}
+		if got := sampleAttribute(t, reader, "operation_latencies", "zone"); got != "us-east4-a" {
+			t.Errorf("operation_latencies zone = %q, want us-east4-a", got)
+		}
+	})
+
+	t.Run("nil_payload_records_internal_status_instead_of_ok", func(t *testing.T) {
+		inv := &fakeInvoker{
+			result: btransport.InvokeResult{Response: (*btpb.SessionReadRowResponse)(nil)},
+		}
+		tbl, reader := newTestTable(t, inv, nil)
+		if _, err := tbl.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("row1")}); err == nil {
+			t.Fatal("ReadRow with nil payload succeeded, want error")
+		}
+		if got := sampleAttribute(t, reader, "operation_latencies", "status"); got != "INTERNAL" {
+			t.Errorf("operation_latencies status on nil payload = %q, want INTERNAL", got)
+		}
+	})
+}
