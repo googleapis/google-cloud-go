@@ -211,6 +211,18 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 	pickedChannel.Store(-1)
 	stream, err := p.streamFactory(ChannelPickHintInto(dialCtxOut, &pickedChannel))
 	if err != nil {
+		if dialCtx.Err() == nil {
+			p.mu.Lock()
+			p.pendingStarts--
+			p.mu.Unlock()
+			reserved = false
+			p.budget.Release(false)
+			ownsBudget = false
+			p.recordAbnormalFailure(err)
+			if p.sl.ReadyCount() < p.sizer.MaxSessions() {
+				p.spawnTickOnce(p.poolCtx)
+			}
+		}
 		return err
 	}
 
@@ -284,6 +296,10 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 		p.mu.Unlock()
 		if wasStarting {
 			p.budget.Release(false)
+			p.recordAbnormalFailure(err)
+			if p.sl.ReadyCount() < p.sizer.MaxSessions() {
+				p.spawnTickOnce(p.poolCtx)
+			}
 		}
 		btopt.Debugf(nil, "POOL %p createSession Start failed for %s: %v", p, sessionName, err)
 		return fmt.Errorf("failed to start session: %w", err)
