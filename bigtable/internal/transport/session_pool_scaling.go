@@ -204,7 +204,15 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 		}
 	}()
 
-	dialCtxOut := metadata.NewOutgoingContext(dialCtx, p.metadata)
+	sessionCtx, sessionCancel := context.WithCancel(dialCtx)
+	sessionOwned := false
+	defer func() {
+		if !sessionOwned {
+			sessionCancel()
+		}
+	}()
+
+	dialCtxOut := metadata.NewOutgoingContext(sessionCtx, p.metadata)
 	// pickedChannel receives the channel-pool's connEntry hint; -1
 	// means the underlying pool didn't publish one.
 	var pickedChannel atomic.Int32
@@ -246,7 +254,8 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 	}
 	s := NewSession(sessionName, stream, hooks, p.sessionType,
 		WithSessionPoolName(p.poolName), WithSessionLogger(log.Default()),
-		WithSessionDebugEnabled(p.debugEnabled))
+		WithSessionDebugEnabled(p.debugEnabled), WithSessionStreamCancel(sessionCancel))
+	sessionOwned = true
 	if hint := pickedChannel.Load(); hint >= 0 {
 		s.setChannelIndex(hint)
 	}
@@ -270,7 +279,8 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 	// onClose did not fire (e.g. pre-Send state-machine failure).
 	ownsBudget = false
 
-	if err := s.Start(dialCtx, p.openSessionRequest); err != nil {
+	if err := s.Start(sessionCtx, p.openSessionRequest); err != nil {
+		sessionCancel()
 		// Normal failure path: Send() failed → ForceClose → onClose's
 		// starting branch already deleted sh and called Release(false).
 		// In that case wasStarting is false and we do nothing extra.
