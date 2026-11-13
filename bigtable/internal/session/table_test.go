@@ -65,6 +65,11 @@ func (f *fakeInvoker) callCount() int {
 // returned reader can be Collect()ed to inspect emitted histograms.
 func newTestTable(t *testing.T, readInv, writeInv Invoker) (*sessionTable, *sdkmetric.ManualReader) {
 	t.Helper()
+	return newTestTableWithReadWrite(t, readInv, writeInv, writeInv)
+}
+
+func newTestTableWithReadWrite(t *testing.T, readInv, writeInv, readWriteInv Invoker) (*sessionTable, *sdkmetric.ManualReader) {
+	t.Helper()
 	reader := sdkmetric.NewManualReader()
 	mp := sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader))
 	factory, err := metrics.NewFactoryForTest("test-project", "test-instance", "test-profile", mp)
@@ -73,18 +78,24 @@ func newTestTable(t *testing.T, readInv, writeInv Invoker) (*sessionTable, *sdkm
 	}
 	openRead := func() (Invoker, error) { return readInv, nil }
 	openWrite := func() (Invoker, error) { return writeInv, nil }
+	openReadWrite := func() (Invoker, error) { return readWriteInv, nil }
 	if readInv == nil {
 		openRead = nil
 	}
 	if writeInv == nil {
 		openWrite = nil
 	}
+	if readWriteInv == nil {
+		openReadWrite = nil
+	}
 	tbl := newSessionTable(
 		"test-table",
 		openRead,
 		openWrite,
+		openReadWrite,
 		nil, // closeRead — fake pools don't back a real poolCloser
 		nil, // closeWrite
+		nil, // closeReadWrite
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil,
@@ -488,16 +499,18 @@ func TestSessionTable_ReadAndWritePoolsDoNotShareSessions(t *testing.T) {
 
 // --- Close teardown ---------------------------------------------------------
 
-// TestSessionTable_Close_CallsBothReleasers verifies Close fires the
-// closeRead and closeWrite release closures exactly once each.
-func TestSessionTable_Close_CallsBothReleasers(t *testing.T) {
-	var reads, writes int
+// TestSessionTable_Close_CallsAllReleasers verifies Close fires the
+// closeRead, closeWrite, and closeReadWrite release closures exactly once each.
+func TestSessionTable_Close_CallsAllReleasers(t *testing.T) {
+	var reads, writes, readWrites int
 	tbl := newSessionTable(
 		"t",
 		func() (Invoker, error) { return nil, nil },
 		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return nil, nil },
 		func() error { reads++; return nil },
 		func() error { writes++; return nil },
+		func() error { readWrites++; return nil },
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil, nil,
@@ -505,21 +518,23 @@ func TestSessionTable_Close_CallsBothReleasers(t *testing.T) {
 	if err := tbl.Close(); err != nil {
 		t.Fatalf("Close: %v", err)
 	}
-	if reads != 1 || writes != 1 {
-		t.Errorf("release call counts = (read=%d write=%d), want (1,1)", reads, writes)
+	if reads != 1 || writes != 1 || readWrites != 1 {
+		t.Errorf("release call counts = (read=%d write=%d readWrite=%d), want (1,1,1)", reads, writes, readWrites)
 	}
 }
 
 // TestSessionTable_Close_NilWriteReleaserOK covers the materialized-
-// view case: no write side means closeWrite is nil; Close must not
-// panic and must still call closeRead.
+// view case: no write side means closeWrite and closeReadWrite are nil;
+// Close must not panic and must still call closeRead.
 func TestSessionTable_Close_NilWriteReleaserOK(t *testing.T) {
 	var reads int
 	tbl := newSessionTable(
 		"",
 		func() (Invoker, error) { return nil, nil },
 		nil,
+		nil,
 		func() error { reads++; return nil },
+		nil,
 		nil,
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
@@ -533,18 +548,21 @@ func TestSessionTable_Close_NilWriteReleaserOK(t *testing.T) {
 	}
 }
 
-// TestSessionTable_Close_JoinsErrors: when BOTH release closures
+// TestSessionTable_Close_JoinsErrors: when release closures
 // return errors, Close returns them via errors.Join so callers see
-// both root causes rather than losing one to a first-error return.
+// all root causes rather than losing one to a first-error return.
 func TestSessionTable_Close_JoinsErrors(t *testing.T) {
 	readErr := status.Error(codes.Internal, "read pool teardown failed")
 	writeErr := status.Error(codes.Internal, "write pool teardown failed")
+	readWriteErr := status.Error(codes.Internal, "read-write pool teardown failed")
 	tbl := newSessionTable(
 		"t",
 		func() (Invoker, error) { return nil, nil },
 		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return nil, nil },
 		func() error { return readErr },
 		func() error { return writeErr },
+		func() error { return readWriteErr },
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil, nil,
@@ -553,8 +571,8 @@ func TestSessionTable_Close_JoinsErrors(t *testing.T) {
 	if err == nil {
 		t.Fatal("Close returned nil, want joined errors")
 	}
-	if got := err.Error(); !strings.Contains(got, "read pool teardown failed") || !strings.Contains(got, "write pool teardown failed") {
-		t.Errorf("Close error = %q; want both read+write causes surfaced", got)
+	if got := err.Error(); !strings.Contains(got, "read pool teardown failed") || !strings.Contains(got, "write pool teardown failed") || !strings.Contains(got, "read-write pool teardown failed") {
+		t.Errorf("Close error = %q; want read+write+read-write causes surfaced", got)
 	}
 }
 
@@ -570,7 +588,9 @@ func TestSessionTable_Close_ReleasersIdempotent(t *testing.T) {
 		"t",
 		func() (Invoker, error) { return nil, nil },
 		nil,
+		nil,
 		func() error { reads++; return nil },
+		nil,
 		nil,
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
@@ -624,7 +644,9 @@ func TestSessionTable_Close_RacingLazyOpen_NoLeak(t *testing.T) {
 			return fakeInv, nil
 		},
 		nil,
+		nil,
 		func() error { releaseCalls.Add(1); return nil },
+		nil,
 		nil,
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
@@ -670,7 +692,9 @@ func TestSessionTable_Close_BeforeLazyOpen_EarlyBail(t *testing.T) {
 		"t",
 		func() (Invoker, error) { openCalled.Add(1); return nil, nil },
 		nil,
+		nil,
 		func() error { releaseCalls.Add(1); return nil },
+		nil,
 		nil,
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
@@ -692,5 +716,16 @@ func TestSessionTable_Close_BeforeLazyOpen_EarlyBail(t *testing.T) {
 	}
 	if releaseCalls.Load() != 1 {
 		t.Errorf("release called %d times, want 1 (Close's own release only; guardOpen never entered inner)", releaseCalls.Load())
+	}
+}
+
+func TestSessionTable_PoolSeparation(t *testing.T) {
+	readInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionReadRowResponse{}}}
+	writeInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionMutateRowResponse{}}}
+	readWriteInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionMutateRowResponse{}}}
+
+	tbl, _ := newTestTableWithReadWrite(t, readInv, writeInv, readWriteInv)
+	if tbl.readPool == tbl.writePool || tbl.readPool == tbl.readWritePool || tbl.writePool == tbl.readWritePool {
+		t.Errorf("read, write, and read-write pools must be distinct lazyPool instances")
 	}
 }
