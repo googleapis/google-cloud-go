@@ -220,6 +220,138 @@ func TestNewFamEmptyQualifier(t *testing.T) {
 	}
 }
 
+func TestProcessLastScannedRowKey_OrderValidation(t *testing.T) {
+	tests := []struct {
+		name           string
+		reversed       bool
+		initialRow     string
+		scannedKey     []byte
+		subsequentRow  string
+		wantScannedErr bool
+		wantChunkErr   bool
+		wantLastKey    string
+	}{
+		{
+			name:          "forward_advances_watermark_and_allows_greater_row",
+			initialRow:    "b",
+			scannedKey:    []byte("m"),
+			subsequentRow: "n",
+			wantLastKey:   "n",
+		},
+		{
+			name:          "forward_advances_watermark_and_rejects_stale_row",
+			initialRow:    "b",
+			scannedKey:    []byte("m"),
+			subsequentRow: "f",
+			wantChunkErr:  true,
+			wantLastKey:   "m",
+		},
+		{
+			name:           "forward_rejects_equal_scanned_key",
+			initialRow:     "m",
+			scannedKey:     []byte("m"),
+			wantScannedErr: true,
+			wantLastKey:    "m",
+		},
+		{
+			name:           "forward_rejects_smaller_scanned_key",
+			initialRow:     "m",
+			scannedKey:     []byte("d"),
+			wantScannedErr: true,
+			wantLastKey:    "m",
+		},
+		{
+			name:          "forward_ignores_empty_byte_slice",
+			initialRow:    "m",
+			scannedKey:    []byte{},
+			subsequentRow: "n",
+			wantLastKey:   "n",
+		},
+		{
+			name:          "reverse_advances_watermark_and_allows_smaller_row",
+			reversed:      true,
+			initialRow:    "m",
+			scannedKey:    []byte("f"),
+			subsequentRow: "d",
+			wantLastKey:   "d",
+		},
+		{
+			name:          "reverse_advances_watermark_and_rejects_stale_row",
+			reversed:      true,
+			initialRow:    "m",
+			scannedKey:    []byte("f"),
+			subsequentRow: "h",
+			wantChunkErr:  true,
+			wantLastKey:   "f",
+		},
+		{
+			name:           "reverse_rejects_greater_scanned_key",
+			reversed:       true,
+			initialRow:     "f",
+			scannedKey:     []byte("m"),
+			wantScannedErr: true,
+			wantLastKey:    "f",
+		},
+		{
+			name:          "reverse_ignores_empty_byte_slice",
+			reversed:      true,
+			initialRow:    "m",
+			scannedKey:    []byte{},
+			subsequentRow: "f",
+			wantLastKey:   "f",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			cr := newChunkReader()
+			if tc.reversed {
+				cr = newReverseChunkReader()
+			}
+			if tc.initialRow != "" {
+				mustProcess(t, cr, cc(tc.initialRow, "fm", "col", 1, "val", 0, true, nil))
+			}
+
+			err := cr.ProcessLastScannedRowKey(tc.scannedKey)
+			if (err != nil) != tc.wantScannedErr {
+				t.Fatalf("ProcessLastScannedRowKey(%q) error = %v, wantErr %v", tc.scannedKey, err, tc.wantScannedErr)
+			}
+
+			if tc.subsequentRow != "" {
+				_, chunkErr := cr.Process(cc(tc.subsequentRow, "fm", "col", 1, "val", 0, true, nil))
+				if (chunkErr != nil) != tc.wantChunkErr {
+					t.Errorf("Process(%q) error = %v, wantErr %v", tc.subsequentRow, chunkErr, tc.wantChunkErr)
+				}
+			}
+
+			if cr.lastKey != tc.wantLastKey {
+				t.Errorf("chunkReader.lastKey = %q, want %q", cr.lastKey, tc.wantLastKey)
+			}
+		})
+	}
+}
+
+func TestProcessLastScannedRowKey_MidRowRejected(t *testing.T) {
+	tests := []struct {
+		name      string
+		valueSize int32
+	}{
+		{name: "row_in_progress", valueSize: 0},
+		{name: "cell_in_progress", valueSize: 10},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			cr := newChunkReader()
+			mustProcess(t, cr, cc("a", "fm", "col", 1, "val", tc.valueSize, false, nil))
+
+			if err := cr.ProcessLastScannedRowKey([]byte("b")); err == nil {
+				t.Errorf("ProcessLastScannedRowKey(%q) in state %d = nil, want non-nil error", "b", cr.state)
+			}
+		})
+	}
+}
+
 func mustProcess(t *testing.T, cr *chunkReader, cc *btspb.ReadRowsResponse_CellChunk) Row {
 	row, err := cr.Process(cc)
 	if err != nil {

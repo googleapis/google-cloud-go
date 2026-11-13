@@ -267,6 +267,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		} else {
 			cr = newChunkReader()
 		}
+		cr.lastKey = prevRowKey
 
 		// Ignore error since header is only being used to record builtin metrics
 		// Failure to record metrics should not fail the operation
@@ -336,8 +337,12 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 				}
 			}
 
-			if res.LastScannedRowKey != nil {
-				prevRowKey = string(res.LastScannedRowKey)
+			if len(res.LastScannedRowKey) > 0 {
+				if err := cr.ProcessLastScannedRowKey(res.LastScannedRowKey); err != nil {
+					// No need to prepare for a retry, this is an unretryable error.
+					return err
+				}
+				prevRowKey = cr.lastKey
 			}
 
 			// Handle any incoming RequestStats. This should happen at most once.
