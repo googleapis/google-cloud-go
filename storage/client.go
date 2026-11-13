@@ -217,7 +217,7 @@ type clientOption struct {
 	opts []option.ClientOption
 }
 
-func (o *clientOption) Apply(s *settings) { s.clientOption = o.opts }
+func (o *clientOption) Apply(s *settings) { s.clientOption = append(s.clientOption, o.opts...) }
 
 func withUserProject(project string) storageOption {
 	return &userProjectOption{project}
