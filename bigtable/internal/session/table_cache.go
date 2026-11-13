@@ -16,11 +16,13 @@ package session
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 )
 
 // Default eviction parameters for TableCache. Vars (not consts) so
@@ -150,11 +152,15 @@ func (h *TableHandle) dispatch() *TableHandle {
 	for cur.evicted.Load() {
 		next := cur.successor.Load()
 		if next == nil {
-			next = cur.resolveSuccessor()
-			if next == nil {
+			resolved := cur.resolveSuccessor()
+			if resolved == nil {
 				return cur // reopen refused; let cur.api surface the terminal error
 			}
-			cur.successor.Store(next)
+			if cur.successor.CompareAndSwap(nil, resolved) {
+				next = resolved
+			} else {
+				next = cur.successor.Load()
+			}
 		}
 		cur = next
 	}
@@ -164,6 +170,13 @@ func (h *TableHandle) dispatch() *TableHandle {
 	return cur
 }
 
+func (h *TableHandle) shouldRetryAfterMidCallEviction(d *TableHandle, err error) bool {
+	if err == nil || !d.evicted.Load() || h.cache == nil || h.cache.isClosed() {
+		return false
+	}
+	return errors.Is(err, ErrClientClosed) || errors.Is(err, btransport.ErrPoolClosed)
+}
+
 // ReadRow proxies to the underlying TableAPI on the atomic-Load fast
 // path, self-healing via dispatch() on eviction. Happy path adds one
 // atomic Load vs a bare api.ReadRow; the cache-map lookup only fires
@@ -171,7 +184,13 @@ func (h *TableHandle) dispatch() *TableHandle {
 func (h *TableHandle) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 	d := h.dispatch()
 	d.touch()
-	return d.api.ReadRow(ctx, req)
+	resp, err := d.api.ReadRow(ctx, req)
+	if h.shouldRetryAfterMidCallEviction(d, err) {
+		d = h.dispatch()
+		d.touch()
+		return d.api.ReadRow(ctx, req)
+	}
+	return resp, err
 }
 
 // MutateRow proxies to the underlying TableAPI, same shape as ReadRow.
@@ -181,7 +200,13 @@ func (h *TableHandle) ReadRow(ctx context.Context, req *btpb.SessionReadRowReque
 func (h *TableHandle) MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
 	d := h.dispatch()
 	d.touch()
-	return d.api.MutateRow(ctx, req)
+	resp, err := d.api.MutateRow(ctx, req)
+	if h.shouldRetryAfterMidCallEviction(d, err) {
+		d = h.dispatch()
+		d.touch()
+		return d.api.MutateRow(ctx, req)
+	}
+	return resp, err
 }
 
 // resolveSuccessor returns the currently-live handle registered under
@@ -329,11 +354,17 @@ func (c *TableCache) GetOrOpen(key string, openFn func() TableAPI) TableAPI {
 
 	for {
 		c.mu.Lock()
-		// Fast path — cache hit.
+		// Fast path — cache hit. Touch under c.mu and skip any entry already
+		// marked evicted so GetOrOpen can never return a handle that a racing
+		// Close/sweepOnce is tearing down.
 		if h, ok := c.entries[key]; ok {
-			c.mu.Unlock()
-			h.touch()
-			return h
+			if h.evicted.Load() {
+				delete(c.entries, key)
+			} else {
+				h.touch()
+				c.mu.Unlock()
+				return h
+			}
 		}
 		if c.closed {
 			c.mu.Unlock()
@@ -448,6 +479,7 @@ func (c *TableCache) sweepOnce() {
 	var evicted []*TableHandle
 	for k, h := range c.entries {
 		if h.lastAccessNano.Load() < cutoff {
+			h.evicted.Store(true)
 			evicted = append(evicted, h)
 			delete(c.entries, k)
 		}
@@ -457,6 +489,12 @@ func (c *TableCache) sweepOnce() {
 	for _, h := range evicted {
 		_ = h.Close()
 	}
+}
+
+func (c *TableCache) isClosed() bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.closed
 }
 
 // Close stops the sweeper, waits for it to exit, then Close()s every
@@ -474,6 +512,7 @@ func (c *TableCache) Close() {
 	c.closed = true
 	remaining := make([]*TableHandle, 0, len(c.entries))
 	for k, h := range c.entries {
+		h.evicted.Store(true)
 		remaining = append(remaining, h)
 		delete(c.entries, k)
 	}

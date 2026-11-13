@@ -645,3 +645,64 @@ func TestTableCache_LoaderPanic_DoesNotWedgeKey(t *testing.T) {
 		t.Fatal("GetOrOpen after panic deadlocked — loader slot was not cleaned up")
 	}
 }
+
+type evictingMidCallTable struct {
+	noopTable
+	evict func()
+}
+
+func (e *evictingMidCallTable) ReadRow(context.Context, *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+	e.evict()
+	return nil, ErrClientClosed
+}
+
+func (e *evictingMidCallTable) MutateRow(context.Context, *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
+	e.evict()
+	return nil, ErrClientClosed
+}
+
+func TestTableHandle_MidCallEvictionRetriesOnFreshSuccessor(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	c := newTestTableCache(t, 1*time.Hour, clock)
+
+	var opens atomic.Int32
+	var h1 *TableHandle
+	openFn := func() TableAPI {
+		if opens.Add(1) == 1 {
+			return &evictingMidCallTable{
+				evict: func() { _ = h1.Close() },
+			}
+		}
+		return &noopTable{key: "tbl:t"}
+	}
+
+	h1 = c.GetOrOpen("tbl:t", openFn).(*TableHandle)
+	if _, err := h1.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("r")}); err != nil {
+		t.Fatalf("ReadRow after mid-call eviction failed: %v, want transparent retry on fresh successor", err)
+	}
+	if got := opens.Load(); got != 2 {
+		t.Errorf("opens = %d, want 2", got)
+	}
+}
+
+func TestTableCache_GetOrOpenSkipsAlreadyEvictedMapEntry(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	c := newTestTableCache(t, 1*time.Hour, clock)
+
+	var opens atomic.Int32
+	openFn := func() TableAPI {
+		opens.Add(1)
+		return &noopTable{key: "tbl:t"}
+	}
+	h1 := c.GetOrOpen("tbl:t", openFn).(*TableHandle)
+	// Simulate Close() having flipped h1.evicted=true before removeEntry acquired c.mu.
+	h1.evicted.Store(true)
+
+	h2 := c.GetOrOpen("tbl:t", openFn).(*TableHandle)
+	if h2 == h1 {
+		t.Fatal("GetOrOpen returned an entry with evicted=true instead of opening a fresh handle")
+	}
+	if got := opens.Load(); got != 2 {
+		t.Errorf("opens = %d, want 2", got)
+	}
+}
