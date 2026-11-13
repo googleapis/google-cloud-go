@@ -545,7 +545,8 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 			},
 		}
 		sess := &mockSessionTable{}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		diverter := btransport.NewDiverter(1.0)
+		shim := NewTableShim(classic, sess, diverter)
 		if err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true }, LimitRows(0)); err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
@@ -554,6 +555,10 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 		}
 		if sess.readRowCalls != 0 {
 			t.Errorf("sess.readRowCalls = %d, want 0 (LimitRows(0) must NOT dial session)", sess.readRowCalls)
+		}
+		snap := diverter.Snapshot()
+		if snap.SessionPicks != 0 || snap.ClassicPicks != 0 {
+			t.Errorf("diverter picks = (session=%d, classic=%d), want (0, 0) when LimitRows(0) defers to classic before diverter check", snap.SessionPicks, snap.ClassicPicks)
 		}
 	})
 

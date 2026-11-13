@@ -111,15 +111,19 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 	if m == nil {
 		return t.classic.Apply(ctx, row, m, opts...)
 	}
+	scope := btransport.ScopeMethodMutateRow
+	if m.isConditional {
+		scope = btransport.ScopeMethodCheckAndMutateRow
+	}
+	if !t.useSessionForMethod(scope) {
+		return t.classic.Apply(ctx, row, m, opts...)
+	}
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)
 		}
 	}
 	if m.isConditional {
-		if !t.useSessionForMethod(btransport.ScopeMethodCheckAndMutateRow) {
-			return t.classic.Apply(ctx, row, m, opts...)
-		}
 		req := &btpb.SessionCheckAndMutateRowRequest{
 			Key: []byte(row),
 		}
@@ -148,9 +152,6 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 			})
 		}
 		return err
-	}
-	if !t.useSessionForMethod(btransport.ScopeMethodMutateRow) {
-		return t.classic.Apply(ctx, row, m, opts...)
 	}
 	req := &btpb.SessionMutateRowRequest{
 		Key:       []byte(row),
@@ -182,7 +183,7 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 // stays in the ReadRows body it was designed for.
 func (t *TableShim) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
 	key, ok := singleRowKey(arg)
-	if !ok || !t.useSessionForMethod(btransport.ScopeMethodReadRow) || deferToClassicForLimit(opts) {
+	if !ok || deferToClassicForLimit(opts) || !t.useSessionForMethod(btransport.ScopeMethodReadRow) {
 		return t.classic.ReadRows(ctx, arg, f, opts...)
 	}
 	row, err := t.readRowSession(ctx, key, opts...)

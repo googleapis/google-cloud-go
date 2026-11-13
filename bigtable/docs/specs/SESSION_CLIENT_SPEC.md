@@ -54,7 +54,7 @@ Every knob that governs a session pool's **size, admission, load-balancing, and 
 
 | Field | Governs |
 |---|---|
-| `Session.SessionLoad` (float64, 0.0–1.0) / `Session.SessionDiversionConfiguration` (`GlobalDiversion` or `PerScopeDiversion` for `"method:Bigtable.<Method>"`) | Fraction of traffic (globally or per served method scope) the `Diverter` sends via session pools vs classic. Emitted to callers via `AddSessionDiversionListener` → `Diverter.ApplySessionClientConfiguration`. |
+| `Session.SessionDiversionConfiguration` (`GlobalDiversion` or `PerScopeDiversion` for `"method:Bigtable.<Method>"`) / deprecated `Session.SessionLoad` (float64, 0.0–1.0) | Fraction of traffic (globally or per served method scope) the `Diverter` sends via session pools vs classic, emitted via `AddSessionDiversionListener` → `Diverter.ApplySessionClientConfiguration`. The server only sends deprecated `Session.SessionLoad` to support `Bigtable.ReadRow` and `Bigtable.MutateRow` in older client versions; newer clients ignore `SessionLoad` entirely when `SessionDiversionConfiguration` is present and check `SessionLoad` only as a fallback for `Bigtable.ReadRow` and `Bigtable.MutateRow` until the server fully rolls out `SessionDiversionConfiguration`. |
 | `Session.ChannelPool.MinServerCount` / `MaxServerCount` | Channel-pool sizing bounds. |
 | `Session.ChannelPool.PerServerSessionCount` | Target sessions per sub-channel; drives the pool's steady-state session count. |
 | `Session.ChannelPool.DirectAccessCheckInterval` / `DirectAccessErrorThreshold` | DirectAccess health probe cadence + trip threshold. |

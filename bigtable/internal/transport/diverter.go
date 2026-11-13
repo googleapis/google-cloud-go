@@ -53,13 +53,15 @@ var servedMethodScopes = []sessionScopeSpec{
 
 // resolveScopeSessionLoads resolves the effective session load ratio for each
 // served method scope from a server-supplied SessionClientConfiguration:
-//   - When SessionDiversionConfiguration is present, it is authoritative and
-//     the deprecated flat session_load field is ignored completely (including
-//     for scopes omitted from PerScopeDiversion or when DiversionStrategy is
-//     unset/unknown, which resolve to 0).
-//   - Only when SessionDiversionConfiguration is nil does the client fall back
-//     to the deprecated flat session_load field for ReadRow and MutateRow (0
-//     for all other scopes).
+//   - The server only sends the deprecated flat session_load field to support
+//     Bigtable.ReadRow and Bigtable.MutateRow in older client versions. Newer
+//     clients ignore session_load entirely when session_diversion_configuration
+//     is present (including for scopes omitted from PerScopeDiversion or when
+//     DiversionStrategy is unset/unknown, which resolve to 0).
+//   - The client checks deprecated session_load only as a fallback for
+//     Bigtable.ReadRow and Bigtable.MutateRow when
+//     session_diversion_configuration is absent (0 for all other scopes) until
+//     the server fully rolls out SessionDiversionConfiguration.
 func resolveScopeSessionLoads(sc *bigtablepb.SessionClientConfiguration) map[string]float64 {
 	loads := make(map[string]float64, len(servedMethodScopes))
 	if sc == nil {

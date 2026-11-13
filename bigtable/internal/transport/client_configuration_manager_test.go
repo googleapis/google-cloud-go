@@ -683,12 +683,17 @@ func TestAddSessionDiversionListener(t *testing.T) {
 				},
 			},
 			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				// Deprecated session_load and unserved scopes are ignored when
+				// SessionDiversionConfiguration is present, so changing them
+				// must not re-fire the diversion listener.
+				SessionLoad: 0.9,
 				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
 					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
 						PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
 							ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
 								"method:Bigtable.ReadRow":   {SessionLoad: 1.0},
 								"method:Bigtable.MutateRow": {SessionLoad: 0.5},
+								"method:Bigtable.ReadRows":  {SessionLoad: 1.0},
 							},
 						},
 					},

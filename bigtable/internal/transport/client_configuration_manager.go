@@ -17,6 +17,7 @@ package internal
 import (
 	"context"
 	"log"
+	"maps"
 	"math/rand"
 	"sync"
 	"sync/atomic"
@@ -403,39 +404,30 @@ func (m *ClientConfigurationManager) AddSessionPoolListener(listener func(*bigta
 // server-supplied value through it. Raised by mutianf on PR #19986.
 
 // AddSessionDiversionListener registers a callback that receives the
-// server-driven SessionClientConfiguration whenever session diversion
-// settings (SessionLoad or SessionDiversionConfiguration) change on a
-// successful poll. Returns an unregister thunk.
+// server-driven SessionClientConfiguration whenever effective session diversion
+// loads across served method scopes (resolved via resolveScopeSessionLoads)
+// change on a successful poll. Returns an unregister thunk.
 //
 // Unlike AddSessionPoolListener, this skips the immediate registration-time
 // fire (seq=0) so the Diverter's bootstrap configuration remains in effect
 // until the control plane responds.
 func (m *ClientConfigurationManager) AddSessionDiversionListener(listener func(*bigtablepb.SessionClientConfiguration)) func() {
 	var (
-		diffMu     sync.Mutex
-		hasPrev    bool
-		prevLoad   float32
-		prevDivCfg *bigtablepb.SessionDiversionConfiguration
+		diffMu    sync.Mutex
+		prevLoads map[string]float64
 	)
 	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, seq int64) {
 		if seq == 0 {
 			return
 		}
 		sc := cfg.GetSessionConfiguration()
-		load := sc.GetSessionLoad()
-		divCfg := sc.GetSessionDiversionConfiguration()
+		loads := resolveScopeSessionLoads(sc)
 		diffMu.Lock()
-		if hasPrev && prevLoad == load && proto.Equal(prevDivCfg, divCfg) {
+		if prevLoads != nil && maps.Equal(prevLoads, loads) {
 			diffMu.Unlock()
 			return
 		}
-		hasPrev = true
-		prevLoad = load
-		if divCfg != nil {
-			prevDivCfg = proto.Clone(divCfg).(*bigtablepb.SessionDiversionConfiguration)
-		} else {
-			prevDivCfg = nil
-		}
+		prevLoads = loads
 		diffMu.Unlock()
 		listener(sc)
 	})

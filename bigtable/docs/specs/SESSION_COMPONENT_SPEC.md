@@ -144,6 +144,7 @@ Every rule is a MUST. Violations are bugs, not preferences.
 ### B4. `Diverter` evaluates global and per-scope (`method`) session load ratios
 - `Diverter` stores an immutable per-scope (`"method:Bigtable.<Method>"`) session load map (`scopeLoads`) across the client's served method scopes, exposes `UseSessionForMethod(scope string) bool` / `SessionLoadForMethod(scope string) float64`, and maintains two counters (`SessionPicks`, `ClassicPicks`).
 - Only the `method` scope dimension (`"method:Bigtable.<Method>"`) for served RPC methods is supported (`ScopeMethodReadRow`, `ScopeMethodMutateRow`, `ScopeMethodCheckAndMutateRow`, `ScopeMethodReadModifyWriteRow`); `TableShim` determines which canonical method scope a given `TableAPI` call maps to (e.g., `ReadRow` and single-row `ReadRows` → `method:Bigtable.ReadRow`; non-conditional `Apply` → `method:Bigtable.MutateRow`; conditional `Apply` → `method:Bigtable.CheckAndMutateRow`; `ApplyReadModifyWrite` → `method:Bigtable.ReadModifyWriteRow`).
+- The server only sends the deprecated `SessionClientConfiguration.session_load` field to support `Bigtable.ReadRow` and `Bigtable.MutateRow` in older client versions. Newer clients ignore `session_load` entirely and rely on `session_diversion_configuration` when present, checking `session_load` only as a fallback for `Bigtable.ReadRow` and `Bigtable.MutateRow` until the server fully rolls out `SessionDiversionConfiguration`.
 - MUST NOT gain per-row/per-key stickiness. It is a stochastic gate, not a router. Any invariant that assumes "the same call went to the same place last time" MUST NOT rely on `Diverter`.
 
 ### B5. `TableShim` MUST NOT reach into `Session` or pool internals
@@ -152,10 +153,10 @@ Every rule is a MUST. Violations are bugs, not preferences.
 - Errors from either data path MUST surface to the caller as-is. `TableShim` MUST NOT retry a session-side failure on classic — that violates the retry oracle (`SESSION_SPEC.md` #9).
 
 ### B6. `ClientConfigurationManager` is the SOLE writer of pool-shaping config
-- `SessionPoolImpl.UpdateConfig`, `Diverter.ApplySessionClientConfiguration` / `Diverter.SetSessionLoad`, and every pool-shaping setter MUST be called from `ClientConfigurationManager` in production code paths.
+- `SessionPoolImpl.UpdateConfig`, `Diverter.ApplySessionClientConfiguration`, and every pool-shaping setter MUST be called from `ClientConfigurationManager` in production code paths. (`Diverter.SetSessionLoad` and `Diverter.SetScopeSessionLoads` are reserved for client bootstrap and test fixture setup.)
 - Tests MAY call these setters directly for fixture setup. This is the only exception.
-- Rationale: if pools self-tune, or if application code toggles `Diverter.SetSessionLoad` outside the config path, the polled config is no longer authoritative (`SESSION_SPEC.md` #13) and the client stops honoring server-driven rollouts.
-- **`grep` sanity check for new call sites:** `git grep -n 'SetSessionLoad\|ApplySessionClientConfiguration\|UpdateConfig' -- ':!*_test.go' ':!*_configuration_manager.go' ':!*/diverter_test.go'` — new hits should be reviewed.
+- Rationale: if pools self-tune, or if application code toggles `Diverter.ApplySessionClientConfiguration` / `Diverter.SetSessionLoad` outside the config path, the polled config is no longer authoritative (`SESSION_SPEC.md` #13) and the client stops honoring server-driven rollouts.
+- **`grep` sanity check for new call sites:** `git grep -n 'SetSessionLoad\|SetScopeSessionLoads\|ApplySessionClientConfiguration\|UpdateConfig' -- ':!*_test.go' ':!*_configuration_manager.go' ':!*/diverter_test.go'` — new hits should be reviewed.
 
 ### B7. `Session` MUST NOT hold pool-level counters
 - Per-Session state: `state`, `activeRPC`, `peerInfo`, `refreshConfig`, `heartbeat*`, `nextRPCID`, `hooks` (`SessionHooks` struct — opaque per-session lifecycle + slot-drained callbacks, wired once at construction by `SessionPoolImpl.createSession`), tracer, debug ring buffer.
