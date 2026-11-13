@@ -220,7 +220,10 @@ func (cr *chunkReader) validateNewRow(cc *btpb.ReadRowsResponse_CellChunk) error
 	if cc.GetResetRow() {
 		return fmt.Errorf("reset_row not allowed between rows")
 	}
-	if cc.RowKey == nil || cc.FamilyName == nil || cc.Qualifier == nil {
+	if err := cr.validateRowStatus(cc); err != nil {
+		return err
+	}
+	if len(cc.RowKey) == 0 || cc.FamilyName == nil || cc.Qualifier == nil {
 		return fmt.Errorf("missing key field for new row %v", cc)
 	}
 
