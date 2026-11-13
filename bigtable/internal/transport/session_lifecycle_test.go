@@ -658,3 +658,13 @@ func TestHooks_FiredInSpecOrder(t *testing.T) {
 		t.Errorf("hook order = %v, want %v", got, want)
 	}
 }
+
+func TestClaimSlot_RejectsNonReadySession(t *testing.T) {
+	s, _ := makeActive(t, SessionHooks{})
+	s.state.Store(int32(StateClosing))
+
+	rpc := &vrpcImpl{id: 1, method: "ReadRow", resultChan: make(chan vrpcResult, 1)}
+	if s.claimSlot(rpc) {
+		t.Fatal("claimSlot succeeded in StateClosing, want false")
+	}
+}
