@@ -1357,6 +1357,11 @@ func (s *bidiReadStreamSession) getError() error {
 	defer s.mu.RUnlock()
 	return s.streamErr
 }
+func (s *bidiReadStreamSession) isManualShutdown() bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.manualShutdown
+}
 func (s *bidiReadStreamSession) sendLoop() {
 	defer s.wg.Done()
 	defer s.stream.CloseSend()
@@ -1385,6 +1390,13 @@ func (s *bidiReadStreamSession) receiveLoop() {
 		// Receive message without a copy.
 		databufs := mem.BufferSlice{}
 		err := s.stream.RecvMsg(&databufs)
+		if s.isManualShutdown() {
+			databufs.Free()
+			if err != nil {
+				return
+			}
+			continue
+		}
 		var decoder *readResponseDecoder
 		if err == nil {
 			// Use the custom decoder to parse the raw buffer without copying object data.
@@ -1400,10 +1412,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 
 		if err != nil {
 			databufs.Free()
-			s.mu.RLock()
-			isManual := s.manualShutdown
-			s.mu.RUnlock()
-			if isManual {
+			if s.isManualShutdown() {
 				return
 			}
 
@@ -1428,6 +1437,10 @@ func (s *bidiReadStreamSession) receiveLoop() {
 			}
 			return
 		}
+		if s.isManualShutdown() {
+			databufs.Free()
+			continue
+		}
 		if s.managerCtx.Err() != nil {
 			databufs.Free()
 			return
@@ -1440,10 +1453,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 		}:
 
 		case <-s.ctx.Done():
-			s.mu.RLock()
-			isManual := s.manualShutdown
-			s.mu.RUnlock()
-			if isManual {
+			if s.isManualShutdown() {
 				databufs.Free()
 				return
 			}
