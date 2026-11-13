@@ -23,8 +23,10 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -154,11 +156,52 @@ type apiKeyTransport struct {
 }
 
 func (t *apiKeyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	if redirectedOffOrigin(req) {
+		return t.Transport.RoundTrip(req)
+	}
 	newReq := *req
+	u := *req.URL
+	newReq.URL = &u
 	args := newReq.URL.Query()
 	args.Set("key", t.Key)
 	newReq.URL.RawQuery = args.Encode()
 	return t.Transport.RoundTrip(&newReq)
+}
+
+// redirectedOffOrigin reports whether req is a redirect that http.Client is
+// following (req.Response is set) in a chain where some hop, this one
+// included, left the origin (scheme, host and port) of the original request.
+// Credentials are minted for the endpoint the caller configured, so they are
+// only added while every hop stays on that origin. This is stricter than the
+// rule net/http uses for an Authorization header set by the caller, which also
+// allows subdomains, other ports and a downgrade from https to http.
+func redirectedOffOrigin(req *http.Request) bool {
+	var hops []string
+	initial := req
+	for initial.Response != nil {
+		if initial.Response.Request == nil {
+			return true // cannot find the original request; send nothing
+		}
+		hops = append(hops, origin(initial.URL))
+		initial = initial.Response.Request
+	}
+	o := origin(initial.URL)
+	for _, h := range hops {
+		if h != o {
+			return true
+		}
+	}
+	return false
+}
+
+// origin returns u's scheme, host and port in canonical form.
+func origin(u *url.URL) string {
+	scheme := strings.ToLower(u.Scheme)
+	port := u.Port()
+	if port == "" {
+		port = map[string]string{"http": "80", "https": "443"}[scheme]
+	}
+	return scheme + "://" + net.JoinHostPort(strings.ToLower(u.Hostname()), port)
 }
 
 type headerTransport struct {
@@ -532,6 +575,11 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 				req.Body.Close()
 			}
 		}()
+	}
+
+	if redirectedOffOrigin(req) {
+		reqBodyClosed = true
+		return t.base.RoundTrip(req)
 	}
 	token, err := t.creds.Token(req.Context())
 	if err != nil {
