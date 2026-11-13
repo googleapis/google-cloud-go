@@ -576,17 +576,17 @@ func (mt *Tracer) ingestMetadata(headerMD, trailerMD metadata.MD) {
 			if existing := a.clusterID; existing == "" || existing == defaultCluster {
 				a.SetClusterID(clusterID)
 			}
-			if clusterID != defaultCluster {
-				mt.currOp.lastClusterID = clusterID
-			}
+		}
+		if a.clusterID != "" && a.clusterID != defaultCluster {
+			mt.currOp.lastClusterID = a.clusterID
 		}
 		if zoneID != "" {
 			if existing := a.zoneID; existing == "" || existing == defaultZone {
 				a.SetZoneID(zoneID)
 			}
-			if zoneID != defaultZone {
-				mt.currOp.lastZoneID = zoneID
-			}
+		}
+		if a.zoneID != "" && a.zoneID != defaultZone {
+			mt.currOp.lastZoneID = a.zoneID
 		}
 		if err == nil {
 			a.locationExtracted = true
