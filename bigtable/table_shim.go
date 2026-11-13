@@ -61,10 +61,10 @@ func NewTableShim(classic TableAPI, sessionAPI session.TableAPI, diverter *btran
 }
 
 // ReadRow implements TableAPI. Routes through the session path when
-// the diverter allows and the session API is available; otherwise
-// delegates to classic.
+// the diverter allows, no non-positive LimitRows option is present,
+// and the session API is available; otherwise delegates to classic.
 func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
-	if !t.useSession() {
+	if !t.useSession() || deferToClassicForLimit(opts) {
 		return t.classic.ReadRow(ctx, row, opts...)
 	}
 	r, err := t.readRowSession(ctx, row, opts...)
@@ -107,7 +107,7 @@ func (t *TableShim) readRowSession(ctx context.Context, row string, opts ...Read
 // client's nil-handling error surfaces exactly as it always has,
 // rather than panicking here on m.ops.
 func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
-	if m == nil || m.isConditional {
+	if m == nil || m.isConditional || len(opts) > 0 {
 		return t.classic.Apply(ctx, row, m, opts...)
 	}
 	if !t.useSession() {

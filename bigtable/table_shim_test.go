@@ -1167,3 +1167,74 @@ func TestTableShim_ReadRows_SingleRowRangeRoutesToSession(t *testing.T) {
 		})
 	}
 }
+
+func TestTableShim_ReadRow_NonPositiveLimitDefersToClassic(t *testing.T) {
+	tests := []struct {
+		name        string
+		opts        []ReadOption
+		wantSession int
+		wantClassic int
+	}{
+		{
+			name:        "zero_limit_defers_to_classic",
+			opts:        []ReadOption{LimitRows(0)},
+			wantSession: 0,
+			wantClassic: 1,
+		},
+		{
+			name:        "negative_limit_defers_to_classic",
+			opts:        []ReadOption{LimitRows(-1)},
+			wantSession: 0,
+			wantClassic: 1,
+		},
+		{
+			name:        "trailing_non_positive_limit_wins",
+			opts:        []ReadOption{LimitRows(5), LimitRows(0)},
+			wantSession: 0,
+			wantClassic: 1,
+		},
+		{
+			name:        "positive_limit_uses_session",
+			opts:        []ReadOption{LimitRows(1)},
+			wantSession: 1,
+			wantClassic: 0,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			classic := &mockClassicTable{}
+			sess := &mockSessionTable{}
+			shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+
+			if _, err := shim.ReadRow(context.Background(), "r1", tc.opts...); err != nil {
+				t.Fatalf("ReadRow(r1) unexpected error: %v", err)
+			}
+			if sess.readRowCalls != tc.wantSession {
+				t.Errorf("sess.readRowCalls = %d, want %d", sess.readRowCalls, tc.wantSession)
+			}
+			if classic.readRowCalls != tc.wantClassic {
+				t.Errorf("classic.readRowCalls = %d, want %d", classic.readRowCalls, tc.wantClassic)
+			}
+		})
+	}
+}
+
+func TestTableShim_Apply_OptionsRouteToClassic(t *testing.T) {
+	classic := &mockClassicTable{}
+	sess := &mockSessionTable{}
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+
+	mut := NewMutation()
+	mut.Set("fam", "col", 1000, []byte("v"))
+	var matched bool
+	if err := shim.Apply(context.Background(), "r1", mut, GetCondMutationResult(&matched)); err != nil {
+		t.Fatalf("Apply unexpected error: %v", err)
+	}
+	if sess.mutateRowCalls != 0 {
+		t.Errorf("sess.mutateRowCalls = %d, want 0", sess.mutateRowCalls)
+	}
+	if classic.applyCalls != 1 {
+		t.Errorf("classic.applyCalls = %d, want 1", classic.applyCalls)
+	}
+}
