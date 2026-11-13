@@ -2191,3 +2191,57 @@ func BenchmarkSelectionStrategies(b *testing.B) {
 		})
 	}
 }
+
+func TestBigtableChannelPool_CloseSerializesAgainstConcurrentReplace(t *testing.T) {
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+
+	var (
+		inReplaceDial atomic.Bool
+		dialEntered   = make(chan struct{})
+		releaseDial   = make(chan struct{})
+	)
+	dialFunc := func() (*BigtableConn, error) {
+		if inReplaceDial.Load() {
+			close(dialEntered)
+			<-releaseDial
+		}
+		return dialBigtableserver(addr)
+	}
+
+	opts := []BigtableChannelPoolOption{
+		WithChannelPrimer(NoOpChannelPrimer{}),
+		WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)),
+	}
+	pool, err := NewBigtableChannelPool(context.Background(), 1, btopt.RoundRobin, dialFunc, time.Now(), opts...)
+	if err != nil {
+		t.Fatalf("NewBigtableChannelPool: %v", err)
+	}
+
+	oldEntry := pool.getConns()[0]
+	inReplaceDial.Store(true)
+
+	replaceDone := make(chan struct{})
+	go func() {
+		defer close(replaceDone)
+		pool.replaceConnection(oldEntry)
+	}()
+
+	<-dialEntered
+
+	closeDone := make(chan error, 1)
+	go func() {
+		closeDone <- pool.Close()
+	}()
+
+	// Unblock replaceConnection's dial while Close is cancelling / acquiring dialMu.
+	close(releaseDial)
+	<-replaceDone
+	if err := <-closeDone; err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+
+	if got := pool.Num(); got != 0 {
+		t.Fatalf("pool.Num() after concurrent Close+replaceConnection = %d, want 0 (leaked connection)", got)
+	}
+}
