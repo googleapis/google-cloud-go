@@ -514,6 +514,10 @@ func (w *gRPCWriter) isActive() bool {
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if c.resource != nil {
 		w.setObj(newObjectFromProto(c.resource))
+		w.budget.recordProgress(false)
+		if w.watchdog != nil {
+			w.watchdog.pause()
+		}
 	}
 
 	// prevConfirmed is the highest offset GCS had confirmed before this
@@ -540,15 +544,11 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	// Only a completion strictly past prevConfirmed counts as progress: a
 	// reconnect that reports the same persisted size must not reset the retry
 	// budget. The stopwatch restarts only if more data is waiting to be sent.
-	progressed := c.flushOffset > prevConfirmed || c.resource != nil
-	if progressed {
+	if c.resource == nil && c.flushOffset > prevConfirmed {
 		w.budget.recordProgress(w.isActive())
-	}
-
-	// Restart the stall timer on forward progress. If nothing remains
-	// outstanding, the write loop pauses it before waiting on the application.
-	if progressed && w.watchdog != nil {
-		w.watchdog.reset()
+		if w.watchdog != nil {
+			w.watchdog.reset()
+		}
 	}
 }
 
@@ -1507,7 +1507,10 @@ type gRPCResumableBidiWriteBufferSender struct {
 	startWriteRequest *storagepb.StartResumableWriteRequest
 	upid              string
 
-	chunkDelay *dynamicDelay
+	// chunkDelay drives adaptive BidiWriteObject stream rotation; see
+	// resumableStream. It is nil unless Writer.ChunkTransferTimeout > 0, in
+	// which case a single stream is reused for the whole upload.
+	chunkDelay *writeChunkDelay
 
 	// Checksum related settings.
 	sendCRC32C          bool
@@ -1550,9 +1553,23 @@ func (s *gRPCResumableBidiWriteBufferSender) connectStage() string {
 	return rpcQueryWriteStatus
 }
 
+// maxPipelinedFlushes bounds the number of flush requests whose timing can be
+// outstanding on one stream. The write loop never pipelines more than one
+// chunk ahead of the last acknowledgement, so this is generous; if it ever
+// fills, the sender blocks until an ack drains it rather than dropping a
+// sample.
+const maxPipelinedFlushes = 16
+
+// flushTiming records when a flush request was sent and how long the sender
+// spent in Send for the non-flush quantums of the chunk that the flush
+// completes.
 type flushTiming struct {
-	sentAt       time.Time
-	sendDuration time.Duration
+	sentAt time.Time
+	// chunkSendTotal is the cumulative time spent in stream.Send for the
+	// preceding non-flush quantums of this chunk (the flush's own Send time
+	// is captured in commitWait from sentAt). On a saturated stream Send
+	// blocks on HTTP/2 flow control, so this grows with transfer time.
+	chunkSendTotal time.Duration
 }
 
 // resumableStream encapsulates a single BidiWriteObject gRPC stream and its
@@ -1561,13 +1578,12 @@ type flushTiming struct {
 // Adaptive stream rotation state machine:
 //  1. Active: The sender loop streams write quantums (r.flush == false) and
 //     flushes (r.flush == true) over st, while the receiver goroutine reads
-//     persisted_size acks, records chunk latency (sendDuration + commitWait),
+//     persisted_size acks, records chunk latency (chunkSendTotal + commitWait),
 //     and sets rotate = true when latency exceeds the adaptive threshold.
 //  2. Drain & Half-Close (closeAndWait): At the next chunk boundary
 //     (!r.finishWrite && !unflushedDataSent) when rotate is true, closeAndWait
 //     calls CloseSend() and waits for the receiver goroutine to drain any
-//     remaining persisted_size acks until the server ends the stream with
-//     io.EOF (the normal gRPC response to CloseSend()).
+//     remaining persisted_size acks until the server ends the stream.
 //  3. Re-attach (openStream): Once drained, openStream opens a fresh
 //     BidiWriteObject stream with the existing UploadId without calling
 //     QueryWriteStatus. The current stream is only replaced on success.
@@ -1575,13 +1591,52 @@ type resumableStream struct {
 	st      storagepb.Storage_BidiWriteObjectClient
 	flushes chan flushTiming
 	done    chan struct{}
-	rErr    error
+	// rErr is written by the receiver goroutine before done is closed and
+	// must only be read after <-done.
+	rErr error
+	// lastAck is only touched by the receiver goroutine.
+	lastAck time.Time
 }
 
+// closeAndWait half-closes the stream and blocks until the receiver goroutine
+// has drained every remaining response. It returns nil when the server ended
+// the stream normally (io.EOF after CloseSend) and the receive error
+// otherwise.
 func (rs *resumableStream) closeAndWait() error {
-	rs.st.CloseSend()
+	// A CloseSend error is reported by the subsequent Recv on the receiver
+	// goroutine, so it is safe to ignore here.
+	_ = rs.st.CloseSend()
 	<-rs.done
+	if rs.rErr == io.EOF {
+		return nil
+	}
 	return rs.rErr
+}
+
+// chunkLatency attributes a persisted_size ack received at now to the oldest
+// flush still awaiting one and returns the chunk's end-to-end latency: the
+// time spent sending it plus the time waiting for the ack after the previous
+// ack (or after the flush was sent, whichever is later). ok is false when no
+// flush is pending, e.g. for the extra persisted_size the server emits after
+// a half-close or a resource-only response.
+//
+// Must only be called from the receiver goroutine.
+func (rs *resumableStream) chunkLatency(now time.Time) (latency time.Duration, ok bool) {
+	defer func() { rs.lastAck = now }()
+	select {
+	case f := <-rs.flushes:
+		waitStart := f.sentAt
+		if rs.lastAck.After(waitStart) {
+			waitStart = rs.lastAck
+		}
+		var commitWait time.Duration
+		if now.After(waitStart) {
+			commitWait = now.Sub(waitStart)
+		}
+		return f.chunkSendTotal + commitWait, true
+	default:
+		return 0, false
+	}
 }
 
 func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
@@ -1609,8 +1664,15 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 	// Record the upload ID for both new and resumed uploads.
 	recordUploadID(ctx, s.upid)
 
+	// rotate is set by either goroutine when the current stream looks slow
+	// and consumed by the sender at the next chunk boundary.
 	var rotate atomic.Bool
 
+	// openStream opens a fresh BidiWriteObject stream and starts its receiver
+	// goroutine. It resets the rotation state for the new stream: rotate is
+	// cleared, and chunkDelay re-enters warm-up so the first chunk on the new
+	// stream (which is routinely slower while the HTTP/2 window ramps up)
+	// updates the baseline without immediately triggering another rotation.
 	openStream := func() (*resumableStream, error) {
 		st, err := s.raw.BidiWriteObject(ctx, opts...)
 		if err != nil {
@@ -1620,40 +1682,36 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		s.chunkDelay.resetWarmUp()
 		rs := &resumableStream{
 			st:      st,
-			flushes: make(chan flushTiming, 16),
+			flushes: make(chan flushTiming, maxPipelinedFlushes),
 			done:    make(chan struct{}),
 		}
 		go func() {
 			rs.rErr = func() error {
-				var lastAck time.Time
+				var receivedResource bool
 				for {
 					resp, err := st.Recv()
 					if err != nil {
+						if receivedResource && st.Context().Err() != nil {
+							return io.EOF
+						}
 						return err
 					}
-					if c := completion(resp); c != nil {
-						now := time.Now()
-						select {
-						case f := <-rs.flushes:
-							waitStart := f.sentAt
-							if lastAck.After(waitStart) {
-								waitStart = lastAck
-							}
-							var commitWait time.Duration
-							if now.After(waitStart) {
-								commitWait = now.Sub(waitStart)
-							}
-							if s.chunkDelay.recordLatency(f.sendDuration + commitWait) {
-								rotate.Store(true)
-							}
-						default:
+					c := completion(resp)
+					if c == nil {
+						continue
+					}
+					if s.chunkDelay != nil {
+						if latency, ok := rs.chunkLatency(time.Now()); ok && s.chunkDelay.recordLatency(latency) {
+							rotate.Store(true)
 						}
-						lastAck = now
-						select {
-						case cs.completions <- *c:
-						case <-st.Context().Done():
-							return st.Context().Err()
+					}
+					select {
+					case cs.completions <- *c:
+						if c.resource != nil {
+							receivedResource = true
 						}
+					case <-st.Context().Done():
+						return st.Context().Err()
 					}
 				}
 			}()
@@ -1673,7 +1731,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		var sendErr error
 		firstSend := true
 		unflushedDataSent := false
-		var chunkSendDuration time.Duration
+		var chunkSendTotal time.Duration
 
 		sendErr = func() error {
 			for {
@@ -1684,7 +1742,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 					return nil
 				case r, ok := <-cs.requests:
 					if !ok {
-						cur.st.CloseSend()
+						_ = cur.st.CloseSend()
 						return nil
 					}
 					if r.requestAck {
@@ -1694,10 +1752,9 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 
 					if !r.finishWrite && !unflushedDataSent && rotate.Load() {
 						// Half-close the current stream and wait for the receiver
-						// goroutine to drain any remaining persisted_size acks.
-						// Receiving io.EOF from Recv() is the normal gRPC response
-						// once the server finishes replying to a half-closed stream.
-						if err := cur.closeAndWait(); err != nil && err != io.EOF {
+						// goroutine to drain any remaining persisted_size acks, then
+						// re-attach to the upload session on a fresh stream.
+						if err := cur.closeAndWait(); err != nil {
 							return err
 						}
 						next, err := openStream()
@@ -1706,7 +1763,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						}
 						cur = next
 						firstSend = true
-						chunkSendDuration = 0
+						chunkSendTotal = 0
 					}
 
 					var bufChecksum *uint32
@@ -1729,7 +1786,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 					sendStart := time.Now()
 					if r.flush && !r.finishWrite && s.chunkDelay != nil {
 						select {
-						case cur.flushes <- flushTiming{sentAt: sendStart, sendDuration: chunkSendDuration}:
+						case cur.flushes <- flushTiming{sentAt: sendStart, chunkSendTotal: chunkSendTotal}:
 						case <-cur.done:
 							return nil
 						}
@@ -1738,20 +1795,28 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						return err
 					}
 					if r.finishWrite {
-						cur.st.CloseSend()
+						_ = cur.st.CloseSend()
 						return nil
 					}
+					if r.flush {
+						// The receiver goroutine judges this chunk from its ack
+						// (chunkLatency), which already includes the time spent in
+						// Send; nothing more to measure on the sender side.
+						chunkSendTotal = 0
+						unflushedDataSent = false
+						continue
+					}
+					if len(r.buf) > 0 {
+						unflushedDataSent = true
+					}
 					if s.chunkDelay != nil {
-						chunkSendDuration += time.Since(sendStart)
-						if s.chunkDelay.exceeds(chunkSendDuration) {
+						// Mid-chunk: no ack is coming until the flush, so this is the
+						// only place a stalled stream (Send blocked on HTTP/2 flow
+						// control) can be noticed before the watchdog fires.
+						chunkSendTotal += time.Since(sendStart)
+						if s.chunkDelay.exceeds(chunkSendTotal) {
 							rotate.Store(true)
 						}
-					}
-					if r.flush {
-						chunkSendDuration = 0
-						unflushedDataSent = false
-					} else if len(r.buf) > 0 {
-						unflushedDataSent = true
 					}
 				}
 			}
