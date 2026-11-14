@@ -33,7 +33,7 @@ import (
 func TestConvertParams(t *testing.T) {
 	st := Statement{
 		SQL:    "SELECT id from t_foo WHERE col = @var",
-		Params: map[string]interface{}{"var": nil},
+		Params: map[string]any{"var": nil},
 	}
 	var (
 		t1, _ = time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
@@ -61,7 +61,7 @@ func TestConvertParams(t *testing.T) {
 	)
 
 	for _, test := range []struct {
-		val       interface{}
+		val       any
 		wantField *proto3.Value
 		wantType  *sppb.Type
 	}{
