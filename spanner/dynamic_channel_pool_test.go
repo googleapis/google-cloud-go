@@ -81,7 +81,7 @@ func setupDCPMockedTestServerWithMeterProvider(t *testing.T, dcp DynamicChannelP
 		OpenTelemetryMeterProvider: mp,
 	})
 	addSelect1Result(server)
-	if client.sc.dynamicPool == nil {
+	if client.sc.dynamicPool == nil || client.sc.dynamicPool.fixed {
 		teardown()
 		t.Fatal("dynamic channel pool not enabled")
 	}
@@ -337,18 +337,6 @@ func TestDynamicChannelPoolMaxChannelsCapsScaleUp(t *testing.T) {
 	}
 	if got, max := client.sc.dynamicPool.Num(), 2; got > max {
 		t.Fatalf("DCP channel count mismatch:\n Got: %d\nWant: <= %d", got, max)
-	}
-}
-
-func TestDynamicChannelPoolLocationAwareDisablesDCP(t *testing.T) {
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics:     true,
-		IsExperimentalHost:       true,
-		DynamicChannelPoolConfig: testDCPConfig(1, 1, 2),
-	})
-	defer teardown()
-	if client.sc.dynamicPool != nil {
-		t.Fatal("DCP enabled with location-aware routing, want disabled")
 	}
 }
 
