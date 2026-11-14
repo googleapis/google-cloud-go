@@ -15,6 +15,8 @@
 package datastore
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -460,7 +462,14 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 			name: "Nil map",
 			in:   &Struct{},
 			want: []Property{
-				{Name: "Map", Value: []Property{}},
+				{Name: "Map", Value: &Entity{Properties: []Property{}}},
+			},
+		},
+		{
+			name: "Non-nil map",
+			in:   &Struct{Map: Map{1: 2}},
+			want: []Property{
+				{Name: "Map", Value: &Entity{Properties: []Property{}}},
 			},
 		},
 		{
@@ -559,6 +568,184 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 				t.Fatalf("got - want +\n%s", diff)
 			}
 		})
+	}
+}
+
+// plsMap is used by TestSaveMapPropertyLoadSaver to test saving of custom
+// map types that implement PropertyLoadSaver.
+type plsMap map[string]string
+
+func (m *plsMap) Load(props []Property) error {
+	for _, p := range props {
+		if p.Name == "JSON" {
+			return json.Unmarshal(p.Value.([]byte), m)
+		}
+	}
+	return nil
+}
+
+func (m *plsMap) Save() ([]Property, error) {
+	b, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return []Property{{Name: "JSON", Value: b, NoIndex: true}}, nil
+}
+
+// plsMapErr is used by TestSaveMapPropertyLoadSaver to test Save errors.
+type plsMapErr map[string]string
+
+func (m *plsMapErr) Load(_ []Property) error {
+	return nil
+}
+
+func (m *plsMapErr) Save() ([]Property, error) {
+	return nil, errors.New("save failed")
+}
+
+func TestSaveMapPropertyLoadSaver(t *testing.T) {
+	type mapEnt struct {
+		A string `datastore:"a"`
+		M plsMap `datastore:"m"`
+	}
+	type mapEntFlatten struct {
+		A string `datastore:"a"`
+		M plsMap `datastore:"m,flatten"`
+	}
+	type mapEntOmit struct {
+		A string `datastore:"a"`
+		M plsMap `datastore:"m,omitempty"`
+	}
+	type mapEntSlice struct {
+		Ms []plsMap `datastore:"ms"`
+	}
+	type mapEntErr struct {
+		M plsMapErr `datastore:"m"`
+	}
+
+	entity := func(json string) *Entity {
+		return &Entity{Properties: []Property{{Name: "JSON", Value: []byte(json), NoIndex: true}}}
+	}
+
+	cases := []struct {
+		name    string
+		in      interface{}
+		want    []Property
+		wantErr string
+	}{
+		{
+			name: "nil map",
+			in:   &mapEnt{A: "a"},
+			want: []Property{
+				{Name: "a", Value: "a"},
+				{Name: "m", Value: entity("null")},
+			},
+		},
+		{
+			name: "non-nil map",
+			in:   &mapEnt{A: "a", M: plsMap{"k": "v"}},
+			want: []Property{
+				{Name: "a", Value: "a"},
+				{Name: "m", Value: entity(`{"k":"v"}`)},
+			},
+		},
+		{
+			name: "empty map",
+			in:   &mapEnt{A: "a", M: plsMap{}},
+			want: []Property{
+				{Name: "a", Value: "a"},
+				{Name: "m", Value: entity("{}")},
+			},
+		},
+		{
+			name: "nil map with flatten",
+			in:   &mapEntFlatten{A: "a"},
+			want: []Property{
+				{Name: "a", Value: "a"},
+				{Name: "m.JSON", Value: []byte("null"), NoIndex: true},
+			},
+		},
+		{
+			name: "non-nil map with flatten",
+			in:   &mapEntFlatten{A: "a", M: plsMap{"k": "v"}},
+			want: []Property{
+				{Name: "a", Value: "a"},
+				{Name: "m.JSON", Value: []byte(`{"k":"v"}`), NoIndex: true},
+			},
+		},
+		{
+			name: "nil map with omitempty",
+			in:   &mapEntOmit{A: "a"},
+			want: []Property{{Name: "a", Value: "a"}},
+		},
+		{
+			name: "empty map with omitempty",
+			in:   &mapEntOmit{A: "a", M: plsMap{}},
+			want: []Property{{Name: "a", Value: "a"}},
+		},
+		{
+			name: "slice of maps with nil element",
+			in:   &mapEntSlice{Ms: []plsMap{{"k": "v"}, nil}},
+			want: []Property{
+				{Name: "ms", Value: []interface{}{entity(`{"k":"v"}`), entity("null")}},
+			},
+		},
+		{
+			name:    "save error on nil map",
+			in:      &mapEntErr{},
+			wantErr: "field save error: save failed",
+		},
+		{
+			name:    "save error on non-nil map",
+			in:      &mapEntErr{M: plsMapErr{"k": "v"}},
+			wantErr: "save failed",
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := SaveStruct(tt.in)
+			if tt.wantErr != "" {
+				if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+					t.Fatalf("got error %v, want error containing %q", err, tt.wantErr)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if diff := testutil.Diff(got, tt.want); diff != "" {
+				t.Fatalf("got - want +\n%s", diff)
+			}
+			// The saved properties must be usable by the Put path.
+			if _, err := propertiesToProto(testKey0, got, false); err != nil {
+				t.Fatalf("propertiesToProto: %v", err)
+			}
+		})
+	}
+}
+
+func TestSaveLoadMapPropertyLoadSaver(t *testing.T) {
+	type mapEnt struct {
+		A string `datastore:"a"`
+		M plsMap `datastore:"m"`
+	}
+
+	for _, in := range []*mapEnt{
+		{A: "a", M: plsMap{"k": "v"}},
+		{A: "a"},
+	} {
+		props, err := SaveStruct(in)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var out mapEnt
+		if err := LoadStruct(&out, props); err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(&out, in) {
+			t.Errorf("round trip mismatch: got %+v, want %+v", &out, in)
+		}
 	}
 }
 
