@@ -3,6 +3,14 @@
 
 
 
+## [1.86.3](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.86.2...bigquery/v1.86.3) (2026-11-14)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Finalize retries on closed writer ([#20743](https://github.com/googleapis/google-cloud-go/issues/20743)) ([4bdbcb7](https://github.com/googleapis/google-cloud-go/commit/4bdbcb75c619e1e028c148cd8c1fe2751d089120))
+* **bigquery/storage/managedwriter:** Release detached multiplexed writers ([#20806](https://github.com/googleapis/google-cloud-go/issues/20806)) ([7b724e4](https://github.com/googleapis/google-cloud-go/commit/7b724e45e22657a8779b6499049cbc6272719ecb))
+
 ## [1.86.2](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.86.1...bigquery/v1.86.2) (2026-11-05)
 
 
