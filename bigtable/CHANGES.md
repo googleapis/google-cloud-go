@@ -1,5 +1,47 @@
 # Changes
 
+## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.58.0...bigtable/v1.59.0) (2026-11-14)
+
+
+### Features
+
+* **bigtable:** Add classic-path fallback to accelerator daemon ([#20598](https://github.com/googleapis/google-cloud-go/issues/20598)) ([9b5aebf](https://github.com/googleapis/google-cloud-go/commit/9b5aebf41b5f3d24c9176af4a410583de1efbc89))
+* **bigtable:** Add support for READ_WRITE session permission ([#20762](https://github.com/googleapis/google-cloud-go/issues/20762)) ([be3feab](https://github.com/googleapis/google-cloud-go/commit/be3feabd57f4d7cd6c5d7d7b389d4981ca0bc07d))
+* **bigtable:** Expose Metadata on PreparedStatement for 0-row queries ([#20825](https://github.com/googleapis/google-cloud-go/issues/20825)) ([719cfa3](https://github.com/googleapis/google-cloud-go/commit/719cfa333dab86aa3666f2b473078bc73e7833c6))
+* **bigtable:** Handle session load and unimplemented fallback in accelerator daemon ([#20882](https://github.com/googleapis/google-cloud-go/issues/20882)) ([b780840](https://github.com/googleapis/google-cloud-go/commit/b7808407970c4943f32d7d0357e1b7225a1bc730))
+* **bigtable:** Support multi-instance and per-RPC app profiles in accelerator daemon ([#20881](https://github.com/googleapis/google-cloud-go/issues/20881)) ([e933ba4](https://github.com/googleapis/google-cloud-go/commit/e933ba4a5284047c00efcee4309e4b6d639f37bd))
+* Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
+* Update API sources and regenerate ([#20646](https://github.com/googleapis/google-cloud-go/issues/20646)) ([4ad5d50](https://github.com/googleapis/google-cloud-go/commit/4ad5d50aaf4392d19fd391ee71eec1c5029ecd1d))
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+* **bigtable:** Align accelerator fallback and checkout error codes ([#20853](https://github.com/googleapis/google-cloud-go/issues/20853)) ([cfa4d42](https://github.com/googleapis/google-cloud-go/commit/cfa4d42a9b3819cc19fc9058fb7c8e5cc1a9d2f1))
+* **bigtable:** Allow unnamed struct fields in StructSQLType.typeProto ([#20823](https://github.com/googleapis/google-cloud-go/issues/20823)) ([d085338](https://github.com/googleapis/google-cloud-go/commit/d085338d003514c64a457aca5046d06032721b8a))
+* **bigtable:** Block ApplyBulk retry when group has non-idempotent mutations ([#20682](https://github.com/googleapis/google-cloud-go/issues/20682)) ([2d443cc](https://github.com/googleapis/google-cloud-go/commit/2d443ccef10c0c135757197c7bcaae1a96f73a1f))
+* **bigtable:** Check isConditional when rejecting nested conditional mutations ([#20901](https://github.com/googleapis/google-cloud-go/issues/20901)) ([5036e77](https://github.com/googleapis/google-cloud-go/commit/5036e77df36d09a0a7e280e0c82315eacfb34b2a))
+* **bigtable:** Enforce strict Int64SQLType conversions and fix ArraySQLType nil/element validation ([#20877](https://github.com/googleapis/google-cloud-go/issues/20877)) ([8b670cc](https://github.com/googleapis/google-cloud-go/commit/8b670cc5ab9ed675f39c46fedf9a0440ff990040))
+* **bigtable:** Fix PreparedStatement plan refresh concurrency, locking, and expiry handling ([#20834](https://github.com/googleapis/google-cloud-go/issues/20834)) ([eab6a56](https://github.com/googleapis/google-cloud-go/commit/eab6a56fd990180fb16a8a39ac8a4f9fac217e58))
+* **bigtable:** Fix ResultRow map conversion, nested BYTES map keys, and NULL STRUCT decoding ([#20878](https://github.com/googleapis/google-cloud-go/issues/20878)) ([8a272c9](https://github.com/googleapis/google-cloud-go/commit/8a272c95c950b9577f1a2f2d08517a7315fc0917))
+* **bigtable:** Fix SQL OpenTelemetry metrics and per-attempt metadata isolation ([#20879](https://github.com/googleapis/google-cloud-go/issues/20879)) ([64b3939](https://github.com/googleapis/google-cloud-go/commit/64b39391d2eb9cb178fe3ad8266e63b8864ef9ae))
+* **bigtable:** Hold session budget slot until OpenSession handshake c… ([#20688](https://github.com/googleapis/google-cloud-go/issues/20688)) ([a9a05e0](https://github.com/googleapis/google-cloud-go/commit/a9a05e0dc5b806d7aceddb2a54a9848d778eb074))
+* **bigtable:** Initialize query metadata on prepare and refresh ([#20803](https://github.com/googleapis/google-cloud-go/issues/20803)) ([f5a4667](https://github.com/googleapis/google-cloud-go/commit/f5a4667e5751807127f628254d5abddd6ae5cbb3))
+* **bigtable:** Only surface partial cluster failure in UpdateInstanceAndSyncClusters when relevant ([#20629](https://github.com/googleapis/google-cloud-go/issues/20629)) ([7660eab](https://github.com/googleapis/google-cloud-go/commit/7660eabfab30f7a9c8216694568da14fd5d6f64a))
+* **bigtable:** Pass ResumeToken on ExecuteQuery retries and detect mid-batch EOF ([#20826](https://github.com/googleapis/google-cloud-go/issues/20826)) ([8aa1b70](https://github.com/googleapis/google-cloud-go/commit/8aa1b7010fe4fc8b6a47c8c060c97524fec002bc))
+* **bigtable:** Prevent principalFromCreds GCE fallthrough on non-email JSON ([#20787](https://github.com/googleapis/google-cloud-go/issues/20787)) ([2769188](https://github.com/googleapis/google-cloud-go/commit/27691888bf916082f498776659cbe092df30a983))
+* **bigtable:** Raise the accelerator's gRPC message size limits to match the classic client ([#20723](https://github.com/googleapis/google-cloud-go/issues/20723)) ([a279d2a](https://github.com/googleapis/google-cloud-go/commit/a279d2a0101b61aa498c87c4187cefafd0a1dbd6))
+* **bigtable:** Support SQL NULL keys in MAP result columns ([#20824](https://github.com/googleapis/google-cloud-go/issues/20824)) ([f83b3c0](https://github.com/googleapis/google-cloud-go/commit/f83b3c064ecb50f5adeec683098a3ed7c2fe6914))
+* **bigtable:** Validate LastScannedRowKey order in chunkReader and ignore empty slices ([#20890](https://github.com/googleapis/google-cloud-go/issues/20890)) ([60d1499](https://github.com/googleapis/google-cloud-go/commit/60d1499bf8056d3635d1326fe62db48d52cf8bcc))
+* **bigtable:** Write credential type to accelerator identity.json ([#20801](https://github.com/googleapis/google-cloud-go/issues/20801)) ([af5a24c](https://github.com/googleapis/google-cloud-go/commit/af5a24cb2df3eb31220970d85fa81da8572a8aa3))
+
+
+### Performance Improvements
+
+* **bigtable:** Avoid unconditional atomic Store(0) in UnimplementedBreaker.ShouldFallback ([#20889](https://github.com/googleapis/google-cloud-go/issues/20889)) ([b86511d](https://github.com/googleapis/google-cloud-go/commit/b86511d0d0cde93f200cce3ba899e9c401a90fa4))
+* **bigtable:** Make CheckoutSession AFE pick+dequeue atomic under sl.mu ([#20884](https://github.com/googleapis/google-cloud-go/issues/20884)) ([c231d0a](https://github.com/googleapis/google-cloud-go/commit/c231d0a8069a27bdebf8604847dfc449607463c0))
+
 ## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.57.0...bigtable/v1.58.0) (2026-09-25)
 
 
