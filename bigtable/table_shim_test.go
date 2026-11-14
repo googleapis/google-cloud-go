@@ -1167,3 +1167,33 @@ func TestTableShim_ReadRows_SingleRowRangeRoutesToSession(t *testing.T) {
 		})
 	}
 }
+
+func TestApply_NestedCondMutationWithNilFilterRejected(t *testing.T) {
+	leaf := NewMutation()
+	leaf.Set("fam", "col", 1000, []byte("v"))
+	innerNilCond := NewCondMutation(nil, leaf, nil)
+
+	tests := []struct {
+		name  string
+		outer *Mutation
+	}{
+		{
+			name:  "nested_in_mtrue",
+			outer: NewCondMutation(PassAllFilter(), innerNilCond, nil),
+		},
+		{
+			name:  "nested_in_mfalse",
+			outer: NewCondMutation(PassAllFilter(), nil, innerNilCond),
+		},
+	}
+
+	c := newBareClientForOpenTests(t, 0.0)
+	tbl := c.Open("mytable")
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := tbl.apply(context.Background(), "r1", tc.outer); err == nil {
+				t.Fatalf("apply(%s) = nil, want nested conditional mutation error", tc.name)
+			}
+		})
+	}
+}
