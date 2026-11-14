@@ -1323,8 +1323,9 @@ func trunc32(i int) int32 {
 
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
+	ctx = withResourceHeader(ctx, q.c.path())
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil, q.readSettings), q: &q,
+		iter: newQueryDocumentIterator(ctx, &q, nil, q.readSettings), q: &q, ctx: ctx,
 	}
 }
 
@@ -1333,6 +1334,7 @@ type DocumentIterator struct {
 	iter docIterator
 	err  error
 	q    *Query
+	ctx  context.Context
 }
 
 // Unexported interface so we can have two different kinds of DocumentIterator: one
@@ -1397,7 +1399,19 @@ func (it *DocumentIterator) Stop() {
 
 // GetAll returns all the documents remaining from the iterator.
 // It is not necessary to call Stop on the iterator after calling GetAll.
-func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
+func (it *DocumentIterator) GetAll() (_ []*DocumentSnapshot, err error) {
+	ctx := it.ctx
+	if qdi, ok := it.iter.(*queryDocumentIterator); ok && qdi != nil && qdi.ctx != nil {
+		ctx = qdi.ctx
+	} else if ctx == nil {
+		ctx = context.Background()
+	}
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.DocumentIterator.GetAll")
+	defer func() { trace.EndSpan(ctx, err) }()
+	if qdi, ok := it.iter.(*queryDocumentIterator); ok && qdi != nil {
+		qdi.ctx = ctx
+	}
+
 	if it.err != nil {
 		return nil, it.err
 	}
@@ -1571,7 +1585,7 @@ func (it *QuerySnapshotIterator) Next() (*QuerySnapshot, error) {
 	}
 	return &QuerySnapshot{
 		Documents: &DocumentIterator{
-			iter: (*btreeDocumentIterator)(btree.BeforeIndex(0)), q: &it.Query,
+			iter: (*btreeDocumentIterator)(btree.BeforeIndex(0)), q: &it.Query, ctx: it.ws.ctx,
 		},
 		Size:     btree.Len(),
 		Changes:  changes,
