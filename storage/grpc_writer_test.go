@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -1821,6 +1822,175 @@ func TestGRPCWriter_ZeroByteFlushWaitsForFirstAck(t *testing.T) {
 	}
 	if w.awaitingFirstAck {
 		t.Fatal("awaitingFirstAck still set after the ack")
+	}
+}
+
+type fakeBidiWriteObjectStream struct {
+	grpc.ClientStream
+	ctx       context.Context
+	sent      chan *storagepb.BidiWriteObjectRequest
+	responses chan *storagepb.BidiWriteObjectResponse
+}
+
+func (s *fakeBidiWriteObjectStream) Context() context.Context {
+	return s.ctx
+}
+
+func (s *fakeBidiWriteObjectStream) Send(req *storagepb.BidiWriteObjectRequest) error {
+	select {
+	case s.sent <- proto.CloneOf(req):
+		return nil
+	case <-s.ctx.Done():
+		return s.ctx.Err()
+	}
+}
+
+func (s *fakeBidiWriteObjectStream) Recv() (*storagepb.BidiWriteObjectResponse, error) {
+	select {
+	case resp, ok := <-s.responses:
+		if !ok {
+			return nil, io.EOF
+		}
+		return resp, nil
+	case <-s.ctx.Done():
+		return nil, s.ctx.Err()
+	}
+}
+
+func (s *fakeBidiWriteObjectStream) CloseSend() error {
+	return nil
+}
+
+// TestGRPCWriter_FlushWaitsForPersistedSizeAndConsumesIntermediateResponses
+// verifies that Flush sends Flush and StateLookup on BidiWriteObjectRequest and
+// waits across intermediate WriteHandle-only and partial PersistedSize
+// responses until PersistedSize reaches flushTarget.
+func TestGRPCWriter_FlushWaitsForPersistedSizeAndConsumesIntermediateResponses(t *testing.T) {
+	stream := &fakeBidiWriteObjectStream{
+		ctx:       t.Context(),
+		sent:      make(chan *storagepb.BidiWriteObjectRequest, 4),
+		responses: make(chan *storagepb.BidiWriteObjectResponse),
+	}
+	sender := &gRPCAppendBidiWriteBufferSender{
+		firstMessage: &storagepb.BidiWriteObjectRequest{
+			FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
+				WriteObjectSpec: &storagepb.WriteObjectSpec{
+					Resource: &storagepb.Object{
+						Bucket: "projects/_/buckets/b",
+						Name:   "o",
+					},
+					Appendable: proto.Bool(true),
+				},
+			},
+		},
+		disableAutoChecksum: true,
+	}
+
+	requests := make(chan gRPCBidiWriteRequest, 2)
+	requestAcks := make(chan struct{})
+	completions := make(chan gRPCBidiWriteCompletion, 4)
+	senderChans := gRPCBufSenderChans{
+		requests:    requests,
+		requestAcks: requestAcks,
+		completions: completions,
+	}
+	cmdChans := gRPCWriterCommandHandleChans{
+		requests:    requests,
+		requestAcks: requestAcks,
+		completions: completions,
+	}
+
+	streamDone := make(chan struct{})
+	go func() {
+		defer close(streamDone)
+		sender.handleStream(stream, senderChans, true)
+	}()
+
+	payload := bytes.Repeat([]byte("a"), 100)
+	progress := newProgressRecorder()
+	w := &gRPCWriter{
+		budget:           testBudget(newFakeClock(), time.Second),
+		awaitingFirstAck: true,
+		buf:              append(make([]byte, 0, 100), payload...),
+		writeQuantum:     100,
+		chunkSize:        100,
+		setSize:          func(int64) {},
+		progress:         progress.report,
+		setObj:           func(*ObjectAttrs) {},
+		streamSender:     sender,
+	}
+	flush := &gRPCWriterCommandFlush{done: make(chan int64, 1)}
+
+	errCh := make(chan error, 1)
+	go func() { errCh <- flush.handle(w, cmdChans) }()
+
+	var wireReq *storagepb.BidiWriteObjectRequest
+	select {
+	case wireReq = <-stream.sent:
+	case <-time.After(5 * time.Second):
+		t.Fatal("Flush did not send a BidiWriteObjectRequest")
+	}
+	if !wireReq.GetFlush() || !wireReq.GetStateLookup() || wireReq.GetFinishWrite() {
+		t.Fatalf("Flush BidiWriteObjectRequest flags = (Flush=%v, StateLookup=%v, FinishWrite=%v), want (true, true, false)",
+			wireReq.GetFlush(), wireReq.GetStateLookup(), wireReq.GetFinishWrite())
+	}
+	if wireReq.GetWriteOffset() != 0 {
+		t.Fatalf("Flush BidiWriteObjectRequest WriteOffset = %d, want 0", wireReq.GetWriteOffset())
+	}
+	if got := wireReq.GetChecksummedData().GetContent(); !bytes.Equal(got, payload) {
+		t.Fatalf("Flush BidiWriteObjectRequest Content len = %d, want %d", len(got), len(payload))
+	}
+
+	// 1. Intermediate response carrying only a WriteHandle (no WriteStatus)
+	// must update the session WriteHandle without unblocking Flush.
+	wantHandle := []byte("intermediate-handle")
+	stream.responses <- &storagepb.BidiWriteObjectResponse{
+		WriteHandle: &storagepb.BidiWriteHandle{Handle: wantHandle},
+	}
+	select {
+	case err := <-errCh:
+		t.Fatalf("Flush.handle() returned %v after WriteHandle-only response, want still waiting", err)
+	case <-time.After(50 * time.Millisecond):
+	}
+
+	// 2. Intermediate response reporting partial PersistedSize (< 100) must
+	// advance progress to 40 while keeping Flush waiting for 100.
+	stream.responses <- &storagepb.BidiWriteObjectResponse{
+		WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{PersistedSize: 40},
+	}
+	progress.waitFor(t, 40)
+	select {
+	case err := <-errCh:
+		t.Fatalf("Flush.handle() returned %v after partial PersistedSize=40, want still waiting for 100", err)
+	default:
+	}
+
+	// 3. Final response reaching flushTarget (PersistedSize == 100) must
+	// unblock Flush and report offset 100.
+	stream.responses <- &storagepb.BidiWriteObjectResponse{
+		WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{PersistedSize: 100},
+	}
+	select {
+	case err := <-errCh:
+		if err != nil {
+			t.Fatalf("Flush.handle() = %v, want nil", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("Flush.handle() did not return after PersistedSize=100 response")
+	}
+	if got := <-flush.done; got != 100 {
+		t.Errorf("Flush offset = %d, want 100", got)
+	}
+	if w.bufBaseOffset != 100 || len(w.buf) != 0 {
+		t.Errorf("writer buffer state after Flush = (base=%d, len=%d), want (100, 0)", w.bufBaseOffset, len(w.buf))
+	}
+
+	close(requests)
+	close(stream.responses)
+	<-streamDone
+
+	if got := sender.firstMessage.GetAppendObjectSpec().GetWriteHandle().GetHandle(); !bytes.Equal(got, wantHandle) {
+		t.Errorf("AppendObjectSpec.WriteHandle = %q, want %q", got, wantHandle)
 	}
 }
 
