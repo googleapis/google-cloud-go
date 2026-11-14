@@ -843,6 +843,9 @@ func (c *Client) run(ctx context.Context, q *Query, opts ...RunOption) *Iterator
 	if q.err != nil {
 		return &Iterator{ctx: ctx, err: q.err}
 	}
+	if q.trans != nil {
+		ctx = withTransactionHeader(ctx)
+	}
 	t := &Iterator{
 		ctx:          ctx,
 		client:       c,
@@ -946,6 +949,9 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 		return ar, err
 	}
 
+	if txn != nil {
+		ctx = withTransactionHeader(ctx)
+	}
 	resp, err := c.client.RunAggregationQuery(ctx, req)
 	if err != nil {
 		return ar, err

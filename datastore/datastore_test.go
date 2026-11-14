@@ -27,6 +27,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport/grpc"
+	ggrpc "google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -1119,5 +1122,190 @@ func TestBasicGet(t *testing.T) {
 	err := cl.Get(context.Background(), key, dst)
 	if err != nil {
 		t.Fatalf("datastore: test failed to get entity: %v", err)
+	}
+}
+
+func TestTransactionRoutingHeader(t *testing.T) {
+	ctx := context.Background()
+	client := &datastoreClient{md: metadata.Pairs()}
+
+	err := client.invoke(ctx, func(c context.Context) error {
+		md, _ := metadata.FromOutgoingContext(c)
+		if got := md.Get(isTransactionHeader); len(got) != 1 || got[0] != "false" {
+			t.Fatalf("non-transactional context: got %v, want [false]", got)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	txCtx := withTransactionHeader(ctx)
+	err = client.invoke(txCtx, func(c context.Context) error {
+		md, _ := metadata.FromOutgoingContext(c)
+		if got := md.Get(isTransactionHeader); len(got) != 1 || got[0] != "true" {
+			t.Fatalf("transactional context: got %v, want [true]", got)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+type headerCheckServer struct {
+	pb.DatastoreServer
+	headers map[string]string // maps method name to x-goog-is-transaction header value
+}
+
+func (s *headerCheckServer) recordHeader(ctx context.Context, method string) {
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		if vals := md.Get(isTransactionHeader); len(vals) > 0 {
+			s.headers[method] = vals[0]
+		} else {
+			s.headers[method] = "missing"
+		}
+	} else {
+		s.headers[method] = "no-metadata"
+	}
+}
+
+func (s *headerCheckServer) Lookup(ctx context.Context, in *pb.LookupRequest) (*pb.LookupResponse, error) {
+	s.recordHeader(ctx, "Lookup")
+	return &pb.LookupResponse{}, nil
+}
+
+func (s *headerCheckServer) RunQuery(ctx context.Context, in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
+	s.recordHeader(ctx, "RunQuery")
+	return &pb.RunQueryResponse{
+		Batch: &pb.QueryResultBatch{
+			MoreResults: pb.QueryResultBatch_NO_MORE_RESULTS,
+		},
+	}, nil
+}
+
+func (s *headerCheckServer) RunAggregationQuery(ctx context.Context, in *pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error) {
+	s.recordHeader(ctx, "RunAggregationQuery")
+	return &pb.RunAggregationQueryResponse{
+		Batch: &pb.AggregationResultBatch{},
+	}, nil
+}
+
+func (s *headerCheckServer) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest) (*pb.BeginTransactionResponse, error) {
+	s.recordHeader(ctx, "BeginTransaction")
+	return &pb.BeginTransactionResponse{Transaction: []byte("tx-id")}, nil
+}
+
+func (s *headerCheckServer) Commit(ctx context.Context, in *pb.CommitRequest) (*pb.CommitResponse, error) {
+	s.recordHeader(ctx, "Commit")
+	return &pb.CommitResponse{}, nil
+}
+
+func (s *headerCheckServer) Rollback(ctx context.Context, in *pb.RollbackRequest) (*pb.RollbackResponse, error) {
+	s.recordHeader(ctx, "Rollback")
+	return &pb.RollbackResponse{}, nil
+}
+
+func (s *headerCheckServer) AllocateIds(ctx context.Context, in *pb.AllocateIdsRequest) (*pb.AllocateIdsResponse, error) {
+	s.recordHeader(ctx, "AllocateIds")
+	return &pb.AllocateIdsResponse{}, nil
+}
+
+func (s *headerCheckServer) ReserveIds(ctx context.Context, in *pb.ReserveIdsRequest) (*pb.ReserveIdsResponse, error) {
+	s.recordHeader(ctx, "ReserveIds")
+	return &pb.ReserveIdsResponse{}, nil
+}
+
+func TestTransactionalRPCsHeaders(t *testing.T) {
+	srv, err := testutil.NewServer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer srv.Close()
+
+	mock := &headerCheckServer{headers: make(map[string]string)}
+	pb.RegisterDatastoreServer(srv.Gsrv, mock)
+	srv.Start()
+
+	ctx := context.Background()
+	client, err := NewClient(ctx, "projectID", option.WithEndpoint(srv.Addr), option.WithoutAuthentication(), option.WithGRPCDialOption(ggrpc.WithTransportCredentials(insecure.NewCredentials())))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	// 1. Non-transactional Get
+	client.Get(ctx, NameKey("Kind", "name", nil), new(PropertyList))
+	if got := mock.headers["Lookup"]; got != "false" {
+		t.Errorf("Get: got %q, want false", got)
+	}
+
+	// 2. Non-transactional Mutate (Commit)
+	client.Put(ctx, NameKey("Kind", "name", nil), &PropertyList{})
+	if got := mock.headers["Commit"]; got != "false" {
+		t.Errorf("Put: got %q, want false", got)
+	}
+
+	// 3. Non-transactional RunQuery
+	var res []PropertyList
+	client.GetAll(ctx, NewQuery("Kind"), &res)
+	if got := mock.headers["RunQuery"]; got != "false" {
+		t.Errorf("GetAll: got %q, want false", got)
+	}
+
+	// 3b. Non-transactional RunAggregationQuery
+	client.RunAggregationQuery(ctx, NewQuery("Kind").NewAggregationQuery().WithCount("c"))
+	if got := mock.headers["RunAggregationQuery"]; got != "false" {
+		t.Errorf("RunAggregationQuery: got %q, want false", got)
+	}
+
+	// 4. AllocateIds and ReserveIds (always non-transactional)
+	client.AllocateIDs(ctx, []*Key{NameKey("Kind", "name", nil)})
+	if got := mock.headers["AllocateIds"]; got != "false" {
+		t.Errorf("AllocateIds: got %q, want false", got)
+	}
+	client.ReserveIDs(ctx, []*Key{NameKey("Kind", "name", nil)})
+	if got := mock.headers["ReserveIds"]; got != "false" {
+		t.Errorf("ReserveIds: got %q, want false", got)
+	}
+
+	// Now start a transaction
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := mock.headers["BeginTransaction"]; got != "true" {
+		t.Errorf("BeginTransaction: got %q, want true", got)
+	}
+
+	// Transactional Get
+	tx.Get(NameKey("Kind", "name", nil), new(PropertyList))
+	if got := mock.headers["Lookup"]; got != "true" {
+		t.Errorf("tx.Get: got %q, want true", got)
+	}
+
+	// Transactional RunQuery
+	client.GetAll(ctx, NewQuery("Kind").Transaction(tx), &res)
+	if got := mock.headers["RunQuery"]; got != "true" {
+		t.Errorf("tx.GetAll: got %q, want true", got)
+	}
+
+	// Transactional RunAggregationQuery
+	client.RunAggregationQuery(ctx, NewQuery("Kind").Transaction(tx).NewAggregationQuery().WithCount("c"))
+	if got := mock.headers["RunAggregationQuery"]; got != "true" {
+		t.Errorf("tx.RunAggregationQuery: got %q, want true", got)
+	}
+
+	// Transactional Commit
+	tx.Commit()
+	if got := mock.headers["Commit"]; got != "true" {
+		t.Errorf("tx.Commit: got %q, want true", got)
+	}
+
+	// Now another transaction for rollback
+	tx2, _ := client.NewTransaction(ctx)
+	tx2.Rollback()
+	if got := mock.headers["Rollback"]; got != "true" {
+		t.Errorf("tx.Rollback: got %q, want true", got)
 	}
 }
