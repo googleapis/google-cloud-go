@@ -37,6 +37,19 @@ const (
 	defaultZone    = "global"
 	defaultTable   = "<unspecified>"
 
+	// defaultTransportType is the sentinel stamped on the transport_type
+	// label when an attempt fails before the server's PeerInfo metadata
+	// arrives (e.g. DEADLINE_EXCEEDED on the first attempt, or a
+	// transport-layer error). "unknown" matches the label Java emits
+	// (Util.transportTypeToStringWithoutFallback → TRANSPORT_TYPE_UNKNOWN
+	// case) so cross-language dashboards group these attempts into the
+	// same bucket. The three geographic transport_* labels
+	// (transport_region / transport_zone / transport_subzone) intentionally
+	// have NO fallback here — Java emits them as empty strings on this
+	// path (Util.formatTransport{Region,Zone,Subzone} with null peerInfo);
+	// mirroring keeps the dashboards aligned.
+	defaultTransportType = "unknown"
+
 	// PeerInfoMDKey is the response-metadata key the server uses to
 	// carry the serialized PeerInfo proto once the PeerInfo feature
 	// flag is negotiated on. extractPeerInfo decodes the value.
