@@ -395,6 +395,44 @@ func (m *ClientConfigurationManager) AddSessionPoolListener(listener func(*bigta
 	})
 }
 
+// AddChannelPoolConfigListener registers a callback that receives the
+// server-driven ChannelPoolConfiguration (min/max server count,
+// per-server session count, mode) on every configuration update from a
+// successful poll — plus an immediate fire at registration with the
+// current config (whatever bootstrapped) so consumers don't need to
+// seed themselves. Returns an unregister thunk.
+//
+// Sibling of AddSessionPoolListener at line 375. Same shape: proto
+// diff filters no-op updates so a listener that only cares about the
+// channel-pool tuple doesn't get spurious wakes from unrelated
+// SessionConfiguration edits.
+//
+// nil ChannelConfiguration on the wire falls back to the default from
+// defaultClientConfig — matches the SessionPool listener's behavior
+// and mirrors the sizer bootstrap in NewSessionPoolImpl.
+func (m *ClientConfigurationManager) AddChannelPoolConfigListener(listener func(*bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration)) func() {
+	var (
+		diffMu  sync.Mutex
+		hasPrev bool
+		prev    *bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration
+	)
+	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, _ int64) {
+		cp := cfg.GetSessionConfiguration().GetChannelConfiguration()
+		if cp == nil {
+			cp = defaultClientConfig.GetSessionConfiguration().GetChannelConfiguration()
+		}
+		diffMu.Lock()
+		if hasPrev && proto.Equal(prev, cp) {
+			diffMu.Unlock()
+			return
+		}
+		hasPrev = true
+		prev = cp
+		diffMu.Unlock()
+		listener(cp)
+	})
+}
+
 // TODO(sushanb): plumb TelemetryConfiguration. The server-side
 // ClientConfiguration proto also carries a TelemetryConfiguration message
 // (see google/bigtable/v2/session.proto) that we currently ignore. Once the
