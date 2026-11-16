@@ -684,30 +684,31 @@ func (p *BigtableChannelPool) Close() error {
 	return errs
 }
 
-// replaceConnection closes the connection for the oldEntry
+// replaceConnection replaces oldEntry in the pool with a newly dialed and
+// primed connection, then gracefully drains and closes oldEntry. If dialing or
+// priming the replacement fails (or the pool context is done), oldEntry is left
+// active in p.conns (not marked draining) so it continues serving RPCs and can
+// be retried on a subsequent recycle pass or drained normally on scale-down.
 func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
+	if oldEntry == nil {
+		return
+	}
 	p.dialMu.Lock() // Serialize replacements
 	defer p.dialMu.Unlock()
 
-	// Mark the connection
-	// if it is marked,
-	// it means another routine (health eviction or dynamic scale down) took over it.
-	if !oldEntry.markAsDraining() {
+	// Skip if another routine (e.g. scale-down or an earlier replacement)
+	// already took ownership of draining this connection.
+	if oldEntry.isDraining() {
 		return
 	}
 
 	currentConns := p.getConns()
 	idx := slices.Index(currentConns, oldEntry)
-
-	// If the connection isn't in the slice, it was already removed.
-	// The drain process should still be kicked off.
 	if idx == -1 {
-		btopt.Debugf(p.logger, "bigtable_connpool: Connection to replace was already removed. Draining it.")
-		// thread safe to call waitForDrainAndClose as conn.Close() can be called multiple times.
-		go p.waitForDrainAndClose(oldEntry)
+		btopt.Debugf(p.logger, "bigtable_connpool: Connection to replace was already removed.\n")
 		return
 	}
-	// Simple eviction logic.
+
 	btopt.Debugf(p.logger, "bigtable_connpool: Evicting connection at index %d\n", idx)
 	select {
 	case <-p.poolCtx.Done():
@@ -715,17 +716,35 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 		return
 	default:
 	}
+
 	newEntry, err := p.factory.newEntry(p.poolCtx)
 	if err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: Failed to replace connection at index %d: %v. Closing new conn. Old connection remains (draining).\n", idx, err)
+		btopt.Debugf(p.logger, "bigtable_connpool: Failed to replace connection at index %d: %v. Keeping existing connection active.\n", idx, err)
+		return
+	}
+
+	// Re-check pool context and membership in case Close() raced while dialing.
+	currentConns = p.getConns()
+	idx = slices.Index(currentConns, oldEntry)
+	if p.poolCtx.Err() != nil || idx == -1 {
+		if newEntry.conn != nil {
+			newEntry.conn.Close()
+		}
+		return
+	}
+
+	newConns := make([]*connEntry, len(currentConns))
+	copy(newConns, currentConns)
+	newConns[idx] = newEntry
+
+	if !oldEntry.markAsDraining() {
+		if newEntry.conn != nil {
+			newEntry.conn.Close()
+		}
 		return
 	}
 
 	btopt.Debugf(p.logger, "bigtable_connpool: Successfully primed new connection. Replacing connection at index %d\n", idx)
-	// Copy-on-write
-	newConns := make([]*connEntry, len(currentConns))
-	copy(newConns, currentConns)
-	newConns[idx] = newEntry
 	p.conns.Store(&newConns)
 	// Start the graceful shutdown process for the old connection
 	go p.waitForDrainAndClose(oldEntry)
