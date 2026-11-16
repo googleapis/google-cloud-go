@@ -17,6 +17,7 @@ package bigtable
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/session"
@@ -122,7 +123,7 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 	if errors.Is(err, session.ErrWriteNotSupported) {
 		// Client-local capability rejection (e.g. materialized view) did not
 		// reach the server and must not reset consecutive Unimplemented strikes.
-		return err
+		return fmt.Errorf("bigtable: %w", err)
 	}
 	if t.breaker.ShouldFallback(err) {
 		return t.classic.Apply(ctx, row, m, opts...)

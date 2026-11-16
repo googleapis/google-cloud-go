@@ -42,13 +42,13 @@ import (
 //
 // Conditional mutations cannot be applied in bulk and providing one will result in an error.
 func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) (errs []error, err error) {
+	if t.materializedView != "" {
+		return nil, errMaterializedViewWrite
+	}
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/ApplyBulk")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if t.materializedView != "" {
-		return nil, errMaterializedViewWrite
-	}
 	if len(rowKeys) != len(muts) {
 		return nil, fmt.Errorf("mismatched rowKeys and mutation array lengths: %d, %d", len(rowKeys), len(muts))
 	}

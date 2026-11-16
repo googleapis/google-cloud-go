@@ -44,9 +44,6 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 }
 
 func (t *Table) applyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
-	if t.materializedView != "" {
-		return nil, errMaterializedViewWrite
-	}
 	req := &btpb.ReadModifyWriteRowRequest{
 		AppProfileId: t.c.appProfile,
 		RowKey:       []byte(row),

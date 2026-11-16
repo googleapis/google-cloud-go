@@ -52,7 +52,7 @@ const (
 
 var (
 	errNegativeRowLimit      = errors.New("bigtable: row limit cannot be negative")
-	errMaterializedViewWrite = fmt.Errorf("bigtable: write operations are not supported on materialized views: %w", session.ErrWriteNotSupported)
+	errMaterializedViewWrite = fmt.Errorf("bigtable: materialized view: %w", session.ErrWriteNotSupported)
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -934,9 +934,6 @@ func (t *Table) applyClassic(ctx context.Context, row string, m *Mutation, opts 
 }
 
 func (t *Table) apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
-	if t.materializedView != "" {
-		return errMaterializedViewWrite
-	}
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)
