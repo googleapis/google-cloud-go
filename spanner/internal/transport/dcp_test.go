@@ -16,6 +16,7 @@ package transport
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -36,20 +37,20 @@ func (f *fakeDCPClient) Close() error {
 	return nil
 }
 
-type fakeConnPool struct {
+type fakeDCPConnPool struct {
 	closed atomic.Bool
 }
 
-func (p *fakeConnPool) Conn() *grpc.ClientConn { return nil }
-func (p *fakeConnPool) Num() int               { return 1 }
-func (p *fakeConnPool) Close() error {
+func (p *fakeDCPConnPool) Conn() *grpc.ClientConn { return nil }
+func (p *fakeDCPConnPool) Num() int               { return 1 }
+func (p *fakeDCPConnPool) Close() error {
 	p.closed.Store(true)
 	return nil
 }
-func (p *fakeConnPool) Invoke(ctx context.Context, method string, args, reply any, opts ...grpc.CallOption) error {
+func (p *fakeDCPConnPool) Invoke(ctx context.Context, method string, args, reply any, opts ...grpc.CallOption) error {
 	return nil
 }
-func (p *fakeConnPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+func (p *fakeDCPConnPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	return nil, nil
 }
 
@@ -72,12 +73,38 @@ func TestNormalizeDCPConfig(t *testing.T) {
 	}
 }
 
-func TestDynamicChannelPool_PrimeFallbackAndRoundRobin(t *testing.T) {
-	// Zero-initialized DynamicChannelPool should still return FailedPrecondition from Prime
-	// and Unavailable from PickRoundRobin when PrimeNotReadyErr / NoEntriesErr are unset.
+func TestNewDynamicChannelPool_RejectsNilRequiredHooks(t *testing.T) {
+	validDial := func(context.Context) (gtransport.ConnPool, error) { return &fakeDCPConnPool{}, nil }
+	validNewEntry := func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+		c := &fakeDCPClient{}
+		e.Delegate = c
+		e.Client = c
+		return nil
+	}
+	validPrime := func(context.Context, *DCPEntry[*fakeDCPClient], string) error { return nil }
+
+	for _, tc := range []struct {
+		name  string
+		hooks DCPHooks[*fakeDCPClient]
+	}{
+		{name: "nil Dial", hooks: DCPHooks[*fakeDCPClient]{NewEntryClient: validNewEntry, PrimeRPC: validPrime}},
+		{name: "nil NewEntryClient", hooks: DCPHooks[*fakeDCPClient]{Dial: validDial, PrimeRPC: validPrime}},
+		{name: "nil PrimeRPC", hooks: DCPHooks[*fakeDCPClient]{Dial: validDial, NewEntryClient: validNewEntry}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := NewDynamicChannelPool(context.Background(), DCPConfig{DCPEnabled: true}, tc.hooks); err == nil {
+				t.Fatalf("expected error when %s is nil", tc.name)
+			}
+		})
+	}
+}
+
+func TestDynamicChannelPool_PrimeFallbackSentinelsAndRoundRobin(t *testing.T) {
+	// Zero-initialized DynamicChannelPool should still return FailedPrecondition from prime
+	// and Unavailable from PickRoundRobin when primeNotReadyErr / noEntriesErr are unset.
 	var uninitPool DynamicChannelPool[*fakeDCPClient]
-	if err := uninitPool.Prime(context.Background(), &DCPEntry[*fakeDCPClient]{}); status.Code(err) != codes.FailedPrecondition {
-		t.Fatalf("expected FailedPrecondition from Prime on uninitialized pool, got %v", err)
+	if err := uninitPool.prime(context.Background(), &DCPEntry[*fakeDCPClient]{}); status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("expected FailedPrecondition from prime on uninitialized pool, got %v", err)
 	}
 	if _, err := uninitPool.PickRoundRobin(); status.Code(err) != codes.Unavailable {
 		t.Fatalf("expected Unavailable from PickRoundRobin on empty pool, got %v", err)
@@ -88,6 +115,8 @@ func TestDynamicChannelPool_PrimeFallbackAndRoundRobin(t *testing.T) {
 		t.Fatalf("expected Unavailable from nil DCPResolver.Acquire, got %v", err)
 	}
 
+	customNoEntries := errors.New("custom no entries")
+	customPrimeNotReady := errors.New("custom prime not ready")
 	var primedCount atomic.Int32
 	pool, err := NewDynamicChannelPool[*fakeDCPClient](
 		context.Background(),
@@ -98,30 +127,38 @@ func TestDynamicChannelPool_PrimeFallbackAndRoundRobin(t *testing.T) {
 			DCPMaxChannels:       5,
 			DCPSelectionStrategy: DCPRoundRobin,
 		},
-		nil,
-		func(context.Context) (gtransport.ConnPool, error) {
-			return &fakeConnPool{}, nil
+		DCPHooks[*fakeDCPClient]{
+			Dial: func(context.Context) (gtransport.ConnPool, error) {
+				return &fakeDCPConnPool{}, nil
+			},
+			NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+				c := &fakeDCPClient{}
+				e.Delegate = c
+				e.Client = c
+				return nil
+			},
+			PrimeRPC: func(_ context.Context, _ *DCPEntry[*fakeDCPClient], sessionID string) error {
+				if sessionID != "" {
+					primedCount.Add(1)
+				}
+				return nil
+			},
+			NoEntriesErr:     customNoEntries,
+			PrimeNotReadyErr: customPrimeNotReady,
 		},
-		func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
-			c := &fakeDCPClient{}
-			e.Delegate = c
-			e.Client = c
-			return nil
-		},
-		func(_ context.Context, _ *DCPEntry[*fakeDCPClient], sessionID string) error {
-			if sessionID != "" {
-				primedCount.Add(1)
-			}
-			return nil
-		},
-		nil,
-		nil,
-		nil,
 	)
 	if err != nil {
 		t.Fatalf("NewDynamicChannelPool failed: %v", err)
 	}
 	defer pool.Close()
+
+	// Initial startup channels are not primed before SetPrimeSession.
+	if got := primedCount.Load(); got != 0 {
+		t.Fatalf("primedCount after initial startup = %d, want 0", got)
+	}
+	if err := pool.prime(context.Background(), pool.GetEntries()[0]); !errors.Is(err, customPrimeNotReady) {
+		t.Fatalf("expected customPrimeNotReady before SetPrimeSession, got %v", err)
+	}
 
 	if got := pool.Num(); got != 3 {
 		t.Fatalf("pool.Num() = %d, want 3", got)
@@ -138,29 +175,39 @@ func TestDynamicChannelPool_PrimeFallbackAndRoundRobin(t *testing.T) {
 		}
 	}
 
-	// Verify error penalty accumulation and expiry on DCPEntry.
+	// Verify error penalty accumulation and deterministic expiry on DCPEntry.
 	entries := pool.GetEntries()
 	e0 := entries[0]
-	pool.Cfg.DCPErrorPenaltyDuration = 20 * time.Millisecond
 	e0.ApplyErrorPenalty(status.Error(codes.Unavailable, "transient"))
 	if p := e0.CurrentPenalty(); p <= 0 {
 		t.Fatalf("expected positive error penalty after Unavailable, got %d", p)
 	}
-	time.Sleep(30 * time.Millisecond)
+	e0.PenaltyExpiry.Store(time.Now().Add(-time.Second).UnixNano())
 	if p := e0.CurrentPenalty(); p != 0 {
 		t.Fatalf("expected error penalty to expire to 0, got %d", p)
 	}
 
-	// Verify DCPResolver re-picks when its bound entry is closed.
+	// Remove e0 from active entries (mirroring scale-down drain) before closing it,
+	// and verify DCPResolver re-picks a live entry.
 	res := &DCPResolver[*fakeDCPClient]{Pool: pool}
 	res.Entry.Store(e0)
+	e0.State.Store(DCPStateDraining)
+	remaining := []*DCPEntry[*fakeDCPClient]{entries[1], entries[2]}
+	pool.Entries.Store(&remaining)
 	_ = e0.CloseNow()
 	acquired, err := res.Acquire(context.Background())
 	if err != nil {
 		t.Fatalf("DCPResolver.Acquire after entry close failed: %v", err)
 	}
-	defer acquired.Release()
+	acquired.Release()
 	if acquired == e0 {
 		t.Fatal("expected DCPResolver.Acquire to re-pick a live entry after e0 was closed")
+	}
+
+	// When all remaining entries are draining, Pick returns the injected NoEntriesErr sentinel.
+	entries[1].State.Store(DCPStateDraining)
+	entries[2].State.Store(DCPStateDraining)
+	if _, err := pool.Pick(context.Background()); !errors.Is(err, customNoEntries) {
+		t.Fatalf("expected customNoEntries when all entries are draining, got %v", err)
 	}
 }

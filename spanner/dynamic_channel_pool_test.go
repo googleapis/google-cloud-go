@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"reflect"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -47,6 +48,22 @@ import (
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/status"
 )
+
+const (
+	dcpStateActive   = transport.DCPStateActive
+	dcpStateDraining = transport.DCPStateDraining
+	dcpStateClosed   = transport.DCPStateClosed
+)
+
+type dcpConnPoolTrackedStream = transport.DCPConnPoolTrackedStream[spannerClient]
+
+func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig, error) {
+	norm, err := transport.NormalizeDCPConfig(toTransportDCPConfig(cfg))
+	if err != nil {
+		return DynamicChannelPoolConfig{}, err
+	}
+	return fromTransportDCPConfig(norm), nil
+}
 
 func testDCPConfig(initial, min, max int) DynamicChannelPoolConfig {
 	return DynamicChannelPoolConfig{
@@ -769,7 +786,7 @@ func TestDCPResolvingClientKeepsDrainingEntryUntilClosed(t *testing.T) {
 	resolver := newDCPResolvingSpannerClient(p, entry1)
 	drainDCPEntryForTest(t, p, entry1)
 
-	client, err := resolver.resolve(context.Background())
+	client, err := resolver.Resolve(context.Background())
 	if err != nil {
 		t.Fatalf("resolve while draining failed: %v", err)
 	}
@@ -778,7 +795,7 @@ func TestDCPResolvingClientKeepsDrainingEntryUntilClosed(t *testing.T) {
 	}
 
 	entry1.CloseNow()
-	client, err = resolver.resolve(context.Background())
+	client, err = resolver.Resolve(context.Background())
 	if err != nil {
 		t.Fatalf("resolve after close failed: %v", err)
 	}
@@ -2199,4 +2216,71 @@ func TestDynamicChannelPoolErrorPenaltyConfigNormalization(t *testing.T) {
 			t.Fatalf("normalizeDCPConfig() error mismatch:\n Got: %q\nWant: %q", got, want)
 		}
 	})
+}
+
+func TestDCPConfigTransportRoundTrip(t *testing.T) {
+	pubType := reflect.TypeOf(DynamicChannelPoolConfig{})
+	trType := reflect.TypeOf(transport.DCPConfig{})
+	if pubType.NumField() != trType.NumField() {
+		t.Fatalf("field count mismatch: DynamicChannelPoolConfig=%d, transport.DCPConfig=%d", pubType.NumField(), trType.NumField())
+	}
+
+	var in DynamicChannelPoolConfig
+	val := reflect.ValueOf(&in).Elem()
+	for i := 0; i < pubType.NumField(); i++ {
+		if pubType.Field(i).Name != trType.Field(i).Name {
+			t.Fatalf("field %d name mismatch: %s vs %s", i, pubType.Field(i).Name, trType.Field(i).Name)
+		}
+		f := val.Field(i)
+		switch f.Kind() {
+		case reflect.Bool:
+			f.SetBool(true)
+		case reflect.Int, reflect.Int32, reflect.Int64:
+			if f.Type() == reflect.TypeOf(DynamicChannelSelectionStrategy(0)) {
+				f.SetInt(int64(DCPRoundRobin))
+			} else {
+				f.SetInt(int64((i + 1) * 7))
+			}
+		case reflect.Float64:
+			f.SetFloat(float64((i+1)*10) + 0.5)
+		default:
+			t.Fatalf("unhandled field kind %v on %s", f.Kind(), pubType.Field(i).Name)
+		}
+	}
+
+	got := fromTransportDCPConfig(toTransportDCPConfig(in))
+	if got != in {
+		t.Fatalf("DCPConfig round-trip mismatch:\n Got: %+v\nWant: %+v", got, in)
+	}
+
+	if transport.DCPSelectionStrategy(DCPPowerOfTwoLeastBusy) != transport.DCPPowerOfTwoLeastBusy {
+		t.Fatal("DCPPowerOfTwoLeastBusy enum value mismatch")
+	}
+	if transport.DCPSelectionStrategy(DCPRoundRobin) != transport.DCPRoundRobin {
+		t.Fatal("DCPRoundRobin enum value mismatch")
+	}
+}
+
+func TestDCPErrNoEntriesSentinelIdentity(t *testing.T) {
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(2, 1, 3))
+	defer teardown()
+	p := client.sc.dynamicPool
+	entries := p.GetEntries()
+	for _, e := range entries {
+		e.State.Store(dcpStateDraining)
+	}
+	if _, err := p.Pick(context.Background()); !errors.Is(err, errDCPNoEntries) {
+		t.Fatalf("expected errors.Is(err, errDCPNoEntries) on all-draining Pick, got %v", err)
+	}
+	res := newDCPResolvingSpannerClient(p, nil)
+	if _, err := res.Acquire(context.Background()); !errors.Is(err, errDCPNoEntries) {
+		t.Fatalf("expected errors.Is(err, errDCPNoEntries) on all-draining resolver.Acquire, got %v", err)
+	}
+	var nilRes *dcpResolvingSpannerClient
+	if _, err := nilRes.Acquire(context.Background()); !errors.Is(err, errDCPNoEntries) {
+		t.Fatalf("expected errors.Is(err, errDCPNoEntries) on nil resolver.Acquire, got %v", err)
+	}
+	if _, err := (&dcpResolvingSpannerClient{}).Acquire(context.Background()); !errors.Is(err, errDCPNoEntries) {
+		t.Fatalf("expected errors.Is(err, errDCPNoEntries) on nil-pool resolver.Acquire, got %v", err)
+	}
 }

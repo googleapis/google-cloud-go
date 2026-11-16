@@ -33,44 +33,47 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func dcpLogf(logger *log.Logger, format string, v ...any) {
-	if logger == nil {
-		log.Printf(format, v...)
-	} else {
-		logger.Printf(format, v...)
-	}
-}
-
 const (
 	// DCPStateActive means the entry is eligible for new picks.
 	DCPStateActive int32 = iota
 	// DCPStateDraining means the entry was removed from the active slice and is
-	// only serving operations that already hold a reference to it.
+	// only serving operations that already hold a reference to it, including
+	// session handles (and so read-write transactions) bound to it.
 	DCPStateDraining
 	// DCPStateClosed means the entry's channel has been closed. It is final.
 	DCPStateClosed
 )
 
-// DCPRefsClosed is the DCPEntry.Refs value of a closed entry. Every negative
-// value means closed; the magnitude leaves room for late acquire and release calls.
-const DCPRefsClosed = math.MinInt64 / 2
+// dcpRefsClosed is the DCPEntry.Refs value of a closed entry. Every negative
+// value means closed; the magnitude leaves room for late acquire and release
+// calls.
+const dcpRefsClosed = math.MinInt64 / 2
 
 // DCPDrainIdleFloor is the minimum time a draining entry must be idle before it
 // closes, whatever DCPDrainIdleGrace is. Tests lower it before creating pools.
 var DCPDrainIdleFloor = 15 * time.Second
+
+var (
+	defaultDCPNoEntriesErr     = status.Error(codes.Unavailable, "spanner_dcp: no available channels")
+	defaultDCPPrimeNotReadyErr = status.Error(codes.FailedPrecondition, "spanner_dcp: cannot prime channel before multiplexed session is available")
+)
 
 // DCPSelectionStrategy controls how DCP chooses an active channel.
 type DCPSelectionStrategy int
 
 const (
 	// DCPPowerOfTwoLeastBusy compares two random active channels and returns the
-	// channel with lower picker load, including any active error penalty.
+	// channel with lower picker load, including any active error penalty. It falls
+	// back to a full scan if random picks only find draining entries.
 	DCPPowerOfTwoLeastBusy DCPSelectionStrategy = iota
 	// DCPRoundRobin cycles through active channels and skips draining entries.
 	DCPRoundRobin
 )
 
 // DCPConfig holds the configuration knobs for a DynamicChannelPool.
+// Its fields mirror spanner.DynamicChannelPoolConfig 1-for-1 (see that type for
+// detailed knob semantics). DCPEnabled is retained for lossless config conversion;
+// callers gate whether to construct a DynamicChannelPool.
 type DCPConfig struct {
 	DCPEnabled                           bool
 	DCPInitialChannels                   int
@@ -176,6 +179,9 @@ func NormalizeDCPConfig(cfg DCPConfig) (DCPConfig, error) {
 		return cfg, fmt.Errorf("DCPInitialChannels must be >= DCPMinChannels when explicitly set")
 	case cfg.DCPInitialChannels > cfg.DCPMaxChannels:
 		return cfg, fmt.Errorf("DCPInitialChannels must be <= DCPMaxChannels")
+	// Equality rejected: needs non-empty hysteresis band. Otherwise scale-up
+	// settles target at the same boundary that triggers it, risking immediate
+	// scale-down qualification and flapping.
 	case cfg.DCPMinRPCPerChannel >= cfg.DCPMaxRPCPerChannel:
 		return cfg, fmt.Errorf("DCPMinRPCPerChannel must be less than DCPMaxRPCPerChannel")
 	case cfg.DCPErrorPenaltyStep < 0:
@@ -196,6 +202,7 @@ func NormalizeDCPConfig(cfg DCPConfig) (DCPConfig, error) {
 
 // DCPClient is the minimal channel client lifecycle interface required by DCPEntry.
 type DCPClient interface {
+	comparable
 	Close() error
 }
 
@@ -206,8 +213,24 @@ type DCPMetricsRecorder interface {
 	Close(logger *log.Logger)
 }
 
+// DCPHooks configures the dial, client-construction, priming, metrics, and error
+// sentinel callbacks for NewDynamicChannelPool.
+// Dial, NewEntryClient, and PrimeRPC are required; all other fields are optional.
+type DCPHooks[C DCPClient] struct {
+	Logger           *log.Logger
+	Dial             func(context.Context) (gtransport.ConnPool, error)
+	NewEntryClient   func(ctx context.Context, e *DCPEntry[C]) error
+	PrimeRPC         func(ctx context.Context, e *DCPEntry[C], sessionID string) error
+	InitMetrics      func(p *DynamicChannelPool[C]) DCPMetricsRecorder
+	NoEntriesErr     error
+	PrimeNotReadyErr error
+}
+
 // DynamicChannelPool owns the copy-on-write slice of DCP entries and the
 // background scaling/draining loops.
+//
+// Internal state fields are exported for spanner/sharedcore integration and
+// in-module white-box tests; callers must not mutate them after construction.
 type DynamicChannelPool[C DCPClient] struct {
 	Entries             atomic.Pointer[[]*DCPEntry[C]]
 	Cfg                 DCPConfig
@@ -239,10 +262,13 @@ type DynamicChannelPool[C DCPClient] struct {
 	Metrics          DCPMetricsRecorder
 
 	DrainingCount  atomic.Int64
-	DrainIdleFloor time.Duration
+	DrainIdleFloor time.Duration // DCPDrainIdleFloor when the pool was created
 }
 
 // DCPEntry represents one logical DCP slot.
+//
+// Fields are exported for spanner/sharedcore integration and in-module white-box
+// tests; production callers must only populate Delegate and Client inside NewEntryClient.
 type DCPEntry[C DCPClient] struct {
 	ID            uint64
 	Pool          gtransport.ConnPool
@@ -264,23 +290,14 @@ type DCPEntry[C DCPClient] struct {
 func NewDynamicChannelPool[C DCPClient](
 	ctx context.Context,
 	cfg DCPConfig,
-	logger *log.Logger,
-	dial func(context.Context) (gtransport.ConnPool, error),
-	newEntryClient func(ctx context.Context, e *DCPEntry[C]) error,
-	primeRPC func(ctx context.Context, e *DCPEntry[C], sessionID string) error,
-	initMetrics func(p *DynamicChannelPool[C]) DCPMetricsRecorder,
-	noEntriesErr error,
-	primeNotReadyErr error,
+	hooks DCPHooks[C],
 ) (*DynamicChannelPool[C], error) {
+	if hooks.Dial == nil || hooks.NewEntryClient == nil || hooks.PrimeRPC == nil {
+		return nil, errors.New("spanner_dcp: Dial, NewEntryClient, and PrimeRPC hooks are required")
+	}
 	cfg, err := NormalizeDCPConfig(cfg)
 	if err != nil {
 		return nil, err
-	}
-	if noEntriesErr == nil {
-		noEntriesErr = status.Error(codes.Unavailable, "spanner_dcp: no available channels")
-	}
-	if primeNotReadyErr == nil {
-		primeNotReadyErr = status.Error(codes.FailedPrecondition, "spanner_dcp: cannot prime channel before multiplexed session is available")
 	}
 	poolCtx, cancel := context.WithCancel(ctx)
 	p := &DynamicChannelPool[C]{
@@ -289,19 +306,19 @@ func NewDynamicChannelPool[C DCPClient](
 		PenaltyMax:          int32(math.Ceil(cfg.DCPMaxRPCPerChannel)),
 		Ctx:                 poolCtx,
 		cancel:              cancel,
-		logger:              logger,
-		Dial:                dial,
-		newEntryClient:      newEntryClient,
-		primeRPC:            primeRPC,
-		noEntriesErr:        noEntriesErr,
-		primeNotReadyErr:    primeNotReadyErr,
+		logger:              hooks.Logger,
+		Dial:                hooks.Dial,
+		newEntryClient:      hooks.NewEntryClient,
+		primeRPC:            hooks.PrimeRPC,
+		noEntriesErr:        hooks.NoEntriesErr,
+		primeNotReadyErr:    hooks.PrimeNotReadyErr,
 		ScaleUpSignal:       make(chan struct{}, 1),
 		done:                make(chan struct{}),
 		DrainIdleFloor:      DCPDrainIdleFloor,
 	}
 	entries := make([]*DCPEntry[C], 0, cfg.DCPInitialChannels)
 	for i := 0; i < cfg.DCPInitialChannels; i++ {
-		e, err := p.NewEntry(ctx, false)
+		e, err := p.newEntry(ctx, false)
 		if err != nil {
 			for _, entry := range entries {
 				entry.CloseNow()
@@ -312,26 +329,34 @@ func NewDynamicChannelPool[C DCPClient](
 		entries = append(entries, e)
 	}
 	p.Entries.Store(&entries)
-	if initMetrics != nil {
-		p.Metrics = initMetrics(p)
+	if hooks.InitMetrics != nil {
+		p.Metrics = hooks.InitMetrics(p)
 	}
 	go p.scaleUpWorker()
 	go p.scaleDownMonitor()
 	return p, nil
 }
 
+func (p *DynamicChannelPool[C]) logf(format string, v ...any) {
+	if p.logger == nil {
+		log.Printf(format, v...)
+	} else {
+		p.logger.Printf(format, v...)
+	}
+}
+
 func (p *DynamicChannelPool[C]) noEntriesError() error {
 	if p != nil && p.noEntriesErr != nil {
 		return p.noEntriesErr
 	}
-	return status.Error(codes.Unavailable, "spanner_dcp: no available channels")
+	return defaultDCPNoEntriesErr
 }
 
 func (p *DynamicChannelPool[C]) primeNotReadyError() error {
 	if p != nil && p.primeNotReadyErr != nil {
 		return p.primeNotReadyErr
 	}
-	return status.Error(codes.FailedPrecondition, "spanner_dcp: cannot prime channel before multiplexed session is available")
+	return defaultDCPPrimeNotReadyErr
 }
 
 // Num returns the number of active channels in the pool.
@@ -355,6 +380,7 @@ func (p *DynamicChannelPool[C]) Invoke(ctx context.Context, method string, args,
 	e.UnaryLoad.Add(1)
 	p.TotalRPCLoad.Add(1)
 	p.MaybeSignalScaleUp(e)
+	e.LastActivity.Store(time.Now().UnixNano())
 	defer func() {
 		e.UnaryLoad.Add(-1)
 		p.TotalRPCLoad.Add(-1)
@@ -374,12 +400,12 @@ func (p *DynamicChannelPool[C]) NewStream(ctx context.Context, desc *grpc.Stream
 	e.StreamLoad.Add(1)
 	p.TotalRPCLoad.Add(1)
 	p.MaybeSignalScaleUp(e)
+	e.LastActivity.Store(time.Now().UnixNano())
 	s, err := e.Pool.NewStream(ctx, desc, method, opts...)
 	if err != nil {
 		e.ApplyErrorPenalty(err)
 		e.StreamLoad.Add(-1)
 		p.TotalRPCLoad.Add(-1)
-		e.LastActivity.Store(time.Now().UnixNano())
 		return nil, err
 	}
 	return &DCPConnPoolTrackedStream[C]{ClientStream: s, Entry: e}, nil
@@ -391,12 +417,8 @@ func (p *DynamicChannelPool[C]) Close() error {
 		if p.Metrics != nil {
 			p.Metrics.Close(p.logger)
 		}
-		if p.cancel != nil {
-			p.cancel()
-		}
-		if p.done != nil {
-			close(p.done)
-		}
+		p.cancel()
+		close(p.done)
 	})
 	p.DialMu.Lock()
 	defer p.DialMu.Unlock()
@@ -420,7 +442,9 @@ func (p *DynamicChannelPool[C]) GetEntries() []*DCPEntry[C] {
 	return *ptr
 }
 
-// SetPrimeSession records the multiplexed session ID used for scaled-up channel priming.
+// SetPrimeSession records the multiplexed session used for scaled-up channel
+// priming. Initial channels are created during client startup and are not
+// primed through this path.
 func (p *DynamicChannelPool[C]) SetPrimeSession(id string) {
 	if id != "" {
 		p.PrimeSession.Store(id)
@@ -431,18 +455,18 @@ func (p *DynamicChannelPool[C]) SetPrimeSession(id string) {
 	}
 }
 
-// HasPrimeSession reports whether a scaled-up channel can be primed.
-func (p *DynamicChannelPool[C]) HasPrimeSession() bool {
-	v := p.PrimeSession.Load()
-	if v == nil {
-		return false
-	}
-	sid, _ := v.(string)
-	return sid != ""
+func (p *DynamicChannelPool[C]) primeSessionID() string {
+	sid, _ := p.PrimeSession.Load().(string)
+	return sid
 }
 
-// NewEntry dials one DCP entry and optionally primes it.
-func (p *DynamicChannelPool[C]) NewEntry(ctx context.Context, prime bool) (*DCPEntry[C], error) {
+// hasPrimeSession reports whether a scaled-up channel can be primed.
+func (p *DynamicChannelPool[C]) hasPrimeSession() bool {
+	return p.primeSessionID() != ""
+}
+
+// newEntry dials one DCP entry and optionally primes it.
+func (p *DynamicChannelPool[C]) newEntry(ctx context.Context, prime bool) (*DCPEntry[C], error) {
 	id := p.nextID.Add(1)
 	entryPool, err := p.Dial(ctx)
 	if err != nil {
@@ -452,14 +476,12 @@ func (p *DynamicChannelPool[C]) NewEntry(ctx context.Context, prime bool) (*DCPE
 	now := time.Now().UnixNano()
 	e.CreatedAt.Store(now)
 	e.LastActivity.Store(now)
-	if p.newEntryClient != nil {
-		if err := p.newEntryClient(ctx, e); err != nil {
-			entryPool.Close()
-			return nil, err
-		}
+	if err := p.newEntryClient(ctx, e); err != nil {
+		entryPool.Close()
+		return nil, err
 	}
 	if prime {
-		if err := p.Prime(ctx, e); err != nil {
+		if err := p.prime(ctx, e); err != nil {
 			e.CloseNow()
 			return nil, err
 		}
@@ -467,18 +489,13 @@ func (p *DynamicChannelPool[C]) NewEntry(ctx context.Context, prime bool) (*DCPE
 	return e, nil
 }
 
-// Prime verifies a scaled-up channel before publishing it to the active slice.
-func (p *DynamicChannelPool[C]) Prime(ctx context.Context, e *DCPEntry[C]) error {
-	v := p.PrimeSession.Load()
-	if v == nil {
-		return p.primeNotReadyError()
-	}
-	sid, _ := v.(string)
+// prime verifies a scaled-up channel before publishing it to the active slice.
+// It executes the primeRPC hook (SELECT 1 through the new entry's delegate) so
+// failed channels are never visible to normal request picking.
+func (p *DynamicChannelPool[C]) prime(ctx context.Context, e *DCPEntry[C]) error {
+	sid := p.primeSessionID()
 	if sid == "" {
 		return p.primeNotReadyError()
-	}
-	if p.primeRPC == nil {
-		return nil
 	}
 	var last error
 	for i := 0; i < p.Cfg.DCPPrimeMaxAttempts; i++ {
@@ -564,7 +581,9 @@ func (s *DCPConnPoolTrackedStream[C]) Finish(err error) {
 	})
 }
 
-// PickPowerOfTwo selects the lower picker-load entry from two random active entries.
+// PickPowerOfTwo selects the lower picker-load entry from two random active
+// entries. It retries when either random choice is draining and falls back to a
+// full least-loaded scan if random sampling cannot find an active pair.
 func (p *DynamicChannelPool[C]) PickPowerOfTwo() (*DCPEntry[C], error) {
 	entries := p.GetEntries()
 	n := len(entries)
@@ -572,14 +591,14 @@ func (p *DynamicChannelPool[C]) PickPowerOfTwo() (*DCPEntry[C], error) {
 		return nil, p.noEntriesError()
 	}
 	if n == 1 {
-		if entries[0].IsDraining() {
+		if entries[0].isDraining() {
 			return nil, p.noEntriesError()
 		}
 		return entries[0], nil
 	}
 	for i := 0; i < n*2; i++ {
 		e1, e2 := entries[rand.IntN(n)], entries[rand.IntN(n)]
-		if e1.IsDraining() || e2.IsDraining() {
+		if e1.isDraining() || e2.isDraining() {
 			continue
 		}
 		if e1.PickLoad() <= e2.PickLoad() {
@@ -600,7 +619,7 @@ func (p *DynamicChannelPool[C]) PickRoundRobin() (*DCPEntry[C], error) {
 	for i := 0; i < n; i++ {
 		idx := p.rrIndex.Add(1) - 1
 		e := entries[int(idx%uint64(n))]
-		if !e.IsDraining() {
+		if !e.isDraining() {
 			return e, nil
 		}
 	}
@@ -612,7 +631,7 @@ func (p *DynamicChannelPool[C]) PickLeastLoaded() (*DCPEntry[C], error) {
 	var best *DCPEntry[C]
 	minLoad := int32(math.MaxInt32)
 	for _, e := range p.GetEntries() {
-		if e.IsDraining() {
+		if e.isDraining() {
 			continue
 		}
 		l := e.PickLoad()
@@ -628,11 +647,14 @@ func (p *DynamicChannelPool[C]) PickLeastLoaded() (*DCPEntry[C], error) {
 }
 
 // MaybeSignalScaleUp notifies the scale-up worker when the selected channel or
-// average pool load exceeds DCPMaxRPCPerChannel.
+// average pool load exceeds DCPMaxRPCPerChannel. The signal channel is buffered
+// so many hot requests collapse into one scale-up evaluation.
 func (p *DynamicChannelPool[C]) MaybeSignalScaleUp(e *DCPEntry[C]) {
 	active := p.Num()
 	avg := float64(0)
 	if active > 0 {
+		// The two totals may be observed at slightly different instants. This
+		// signal is only a hint; ScaleUp recomputes exact per-entry load.
 		load := int64(p.TotalRPCLoad.Load()) + int64(p.TotalPenaltyLoad.Load())
 		avg = float64(load) / float64(active)
 	}
@@ -646,6 +668,7 @@ func (p *DynamicChannelPool[C]) MaybeSignalScaleUp(e *DCPEntry[C]) {
 	}
 }
 
+// scaleUpWorker serializes event-driven scale-up requests.
 func (p *DynamicChannelPool[C]) scaleUpWorker() {
 	for {
 		select {
@@ -657,7 +680,8 @@ func (p *DynamicChannelPool[C]) scaleUpWorker() {
 	}
 }
 
-// ScaleUp adds and primes channels based on current total load.
+// ScaleUp adds and primes channels based on current total load. The new entries
+// are published only after successful dial and SELECT 1 priming.
 func (p *DynamicChannelPool[C]) ScaleUp() {
 	select {
 	case <-p.done:
@@ -671,11 +695,11 @@ func (p *DynamicChannelPool[C]) ScaleUp() {
 		p.DialMu.Unlock()
 		return
 	}
-	if p.Ctx != nil && p.Ctx.Err() != nil {
+	if p.Ctx.Err() != nil {
 		p.DialMu.Unlock()
 		return
 	}
-	if !p.HasPrimeSession() {
+	if !p.hasPrimeSession() {
 		p.DialMu.Unlock()
 		return
 	}
@@ -683,7 +707,7 @@ func (p *DynamicChannelPool[C]) ScaleUp() {
 	active := 0
 	var load int64
 	for _, e := range entries {
-		if !e.IsDraining() {
+		if !e.isDraining() {
 			active++
 			load += int64(e.RPCLoad()) + int64(e.CurrentPenalty())
 		}
@@ -695,6 +719,9 @@ func (p *DynamicChannelPool[C]) ScaleUp() {
 	desired := int(math.Ceil(float64(load) / p.TargetRPCPerChannel))
 	add := desired - active
 	capPct := int(math.Ceil(float64(active) * float64(p.Cfg.DCPMaxScaleUpPercent) / 100))
+	// Floor the percent cap so small pools can ramp during burst recovery.
+	// Floor raises the %-cap only; final add is still clamped to desired and
+	// to DCPMaxChannels headroom below.
 	if capPct < 2 {
 		capPct = 2
 	}
@@ -708,19 +735,21 @@ func (p *DynamicChannelPool[C]) ScaleUp() {
 		p.DialMu.Unlock()
 		return
 	}
+	// Claim the cooldown before slow channel creation/priming so any subsequent
+	// scale-up signal that arrives while priming is in progress is throttled.
 	p.LastScaleUp.Store(now.UnixNano())
 	p.DialMu.Unlock()
 
 	newEntries := make([]*DCPEntry[C], 0, add)
 	for i := 0; i < add; i++ {
-		if p.Ctx != nil && p.Ctx.Err() != nil {
+		if p.Ctx.Err() != nil {
 			break
 		}
-		e, err := p.NewEntry(p.Ctx, true)
+		e, err := p.newEntry(p.Ctx, true)
 		if err == nil {
 			newEntries = append(newEntries, e)
 		} else {
-			dcpLogf(p.logger, "spanner_dcp: failed to create or prime scaled-up channel: %v", err)
+			p.logf("spanner_dcp: failed to create or prime scaled-up channel: %v", err)
 		}
 	}
 	if len(newEntries) == 0 {
@@ -729,7 +758,7 @@ func (p *DynamicChannelPool[C]) ScaleUp() {
 
 	p.DialMu.Lock()
 	defer p.DialMu.Unlock()
-	if p.Ctx != nil && p.Ctx.Err() != nil {
+	if p.Ctx.Err() != nil {
 		closeDCPEntries(newEntries)
 		return
 	}
@@ -758,6 +787,8 @@ func closeDCPEntries[C DCPClient](entries []*DCPEntry[C]) {
 	}
 }
 
+// scaleDownMonitor periodically evaluates whether sustained low load can drain
+// channels.
 func (p *DynamicChannelPool[C]) scaleDownMonitor() {
 	t := time.NewTicker(p.Cfg.DCPScaleDownCheckInterval)
 	defer t.Stop()
@@ -778,8 +809,10 @@ func (p *DynamicChannelPool[C]) EvaluateScaleDown() {
 	entries := p.GetEntries()
 	active := 0
 	var load int32
+	// Error penalties are deliberately excluded from scale-down load so a
+	// failing channel is not retained as busy.
 	for _, e := range entries {
-		if !e.IsDraining() {
+		if !e.isDraining() {
 			active++
 			load += e.RPCLoad()
 		}
@@ -825,7 +858,7 @@ func (p *DynamicChannelPool[C]) RemoveEntries(count int) {
 	}
 	candidates := make([]candidate, 0, len(entries))
 	for _, e := range entries {
-		if !e.IsDraining() {
+		if !e.isDraining() {
 			active++
 			load += e.RPCLoad()
 			candidates = append(candidates, candidate{e, e.CreatedAt.Load(), e.WeightedLoad()})
@@ -894,10 +927,6 @@ func (p *DynamicChannelPool[C]) RemoveEntries(count int) {
 func (p *DynamicChannelPool[C]) WaitForDrainAndClose(e *DCPEntry[C]) {
 	t := time.NewTicker(250 * time.Millisecond)
 	defer t.Stop()
-	var doneCh <-chan struct{}
-	if p.Ctx != nil {
-		doneCh = p.Ctx.Done()
-	}
 	for {
 		select {
 		case <-t.C:
@@ -905,7 +934,7 @@ func (p *DynamicChannelPool[C]) WaitForDrainAndClose(e *DCPEntry[C]) {
 				p.DrainingCount.Add(-1)
 				return
 			}
-		case <-doneCh:
+		case <-p.Ctx.Done():
 			e.CloseNow()
 			p.DrainingCount.Add(-1)
 			return
@@ -932,7 +961,8 @@ func (e *DCPEntry[C]) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 	return e.Pool.NewStream(ctx, desc, method, opts...)
 }
 
-// Acquire takes a reference that keeps drain from closing the entry until Release is called.
+// Acquire takes a reference that keeps drain from closing the entry until
+// Release is called. It fails once the entry is closed.
 func (e *DCPEntry[C]) Acquire() bool {
 	if e.Refs.Add(1) > 0 {
 		return true
@@ -944,28 +974,32 @@ func (e *DCPEntry[C]) Acquire() bool {
 // Release releases a reference acquired via Acquire.
 func (e *DCPEntry[C]) Release() { e.Refs.Add(-1) }
 
-// CloseIfIdle closes a draining entry that has been idle for grace, unless an RPC holds a reference.
+// CloseIfIdle closes a draining entry that has been idle for grace, unless an
+// RPC holds a reference to it. It reports whether the entry is closed.
 func (e *DCPEntry[C]) CloseIfIdle(grace time.Duration) bool {
-	return e.IdleFor(grace) && e.CloseIfUnreferenced()
+	return e.idleFor(grace) && e.CloseIfUnreferenced()
 }
 
 // CloseIfUnreferenced closes the entry unless an RPC holds a reference to it.
+// Swapping zero references for closed is atomic, so an RPC that acquired the
+// entry keeps it open and one that acquires later fails and re-picks. It
+// reports whether the entry is closed.
 func (e *DCPEntry[C]) CloseIfUnreferenced() bool {
-	if e.Refs.CompareAndSwap(0, DCPRefsClosed) {
+	if e.Refs.CompareAndSwap(0, dcpRefsClosed) {
 		e.State.Store(DCPStateClosed)
 		e.closeResources()
 	}
 	return e.Refs.Load() < 0
 }
 
-// IdleFor reports whether the entry has 0 active RPCs and has been idle for at least grace.
-func (e *DCPEntry[C]) IdleFor(grace time.Duration) bool {
+func (e *DCPEntry[C]) idleFor(grace time.Duration) bool {
 	return e.RPCLoad() == 0 && time.Since(time.Unix(0, e.LastActivity.Load())) >= grace
 }
 
-// CloseNow closes the entry immediately even if RPCs hold references to it.
+// CloseNow closes the entry now, even if RPCs hold references to it. Pool
+// shutdown uses it; scale-down uses CloseIfIdle.
 func (e *DCPEntry[C]) CloseNow() error {
-	if e.Refs.Swap(DCPRefsClosed) < 0 {
+	if e.Refs.Swap(dcpRefsClosed) < 0 {
 		return nil
 	}
 	e.State.Store(DCPStateClosed)
@@ -975,11 +1009,9 @@ func (e *DCPEntry[C]) CloseNow() error {
 func (e *DCPEntry[C]) closeResources() error {
 	e.ClearErrorPenalty()
 	var errs []error
-	if any(e.Client) != nil {
-		var zero C
-		if any(e.Client) != any(zero) {
-			errs = append(errs, e.Client.Close())
-		}
+	var zero C
+	if e.Client != zero {
+		errs = append(errs, e.Client.Close())
 	}
 	if e.Pool != nil {
 		errs = append(errs, e.Pool.Close())
@@ -987,8 +1019,9 @@ func (e *DCPEntry[C]) closeResources() error {
 	return errors.Join(errs...)
 }
 
-// IsDraining atomically checks whether the entry has been removed from normal selection.
-func (e *DCPEntry[C]) IsDraining() bool { return e.State.Load() == DCPStateDraining }
+// isDraining atomically checks whether the entry has been removed from normal
+// selection and is waiting for in-flight operations to finish.
+func (e *DCPEntry[C]) isDraining() bool { return e.State.Load() == DCPStateDraining }
 
 // RPCLoad returns the current in-flight RPC load for this entry.
 func (e *DCPEntry[C]) RPCLoad() int32 { return e.UnaryLoad.Load() + e.StreamLoad.Load() }
@@ -996,9 +1029,13 @@ func (e *DCPEntry[C]) RPCLoad() int32 { return e.UnaryLoad.Load() + e.StreamLoad
 // WeightedLoad returns the current in-flight RPC load for this entry.
 func (e *DCPEntry[C]) WeightedLoad() int32 { return e.RPCLoad() }
 
-// ApplyErrorPenalty accumulates load for Unavailable and ResourceExhausted errors.
+// ApplyErrorPenalty accumulates load for errors that indicate channel-specific
+// health or capacity trouble. Internal is deliberately excluded: only
+// Unavailable and ResourceExhausted steer subsequent picks away from a channel.
+// Updates are serialized because they are rare and must keep the pool aggregate
+// consistent. The hot pick path remains lock-free while the penalty is active.
 func (e *DCPEntry[C]) ApplyErrorPenalty(err error) {
-	if err == nil || e.Parent == nil || e.Parent.Cfg.DCPErrorPenaltyDuration < 0 {
+	if err == nil || e.Parent.Cfg.DCPErrorPenaltyDuration < 0 {
 		return
 	}
 	code := status.Code(err)
@@ -1034,7 +1071,8 @@ func (e *DCPEntry[C]) ApplyErrorPenalty(err error) {
 	e.Parent.TotalPenaltyLoad.Add(int64(load - oldContribution))
 }
 
-// CurrentPenalty returns active accumulated error load and lazily clears an expired penalty.
+// CurrentPenalty returns active accumulated error load and lazily clears an
+// expired penalty.
 func (e *DCPEntry[C]) CurrentPenalty() int32 {
 	expiry := e.PenaltyExpiry.Load()
 	if expiry == 0 {
@@ -1052,18 +1090,18 @@ func (e *DCPEntry[C]) CurrentPenalty() int32 {
 	if time.Now().UnixNano() < expiry {
 		return e.PenaltyLoad.Load()
 	}
+	// Leave PenaltyLoad intact; expiry alone gates whether load is used.
 	e.PenaltyExpiry.Store(0)
-	if e.Parent != nil {
-		e.Parent.TotalPenaltyLoad.Add(-int64(e.PenaltyLoad.Load()))
-	}
+	e.Parent.TotalPenaltyLoad.Add(-int64(e.PenaltyLoad.Load()))
 	return 0
 }
 
-// ClearErrorPenalty removes an entry's aggregate contribution when the entry leaves the live pool.
+// ClearErrorPenalty removes an entry's aggregate contribution when the entry
+// leaves the live pool. The expiry swap makes repeated close paths harmless.
 func (e *DCPEntry[C]) ClearErrorPenalty() {
 	e.penaltyMu.Lock()
 	defer e.penaltyMu.Unlock()
-	if e.PenaltyExpiry.Swap(0) != 0 && e.Parent != nil {
+	if e.PenaltyExpiry.Swap(0) != 0 {
 		e.Parent.TotalPenaltyLoad.Add(-int64(e.PenaltyLoad.Load()))
 	}
 }
@@ -1087,6 +1125,7 @@ func (e *DCPEntry[C]) StartUnary(ctx context.Context) func(error) {
 
 // StartStream increments stream load and entry reference count, returning a DCPStreamRef.
 func (e *DCPEntry[C]) StartStream(ctx context.Context) *DCPStreamRef {
+	// A stream outlives the call that starts it, so it holds its own reference.
 	e.Refs.Add(1)
 	e.StreamLoad.Add(1)
 	e.Parent.TotalRPCLoad.Add(1)
@@ -1104,7 +1143,7 @@ func (e *DCPEntry[C]) StartStream(ctx context.Context) *DCPStreamRef {
 			ref.Done(err)
 			return ref
 		}
-		ref.SetStop(context.AfterFunc(ctx, func() {
+		ref.setStop(context.AfterFunc(ctx, func() {
 			ref.Done(ctx.Err())
 		}))
 	}
@@ -1134,8 +1173,7 @@ func (r *DCPStreamRef) Done(err error) {
 	})
 }
 
-// SetStop registers the context.AfterFunc stop callback for the stream.
-func (r *DCPStreamRef) SetStop(stop func() bool) {
+func (r *DCPStreamRef) setStop(stop func() bool) {
 	r.stopMu.Lock()
 	doneCalled := r.doneCalled
 	if !doneCalled {
@@ -1163,7 +1201,8 @@ func (c *DCPExecuteStreamingSQLClient) Recv() (*spannerpb.PartialResultSet, erro
 	return resp, err
 }
 
-// RecvMsg receives into m and releases stream load on error/EOF.
+// RecvMsg is Recv for callers that receive the PartialResultSet into a message
+// of another type. See vtproto_stream.go.
 func (c *DCPExecuteStreamingSQLClient) RecvMsg(m any) error {
 	err := c.Spanner_ExecuteStreamingSqlClient.RecvMsg(m)
 	if err != nil {
@@ -1178,17 +1217,28 @@ func (c *DCPExecuteStreamingSQLClient) CloseSend() error {
 	if err != nil {
 		c.Ref.Done(err)
 	}
+	// Successful CloseSend only half-closes the client send side. The stream is
+	// still active until Recv returns a terminal error/EOF or the context is
+	// canceled, so do not release stream load here.
 	return err
 }
 
 // DCPResolver keeps using its bound DCPEntry while it is active or draining,
-// and atomically re-picks a fresh entry from Pool only once the bound entry is closed.
+// so all operations of a read-write transaction stay on one channel through a
+// scale-down. It re-picks only once the bound entry is closed.
+//
+// Fields are exported for spanner/sharedcore wrapper initialization and
+// in-module white-box tests; callers must not mutate Pool after construction.
 type DCPResolver[C DCPClient] struct {
 	Pool  *DynamicChannelPool[C]
 	Entry atomic.Pointer[DCPEntry[C]]
 }
 
-// Acquire returns the bound entry with a reference held, or re-picks if the bound entry is closed.
+// Acquire returns the bound entry with a reference held, which the caller
+// releases when its RPC returns. Scale-down drain cannot close the entry in
+// between, so the RPC never starts on a channel drain closed; only pool
+// shutdown closes a referenced entry. A closed entry is replaced by a fresh
+// pick.
 func (c *DCPResolver[C]) Acquire(ctx context.Context) (*DCPEntry[C], error) {
 	if c == nil || c.Pool == nil {
 		return nil, (*DynamicChannelPool[C])(nil).noEntriesError()
@@ -1199,6 +1249,7 @@ func (c *DCPResolver[C]) Acquire(ctx context.Context) (*DCPEntry[C], error) {
 		if err != nil {
 			return nil, err
 		}
+		// Concurrent RPCs of one transaction must agree on the new entry.
 		if !c.Entry.CompareAndSwap(e, picked) {
 			picked = c.Entry.Load()
 		}
@@ -1207,7 +1258,7 @@ func (c *DCPResolver[C]) Acquire(ctx context.Context) (*DCPEntry[C], error) {
 	return e, nil
 }
 
-// Resolve returns the bound entry's Client without holding a reference for an RPC.
+// Resolve returns the bound entry's Client for callers that start no RPC.
 func (c *DCPResolver[C]) Resolve(ctx context.Context) (C, error) {
 	var zero C
 	e, err := c.Acquire(ctx)

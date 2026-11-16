@@ -19,6 +19,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/spanner/internal"
+	"cloud.google.com/go/spanner/internal/transport"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -40,8 +41,8 @@ type dcpMetrics struct {
 	registration           metric.Registration
 }
 
-func newDCPMetrics(p *dynamicChannelPool, sc *sessionClient, mp metric.MeterProvider) *dcpMetrics {
-	if !IsOpenTelemetryMetricsEnabled() || sc == nil {
+func newDCPMetrics(p *dynamicChannelPool, sc *sessionClient, mp metric.MeterProvider) transport.DCPMetricsRecorder {
+	if !IsOpenTelemetryMetricsEnabled() {
 		return nil
 	}
 	if mp == nil {

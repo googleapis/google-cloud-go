@@ -28,12 +28,6 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-const (
-	dcpStateActive   = transport.DCPStateActive
-	dcpStateDraining = transport.DCPStateDraining
-	dcpStateClosed   = transport.DCPStateClosed
-)
-
 // DynamicChannelSelectionStrategy controls how DCP chooses an active channel.
 type DynamicChannelSelectionStrategy int
 
@@ -137,19 +131,10 @@ func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 	return fromTransportDCPConfig(transport.DefaultDCPConfig())
 }
 
-func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig, error) {
-	norm, err := transport.NormalizeDCPConfig(toTransportDCPConfig(cfg))
-	if err != nil {
-		return DynamicChannelPoolConfig{}, err
-	}
-	return fromTransportDCPConfig(norm), nil
-}
-
 type dynamicChannelPool = transport.DynamicChannelPool[spannerClient]
 type dcpEntry = transport.DCPEntry[spannerClient]
 type dcpStreamRef = transport.DCPStreamRef
 type dcpExecuteStreamingSqlClient = transport.DCPExecuteStreamingSQLClient
-type dcpConnPoolTrackedStream = transport.DCPConnPoolTrackedStream[spannerClient]
 
 var errDCPNoEntries = spannerErrorf(codes.Unavailable, "spanner_dcp: no available channels")
 var errDCPPrimeNotReady = spannerErrorf(codes.FailedPrecondition, "spanner_dcp: cannot prime channel before multiplexed session is available")
@@ -161,37 +146,41 @@ func newDynamicChannelPool(
 	mp metric.MeterProvider,
 	dial func(context.Context) (gtransport.ConnPool, error),
 ) (*dynamicChannelPool, error) {
-	var logger = sc.logger
 	return transport.NewDynamicChannelPool[spannerClient](
 		ctx,
 		toTransportDCPConfig(cfg),
-		logger,
-		dial,
-		func(entryCtx context.Context, e *dcpEntry) error {
-			client, err := newGRPCSpannerClient(entryCtx, sc, e.ID, gtransport.WithConnPool(e))
-			if err != nil {
+		transport.DCPHooks[spannerClient]{
+			Logger: sc.logger,
+			Dial:   dial,
+			NewEntryClient: func(entryCtx context.Context, e *dcpEntry) error {
+				client, err := newGRPCSpannerClient(entryCtx, sc, e.ID, gtransport.WithConnPool(e))
+				if err != nil {
+					return err
+				}
+				e.Delegate = client
+				e.Client = &dcpSpannerClient{entry: e, delegate: client}
+				return nil
+			},
+			// Verify scaled-up channels via SELECT 1 through the new entry's delegate
+			// so failed channels are never published to normal request picking.
+			PrimeRPC: func(primeCtx context.Context, e *dcpEntry, sessionID string) error {
+				stmt := &spannerpb.ExecuteSqlRequest{Session: sessionID, Sql: "SELECT 1"}
+				_, err := e.Delegate.ExecuteSql(contextWithOutgoingMetadata(primeCtx, sc.md, sc.disableRouteToLeader), stmt)
 				return err
-			}
-			e.Delegate = client
-			e.Client = &dcpSpannerClient{entry: e, delegate: client}
-			return nil
+			},
+			InitMetrics: func(p *dynamicChannelPool) transport.DCPMetricsRecorder {
+				return newDCPMetrics(p, sc, mp)
+			},
+			NoEntriesErr:     errDCPNoEntries,
+			PrimeNotReadyErr: errDCPPrimeNotReady,
 		},
-		func(primeCtx context.Context, e *dcpEntry, sessionID string) error {
-			stmt := &spannerpb.ExecuteSqlRequest{Session: sessionID, Sql: "SELECT 1"}
-			_, err := e.Delegate.ExecuteSql(contextWithOutgoingMetadata(primeCtx, sc.md, sc.disableRouteToLeader), stmt)
-			return err
-		},
-		func(p *dynamicChannelPool) transport.DCPMetricsRecorder {
-			if m := newDCPMetrics(p, sc, mp); m != nil {
-				return m
-			}
-			return nil
-		},
-		errDCPNoEntries,
-		errDCPPrimeNotReady,
 	)
 }
 
+// TODO: Investigate replacing dcpSpannerClient and dcpConnPoolTrackedStream with
+// per-entry gRPC unary/stream client interceptors injected when dialing each DCP
+// entry. The interceptors could track load and trigger scale-up for both the
+// ConnPool path and spannerClient path, avoiding per-RPC wrapper methods.
 type dcpSpannerClient struct {
 	entry    *dcpEntry
 	delegate spannerClient
@@ -235,6 +224,7 @@ func (c *dcpSpannerClient) ListSessions(ctx context.Context, req *spannerpb.List
 	if iter != nil && iter.InternalFetch != nil {
 		fetch := iter.InternalFetch
 		iter.InternalFetch = func(pageSize int, pageToken string) ([]*spannerpb.Session, string, error) {
+			// Pages are fetched after the call that built the iterator returned.
 			if !c.entry.Acquire() {
 				return nil, "", errDCPNoEntries
 			}
@@ -354,6 +344,8 @@ func (c *dcpStreamingReadClient) Recv() (*spannerpb.PartialResultSet, error) {
 	return resp, err
 }
 
+// RecvMsg is Recv for callers that receive the PartialResultSet into a message
+// of another type. See vtproto_stream.go.
 func (c *dcpStreamingReadClient) RecvMsg(m any) error {
 	err := c.Spanner_StreamingReadClient.RecvMsg(m)
 	if err != nil {
@@ -367,6 +359,9 @@ func (c *dcpStreamingReadClient) CloseSend() error {
 	if err != nil {
 		c.ref.Done(err)
 	}
+	// Successful CloseSend only half-closes the client send side. The stream is
+	// still active until Recv returns a terminal error/EOF or the context is
+	// canceled, so do not release stream load here.
 	return err
 }
 
@@ -388,9 +383,19 @@ func (c *dcpBatchWriteClient) CloseSend() error {
 	if err != nil {
 		c.ref.Done(err)
 	}
+	// Successful CloseSend only half-closes the client send side. The stream is
+	// still active until Recv returns a terminal error/EOF or the context is
+	// canceled, so do not release stream load here.
 	return err
 }
 
+// dcpResolvingSpannerClient keeps using its bound entry while it is active or
+// draining, so all operations of a read-write transaction stay on one channel
+// through a scale-down. It re-picks only once the bound entry is closed.
+//
+// TODO: Investigate replacing this per-RPC resolving wrapper with a generic
+// interceptor-based approach after the DCP load-tracking interceptor follow-up
+// is designed.
 type dcpResolvingSpannerClient struct {
 	transport.DCPResolver[spannerClient]
 }
@@ -403,6 +408,8 @@ func newDCPResolvingSpannerClient(pool *dynamicChannelPool, entry *dcpEntry) *dc
 	return c
 }
 
+// Acquire overrides the embedded DCPResolver.Acquire to guard a nil outer
+// pointer and return spanner's errDCPNoEntries when Pool is nil.
 func (c *dcpResolvingSpannerClient) Acquire(ctx context.Context) (*dcpEntry, error) {
 	if c == nil || c.Pool == nil {
 		return nil, errDCPNoEntries
@@ -410,6 +417,8 @@ func (c *dcpResolvingSpannerClient) Acquire(ctx context.Context) (*dcpEntry, err
 	return c.DCPResolver.Acquire(ctx)
 }
 
+// Resolve returns the bound entry's client for callers that start no RPC,
+// preserving Acquire's nil-receiver/nil-pool errDCPNoEntries handling.
 func (c *dcpResolvingSpannerClient) Resolve(ctx context.Context) (spannerClient, error) {
 	e, err := c.Acquire(ctx)
 	if err != nil {
@@ -419,26 +428,20 @@ func (c *dcpResolvingSpannerClient) Resolve(ctx context.Context) (spannerClient,
 	return e.Client, nil
 }
 
-func (c *dcpResolvingSpannerClient) acquire(ctx context.Context) (*dcpEntry, error) {
-	return c.Acquire(ctx)
-}
-
-func (c *dcpResolvingSpannerClient) resolve(ctx context.Context) (spannerClient, error) {
-	return c.Resolve(ctx)
-}
-
 func (c *dcpResolvingSpannerClient) CallOptions() *vkit.CallOptions {
-	client, err := c.resolve(context.Background())
+	client, err := c.Resolve(context.Background())
 	if err != nil || client == nil {
 		return &vkit.CallOptions{}
 	}
 	return client.CallOptions()
 }
 
+// Close is intentionally a no-op. The resolver is a session-handle view over a
+// DCP entry; dynamicChannelPool owns and closes the underlying clients.
 func (c *dcpResolvingSpannerClient) Close() error { return nil }
 
 func (c *dcpResolvingSpannerClient) Connection() *grpc.ClientConn {
-	client, err := c.resolve(context.Background())
+	client, err := c.Resolve(context.Background())
 	if err != nil || client == nil {
 		return nil
 	}
@@ -446,7 +449,7 @@ func (c *dcpResolvingSpannerClient) Connection() *grpc.ClientConn {
 }
 
 func (c *dcpResolvingSpannerClient) requestIDHeaderInjector(ctx context.Context) (*requestIDWrap, error) {
-	client, err := c.resolve(ctx)
+	client, err := c.Resolve(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -461,7 +464,7 @@ func (c *dcpResolvingSpannerClient) requestIDHeaderInjector(ctx context.Context)
 }
 
 func (c *dcpResolvingSpannerClient) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -470,7 +473,7 @@ func (c *dcpResolvingSpannerClient) CreateSession(ctx context.Context, req *span
 }
 
 func (c *dcpResolvingSpannerClient) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest, opts ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -479,7 +482,7 @@ func (c *dcpResolvingSpannerClient) BatchCreateSessions(ctx context.Context, req
 }
 
 func (c *dcpResolvingSpannerClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -488,7 +491,7 @@ func (c *dcpResolvingSpannerClient) GetSession(ctx context.Context, req *spanner
 }
 
 func (c *dcpResolvingSpannerClient) ListSessions(ctx context.Context, req *spannerpb.ListSessionsRequest, opts ...gax.CallOption) *vkit.SessionIterator {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return &vkit.SessionIterator{}
 	}
@@ -497,7 +500,7 @@ func (c *dcpResolvingSpannerClient) ListSessions(ctx context.Context, req *spann
 }
 
 func (c *dcpResolvingSpannerClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest, opts ...gax.CallOption) error {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return err
 	}
@@ -506,7 +509,7 @@ func (c *dcpResolvingSpannerClient) DeleteSession(ctx context.Context, req *span
 }
 
 func (c *dcpResolvingSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -515,7 +518,7 @@ func (c *dcpResolvingSpannerClient) ExecuteSql(ctx context.Context, req *spanner
 }
 
 func (c *dcpResolvingSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -524,7 +527,7 @@ func (c *dcpResolvingSpannerClient) ExecuteStreamingSql(ctx context.Context, req
 }
 
 func (c *dcpResolvingSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -533,7 +536,7 @@ func (c *dcpResolvingSpannerClient) ExecuteBatchDml(ctx context.Context, req *sp
 }
 
 func (c *dcpResolvingSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -542,7 +545,7 @@ func (c *dcpResolvingSpannerClient) Read(ctx context.Context, req *spannerpb.Rea
 }
 
 func (c *dcpResolvingSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -551,7 +554,7 @@ func (c *dcpResolvingSpannerClient) StreamingRead(ctx context.Context, req *span
 }
 
 func (c *dcpResolvingSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -560,7 +563,7 @@ func (c *dcpResolvingSpannerClient) BeginTransaction(ctx context.Context, req *s
 }
 
 func (c *dcpResolvingSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -569,7 +572,7 @@ func (c *dcpResolvingSpannerClient) Commit(ctx context.Context, req *spannerpb.C
 }
 
 func (c *dcpResolvingSpannerClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return err
 	}
@@ -578,7 +581,7 @@ func (c *dcpResolvingSpannerClient) Rollback(ctx context.Context, req *spannerpb
 }
 
 func (c *dcpResolvingSpannerClient) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -587,7 +590,7 @@ func (c *dcpResolvingSpannerClient) PartitionQuery(ctx context.Context, req *spa
 }
 
 func (c *dcpResolvingSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -596,7 +599,7 @@ func (c *dcpResolvingSpannerClient) PartitionRead(ctx context.Context, req *span
 }
 
 func (c *dcpResolvingSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
-	e, err := c.acquire(ctx)
+	e, err := c.Acquire(ctx)
 	if err != nil {
 		return nil, err
 	}
