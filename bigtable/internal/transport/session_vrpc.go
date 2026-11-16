@@ -107,7 +107,11 @@ func (s *Session) Invoke(ctx context.Context, desc VRpcDescriptor, req interface
 			unavailable(ErrSessionNotActive, "session is not active (state: %v)", st))
 	}
 
-	reqBytes, err := desc.Encode(req)
+	env, err := s.sessionType.Envelope()
+	if err != nil {
+		return result, tagErr(StateUncommitted, fmt.Errorf("encode vRPC request: %w", err))
+	}
+	reqBytes, err := desc.Encode(env, req)
 	if err != nil {
 		return result, tagErr(StateUncommitted, fmt.Errorf("encode vRPC request: %w", err))
 	}
@@ -172,7 +176,7 @@ func (s *Session) Invoke(ctx context.Context, desc VRpcDescriptor, req interface
 	// window (SESSION_SPEC.md #7).
 	s.resetHeartbeatDeadline()
 
-	err = s.awaitInvokeResult(ctx, rpc, desc, &result)
+	err = s.awaitInvokeResult(ctx, rpc, env, desc, &result)
 	return result, err
 }
 
@@ -240,12 +244,12 @@ func buildInvokeRequest(ctx context.Context, rpcID int64, reqBytes []byte, attem
 // dropped. Otherwise mark the slot as cancelled — activeRPC stays set
 // so a concurrent Invoke fails claimSlot with Uncommitted rather than
 // racing to id-mismatch the abandoned response.
-func (s *Session) awaitInvokeResult(ctx context.Context, rpc *vrpcImpl, desc VRpcDescriptor, result *InvokeResult) error {
+func (s *Session) awaitInvokeResult(ctx context.Context, rpc *vrpcImpl, env ResourceEnvelope, desc VRpcDescriptor, result *InvokeResult) error {
 	select {
 	case <-ctx.Done():
 		select {
 		case res := <-rpc.resultChan:
-			return s.processResult(desc, result, res)
+			return s.processResult(env, desc, result, res)
 		default:
 		}
 		cancelErr := tagErr(StateTransportFailure, ctx.Err())
@@ -253,7 +257,7 @@ func (s *Session) awaitInvokeResult(ctx context.Context, rpc *vrpcImpl, desc VRp
 		s.recordCtxDone(ctx, rpc, desc.Method(), result.SentAt, stillActive)
 		return cancelErr
 	case res := <-rpc.resultChan:
-		return s.processResult(desc, result, res)
+		return s.processResult(env, desc, result, res)
 	}
 }
 
@@ -265,7 +269,7 @@ func (s *Session) awaitInvokeResult(ctx context.Context, rpc *vrpcImpl, desc VRp
 // The res.resp.RpcId == rpc.id check that used to live here is gone:
 // under slotMu, handleVRPCResponse gates the id match BEFORE drainSlot,
 // so deliver can only ever put a matching-id response into resultChan.
-func (s *Session) processResult(desc VRpcDescriptor, result *InvokeResult, res vrpcResult) error {
+func (s *Session) processResult(env ResourceEnvelope, desc VRpcDescriptor, result *InvokeResult, res vrpcResult) error {
 	wire := time.Since(result.SentAt)
 	ci := res.ClusterInfo()
 	result.ClusterInfo = ci
@@ -278,7 +282,7 @@ func (s *Session) processResult(desc VRpcDescriptor, result *InvokeResult, res v
 	if res.errResp != nil {
 		return tagErr(StateServerResult, errorResponseToErr(res.errResp))
 	}
-	respMsg, decodeErr := desc.Decode(res.resp.Payload)
+	respMsg, decodeErr := desc.Decode(env, res.resp.Payload)
 	if decodeErr != nil {
 		// StateServerResult per SESSION_SPEC #9: the server sent a
 		// response, so the request likely COMMITTED even if we can't

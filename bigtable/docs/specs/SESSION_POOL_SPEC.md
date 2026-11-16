@@ -14,9 +14,10 @@
 
 ### 1. Every resource has separate session pools — read, write, and read-write — except MaterializedView, which has read only
 
-- `SessionClient.OpenTable(name)` → `sessionTable{readPool, writePool, readWritePool}` with descriptors `READ_ROW` / `MUTATE_ROW` (`client.go`).
-- `SessionClient.OpenAuthorizedView(view)` → `sessionTable{readPool, writePool, readWritePool}` with descriptors `READ_ROW_AUTH_VIEW` / `MUTATE_ROW_AUTH_VIEW` (`client.go`).
-- `SessionClient.OpenMaterializedView(view)` → `sessionTable{readPool, writePool=nil, readWritePool=nil}` with `READ_ROW_MAT_VIEW`; **MatView is read-only by contract**. Write operations on a MatView MUST return `ErrWriteNotSupported`.
+- `SessionClient.OpenTable(name)` → `sessionTable{readPool, writePool, readWritePool}` backed by `TABLE_SESSION` pools (`SessionTypeTable` → `TableEnvelope`) (`client.go`).
+- `SessionClient.OpenAuthorizedView(table, view)` → `sessionTable{readPool, writePool, readWritePool}` backed by `AUTHORIZED_VIEW_SESSION` pools (`SessionTypeAuthorizedView` → `AuthorizedViewEnvelope`) (`client.go`).
+- `SessionClient.OpenMaterializedView(view)` → `sessionTable{readPool, writePool=nil, readWritePool=nil}` backed by a `MATERIALIZED_VIEW_SESSION` pool (`SessionTypeMaterializedView` → `MaterializedViewEnvelope`); **MatView is read-only by contract**. Write operations on a MatView MUST return `ErrWriteNotSupported`.
+- Method descriptors (`READ_ROW`, `MUTATE_ROW` in `descriptors.go`) are resource-agnostic — one `VRpcDescriptor` per method — while outer resource framing (`TableRequest`/`TableResponse`, `AuthorizedViewRequest`/`AuthorizedViewResponse`, `MaterializedViewRequest`/`MaterializedViewResponse`) is handled by the `ResourceEnvelope` resolved from `Session.sessionType` in `Session.Invoke` (`session_vrpc.go`). `sessionTable` holds no per-method descriptor fields.
 - Pools are **`lazyPool`** — opened on first operation, not at `OpenTable`. Failed opens are **not cached** (a transient `proto.Marshal` failure MUST NOT strand the table); the next call retries. See `SESSION_CLIENT_SPEC.md #1` for the two-layer lazy-creation topology.
 - **Read, write, and read-write pools do not share sessions.** Each pool holds its own set of Sessions typed for its direction (via `SessionType` on the underlying `Session`), each running its own OpenSession bidi stream. This is what keeps the multiplex=1 rule (`SESSION_SPEC.md #2`) from starving cross-direction traffic.
 - Behavioral shift vs classic path: marshal failures on session payloads surface on first operation, not at `OpenTable`. Callers that expected eager failure will see it later.

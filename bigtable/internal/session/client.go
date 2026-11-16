@@ -606,7 +606,7 @@ func (sc *sessionClient) OpenTable(tableID string) TableAPI {
 	openReadWrite := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_READ_WRITE},
 		poolKey{resource, permissionReadWrite}, readWriteOwner)
-	return newSessionTable(tableID, openRead, openWrite, openReadWrite, readOwner.Close, writeOwner.Close, readWriteOwner.Close, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
+	return newSessionTable(tableID, openRead, openWrite, openReadWrite, readOwner.Close, writeOwner.Close, readWriteOwner.Close, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
 }
 
 // OpenAuthorizedView returns a TableAPI for an authorized view.
@@ -626,7 +626,7 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 	openReadWrite := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_READ_WRITE},
 		poolKey{resource, permissionReadWrite}, readWriteOwner)
-	return newSessionTable(table, openRead, openWrite, openReadWrite, readOwner.Close, writeOwner.Close, readWriteOwner.Close, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
+	return newSessionTable(table, openRead, openWrite, openReadWrite, readOwner.Close, writeOwner.Close, readWriteOwner.Close, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
 }
 
 // OpenMaterializedView returns a read-only TableAPI for a
@@ -643,7 +643,7 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 			Permission:           btpb.OpenMaterializedViewRequest_PERMISSION_READ,
 		},
 		poolKey{"mv:" + view, permissionRead}, readOwner)
-	return newSessionTable("", openRead, nil, nil, readOwner.Close, nil, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
+	return newSessionTable("", openRead, nil, nil, readOwner.Close, nil, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
 }
 
 // Close tears down in a phased order that keeps late callbacks from

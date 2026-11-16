@@ -63,8 +63,6 @@ type sessionTable struct {
 	readPool       *lazyPool
 	writePool      *lazyPool
 	readWritePool  *lazyPool
-	readVRpcDesc   btransport.VRpcDescriptor
-	writeVRpcDesc  btransport.VRpcDescriptor
 	md             metadata.MD
 	metricsFactory *metrics.Factory
 	// closeRead / closeWrite / closeReadWrite tear down the specific pools this
@@ -88,10 +86,9 @@ type sessionTable struct {
 }
 
 // newSessionTable is the internal constructor. Callers (sessionClient)
-// build the lazyPool open + release closures, supply the vRPC
-// descriptors, and resource-scoped metadata. metricsFactory may be nil
-// to disable per-attempt metrics. closeWrite and closeReadWrite may be nil for
-// materialized views (no write or read-write side).
+// build the lazyPool open + release closures and resource-scoped metadata.
+// metricsFactory may be nil to disable per-attempt metrics. closeWrite and
+// closeReadWrite may be nil for materialized views (no write or read-write side).
 func newSessionTable(
 	tableID string,
 	openRead func() (Invoker, error),
@@ -100,15 +97,11 @@ func newSessionTable(
 	closeRead func() error,
 	closeWrite func() error,
 	closeReadWrite func() error,
-	readVRpcDesc btransport.VRpcDescriptor,
-	writeVRpcDesc btransport.VRpcDescriptor,
 	md metadata.MD,
 	metricsFactory *metrics.Factory,
 ) *sessionTable {
 	t := &sessionTable{
 		tableID:        tableID,
-		readVRpcDesc:   readVRpcDesc,
-		writeVRpcDesc:  writeVRpcDesc,
 		md:             md,
 		metricsFactory: metricsFactory,
 		closeRead:      closeRead,
@@ -177,16 +170,12 @@ func (t *sessionTable) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequ
 	if req == nil {
 		return nil, errors.New("bigtable/session: SessionReadRowRequest is nil")
 	}
-	return dispatch[btransport.ReadRowArgs, btpb.SessionReadRowResponse, *btpb.SessionReadRowResponse](ctx, t, opSpec[btransport.ReadRowArgs, btpb.SessionReadRowResponse, *btpb.SessionReadRowResponse]{
-		method:     "ReadRow",
+	return dispatch[*btpb.SessionReadRowRequest, btpb.SessionReadRowResponse, *btpb.SessionReadRowResponse](ctx, t, opSpec[*btpb.SessionReadRowRequest, btpb.SessionReadRowResponse, *btpb.SessionReadRowResponse]{
 		pool:       t.readPool,
-		desc:       t.readVRpcDesc,
+		desc:       btransport.READ_ROW,
 		idempotent: true,
-		args: btransport.ReadRowArgs{
-			RowKey: string(req.GetKey()),
-			Filter: req.GetFilter(),
-		},
-		errNoPool: errReadPoolNil,
+		req:        req,
+		errNoPool:  errReadPoolNil,
 	})
 }
 
@@ -201,36 +190,30 @@ func (t *sessionTable) MutateRow(ctx context.Context, req *btpb.SessionMutateRow
 	if req == nil {
 		return nil, errors.New("bigtable/session: SessionMutateRowRequest is nil")
 	}
-	return dispatch[btransport.MutateRowArgs, btpb.SessionMutateRowResponse, *btpb.SessionMutateRowResponse](ctx, t, opSpec[btransport.MutateRowArgs, btpb.SessionMutateRowResponse, *btpb.SessionMutateRowResponse]{
-		method:     "MutateRow",
+	return dispatch[*btpb.SessionMutateRowRequest, btpb.SessionMutateRowResponse, *btpb.SessionMutateRowResponse](ctx, t, opSpec[*btpb.SessionMutateRowRequest, btpb.SessionMutateRowResponse, *btpb.SessionMutateRowResponse]{
 		pool:       t.writePool,
-		desc:       t.writeVRpcDesc,
+		desc:       btransport.MUTATE_ROW,
 		idempotent: mutationsAreRetryable(req.GetMutations()),
-		args: btransport.MutateRowArgs{
-			RowKey:    string(req.GetKey()),
-			Mutations: req.GetMutations(),
-		},
-		errNoPool: ErrWriteNotSupported,
+		req:        req,
+		errNoPool:  ErrWriteNotSupported,
 	})
 }
 
-// opSpec parameterises dispatch over the six axes that used to differ
-// between ReadRow and MutateRow: RPC method label (for tracer + error
-// context), pool, descriptor, idempotence, encoded args, and the
-// error to return when the lazy pool resolves to nil.
+// opSpec parameterises dispatch over the per-operation axes: pool, method
+// descriptor, idempotence, request proto, and the error to return when the
+// lazy pool resolves to nil.
 //
 // Resp is constrained to *R (a pointer type whose element implements
 // proto.Message) so the response type-assertion stays compile-time
 // safe AND `resp == nil` remains a legal comparison inside dispatch.
-type opSpec[Args any, R any, Resp interface {
+type opSpec[Req proto.Message, R any, Resp interface {
 	*R
 	proto.Message
 }] struct {
-	method     string
 	pool       *lazyPool
 	desc       btransport.VRpcDescriptor
 	idempotent bool
-	args       Args
+	req        Req
 	errNoPool  error
 }
 
@@ -238,21 +221,22 @@ type opSpec[Args any, R any, Resp interface {
 // per-op session RPC — Scan, ReadModifyWrite when they land) reduce
 // to. Return type is the caller-instantiated Resp so the response
 // coerce stays compile-time safe.
-func dispatch[Args any, R any, Resp interface {
+func dispatch[Req proto.Message, R any, Resp interface {
 	*R
 	proto.Message
-}](ctx context.Context, t *sessionTable, spec opSpec[Args, R, Resp]) (Resp, error) {
+}](ctx context.Context, t *sessionTable, spec opSpec[Req, R, Resp]) (Resp, error) {
 	var zero Resp
+	method := spec.desc.Method()
 	pool, poolErr := spec.pool.get()
 	if poolErr != nil {
-		return zero, fmt.Errorf("session %s pool open: %w", spec.method, poolErr)
+		return zero, fmt.Errorf("session %s pool open: %w", method, poolErr)
 	}
 	if pool == nil {
 		return zero, spec.errNoPool
 	}
 
 	ctx = attachOutgoingMetadata(ctx, t.md)
-	ctx, mt, ownedTracer := t.ensureTracer(ctx, spec.method)
+	ctx, mt, ownedTracer := t.ensureTracer(ctx, method)
 	if ownedTracer {
 		defer mt.RecordOperationCompletion()
 	}
@@ -277,21 +261,21 @@ func dispatch[Args any, R any, Resp interface {
 		return result.Response, nil
 	}
 
-	ctx = btransport.WithVRpcMetadata(ctx, spec.desc.Method(), 0)
+	ctx = btransport.WithVRpcMetadata(ctx, method, 0)
 	chained := btransport.ChainInterceptors(retryInterceptor)
-	res, err := chained(ctx, spec.args, baseHandler)
+	res, err := chained(ctx, spec.req, baseHandler)
 	if err != nil {
 		if ownedTracer {
 			mt.SetCurrOpStatus(metrics.GrpcCodeOf(err))
 		}
-		return zero, fmt.Errorf("session %s vRPC: %w", spec.method, err)
+		return zero, fmt.Errorf("session %s vRPC: %w", method, err)
 	}
 	resp, ok := res.(Resp)
 	if !ok || resp == nil {
 		if ownedTracer {
 			mt.SetCurrOpStatus(codes.Internal)
 		}
-		return zero, fmt.Errorf("session %s: missing response payload (%T)", spec.method, res)
+		return zero, fmt.Errorf("session %s: missing response payload (%T)", method, res)
 	}
 	if ownedTracer {
 		mt.SetCurrOpStatus(codes.OK)
