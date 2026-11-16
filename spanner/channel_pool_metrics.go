@@ -43,11 +43,7 @@ const (
 	disableChannelPoolBuiltinMetricsEnvVar = "SPANNER_DISABLE_CHANNEL_POOL_BUILTIN_METRICS"
 )
 
-// channelPoolBuiltinMetricsConfig holds the settings a channel pool needs to
-// report its metrics to the built-in Cloud Monitoring pipeline.
 type channelPoolBuiltinMetricsConfig struct {
-	// meterProvider is the built-in metrics meter provider. A nil value
-	// disables the channel pool built-in metrics.
 	meterProvider metric.MeterProvider
 	lane          string
 }
@@ -67,8 +63,6 @@ func newChannelPoolBuiltinMetricsConfig(tf *builtinMetricsTracerFactory, isDirec
 	return cfg
 }
 
-// channelPoolBuiltinMetrics reports the channel pool metrics that are only
-// sent to the built-in Cloud Monitoring pipeline.
 type channelPoolBuiltinMetrics struct {
 	registration metric.Registration
 }
@@ -85,7 +79,7 @@ func newChannelPoolBuiltinMetrics(p *dynamicChannelPool, cfg channelPoolBuiltinM
 		metric.WithUnit(metricUnitCount),
 	)
 	if err != nil {
-		logf(p.sc.logger, "Error during registering instrument for metric %s, error: %v", name, err)
+		logf(p.sc.logger, "spanner_dcp: failed to create built-in metric %s: %v", name, err)
 		return nil
 	}
 	activeAttrs := metric.WithAttributeSet(attribute.NewSet(
@@ -118,7 +112,7 @@ func (m *channelPoolBuiltinMetrics) close(logger *log.Logger) {
 		return
 	}
 	if err := m.registration.Unregister(); err != nil {
-		logf(logger, "Failed to unregister built-in channel pool metric callback, error: %v", err)
+		logf(logger, "spanner_dcp: failed to unregister built-in channel pool metric callback: %v", err)
 	}
 	m.registration = nil
 }

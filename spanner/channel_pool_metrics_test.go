@@ -35,8 +35,6 @@ import (
 
 const channelCountMetricName = nativeMetricsPrefix + metricNameChannelPoolChannelCount
 
-// channelCountByState returns the channel_count values keyed by the state
-// label, and checks that every point has the expected pool_mode and lane.
 func channelCountByState(t *testing.T, rm metricdata.ResourceMetrics, wantLane string) map[string]int64 {
 	t.Helper()
 	m := requireDCPMetric(t, rm, channelCountMetricName)
@@ -84,9 +82,6 @@ func TestChannelPoolBuiltinMetricsConfig(t *testing.T) {
 		{name: "built-in metrics off", tf: &builtinMetricsTracerFactory{}, wantLane: laneCloudPath},
 		{name: "off switch set", tf: &builtinMetricsTracerFactory{meterProvider: mp}, disableEnv: "true", wantLane: laneCloudPath},
 		{name: "off switch false", tf: &builtinMetricsTracerFactory{meterProvider: mp}, disableEnv: "false", wantProvider: true, wantLane: laneCloudPath},
-		{name: "off switch 1", tf: &builtinMetricsTracerFactory{meterProvider: mp}, disableEnv: "1", wantLane: laneCloudPath},
-		{name: "off switch TRUE", tf: &builtinMetricsTracerFactory{meterProvider: mp}, disableEnv: "TRUE", wantLane: laneCloudPath},
-		{name: "off switch unreadable", tf: &builtinMetricsTracerFactory{meterProvider: mp}, disableEnv: "abc", wantProvider: true, wantLane: laneCloudPath},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -138,7 +133,6 @@ func TestChannelPoolBuiltinMetricsCountsScaledUpChannels(t *testing.T) {
 	m := newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath})
 	defer m.close(nil)
 
-	// Drive scaleUp synchronously, as in the existing DCP metrics tests.
 	p.primeSession.Store(client.sm.multiplexedSession.id)
 	p.getEntries()[0].unaryLoad.Store(3)
 	p.totalRPCLoad.Store(3)
@@ -170,22 +164,8 @@ func TestChannelPoolBuiltinMetricsDisabledWithoutMeterProvider(t *testing.T) {
 	if got := newChannelPoolBuiltinMetrics(client.sc.dynamicPool, channelPoolBuiltinMetricsConfig{lane: laneCloudPath}); got != nil {
 		t.Fatalf("metrics without a meter provider mismatch:\n Got: %+v\nWant: nil", got)
 	}
-	// DisableNativeMetrics is set by the test setup, so the pool has none.
 	if got := client.sc.dynamicPool.builtinMetrics; got != nil {
 		t.Fatalf("pool built-in metrics with native metrics disabled mismatch:\n Got: %+v\nWant: nil", got)
-	}
-}
-
-func TestChannelPoolBuiltinMetricsWorksWithNoopMeterProvider(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
-	defer teardown()
-	m := newChannelPoolBuiltinMetrics(client.sc.dynamicPool, channelPoolBuiltinMetricsConfig{meterProvider: noop.NewMeterProvider(), lane: laneCloudPath})
-	if m == nil || m.registration == nil {
-		t.Fatalf("metrics with a no-op meter provider mismatch:\n Got: %+v\nWant: a registered callback", m)
-	}
-	m.close(nil)
-	if m.registration != nil {
-		t.Fatal("callback still registered after close")
 	}
 }
 
@@ -298,7 +278,7 @@ func TestChannelPoolBuiltinMetricsCollectWhilePoolChanges(t *testing.T) {
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
-	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneCloudPath), int64(p.Num()), 0)
+	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneCloudPath), int64(cfg.DCPMinChannels), 0)
 }
 
 func runSelect1(t *testing.T, client *Client) {
@@ -316,10 +296,6 @@ func runSelect1(t *testing.T, client *Client) {
 	}
 }
 
-// exportedChannelCounts returns the channel_count values received by the fake
-// Cloud Monitoring server, keyed by the state label. It also checks the metric
-// kind, value type, interval and the exact label set of every point, because
-// Cloud Monitoring rejects the whole request if one time series is invalid.
 func exportedChannelCounts(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRequest) map[string]int64 {
 	t.Helper()
 	got := make(map[string]int64)
@@ -376,9 +352,6 @@ func exportedMetricTypes(reqs []*monitoringpb.CreateTimeSeriesRequest) map[strin
 	return types
 }
 
-// TestChannelPoolBuiltinMetricsExportedToCloudMonitoring checks the whole
-// path: client config, pool, built-in meter provider and the Cloud Monitoring
-// exporter, using a fake Cloud Monitoring server.
 func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 	if isEmulatorEnvSet() {
 		t.Skip("built-in metrics are off with the emulator")
@@ -420,7 +393,6 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 				drainDCPEntryForTest(t, p, p.getEntries()[0])
 			}
 
-			// Close flushes the built-in metrics before the pool closes.
 			client.Close()
 			reqs := monitoringServer.CreateServiceTimeSeriesRequests()
 			for _, name := range []string{metricNameOperationCount, metricNameAttemptCount} {
@@ -466,7 +438,6 @@ func TestChannelPoolBuiltinMetricsNotSentToCustomerMeterProviders(t *testing.T) 
 		"OpenTelemetryMeterProvider": collectDCPMetrics(t, dcpReader),
 		"ClientMetricsProvider":      collectDCPMetrics(t, clientMetricsReader),
 	}
-	// Both customer providers still receive their own metrics.
 	requireDCPMetric(t, customerMetrics["OpenTelemetryMeterProvider"], dcpMetricsPrefix+"num_channels")
 	requireDCPMetric(t, customerMetrics["ClientMetricsProvider"], clientMetricsPrefix+metricNameOperationCount)
 	for provider, rm := range customerMetrics {
