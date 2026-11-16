@@ -136,6 +136,11 @@ defer client.Close()
 
 You can also disable these metrics by setting `SPANNER_DISABLE_BUILTIN_METRICS` to `true`.
 
+When the dynamic channel pool is enabled, the client also exports the number of
+active and draining channels in the pool. Set
+`SPANNER_DISABLE_CHANNEL_POOL_BUILTIN_METRICS` to `true` to disable only this
+metric.
+
 > Note: Exporting client-side metrics requires the `monitoring.timeSeries.create` IAM permission. To grant this, ask your administrator to assign the [Monitoring Metric Writer](https://cloud.google.com/iam/docs/roles-permissions/monitoring#monitoring.metricWriter) (`roles/monitoring.metricWriter`) IAM role to your application's service account.
 
 ### Exporting client metrics to OpenTelemetry

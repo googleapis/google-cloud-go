@@ -17,6 +17,7 @@ package spanner
 import (
 	"context"
 	"errors"
+	"reflect"
 	"strings"
 	"sync"
 	"testing"
@@ -28,10 +29,8 @@ import (
 	"go.opentelemetry.io/otel/metric/noop"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/proto"
 )
 
 const channelCountMetricName = nativeMetricsPrefix + metricNameChannelPoolChannelCount
@@ -147,10 +146,10 @@ func TestChannelPoolBuiltinMetricsCountsScaledUpChannels(t *testing.T) {
 	p.getEntries()[0].unaryLoad.Store(0)
 	p.totalRPCLoad.Store(0)
 
-	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneCloudPath), int64(p.Num()), 0)
-	if got := p.Num(); got <= 1 {
-		t.Fatalf("channels after scale-up mismatch:\n Got: %d\nWant: more than 1", got)
+	if got := p.Num(); got != 3 {
+		t.Fatalf("channels after scale-up mismatch:\n Got: %d\nWant: 3", got)
 	}
+	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneCloudPath), 3, 0)
 }
 
 func TestChannelPoolBuiltinMetricsDirectPathLane(t *testing.T) {
@@ -181,7 +180,13 @@ func TestChannelPoolBuiltinMetricsWorksWithNoopMeterProvider(t *testing.T) {
 	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
 	defer teardown()
 	m := newChannelPoolBuiltinMetrics(client.sc.dynamicPool, channelPoolBuiltinMetricsConfig{meterProvider: noop.NewMeterProvider(), lane: laneCloudPath})
+	if m == nil || m.registration == nil {
+		t.Fatalf("metrics with a no-op meter provider mismatch:\n Got: %+v\nWant: a registered callback", m)
+	}
 	m.close(nil)
+	if m.registration != nil {
+		t.Fatal("callback still registered after close")
+	}
 }
 
 func TestChannelPoolBuiltinMetricsPoolCloseUnregistersCallback(t *testing.T) {
@@ -272,6 +277,7 @@ func TestChannelPoolBuiltinMetricsCollectWhilePoolChanges(t *testing.T) {
 				t.Errorf("Collect() failed: %v", err)
 				return
 			}
+			time.Sleep(time.Millisecond)
 		}
 	}()
 	for i := 0; i < 20; i++ {
@@ -310,31 +316,10 @@ func runSelect1(t *testing.T, client *Client) {
 	}
 }
 
-// useFakeMonitoringServer points the built-in metrics exporter at a fake
-// Cloud Monitoring server for the rest of the test.
-func useFakeMonitoringServer(t *testing.T) *MetricsTestServer {
-	t.Helper()
-	server, err := NewMetricTestServer()
-	if err != nil {
-		t.Fatalf("NewMetricTestServer() failed: %v", err)
-	}
-	go server.Serve()
-	t.Cleanup(server.Shutdown)
-	origCreateExporterOptions := createExporterOptions
-	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
-		return []option.ClientOption{
-			option.WithEndpoint(server.Endpoint),
-			option.WithoutAuthentication(),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		}
-	}
-	t.Cleanup(func() { createExporterOptions = origCreateExporterOptions })
-	return server
-}
-
 // exportedChannelCounts returns the channel_count values received by the fake
 // Cloud Monitoring server, keyed by the state label. It also checks the metric
-// kind, value type and labels of every point.
+// kind, value type, interval and the exact label set of every point, because
+// Cloud Monitoring rejects the whole request if one time series is invalid.
 func exportedChannelCounts(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRequest) map[string]int64 {
 	t.Helper()
 	got := make(map[string]int64)
@@ -349,22 +334,33 @@ func exportedChannelCounts(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRe
 			if ts.ValueType != googlemetricpb.MetricDescriptor_INT64 {
 				t.Fatalf("value type mismatch:\n Got: %v\nWant: INT64", ts.ValueType)
 			}
-			labels := ts.Metric.Labels
-			wantLabels := map[string]string{
-				metricLabelKeyPoolMode:   poolModeDynamic,
-				metricLabelKeyLane:       laneCloudPath,
-				metricLabelKeyClientName: clientName,
-				metricLabelKeyDatabase:   "[DATABASE]",
+			if len(ts.Points) != 1 {
+				t.Fatalf("points mismatch:\n Got: %d\nWant: 1", len(ts.Points))
 			}
-			for k, v := range wantLabels {
-				if labels[k] != v {
-					t.Fatalf("label %q mismatch:\n Got: %q\nWant: %q", k, labels[k], v)
-				}
+			interval := ts.Points[0].GetInterval()
+			if !proto.Equal(interval.GetStartTime(), interval.GetEndTime()) {
+				t.Fatalf("gauge interval start and end mismatch:\n Got: %v\nWant: %v", interval.GetStartTime(), interval.GetEndTime())
+			}
+			labels := ts.Metric.Labels
+			state := labels[metricLabelKeyState]
+			if state != channelStateActive && state != channelStateDraining {
+				t.Fatalf("state label mismatch:\n Got: %q\nWant: %q or %q", state, channelStateActive, channelStateDraining)
 			}
 			if labels[metricLabelKeyClientUID] == "" {
 				t.Fatalf("label %q missing in %v", metricLabelKeyClientUID, labels)
 			}
-			got[labels[metricLabelKeyState]] = ts.Points[0].GetValue().GetInt64Value()
+			wantLabels := map[string]string{
+				metricLabelKeyPoolMode:   poolModeDynamic,
+				metricLabelKeyState:      state,
+				metricLabelKeyLane:       laneCloudPath,
+				metricLabelKeyClientUID:  labels[metricLabelKeyClientUID],
+				metricLabelKeyClientName: clientName,
+				metricLabelKeyDatabase:   "[DATABASE]",
+			}
+			if !reflect.DeepEqual(labels, wantLabels) {
+				t.Fatalf("labels mismatch:\n Got: %v\nWant: %v", labels, wantLabels)
+			}
+			got[state] = ts.Points[0].GetValue().GetInt64Value()
 		}
 	}
 	return got
@@ -389,7 +385,7 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 	}
 	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
 	disableDCPDrainIdleFloor(t)
-	monitoringServer := useFakeMonitoringServer(t)
+	monitoringServer := installTestMonitoringExporter(t).server
 
 	tests := []struct {
 		name       string
@@ -452,7 +448,7 @@ func TestChannelPoolBuiltinMetricsNotSentToCustomerMeterProviders(t *testing.T) 
 	t.Setenv(disableChannelPoolBuiltinMetricsEnvVar, "")
 	enableOpenTelemetryMetricsForTest(t)
 	disableDCPDrainIdleFloor(t)
-	monitoringServer := useFakeMonitoringServer(t)
+	monitoringServer := installTestMonitoringExporter(t).server
 	dcpReader, dcpMP := newDCPManualReader()
 	clientMetricsReader, clientMetricsMP := newDCPManualReader()
 	cfg := testDCPConfig(2, 1, 4)
