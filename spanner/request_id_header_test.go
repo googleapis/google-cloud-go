@@ -48,6 +48,11 @@ import (
 var randIDForProcess = requestid.RandIDForProcess()
 
 const xSpannerRequestIDVersion = requestid.Version
+const xSpannerRequestIDHeader = requestid.Header
+
+func (r requestID) logicalRequestKey() string {
+	return requestid.RequestID(r).LogicalRequestKey()
+}
 
 func gRPCCallOptionsToRequestID(opts []grpc.CallOption) (md metadata.MD, reqID requestID, found bool) {
 	md, r, found := requestid.GRPCCallOptionsToRequestID(opts)

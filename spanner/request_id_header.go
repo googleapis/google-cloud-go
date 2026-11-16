@@ -27,8 +27,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const xSpannerRequestIDHeader = requestid.Header
-
 // optsWithNextRequestID bundles priors with a new header "x-goog-spanner-request-id"
 func (g *grpcSpannerClient) optsWithNextRequestID(priors []gax.CallOption) []gax.CallOption {
 	return g.reqIDTracker.OptsWithNextRequestID(priors)
@@ -39,10 +37,6 @@ func (g *grpcSpannerClient) prepareRequestIDTrackers(clientID int, channelID uin
 }
 
 type requestID string
-
-func (r requestID) logicalRequestKey() string {
-	return requestid.RequestID(r).LogicalRequestKey()
-}
 
 type wrapRetryFn = requestid.WrapRetryFn
 
@@ -88,7 +82,7 @@ func logicalRequestKeyFromCallOptions(opts []gax.CallOption) string {
 }
 
 type requestIDWrap struct {
-	*requestid.Wrap
+	Wrap *requestid.Wrap
 }
 
 func (riw *requestIDWrap) withNextRetryAttempt(attempt uint32) gax.CallOption {

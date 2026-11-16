@@ -20,6 +20,7 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+	"io"
 	"math"
 	"math/big"
 	"strings"
@@ -153,7 +154,9 @@ func callOptionsHaveRequestID(opts []gax.CallOption) bool {
 }
 
 // stripRequestIDGRPCOptions returns a slice without any grpc.HeaderCallOption
-// carrying x-goog-spanner-request-id, without mutating opts's backing array.
+// carrying x-goog-spanner-request-id. It never mutates opts's backing array and
+// never returns a slice sharing spare capacity with opts (which callOption.Resolve's
+// subsequent append relies on).
 func stripRequestIDGRPCOptions(opts []grpc.CallOption) []grpc.CallOption {
 	if len(opts) == 0 {
 		return nil
@@ -178,8 +181,23 @@ func stripRequestIDGRPCOptions(opts []grpc.CallOption) []grpc.CallOption {
 	return filtered
 }
 
-// ErrorAugmenter attaches a requestID to a non-nil RPC error when appropriate.
+// ErrorAugmenter attaches reqID to a non-nil RPC error when appropriate.
+//
+// HeaderInjector passes non-nil errors other than io.EOF to ErrorAugmenter; if an
+// implementation returns nil, HeaderInjector preserves the original non-nil error.
+// Implementations should also return sentinel errors (such as context.Canceled or
+// iterator.Done) unchanged when callers check them by identity.
 type ErrorAugmenter func(err error, reqID string) error
+
+func applyErrorAugmenter(augment ErrorAugmenter, err error, reqID RequestID) error {
+	if err == nil || err == io.EOF || augment == nil {
+		return err
+	}
+	if augmented := augment(err, string(reqID)); augmented != nil {
+		return augmented
+	}
+	return err
+}
 
 // HeaderInjector is a gRPC unary and stream client interceptor that propagates
 // x-goog-spanner-request-id from CallOptions into outgoing metadata, OpenTelemetry
@@ -189,15 +207,10 @@ type HeaderInjector struct {
 }
 
 // NewHeaderInjector creates a HeaderInjector using augment to attach request IDs to errors.
+// When augment is nil, request-ID headers and span attributes are still injected,
+// returned errors are left unmodified, and client streams are not wrapped.
 func NewHeaderInjector(augment ErrorAugmenter) *HeaderInjector {
 	return &HeaderInjector{augment: augment}
-}
-
-func (wr *HeaderInjector) augmentErr(err error, reqID RequestID) error {
-	if err == nil || wr == nil || wr.augment == nil {
-		return err
-	}
-	return wr.augment(err, string(reqID))
 }
 
 func injectRequestIDIntoContext(ctx context.Context, opts []grpc.CallOption) (context.Context, RequestID, bool) {
@@ -221,10 +234,10 @@ func (wr *HeaderInjector) InterceptUnary(ctx context.Context, method string, req
 	ctx, reqID, foundRequestID := injectRequestIDIntoContext(ctx, opts)
 
 	err := invoker(ctx, method, req, reply, cc, opts...)
-	if !foundRequestID {
+	if !foundRequestID || wr == nil {
 		return err
 	}
-	return wr.augmentErr(err, reqID)
+	return applyErrorAugmenter(wr.augment, err, reqID)
 }
 
 type errWrappingClientStream struct {
@@ -233,21 +246,14 @@ type errWrappingClientStream struct {
 	augment ErrorAugmenter
 }
 
-func (rew *errWrappingClientStream) processErr(err error) error {
-	if err == nil || rew.augment == nil {
-		return err
-	}
-	return rew.augment(err, string(rew.reqID))
-}
-
 func (rew *errWrappingClientStream) SendMsg(msg any) error {
 	err := rew.ClientStream.SendMsg(msg)
-	return rew.processErr(err)
+	return applyErrorAugmenter(rew.augment, err, rew.reqID)
 }
 
 func (rew *errWrappingClientStream) RecvMsg(msg any) error {
 	err := rew.ClientStream.RecvMsg(msg)
-	return rew.processErr(err)
+	return applyErrorAugmenter(rew.augment, err, rew.reqID)
 }
 
 var _ grpc.ClientStream = (*errWrappingClientStream)(nil)
@@ -264,17 +270,19 @@ func (wr *HeaderInjector) InterceptStream(ctx context.Context, desc *grpc.Stream
 	if err == nil {
 		return wcs, nil
 	}
-	return wcs, wr.augmentErr(err, reqID)
+	return wcs, applyErrorAugmenter(wr.augment, err, reqID)
 }
 
-// Tracker tracks client ordinal, channel ID, and request sequence numbers for a gRPC channel.
+// Tracker is a lightweight value descriptor that tracks client ordinal, channel ID,
+// and logical request sequence numbers for a gRPC channel.
+// nthRequest is incremented once per new logical request (and is not advanced on retries).
 type Tracker struct {
 	clientID   int
 	channelID  uint64
 	nthRequest *atomic.Uint32
 }
 
-// NewTracker constructs a Tracker for the given clientID, channelID, and shared request counter.
+// NewTracker constructs a Tracker value sharing the client-wide nthRequest counter.
 // nthRequest must not be nil.
 func NewTracker(clientID int, channelID uint64, nthRequest *atomic.Uint32) Tracker {
 	if nthRequest == nil {
@@ -304,7 +312,9 @@ func (t *Tracker) generateAndInsertRequestID(md *metadata.MD, nthRequest, attemp
 	md.Set(Header, reqID)
 }
 
-// OptsWithNextRequestID appends a per-attempt request-ID CallOption unless priors already have one.
+// OptsWithNextRequestID appends a request-ID CallOption (which allocates one
+// nthRequest ordinal per Resolve and increments only the attempt number across
+// retries) unless priors already resolve an x-goog-spanner-request-id header.
 func (t *Tracker) OptsWithNextRequestID(priors []gax.CallOption) []gax.CallOption {
 	if callOptionsHaveRequestID(priors) {
 		return priors
@@ -397,6 +407,8 @@ func (riw LogicalWrap) WithNextRetryAttempt(attempt uint32) gax.CallOption {
 	return callOption{md: &md}
 }
 
+// callOption replaces any prior x-goog-spanner-request-id gRPC header option with md.
+// Its zero value (md == nil) is an intentional no-op.
 type callOption struct {
 	md *metadata.MD
 }

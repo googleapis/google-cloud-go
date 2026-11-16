@@ -18,6 +18,8 @@ import (
 	"context"
 	"encoding/hex"
 	"errors"
+	"fmt"
+	"io"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -101,43 +103,83 @@ func TestRequestIDAndCallOptions(t *testing.T) {
 	}
 }
 
+// rawGRPCOpt assigns a pre-allocated []grpc.CallOption slice directly onto cs.GRPC
+// without copying, exercising spare-capacity clipping on shared backing arrays.
+type rawGRPCOpt []grpc.CallOption
+
+func (o rawGRPCOpt) Resolve(cs *gax.CallSettings) {
+	cs.GRPC = o
+}
+
 func TestConcurrentSharedGRPCOptionsNoRace(t *testing.T) {
-	// Pre-allocate a slice with spare capacity (cap=8 > len=2) and also an initial
-	// request-ID HeaderCallOption to exercise both stripRequestIDGRPCOptions and
-	// retryerWithRequestID.Resolve concurrently without mutating the shared backing array.
+	// 1. Realistic shared gax.WithGRPCOptions without a request-ID header (len=1, cap=1):
+	//    catches in-place opts[:0] mutation on the !hasReqID branch.
+	sharedNoReqID := gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(4096))
+
+	// 2. Shared non-copying slice with spare capacity (len=1, cap=8) and no request-ID header:
+	//    catches dropping opts[:len:len] in stripRequestIDGRPCOptions and dropping
+	//    cs.GRPC[:len:len] in retryerWithRequestID.Resolve.
+	sharedRaw := make(rawGRPCOpt, 1, 8)
+	sharedRaw[0] = grpc.MaxCallRecvMsgSize(4096)
+
+	// 3. Shared gax.WithGRPCOptions carrying a seeded request-ID header:
+	//    catches in-place opts[:0] mutation on the hasReqID branch.
 	seedMD := metadata.MD{Header: []string{"1.seed.1.1.1.1"}}
-	sharedGRPC := make([]grpc.CallOption, 0, 8)
-	sharedGRPC = append(sharedGRPC, grpc.MaxCallRecvMsgSize(4096), grpc.Header(&seedMD))
-	sharedOpt := gax.WithGRPCOptions(sharedGRPC...)
+	sharedSeeded := gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(4096), grpc.Header(&seedMD))
+
+	// 4. Shared gax.CallOption slice with spare capacity (len=1, cap=4):
+	//    catches dropping priors[:len:len] in OptsWithNextRequestID.
+	sharedPriors := make([]gax.CallOption, 1, 4)
+	sharedPriors[0] = sharedRaw
 
 	var nth atomic.Uint32
 	tr := NewTracker(1, 2, &nth)
+	proc := RandIDForProcess()
 
 	var wg sync.WaitGroup
 	for g := 0; g < 16; g++ {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
-			for i := 0; i < 50; i++ {
-				// Path 1: streaming override replacing prior request-ID option.
-				w := tr.NewWrap()
-				var cs1 gax.CallSettings
-				sharedOpt.Resolve(&cs1)
-				w.WithNextRetryAttempt(1).Resolve(&cs1)
-				if _, got, ok := GRPCCallOptionsToRequestID(cs1.GRPC); !ok || strings.Contains(string(got), "seed") {
-					t.Errorf("goroutine %d: unexpected stream reqID %q (ok=%v)", id, got, ok)
+			for i := 0; i < 40; i++ {
+				// Case A: !hasReqID via realistic gax.WithGRPCOptions.
+				w1 := tr.NewWrap()
+				var csA gax.CallSettings
+				sharedNoReqID.Resolve(&csA)
+				w1.WithNextRetryAttempt(1).Resolve(&csA)
+				wantA := fmt.Sprintf("1.%s.1.2.%d.1", proc, w1.nthRequest)
+				if _, got, ok := GRPCCallOptionsToRequestID(csA.GRPC); !ok || string(got) != wantA {
+					t.Errorf("goroutine %d case A: got %q (ok=%v), want %q", id, got, ok, wantA)
 					return
 				}
 
-				// Path 2: unary retryer appending onto shared non-request-ID slice with spare cap.
-				plainGRPC := make([]grpc.CallOption, 0, 8)
-				plainGRPC = append(plainGRPC, grpc.MaxCallRecvMsgSize(4096))
-				plainGax := make([]gax.CallOption, 0, 4)
-				plainGax = append(plainGax, gax.WithGRPCOptions(plainGRPC...))
-				out := tr.OptsWithNextRequestID(plainGax)
-				cs2 := resolveCallSettings(out)
-				if _, got, ok := GRPCCallOptionsToRequestID(cs2.GRPC); !ok || got == "" {
-					t.Errorf("goroutine %d: missing unary reqID (ok=%v)", id, ok)
+				// Case B: !hasReqID with spare capacity on cs.GRPC.
+				w2 := tr.NewWrap()
+				var csB gax.CallSettings
+				sharedRaw.Resolve(&csB)
+				w2.WithNextRetryAttempt(1).Resolve(&csB)
+				wantB := fmt.Sprintf("1.%s.1.2.%d.1", proc, w2.nthRequest)
+				if _, got, ok := GRPCCallOptionsToRequestID(csB.GRPC); !ok || string(got) != wantB {
+					t.Errorf("goroutine %d case B: got %q (ok=%v), want %q", id, got, ok, wantB)
+					return
+				}
+
+				// Case C: hasReqID override replacing seeded request-ID option.
+				w3 := tr.NewWrap()
+				var csC gax.CallSettings
+				sharedSeeded.Resolve(&csC)
+				w3.WithNextRetryAttempt(1).Resolve(&csC)
+				wantC := fmt.Sprintf("1.%s.1.2.%d.1", proc, w3.nthRequest)
+				if _, got, ok := GRPCCallOptionsToRequestID(csC.GRPC); !ok || string(got) != wantC {
+					t.Errorf("goroutine %d case C: got %q (ok=%v), want %q", id, got, ok, wantC)
+					return
+				}
+
+				// Case D: unary OptsWithNextRequestID + retryerWithRequestID.Resolve
+				// on shared priors (cap=4) and shared cs.GRPC (cap=8).
+				csD := resolveCallSettings(tr.OptsWithNextRequestID(sharedPriors))
+				if _, got, ok := GRPCCallOptionsToRequestID(csD.GRPC); !ok || got == "" {
+					t.Errorf("goroutine %d case D: missing unary reqID (ok=%v)", id, ok)
 					return
 				}
 			}
@@ -146,36 +188,139 @@ func TestConcurrentSharedGRPCOptionsNoRace(t *testing.T) {
 	wg.Wait()
 }
 
-func TestHeaderInjectorAugmentsError(t *testing.T) {
-	inj := NewHeaderInjector(func(err error, reqID string) error {
-		return errors.New(err.Error() + " [reqID=" + reqID + "]")
-	})
+type fakeClientStream struct {
+	grpc.ClientStream
+	recvErr error
+}
+
+func (f *fakeClientStream) RecvMsg(any) error { return f.recvErr }
+func (f *fakeClientStream) SendMsg(any) error { return f.recvErr }
+
+func TestHeaderInjectorAugmentsErrorAndEnforcesContract(t *testing.T) {
 	var nth atomic.Uint32
 	tr := NewTracker(1, 1, &nth)
-	opts := tr.OptsWithNextRequestID(nil)
-	var cs gax.CallSettings
-	for _, o := range opts {
-		o.Resolve(&cs)
-	}
+	cs := resolveCallSettings(tr.OptsWithNextRequestID(nil))
 
-	var seenIncoming string
-	err := inj.InterceptUnary(
-		context.Background(),
-		"/google.spanner.v1.Spanner/ExecuteSql",
-		nil,
-		nil,
-		nil,
-		func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
-			if md, ok := metadata.FromOutgoingContext(ctx); ok {
-				if vals := md.Get(Header); len(vals) > 0 {
-					seenIncoming = vals[0]
+	t.Run("attaches request ID on non-EOF errors and skips io.EOF", func(t *testing.T) {
+		inj := NewHeaderInjector(func(err error, reqID string) error {
+			return errors.New(err.Error() + " [reqID=" + reqID + "]")
+		})
+
+		var seenIncoming string
+		err := inj.InterceptUnary(
+			context.Background(),
+			"/google.spanner.v1.Spanner/ExecuteSql",
+			nil,
+			nil,
+			nil,
+			func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+				if md, ok := metadata.FromOutgoingContext(ctx); ok {
+					if vals := md.Get(Header); len(vals) > 0 {
+						seenIncoming = vals[0]
+					}
 				}
+				return errors.New("boom")
+			},
+			cs.GRPC...,
+		)
+		if err == nil || !strings.Contains(err.Error(), "[reqID="+seenIncoming+"]") || seenIncoming == "" {
+			t.Fatalf("expected augmented error with reqID %q, got %v", seenIncoming, err)
+		}
+
+		// io.EOF must pass through unwrapped on both unary and stream RecvMsg.
+		eofUnary := inj.InterceptUnary(
+			context.Background(),
+			"/google.spanner.v1.Spanner/ExecuteSql",
+			nil,
+			nil,
+			nil,
+			func(context.Context, string, any, any, *grpc.ClientConn, ...grpc.CallOption) error { return io.EOF },
+			cs.GRPC...,
+		)
+		if eofUnary != io.EOF {
+			t.Fatalf("expected io.EOF untouched from InterceptUnary, got %v", eofUnary)
+		}
+
+		st, err := inj.InterceptStream(
+			context.Background(),
+			&grpc.StreamDesc{ServerStreams: true},
+			nil,
+			"/google.spanner.v1.Spanner/ExecuteStreamingSql",
+			func(context.Context, *grpc.StreamDesc, *grpc.ClientConn, string, ...grpc.CallOption) (grpc.ClientStream, error) {
+				return &fakeClientStream{recvErr: io.EOF}, nil
+			},
+			cs.GRPC...,
+		)
+		if err != nil {
+			t.Fatalf("InterceptStream failed: %v", err)
+		}
+		if got := st.RecvMsg(nil); got != io.EOF {
+			t.Fatalf("expected io.EOF untouched from stream.RecvMsg, got %v", got)
+		}
+	})
+
+	t.Run("nil-returning augmenter preserves original non-nil error", func(t *testing.T) {
+		origErr := errors.New("rpc failed")
+		inj := NewHeaderInjector(func(error, string) error { return nil })
+		got := inj.InterceptUnary(
+			context.Background(),
+			"/google.spanner.v1.Spanner/ExecuteSql",
+			nil,
+			nil,
+			nil,
+			func(context.Context, string, any, any, *grpc.ClientConn, ...grpc.CallOption) error { return origErr },
+			cs.GRPC...,
+		)
+		if got != origErr {
+			t.Fatalf("expected original error %v when augmenter returns nil, got %v", origErr, got)
+		}
+	})
+
+	t.Run("nil augmenter and nil HeaderInjector still inject outgoing header", func(t *testing.T) {
+		origErr := errors.New("unchanged")
+		rawStream := &fakeClientStream{recvErr: origErr}
+
+		for _, inj := range []*HeaderInjector{NewHeaderInjector(nil), nil} {
+			var wireReqID string
+			got := inj.InterceptUnary(
+				context.Background(),
+				"/google.spanner.v1.Spanner/ExecuteSql",
+				nil,
+				nil,
+				nil,
+				func(ctx context.Context, _ string, _, _ any, _ *grpc.ClientConn, _ ...grpc.CallOption) error {
+					if md, ok := metadata.FromOutgoingContext(ctx); ok {
+						if vals := md.Get(Header); len(vals) > 0 {
+							wireReqID = vals[0]
+						}
+					}
+					return origErr
+				},
+				cs.GRPC...,
+			)
+			if got != origErr || wireReqID == "" {
+				t.Fatalf("inj=%v: got err=%v wireReqID=%q, want origErr and non-empty header", inj, got, wireReqID)
 			}
-			return errors.New("boom")
-		},
-		cs.GRPC...,
-	)
-	if err == nil || !strings.Contains(err.Error(), "[reqID="+seenIncoming+"]") || seenIncoming == "" {
-		t.Fatalf("expected augmented error with reqID %q, got %v", seenIncoming, err)
-	}
+
+			var streamWireID string
+			st, sErr := inj.InterceptStream(
+				context.Background(),
+				&grpc.StreamDesc{ServerStreams: true},
+				nil,
+				"/google.spanner.v1.Spanner/ExecuteStreamingSql",
+				func(ctx context.Context, _ *grpc.StreamDesc, _ *grpc.ClientConn, _ string, _ ...grpc.CallOption) (grpc.ClientStream, error) {
+					if md, ok := metadata.FromOutgoingContext(ctx); ok {
+						if vals := md.Get(Header); len(vals) > 0 {
+							streamWireID = vals[0]
+						}
+					}
+					return rawStream, nil
+				},
+				cs.GRPC...,
+			)
+			if sErr != nil || st != rawStream || streamWireID == "" {
+				t.Fatalf("inj=%v: expected unwrapped rawStream with injected header, got st=%T err=%v header=%q", inj, st, sErr, streamWireID)
+			}
+		}
+	})
 }

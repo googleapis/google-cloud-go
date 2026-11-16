@@ -26,6 +26,7 @@ import (
 	"cloud.google.com/go/spanner/internal/requestid"
 	"cloud.google.com/go/spanner/internal/transport"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
 	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -165,7 +166,16 @@ func setSpanAttributes[T any](span oteltrace.Span, req T) {
 }
 
 func setGFEAndAFESpanAttributes(span oteltrace.Span, latencyMap map[string]time.Duration) {
-	transport.SetGFEAndAFESpanAttributes(span, latencyMap)
+	if !span.IsRecording() {
+		return
+	}
+	for t, v := range latencyMap {
+		if t == gfeTimingHeader || t == afeTimingHeader {
+			span.SetAttributes(
+				attribute.Float64(t[:3]+".latency_ms", float64(v.Nanoseconds())/1e6),
+			)
+		}
+	}
 }
 
 type cachedExecuteStreamingSQLClient = transport.CachedExecuteStreamingSQLClient

@@ -56,16 +56,6 @@ const (
 	RequestsCompressionHeader = "x-response-encoding"
 	// RouteToLeaderHeader is the gRPC metadata key enabling leader-aware routing.
 	RouteToLeaderHeader = "x-goog-spanner-route-to-leader"
-	// EndToEndTracingHeader is the gRPC metadata key enabling server-side end-to-end tracing.
-	EndToEndTracingHeader = "x-goog-spanner-end-to-end-tracing"
-	// AFEMetricHeader is the gRPC metadata key enabling AFE server-timing headers.
-	AFEMetricHeader = "x-goog-spanner-enable-afe-server-timing"
-	// ServerTimingHeaderKey is the response metadata key carrying GFE/AFE latencies.
-	ServerTimingHeaderKey = "server-timing"
-	// GFETimingHeader is the server-timing metric name for Google Frontend latency.
-	GFETimingHeader = "gfet4t7"
-	// AFETimingHeader is the server-timing metric name for Spanner AFE latency.
-	AFETimingHeader = "afe"
 	// DefaultNumChannels is the default number of gRPC channels in a static connection pool.
 	DefaultNumChannels = 4
 )
@@ -116,8 +106,13 @@ func ResolveGCPFallbackEnabled() bool {
 }
 
 // DefaultClientOptions combines the generated GAPIC default options, Spanner client
-// default options (connection pool size, user-agent, interceptors, keepalive, DirectPath,
-// and gzip compressor), and userOpts in precedence order: userOpts > clientDefaultOpts > generatedDefaultOpts.
+// default options (connection pool size, user-agent, interceptors, keepalive, and
+// DirectPath), and userOpts in order: generatedDefaultOpts, clientDefaultOpts, userOpts
+// (so userOpts override earlier defaults), followed by the gzip compressor call option
+// when compression == "gzip" (which therefore overrides userOpts).
+//
+// It reads GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS and GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN
+// from the process environment when resolving DirectPath options.
 func DefaultClientOptions(
 	numChannels int,
 	compression string,
@@ -166,6 +161,7 @@ func DefaultClientOptions(
 
 // WithRequestIDInterceptors returns a copy of userOpts with stream and unary
 // x-goog-spanner-request-id client interceptors appended.
+// augmentErr may be nil (see requestid.NewHeaderInjector for the ErrorAugmenter contract).
 func WithRequestIDInterceptors(augmentErr requestid.ErrorAugmenter, userOpts ...option.ClientOption) []option.ClientOption {
 	reqIDInjector := requestid.NewHeaderInjector(augmentErr)
 	opts := make([]option.ClientOption, 0, len(userOpts)+2)
@@ -176,19 +172,34 @@ func WithRequestIDInterceptors(augmentErr requestid.ErrorAugmenter, userOpts ...
 	)
 }
 
-// PoolConfig configures connection pool dialing for CreateFallbackConnPool and DialStaticPool.
+// PoolConfig configures connection pool dialing and client option construction.
 type PoolConfig struct {
-	NumChannels          int
+	// NumChannels sets the target gRPC connection pool size. Zero passes
+	// option.WithGRPCConnectionPool(0) (dialing 1 channel unless overridden by
+	// userOpts); pass DefaultNumChannels explicitly for Spanner's 4-channel default.
+	NumChannels int
+	// HasNumChannelsConfig reports whether NumChannels was explicitly set by the
+	// caller, enabling validation against conflicting WithGRPCConnectionPool userOpts.
 	HasNumChannelsConfig bool
-	Compression          string
-	EnableDirectAccess   bool
-	AugmentError         requestid.ErrorAugmenter
-	MeterProvider        metric.MeterProvider
-	UnaryInterceptors    []grpc.UnaryClientInterceptor
-	StreamInterceptors   []grpc.StreamClientInterceptor
+	// Compression enables request compression when set to "gzip".
+	Compression string
+	// EnableDirectAccess enables DirectPath unless overridden by GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS.
+	EnableDirectAccess bool
+	// AugmentError optionally attaches x-goog-spanner-request-id to non-EOF RPC
+	// errors. May be nil (headers are still injected without wrapping errors).
+	AugmentError requestid.ErrorAugmenter
+	// MeterProvider configures OpenTelemetry metrics on CreateFallbackConnPool
+	// (unused by DialStaticPool and ClientOptions).
+	MeterProvider metric.MeterProvider
+	// UnaryInterceptors are prepended before userOpts unary client interceptors.
+	UnaryInterceptors []grpc.UnaryClientInterceptor
+	// StreamInterceptors are prepended before userOpts stream client interceptors.
+	StreamInterceptors []grpc.StreamClientInterceptor
 }
 
-func (cfg PoolConfig) clientOptions(userOpts ...option.ClientOption) []option.ClientOption {
+// ClientOptions builds the resolved slice of ClientOptions combining DefaultClientOptions,
+// userOpts, and x-goog-spanner-request-id interceptors for cfg.
+func (cfg PoolConfig) ClientOptions(userOpts ...option.ClientOption) []option.ClientOption {
 	opts := WithRequestIDInterceptors(cfg.AugmentError, userOpts...)
 	return DefaultClientOptions(cfg.NumChannels, cfg.Compression, cfg.EnableDirectAccess, cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
 }
@@ -238,13 +249,14 @@ func (fw *FallbackPool) Close() error {
 }
 
 // CreateFallbackConnPool dials a DirectPath primary pool and a CloudPath fallback pool
-// wrapped in a FallbackPool.
+// wrapped in a FallbackPool, returning the pool and the resolved primary ClientOptions
+// (cfg.ClientOptions(userOpts...)) for reuse by routed endpoint clients.
 func CreateFallbackConnPool(
 	ctx context.Context,
 	cfg PoolConfig,
 	userOpts ...option.ClientOption,
 ) (gtransport.ConnPool, []option.ClientOption, error) {
-	allOpts := cfg.clientOptions(userOpts...)
+	allOpts := cfg.ClientOptions(userOpts...)
 	primaryConn, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
 		return nil, nil, err
@@ -290,12 +302,13 @@ func CreateFallbackConnPool(
 
 // DialStaticPool dials a static gtransport.ConnPool with x-goog-spanner-request-id
 // interceptors and validates that NumChannels does not conflict with WithGRPCConnectionPool.
+// The second return value is the resolved ClientOption slice (cfg.ClientOptions(userOpts...)).
 func DialStaticPool(
 	ctx context.Context,
 	cfg PoolConfig,
 	userOpts ...option.ClientOption,
 ) (gtransport.ConnPool, []option.ClientOption, error) {
-	allOpts := cfg.clientOptions(userOpts...)
+	allOpts := cfg.ClientOptions(userOpts...)
 	pool, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
 		return nil, nil, err
@@ -387,20 +400,6 @@ func SetSpanAttributes[T any](span oteltrace.Span, req T) {
 		}
 	}
 	span.SetAttributes(attrs...)
-}
-
-// SetGFEAndAFESpanAttributes records GFE and AFE latency attributes on span if recording.
-func SetGFEAndAFESpanAttributes(span oteltrace.Span, latencyMap map[string]time.Duration) {
-	if !span.IsRecording() {
-		return
-	}
-	for t, v := range latencyMap {
-		if t == GFETimingHeader || t == AFETimingHeader {
-			span.SetAttributes(
-				attribute.Float64(t[:3]+".latency_ms", float64(v.Nanoseconds())/1e6),
-			)
-		}
-	}
 }
 
 // CachedExecuteStreamingSQLClient caches the response headers of an ExecuteStreamingSql

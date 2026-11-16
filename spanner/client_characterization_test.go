@@ -18,19 +18,26 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"testing"
 
 	. "cloud.google.com/go/spanner/internal/testutil"
-	"cloud.google.com/go/spanner/internal/transport"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestNewClientWithConfig_Characterization(t *testing.T) {
-	t.Run("static pool default and custom NumChannels and conflict check", func(t *testing.T) {
+	if useGRPCgcp {
+		t.Skip("Skipping pool characterization test when using grpc-gcp")
+	}
+
+	t.Run("static and fallback pool sizing and mismatch error chain", func(t *testing.T) {
 		t.Setenv("SPANNER_EMULATOR_HOST", "")
+		t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "")
 		_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 			DisableNativeMetrics: true,
 		})
@@ -52,9 +59,12 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 			t.Fatalf("expected custom pool.Num()=2, got %d", got)
 		}
 
-		// Conflicting NumChannels and WithGRPCConnectionPool returns InvalidArgument *spanner.Error.
+		// Conflicting NumChannels and WithGRPCConnectionPool returns an exact InvalidArgument
+		// *spanner.Error -> *apierror.APIError -> *status.Error chain on both static and fallback pools.
 		_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 		defer serverTeardown()
+
+		const wantStaticDesc = "Connection pool mismatch: NumChannels=4, WithGRPCConnectionPool=6. Only set one of these options, or set both to the same value."
 		badClient, err := NewClientWithConfig(
 			context.Background(),
 			"projects/p/instances/i/databases/d",
@@ -68,9 +78,26 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 			badClient.Close()
 			t.Fatal("expected InvalidArgument when NumChannels=4 conflicts with WithGRPCConnectionPool(6)")
 		}
-		if ErrCode(err) != codes.InvalidArgument {
-			t.Fatalf("expected codes.InvalidArgument, got %v", err)
+		assertPoolMismatchErrorChain(t, err, wantStaticDesc)
+
+		t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "true")
+		t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
+		const wantFallbackDesc = "Connection pool mismatch: NumChannels=4, primaryConn.Num()=6, fallbackConn.Num()=6"
+		badFbClient, fbErr := NewClientWithConfig(
+			context.Background(),
+			"projects/p/instances/i/databases/d",
+			ClientConfig{
+				NumChannels:          4,
+				EnableDirectAccess:   true,
+				DisableNativeMetrics: true,
+			},
+			append(opts, option.WithGRPCConnectionPool(6))...,
+		)
+		if fbErr == nil {
+			badFbClient.Close()
+			t.Fatal("expected InvalidArgument on fallback pool NumChannels mismatch")
 		}
+		assertPoolMismatchErrorChain(t, fbErr, wantFallbackDesc)
 	})
 
 	t.Run("DCP enabled vs bypassed on SPANNER_EMULATOR_HOST", func(t *testing.T) {
@@ -131,17 +158,26 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 		}
 
 		// Malformed scheme-only SPANNER_EMULATOR_HOST="http://" must still bind WithEndpoint("passthrough:///")
-		// and fail locally rather than dialing production Spanner in plaintext.
+		// and fail locally in the passthrough resolver rather than dialing production Spanner in plaintext.
 		t.Setenv("SPANNER_EMULATOR_HOST", "http://")
 		badEmuClient, err := NewClientWithConfig(
 			context.Background(),
 			"projects/p/instances/i/databases/d",
 			ClientConfig{DisableNativeMetrics: true},
 		)
-		if err == nil {
-			defer badEmuClient.Close()
-			if conn := badEmuClient.sc.connPool.Conn(); conn != nil && strings.Contains(conn.Target(), "googleapis.com") {
-				t.Fatalf("SPANNER_EMULATOR_HOST=http:// dialed production target %q", conn.Target())
+		if err != nil {
+			if !strings.Contains(err.Error(), "passthrough") || strings.Contains(err.Error(), "googleapis.com") {
+				t.Fatalf("expected local passthrough resolver failure for SPANNER_EMULATOR_HOST=http://, got %v", err)
+			}
+		} else {
+			conn := badEmuClient.sc.connPool.Conn()
+			target := ""
+			if conn != nil {
+				target = conn.Target()
+			}
+			badEmuClient.Close()
+			if conn == nil || target != "passthrough:///" {
+				t.Fatalf("expected target passthrough:/// when SPANNER_EMULATOR_HOST=http://, got %q", target)
 			}
 		}
 	})
@@ -152,13 +188,6 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "true")
 		t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "false")
 		t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "false")
-
-		if transport.ResolveDirectPathEnabled(true) {
-			t.Fatal("expected GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS=false to override EnableDirectAccess=true")
-		}
-		if transport.ResolveGCPFallbackEnabled() {
-			t.Fatal("expected GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=false to disable fallback")
-		}
 
 		_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 			Compression:        "gzip",
@@ -176,6 +205,11 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 		}
 		if got := client.sc.md.Get(endToEndTracingHeader); len(got) != 1 || got[0] != "true" {
 			t.Fatalf("expected %s=[true] in sc.md, got %v", endToEndTracingHeader, got)
+		}
+		// GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS=false overrides EnableDirectAccess=true,
+		// so the DirectPath-implied AFE server-timing header must remain unset.
+		if got := client.sc.md.Get(afeMetricHeader); len(got) != 0 {
+			t.Fatalf("expected GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS=false to keep %s unset, got %v", afeMetricHeader, got)
 		}
 		if client.sc.sessionLabels["env"] != "test" {
 			t.Fatalf("expected session label env=test, got %v", client.sc.sessionLabels)
@@ -197,4 +231,22 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 			t.Fatalf("expected 2 rows from SelectFooFromBar, got %d", rowCount)
 		}
 	})
+}
+
+func assertPoolMismatchErrorChain(t *testing.T, err error, wantDesc string) {
+	t.Helper()
+	if ErrCode(err) != codes.InvalidArgument {
+		t.Fatalf("ErrCode(err) = %v, want InvalidArgument (%v)", ErrCode(err), err)
+	}
+	wantStatusErr := status.Error(codes.InvalidArgument, wantDesc)
+	if !errors.Is(err, wantStatusErr) {
+		t.Fatalf("expected errors.Is(err, %v) to be true; got err=%v", wantStatusErr, err)
+	}
+	var apiErr *apierror.APIError
+	if !errors.As(err, &apiErr) {
+		t.Fatalf("expected *apierror.APIError in error chain, got %T (%v)", err, err)
+	}
+	if apiErr.Error() != wantStatusErr.Error() {
+		t.Fatalf("apiErr.Error() = %q, want %q", apiErr.Error(), wantStatusErr.Error())
+	}
 }

@@ -65,19 +65,19 @@ const (
 
 	// endToEndTracingHeader is the name of the metadata header if client
 	// has opted-in for the creation of trace spans on the Spanner layer.
-	endToEndTracingHeader = transport.EndToEndTracingHeader
+	endToEndTracingHeader = "x-goog-spanner-end-to-end-tracing"
 
 	// afeMetricHeader is the name of the metadata header if client
 	// has opted-in for the receiving Spanner API Frontend server timing metrics.
-	afeMetricHeader = transport.AFEMetricHeader
+	afeMetricHeader = "x-goog-spanner-enable-afe-server-timing"
 
 	// numChannels is the default value for NumChannels of client.
 	numChannels = transport.DefaultNumChannels
 
 	// Server timing header constants
-	serverTimingHeaderKey = transport.ServerTimingHeaderKey
-	gfeTimingHeader       = transport.GFETimingHeader
-	afeTimingHeader       = transport.AFETimingHeader
+	serverTimingHeaderKey = "server-timing"
+	gfeTimingHeader       = "gfet4t7"
+	afeTimingHeader       = "afe"
 
 	// MinSessions for Experimental Host connection
 	experimentalHostMinSessions = 0
@@ -540,11 +540,13 @@ func createDCPConnPool(
 	metricsTracerFactory *builtinMetricsTracerFactory,
 	opts ...option.ClientOption,
 ) (gtransport.ConnPool, *sessionClient, error) {
-	dcpOpts := transport.WithRequestIDInterceptors(augmentErrorWithRequestID, opts...)
+	userOpts := append([]option.ClientOption(nil), opts...)
+	dcpPoolCfg := newTransportPoolConfig(config, false, nil)
+	dcpPoolCfg.NumChannels = 1
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 	sc.metricsTracerFactory = metricsTracerFactory
 	dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
-		return gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
+		return gtransport.DialPool(dialCtx, dcpPoolCfg.ClientOptions(userOpts...)...)
 	}
 	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, dial)
 	if err != nil {
@@ -570,8 +572,8 @@ func newTransportPoolConfig(config ClientConfig, hasNumChannelsConfig bool, mp m
 
 func wrapPoolDialError(err error) error {
 	var mismatch *transport.PoolSizeMismatchError
-	if errors.As(err, &mismatch) {
-		return ToSpannerError(err)
+	if errors.As(err, &mismatch) && mismatch != nil {
+		return spannerError(codes.InvalidArgument, mismatch.Msg)
 	}
 	return err
 }
