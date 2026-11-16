@@ -177,7 +177,7 @@ func newDynamicChannelPool(
 	)
 }
 
-// TODO: Investigate replacing dcpSpannerClient and dcpConnPoolTrackedStream with
+// TODO: Investigate replacing dcpSpannerClient and transport.DCPConnPoolTrackedStream with
 // per-entry gRPC unary/stream client interceptors injected when dialing each DCP
 // entry. The interceptors could track load and trigger scale-up for both the
 // ConnPool path and spannerClient path, avoiding per-RPC wrapper methods.
@@ -408,8 +408,8 @@ func newDCPResolvingSpannerClient(pool *dynamicChannelPool, entry *dcpEntry) *dc
 	return c
 }
 
-// Acquire overrides the embedded DCPResolver.Acquire to guard a nil outer
-// pointer and return spanner's errDCPNoEntries when Pool is nil.
+// Acquire guards a nil outer pointer or nil Pool (returning spanner's
+// errDCPNoEntries) before delegating to the embedded DCPResolver.Acquire.
 func (c *dcpResolvingSpannerClient) Acquire(ctx context.Context) (*dcpEntry, error) {
 	if c == nil || c.Pool == nil {
 		return nil, errDCPNoEntries

@@ -1307,13 +1307,16 @@ func TestDCPReadWriteTransactionChannelAffinityAcrossDrain(t *testing.T) {
 }
 
 func TestDCPResolvingRequestIDReturnsErrorWhenNoEntry(t *testing.T) {
-	p := &dynamicChannelPool{Cfg: toTransportDCPConfig(testDCPConfig(1, 1, 1))}
-	entries := []*dcpEntry{}
-	p.Entries.Store(&entries)
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
+	defer teardown()
+	p := client.sc.dynamicPool
+	for _, e := range p.GetEntries() {
+		e.State.Store(dcpStateDraining)
+	}
 	resolver := newDCPResolvingSpannerClient(p, nil)
 
-	if _, err := resolver.requestIDHeaderInjector(context.Background()); err == nil {
-		t.Fatal("requestIDHeaderInjector succeeded, want error")
+	if _, err := resolver.requestIDHeaderInjector(context.Background()); !errors.Is(err, errDCPNoEntries) {
+		t.Fatalf("requestIDHeaderInjector error = %v, want errDCPNoEntries", err)
 	}
 }
 
@@ -2248,7 +2251,20 @@ func TestDCPConfigTransportRoundTrip(t *testing.T) {
 		}
 	}
 
-	got := fromTransportDCPConfig(toTransportDCPConfig(in))
+	trCfg := toTransportDCPConfig(in)
+	trVal := reflect.ValueOf(trCfg)
+	for i := 0; i < pubType.NumField(); i++ {
+		name := pubType.Field(i).Name
+		tf := trVal.FieldByName(name)
+		if !tf.IsValid() || tf.Kind() != val.Field(i).Kind() {
+			t.Fatalf("field %s missing or kind mismatch on transport.DCPConfig", name)
+		}
+		if tf.Convert(val.Field(i).Type()).Interface() != val.Field(i).Interface() {
+			t.Fatalf("toTransportDCPConfig field %s = %v, want %v", name, tf.Interface(), val.Field(i).Interface())
+		}
+	}
+
+	got := fromTransportDCPConfig(trCfg)
 	if got != in {
 		t.Fatalf("DCPConfig round-trip mismatch:\n Got: %+v\nWant: %+v", got, in)
 	}

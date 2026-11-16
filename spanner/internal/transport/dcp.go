@@ -215,22 +215,37 @@ type DCPMetricsRecorder interface {
 
 // DCPHooks configures the dial, client-construction, priming, metrics, and error
 // sentinel callbacks for NewDynamicChannelPool.
-// Dial, NewEntryClient, and PrimeRPC are required; all other fields are optional.
 type DCPHooks[C DCPClient] struct {
-	Logger           *log.Logger
-	Dial             func(context.Context) (gtransport.ConnPool, error)
-	NewEntryClient   func(ctx context.Context, e *DCPEntry[C]) error
-	PrimeRPC         func(ctx context.Context, e *DCPEntry[C], sessionID string) error
-	InitMetrics      func(p *DynamicChannelPool[C]) DCPMetricsRecorder
-	NoEntriesErr     error
+	// Logger receives scaled-up channel dial/priming failure warnings.
+	// When nil, warnings are written via the standard log.Printf logger.
+	Logger *log.Logger
+	// Dial (required) dials a single-channel gtransport.ConnPool for a new DCPEntry.
+	Dial func(context.Context) (gtransport.ConnPool, error)
+	// NewEntryClient (required) initializes e.Client (and optionally e.Delegate for
+	// use by PrimeRPC) for a newly dialed DCPEntry. Returning nil without setting
+	// e.Client to a non-zero value fails entry creation and closes the entry.
+	NewEntryClient func(ctx context.Context, e *DCPEntry[C]) error
+	// PrimeRPC (required) verifies a scaled-up DCPEntry against sessionID before
+	// the entry is published to the active pool.
+	PrimeRPC func(ctx context.Context, e *DCPEntry[C], sessionID string) error
+	// InitMetrics optionally registers OpenTelemetry pool metrics after initial
+	// entries are created. When nil (or returning nil), metrics are disabled.
+	InitMetrics func(p *DynamicChannelPool[C]) DCPMetricsRecorder
+	// NoEntriesErr overrides the Unavailable error returned when no active entries
+	// can be picked. When nil, a default codes.Unavailable status error is returned.
+	NoEntriesErr error
+	// PrimeNotReadyErr overrides the FailedPrecondition error used when priming is
+	// attempted before SetPrimeSession. When nil, a default status error is used.
 	PrimeNotReadyErr error
 }
 
 // DynamicChannelPool owns the copy-on-write slice of DCP entries and the
 // background scaling/draining loops.
 //
-// Internal state fields are exported for spanner/sharedcore integration and
-// in-module white-box tests; callers must not mutate them after construction.
+// Cfg, TotalRPCLoad, and DrainingCount are read by spanner OpenTelemetry metrics
+// (spanner/dcp_metrics.go); remaining exported fields (such as Entries, Dial,
+// DialMu, ScaleUpSignal, LastScaleUp, and PrimeSession) are exported for in-module
+// white-box tests and must not be mutated by production callers.
 type DynamicChannelPool[C DCPClient] struct {
 	Entries             atomic.Pointer[[]*DCPEntry[C]]
 	Cfg                 DCPConfig
@@ -267,8 +282,9 @@ type DynamicChannelPool[C DCPClient] struct {
 
 // DCPEntry represents one logical DCP slot.
 //
-// Fields are exported for spanner/sharedcore integration and in-module white-box
-// tests; production callers must only populate Delegate and Client inside NewEntryClient.
+// Production callers populate Client (and optionally Delegate for PrimeRPC) inside
+// DCPHooks.NewEntryClient and read ID, Pool, Delegate, and Client; remaining fields
+// are exported for in-module white-box tests.
 type DCPEntry[C DCPClient] struct {
 	ID            uint64
 	Pool          gtransport.ConnPool
@@ -433,7 +449,8 @@ func (p *DynamicChannelPool[C]) Close() error {
 	return errors.Join(errs...)
 }
 
-// GetEntries returns the current active entry slice.
+// GetEntries returns the current copy-on-write snapshot of active entries.
+// Callers must treat the returned slice and its elements as read-only.
 func (p *DynamicChannelPool[C]) GetEntries() []*DCPEntry[C] {
 	ptr := p.Entries.Load()
 	if ptr == nil {
@@ -455,14 +472,16 @@ func (p *DynamicChannelPool[C]) SetPrimeSession(id string) {
 	}
 }
 
-func (p *DynamicChannelPool[C]) primeSessionID() string {
+// PrimeSessionID returns the currently recorded multiplexed session ID used for
+// channel priming, or "" if none has been set.
+func (p *DynamicChannelPool[C]) PrimeSessionID() string {
 	sid, _ := p.PrimeSession.Load().(string)
 	return sid
 }
 
 // hasPrimeSession reports whether a scaled-up channel can be primed.
 func (p *DynamicChannelPool[C]) hasPrimeSession() bool {
-	return p.primeSessionID() != ""
+	return p.PrimeSessionID() != ""
 }
 
 // newEntry dials one DCP entry and optionally primes it.
@@ -480,6 +499,11 @@ func (p *DynamicChannelPool[C]) newEntry(ctx context.Context, prime bool) (*DCPE
 		entryPool.Close()
 		return nil, err
 	}
+	var zero C
+	if e.Client == zero {
+		_ = e.CloseNow()
+		return nil, errors.New("spanner_dcp: NewEntryClient must set DCPEntry.Client")
+	}
 	if prime {
 		if err := p.prime(ctx, e); err != nil {
 			e.CloseNow()
@@ -490,10 +514,10 @@ func (p *DynamicChannelPool[C]) newEntry(ctx context.Context, prime bool) (*DCPE
 }
 
 // prime verifies a scaled-up channel before publishing it to the active slice.
-// It executes the primeRPC hook (SELECT 1 through the new entry's delegate) so
-// failed channels are never visible to normal request picking.
+// It executes the PrimeRPC hook so failed channels are never visible to normal
+// request picking.
 func (p *DynamicChannelPool[C]) prime(ctx context.Context, e *DCPEntry[C]) error {
-	sid := p.primeSessionID()
+	sid := p.PrimeSessionID()
 	if sid == "" {
 		return p.primeNotReadyError()
 	}
@@ -681,7 +705,7 @@ func (p *DynamicChannelPool[C]) scaleUpWorker() {
 }
 
 // ScaleUp adds and primes channels based on current total load. The new entries
-// are published only after successful dial and SELECT 1 priming.
+// are published only after successful dial and verification via the PrimeRPC hook.
 func (p *DynamicChannelPool[C]) ScaleUp() {
 	select {
 	case <-p.done:
@@ -1012,6 +1036,8 @@ func (e *DCPEntry[C]) closeResources() error {
 	var zero C
 	if e.Client != zero {
 		errs = append(errs, e.Client.Close())
+	} else if e.Delegate != zero {
+		errs = append(errs, e.Delegate.Close())
 	}
 	if e.Pool != nil {
 		errs = append(errs, e.Pool.Close())
@@ -1202,7 +1228,7 @@ func (c *DCPExecuteStreamingSQLClient) Recv() (*spannerpb.PartialResultSet, erro
 }
 
 // RecvMsg is Recv for callers that receive the PartialResultSet into a message
-// of another type. See vtproto_stream.go.
+// of another type. See spanner/vtproto_stream.go.
 func (c *DCPExecuteStreamingSQLClient) RecvMsg(m any) error {
 	err := c.Spanner_ExecuteStreamingSqlClient.RecvMsg(m)
 	if err != nil {
@@ -1227,8 +1253,9 @@ func (c *DCPExecuteStreamingSQLClient) CloseSend() error {
 // so all operations of a read-write transaction stay on one channel through a
 // scale-down. It re-picks only once the bound entry is closed.
 //
-// Fields are exported for spanner/sharedcore wrapper initialization and
-// in-module white-box tests; callers must not mutate Pool after construction.
+// Pool and Entry are initialized by spanner/sharedcore resolving wrappers and
+// in-module white-box tests; Pool must be non-nil when Acquire is called, and
+// must not be mutated after construction.
 type DCPResolver[C DCPClient] struct {
 	Pool  *DynamicChannelPool[C]
 	Entry atomic.Pointer[DCPEntry[C]]
@@ -1238,11 +1265,9 @@ type DCPResolver[C DCPClient] struct {
 // releases when its RPC returns. Scale-down drain cannot close the entry in
 // between, so the RPC never starts on a channel drain closed; only pool
 // shutdown closes a referenced entry. A closed entry is replaced by a fresh
-// pick.
+// pick. Both c and c.Pool must be non-nil (embedding wrappers guard nil outer
+// pointers and nil pools with their own sentinel error).
 func (c *DCPResolver[C]) Acquire(ctx context.Context) (*DCPEntry[C], error) {
-	if c == nil || c.Pool == nil {
-		return nil, (*DynamicChannelPool[C])(nil).noEntriesError()
-	}
 	e := c.Entry.Load()
 	for e == nil || !e.Acquire() {
 		picked, err := c.Pool.Pick(ctx)
@@ -1256,15 +1281,4 @@ func (c *DCPResolver[C]) Acquire(ctx context.Context) (*DCPEntry[C], error) {
 		e = picked
 	}
 	return e, nil
-}
-
-// Resolve returns the bound entry's Client for callers that start no RPC.
-func (c *DCPResolver[C]) Resolve(ctx context.Context) (C, error) {
-	var zero C
-	e, err := c.Acquire(ctx)
-	if err != nil {
-		return zero, err
-	}
-	e.Release()
-	return e.Client, nil
 }
