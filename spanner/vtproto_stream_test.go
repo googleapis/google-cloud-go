@@ -30,7 +30,6 @@ import (
 	"unsafe"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	"cloud.google.com/go/spanner/internal/requestid"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"cloud.google.com/go/spanner/internal/vtpb"
 	"github.com/google/go-cmp/cmp"
@@ -158,7 +157,7 @@ func codecStreamIterator(t *testing.T, streams ...*codecStream) *RowIterator {
 			return s, nil
 		},
 		nil, func(err error) error { return err }, nil, nil,
-		func(error) {}, &grpcSpannerClient{reqIDTracker: requestid.NewTracker(0, 0, new(atomic.Uint32))}, true, false, true)
+		func(error) {}, &grpcSpannerClient{nthRequest: new(atomic.Uint32)}, true, false, true)
 }
 
 // borrowRows are the options of the queries and reads that borrow rows.

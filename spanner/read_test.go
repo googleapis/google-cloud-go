@@ -29,7 +29,6 @@ import (
 	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	"cloud.google.com/go/spanner/internal/requestid"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
@@ -737,7 +736,7 @@ func TestPartialResultSetDecoder_MissingRowType(t *testing.T) {
 			},
 			func(ts time.Time) { gotTs = ts },
 			func(error) {},
-			&grpcSpannerClient{reqIDTracker: requestid.NewTracker(0, 0, new(atomic.Uint32))},
+			&grpcSpannerClient{nthRequest: new(atomic.Uint32)},
 		)
 		defer iter.Stop()
 
@@ -2237,7 +2236,7 @@ func TestRowIteratorNextBufferedRowsDoesNotAllocate(t *testing.T) {
 					return receiver, nil
 				},
 				nil,
-				func(error) {}, &grpcSpannerClient{reqIDTracker: requestid.NewTracker(0, 0, new(atomic.Uint32))})
+				func(error) {}, &grpcSpannerClient{nthRequest: new(atomic.Uint32)})
 			defer iter.Stop()
 
 			// The first call receives the PartialResultSet and buffers its rows.
@@ -2708,7 +2707,7 @@ func TestResumableStreamDecoderDisabledMetricsDoNotReadErrorStatus(t *testing.T)
 						}
 						return &errorReceiver{err: streamErr}, nil
 					},
-					&grpcSpannerClient{reqIDTracker: requestid.NewTracker(0, 0, new(atomic.Uint32))}, true, false)
+					&grpcSpannerClient{nthRequest: new(atomic.Uint32)}, true, false)
 				d.meterTracerFactory = factory
 				if d.next() {
 					t.Fatal("next() succeeded, want error")

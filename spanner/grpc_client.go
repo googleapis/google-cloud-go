@@ -19,11 +19,11 @@ package spanner
 import (
 	"context"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	"cloud.google.com/go/spanner/internal/requestid"
 	"cloud.google.com/go/spanner/internal/transport"
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
@@ -68,9 +68,14 @@ type grpcSpannerClient struct {
 	raw                  *vkit.Client
 	metricsTracerFactory *builtinMetricsTracerFactory
 
-	// reqIDTracker uniquely tracks x-goog-spanner-request-id for this channel
-	// (client ordinal, channel ordinal, and shared per-client request counter).
-	reqIDTracker requestid.Tracker
+	// These fields are used to uniquely track x-goog-spanner-request-id where:
+	// raw(*vkit.Client) is the channel, and channelID is derived from the ordinal
+	// count of unique *vkit.Client as retrieved from the session pool.
+	channelID uint64
+	// id is derived from the SpannerClient.
+	id int
+	// nthRequest is incremented for each new request (but not for retries of requests).
+	nthRequest *atomic.Uint32
 }
 
 var (
@@ -81,9 +86,12 @@ var (
 // newGRPCSpannerClient initializes a new spannerClient that uses the gRPC
 // Spanner API.
 func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, channelID uint64, opts ...option.ClientOption) (spannerClient, error) {
-	raw, err := transport.NewGAPICClient(ctx, sc.userAgent, sc.callOptions, opts...)
+	raw, err := transport.NewGAPICClient(ctx, sc.userAgent, opts...)
 	if err != nil {
 		return nil, err
+	}
+	if sc.callOptions != nil {
+		raw.CallOptions = mergeCallOptions(raw.CallOptions, sc.callOptions)
 	}
 
 	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory}
@@ -161,8 +169,48 @@ func (g *grpcSpannerClient) DeleteSession(ctx context.Context, req *spannerpb.De
 	return err
 }
 
+// setSpanAttributes dynamically sets span attributes based on the request type.
 func setSpanAttributes[T any](span oteltrace.Span, req T) {
-	transport.SetSpanAttributes(span, req)
+	if !span.IsRecording() {
+		return
+	}
+
+	var attrs []attribute.KeyValue
+
+	if r, ok := any(req).(interface {
+		GetRequestOptions() *spannerpb.RequestOptions
+	}); ok {
+		if tag := r.GetRequestOptions().GetTransactionTag(); tag != "" {
+			attrs = append(attrs, attribute.String("transaction.tag", tag))
+		}
+		if tag := r.GetRequestOptions().GetRequestTag(); tag != "" {
+			attrs = append(attrs, attribute.String("statement.tag", tag))
+		}
+	}
+
+	if r, ok := any(req).(interface{ GetSql() string }); ok {
+		if sql := r.GetSql(); sql != "" {
+			attrs = append(attrs, attribute.String("db.statement", sql))
+		}
+	} else if r, ok := any(req).(interface {
+		GetStatements() []*spannerpb.ExecuteBatchDmlRequest_Statement
+	}); ok {
+		if stmts := r.GetStatements(); len(stmts) > 0 {
+			sqls := make([]string, len(stmts))
+			for i, stmt := range stmts {
+				sqls[i] = stmt.GetSql()
+			}
+			attrs = append(attrs, attribute.StringSlice("db.statement", sqls))
+		}
+	}
+
+	if r, ok := any(req).(interface{ GetTable() string }); ok {
+		if table := r.GetTable(); table != "" {
+			attrs = append(attrs, attribute.String("db.table", table))
+		}
+	}
+
+	span.SetAttributes(attrs...)
 }
 
 func setGFEAndAFESpanAttributes(span oteltrace.Span, latencyMap map[string]time.Duration) {
@@ -239,13 +287,14 @@ func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.Execu
 }
 
 func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
+	span := oteltrace.SpanFromContext(ctx)
+	setSpanAttributes(span, req)
 	// Note: This method does not add g.optsWithNextRequestID, as it is already
 	// manually added when creating Stream iterators for ExecuteStreamingSql.
 	cached, err := transport.ExecuteStreamingSQL(ctx, g.raw, req, opts...)
 	if err != nil {
 		return nil, err
 	}
-	span := oteltrace.SpanFromContext(ctx)
 	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 	captureStreamServerTiming(span, mt, cached)
 	return cached, nil

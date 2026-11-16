@@ -25,7 +25,6 @@ import (
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	"cloud.google.com/go/spanner/internal/transport"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -243,7 +242,7 @@ func TestMergeCallOptions(t *testing.T) {
 			}),
 		}}
 
-	merged := transport.MergeCallOptions(b, a)
+	merged := mergeCallOptions(b, a)
 	cs := &gax.CallSettings{}
 	// We can't access the fields of Retryer so we have test the result by
 	// comparing strings.

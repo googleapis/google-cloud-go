@@ -23,10 +23,8 @@ import (
 	"sync/atomic"
 	"testing"
 
-	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal/requestid"
-	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
@@ -190,7 +188,7 @@ func TestDefaultClientOptionsPrecedenceAndNonMutation(t *testing.T) {
 	if pool.Num() != 3 {
 		t.Fatalf("expected userOpts WithGRPCConnectionPool(3) to override default 1, got %d", pool.Num())
 	}
-	raw, err := NewGAPICClient(context.Background(), "", nil, gtransport.WithConnPool(pool))
+	raw, err := NewGAPICClient(context.Background(), "", gtransport.WithConnPool(pool))
 	if err != nil {
 		t.Fatalf("NewGAPICClient failed: %v", err)
 	}
@@ -258,22 +256,13 @@ func TestDialStaticPoolFallbackPoolAndRequestIDInjection(t *testing.T) {
 		t.Fatalf("pool.Num() = %d, want 2", pool.Num())
 	}
 
-	customGRPCOpt := gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(8192))
 	raw, err := NewGAPICClient(
 		context.Background(),
 		"custom-agent/1.0",
-		&vkit.CallOptions{ExecuteSql: []gax.CallOption{customGRPCOpt}},
 		gtransport.WithConnPool(pool),
 	)
 	if err != nil {
 		t.Fatalf("NewGAPICClient failed: %v", err)
-	}
-	var cs gax.CallSettings
-	for _, opt := range raw.CallOptions.ExecuteSql {
-		opt.Resolve(&cs)
-	}
-	if len(cs.GRPC) != 1 {
-		t.Fatalf("expected merged ExecuteSql GRPC options len=1, got %d", len(cs.GRPC))
 	}
 
 	// Verify DialStaticPool's interceptor injects x-goog-spanner-request-id onto outgoing RPCs.
@@ -325,7 +314,7 @@ func TestDialStaticPoolFallbackPoolAndRequestIDInjection(t *testing.T) {
 	if fbPool.Num() != 2 {
 		t.Fatalf("FallbackPool.Num() = %d, want 2", fbPool.Num())
 	}
-	fbRaw, err := NewGAPICClient(context.Background(), "", nil, gtransport.WithConnPool(fbPool))
+	fbRaw, err := NewGAPICClient(context.Background(), "", gtransport.WithConnPool(fbPool))
 	if err != nil {
 		t.Fatalf("NewGAPICClient(fbPool) failed: %v", err)
 	}
@@ -342,20 +331,5 @@ func TestDialStaticPoolFallbackPoolAndRequestIDInjection(t *testing.T) {
 	// delegates to FallbackPool.Close().
 	if err := fbRaw.Close(); err != nil {
 		t.Fatalf("fbRaw.Close() (delegating to FallbackPool.Close()) failed: %v", err)
-	}
-
-	// MergeCallOptions keeps unset fields nil and gives b precedence over a.
-	aOpts := &vkit.CallOptions{CreateSession: []gax.CallOption{gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(1024))}}
-	bOpts := &vkit.CallOptions{CreateSession: []gax.CallOption{gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(2048))}}
-	merged := MergeCallOptions(aOpts, bOpts)
-	if merged.ExecuteSql != nil {
-		t.Fatalf("expected MergeCallOptions on nil slices to stay nil, got %#v", merged.ExecuteSql)
-	}
-	var mergedCS gax.CallSettings
-	for _, o := range merged.CreateSession {
-		o.Resolve(&mergedCS)
-	}
-	if len(mergedCS.GRPC) != 1 || mergedCS.GRPC[0] != grpc.MaxCallRecvMsgSize(2048) {
-		t.Fatalf("expected b to override a in MergeCallOptions, got %#v", mergedCS.GRPC)
 	}
 }

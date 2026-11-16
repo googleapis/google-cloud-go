@@ -106,10 +106,19 @@ func GRPCCallOptionsToRequestID(opts []grpc.CallOption) (md metadata.MD, reqID R
 	return
 }
 
-func resolveCallSettings(opts []gax.CallOption) gax.CallSettings {
+func resolveCallSettings(opts []gax.CallOption, includeRetryerPlaceholder bool) gax.CallSettings {
 	var settings gax.CallSettings
 	for _, opt := range opts {
 		if opt == nil {
+			continue
+		}
+		if _, isRetryer := opt.(*retryerWithRequestID); isRetryer {
+			// Avoid calling (*retryerWithRequestID).Resolve during inspection so
+			// Tracker.nthRequest is never incremented as a side effect.
+			if includeRetryerPlaceholder {
+				md := metadata.MD{Header: []string{"1"}}
+				settings.GRPC = append(settings.GRPC[:len(settings.GRPC):len(settings.GRPC)], grpc.Header(&md))
+			}
 			continue
 		}
 		opt.Resolve(&settings)
@@ -136,7 +145,7 @@ func LogicalRequestKeyFromCallOptions(opts []gax.CallOption) string {
 		}
 	}
 
-	settings := resolveCallSettings(opts)
+	settings := resolveCallSettings(opts, false)
 	_, reqID, found := GRPCCallOptionsToRequestID(settings.GRPC)
 	if !found {
 		return ""
@@ -148,7 +157,7 @@ func callOptionsHaveRequestID(opts []gax.CallOption) bool {
 	if len(opts) == 0 {
 		return false
 	}
-	settings := resolveCallSettings(opts)
+	settings := resolveCallSettings(opts, true)
 	_, _, found := GRPCCallOptionsToRequestID(settings.GRPC)
 	return found
 }
@@ -295,16 +304,16 @@ func NewTracker(clientID int, channelID uint64, nthRequest *atomic.Uint32) Track
 	}
 }
 
-func (t *Tracker) nextNthRequest() uint32 {
+func (t Tracker) nextNthRequest() uint32 {
 	return t.nthRequest.Add(1)
 }
 
-func (t *Tracker) formatRequestID(nthRequest, attempt uint32) string {
+func (t Tracker) formatRequestID(nthRequest, attempt uint32) string {
 	// Google Engineering has requested that each value be added in Decimal unpadded.
 	return fmt.Sprintf("%d.%s.%d.%d.%d.%d", Version, randIDForProcess, t.clientID, t.channelID, nthRequest, attempt)
 }
 
-func (t *Tracker) generateAndInsertRequestID(md *metadata.MD, nthRequest, attempt uint32) {
+func (t Tracker) generateAndInsertRequestID(md *metadata.MD, nthRequest, attempt uint32) {
 	reqID := t.formatRequestID(nthRequest, attempt)
 	if *md == nil {
 		*md = metadata.MD{}
@@ -315,7 +324,7 @@ func (t *Tracker) generateAndInsertRequestID(md *metadata.MD, nthRequest, attemp
 // OptsWithNextRequestID appends a request-ID CallOption (which allocates one
 // nthRequest ordinal per Resolve and increments only the attempt number across
 // retries) unless priors already resolve an x-goog-spanner-request-id header.
-func (t *Tracker) OptsWithNextRequestID(priors []gax.CallOption) []gax.CallOption {
+func (t Tracker) OptsWithNextRequestID(priors []gax.CallOption) []gax.CallOption {
 	if callOptionsHaveRequestID(priors) {
 		return priors
 	}
@@ -324,7 +333,7 @@ func (t *Tracker) OptsWithNextRequestID(priors []gax.CallOption) []gax.CallOptio
 
 // NewWrap allocates a new Wrap for streaming RPCs that advances nthRequest once and
 // increments the attempt number on each retry.
-func (t *Tracker) NewWrap() *Wrap {
+func (t Tracker) NewWrap() *Wrap {
 	return &Wrap{
 		md:         new(metadata.MD),
 		nthRequest: t.nextNthRequest(),
@@ -335,7 +344,7 @@ func (t *Tracker) NewWrap() *Wrap {
 // retryerWithRequestID is a gax.CallOption that injects "x-goog-spanner-request-id"
 // into every RPC, and appropriately increments the RPC's attempt number per retry.
 type retryerWithRequestID struct {
-	tracker *Tracker
+	tracker Tracker
 }
 
 var _ gax.CallOption = (*retryerWithRequestID)(nil)
@@ -387,7 +396,7 @@ func (fn WrapRetryFn) Retry(err error) (time.Duration, bool) {
 type Wrap struct {
 	md         *metadata.MD
 	nthRequest uint32
-	tracker    *Tracker
+	tracker    Tracker
 }
 
 // WithNextRetryAttempt updates the wrapped metadata with the given attempt number and returns a CallOption.

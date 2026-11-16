@@ -97,7 +97,24 @@ func TestRequestIDAndCallOptions(t *testing.T) {
 	if len(reinjected) != 3 {
 		t.Fatalf("expected OptsWithNextRequestID to append retryer after overwrite, got len=%d", len(reinjected))
 	}
-	resolved := resolveCallSettings(reinjected)
+	// Calling OptsWithNextRequestID or LogicalRequestKeyFromCallOptions on a slice
+	// that contains an unresolved *retryerWithRequestID must be idempotent and must
+	// not advance nthRequest before the actual gax.Invoke resolve.
+	nthBeforeInspect := nth.Load()
+	if got := tr.OptsWithNextRequestID(reinjected); len(got) != 3 {
+		t.Fatalf("expected second OptsWithNextRequestID call to be idempotent, got len=%d", len(got))
+	}
+	unaryOpts := tr.OptsWithNextRequestID(nil)
+	if got := LogicalRequestKeyFromCallOptions(unaryOpts); got != "" {
+		t.Fatalf("expected LogicalRequestKeyFromCallOptions on unresolved retryer to return empty string, got %q", got)
+	}
+	if got := nth.Load(); got != nthBeforeInspect {
+		t.Fatalf("inspecting *retryerWithRequestID mutated nthRequest: got %d, want %d", got, nthBeforeInspect)
+	}
+	var resolved gax.CallSettings
+	for _, o := range reinjected {
+		o.Resolve(&resolved)
+	}
 	if _, _, ok := GRPCCallOptionsToRequestID(resolved.GRPC); !ok {
 		t.Fatal("expected reinjected options to resolve an x-goog-spanner-request-id header")
 	}
@@ -177,7 +194,10 @@ func TestConcurrentSharedGRPCOptionsNoRace(t *testing.T) {
 
 				// Case D: unary OptsWithNextRequestID + retryerWithRequestID.Resolve
 				// on shared priors (cap=4) and shared cs.GRPC (cap=8).
-				csD := resolveCallSettings(tr.OptsWithNextRequestID(sharedPriors))
+				var csD gax.CallSettings
+				for _, o := range tr.OptsWithNextRequestID(sharedPriors) {
+					o.Resolve(&csD)
+				}
 				if _, got, ok := GRPCCallOptionsToRequestID(csD.GRPC); !ok || got == "" {
 					t.Errorf("goroutine %d case D: missing unary reqID (ok=%v)", id, ok)
 					return
@@ -199,7 +219,10 @@ func (f *fakeClientStream) SendMsg(any) error { return f.recvErr }
 func TestHeaderInjectorAugmentsErrorAndEnforcesContract(t *testing.T) {
 	var nth atomic.Uint32
 	tr := NewTracker(1, 1, &nth)
-	cs := resolveCallSettings(tr.OptsWithNextRequestID(nil))
+	var cs gax.CallSettings
+	for _, o := range tr.OptsWithNextRequestID(nil) {
+		o.Resolve(&cs)
+	}
 
 	t.Run("attaches request ID on non-EOF errors and skips io.EOF", func(t *testing.T) {
 		inj := NewHeaderInjector(func(err error, reqID string) error {

@@ -41,23 +41,8 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"cloud.google.com/go/spanner/internal/requestid"
 	"cloud.google.com/go/spanner/internal/testutil"
 )
-
-var randIDForProcess = requestid.RandIDForProcess()
-
-const xSpannerRequestIDVersion = requestid.Version
-const xSpannerRequestIDHeader = requestid.Header
-
-func (r requestID) logicalRequestKey() string {
-	return requestid.RequestID(r).LogicalRequestKey()
-}
-
-func gRPCCallOptionsToRequestID(opts []grpc.CallOption) (md metadata.MD, reqID requestID, found bool) {
-	md, r, found := requestid.GRPCCallOptionsToRequestID(opts)
-	return md, requestID(r), found
-}
 
 var regRequestID = regexp.MustCompile(`^(?P<version>\d+).(?P<randProcessId>[a-z0-9]+)\.(?P<clientId>\d+)\.(?P<channelId>\d+)\.(?P<reqId>\d+)\.(?P<rpcId>\d+)$`)
 

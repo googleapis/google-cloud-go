@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -28,9 +27,7 @@ import (
 
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
 	"github.com/googleapis/gax-go/v2"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
-	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -322,29 +319,9 @@ func DialStaticPool(
 	return pool, allOpts, nil
 }
 
-// MergeCallOptions merges two vkit.CallOptions structs, giving b precedence over a.
-func MergeCallOptions(a *vkit.CallOptions, b *vkit.CallOptions) *vkit.CallOptions {
-	res := &vkit.CallOptions{}
-	resVal := reflect.ValueOf(res).Elem()
-	aVal := reflect.ValueOf(a).Elem()
-	bVal := reflect.ValueOf(b).Elem()
-
-	for i := 0; i < aVal.NumField(); i++ {
-		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
-		bFieldVal := bVal.Field(i).Interface().([]gax.CallOption)
-		if n := len(aFieldVal) + len(bFieldVal); n > 0 {
-			merged := make([]gax.CallOption, 0, n)
-			merged = append(merged, aFieldVal...)
-			merged = append(merged, bFieldVal...)
-			resVal.Field(i).Set(reflect.ValueOf(merged))
-		}
-	}
-	return res
-}
-
-// NewGAPICClient constructs a new GAPIC vkit.Client, sets x-goog-api-client info
-// ("gccl", internal.Version, and optional userAgent), and merges callOpts if non-nil.
-func NewGAPICClient(ctx context.Context, userAgent string, callOpts *vkit.CallOptions, opts ...option.ClientOption) (*vkit.Client, error) {
+// NewGAPICClient constructs a new GAPIC vkit.Client and sets x-goog-api-client info
+// ("gccl", internal.Version, and optional userAgent).
+func NewGAPICClient(ctx context.Context, userAgent string, opts ...option.ClientOption) (*vkit.Client, error) {
 	raw, err := vkit.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err
@@ -357,49 +334,7 @@ func NewGAPICClient(ctx context.Context, userAgent string, callOpts *vkit.CallOp
 		}
 	}
 	raw.SetGoogleClientInfo(clientInfo...)
-	if callOpts != nil {
-		raw.CallOptions = MergeCallOptions(raw.CallOptions, callOpts)
-	}
 	return raw, nil
-}
-
-// SetSpanAttributes dynamically sets OpenTelemetry span attributes based on the request type.
-func SetSpanAttributes[T any](span oteltrace.Span, req T) {
-	if !span.IsRecording() {
-		return
-	}
-	var attrs []attribute.KeyValue
-	if r, ok := any(req).(interface {
-		GetRequestOptions() *spannerpb.RequestOptions
-	}); ok {
-		if tag := r.GetRequestOptions().GetTransactionTag(); tag != "" {
-			attrs = append(attrs, attribute.String("transaction.tag", tag))
-		}
-		if tag := r.GetRequestOptions().GetRequestTag(); tag != "" {
-			attrs = append(attrs, attribute.String("statement.tag", tag))
-		}
-	}
-	if r, ok := any(req).(interface{ GetSql() string }); ok {
-		if sql := r.GetSql(); sql != "" {
-			attrs = append(attrs, attribute.String("db.statement", sql))
-		}
-	} else if r, ok := any(req).(interface {
-		GetStatements() []*spannerpb.ExecuteBatchDmlRequest_Statement
-	}); ok {
-		if stmts := r.GetStatements(); len(stmts) > 0 {
-			sqls := make([]string, len(stmts))
-			for i, stmt := range stmts {
-				sqls[i] = stmt.GetSql()
-			}
-			attrs = append(attrs, attribute.StringSlice("db.statement", sqls))
-		}
-	}
-	if r, ok := any(req).(interface{ GetTable() string }); ok {
-		if table := r.GetTable(); table != "" {
-			attrs = append(attrs, attribute.String("db.table", table))
-		}
-	}
-	span.SetAttributes(attrs...)
 }
 
 // CachedExecuteStreamingSQLClient caches the response headers of an ExecuteStreamingSql
@@ -417,14 +352,12 @@ func (c *CachedExecuteStreamingSQLClient) Header() (metadata.MD, error) {
 	return c.md, c.err
 }
 
-// ExecuteStreamingSQL invokes raw.ExecuteStreamingSql with peer info context and span attributes,
-// wrapping the returned stream in a CachedExecuteStreamingSQLClient.
+// ExecuteStreamingSQL invokes raw.ExecuteStreamingSql with peer info context and wraps
+// the returned stream in a CachedExecuteStreamingSQLClient.
 //
 // Note: This function does not inject x-goog-spanner-request-id CallOptions because
 // stream iterators construct and attach per-attempt request-ID options themselves.
 func ExecuteStreamingSQL(ctx context.Context, raw *vkit.Client, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*CachedExecuteStreamingSQLClient, error) {
-	span := oteltrace.SpanFromContext(ctx)
-	SetSpanAttributes(span, req)
 	client, err := raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 	if err != nil {
 		return nil, err
