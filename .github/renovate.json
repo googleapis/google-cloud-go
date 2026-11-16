@@ -16,8 +16,8 @@
         "google.golang.org/genproto"
     ],
     "ignorePaths": [
-	".github/workflows/librarian_tidy.yaml",
-	".github/workflows/generation_check.yaml"
+        ".github/workflows/librarian_tidy.yaml",
+        ".github/workflows/generation_check.yaml"
     ],
     "packageRules": [
     	{
