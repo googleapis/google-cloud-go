@@ -571,6 +571,7 @@ func createDCPConnPool(
 	sessionLabels map[string]string,
 	md metadata.MD,
 	metricsTracerFactory *builtinMetricsTracerFactory,
+	isDirectPathEnabled bool,
 	opts ...option.ClientOption,
 ) (gtransport.ConnPool, *sessionClient, error) {
 	reqIDInjector := new(requestIDHeaderInjector)
@@ -584,7 +585,8 @@ func createDCPConnPool(
 	dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
 		return gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
 	}
-	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, dial)
+	builtinMetricsCfg := newChannelPoolBuiltinMetricsConfig(metricsTracerFactory, isDirectPathEnabled)
+	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, builtinMetricsCfg, dial)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -789,7 +791,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	if isDCPEnabledForConfig(config, gme) {
-		pool, sc, err = createDCPConnPool(ctx, database, config, sessionLabels, md, metricsTracerFactory, opts...)
+		pool, sc, err = createDCPConnPool(ctx, database, config, sessionLabels, md, metricsTracerFactory, isDirectPathEnabled, opts...)
 		if err != nil {
 			return nil, err
 		}

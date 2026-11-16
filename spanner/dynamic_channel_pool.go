@@ -241,6 +241,7 @@ type dynamicChannelPool struct {
 	monitorMu        sync.Mutex
 	primeSession     atomic.Value // string
 	metrics          *dcpMetrics
+	builtinMetrics   *channelPoolBuiltinMetrics
 
 	drainingCount  atomic.Int64
 	drainIdleFloor time.Duration // dcpDrainIdleFloor when the pool was created
@@ -265,7 +266,7 @@ type dcpEntry struct {
 }
 
 // newDynamicChannelPool creates the initial channel set and starts scale workers.
-func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, mp metric.MeterProvider, dial func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
+func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, mp metric.MeterProvider, builtinMetricsCfg channelPoolBuiltinMetricsConfig, dial func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
 	cfg, err := normalizeDCPConfig(cfg)
 	if err != nil {
 		return nil, err
@@ -297,6 +298,7 @@ func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicCh
 	}
 	p.entries.Store(&entries)
 	p.metrics = newDCPMetrics(p, mp)
+	p.builtinMetrics = newChannelPoolBuiltinMetrics(p, builtinMetricsCfg)
 	go p.scaleUpWorker()
 	go p.scaleDownMonitor()
 	return p, nil
@@ -352,6 +354,7 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 func (p *dynamicChannelPool) Close() error {
 	p.stopOnce.Do(func() {
 		p.metrics.close(p.sc.logger)
+		p.builtinMetrics.close(p.sc.logger)
 		p.cancel()
 		close(p.done)
 	})
