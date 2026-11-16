@@ -56,13 +56,15 @@ func RandIDForProcess() string {
 }
 
 // Version is the x-goog-spanner-request-id specification version.
+// Please bump this version whenever this implementation
+// executes on the plans of a new specification.
 const Version uint8 = 1
 
 // Header is the outgoing gRPC metadata key for Spanner request IDs.
 const Header = "x-goog-spanner-request-id"
 
-// SpanAttr is the OpenTelemetry span attribute key for Spanner request IDs.
-const SpanAttr = "x_goog_spanner_request_id"
+// spanAttr is the OpenTelemetry span attribute key for Spanner request IDs.
+const spanAttr = "x_goog_spanner_request_id"
 
 // RequestID represents a formatted x-goog-spanner-request-id value.
 type RequestID string
@@ -77,9 +79,8 @@ func (r RequestID) LogicalRequestKey() string {
 	return requestIDValue[:lastSeparator]
 }
 
-// LogicalRequestKeyOption is implemented by gax.CallOption values that expose a logical request key.
-type LogicalRequestKeyOption interface {
-	LogicalRequestKey() string
+type logicalRequestKeyOption interface {
+	logicalRequestKey() string
 }
 
 // GRPCCallOptionsToRequestID extracts the x-goog-spanner-request-id header from gRPC CallOptions.
@@ -125,11 +126,11 @@ func LogicalRequestKeyFromCallOptions(opts []gax.CallOption) string {
 		if opt == nil {
 			continue
 		}
-		reqIDOpt, ok := opt.(LogicalRequestKeyOption)
+		reqIDOpt, ok := opt.(logicalRequestKeyOption)
 		if !ok {
 			continue
 		}
-		if key := reqIDOpt.LogicalRequestKey(); key != "" {
+		if key := reqIDOpt.logicalRequestKey(); key != "" {
 			return key
 		}
 	}
@@ -142,33 +143,32 @@ func LogicalRequestKeyFromCallOptions(opts []gax.CallOption) string {
 	return reqID.LogicalRequestKey()
 }
 
-// CallOptionsHaveRequestID reports whether opts already carry an x-goog-spanner-request-id header.
-func CallOptionsHaveRequestID(opts []gax.CallOption) bool {
+func callOptionsHaveRequestID(opts []gax.CallOption) bool {
 	if len(opts) == 0 {
 		return false
-	}
-	for _, opt := range opts {
-		if opt == nil {
-			continue
-		}
-		if _, ok := opt.(*retryerWithRequestID); ok {
-			return true
-		}
-		if reqIDOpt, ok := opt.(LogicalRequestKeyOption); ok && reqIDOpt.LogicalRequestKey() != "" {
-			return true
-		}
 	}
 	settings := resolveCallSettings(opts)
 	_, _, found := GRPCCallOptionsToRequestID(settings.GRPC)
 	return found
 }
 
-// StripRequestIDGRPCOptions removes any grpc.HeaderCallOption carrying x-goog-spanner-request-id.
-func StripRequestIDGRPCOptions(opts []grpc.CallOption) []grpc.CallOption {
+// stripRequestIDGRPCOptions returns a slice without any grpc.HeaderCallOption
+// carrying x-goog-spanner-request-id, without mutating opts's backing array.
+func stripRequestIDGRPCOptions(opts []grpc.CallOption) []grpc.CallOption {
 	if len(opts) == 0 {
 		return nil
 	}
-	filtered := opts[:0]
+	hasReqID := false
+	for _, opt := range opts {
+		if hdrOpt, ok := opt.(grpc.HeaderCallOption); ok && hdrOpt.HeaderAddr != nil && len(hdrOpt.HeaderAddr.Get(Header)) > 0 {
+			hasReqID = true
+			break
+		}
+	}
+	if !hasReqID {
+		return opts[:len(opts):len(opts)]
+	}
+	filtered := make([]grpc.CallOption, 0, len(opts))
 	for _, opt := range opts {
 		hdrOpt, ok := opt.(grpc.HeaderCallOption)
 		if !ok || hdrOpt.HeaderAddr == nil || len(hdrOpt.HeaderAddr.Get(Header)) == 0 {
@@ -201,12 +201,15 @@ func (wr *HeaderInjector) augmentErr(err error, reqID RequestID) error {
 }
 
 func injectRequestIDIntoContext(ctx context.Context, opts []grpc.CallOption) (context.Context, RequestID, bool) {
+	// It is imperative to search for the requestID before the call
+	// because gRPC's internals will consume the headers.
 	_, reqID, found := GRPCCallOptionsToRequestID(opts)
 	if found {
 		ctx = metadata.AppendToOutgoingContext(ctx, Header, string(reqID))
+		// Associate the requestId as an attribute on the span in the current context.
 		span := trace.SpanFromContext(ctx)
 		span.SetAttributes(attribute.KeyValue{
-			Key:   SpanAttr,
+			Key:   spanAttr,
 			Value: attribute.StringValue(string(reqID)),
 		})
 	}
@@ -266,43 +269,35 @@ func (wr *HeaderInjector) InterceptStream(ctx context.Context, desc *grpc.Stream
 
 // Tracker tracks client ordinal, channel ID, and request sequence numbers for a gRPC channel.
 type Tracker struct {
-	ClientID   int
-	ChannelID  uint64
-	NthRequest *atomic.Uint32
+	clientID   int
+	channelID  uint64
+	nthRequest *atomic.Uint32
 }
 
 // NewTracker constructs a Tracker for the given clientID, channelID, and shared request counter.
+// nthRequest must not be nil.
 func NewTracker(clientID int, channelID uint64, nthRequest *atomic.Uint32) Tracker {
 	if nthRequest == nil {
-		nthRequest = new(atomic.Uint32)
+		panic("requestid: NewTracker requires non-nil nthRequest")
 	}
 	return Tracker{
-		ClientID:   clientID,
-		ChannelID:  channelID,
-		NthRequest: nthRequest,
+		clientID:   clientID,
+		channelID:  channelID,
+		nthRequest: nthRequest,
 	}
 }
 
-// NextNthRequest atomically increments and returns the next request ordinal.
-func (t *Tracker) NextNthRequest() uint32 {
-	return t.NthRequest.Add(1)
+func (t *Tracker) nextNthRequest() uint32 {
+	return t.nthRequest.Add(1)
 }
 
-// FormatRequestID formats an x-goog-spanner-request-id for nthRequest and attempt.
-func (t *Tracker) FormatRequestID(nthRequest, attempt uint32) string {
-	return fmt.Sprintf("%d.%s.%d.%d.%d.%d", Version, randIDForProcess, t.ClientID, t.ChannelID, nthRequest, attempt)
+func (t *Tracker) formatRequestID(nthRequest, attempt uint32) string {
+	// Google Engineering has requested that each value be added in Decimal unpadded.
+	return fmt.Sprintf("%d.%s.%d.%d.%d.%d", Version, randIDForProcess, t.clientID, t.channelID, nthRequest, attempt)
 }
 
-// AppendToGRPCOptions appends a grpc.Header CallOption carrying the formatted request ID.
-func (t *Tracker) AppendToGRPCOptions(priors []grpc.CallOption, nthRequest, attempt uint32) []grpc.CallOption {
-	reqID := t.FormatRequestID(nthRequest, attempt)
-	md := metadata.MD{Header: []string{reqID}}
-	return append(priors, grpc.Header(&md))
-}
-
-// GenerateAndInsertRequestID writes the formatted request ID for (nthRequest, attempt) into *md.
-func (t *Tracker) GenerateAndInsertRequestID(md *metadata.MD, nthRequest, attempt uint32) {
-	reqID := t.FormatRequestID(nthRequest, attempt)
+func (t *Tracker) generateAndInsertRequestID(md *metadata.MD, nthRequest, attempt uint32) {
+	reqID := t.formatRequestID(nthRequest, attempt)
 	if *md == nil {
 		*md = metadata.MD{}
 	}
@@ -311,41 +306,52 @@ func (t *Tracker) GenerateAndInsertRequestID(md *metadata.MD, nthRequest, attemp
 
 // OptsWithNextRequestID appends a per-attempt request-ID CallOption unless priors already have one.
 func (t *Tracker) OptsWithNextRequestID(priors []gax.CallOption) []gax.CallOption {
-	if CallOptionsHaveRequestID(priors) {
+	if callOptionsHaveRequestID(priors) {
 		return priors
 	}
-	return append(priors, &retryerWithRequestID{tracker: t})
+	return append(priors[:len(priors):len(priors)], &retryerWithRequestID{tracker: t})
 }
 
-// NewWrap allocates a new Wrap for streaming RPCs that advances NthRequest once and
+// NewWrap allocates a new Wrap for streaming RPCs that advances nthRequest once and
 // increments the attempt number on each retry.
 func (t *Tracker) NewWrap() *Wrap {
 	return &Wrap{
 		md:         new(metadata.MD),
-		nthRequest: t.NextNthRequest(),
+		nthRequest: t.nextNthRequest(),
 		tracker:    t,
 	}
 }
 
+// retryerWithRequestID is a gax.CallOption that injects "x-goog-spanner-request-id"
+// into every RPC, and appropriately increments the RPC's attempt number per retry.
 type retryerWithRequestID struct {
 	tracker *Tracker
 }
 
 var _ gax.CallOption = (*retryerWithRequestID)(nil)
-var _ LogicalRequestKeyOption = (*retryerWithRequestID)(nil)
+var _ logicalRequestKeyOption = (*retryerWithRequestID)(nil)
 
-func (*retryerWithRequestID) LogicalRequestKey() string {
+func (*retryerWithRequestID) logicalRequestKey() string {
 	return ""
 }
 
 func (wr *retryerWithRequestID) Resolve(cs *gax.CallSettings) {
-	nthRequest := wr.tracker.NextNthRequest()
+	nthRequest := wr.tracker.nextNthRequest()
 	attempt := uint32(1)
+	// Inject the first request-id header.
+	// Note: after every gax.Invoke call, all the gRPC option headers are cleared out
+	// and nullified, but yet cs.GRPC still contains a reference to the inserted *metadata.MD
+	// just that it got cleared out and nullified. However, for retries we need to retain control
+	// of the entry to re-insert the updated request-id on every call, hence why we are creating
+	// and retaining a pointer reference to the metadata and shall be re-inserting the header value
+	// on every retry.
 	md := new(metadata.MD)
-	wr.tracker.GenerateAndInsertRequestID(md, nthRequest, attempt)
-	cs.GRPC = append(cs.GRPC, grpc.Header(md))
+	wr.tracker.generateAndInsertRequestID(md, nthRequest, attempt)
+	// Insert our grpc.CallOption that'll be updated by reference on every retry attempt.
+	cs.GRPC = append(cs.GRPC[:len(cs.GRPC):len(cs.GRPC)], grpc.Header(md))
 
 	if cs.Retry == nil {
+		// If there was no retry manager, our journey has ended.
 		return
 	}
 
@@ -353,7 +359,7 @@ func (wr *retryerWithRequestID) Resolve(cs *gax.CallSettings) {
 	cs.Retry = func() gax.Retryer {
 		return (WrapRetryFn)(func(err error) (pause time.Duration, shouldRetry bool) {
 			attempt++
-			wr.tracker.GenerateAndInsertRequestID(md, nthRequest, attempt)
+			wr.tracker.generateAndInsertRequestID(md, nthRequest, attempt)
 			return originalRetryer.Retry(err)
 		})
 	}
@@ -376,8 +382,8 @@ type Wrap struct {
 
 // WithNextRetryAttempt updates the wrapped metadata with the given attempt number and returns a CallOption.
 func (riw *Wrap) WithNextRetryAttempt(attempt uint32) gax.CallOption {
-	riw.tracker.GenerateAndInsertRequestID(riw.md, riw.nthRequest, attempt)
-	return CallOption{MD: riw.md}
+	riw.tracker.generateAndInsertRequestID(riw.md, riw.nthRequest, attempt)
+	return callOption{md: riw.md}
 }
 
 // LogicalWrap builds retry CallOptions from a pre-existing logical request key (e.g. "1.proc.1.1.5").
@@ -388,35 +394,30 @@ type LogicalWrap struct {
 // WithNextRetryAttempt returns a CallOption setting x-goog-spanner-request-id to "<LogicalKey>.<attempt>".
 func (riw LogicalWrap) WithNextRetryAttempt(attempt uint32) gax.CallOption {
 	md := metadata.MD{Header: []string{fmt.Sprintf("%s.%d", riw.LogicalKey, attempt)}}
-	return CallOption{MD: &md}
+	return callOption{md: &md}
 }
 
-// CallOption is a gax.CallOption that replaces any prior x-goog-spanner-request-id header with MD.
-type CallOption struct {
-	MD *metadata.MD
+type callOption struct {
+	md *metadata.MD
 }
 
-var _ LogicalRequestKeyOption = CallOption{}
+var _ logicalRequestKeyOption = callOption{}
 
-// Resolve strips prior request-ID gRPC options and appends grpc.Header(opt.MD).
-func (opt CallOption) Resolve(cs *gax.CallSettings) {
-	cs.GRPC = StripRequestIDGRPCOptions(cs.GRPC)
-	cs.GRPC = append(cs.GRPC, grpc.Header(opt.MD))
+func (opt callOption) Resolve(cs *gax.CallSettings) {
+	if opt.md == nil {
+		return
+	}
+	cs.GRPC = stripRequestIDGRPCOptions(cs.GRPC)
+	cs.GRPC = append(cs.GRPC, grpc.Header(opt.md))
 }
 
-// LogicalRequestKey returns the logical request key stored in opt.MD.
-func (opt CallOption) LogicalRequestKey() string {
-	if opt.MD == nil {
+func (opt callOption) logicalRequestKey() string {
+	if opt.md == nil {
 		return ""
 	}
-	reqIDs := opt.MD.Get(Header)
+	reqIDs := opt.md.Get(Header)
 	if len(reqIDs) == 0 || reqIDs[0] == "" {
 		return ""
 	}
 	return RequestID(reqIDs[0]).LogicalRequestKey()
-}
-
-// Provider produces a Wrap for a new streaming RPC.
-type Provider interface {
-	RequestIDHeaderInjector(context.Context) (*Wrap, error)
 }

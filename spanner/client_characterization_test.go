@@ -18,19 +18,14 @@ package spanner
 
 import (
 	"context"
-	"io"
-	"log"
-	"net"
+	"strings"
 	"testing"
 
-	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"cloud.google.com/go/spanner/internal/transport"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
-	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestNewClientWithConfig_Characterization(t *testing.T) {
@@ -47,8 +42,18 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 			t.Fatalf("expected default pool.Num()=%d, got %d", numChannels, got)
 		}
 
-		// Conflicting NumChannels and WithGRPCConnectionPool returns InvalidArgument.
-		server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+		// Custom NumChannels configures the static pool size.
+		_, customClient, customTeardown := setupMockedTestServerWithConfig(t, ClientConfig{
+			NumChannels:          2,
+			DisableNativeMetrics: true,
+		})
+		defer customTeardown()
+		if got := customClient.sc.connPool.Num(); got != 2 {
+			t.Fatalf("expected custom pool.Num()=2, got %d", got)
+		}
+
+		// Conflicting NumChannels and WithGRPCConnectionPool returns InvalidArgument *spanner.Error.
+		_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 		defer serverTeardown()
 		badClient, err := NewClientWithConfig(
 			context.Background(),
@@ -66,7 +71,6 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 		if ErrCode(err) != codes.InvalidArgument {
 			t.Fatalf("expected codes.InvalidArgument, got %v", err)
 		}
-		_ = server
 	})
 
 	t.Run("DCP enabled vs bypassed on SPANNER_EMULATOR_HOST", func(t *testing.T) {
@@ -88,7 +92,7 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 			t.Fatalf("expected 3 DCP channels, got %d", got)
 		}
 
-		// When SPANNER_EMULATOR_HOST is set, DCP is bypassed and emulator scheme is stripped.
+		// When SPANNER_EMULATOR_HOST is set, DCP is bypassed and a single leading emulator scheme is stripped.
 		server, _, serverTeardown := NewMockedSpannerInMemTestServer(t)
 		defer serverTeardown()
 		for _, scheme := range []string{"", "http://", "https://", "passthrough:///"} {
@@ -125,6 +129,21 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 			iter.Stop()
 			emuClient.Close()
 		}
+
+		// Malformed scheme-only SPANNER_EMULATOR_HOST="http://" must still bind WithEndpoint("passthrough:///")
+		// and fail locally rather than dialing production Spanner in plaintext.
+		t.Setenv("SPANNER_EMULATOR_HOST", "http://")
+		badEmuClient, err := NewClientWithConfig(
+			context.Background(),
+			"projects/p/instances/i/databases/d",
+			ClientConfig{DisableNativeMetrics: true},
+		)
+		if err == nil {
+			defer badEmuClient.Close()
+			if conn := badEmuClient.sc.connPool.Conn(); conn != nil && strings.Contains(conn.Target(), "googleapis.com") {
+				t.Fatalf("SPANNER_EMULATOR_HOST=http:// dialed production target %q", conn.Target())
+			}
+		}
 	})
 
 	t.Run("compression, end-to-end tracing, user-agent, session labels, and DirectPath env", func(t *testing.T) {
@@ -134,13 +153,24 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 		t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "false")
 		t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "false")
 
+		if transport.ResolveDirectPathEnabled(true) {
+			t.Fatal("expected GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS=false to override EnableDirectAccess=true")
+		}
+		if transport.ResolveGCPFallbackEnabled() {
+			t.Fatal("expected GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=false to disable fallback")
+		}
+
 		_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-			Compression:   "gzip",
-			UserAgent:     "custom-agent/2.0",
-			SessionLabels: map[string]string{"env": "test"},
+			Compression:        "gzip",
+			UserAgent:          "custom-agent/2.0",
+			SessionLabels:      map[string]string{"env": "test"},
+			EnableDirectAccess: true,
 		})
 		defer teardown()
 
+		if client.sc.userAgent != "custom-agent/2.0" {
+			t.Fatalf("expected sc.userAgent=custom-agent/2.0, got %q", client.sc.userAgent)
+		}
 		if got := client.sc.md.Get(requestsCompressionHeader); len(got) != 1 || got[0] != "gzip" {
 			t.Fatalf("expected %s=[gzip] in sc.md, got %v", requestsCompressionHeader, got)
 		}
@@ -167,69 +197,4 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 			t.Fatalf("expected 2 rows from SelectFooFromBar, got %d", rowCount)
 		}
 	})
-}
-
-func BenchmarkPureGo_Query(b *testing.B) {
-	testSpanner := NewInMemSpannerServer()
-	_ = testSpanner.PutStatementResult(SelectFooFromBar, &StatementResult{
-		Type: StatementResultResultSet,
-		ResultSet: &spannerpb.ResultSet{
-			Metadata: &spannerpb.ResultSetMetadata{
-				RowType: &spannerpb.StructType{
-					Fields: []*spannerpb.StructType_Field{
-						{Name: "FOO", Type: &spannerpb.Type{Code: spannerpb.TypeCode_INT64}},
-					},
-				},
-			},
-			Rows: []*proto3.ListValue{
-				{Values: []*proto3.Value{{Kind: &proto3.Value_StringValue{StringValue: "1"}}}},
-				{Values: []*proto3.Value{{Kind: &proto3.Value_StringValue{StringValue: "2"}}}},
-			},
-		},
-	})
-	srv := grpc.NewServer()
-	spannerpb.RegisterSpannerServer(srv, testSpanner)
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		b.Fatal(err)
-	}
-	go func() { _ = srv.Serve(lis) }()
-	defer func() {
-		testSpanner.Stop()
-		srv.Stop()
-		_ = lis.Close()
-	}()
-
-	ctx := context.Background()
-	client, err := NewClientWithConfig(
-		ctx,
-		"projects/p/instances/i/databases/d",
-		ClientConfig{
-			DisableNativeMetrics: true,
-			Logger:               log.New(io.Discard, "", 0),
-		},
-		option.WithEndpoint(lis.Addr().String()),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		option.WithoutAuthentication(),
-	)
-	if err != nil {
-		b.Fatal(err)
-	}
-	defer client.Close()
-
-	stmt := NewStatement(SelectFooFromBar)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		iter := client.Single().Query(ctx, stmt)
-		for {
-			_, err := iter.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				b.Fatal(err)
-			}
-		}
-		iter.Stop()
-	}
 }

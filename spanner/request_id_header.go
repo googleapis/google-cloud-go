@@ -23,43 +23,19 @@ import (
 	"cloud.google.com/go/spanner/internal/requestid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-var randIDForProcess = requestid.RandIDForProcess()
-
-const xSpannerRequestIDVersion = requestid.Version
 const xSpannerRequestIDHeader = requestid.Header
-const xSpannerRequestIDSpanAttr = requestid.SpanAttr
-
-func (g *grpcSpannerClient) tracker() *requestid.Tracker {
-	if g.reqIDTracker.NthRequest == g.nthRequest && g.nthRequest != nil && g.reqIDTracker.ClientID == g.id && g.reqIDTracker.ChannelID == g.channelID {
-		return &g.reqIDTracker
-	}
-	return &requestid.Tracker{
-		ClientID:   g.id,
-		ChannelID:  g.channelID,
-		NthRequest: g.nthRequest,
-	}
-}
 
 // optsWithNextRequestID bundles priors with a new header "x-goog-spanner-request-id"
 func (g *grpcSpannerClient) optsWithNextRequestID(priors []gax.CallOption) []gax.CallOption {
-	return g.tracker().OptsWithNextRequestID(priors)
+	return g.reqIDTracker.OptsWithNextRequestID(priors)
 }
 
 func (g *grpcSpannerClient) prepareRequestIDTrackers(clientID int, channelID uint64, nthRequest *atomic.Uint32) {
-	g.id = clientID
-	g.channelID = channelID
-	g.nthRequest = nthRequest
-	g.reqIDTracker = requestid.Tracker{
-		ClientID:   clientID,
-		ChannelID:  channelID,
-		NthRequest: nthRequest,
-	}
+	g.reqIDTracker = requestid.NewTracker(clientID, channelID, nthRequest)
 }
 
 type requestID string
@@ -107,11 +83,6 @@ func augmentErrorWithRequestID(err error, reqID string) error {
 	return requestID(reqID).augmentErrorWithRequestID(err)
 }
 
-func gRPCCallOptionsToRequestID(opts []grpc.CallOption) (md metadata.MD, reqID requestID, found bool) {
-	md, r, found := requestid.GRPCCallOptionsToRequestID(opts)
-	return md, requestID(r), found
-}
-
 func logicalRequestKeyFromCallOptions(opts []gax.CallOption) string {
 	return requestid.LogicalRequestKeyFromCallOptions(opts)
 }
@@ -133,7 +104,7 @@ func (riw logicalRequestIDWrap) withNextRetryAttempt(attempt uint32) gax.CallOpt
 }
 
 func (gsc *grpcSpannerClient) generateRequestIDHeaderInjector() *requestIDWrap {
-	return &requestIDWrap{Wrap: gsc.tracker().NewWrap()}
+	return &requestIDWrap{Wrap: gsc.reqIDTracker.NewWrap()}
 }
 
 func (gsc *grpcSpannerClient) requestIDHeaderInjector(context.Context) (*requestIDWrap, error) {

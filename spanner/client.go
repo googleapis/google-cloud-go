@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -222,7 +223,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	cfg.GRPCgcpConfig.ChannelPool.BindPickStrategy = grpcgcppb.ChannelPoolConfig_ROUND_ROBIN
 
 	cfg.DialFunc = func(ctx context.Context, target string, dopts ...grpc.DialOption) (*grpc.ClientConn, error) {
-		copts := opts
+		copts := opts[:len(opts):len(opts)]
 
 		for _, do := range dopts {
 			copts = append(copts, option.WithGRPCDialOption(do))
@@ -554,6 +555,27 @@ func createDCPConnPool(
 	return dcp, sc, nil
 }
 
+func newTransportPoolConfig(config ClientConfig, hasNumChannelsConfig bool, mp metric.MeterProvider) transport.PoolConfig {
+	return transport.PoolConfig{
+		NumChannels:          config.NumChannels,
+		HasNumChannelsConfig: hasNumChannelsConfig,
+		Compression:          config.Compression,
+		EnableDirectAccess:   config.EnableDirectAccess,
+		AugmentError:         augmentErrorWithRequestID,
+		MeterProvider:        mp,
+		UnaryInterceptors:    addNativeMetricsInterceptor(),
+		StreamInterceptors:   addStreamNativeMetricsInterceptor(),
+	}
+}
+
+func wrapPoolDialError(err error) error {
+	var mismatch *transport.PoolSizeMismatchError
+	if errors.As(err, &mismatch) {
+		return ToSpannerError(err)
+	}
+	return err
+}
+
 func createFallbackConnPool(
 	ctx context.Context,
 	config ClientConfig,
@@ -567,22 +589,13 @@ func createFallbackConnPool(
 	}
 	pool, allOpts, err := transport.CreateFallbackConnPool(
 		ctx,
-		transport.PoolConfig{
-			NumChannels:          config.NumChannels,
-			HasNumChannelsConfig: hasNumChannelsConfig,
-			Compression:          config.Compression,
-			EnableDirectAccess:   config.EnableDirectAccess,
-			AugmentError:         augmentErrorWithRequestID,
-			MeterProvider:        mp,
-			UnaryInterceptors:    addNativeMetricsInterceptor(),
-			StreamInterceptors:   addStreamNativeMetricsInterceptor(),
-		},
+		newTransportPoolConfig(config, hasNumChannelsConfig, mp),
 		opts...,
 	)
-	if err != nil && status.Code(err) == codes.InvalidArgument {
-		return nil, nil, ToSpannerError(err)
+	if err != nil {
+		return nil, nil, wrapPoolDialError(err)
 	}
-	return pool, allOpts, err
+	return pool, allOpts, nil
 }
 
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
@@ -732,22 +745,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		var allOpts []option.ClientOption
 		pool, allOpts, err = transport.DialStaticPool(
 			ctx,
-			transport.PoolConfig{
-				NumChannels:          config.NumChannels,
-				HasNumChannelsConfig: hasNumChannelsConfig,
-				Compression:          config.Compression,
-				EnableDirectAccess:   config.EnableDirectAccess,
-				AugmentError:         augmentErrorWithRequestID,
-				UnaryInterceptors:    addNativeMetricsInterceptor(),
-				StreamInterceptors:   addStreamNativeMetricsInterceptor(),
-			},
+			newTransportPoolConfig(config, hasNumChannelsConfig, nil),
 			opts...,
 		)
 		if err != nil {
-			if status.Code(err) == codes.InvalidArgument {
-				return nil, ToSpannerError(err)
-			}
-			return nil, err
+			return nil, wrapPoolDialError(err)
 		}
 		endpointClientOpts = append(endpointClientOpts, allOpts...)
 	}
@@ -1820,7 +1822,11 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 // logf logs the given message to the given logger, or the standard logger if
 // the given logger is nil.
 func logf(logger *log.Logger, format string, v ...interface{}) {
-	transport.Logf(logger, format, v...)
+	if logger == nil {
+		log.Printf(format, v...)
+	} else {
+		logger.Printf(format, v...)
+	}
 }
 
 // parseServerTimingHeader extracts server timing metrics from gRPC metadata into a map

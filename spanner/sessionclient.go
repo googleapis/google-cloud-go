@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -29,7 +28,6 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
-	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/option"
 
@@ -340,26 +338,4 @@ func (sc *sessionClient) createEndpointClient(ctx context.Context, address strin
 		Timeout: routedKeepaliveTimeout,
 	})))
 	return newGRPCSpannerClient(ctx, sc, 0, opts...)
-}
-
-// mergeCallOptions merges two CallOptions into one and the first argument has
-// a lower order of precedence than the second one.
-func mergeCallOptions(a *vkit.CallOptions, b *vkit.CallOptions) *vkit.CallOptions {
-	res := &vkit.CallOptions{}
-	resVal := reflect.ValueOf(res).Elem()
-	aVal := reflect.ValueOf(a).Elem()
-	bVal := reflect.ValueOf(b).Elem()
-
-	t := aVal.Type()
-
-	for i := 0; i < aVal.NumField(); i++ {
-		fieldName := t.Field(i).Name
-
-		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
-		bFieldVal := bVal.Field(i).Interface().([]gax.CallOption)
-
-		merged := append(aFieldVal, bFieldVal...)
-		resVal.FieldByName(fieldName).Set(reflect.ValueOf(merged))
-	}
-	return res
 }

@@ -13,13 +13,12 @@
 // limitations under the License.
 
 // Package transport provides internal gRPC connection pool, GAPIC client,
-// DirectPath/fallback, and Dynamic Channel Pool primitives shared across Spanner packages.
+// and DirectPath/fallback primitives shared across Spanner packages.
 package transport
 
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"reflect"
 	"strconv"
@@ -71,37 +70,27 @@ const (
 	DefaultNumChannels = 4
 )
 
-// Logf logs the formatted message to logger, or to the standard logger if logger is nil.
-func Logf(logger *log.Logger, format string, v ...any) {
-	if logger == nil {
-		log.Printf(format, v...)
-	} else {
-		logger.Printf(format, v...)
+// stripEndpointScheme removes a single leading http://, https://, or passthrough:///
+// prefix from endpoint, matching the historical client.go emulator scheme stripping.
+func stripEndpointScheme(endpoint string) string {
+	for _, prefix := range []string{"http://", "https://", "passthrough:///"} {
+		if after, ok := strings.CutPrefix(endpoint, prefix); ok {
+			return after
+		}
 	}
-}
-
-// StripEndpointScheme removes leading passthrough:///, https://, and http:// schemes
-// (including chained passthrough:///http:// prefixes) from an endpoint string.
-func StripEndpointScheme(endpoint string) string {
-	s := strings.TrimPrefix(endpoint, "passthrough:///")
-	s = strings.TrimPrefix(s, "https://")
-	s = strings.TrimPrefix(s, "http://")
-	return strings.TrimPrefix(s, "passthrough:///")
+	return endpoint
 }
 
 // EmulatorClientOptions returns the ClientOptions needed to connect to a Spanner
-// emulator or plaintext endpoint.
+// emulator endpoint.
 func EmulatorClientOptions(emulatorAddr string) []option.ClientOption {
-	schemeRemoved := StripEndpointScheme(emulatorAddr)
-	opts := []option.ClientOption{
+	schemeRemoved := stripEndpointScheme(emulatorAddr)
+	return []option.ClientOption{
+		option.WithEndpoint("passthrough:///" + schemeRemoved),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		option.WithoutAuthentication(),
 		internaloption.SkipDialSettingsValidation(),
 	}
-	if schemeRemoved != "" {
-		opts = append([]option.ClientOption{option.WithEndpoint("passthrough:///" + schemeRemoved)}, opts...)
-	}
-	return opts
 }
 
 // ResolveDirectPathEnabled resolves whether DirectPath is enabled by checking the
@@ -159,19 +148,28 @@ func DefaultClientOptions(
 			clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowHardBoundTokens("ALTS"))
 		}
 	}
+
+	extra := 0
 	if compression == gzip.Name {
-		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+		extra = 1
+	}
+	out := make([]option.ClientOption, 0, len(generatedDefaultOpts)+len(clientDefaultOpts)+len(userOpts)+extra)
+	out = append(out, generatedDefaultOpts...)
+	out = append(out, clientDefaultOpts...)
+	out = append(out, userOpts...)
+	if compression == gzip.Name {
+		out = append(out, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.UseCompressor(gzip.Name))))
 	}
-	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
-	return append(allDefaultOpts, userOpts...)
+	return out
 }
 
 // WithRequestIDInterceptors returns a copy of userOpts with stream and unary
 // x-goog-spanner-request-id client interceptors appended.
 func WithRequestIDInterceptors(augmentErr requestid.ErrorAugmenter, userOpts ...option.ClientOption) []option.ClientOption {
 	reqIDInjector := requestid.NewHeaderInjector(augmentErr)
-	opts := append([]option.ClientOption{}, userOpts...)
+	opts := make([]option.ClientOption, 0, len(userOpts)+2)
+	opts = append(opts, userOpts...)
 	return append(opts,
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.InterceptStream)),
 		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.InterceptUnary)),
@@ -190,28 +188,49 @@ type PoolConfig struct {
 	StreamInterceptors   []grpc.StreamClientInterceptor
 }
 
+func (cfg PoolConfig) clientOptions(userOpts ...option.ClientOption) []option.ClientOption {
+	opts := WithRequestIDInterceptors(cfg.AugmentError, userOpts...)
+	return DefaultClientOptions(cfg.NumChannels, cfg.Compression, cfg.EnableDirectAccess, cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
+}
+
+// PoolSizeMismatchError is returned when an explicit NumChannels configuration
+// conflicts with option.WithGRPCConnectionPool.
+type PoolSizeMismatchError struct {
+	Msg string
+}
+
+func (e *PoolSizeMismatchError) Error() string {
+	return e.Msg
+}
+
+// GRPCStatus implements the status.GRPCStatus interface with codes.InvalidArgument.
+func (e *PoolSizeMismatchError) GRPCStatus() *status.Status {
+	return status.New(codes.InvalidArgument, e.Msg)
+}
+
 // FallbackPool wraps a grpcgcp.GCPFallback connection pool and its primary/fallback pools.
 type FallbackPool struct {
 	*grpcgcp.GCPFallback
-	PrimaryConn  gtransport.ConnPool
-	FallbackConn gtransport.ConnPool
+	primaryConn  gtransport.ConnPool
+	fallbackConn gtransport.ConnPool
 }
 
 // Conn returns nil because GCPFallback hides the underlying ClientConn.
+// The Spanner client handles this by using the interface methods (Invoke/NewStream).
 func (fw *FallbackPool) Conn() *grpc.ClientConn {
 	return nil
 }
 
 // Num returns the number of connections in the primary pool.
 func (fw *FallbackPool) Num() int {
-	return fw.PrimaryConn.Num()
+	return fw.primaryConn.Num()
 }
 
 // Close closes the fallback wrapper and both underlying connection pools.
 func (fw *FallbackPool) Close() error {
 	fw.GCPFallback.Close()
-	err1 := fw.PrimaryConn.Close()
-	err2 := fw.FallbackConn.Close()
+	err1 := fw.primaryConn.Close()
+	err2 := fw.fallbackConn.Close()
 	if err1 != nil {
 		return err1
 	}
@@ -225,14 +244,13 @@ func CreateFallbackConnPool(
 	cfg PoolConfig,
 	userOpts ...option.ClientOption,
 ) (gtransport.ConnPool, []option.ClientOption, error) {
-	opts := WithRequestIDInterceptors(cfg.AugmentError, userOpts...)
-	allOpts := DefaultClientOptions(cfg.NumChannels, cfg.Compression, cfg.EnableDirectAccess, cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
+	allOpts := cfg.clientOptions(userOpts...)
 	primaryConn, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	fallbackConnOpts := append(allOpts, internaloption.EnableDirectPath(false))
+	fallbackConnOpts := append(allOpts[:len(allOpts):len(allOpts)], internaloption.EnableDirectPath(false))
 	fallbackConn, err := gtransport.DialPool(ctx, fallbackConnOpts...)
 	if err != nil {
 		primaryConn.Close()
@@ -242,7 +260,9 @@ func CreateFallbackConnPool(
 	if cfg.HasNumChannelsConfig && ((primaryConn.Num() != cfg.NumChannels) || (fallbackConn.Num() != cfg.NumChannels)) {
 		primaryConn.Close()
 		fallbackConn.Close()
-		return nil, nil, status.Errorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", cfg.NumChannels, primaryConn.Num(), fallbackConn.Num())
+		return nil, nil, &PoolSizeMismatchError{
+			Msg: fmt.Sprintf("Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", cfg.NumChannels, primaryConn.Num(), fallbackConn.Num()),
+		}
 	}
 
 	fbOpts := grpcgcp.NewGCPFallbackOptions()
@@ -263,8 +283,8 @@ func CreateFallbackConnPool(
 
 	return &FallbackPool{
 		GCPFallback:  gcpFallback,
-		PrimaryConn:  primaryConn,
-		FallbackConn: fallbackConn,
+		primaryConn:  primaryConn,
+		fallbackConn: fallbackConn,
 	}, allOpts, nil
 }
 
@@ -275,15 +295,16 @@ func DialStaticPool(
 	cfg PoolConfig,
 	userOpts ...option.ClientOption,
 ) (gtransport.ConnPool, []option.ClientOption, error) {
-	opts := WithRequestIDInterceptors(cfg.AugmentError, userOpts...)
-	allOpts := DefaultClientOptions(cfg.NumChannels, cfg.Compression, cfg.EnableDirectAccess, cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
+	allOpts := cfg.clientOptions(userOpts...)
 	pool, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
 		return nil, nil, err
 	}
 	if cfg.HasNumChannelsConfig && pool.Num() != cfg.NumChannels {
 		pool.Close()
-		return nil, nil, status.Errorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", cfg.NumChannels, pool.Num())
+		return nil, nil, &PoolSizeMismatchError{
+			Msg: fmt.Sprintf("Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", cfg.NumChannels, pool.Num()),
+		}
 	}
 	return pool, allOpts, nil
 }
@@ -295,14 +316,15 @@ func MergeCallOptions(a *vkit.CallOptions, b *vkit.CallOptions) *vkit.CallOption
 	aVal := reflect.ValueOf(a).Elem()
 	bVal := reflect.ValueOf(b).Elem()
 
-	t := aVal.Type()
 	for i := 0; i < aVal.NumField(); i++ {
-		fieldName := t.Field(i).Name
 		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
 		bFieldVal := bVal.Field(i).Interface().([]gax.CallOption)
-		merged := append([]gax.CallOption{}, aFieldVal...)
-		merged = append(merged, bFieldVal...)
-		resVal.FieldByName(fieldName).Set(reflect.ValueOf(merged))
+		if n := len(aFieldVal) + len(bFieldVal); n > 0 {
+			merged := make([]gax.CallOption, 0, n)
+			merged = append(merged, aFieldVal...)
+			merged = append(merged, bFieldVal...)
+			resVal.Field(i).Set(reflect.ValueOf(merged))
+		}
 	}
 	return res
 }
@@ -398,6 +420,9 @@ func (c *CachedExecuteStreamingSQLClient) Header() (metadata.MD, error) {
 
 // ExecuteStreamingSQL invokes raw.ExecuteStreamingSql with peer info context and span attributes,
 // wrapping the returned stream in a CachedExecuteStreamingSQLClient.
+//
+// Note: This function does not inject x-goog-spanner-request-id CallOptions because
+// stream iterators construct and attach per-attempt request-ID options themselves.
 func ExecuteStreamingSQL(ctx context.Context, raw *vkit.Client, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*CachedExecuteStreamingSQLClient, error) {
 	span := oteltrace.SpanFromContext(ctx)
 	SetSpanAttributes(span, req)

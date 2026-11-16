@@ -19,7 +19,6 @@ package spanner
 import (
 	"context"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
@@ -68,14 +67,8 @@ type grpcSpannerClient struct {
 	raw                  *vkit.Client
 	metricsTracerFactory *builtinMetricsTracerFactory
 
-	// These fields are used to uniquely track x-goog-spanner-request-id where:
-	// raw(*vkit.Client) is the channel, and channelID is derived from the ordinal
-	// count of unique *vkit.Client as retrieved from the session pool.
-	channelID uint64
-	// id is derived from the SpannerClient.
-	id int
-	// nthRequest is incremented for each new request (but not for retries of requests).
-	nthRequest   *atomic.Uint32
+	// reqIDTracker uniquely tracks x-goog-spanner-request-id for this channel
+	// (client ordinal, channel ordinal, and shared per-client request counter).
 	reqIDTracker requestid.Tracker
 }
 
@@ -236,6 +229,8 @@ func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.Execu
 }
 
 func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
+	// Note: This method does not add g.optsWithNextRequestID, as it is already
+	// manually added when creating Stream iterators for ExecuteStreamingSql.
 	cached, err := transport.ExecuteStreamingSQL(ctx, g.raw, req, opts...)
 	if err != nil {
 		return nil, err
