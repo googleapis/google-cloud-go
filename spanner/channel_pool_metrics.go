@@ -27,6 +27,7 @@ import (
 
 const (
 	metricNameChannelPoolChannelCount = "channel_pool/channel_count"
+	metricNameChannelPoolChannelLoad  = "channel_pool/channel_load"
 
 	metricLabelKeyPoolMode = "pool_mode"
 	metricLabelKeyState    = "state"
@@ -42,6 +43,8 @@ const (
 
 	disableChannelPoolBuiltinMetricsEnvVar = "SPANNER_DISABLE_CHANNEL_POOL_BUILTIN_METRICS"
 )
+
+var channelLoadBucketBounds = []float64{1, 2, 3, 5, 8, 12, 16, 20, 25, 30, 40, 50, 75, 100, 150, 200}
 
 type channelPoolBuiltinMetricsConfig struct {
 	meterProvider metric.MeterProvider
@@ -64,7 +67,9 @@ func newChannelPoolBuiltinMetricsConfig(tf *builtinMetricsTracerFactory, isDirec
 }
 
 type channelPoolBuiltinMetrics struct {
-	registration metric.Registration
+	registration     metric.Registration
+	channelLoad      metric.Float64Histogram
+	channelLoadAttrs metric.RecordOption
 }
 
 func newChannelPoolBuiltinMetrics(p *dynamicChannelPool, cfg channelPoolBuiltinMetricsConfig) *channelPoolBuiltinMetrics {
@@ -72,6 +77,13 @@ func newChannelPoolBuiltinMetrics(p *dynamicChannelPool, cfg channelPoolBuiltinM
 		return nil
 	}
 	meter := cfg.meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
+	m := &channelPoolBuiltinMetrics{}
+	m.registerChannelCount(p, meter, cfg.lane)
+	m.registerChannelLoad(p, meter, cfg.lane)
+	return m
+}
+
+func (m *channelPoolBuiltinMetrics) registerChannelCount(p *dynamicChannelPool, meter metric.Meter, lane string) {
 	name := nativeMetricsPrefix + metricNameChannelPoolChannelCount
 	channelCount, err := meter.Int64ObservableUpDownCounter(
 		name,
@@ -80,17 +92,17 @@ func newChannelPoolBuiltinMetrics(p *dynamicChannelPool, cfg channelPoolBuiltinM
 	)
 	if err != nil {
 		logf(p.sc.logger, "spanner_dcp: failed to create built-in metric %s: %v", name, err)
-		return nil
+		return
 	}
 	activeAttrs := metric.WithAttributeSet(attribute.NewSet(
 		attribute.String(metricLabelKeyPoolMode, poolModeDynamic),
 		attribute.String(metricLabelKeyState, channelStateActive),
-		attribute.String(metricLabelKeyLane, cfg.lane),
+		attribute.String(metricLabelKeyLane, lane),
 	))
 	drainingAttrs := metric.WithAttributeSet(attribute.NewSet(
 		attribute.String(metricLabelKeyPoolMode, poolModeDynamic),
 		attribute.String(metricLabelKeyState, channelStateDraining),
-		attribute.String(metricLabelKeyLane, cfg.lane),
+		attribute.String(metricLabelKeyLane, lane),
 	))
 	reg, err := meter.RegisterCallback(
 		func(ctx context.Context, o metric.Observer) error {
@@ -102,9 +114,35 @@ func newChannelPoolBuiltinMetrics(p *dynamicChannelPool, cfg channelPoolBuiltinM
 	)
 	if err != nil {
 		logf(p.sc.logger, "spanner_dcp: failed to register built-in channel pool metric callback: %v", err)
-		return nil
+		return
 	}
-	return &channelPoolBuiltinMetrics{registration: reg}
+	m.registration = reg
+}
+
+func (m *channelPoolBuiltinMetrics) registerChannelLoad(p *dynamicChannelPool, meter metric.Meter, lane string) {
+	name := nativeMetricsPrefix + metricNameChannelPoolChannelLoad
+	channelLoad, err := meter.Float64Histogram(
+		name,
+		metric.WithDescription("The number of calls in flight on the channel that a call starts on, including that call."),
+		metric.WithUnit(metricUnitCount),
+		metric.WithExplicitBucketBoundaries(channelLoadBucketBounds...),
+	)
+	if err != nil {
+		logf(p.sc.logger, "spanner_dcp: failed to create built-in metric %s: %v", name, err)
+		return
+	}
+	m.channelLoad = channelLoad
+	m.channelLoadAttrs = metric.WithAttributeSet(attribute.NewSet(
+		attribute.String(metricLabelKeyPoolMode, poolModeDynamic),
+		attribute.String(metricLabelKeyLane, lane),
+	))
+}
+
+func (m *channelPoolBuiltinMetrics) recordChannelLoad(ctx context.Context, load int32) {
+	if m == nil || m.channelLoad == nil {
+		return
+	}
+	m.channelLoad.Record(ctx, float64(load), m.channelLoadAttrs)
 }
 
 func (m *channelPoolBuiltinMetrics) close(logger *log.Logger) {

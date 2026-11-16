@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -30,10 +31,14 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"google.golang.org/api/iterator"
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 )
 
-const channelCountMetricName = nativeMetricsPrefix + metricNameChannelPoolChannelCount
+const (
+	channelCountMetricName = nativeMetricsPrefix + metricNameChannelPoolChannelCount
+	channelLoadMetricName  = nativeMetricsPrefix + metricNameChannelPoolChannelLoad
+)
 
 func channelCountByState(t *testing.T, rm metricdata.ResourceMetrics, wantLane string) map[string]int64 {
 	t.Helper()
@@ -64,6 +69,30 @@ func requireChannelCounts(t *testing.T, got map[string]int64, wantActive, wantDr
 	if len(got) != 2 || got[channelStateActive] != wantActive || got[channelStateDraining] != wantDraining {
 		t.Fatalf("channel_count mismatch:\n Got: %v\nWant: map[active:%d draining:%d]", got, wantActive, wantDraining)
 	}
+}
+
+func channelLoadPoint(t *testing.T, rm metricdata.ResourceMetrics, wantLane string) metricdata.HistogramDataPoint[float64] {
+	t.Helper()
+	m := requireDCPMetric(t, rm, channelLoadMetricName)
+	hist, ok := m.Data.(metricdata.Histogram[float64])
+	if !ok {
+		t.Fatalf("channel_load data type mismatch:\n Got: %T\nWant: metricdata.Histogram[float64]", m.Data)
+	}
+	if len(hist.DataPoints) != 1 {
+		t.Fatalf("channel_load points mismatch:\n Got: %d\nWant: 1", len(hist.DataPoints))
+	}
+	dp := hist.DataPoints[0]
+	wantAttrs := attribute.NewSet(
+		attribute.String(metricLabelKeyPoolMode, poolModeDynamic),
+		attribute.String(metricLabelKeyLane, wantLane),
+	)
+	if !dp.Attributes.Equals(&wantAttrs) {
+		t.Fatalf("channel_load attributes mismatch:\n Got: %v\nWant: %v", dp.Attributes.ToSlice(), wantAttrs.ToSlice())
+	}
+	if !slices.Equal(dp.Bounds, channelLoadBucketBounds) {
+		t.Fatalf("channel_load buckets mismatch:\n Got: %v\nWant: %v", dp.Bounds, channelLoadBucketBounds)
+	}
+	return dp
 }
 
 func TestChannelPoolBuiltinMetricsConfig(t *testing.T) {
@@ -195,9 +224,17 @@ func (p *failingChannelPoolMeterProvider) Meter(string, ...metric.MeterOption) m
 }
 
 type failingChannelPoolMeter struct {
-	noop.Meter
+	metric.Meter
+	failHistogram  bool
 	failInstrument bool
 	failCallback   bool
+}
+
+func (m *failingChannelPoolMeter) Float64Histogram(name string, opts ...metric.Float64HistogramOption) (metric.Float64Histogram, error) {
+	if m.failHistogram {
+		return nil, errors.New("test histogram registration failure")
+	}
+	return m.Meter.Float64Histogram(name, opts...)
 }
 
 func (m *failingChannelPoolMeter) Int64ObservableUpDownCounter(name string, opts ...metric.Int64ObservableUpDownCounterOption) (metric.Int64ObservableUpDownCounter, error) {
@@ -214,23 +251,42 @@ func (m *failingChannelPoolMeter) RegisterCallback(f metric.Callback, instrument
 	return m.Meter.RegisterCallback(f, instruments...)
 }
 
-func TestChannelPoolBuiltinMetricsRegistrationErrorsDisableMetrics(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
+func TestChannelPoolBuiltinMetricsRegistrationErrorKeepsOtherMetric(t *testing.T) {
+	cfg := testDCPConfig(1, 1, 2)
+	cfg.DCPScaleDownCheckInterval = time.Hour
+	server, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
+	addSelect1Result(server)
+	p := client.sc.dynamicPool
 	tests := []struct {
-		name  string
-		meter *failingChannelPoolMeter
+		name      string
+		fail      func(m *failingChannelPoolMeter)
+		wantCount bool
+		wantLoad  bool
 	}{
-		{name: "instrument fails", meter: &failingChannelPoolMeter{failInstrument: true}},
-		{name: "callback fails", meter: &failingChannelPoolMeter{failCallback: true}},
+		{name: "histogram fails", fail: func(m *failingChannelPoolMeter) { m.failHistogram = true }, wantCount: true},
+		{name: "instrument fails", fail: func(m *failingChannelPoolMeter) { m.failInstrument = true }, wantLoad: true},
+		{name: "callback fails", fail: func(m *failingChannelPoolMeter) { m.failCallback = true }, wantLoad: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mp := &failingChannelPoolMeterProvider{meter: tt.meter}
-			if got := newChannelPoolBuiltinMetrics(client.sc.dynamicPool, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath}); got != nil {
-				t.Fatalf("metrics after registration failure mismatch:\n Got: %+v\nWant: nil", got)
-			}
+			reader, sdkMP := newDCPManualReader()
+			meter := &failingChannelPoolMeter{Meter: sdkMP.Meter(builtInMetricsMeterName)}
+			tt.fail(meter)
+			p.builtinMetrics = newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: &failingChannelPoolMeterProvider{meter: meter}, lane: laneCloudPath})
+			defer func() {
+				p.builtinMetrics.close(nil)
+				p.builtinMetrics = nil
+			}()
 			runSelect1(t, client)
+
+			rm := collectDCPMetrics(t, reader)
+			if _, got := findDCPMetric(rm, channelCountMetricName); got != tt.wantCount {
+				t.Fatalf("channel_count reported mismatch:\n Got: %v\nWant: %v", got, tt.wantCount)
+			}
+			if _, got := findDCPMetric(rm, channelLoadMetricName); got != tt.wantLoad {
+				t.Fatalf("channel_load reported mismatch:\n Got: %v\nWant: %v", got, tt.wantLoad)
+			}
 		})
 	}
 }
@@ -279,6 +335,85 @@ func TestChannelPoolBuiltinMetricsCollectWhilePoolChanges(t *testing.T) {
 		time.Sleep(50 * time.Millisecond)
 	}
 	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneCloudPath), int64(cfg.DCPMinChannels), 0)
+}
+
+func TestChannelPoolBuiltinMetricsRecordsChannelLoad(t *testing.T) {
+	tests := []struct {
+		name  string
+		start func(p *dynamicChannelPool, e *dcpEntry) error
+	}{
+		{name: "ConnPool Invoke", start: func(p *dynamicChannelPool, e *dcpEntry) error {
+			return p.Invoke(context.Background(), "method", nil, nil)
+		}},
+		{name: "ConnPool NewStream", start: func(p *dynamicChannelPool, e *dcpEntry) error {
+			_, err := p.NewStream(context.Background(), &grpc.StreamDesc{}, "method")
+			return err
+		}},
+		{name: "spannerClient unary", start: func(p *dynamicChannelPool, e *dcpEntry) error {
+			(&dcpSpannerClient{entry: e}).startUnary(context.Background())(nil)
+			return nil
+		}},
+		{name: "spannerClient stream", start: func(p *dynamicChannelPool, e *dcpEntry) error {
+			(&dcpSpannerClient{entry: e}).startStream(context.Background()).done(nil)
+			return nil
+		}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p, entries := newDCPRefTestPool(t, 1)
+			e := entries[0]
+			e.pool = &fakeDCPConnPool{}
+			reader, mp := newDCPManualReader()
+			p.builtinMetrics = newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneDirectPath})
+			defer p.builtinMetrics.close(nil)
+			e.unaryLoad.Store(1)
+			e.streamLoad.Store(1)
+
+			if err := tt.start(p, e); err != nil {
+				t.Fatalf("call failed: %v", err)
+			}
+			dp := channelLoadPoint(t, collectDCPMetrics(t, reader), laneDirectPath)
+			if dp.Count != 1 || dp.Sum != 3 {
+				t.Fatalf("channel_load mismatch:\n Got: count %d, sum %v\nWant: count 1, sum 3", dp.Count, dp.Sum)
+			}
+		})
+	}
+}
+
+func TestChannelPoolBuiltinMetricsRecordsConcurrentChannelLoad(t *testing.T) {
+	p, entries := newDCPRefTestPool(t, 2)
+	reader, mp := newDCPManualReader()
+	p.builtinMetrics = newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath})
+	defer p.builtinMetrics.close(nil)
+
+	const goroutines, calls = 8, 100
+	var wg sync.WaitGroup
+	for i := 0; i < goroutines; i++ {
+		client := &dcpSpannerClient{entry: entries[i%len(entries)]}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < calls; j++ {
+				client.startUnary(context.Background())(nil)
+				if err := reader.Collect(context.Background(), &metricdata.ResourceMetrics{}); err != nil {
+					t.Errorf("Collect() failed: %v", err)
+					return
+				}
+			}
+		}()
+	}
+	wg.Wait()
+
+	dp := channelLoadPoint(t, collectDCPMetrics(t, reader), laneCloudPath)
+	if dp.Count != goroutines*calls {
+		t.Fatalf("channel_load count mismatch:\n Got: %d\nWant: %d", dp.Count, goroutines*calls)
+	}
+	if min, ok := dp.Min.Value(); !ok || min < 1 {
+		t.Fatalf("channel_load min mismatch:\n Got: %v\nWant: at least 1", min)
+	}
+	if max, ok := dp.Max.Value(); !ok || max > float64(goroutines/len(entries)) {
+		t.Fatalf("channel_load max mismatch:\n Got: %v\nWant: at most %d", max, goroutines/len(entries))
+	}
 }
 
 func runSelect1(t *testing.T, client *Client) {
@@ -342,6 +477,47 @@ func exportedChannelCounts(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRe
 	return got
 }
 
+func exportedChannelLoadCount(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRequest) int64 {
+	t.Helper()
+	var count int64
+	for _, req := range reqs {
+		for _, ts := range req.TimeSeries {
+			if ts.Metric.Type != channelLoadMetricName {
+				continue
+			}
+			if ts.MetricKind != googlemetricpb.MetricDescriptor_CUMULATIVE {
+				t.Fatalf("metric kind mismatch:\n Got: %v\nWant: CUMULATIVE", ts.MetricKind)
+			}
+			if ts.ValueType != googlemetricpb.MetricDescriptor_DISTRIBUTION {
+				t.Fatalf("value type mismatch:\n Got: %v\nWant: DISTRIBUTION", ts.ValueType)
+			}
+			if len(ts.Points) != 1 {
+				t.Fatalf("points mismatch:\n Got: %d\nWant: 1", len(ts.Points))
+			}
+			labels := ts.Metric.Labels
+			if labels[metricLabelKeyClientUID] == "" {
+				t.Fatalf("label %q missing in %v", metricLabelKeyClientUID, labels)
+			}
+			wantLabels := map[string]string{
+				metricLabelKeyPoolMode:   poolModeDynamic,
+				metricLabelKeyLane:       laneCloudPath,
+				metricLabelKeyClientUID:  labels[metricLabelKeyClientUID],
+				metricLabelKeyClientName: clientName,
+				metricLabelKeyDatabase:   "[DATABASE]",
+			}
+			if !reflect.DeepEqual(labels, wantLabels) {
+				t.Fatalf("labels mismatch:\n Got: %v\nWant: %v", labels, wantLabels)
+			}
+			dist := ts.Points[0].GetValue().GetDistributionValue()
+			if got := dist.GetBucketOptions().GetExplicitBuckets().GetBounds(); !slices.Equal(got, channelLoadBucketBounds) {
+				t.Fatalf("channel_load buckets mismatch:\n Got: %v\nWant: %v", got, channelLoadBucketBounds)
+			}
+			count += dist.GetCount()
+		}
+	}
+	return count
+}
+
 func exportedMetricTypes(reqs []*monitoringpb.CreateTimeSeriesRequest) map[string]bool {
 	types := make(map[string]bool)
 	for _, req := range reqs {
@@ -401,13 +577,17 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 				}
 			}
 			got := exportedChannelCounts(t, reqs)
+			loadCount := exportedChannelLoadCount(t, reqs)
 			if tt.wantCounts == nil {
-				if len(got) != 0 {
-					t.Fatalf("channel_count points mismatch:\n Got: %v\nWant: none", got)
+				if len(got) != 0 || loadCount != 0 {
+					t.Fatalf("channel pool points mismatch:\n Got: channel_count %v, channel_load count %d\nWant: none", got, loadCount)
 				}
 				return
 			}
 			requireChannelCounts(t, got, tt.wantCounts[channelStateActive], tt.wantCounts[channelStateDraining])
+			if loadCount == 0 {
+				t.Fatal("channel_load not exported")
+			}
 		})
 	}
 }
@@ -443,13 +623,17 @@ func TestChannelPoolBuiltinMetricsNotSentToCustomerMeterProviders(t *testing.T) 
 	for provider, rm := range customerMetrics {
 		for _, sm := range rm.ScopeMetrics {
 			for _, m := range sm.Metrics {
-				if strings.HasSuffix(m.Name, metricNameChannelPoolChannelCount) {
-					t.Fatalf("%s received %q, want channel_count sent to Cloud Monitoring only", provider, m.Name)
+				if strings.HasSuffix(m.Name, metricNameChannelPoolChannelCount) || strings.HasSuffix(m.Name, metricNameChannelPoolChannelLoad) {
+					t.Fatalf("%s received %q, want channel pool metrics sent to Cloud Monitoring only", provider, m.Name)
 				}
 			}
 		}
 	}
 
 	client.Close()
-	requireChannelCounts(t, exportedChannelCounts(t, monitoringServer.CreateServiceTimeSeriesRequests()), 2, 0)
+	reqs := monitoringServer.CreateServiceTimeSeriesRequests()
+	requireChannelCounts(t, exportedChannelCounts(t, reqs), 2, 0)
+	if exportedChannelLoadCount(t, reqs) == 0 {
+		t.Fatal("channel_load not exported")
+	}
 }

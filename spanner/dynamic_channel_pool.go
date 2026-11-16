@@ -320,6 +320,7 @@ func (p *dynamicChannelPool) Invoke(ctx context.Context, method string, args, re
 	}
 	e.unaryLoad.Add(1)
 	p.totalRPCLoad.Add(1)
+	p.builtinMetrics.recordChannelLoad(ctx, e.rpcLoad())
 	p.maybeSignalScaleUp(e)
 	e.lastActivity.Store(time.Now().UnixNano())
 	defer func() {
@@ -339,6 +340,7 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 	}
 	e.streamLoad.Add(1)
 	p.totalRPCLoad.Add(1)
+	p.builtinMetrics.recordChannelLoad(ctx, e.rpcLoad())
 	p.maybeSignalScaleUp(e)
 	e.lastActivity.Store(time.Now().UnixNano())
 	stream, err := e.pool.NewStream(ctx, desc, method, opts...)
@@ -1049,6 +1051,7 @@ func (c *dcpSpannerClient) Connection() *grpc.ClientConn   { return c.delegate.C
 func (c *dcpSpannerClient) startUnary(ctx context.Context) func(error) {
 	c.entry.unaryLoad.Add(1)
 	c.entry.parent.totalRPCLoad.Add(1)
+	c.entry.parent.builtinMetrics.recordChannelLoad(ctx, c.entry.rpcLoad())
 	c.entry.parent.maybeSignalScaleUp(c.entry)
 	c.entry.lastActivity.Store(time.Now().UnixNano())
 	return func(err error) {
@@ -1097,6 +1100,7 @@ func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
 	c.entry.refs.Add(1)
 	c.entry.streamLoad.Add(1)
 	c.entry.parent.totalRPCLoad.Add(1)
+	c.entry.parent.builtinMetrics.recordChannelLoad(ctx, c.entry.rpcLoad())
 	c.entry.parent.maybeSignalScaleUp(c.entry)
 	c.entry.lastActivity.Store(time.Now().UnixNano())
 	ref := &dcpStreamRef{finish: func(err error) {
