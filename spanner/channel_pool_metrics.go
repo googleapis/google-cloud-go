@@ -67,9 +67,9 @@ func newChannelPoolBuiltinMetricsConfig(tf *builtinMetricsTracerFactory, isDirec
 }
 
 type channelPoolBuiltinMetrics struct {
-	registration     metric.Registration
-	channelLoad      metric.Float64Histogram
-	channelLoadAttrs metric.RecordOption
+	registration    metric.Registration
+	channelLoad     metric.Float64Histogram
+	channelLoadOpts []metric.RecordOption
 }
 
 func newChannelPoolBuiltinMetrics(p *dynamicChannelPool, cfg channelPoolBuiltinMetricsConfig) *channelPoolBuiltinMetrics {
@@ -132,17 +132,17 @@ func (m *channelPoolBuiltinMetrics) registerChannelLoad(p *dynamicChannelPool, m
 		return
 	}
 	m.channelLoad = channelLoad
-	m.channelLoadAttrs = metric.WithAttributeSet(attribute.NewSet(
+	m.channelLoadOpts = []metric.RecordOption{metric.WithAttributeSet(attribute.NewSet(
 		attribute.String(metricLabelKeyPoolMode, poolModeDynamic),
 		attribute.String(metricLabelKeyLane, lane),
-	))
+	))}
 }
 
 func (m *channelPoolBuiltinMetrics) recordChannelLoad(ctx context.Context, load int32) {
 	if m == nil || m.channelLoad == nil {
 		return
 	}
-	m.channelLoad.Record(ctx, float64(load), m.channelLoadAttrs)
+	m.channelLoad.Record(ctx, float64(load), m.channelLoadOpts...)
 }
 
 func (m *channelPoolBuiltinMetrics) close(logger *log.Logger) {
