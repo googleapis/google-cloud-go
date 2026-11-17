@@ -13,6 +13,17 @@
 // limitations under the License.
 
 // Adapted from github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric.
+//
+// Why this in-package exporter exists:
+//   - github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric
+//     is deprecated (archiving after Jan 1, 2027) and logs a deprecation warning on New().
+//   - Built-in GCS client metrics target the storage.googleapis.com/Client monitored
+//     resource via Cloud Monitoring's CreateServiceTimeSeries API (rather than OTLP
+//     telemetry.googleapis.com, which ingests into prometheus.googleapis.com/* on
+//     prometheus_target; callers wanting OTLP pass WithMeterProvider).
+//   - Because storage, spanner, and bigtable are separate Go modules in google-cloud-go,
+//     Go's internal/ visibility rules prevent sharing an unexported exporter across them,
+//     so storage maintains an unexported copy just like spanner and bigtable.
 
 package storage
 
@@ -193,6 +204,11 @@ func (me *monitoringExporter) Export(ctx context.Context, rm *metricdata.Resourc
 	)
 }
 
+// TODO: Remove exportMetricDescriptors (along with mdCache, createMetricDescriptorIfNeeded,
+// recordToMetricDescriptor, extractLabelDescriptors, and aggregationToKindAndValueType)
+// once newMetricsGCMExporter in metrics.go switches from custom.googleapis.com/
+// (CreateTimeSeries) to storage.googleapis.com/Client (CreateServiceTimeSeries),
+// since service metric descriptors are pre-registered in Cloud Monitoring.
 func (me *monitoringExporter) exportMetricDescriptors(ctx context.Context, rm *metricdata.ResourceMetrics) error {
 	if me.opts.disableCreateMetricDescriptor {
 		return nil
@@ -403,6 +419,9 @@ func (me *monitoringExporter) resourceToMonitoredResource(res *resource.Resource
 // mapDefaultMonitoredResource maps standard OpenTelemetry resource attributes
 // onto Google Cloud Monitoring's default monitored resource types (gce_instance,
 // k8s_*, gae_instance, generic_task, or generic_node).
+//
+// TODO: Remove mapDefaultMonitoredResource and the CreateTimeSeries path once
+// newMetricsGCMExporter in metrics.go switches to storage.googleapis.com/Client.
 func mapDefaultMonitoredResource(rset *attribute.Set) *monitoredrespb.MonitoredResource {
 	getStr := func(keys ...string) string {
 		for _, k := range keys {

@@ -136,7 +136,9 @@ func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exp
 		//
 		// TODO: When storage_client node is allowlisted in Monarch
 		// (google3/configs/monitoring/cloud_pulse_monarch/storage/storage_client.proto),
-		// enable service time series on storage.googleapis.com/Client:
+		// enable service time series on storage.googleapis.com/Client and remove the
+		// legacy CreateTimeSeries / CreateMetricDescriptor / mapDefaultMonitoredResource
+		// helpers in monitoring_exporter.go:
 		// createServiceTimeSeries: true,
 		// monitoredResourceType:   monitoredResourceName,
 		// monitoredResourceLabels: []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"},
