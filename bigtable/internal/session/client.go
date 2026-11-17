@@ -478,7 +478,7 @@ func NewClient(
 		btransport.WithMeterProvider(factory.OtelMeterProvider),
 		btransport.WithChannelPrimer(btransport.NoOpChannelPrimer{}),
 		btransport.WithDirectAccessChecker(btransport.NewSessionClientDirectAccessChecker(
-			daDial, fullInstance, appProfile, directAccessMD,
+			daDial, fullInstance, appProfile, configMD,
 			factory.OtelMeterProvider, nil,
 		)),
 	)
