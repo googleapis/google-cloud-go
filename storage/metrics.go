@@ -37,7 +37,6 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
-	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
@@ -125,25 +124,29 @@ func isOtelDebugMetricsEnabled(config *storageConfig) bool {
 
 // newMetricsGCMExporter creates a Google Cloud Monitoring exporter.
 func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exporter, error) {
-	exporter, err := mexporter.New(
-		mexporter.WithProjectID(projectID),
-		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
+	exporter, err := newMonitoringExporter(&monitoringExporterOptions{
+		context:   ctx,
+		projectID: projectID,
+		metricDescriptorTypeFormatter: func(m metricdata.Metrics) string {
 			return formatMetricWithPrefix(m, customMetricPrefix)
-		}),
-		// The OTel GCP exporter drops resource attributes that don't map to the
-		// target MonitoredResource (currently generic_node). WithFilteredResourceAttributes
-		// keeps an allowlist of attributes (see keepFilteredResourceAttribute) as metric
+		},
+		// The GCM exporter drops resource attributes that don't map to the target
+		// MonitoredResource (currently generic_node). resourceAttributeFilter keeps
+		// an allowlist of attributes (see keepFilteredResourceAttribute) as metric
 		// labels and drops the rest to stay under the Cloud Monitoring label limit.
 		//
 		// TODO: When storage_client node is allowlisted in Monarch
 		// (google3/configs/monitoring/cloud_pulse_monarch/storage/storage_client.proto),
-		// we should uncomment the following options to export to the custom resource:
-		// mexporter.WithCreateServiceTimeSeries(),
-		// mexporter.WithMonitoredResourceDescription("storage.googleapis.com/Client", []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
-		mexporter.WithFilteredResourceAttributes(func(kv attribute.KeyValue) bool {
+		// enable service time series on storage.googleapis.com/Client and remove the
+		// legacy CreateTimeSeries / CreateMetricDescriptor / mapDefaultMonitoredResource
+		// helpers in monitoring_exporter.go:
+		// createServiceTimeSeries: true,
+		// monitoredResourceType:   monitoredResourceName,
+		// monitoredResourceLabels: []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"},
+		resourceAttributeFilter: func(kv attribute.KeyValue) bool {
 			return keepFilteredResourceAttribute(string(kv.Key))
-		}),
-	)
+		},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating GCM exporter: %w", err)
 	}
