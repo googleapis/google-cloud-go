@@ -5515,6 +5515,9 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
 
+	setupClient := testConfig(ctx, t)
+	t.Cleanup(func() { _ = setupClient.Close() })
+
 	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support requester pays"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		client.SetRetry(WithPolicy(RetryAlways))
 
@@ -5544,9 +5547,6 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
-				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
-				t.Cleanup(cancel)
-
 				printTestCase := func() string {
 					userProject := "none"
 					if test.userProject != nil {
@@ -5563,7 +5563,6 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 						t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
 					} else if !test.expectSuccess && test.wantErrorCode != 0 {
 						if (status.Code(err) != codes.OK && status.Code(err) != codes.Unknown && status.Code(err) != test.wantErrorCodeGRPC) || (errCode > 0 && errCode != test.wantErrorCode) {
-							fmt.Println(status.Code(err), "   ", status.Code(err) != test.wantErrorCodeGRPC)
 							t.Errorf("%s: mismatched errors; want error code: %d or grpc error: %s, got error: %v \n\t\t%s\n",
 								desc, test.wantErrorCode, test.wantErrorCodeGRPC, err, printTestCase())
 						}
@@ -5573,7 +5572,10 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 				bucketName := prefix + uidSpace.New()
 				objectName := "acl-go-test" + uidSpaceObjects.New()
 
-				setUpRequesterPaysBucket(ctx, t, bucketName, objectName, secondaryUserEmail)
+				setUpRequesterPaysBucket(t, setupClient, bucketName, objectName, secondaryUserEmail)
+
+				ctx, cancel := context.WithTimeout(ctx, time.Minute)
+				defer cancel()
 
 				// Set up the bucket to use depending on the test case
 				bucket := client.Bucket(bucketName)
@@ -8938,6 +8940,9 @@ func deleteObjectIfExists(o *ObjectHandle, retryOpts ...RetryOption) error {
 	retryOpts = append([]RetryOption{WithPolicy(RetryAlways)}, retryOpts...)
 
 	if err := o.Retryer(retryOpts...).Delete(ctx); err != nil {
+		if errors.Is(err, ErrObjectNotExist) {
+			return nil
+		}
 		var apiErr *apierror.APIError
 		if ok := errors.As(err, &apiErr); ok {
 			// Object may already be deleted with retry; if so, return no error.
@@ -9257,11 +9262,9 @@ func retryOnNilAndTransientErrs(err error) bool {
 	return err == nil || ShouldRetry(err)
 }
 func retryOnTransient400and403(err error) bool {
-	var e *googleapi.Error
-	var ae *apierror.APIError
 	return ShouldRetry(err) ||
-		/* http */ errors.As(err, &e) && (e.Code == 400 || e.Code == 403) ||
-		/* grpc */ errors.As(err, &ae) && (ae.GRPCStatus().Code() == codes.InvalidArgument || ae.GRPCStatus().Code() == codes.PermissionDenied)
+		errorIsStatusCode(err, 400, codes.InvalidArgument) ||
+		errorIsStatusCode(err, 403, codes.PermissionDenied)
 }
 
 func skipGRPC(reason string) context.Context {
@@ -9326,26 +9329,64 @@ func errorIsStatusCode(err error, httpStatusCode int, grpcStatusCode codes.Code)
 		status.Code(err) == grpcStatusCode
 }
 
-func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object string, addOwnerEmail string) {
+func setUpRequesterPaysBucket(t *testing.T, client *Client, bucket, object string, addOwnerEmail string) {
 	t.Helper()
-	client := testConfig(ctx, t)
 	h := testHelper{t}
+	setupCtx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
 
 	requesterPaysBucket := client.Bucket(bucket)
 
 	// Create a requester-pays bucket with ownership.
-	addACL := []ACLRule{{Entity: ACLEntity(fmt.Sprintf("user-%s", addOwnerEmail)), Role: RoleOwner}}
+	ownerEntity := ACLEntity(fmt.Sprintf("user-%s", addOwnerEmail))
+	addACL := []ACLRule{{Entity: ownerEntity, Role: RoleOwner}}
 	h.mustCreate(requesterPaysBucket, testutil.ProjID(), &BucketAttrs{RequesterPays: true, ACL: addACL})
 	t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
 
-	h.mustWrite(requesterPaysBucket.Object(object).NewWriter(ctx), []byte("hello"))
+	h.mustWrite(requesterPaysBucket.Object(object).NewWriter(setupCtx), []byte("hello"))
+	if err := requesterPaysBucket.Object(object).ACL().Set(setupCtx, ownerEntity, RoleOwner); err != nil {
+		t.Fatalf("Object(%q).ACL().Set: %v", object, err)
+	}
 	t.Cleanup(func() {
-		err := requesterPaysBucket.Object(object).Delete(ctx)
-		if err != nil {
-			// only log because object may be deleted by test
-			t.Logf("could not delete object: %v", err)
+		for _, obj := range []string{object, "copy", "compose"} {
+			if err := deleteObjectIfExists(requesterPaysBucket.Object(obj)); err != nil {
+				t.Logf("could not delete object %q: %v", obj, err)
+			}
 		}
 	})
+}
+
+func TestRetryOnTransient400and403(t *testing.T) {
+	apiErr403, ok := apierror.FromError(status.Error(codes.PermissionDenied, "denied"))
+	if !ok {
+		t.Fatal("apierror.FromError(PermissionDenied) returned ok=false")
+	}
+	apiErr400, ok := apierror.FromError(status.Error(codes.InvalidArgument, "invalid"))
+	if !ok {
+		t.Fatal("apierror.FromError(InvalidArgument) returned ok=false")
+	}
+
+	for _, tc := range []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{name: "http 400", err: &googleapi.Error{Code: 400}, want: true},
+		{name: "http 403", err: &googleapi.Error{Code: 403}, want: true},
+		{name: "http 404", err: &googleapi.Error{Code: 404}, want: false},
+		{name: "apierror InvalidArgument", err: apiErr400, want: true},
+		{name: "apierror PermissionDenied", err: apiErr403, want: true},
+		{name: "raw grpc InvalidArgument", err: status.Error(codes.InvalidArgument, "invalid"), want: true},
+		{name: "raw grpc PermissionDenied", err: status.Error(codes.PermissionDenied, "denied"), want: true},
+		{name: "raw grpc Unavailable", err: status.Error(codes.Unavailable, "unavailable"), want: true},
+		{name: "raw grpc NotFound", err: status.Error(codes.NotFound, "not found"), want: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := retryOnTransient400and403(tc.err); got != tc.want {
+				t.Errorf("retryOnTransient400and403(%v) = %v, want %v", tc.err, got, tc.want)
+			}
+		})
+	}
 }
 
 func crc32c(b []byte) uint32 {
