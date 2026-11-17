@@ -46,8 +46,11 @@ var (
 		"gopkg.in/yaml",
 		"github.com/go-git/go-git",
 		"github.com/apache/arrow/go",
-		"github.com/apache/arrow-go",         // arrow project changed their structure for go.
-		"github.com/cloudprober/cloudprober", // https://github.com/googleapis/google-cloud-go/issues/9377
+		"github.com/apache/arrow-go",                   // arrow project changed their structure for go.
+		"github.com/cloudprober/cloudprober",           // https://github.com/googleapis/google-cloud-go/issues/9377
+		"github.com/envoyproxy/go-control-plane/envoy", // bigtable
+		"github.com/IBM/sarama",                        // pubsub kafka support
+		"github.com/planetscale/vtprotobuf",            // spanner
 
 		// Third party deps (temporary exception(s)).
 		"go.einride.tech/aip", // https://github.com/googleapis/google-cloud-go/issues/9338
