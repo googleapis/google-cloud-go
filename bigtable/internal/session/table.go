@@ -30,7 +30,7 @@ import (
 
 // ErrWriteNotSupported is returned by MutateRow when the resource has
 // no write pool — e.g. materialized views, which are read-only.
-var ErrWriteNotSupported = errors.New("bigtable/session: write operations not supported on this resource")
+var ErrWriteNotSupported = errors.New("write operations not supported on this resource")
 
 // ErrClientClosed is returned when a Read/MutateRow is issued
 // against a Client whose Close() has already run. Distinct from
