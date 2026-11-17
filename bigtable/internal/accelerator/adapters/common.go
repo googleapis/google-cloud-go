@@ -31,10 +31,11 @@ const (
 )
 
 // Resource is the fully-qualified resource a request targets, tagged with its
-// kind so callers route without inspecting the name string.
+// kind and app profile so callers route without re-inspecting the request proto.
 type Resource struct {
-	Kind ResourceKind
-	Name string
+	Kind       ResourceKind
+	Name       string
+	AppProfile string
 }
 
 // Adapter defines a generic interface for adapting one type to another.

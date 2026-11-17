@@ -375,6 +375,8 @@ func (e *connEntry) markAsDraining() bool {
 // waitForDrainAndClose waits for a connection's in-flight request count to drop to zero
 // before closing it. It runs in a separate goroutine.
 func (p *BigtableChannelPool) waitForDrainAndClose(entry *connEntry) {
+	defer p.finishDraining(entry)
+
 	// Create a context with a drain timeout
 	ctx, cancel := context.WithTimeout(p.poolCtx, maxDrainingTimeout)
 	defer cancel()
@@ -428,6 +430,13 @@ type BigtableChannelPool struct {
 	selectFunc func() (*connEntry, error) // returns *connEntry
 
 	dialMu sync.Mutex // Serializes dial/replace/resize operations
+
+	// drainingMu guards drainingConns, which tracks connections marked
+	// draining so TotalStreamCount continues counting their live streams
+	// after removeConnectionsOrdered / replaceConnection removes them from
+	// p.conns while waitForDrainAndClose waits for streams to finish.
+	drainingMu    sync.Mutex
+	drainingConns map[*connEntry]struct{}
 
 	poolCtx    context.Context    // Context for the pool's background tasks
 	poolCancel context.CancelFunc // Function to cancel the poolCtx
@@ -660,6 +669,53 @@ func (p *BigtableChannelPool) Num() int {
 	return len(p.getConns())
 }
 
+func (p *BigtableChannelPool) startDraining(entry *connEntry) bool {
+	p.drainingMu.Lock()
+	defer p.drainingMu.Unlock()
+	if !entry.markAsDraining() {
+		return false
+	}
+	if p.drainingConns == nil {
+		p.drainingConns = make(map[*connEntry]struct{})
+	}
+	p.drainingConns[entry] = struct{}{}
+	return true
+}
+
+func (p *BigtableChannelPool) finishDraining(entry *connEntry) {
+	p.drainingMu.Lock()
+	delete(p.drainingConns, entry)
+	p.drainingMu.Unlock()
+}
+
+// TotalStreamCount returns the total number of in-flight streaming RPCs
+// across every channel in the pool — the sum of each connEntry's
+// streamingLoad across both active (p.conns) and draining connections
+// that have already been removed from p.conns while awaiting graceful
+// close. Sessions are bidi streams (one streaming RPC per open session),
+// so on session-mode traffic this equals the total session count riding
+// on the pool. SessionAwareScaleMonitor uses this as its input signal,
+// avoiding the need to reach across the session pool boundary to sum
+// per-resource session counts.
+func (p *BigtableChannelPool) TotalStreamCount() int {
+	p.drainingMu.Lock()
+	defer p.drainingMu.Unlock()
+
+	conns := p.getConns()
+	total := 0
+	for _, entry := range conns {
+		if entry != nil {
+			total += int(entry.streamingLoad.Load())
+		}
+	}
+	for entry := range p.drainingConns {
+		if !slices.Contains(conns, entry) {
+			total += int(entry.streamingLoad.Load())
+		}
+	}
+	return total
+}
+
 // Close closes all connections in the pool.
 func (p *BigtableChannelPool) Close() error {
 	p.poolCancel() // Cancel the context for background tasks
@@ -672,6 +728,9 @@ func (p *BigtableChannelPool) Close() error {
 
 	// immediately store zero-length slice
 	p.conns.Store((&[]*connEntry{}))
+	p.drainingMu.Lock()
+	p.drainingConns = nil
+	p.drainingMu.Unlock()
 
 	for _, entry := range conns {
 		if err := entry.conn.Close(); err != nil {
@@ -684,30 +743,31 @@ func (p *BigtableChannelPool) Close() error {
 	return errs
 }
 
-// replaceConnection closes the connection for the oldEntry
+// replaceConnection replaces oldEntry in the pool with a newly dialed and
+// primed connection, then gracefully drains and closes oldEntry. If dialing or
+// priming the replacement fails (or the pool context is done), oldEntry is left
+// active in p.conns (not marked draining) so it continues serving RPCs and can
+// be retried on a subsequent recycle pass or drained normally on scale-down.
 func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
+	if oldEntry == nil {
+		return
+	}
 	p.dialMu.Lock() // Serialize replacements
 	defer p.dialMu.Unlock()
 
-	// Mark the connection
-	// if it is marked,
-	// it means another routine (health eviction or dynamic scale down) took over it.
-	if !oldEntry.markAsDraining() {
+	// Skip if another routine (e.g. scale-down or an earlier replacement)
+	// already took ownership of draining this connection.
+	if oldEntry.isDraining() {
 		return
 	}
 
 	currentConns := p.getConns()
 	idx := slices.Index(currentConns, oldEntry)
-
-	// If the connection isn't in the slice, it was already removed.
-	// The drain process should still be kicked off.
 	if idx == -1 {
-		btopt.Debugf(p.logger, "bigtable_connpool: Connection to replace was already removed. Draining it.")
-		// thread safe to call waitForDrainAndClose as conn.Close() can be called multiple times.
-		go p.waitForDrainAndClose(oldEntry)
+		btopt.Debugf(p.logger, "bigtable_connpool: Connection to replace was already removed.\n")
 		return
 	}
-	// Simple eviction logic.
+
 	btopt.Debugf(p.logger, "bigtable_connpool: Evicting connection at index %d\n", idx)
 	select {
 	case <-p.poolCtx.Done():
@@ -715,17 +775,35 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 		return
 	default:
 	}
+
 	newEntry, err := p.factory.newEntry(p.poolCtx)
 	if err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: Failed to replace connection at index %d: %v. Closing new conn. Old connection remains (draining).\n", idx, err)
+		btopt.Debugf(p.logger, "bigtable_connpool: Failed to replace connection at index %d: %v. Keeping existing connection active.\n", idx, err)
+		return
+	}
+
+	// Re-check pool context and membership in case Close() raced while dialing.
+	currentConns = p.getConns()
+	idx = slices.Index(currentConns, oldEntry)
+	if p.poolCtx.Err() != nil || idx == -1 {
+		if newEntry.conn != nil {
+			newEntry.conn.Close()
+		}
+		return
+	}
+
+	newConns := make([]*connEntry, len(currentConns))
+	copy(newConns, currentConns)
+	newConns[idx] = newEntry
+
+	if !p.startDraining(oldEntry) {
+		if newEntry.conn != nil {
+			newEntry.conn.Close()
+		}
 		return
 	}
 
 	btopt.Debugf(p.logger, "bigtable_connpool: Successfully primed new connection. Replacing connection at index %d\n", idx)
-	// Copy-on-write
-	newConns := make([]*connEntry, len(currentConns))
-	copy(newConns, currentConns)
-	newConns[idx] = newEntry
 	p.conns.Store(&newConns)
 	// Start the graceful shutdown process for the old connection
 	go p.waitForDrainAndClose(oldEntry)
@@ -993,14 +1071,35 @@ func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
 }
 
 type entryWithAge struct {
-	entry     *connEntry
-	createdAt int64
+	entry         *connEntry
+	createdAt     int64
+	streamingLoad int32
 }
 
 // removeConnections returns true if the pool size changed. It removes the oldest connections available in the conns.
 func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemoveConns int) bool {
+	return p.removeConnectionsOrdered(decreaseDelta, minConns, maxRemoveConns, func(a, b entryWithAge) bool {
+		return a.createdAt < b.createdAt
+	})
+}
+
+// removeLeastStreamedConnections shrinks the pool preferring connections with
+// zero or the fewest active streaming RPCs (sessions), breaking ties by oldest
+// creation time. Matches Java ChannelPoolDpImpl.pickDrainCandidates so
+// SessionAwareScaleMonitor drains idle/lightly-loaded channels first instead
+// of evicting older channels that carry active long-lived sessions.
+func (p *BigtableChannelPool) removeLeastStreamedConnections(decreaseDelta, minConns, maxRemoveConns int) bool {
+	return p.removeConnectionsOrdered(decreaseDelta, minConns, maxRemoveConns, func(a, b entryWithAge) bool {
+		if a.streamingLoad != b.streamingLoad {
+			return a.streamingLoad < b.streamingLoad
+		}
+		return a.createdAt < b.createdAt
+	})
+}
+
+func (p *BigtableChannelPool) removeConnectionsOrdered(decreaseDelta, minConns, maxRemoveConns int, less func(a, b entryWithAge) bool) bool {
 	// the critical section is very short
-	// as we just need to sort the conns and get rid of n old connections.
+	// as we just need to sort the conns and get rid of n connections.
 	p.dialMu.Lock()
 
 	if decreaseDelta <= 0 {
@@ -1028,20 +1127,32 @@ func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemo
 	for _, entry := range snapshotConns {
 		// Only consider connections not *already* draining for removal via this logic.
 		if !entry.isDraining() {
-			entries = append(entries, entryWithAge{entry: entry, createdAt: entry.conn.creationTime()})
+			entries = append(entries, entryWithAge{
+				entry:         entry,
+				createdAt:     entry.createdAt(),
+				streamingLoad: entry.streamingLoad.Load(),
+			})
 		}
 	}
 
-	// Sort by creation time, oldest first
+	if len(entries) == 0 {
+		p.dialMu.Unlock()
+		return false
+	}
+	if cappedDecrease > len(entries) {
+		cappedDecrease = len(entries)
+	}
+
 	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].entry.createdAt() < entries[j].entry.createdAt()
+		return less(entries[i], entries[j])
 	})
 
-	// Select the oldest non-draining connections to mark for draining.
+	// Select the top non-draining connections to mark for draining.
 	connsToDrain := make([]*connEntry, 0, cappedDecrease)
 	for i := 0; i < cappedDecrease; i++ {
-		connsToDrain = append(connsToDrain, entries[i].entry)
-		entries[i].entry.markAsDraining()
+		if p.startDraining(entries[i].entry) {
+			connsToDrain = append(connsToDrain, entries[i].entry)
+		}
 	}
 
 	// Build the slice of connections to keep

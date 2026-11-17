@@ -14,10 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Internal Use Only: Package sharedcore provides the internal Go interface layer between
-// host language bindings (such as Node.js cgo/N-API) and the Cloud Spanner Go
-// client library's transport and resumable stream decoding infrastructure.
-// This package is intended only for Google Cloud client libraries and is not a supported public API.
 package sharedcore
 
 import (
@@ -26,45 +22,49 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// Internal Use Only: ValueKind identifies the native representation of a decoded Spanner cell value
+// ValueKind identifies the native representation of a decoded Spanner cell value
 // for zero-parse transfer across the FFI boundary.
 type ValueKind uint8
 
 const (
-	// Internal Use Only: KindNull represents a SQL NULL value.
+	// KindNull represents a SQL NULL value.
 	KindNull ValueKind = 0
-	// Internal Use Only: KindBool represents a BOOL value.
+	// KindBool represents a BOOL value.
 	KindBool ValueKind = 1
-	// Internal Use Only: KindFloat64 represents a FLOAT64 value (including NaN, +Inf, -Inf).
+	// KindFloat64 represents a FLOAT64 value (including NaN, +Inf, -Inf).
 	KindFloat64 ValueKind = 2
-	// Internal Use Only: KindString represents a UTF-8 string value (STRING, INT64, NUMERIC, DATE, JSON, INTERVAL, UUID, ENUM).
+	// KindString represents a UTF-8 string value (STRING, INT64, NUMERIC, DATE, JSON, INTERVAL, UUID, ENUM).
+	// INT64 and ENUM are transmitted as decimal strings on the Spanner protobuf wire and kept as
+	// KindString so host languages whose default number type is IEEE 754 double (such as JavaScript)
+	// can wrap or parse them without 53-bit integer precision loss or extra int64-to-string formatting.
 	KindString ValueKind = 3
-	// Internal Use Only: KindBytes represents a pre-decoded binary value (BYTES, PROTO).
+	// KindBytes represents a pre-decoded binary value (BYTES, PROTO).
 	KindBytes ValueKind = 4
-	// Internal Use Only: KindTimestamp represents a pre-parsed TIMESTAMP value as Unix seconds and nanoseconds.
+	// KindTimestamp represents a pre-parsed TIMESTAMP value as Unix seconds (Int64Val) and nanoseconds (Int32Val).
 	KindTimestamp ValueKind = 5
-	// Internal Use Only: KindFloat32 represents a FLOAT32 value (including NaN, +Inf, -Inf).
+	// KindFloat32 represents a FLOAT32 value (including NaN, +Inf, -Inf).
 	KindFloat32 ValueKind = 6
-	// Internal Use Only: KindArray represents a recursive ARRAY of SpannerValue elements.
+	// KindArray represents a recursive ARRAY of SpannerValue elements.
 	KindArray ValueKind = 7
-	// Internal Use Only: KindStruct represents a recursive STRUCT of SpannerValue fields.
+	// KindStruct represents a recursive STRUCT of SpannerValue fields.
 	KindStruct ValueKind = 8
 )
 
-// Internal Use Only: SpannerValue holds a single decoded Spanner cell value ready to be packed
+// SpannerValue holds a single decoded Spanner cell value ready to be packed
 // into a contiguous C memory arena for FFI transfer.
+// For KindTimestamp, Int64Val holds Unix seconds and Int32Val holds nanoseconds (0..999,999,999).
 type SpannerValue struct {
 	Kind       ValueKind
 	BoolVal    bool
 	Float64Val float64
 	StrVal     string
 	BytesVal   []byte
-	SecVal     int64
-	NanoVal    int32
+	Int64Val   int64
+	Int32Val   int32
 	Children   []SpannerValue
 }
 
-// Internal Use Only: DynamicChannelPoolConfig configures opt-in dynamic gRPC channel pooling,
+// DynamicChannelPoolConfig configures opt-in dynamic gRPC channel pooling,
 // mirroring spanner.DynamicChannelPoolConfig. Zero values use DefaultDynamicChannelPoolConfig
 // when Enabled is true.
 type DynamicChannelPoolConfig struct {
@@ -77,7 +77,7 @@ type DynamicChannelPoolConfig struct {
 	SelectionStrategy int // 0 = DCPPowerOfTwoLeastBusy, 1 = DCPRoundRobin
 }
 
-// Internal Use Only: ClientConfig configures a SharedCoreService client pool.
+// ClientConfig configures a Service client pool.
 type ClientConfig struct {
 	Endpoint                 string
 	UniverseDomain           string
@@ -89,38 +89,71 @@ type ClientConfig struct {
 	PlainText                bool
 	DisableBuiltInAuth       bool
 	DynamicChannelPoolConfig DynamicChannelPoolConfig
-	LogFunc                  func(level string, message string)
+	// LogFunc is an optional callback for transport log messages. Must be safe for concurrent calls.
+	LogFunc func(level string, message string)
 }
 
-// Internal Use Only: StreamRequest encapsulates a single ExecuteStreamingSql invocation from a host language binding.
-type StreamRequest struct {
-	RoutingKey              string
-	RequestID               string
-	Metadata                map[string]string
-	MetadataPairs           []string
-	OutgoingMD              metadata.MD
-	SkipTraceContext        bool
-	RequestBytes            []byte
-	SkipMetadata            bool
-	ExpectedSchemaHash      uint32
-	SkipTelemetry           bool
-	SkipReadTimestamp       bool
-	FlushOnChunkBoundary    bool
+// RetrySettings configures per-RPC timeout and retry backoff parameters in milliseconds.
+type RetrySettings struct {
+	// TimeoutMs is the per-RPC deadline in milliseconds when HasTimeout is true.
+	TimeoutMs int64
+	// HasTimeout indicates whether TimeoutMs should be applied as a deadline.
+	HasTimeout bool
+	// UntimedRetryBudgetMs bounds total retry elapsed time in milliseconds when HasTimeout is false (defaults to 60,000 ms when <= 0).
+	UntimedRetryBudgetMs int64
+	// InitialRetryDelayMs is the initial retry backoff delay in milliseconds (defaults to 200 ms when <= 0).
+	InitialRetryDelayMs int64
+	// MaxRetryDelayMs is the maximum retry backoff delay in milliseconds (defaults to 32,000 ms when <= 0).
+	MaxRetryDelayMs int64
+	// RetryDelayMultiplier is the exponential backoff multiplier (defaults to 1.3 when <= 0).
+	RetryDelayMultiplier float64
+}
+
+// StreamBatchConfig configures row batching, chunk checkpointing, and arena buffer pooling.
+type StreamBatchConfig struct {
+	// BatchRowSize is the target number of rows per StreamBatch callback (defaults to 64 when <= 0).
+	BatchRowSize int
+	// FlushOnChunkBoundary flushes accumulated complete rows at the end of each PartialResultSet chunk.
+	FlushOnChunkBoundary bool
+	// MaxUncheckpointedChunks bounds how many chunks without a resume_token can be buffered before pausing row emission.
 	MaxUncheckpointedChunks int
 	// ReuseArenaBuffers pools and reuses backing slices for StreamBatch.Cells and
 	// StreamBatch.ArenaBytes across batches; when true, callers must consume or copy
 	// Cells and ArenaBytes before the onBatch callback returns.
-	ReuseArenaBuffers    bool
-	TimeoutMs            int64
-	HasTimeout           bool
-	UntimedRetryBudgetMs int64
-	InitialRetryDelayMs  int64
-	MaxRetryDelayMs      int64
-	RetryDelayMultiplier float64
-	BatchRowSize         int
+	ReuseArenaBuffers bool
 }
 
-// Internal Use Only: PackedCell is a 24-byte, 8-byte-aligned, pointer-free value descriptor
+// StreamOptions configures optional metadata, telemetry, and trace-context optimizations for a stream.
+type StreamOptions struct {
+	// SkipMetadata omits serialized ResultSetMetadataBytes when the schema hash matches ExpectedSchemaHash.
+	SkipMetadata bool
+	// ExpectedSchemaHash is the caller's cached FNV-1a 32-bit schema hash used when SkipMetadata is true.
+	ExpectedSchemaHash uint32
+	// SkipTelemetry omits per-attempt telemetry formatting when built-in metrics are disabled.
+	SkipTelemetry bool
+	// SkipReadTimestamp skips parsing read_timestamp from TransactionMetadata when not requested.
+	SkipReadTimestamp bool
+	// SkipTraceContext skips OpenTelemetry span context extraction when end-to-end tracing is disabled.
+	SkipTraceContext bool
+}
+
+// StreamRequest encapsulates a single ExecuteStreamingSql invocation from a host language binding.
+type StreamRequest struct {
+	RoutingKey string
+	RequestID  string
+	// Metadata supplies per-request outgoing gRPC metadata headers as a string map.
+	// When OutgoingMD is non-empty, OutgoingMD takes precedence over Metadata on the hot path.
+	Metadata map[string]string
+	// OutgoingMD optionally supplies pre-parsed, pre-lowercased gRPC metadata.MD that callers
+	// can cache and reuse across requests sharing the same static headers.
+	OutgoingMD   metadata.MD
+	RequestBytes []byte
+	Retry        RetrySettings
+	Batch        StreamBatchConfig
+	Options      StreamOptions
+}
+
+// PackedCell is a 24-byte, 8-byte-aligned, pointer-free value descriptor
 // matching the exact C ABI layout of CSpannerCell. Because it contains no Go
 // pointers, []PackedCell is allocated in a noscan span (zero GC mark overhead)
 // and can be copied across the cgo boundary with a single memcpy.
@@ -130,7 +163,7 @@ type StreamRequest struct {
 //   - KindBool:      Flags = 1 (true) or 0 (false).
 //   - KindFloat64:   NumBits = math.Float64bits(v) (matches CSpannerCell.num.f64_val).
 //   - KindFloat32:   NumBits = math.Float64bits(v) (stored as IEEE 754 float64 bits to match CSpannerCell.num.f64_val).
-//   - KindString:    Offset, Len = UTF-8 byte range in ArenaBytes (also emitted as a raw wire-string fallback when FLOAT64/FLOAT32/BYTES/PROTO/TIMESTAMP holds a non-canonical string).
+//   - KindString:    Offset, Len = UTF-8 byte range in ArenaBytes.
 //   - KindBytes:     Offset, Len = decoded binary byte range in ArenaBytes.
 //   - KindTimestamp: NumBits = uint64(unixSeconds) (matches CSpannerCell.num.i64_val), Flags = uint32(nanos) (0..999,999,999).
 //   - KindArray:     Offset = start index in Cells, Len = number of contiguous child cells.
@@ -158,9 +191,9 @@ var (
 	_ [unsafe.Offsetof(PackedCell{}.Len) - 20]byte
 )
 
-// Internal Use Only: StreamBatch represents a batch of decoded rows and associated stream metadata
+// StreamBatch represents a batch of decoded rows and associated stream metadata
 // delivered to the host language binding callback.
-// When StreamRequest.ReuseArenaBuffers is true, Cells and ArenaBytes alias pooled
+// When StreamBatchConfig.ReuseArenaBuffers is true, Cells and ArenaBytes alias pooled
 // scratch buffers and are only valid until the onBatch callback returns.
 type StreamBatch struct {
 	Rows                [][]SpannerValue
@@ -179,7 +212,7 @@ type StreamBatch struct {
 	IsLast              bool
 }
 
-// Internal Use Only: StreamTelemetry holds server-timing and retry attempt metrics collected during the stream.
+// StreamTelemetry holds server-timing and retry attempt metrics collected during the stream.
 type StreamTelemetry struct {
 	ServerTiming   string
 	GFELatencyMs   float64

@@ -80,7 +80,9 @@ func (b *UnimplementedBreaker) Count() int32 {
 //     whatever session produced.
 func (b *UnimplementedBreaker) ShouldFallback(err error) bool {
 	if err == nil || status.Code(err) != codes.Unimplemented {
-		b.count.Store(0)
+		if b.count.Load() != 0 {
+			b.count.Store(0)
+		}
 		return false
 	}
 	if n := b.count.Add(1); n >= b.threshold {

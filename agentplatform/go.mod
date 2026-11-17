@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	cloud.google.com/go v0.123.0
 	github.com/google/go-cmp v0.7.0
-	google.golang.org/genai v1.74.0
+	google.golang.org/genai v1.77.0
 )
 
 require go.opentelemetry.io/otel/log v1.47.0 // indirect

@@ -1,5 +1,12 @@
 # Changes
 
+## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.8.1...pubsub/v2.9.0) (2026-11-10)
+
+
+### Features
+
+* Update API sources and regenerate ([#20873](https://github.com/googleapis/google-cloud-go/issues/20873)) ([3ded070](https://github.com/googleapis/google-cloud-go/commit/3ded070fa438a4c80823888872f0bef348412825))
+
 ## [2.8.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.8.0...pubsub/v2.8.1) (2026-11-04)
 
 

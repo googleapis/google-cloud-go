@@ -73,14 +73,19 @@ func TestReadRowRequestAdapter_ExtractResource(t *testing.T) {
 			Resource{Kind: ResourceTable, Name: "projects/p/instances/i/tables/t"},
 		},
 		{
+			"table-with-app-profile",
+			&v2pb.ReadRowsRequest{TableName: "projects/p/instances/i/tables/t", AppProfileId: "prof"},
+			Resource{Kind: ResourceTable, Name: "projects/p/instances/i/tables/t", AppProfile: "prof"},
+		},
+		{
 			"authorized-view",
-			&v2pb.ReadRowsRequest{AuthorizedViewName: "projects/p/instances/i/tables/t/authorizedViews/v"},
-			Resource{Kind: ResourceAuthorizedView, Name: "projects/p/instances/i/tables/t/authorizedViews/v"},
+			&v2pb.ReadRowsRequest{AuthorizedViewName: "projects/p/instances/i/tables/t/authorizedViews/v", AppProfileId: "prof"},
+			Resource{Kind: ResourceAuthorizedView, Name: "projects/p/instances/i/tables/t/authorizedViews/v", AppProfile: "prof"},
 		},
 		{
 			"materialized-view",
-			&v2pb.ReadRowsRequest{MaterializedViewName: "projects/p/instances/i/materializedViews/mv"},
-			Resource{Kind: ResourceMaterializedView, Name: "projects/p/instances/i/materializedViews/mv"},
+			&v2pb.ReadRowsRequest{MaterializedViewName: "projects/p/instances/i/materializedViews/mv", AppProfileId: "prof"},
+			Resource{Kind: ResourceMaterializedView, Name: "projects/p/instances/i/materializedViews/mv", AppProfile: "prof"},
 		},
 	}
 	for _, tc := range cases {

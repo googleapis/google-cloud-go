@@ -257,19 +257,10 @@ func NewSessionPoolImpl(id uint64, poolName string, streamFactory func(ctx conte
 // count is 0; if all are busy, the caller parks on the FIFO waiter queue
 // until a drainSlot wake fires.
 func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, error) {
-	// One-shot kick if the pool is empty. Cheap check; Tick
-	// gates on its own in-progress flag so a duplicate goroutine here
-	// exits immediately.
-	p.mu.Lock()
-	closed := p.closed
-	p.mu.Unlock()
-	if !closed && p.sl.ReadyCount() == 0 {
-		p.spawnTickOnce(p.poolCtx)
-	}
-
 	for {
-		// Snapshot closed + picker under p.mu; everything after runs
-		// outside the lock so concurrent CheckoutSession calls parallelize.
+		// Snapshot closed + picker under p.mu; pick + dequeue then runs
+		// atomically under sl.mu (preserving p.mu → sl.mu lock order) with
+		// zero per-RPC slice allocations and zero lock-split races.
 		p.mu.Lock()
 		if p.closed {
 			p.mu.Unlock()
@@ -277,19 +268,14 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 		}
 		picker := p.picker
 		p.mu.Unlock()
-
-		// Two-tier pick: picker chooses an AFE from the ready snapshot,
-		// then sessionList dequeues one idle session in that AFE.
-		ready := p.sl.ReadyAfes()
 		pickerName := picker.Name()
-		afeID, picked, decision := picker.PickAfe(ready)
+
+		idle, decision := p.sl.CheckoutWithPicker(picker)
 		p.recordPickDecision(decision, pickerName)
-		if picked {
-			if idle := p.sl.Checkout(afeID); idle != nil {
-				idle.IncOutstanding()
-				idle.IncPicks()
-				return idle, nil
-			}
+		if idle != nil {
+			idle.IncOutstanding()
+			idle.IncPicks()
+			return idle, nil
 		}
 
 		// Park in the FIFO waiter queue BEFORE kicking Tick or re-checking
