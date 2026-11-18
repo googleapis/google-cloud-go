@@ -33,8 +33,11 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -1289,6 +1292,57 @@ func TestNewGRPCStorageClient_AuthTracingCustomCredentials(t *testing.T) {
 	// Caller-owned credentials must not be mutated by client construction.
 	if baseCreds.TokenProvider != auth.TokenProvider(baseProvider) {
 		t.Errorf("caller-owned credentials were mutated: got TokenProvider %T, want %T", baseCreds.TokenProvider, baseProvider)
+	}
+}
+
+func TestNewGRPCStorageClient_AuthTracingWithCredentials(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv(storageOtelTracingDevVar, "true")
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
+	t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "")
+	// Keep the test hermetic: skip DirectPath and GCE metadata probing.
+	t.Setenv(directPathDisableEnvVar, "true")
+
+	userCreds := &google.Credentials{
+		ProjectID:   "my-project",
+		TokenSource: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "user-creds"}),
+	}
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithCredentials(userCreds),
+			WithDisabledClientMetrics(),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	// transport.Creds, like the gRPC transport, prefers WithCredentials over
+	// WithAuthCredentials, so it must resolve to the traced copy.
+	got, err := transport.Creds(ctx, client.settings.clientOption...)
+	if err != nil {
+		t.Fatalf("transport.Creds: %v", err)
+	}
+	if got == userCreds {
+		t.Fatal("transport resolves the caller's WithCredentials; want the traced credentials")
+	}
+	if got.ProjectID != userCreds.ProjectID {
+		t.Errorf("got project ID %q, want %q", got.ProjectID, userCreds.ProjectID)
+	}
+	tok, err := got.TokenSource.Token()
+	if err != nil {
+		t.Fatalf("Token: %v", err)
+	}
+	if tok.AccessToken != "user-creds" {
+		t.Errorf("got access token %q, want %q", tok.AccessToken, "user-creds")
+	}
+	resolved, err := internaloption.AuthCreds(ctx, client.settings.clientOption)
+	if err != nil {
+		t.Fatalf("internaloption.AuthCreds: %v", err)
+	}
+	if _, ok := resolved.TokenProvider.(*tracedTokenProvider); !ok {
+		t.Errorf("got resolved TokenProvider %T, want *tracedTokenProvider", resolved.TokenProvider)
 	}
 }
 

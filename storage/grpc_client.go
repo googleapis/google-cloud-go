@@ -220,7 +220,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 			authCreds = wrapAuthCredentialsForTracing(authCreds)
 		}
 		if authCreds != nil {
-			s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds))
+			// The transport prefers WithCredentials over WithAuthCredentials,
+			// so clear it; authCreds already wraps the caller's credentials.
+			s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds), option.WithCredentials(nil))
 		}
 	}
 
