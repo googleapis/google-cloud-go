@@ -214,19 +214,21 @@ type DCPMetricsRecorder interface {
 }
 
 // DCPHooks configures the dial, client-construction, priming, metrics, and error
-// sentinel callbacks for NewDynamicChannelPool.
+// sentinel callbacks for NewDynamicChannelPool and NewFixedChannelPool.
 type DCPHooks[C DCPClient] struct {
 	// Logger receives scaled-up channel dial/priming failure warnings.
 	// When nil, warnings are written via the standard log.Printf logger.
 	Logger *log.Logger
-	// Dial (required) dials a single-channel gtransport.ConnPool for a new DCPEntry.
+	// Dial (required by NewDynamicChannelPool; unused by NewFixedChannelPool) dials
+	// a single-channel gtransport.ConnPool for a new DCPEntry.
 	Dial func(context.Context) (gtransport.ConnPool, error)
 	// NewEntryClient (required) initializes e.Client (and optionally e.Delegate for
 	// use by PrimeRPC) for a newly dialed DCPEntry. Returning nil without setting
 	// e.Client to a non-zero value fails entry creation and closes the entry.
 	NewEntryClient func(ctx context.Context, e *DCPEntry[C]) error
-	// PrimeRPC (required) verifies a scaled-up DCPEntry against sessionID before
-	// the entry is published to the active pool.
+	// PrimeRPC (required by NewDynamicChannelPool; unused by NewFixedChannelPool)
+	// verifies a scaled-up DCPEntry against sessionID before the entry is published
+	// to the active pool.
 	PrimeRPC func(ctx context.Context, e *DCPEntry[C], sessionID string) error
 	// InitMetrics optionally registers OpenTelemetry pool metrics after initial
 	// entries are created. When nil (or returning nil), metrics are disabled.
@@ -278,6 +280,9 @@ type DynamicChannelPool[C DCPClient] struct {
 
 	DrainingCount  atomic.Int64
 	DrainIdleFloor time.Duration // DCPDrainIdleFloor when the pool was created
+
+	fixed      bool                // constant round-robin entries; no scaling, priming, or metrics
+	underlying gtransport.ConnPool // owns a fixed pool's connections
 }
 
 // DCPEntry represents one logical DCP slot.
@@ -315,42 +320,113 @@ func NewDynamicChannelPool[C DCPClient](
 	if err != nil {
 		return nil, err
 	}
-	poolCtx, cancel := context.WithCancel(ctx)
-	p := &DynamicChannelPool[C]{
-		Cfg:                 cfg,
-		TargetRPCPerChannel: math.Max(1, math.Floor((cfg.DCPMinRPCPerChannel+cfg.DCPMaxRPCPerChannel)/2)),
-		PenaltyMax:          int32(math.Ceil(cfg.DCPMaxRPCPerChannel)),
-		Ctx:                 poolCtx,
-		cancel:              cancel,
-		logger:              hooks.Logger,
-		Dial:                hooks.Dial,
-		newEntryClient:      hooks.NewEntryClient,
-		primeRPC:            hooks.PrimeRPC,
-		noEntriesErr:        hooks.NoEntriesErr,
-		primeNotReadyErr:    hooks.PrimeNotReadyErr,
-		ScaleUpSignal:       make(chan struct{}, 1),
-		done:                make(chan struct{}),
-		DrainIdleFloor:      DCPDrainIdleFloor,
+	p := newEmptyDCP[C](cfg, hooks)
+	p.Ctx, p.cancel = context.WithCancel(ctx)
+	p.ScaleUpSignal = make(chan struct{}, 1)
+	p.done = make(chan struct{})
+	if err := p.createInitialEntries(ctx); err != nil {
+		p.cancel()
+		return nil, err
 	}
-	entries := make([]*DCPEntry[C], 0, cfg.DCPInitialChannels)
-	for i := 0; i < cfg.DCPInitialChannels; i++ {
-		e, err := p.newEntry(ctx, false)
-		if err != nil {
-			for _, entry := range entries {
-				entry.CloseNow()
-			}
-			cancel()
-			return nil, err
-		}
-		entries = append(entries, e)
-	}
-	p.Entries.Store(&entries)
 	if hooks.InitMetrics != nil {
 		p.Metrics = hooks.InitMetrics(p)
 	}
 	go p.scaleUpWorker()
 	go p.scaleDownMonitor()
 	return p, nil
+}
+
+// NewFixedChannelPool returns a fixed-mode DynamicChannelPool with one entry
+// per distinct connection in underlying: round-robin selection and no scaling,
+// priming, error penalties, or pool metrics. The pool takes ownership of
+// underlying and closes it in Close.
+func NewFixedChannelPool[C DCPClient](
+	ctx context.Context,
+	underlying gtransport.ConnPool,
+	hooks DCPHooks[C],
+) (*DynamicChannelPool[C], error) {
+	if underlying == nil || hooks.NewEntryClient == nil {
+		return nil, errors.New("spanner_dcp: underlying ConnPool and NewEntryClient hook are required")
+	}
+	// Deduplicate so each connection has one request-id channel id.
+	var conns []*grpc.ClientConn
+	seen := make(map[*grpc.ClientConn]bool)
+	for i := 0; i < underlying.Num(); i++ {
+		c := underlying.Conn()
+		if c != nil {
+			if seen[c] {
+				continue
+			}
+			seen[c] = true
+		}
+		conns = append(conns, c)
+	}
+	n := len(conns)
+	cfg, err := NormalizeDCPConfig(DCPConfig{
+		DCPInitialChannels:   n,
+		DCPMinChannels:       n,
+		DCPMaxChannels:       n,
+		DCPSelectionStrategy: DCPRoundRobin,
+	})
+	if err != nil {
+		return nil, err
+	}
+	// next needs no lock: createInitialEntries calls dial n times, in sequence.
+	next := 0
+	hooks.Dial = func(context.Context) (gtransport.ConnPool, error) {
+		c := conns[next]
+		next++
+		if c == nil {
+			// underlying hides its connections, so the entry routes through it.
+			return borrowedPool{underlying}, nil
+		}
+		return borrowedConn{c}, nil
+	}
+	p := newEmptyDCP[C](cfg, hooks)
+	p.fixed = true
+	p.underlying = underlying
+	if err := p.createInitialEntries(ctx); err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+// newEmptyDCP returns a pool with no entries and no background state.
+func newEmptyDCP[C DCPClient](cfg DCPConfig, hooks DCPHooks[C]) *DynamicChannelPool[C] {
+	return &DynamicChannelPool[C]{
+		Cfg:                 cfg,
+		TargetRPCPerChannel: math.Max(1, math.Floor((cfg.DCPMinRPCPerChannel+cfg.DCPMaxRPCPerChannel)/2)),
+		PenaltyMax:          int32(math.Ceil(cfg.DCPMaxRPCPerChannel)),
+		logger:              hooks.Logger,
+		Dial:                hooks.Dial,
+		newEntryClient:      hooks.NewEntryClient,
+		primeRPC:            hooks.PrimeRPC,
+		noEntriesErr:        hooks.NoEntriesErr,
+		primeNotReadyErr:    hooks.PrimeNotReadyErr,
+		DrainIdleFloor:      DCPDrainIdleFloor,
+	}
+}
+
+func (p *DynamicChannelPool[C]) createInitialEntries(ctx context.Context) error {
+	entries := make([]*DCPEntry[C], 0, p.Cfg.DCPInitialChannels)
+	for i := 0; i < p.Cfg.DCPInitialChannels; i++ {
+		e, err := p.newEntry(ctx, false)
+		if err != nil {
+			for _, entry := range entries {
+				entry.CloseNow()
+			}
+			return err
+		}
+		entries = append(entries, e)
+	}
+	p.Entries.Store(&entries)
+	return nil
+}
+
+// IsFixed reports whether this pool runs in fixed mode (constant round-robin
+// entries with no background scaling, priming, or metrics).
+func (p *DynamicChannelPool[C]) IsFixed() bool {
+	return p != nil && p.fixed
 }
 
 func (p *DynamicChannelPool[C]) logf(format string, v ...any) {
@@ -393,6 +469,9 @@ func (p *DynamicChannelPool[C]) Invoke(ctx context.Context, method string, args,
 	if err != nil {
 		return err
 	}
+	if p.fixed {
+		return e.Pool.Invoke(ctx, method, args, reply, opts...)
+	}
 	e.UnaryLoad.Add(1)
 	p.TotalRPCLoad.Add(1)
 	p.MaybeSignalScaleUp(e)
@@ -412,6 +491,9 @@ func (p *DynamicChannelPool[C]) NewStream(ctx context.Context, desc *grpc.Stream
 	e, err := p.Pick(ctx)
 	if err != nil {
 		return nil, err
+	}
+	if p.fixed {
+		return e.Pool.NewStream(ctx, desc, method, opts...)
 	}
 	e.StreamLoad.Add(1)
 	p.TotalRPCLoad.Add(1)
@@ -433,18 +515,28 @@ func (p *DynamicChannelPool[C]) Close() error {
 		if p.Metrics != nil {
 			p.Metrics.Close(p.logger)
 		}
-		p.cancel()
-		close(p.done)
+		if !p.fixed {
+			p.cancel()
+			close(p.done)
+		}
 	})
 	p.DialMu.Lock()
 	defer p.DialMu.Unlock()
 	entries := p.GetEntries()
-	p.Entries.Store(&[]*DCPEntry[C]{})
+	// A fixed pool keeps its closed entries, so that RPCs after Close fail
+	// with CANCELED as they do with the static pool.
+	if !p.fixed {
+		p.Entries.Store(&[]*DCPEntry[C]{})
+	}
 	var errs []error
 	for _, e := range entries {
 		if err := e.CloseNow(); err != nil {
 			errs = append(errs, err)
 		}
+	}
+	if p.underlying != nil {
+		errs = append(errs, p.underlying.Close())
+		p.underlying = nil
 	}
 	return errors.Join(errs...)
 }
@@ -463,7 +555,7 @@ func (p *DynamicChannelPool[C]) GetEntries() []*DCPEntry[C] {
 // priming. Initial channels are created during client startup and are not
 // primed through this path.
 func (p *DynamicChannelPool[C]) SetPrimeSession(id string) {
-	if id != "" {
+	if id != "" && !p.fixed {
 		p.PrimeSession.Store(id)
 		select {
 		case p.ScaleUpSignal <- struct{}{}:
@@ -554,7 +646,9 @@ func (p *DynamicChannelPool[C]) Pick(ctx context.Context) (*DCPEntry[C], error) 
 	if err != nil {
 		return nil, err
 	}
-	e.LastActivity.Store(time.Now().UnixNano())
+	if !p.fixed {
+		e.LastActivity.Store(time.Now().UnixNano())
+	}
 	return e, nil
 }
 
@@ -984,6 +1078,18 @@ func (e *DCPEntry[C]) Invoke(ctx context.Context, method string, args, reply any
 func (e *DCPEntry[C]) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	return e.Pool.NewStream(ctx, desc, method, opts...)
 }
+
+// borrowedConn is a ConnPool over one connection that it does not close.
+type borrowedConn struct{ *grpc.ClientConn }
+
+func (c borrowedConn) Conn() *grpc.ClientConn { return c.ClientConn }
+func (c borrowedConn) Num() int               { return 1 }
+func (c borrowedConn) Close() error           { return nil }
+
+// borrowedPool is a ConnPool that does not close the pool it wraps.
+type borrowedPool struct{ gtransport.ConnPool }
+
+func (borrowedPool) Close() error { return nil }
 
 // Acquire takes a reference that keeps drain from closing the entry until
 // Release is called. It fails once the entry is closed.

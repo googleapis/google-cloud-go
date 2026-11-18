@@ -249,3 +249,132 @@ func TestDynamicChannelPool_SentinelsRoundRobinPenaltyAndResolver(t *testing.T) 
 		}
 	})
 }
+
+type fakeFixedUnderlyingPool struct {
+	conns  []*grpc.ClientConn
+	next   atomic.Int32
+	closes atomic.Int32
+}
+
+func (f *fakeFixedUnderlyingPool) Conn() *grpc.ClientConn {
+	if len(f.conns) == 0 {
+		return nil
+	}
+	i := int(f.next.Add(1)-1) % len(f.conns)
+	return f.conns[i]
+}
+func (f *fakeFixedUnderlyingPool) Num() int { return len(f.conns) }
+func (f *fakeFixedUnderlyingPool) Close() error {
+	f.closes.Add(1)
+	return nil
+}
+func (f *fakeFixedUnderlyingPool) Invoke(context.Context, string, any, any, ...grpc.CallOption) error {
+	return nil
+}
+func (f *fakeFixedUnderlyingPool) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.CallOption) (grpc.ClientStream, error) {
+	return nil, errors.New("unused")
+}
+
+func TestNewFixedChannelPool(t *testing.T) {
+	t.Run("rejects nil underlying or nil NewEntryClient", func(t *testing.T) {
+		if _, err := NewFixedChannelPool[*fakeDCPClient](context.Background(), nil, DCPHooks[*fakeDCPClient]{
+			NewEntryClient: func(context.Context, *DCPEntry[*fakeDCPClient]) error { return nil },
+		}); err == nil {
+			t.Fatal("expected error for nil underlying")
+		}
+		if _, err := NewFixedChannelPool[*fakeDCPClient](context.Background(), &fakeFixedUnderlyingPool{conns: []*grpc.ClientConn{nil}}, DCPHooks[*fakeDCPClient]{}); err == nil {
+			t.Fatal("expected error for nil NewEntryClient")
+		}
+	})
+
+	t.Run("deduplicates conns, skips background workers, and closes underlying once", func(t *testing.T) {
+		c1 := new(grpc.ClientConn)
+		c2 := new(grpc.ClientConn)
+		underlying := &fakeFixedUnderlyingPool{conns: []*grpc.ClientConn{c1, c2, c1}}
+		p, err := NewFixedChannelPool[*fakeDCPClient](context.Background(), underlying, DCPHooks[*fakeDCPClient]{
+			NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+				c := &fakeDCPClient{}
+				e.Delegate = c
+				e.Client = c
+				return nil
+			},
+		})
+		if err != nil {
+			t.Fatalf("NewFixedChannelPool() failed: %v", err)
+		}
+		if !p.IsFixed() {
+			t.Fatal("expected IsFixed() == true")
+		}
+		if p.Ctx != nil || p.cancel != nil || p.done != nil || p.ScaleUpSignal != nil || p.Metrics != nil {
+			t.Fatalf("expected zero background state on fixed pool, got ctx=%v cancel=%v done=%v sig=%v metrics=%v",
+				p.Ctx != nil, p.cancel != nil, p.done != nil, p.ScaleUpSignal != nil, p.Metrics != nil)
+		}
+		if got := p.Num(); got != 2 {
+			t.Fatalf("Num() = %d, want 2 after deduplication", got)
+		}
+		p.SetPrimeSession("projects/p/instances/i/databases/d/sessions/s1")
+		if got := p.PrimeSessionID(); got != "" {
+			t.Fatalf("fixed pool SetPrimeSession stored %q, want empty", got)
+		}
+		// Picks round-robin without updating LastActivity.
+		entries := p.GetEntries()
+		for _, e := range entries {
+			e.LastActivity.Store(0)
+		}
+		e1, err := p.Pick(context.Background())
+		if err != nil {
+			t.Fatalf("Pick 1 failed: %v", err)
+		}
+		e2, err := p.Pick(context.Background())
+		if err != nil {
+			t.Fatalf("Pick 2 failed: %v", err)
+		}
+		if e1.ID != 1 || e2.ID != 2 {
+			t.Fatalf("round-robin IDs = (%d, %d), want (1, 2)", e1.ID, e2.ID)
+		}
+		for i, e := range entries {
+			if e.LastActivity.Load() != 0 {
+				t.Fatalf("entry %d LastActivity mutated in fixed mode", i)
+			}
+		}
+		if err := p.Close(); err != nil {
+			t.Fatalf("first Close failed: %v", err)
+		}
+		if err := p.Close(); err != nil {
+			t.Fatalf("second Close failed: %v", err)
+		}
+		if got := underlying.closes.Load(); got != 1 {
+			t.Fatalf("underlying Close count = %d, want 1", got)
+		}
+		if got := p.Num(); got != 2 {
+			t.Fatalf("fixed pool Num() after Close = %d, want 2 (entries retained)", got)
+		}
+	})
+
+	t.Run("wraps nil-Conn underlying with borrowedPool", func(t *testing.T) {
+		underlying := &fakeFixedUnderlyingPool{conns: []*grpc.ClientConn{nil, nil}}
+		p, err := NewFixedChannelPool[*fakeDCPClient](context.Background(), underlying, DCPHooks[*fakeDCPClient]{
+			NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+				c := &fakeDCPClient{}
+				e.Delegate = c
+				e.Client = c
+				return nil
+			},
+		})
+		if err != nil {
+			t.Fatalf("NewFixedChannelPool(nil conns) failed: %v", err)
+		}
+		if got := p.Num(); got != 2 {
+			t.Fatalf("Num() = %d, want 2", got)
+		}
+		if err := p.Invoke(context.Background(), "/test/Method", nil, nil); err != nil {
+			t.Fatalf("Invoke on borrowedPool failed: %v", err)
+		}
+		if err := p.Close(); err != nil {
+			t.Fatalf("Close failed: %v", err)
+		}
+		if got := underlying.closes.Load(); got != 1 {
+			t.Fatalf("underlying Close count = %d, want 1", got)
+		}
+	})
+}

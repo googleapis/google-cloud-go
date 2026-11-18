@@ -100,3 +100,16 @@ func TestShouldFallback_TripsStickyBreaker(t *testing.T) {
 		t.Errorf("Bypass() = false after a success, want true (breaker is sticky)")
 	}
 }
+
+func BenchmarkShouldFallback_ParallelSuccess(b *testing.B) {
+	breaker := NewUnimplementedBreaker(DefaultUnimplementedThreshold)
+	b.ReportAllocs()
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			if breaker.ShouldFallback(nil) {
+				b.Fatal("ShouldFallback(nil) = true, want false")
+			}
+		}
+	})
+}

@@ -177,6 +177,32 @@ func newDynamicChannelPool(
 	)
 }
 
+// newFixedChannelPool returns a fixed pool with one entry per connection of
+// underlying. The pool takes ownership of underlying.
+func newFixedChannelPool(
+	ctx context.Context,
+	sc *sessionClient,
+	underlying gtransport.ConnPool,
+) (*dynamicChannelPool, error) {
+	return transport.NewFixedChannelPool[spannerClient](
+		ctx,
+		underlying,
+		transport.DCPHooks[spannerClient]{
+			Logger: sc.logger,
+			NewEntryClient: func(entryCtx context.Context, e *dcpEntry) error {
+				client, err := newGRPCSpannerClient(entryCtx, sc, e.ID, gtransport.WithConnPool(e))
+				if err != nil {
+					return err
+				}
+				e.Delegate = client
+				e.Client = client
+				return nil
+			},
+			NoEntriesErr: errDCPNoEntries,
+		},
+	)
+}
+
 // TODO: Investigate replacing dcpSpannerClient and transport.DCPConnPoolTrackedStream with
 // per-entry gRPC unary/stream client interceptors injected when dialing each DCP
 // entry. The interceptors could track load and trigger scale-up for both the
