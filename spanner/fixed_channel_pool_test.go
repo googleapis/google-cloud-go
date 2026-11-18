@@ -666,7 +666,7 @@ func TestDirectPathFallbackKeepsStaticChannelPool(t *testing.T) {
 			if fw.GCPFallback == nil {
 				t.Fatal("fallback pool has no GCPFallback")
 			}
-			if p, f := fw.primaryConn.Num(), fw.fallbackConn.Num(); p != 3 || f != 3 {
+			if p, f := fw.PrimaryConn().Num(), fw.FallbackConn().Num(); p != 3 || f != 3 {
 				t.Fatalf("connections = {primary: %d, fallback: %d}, want {3, 3}", p, f)
 			}
 			if _, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {

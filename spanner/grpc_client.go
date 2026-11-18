@@ -18,14 +18,13 @@ package spanner
 
 import (
 	"context"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	"cloud.google.com/go/spanner/internal"
+	"cloud.google.com/go/spanner/internal/transport"
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	oteltrace "go.opentelemetry.io/otel/trace"
@@ -87,26 +86,16 @@ var (
 // newGRPCSpannerClient initializes a new spannerClient that uses the gRPC
 // Spanner API.
 func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, channelID uint64, opts ...option.ClientOption) (spannerClient, error) {
-	raw, err := vkit.NewClient(ctx, opts...)
+	raw, err := transport.NewGAPICClient(ctx, sc.userAgent, opts...)
 	if err != nil {
 		return nil, err
 	}
-
-	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory}
-	clientID := sc.nthClient
-	g.prepareRequestIDTrackers(clientID, channelID, sc.nthRequest)
-
-	clientInfo := []string{"gccl", internal.Version}
-	if sc.userAgent != "" {
-		agentWithVersion := strings.SplitN(sc.userAgent, "/", 2)
-		if len(agentWithVersion) == 2 {
-			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
-		}
-	}
-	raw.SetGoogleClientInfo(clientInfo...)
 	if sc.callOptions != nil {
 		raw.CallOptions = mergeCallOptions(raw.CallOptions, sc.callOptions)
 	}
+
+	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory}
+	g.prepareRequestIDTrackers(sc.nthClient, channelID, sc.nthRequest)
 	return g, nil
 }
 
@@ -237,19 +226,7 @@ func setGFEAndAFESpanAttributes(span oteltrace.Span, latencyMap map[string]time.
 	}
 }
 
-// cachedExecuteStreamingSQLClient caches the response headers of the stream,
-// so that server-timing capture and GFE latency sinks share a single Header call.
-type cachedExecuteStreamingSQLClient struct {
-	spannerpb.Spanner_ExecuteStreamingSqlClient
-	once sync.Once
-	md   metadata.MD
-	err  error
-}
-
-func (c *cachedExecuteStreamingSQLClient) Header() (metadata.MD, error) {
-	c.once.Do(func() { c.md, c.err = c.Spanner_ExecuteStreamingSqlClient.Header() })
-	return c.md, c.err
-}
+type cachedExecuteStreamingSQLClient = transport.CachedExecuteStreamingSQLClient
 
 // cachedStreamingReadClient caches the response headers of the stream,
 // so that server-timing capture and GFE latency sinks share a single Header call.
@@ -312,13 +289,12 @@ func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.Execu
 func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
-	// Note: This method does not add g.optsWithNextRequestID to inject x-goog-spanner-request-id
-	// as it is already manually added when creating Stream iterators for ExecuteStreamingSql.
-	client, err := g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
+	// Note: This method does not add g.optsWithNextRequestID, as it is already
+	// manually added when creating Stream iterators for ExecuteStreamingSql.
+	cached, err := transport.ExecuteStreamingSQL(ctx, g.raw, req, opts...)
 	if err != nil {
 		return nil, err
 	}
-	cached := &cachedExecuteStreamingSQLClient{Spanner_ExecuteStreamingSqlClient: client}
 	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 	captureStreamServerTiming(span, mt, cached)
 	return cached, nil

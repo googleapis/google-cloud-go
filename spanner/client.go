@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -38,32 +39,29 @@ import (
 	otrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
-	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
-	"cloud.google.com/go/spanner/internal"
+	"cloud.google.com/go/spanner/internal/transport"
 	"cloud.google.com/go/spanner/omni"
 )
 
 const (
 	// resourcePrefixHeader is the name of the metadata header used to indicate
 	// the resource being operated on.
-	resourcePrefixHeader = "google-cloud-resource-prefix"
+	resourcePrefixHeader = transport.ResourcePrefixHeader
 
 	// routeToLeaderHeader is the name of the metadata header if RW/PDML
 	// requests need  to route to leader.
-	routeToLeaderHeader = "x-goog-spanner-route-to-leader"
+	routeToLeaderHeader = transport.RouteToLeaderHeader
 
-	requestsCompressionHeader = "x-response-encoding"
+	requestsCompressionHeader = transport.RequestsCompressionHeader
 
 	// endToEndTracingHeader is the name of the metadata header if client
 	// has opted-in for the creation of trace spans on the Spanner layer.
@@ -74,7 +72,7 @@ const (
 	afeMetricHeader = "x-goog-spanner-enable-afe-server-timing"
 
 	// numChannels is the default value for NumChannels of client.
-	numChannels = 4
+	numChannels = transport.DefaultNumChannels
 
 	// Server timing header constants
 	serverTimingHeaderKey = "server-timing"
@@ -205,14 +203,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	}
 	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
-		schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(emulatorAddr, "")
-		emulatorOpts := []option.ClientOption{
-			option.WithEndpoint("passthrough:///" + schemeRemoved),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-			option.WithoutAuthentication(),
-			internaloption.SkipDialSettingsValidation(),
-		}
-		opts = append(opts, emulatorOpts...)
+		opts = append(opts, transport.EmulatorClientOptions(emulatorAddr)...)
 		// Replace all endpoints with emulator target.
 		for _, meo := range cfg.MultiEndpoints {
 			meo.Endpoints = []string{emulatorAddr}
@@ -232,7 +223,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	cfg.GRPCgcpConfig.ChannelPool.BindPickStrategy = grpcgcppb.ChannelPoolConfig_ROUND_ROBIN
 
 	cfg.DialFunc = func(ctx context.Context, target string, dopts ...grpc.DialOption) (*grpc.ClientConn, error) {
-		copts := opts
+		copts := opts[:len(opts):len(opts)]
 
 		for _, do := range dopts {
 			copts = append(copts, option.WithGRPCDialOption(do))
@@ -534,31 +525,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	return newClientWithConfig(ctx, database, config, nil, opts...)
 }
 
-type fallbackWrapper struct {
-	*grpcgcp.GCPFallback
-	primaryConn  gtransport.ConnPool
-	fallbackConn gtransport.ConnPool
-}
-
-// Conn returns nil because GCPFallback hides the underlying ClientConn.
-// The Spanner client handles this by using the interface methods (Invoke/NewStream).
-func (fw *fallbackWrapper) Conn() *grpc.ClientConn {
-	return nil
-}
-
-func (fw *fallbackWrapper) Num() int {
-	return fw.primaryConn.Num()
-}
-
-func (fw *fallbackWrapper) Close() error {
-	fw.GCPFallback.Close()
-	err1 := fw.primaryConn.Close()
-	err2 := fw.fallbackConn.Close()
-	if err1 != nil {
-		return err1
-	}
-	return err2
-}
+type fallbackWrapper = transport.FallbackPool
 
 func isDCPEnabledForConfig(config ClientConfig, gme *grpcgcp.GCPMultiEndpoint) bool {
 	return config.DynamicChannelPoolConfig.DCPEnabled &&
@@ -581,16 +548,13 @@ func createDCPConnPool(
 	metricsTracerFactory *builtinMetricsTracerFactory,
 	opts ...option.ClientOption,
 ) (gtransport.ConnPool, *sessionClient, error) {
-	reqIDInjector := new(requestIDHeaderInjector)
-	dcpOpts := append([]option.ClientOption{}, opts...)
-	dcpOpts = append(dcpOpts,
-		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
-		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
-	)
+	userOpts := append([]option.ClientOption(nil), opts...)
+	dcpPoolCfg := newTransportPoolConfig(config, false, nil)
+	dcpPoolCfg.NumChannels = 1
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 	sc.metricsTracerFactory = metricsTracerFactory
 	dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
-		return gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
+		return gtransport.DialPool(dialCtx, dcpPoolCfg.ClientOptions(userOpts...)...)
 	}
 	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, dial)
 	if err != nil {
@@ -599,6 +563,27 @@ func createDCPConnPool(
 	sc.connPool = dcp
 	sc.dynamicPool = dcp
 	return dcp, sc, nil
+}
+
+func newTransportPoolConfig(config ClientConfig, hasNumChannelsConfig bool, mp metric.MeterProvider) transport.PoolConfig {
+	return transport.PoolConfig{
+		NumChannels:          config.NumChannels,
+		HasNumChannelsConfig: hasNumChannelsConfig,
+		Compression:          config.Compression,
+		EnableDirectAccess:   config.EnableDirectAccess,
+		AugmentError:         augmentErrorWithRequestID,
+		MeterProvider:        mp,
+		UnaryInterceptors:    addNativeMetricsInterceptor(),
+		StreamInterceptors:   addStreamNativeMetricsInterceptor(),
+	}
+}
+
+func wrapPoolDialError(err error) error {
+	var mismatch *transport.PoolSizeMismatchError
+	if errors.As(err, &mismatch) && mismatch != nil {
+		return spannerError(codes.InvalidArgument, mismatch.Msg)
+	}
+	return err
 }
 
 // createFixedConnPool dials the default fixed-size channel pool. It returns
@@ -613,20 +598,13 @@ func createFixedConnPool(
 	metricsTracerFactory *builtinMetricsTracerFactory,
 	opts ...option.ClientOption,
 ) (gtransport.ConnPool, *sessionClient, []option.ClientOption, error) {
-	reqIDInjector := new(requestIDHeaderInjector)
-	fixedOpts := append([]option.ClientOption{}, opts...)
-	fixedOpts = append(fixedOpts,
-		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
-		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+	dialedPool, allOpts, err := transport.DialStaticPool(
+		ctx,
+		newTransportPoolConfig(config, hasNumChannelsConfig, nil),
+		opts...,
 	)
-	allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, fixedOpts...)
-	dialedPool, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
-		return nil, nil, nil, err
-	}
-	if hasNumChannelsConfig && dialedPool.Num() != config.NumChannels {
-		dialedPool.Close()
-		return nil, nil, nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, dialedPool.Num())
+		return nil, nil, nil, wrapPoolDialError(err)
 	}
 	if dialedPool.Num() <= 0 {
 		dialedPool.Close()
@@ -651,48 +629,19 @@ func createFallbackConnPool(
 	metricsTracerFactory *builtinMetricsTracerFactory,
 	opts ...option.ClientOption,
 ) (gtransport.ConnPool, []option.ClientOption, error) {
-	reqIDInjector := new(requestIDHeaderInjector)
-	opts = append(opts,
-		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
-		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+	var mp metric.MeterProvider
+	if metricsTracerFactory != nil {
+		mp = metricsTracerFactory.meterProvider
+	}
+	pool, allOpts, err := transport.CreateFallbackConnPool(
+		ctx,
+		newTransportPoolConfig(config, hasNumChannelsConfig, mp),
+		opts...,
 	)
-	allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
-	primaryConn, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, wrapPoolDialError(err)
 	}
-
-	fallbackConnOpts := append(allOpts, internaloption.EnableDirectPath(false))
-	fallbackConn, err := gtransport.DialPool(ctx, fallbackConnOpts...)
-	if err != nil {
-		primaryConn.Close()
-		return nil, nil, err
-	}
-
-	if hasNumChannelsConfig && ((primaryConn.Num() != config.NumChannels) || (fallbackConn.Num() != config.NumChannels)) {
-		primaryConn.Close()
-		fallbackConn.Close()
-		return nil, nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", config.NumChannels, primaryConn.Num(), fallbackConn.Num())
-	}
-
-	fbOpts := grpcgcp.NewGCPFallbackOptions()
-	fbOpts.EnableFallback = true
-	fbOpts.ErrorRateThreshold = 1
-	fbOpts.MinFailedCalls = 1
-	fbOpts.Period = time.Minute * 3
-
-	if metricsTracerFactory != nil && metricsTracerFactory.meterProvider != nil {
-		fbOpts.MeterProvider = metricsTracerFactory.meterProvider
-	}
-
-	gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
-	if err != nil {
-		primaryConn.Close()
-		fallbackConn.Close()
-		return nil, nil, err
-	}
-
-	return &fallbackWrapper{gcpFallback, primaryConn, fallbackConn}, allOpts, nil
+	return pool, allOpts, nil
 }
 
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
@@ -739,14 +688,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 
 	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
-		schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(emulatorAddr, "")
-		emulatorOpts := []option.ClientOption{
-			option.WithEndpoint("passthrough:///" + schemeRemoved),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-			option.WithoutAuthentication(),
-			internaloption.SkipDialSettingsValidation(),
-		}
-		opts = append(emulatorOpts, opts...)
+		opts = append(transport.EmulatorClientOptions(emulatorAddr), opts...)
 	}
 
 	// Prepare gRPC channels.
@@ -772,10 +714,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	isAFEBuiltInMetricEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_AFE_SERVER_TIMING"))
 	isGRPCBuiltInMetricsEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS"))
 	// enable the AFE/GRPC built-in metrics if direct-path is enabled
-	isDirectPathEnabled := config.EnableDirectAccess
-	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
-		isDirectPathEnabled, _ = strconv.ParseBool(enableDirectPathXdsString)
-	}
+	isDirectPathEnabled := transport.ResolveDirectPathEnabled(config.EnableDirectAccess)
 	if isDirectPathEnabled {
 		isAFEBuiltInMetricEnabled = true
 		isGRPCBuiltInMetricsEnabled = true
@@ -805,12 +744,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	// transaction on the same channel. Set GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=true
 	// to enable it. See https://github.com/googleapis/google-cloud-go/pull/14414,
 	// which originally enabled it by default.
-	isFallbackEnabled := false
-	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"); ok {
-		if b, err := strconv.ParseBool(val); err == nil {
-			isFallbackEnabled = b
-		}
-	}
+	isFallbackEnabled := transport.ResolveGCPFallbackEnabled()
 
 	isLegacyStaticChannelPoolEnabled := false
 	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL"); ok {
@@ -862,24 +796,16 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			return nil, err
 		}
 	} else if isLegacyStaticChannelPoolEnabled {
-		// Add a unaryClientInterceptor and streamClientInterceptor.
-		reqIDInjector := new(requestIDHeaderInjector)
-		opts = append(opts,
-			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
-			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+		var allOpts []option.ClientOption
+		pool, allOpts, err = transport.DialStaticPool(
+			ctx,
+			newTransportPoolConfig(config, hasNumChannelsConfig, nil),
+			opts...,
 		)
-
-		allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
-		endpointClientOpts = append(endpointClientOpts, allOpts...)
-		pool, err = gtransport.DialPool(ctx, allOpts...)
 		if err != nil {
-			return nil, err
+			return nil, wrapPoolDialError(err)
 		}
-
-		if hasNumChannelsConfig && pool.Num() != config.NumChannels {
-			pool.Close()
-			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
-		}
+		endpointClientOpts = append(endpointClientOpts, allOpts...)
 	} else {
 		if config.DynamicChannelPoolConfig.DCPEnabled && isExperimentalLocationAPIEnabledForConfig(config) {
 			logf(config.Logger, "spanner: DynamicChannelPoolConfig is ignored with location-aware routing; using a fixed-size channel pool")
@@ -1053,32 +979,14 @@ func NewMultiEndpointClientWithConfig(ctx context.Context, database string, conf
 // of the hand-written client and the user options to one list of options.
 // Precedence: userOpts > clientDefaultOpts > generatedDefaultOpts
 func allClientOpts(numChannels int, compression string, enableDirectAccess bool, userOpts ...option.ClientOption) []option.ClientOption {
-	generatedDefaultOpts := vkit.DefaultClientOptions()
-	clientDefaultOpts := []option.ClientOption{
-		option.WithGRPCConnectionPool(numChannels),
-		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
-		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(addNativeMetricsInterceptor()...)),
-		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
-		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 120 * time.Second})),
-	}
-	enableDirectPathXds := enableDirectAccess
-	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
-		enableDirectPathXds, _ = strconv.ParseBool(enableDirectPathXdsString)
-	}
-
-	if enableDirectPathXds {
-		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
-		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
-		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN")); !disableBoundToken {
-			clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowHardBoundTokens("ALTS"))
-		}
-	}
-	if compression == "gzip" {
-		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
-			grpc.UseCompressor(gzip.Name))))
-	}
-	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
-	return append(allDefaultOpts, userOpts...)
+	return transport.DefaultClientOptions(
+		numChannels,
+		compression,
+		enableDirectAccess,
+		addNativeMetricsInterceptor(),
+		addStreamNativeMetricsInterceptor(),
+		userOpts...,
+	)
 }
 
 // metricsInterceptor is a gRPC unary client interceptor that records metrics for unary RPCs.
