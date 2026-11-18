@@ -154,13 +154,7 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		return fmt.Errorf("transfermanager: DownloadDirectory failed to resolve local directory: %w", err)
 	}
 
-	type queuedObject struct {
-		name     string
-		filePath string
-		relPath  string
-	}
-	var objectsToQueue []queuedObject
-	var illegalPathObjects []DownloadObjectInput
+	var objectsToQueue []string
 	it := d.client.Bucket(input.Bucket).Objects(ctx, query)
 	for {
 		attrs, err := it.Next()
@@ -170,106 +164,92 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		if err != nil {
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to list objects: %w", err)
 		}
+		objectsToQueue = append(objectsToQueue, attrs.Name)
+	}
 
-		objectWithoutPrefix := attrs.Name
+	outs := make(chan DownloadOutput, len(objectsToQueue))
+	inputs := make([]DownloadObjectInput, 0, len(objectsToQueue))
+	illegalPathObjects := make([]DownloadObjectInput, 0, len(objectsToQueue))
+
+	var root *os.Root
+	defer func() {
+		if root != nil {
+			root.Close()
+		}
+	}()
+	cleanupOnErr := func() {
+		if root != nil {
+			root.Close()
+			root = nil
+		}
+		cleanFiles(inputs)
+	}
+
+	for _, object := range objectsToQueue {
+		objectWithoutPrefix := object
 		if len(input.StripPrefix) > 0 {
-			objectWithoutPrefix, _ = strings.CutPrefix(attrs.Name, input.StripPrefix)
+			objectWithoutPrefix, _ = strings.CutPrefix(object, input.StripPrefix)
 		}
 		filePath := filepath.Join(input.LocalDirectory, objectWithoutPrefix)
 
-		// Prevent directory traversal attacks (including via symlinks) before
-		// probing or creating files on disk.
+		// Prevent lexical directory traversal before touching the filesystem.
 		relPath, isUnder, err := resolveSubPath(absLocalDir, filePath)
 		if err != nil {
+			cleanupOnErr()
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to verify path: %w", err)
 		}
 		if !isUnder {
 			illegalPathObjects = append(illegalPathObjects, DownloadObjectInput{
-				Bucket:    input.Bucket,
-				Object:    attrs.Name,
-				Callback:  input.OnObjectDownload,
-				ctx:       ctx,
-				directory: true,
+				Bucket:                 input.Bucket,
+				Object:                 object,
+				Callback:               input.OnObjectDownload,
+				ctx:                    ctx,
+				directoryObjectOutputs: outs,
+				directory:              true,
 			})
 			continue
 		}
 
-		// Check if the file (or symlink) already exists.
-		fileExists := false
-		if _, err := os.Lstat(filePath); err == nil {
-			fileExists = true
-			if !d.config.skipIfExists {
-				return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, os.ErrExist)
+		if root == nil {
+			if err := os.MkdirAll(input.LocalDirectory, fs.ModeDir|fs.ModePerm); err != nil {
+				cleanupOnErr()
+				return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", input.LocalDirectory, err)
 			}
-		} else if !errors.Is(err, os.ErrNotExist) {
-			// Encountered an error other than file does not exist.
-			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, err)
-		}
-
-		if !(d.config.skipIfExists && fileExists) {
-			objectsToQueue = append(objectsToQueue, queuedObject{
-				name:     attrs.Name,
-				filePath: filePath,
-				relPath:  relPath,
-			})
-		}
-	}
-
-	outs := make(chan DownloadOutput, len(objectsToQueue)+len(illegalPathObjects))
-	for i := range illegalPathObjects {
-		illegalPathObjects[i].directoryObjectOutputs = outs
-	}
-	inputs := make([]DownloadObjectInput, 0, len(objectsToQueue))
-
-	if len(objectsToQueue) > 0 {
-		if err := os.MkdirAll(input.LocalDirectory, fs.ModeDir|fs.ModePerm); err != nil {
-			return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", input.LocalDirectory, err)
-		}
-		root, err := os.OpenRoot(input.LocalDirectory)
-		if err != nil {
-			cleanFiles(inputs)
-			return fmt.Errorf("transfermanager: DownloadDirectory failed to open directory(%q): %w", input.LocalDirectory, err)
-		}
-
-		for _, q := range objectsToQueue {
-			objDirectory := filepath.Dir(q.filePath)
-
-			// Make sure all directories in the object path exist within root.
-			// (*os.Root).MkdirAll only accepts permission bits (0o777), not fs.ModeDir.
-			if relDir := filepath.Dir(q.relPath); relDir != "." {
-				if err := root.MkdirAll(relDir, fs.ModePerm); err != nil {
-					root.Close()
-					cleanFiles(inputs)
-					return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", objDirectory, err)
-				}
+			r, err := os.OpenRoot(input.LocalDirectory)
+			if err != nil {
+				cleanupOnErr()
+				return fmt.Errorf("transfermanager: DownloadDirectory failed to open directory(%q): %w", input.LocalDirectory, err)
 			}
+			root = r
+		}
 
-			// Create file exclusively within root so colliding StripPrefix targets
-			// or concurrent writers cannot truncate or share the same file.
-			f, fErr := root.OpenFile(q.relPath, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
-			if fErr != nil {
-				if d.config.skipIfExists && errors.Is(fErr, os.ErrExist) {
-					continue
-				}
-				root.Close()
-				cleanFiles(inputs)
-				return fmt.Errorf("transfermanager: DownloadDirectory failed to create file(%q): %w", q.filePath, fErr)
+		// (*os.Root).MkdirAll and OpenFile confine all directory and file operations
+		// within LocalDirectory, rejecting symlink escapes outside the root.
+		if relDir := filepath.Dir(relPath); relDir != "." {
+			if err := root.MkdirAll(relDir, fs.ModePerm); err != nil {
+				cleanupOnErr()
+				return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", filepath.Dir(filePath), err)
 			}
+		}
 
-			inputs = append(inputs, DownloadObjectInput{
-				Bucket:                 input.Bucket,
-				Object:                 q.name,
-				Destination:            f,
-				Callback:               input.OnObjectDownload,
-				ctx:                    ctx,
-				directory:              true,
-				directoryObjectOutputs: outs,
-			})
+		f, fErr := root.OpenFile(relPath, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
+		if fErr != nil {
+			if d.config.skipIfExists && errors.Is(fErr, os.ErrExist) {
+				continue
+			}
+			cleanupOnErr()
+			return fmt.Errorf("transfermanager: DownloadDirectory failed to create file(%q): %w", filePath, fErr)
 		}
-		if err := root.Close(); err != nil {
-			cleanFiles(inputs)
-			return fmt.Errorf("transfermanager: DownloadDirectory failed to close directory(%q): %w", input.LocalDirectory, err)
-		}
+
+		inputs = append(inputs, DownloadObjectInput{
+			Bucket:                 input.Bucket,
+			Object:                 object,
+			Destination:            f,
+			Callback:               input.OnObjectDownload,
+			ctx:                    ctx,
+			directory:              true,
+			directoryObjectOutputs: outs,
+		})
 	}
 
 	if d.config.asynchronous {
@@ -1021,7 +1001,6 @@ func checksumObject(got, want uint32) error {
 }
 
 func isSubPath(localDirectory, filePath string) (bool, error) {
-	// Validate if paths can be converted to absolute paths.
 	absLocalDirectory, err := filepath.Abs(localDirectory)
 	if err != nil {
 		return false, fmt.Errorf("cannot convert local directory to absolute path: %w", err)
@@ -1036,104 +1015,13 @@ func resolveSubPath(absLocalDirectory, filePath string) (string, bool, error) {
 		return "", false, fmt.Errorf("cannot convert file path to absolute path: %w", err)
 	}
 
-	// Check lexical containment first so paths escaping via ".." never probe
-	// external directories on disk.
-	relFile, err := filepath.Rel(absLocalDirectory, absFilePath)
+	rel, err := filepath.Rel(absLocalDirectory, absFilePath)
 	if err != nil {
 		return "", false, err
 	}
 	prevDir := ".." + string(filepath.Separator)
-	if relFile == "." || relFile == ".." || strings.HasPrefix(relFile, prevDir) {
+	if rel == "." || rel == ".." || strings.HasPrefix(rel, prevDir) {
 		return "", false, nil
 	}
-
-	isUnder, err := isConfinedUnderRoot(absLocalDirectory, relFile)
-	if err != nil || !isUnder {
-		return "", false, err
-	}
-	return relFile, true, nil
-}
-
-// isConfinedUnderRoot walks relPath component-by-component starting from
-// absLocalDirectory, expanding symlinks (including dangling symlinks) as they
-// are encountered without ever stepping above absLocalDirectory or following
-// absolute symlinks, matching os.Root confinement semantics.
-func isConfinedUnderRoot(absLocalDirectory, relPath string) (bool, error) {
-	const maxSymlinkHops = 255
-	queue := splitPathComponents(relPath)
-	var resolvedParts []string
-	rootMissing := false
-	if _, err := os.Stat(absLocalDirectory); err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			rootMissing = true
-		} else {
-			return false, err
-		}
-	}
-
-	// missingDepth counts how many trailing segments of resolvedParts do not yet
-	// exist on disk so ".." pops back into an existing directory resume os.Lstat.
-	missingDepth := 0
-	hops := 0
-	for len(queue) > 0 {
-		part := queue[0]
-		queue = queue[1:]
-		if part == "" || part == "." {
-			continue
-		}
-		if part == ".." {
-			if len(resolvedParts) == 0 {
-				return false, nil
-			}
-			resolvedParts = resolvedParts[:len(resolvedParts)-1]
-			if missingDepth > 0 {
-				missingDepth--
-			}
-			continue
-		}
-
-		if rootMissing || missingDepth > 0 {
-			resolvedParts = append(resolvedParts, part)
-			missingDepth++
-			continue
-		}
-
-		curCandidate := filepath.Join(absLocalDirectory, filepath.Join(resolvedParts...), part)
-		fi, err := os.Lstat(curCandidate)
-		if err != nil {
-			if errors.Is(err, os.ErrNotExist) {
-				resolvedParts = append(resolvedParts, part)
-				missingDepth = 1
-				continue
-			}
-			return false, err
-		}
-
-		if fi.Mode()&os.ModeSymlink != 0 {
-			hops++
-			if hops > maxSymlinkHops {
-				return false, errors.New("isSubPath: too many links")
-			}
-			target, err := os.Readlink(curCandidate)
-			if err != nil {
-				return false, err
-			}
-			if target == "" || filepath.IsAbs(target) || filepath.VolumeName(target) != "" || target[0] == '/' || os.IsPathSeparator(target[0]) {
-				return false, nil
-			}
-			targetParts := splitPathComponents(target)
-			queue = append(targetParts, queue...)
-			continue
-		}
-
-		resolvedParts = append(resolvedParts, part)
-	}
-
-	return len(resolvedParts) > 0, nil
-}
-
-func splitPathComponents(p string) []string {
-	return strings.FieldsFunc(p, func(r rune) bool {
-		return r == '/' || r == filepath.Separator
-	})
+	return rel, true, nil
 }
