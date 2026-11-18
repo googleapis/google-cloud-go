@@ -244,6 +244,9 @@ type dynamicChannelPool struct {
 
 	drainingCount  atomic.Int64
 	drainIdleFloor time.Duration // dcpDrainIdleFloor when the pool was created
+
+	fixed      bool                // constant round-robin entries; no scaling, priming, or metrics
+	underlying gtransport.ConnPool // owns a fixed pool's connections
 }
 
 // dcpEntry represents one logical DCP slot.
@@ -270,36 +273,92 @@ func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicCh
 	if err != nil {
 		return nil, err
 	}
-	poolCtx, cancel := context.WithCancel(ctx)
-	p := &dynamicChannelPool{
+	p := newEmptyDCP(sc, cfg, dial)
+	p.ctx, p.cancel = context.WithCancel(ctx)
+	p.scaleUpSignal = make(chan struct{}, 1)
+	p.done = make(chan struct{})
+	if err := p.createInitialEntries(ctx); err != nil {
+		p.cancel()
+		return nil, err
+	}
+	p.metrics = newDCPMetrics(p, mp)
+	go p.scaleUpWorker()
+	go p.scaleDownMonitor()
+	return p, nil
+}
+
+// newFixedChannelPool returns a fixed pool with one entry per connection of
+// underlying. The pool takes ownership of underlying.
+func newFixedChannelPool(ctx context.Context, sc *sessionClient, underlying gtransport.ConnPool) (*dynamicChannelPool, error) {
+	// Deduplicate so each connection has one request-id channel id.
+	var conns []*grpc.ClientConn
+	seen := make(map[*grpc.ClientConn]bool)
+	for i := 0; i < underlying.Num(); i++ {
+		c := underlying.Conn()
+		if c != nil {
+			if seen[c] {
+				continue
+			}
+			seen[c] = true
+		}
+		conns = append(conns, c)
+	}
+	n := len(conns)
+	cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{
+		DCPInitialChannels:   n,
+		DCPMinChannels:       n,
+		DCPMaxChannels:       n,
+		DCPSelectionStrategy: DCPRoundRobin,
+	})
+	if err != nil {
+		return nil, err
+	}
+	// next needs no lock: createInitialEntries calls dial n times, in sequence.
+	next := 0
+	dial := func(context.Context) (gtransport.ConnPool, error) {
+		c := conns[next]
+		next++
+		if c == nil {
+			// underlying hides its connections, so the entry routes through it.
+			return borrowedPool{underlying}, nil
+		}
+		return borrowedConn{c}, nil
+	}
+	p := newEmptyDCP(sc, cfg, dial)
+	p.fixed = true
+	p.underlying = underlying
+	if err := p.createInitialEntries(ctx); err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+// newEmptyDCP returns a pool with no entries and no background state.
+func newEmptyDCP(sc *sessionClient, cfg DynamicChannelPoolConfig, dial func(context.Context) (gtransport.ConnPool, error)) *dynamicChannelPool {
+	return &dynamicChannelPool{
 		cfg:                 cfg,
 		targetRPCPerChannel: math.Max(1, math.Floor((cfg.DCPMinRPCPerChannel+cfg.DCPMaxRPCPerChannel)/2)),
 		penaltyMax:          int32(math.Ceil(cfg.DCPMaxRPCPerChannel)),
-		ctx:                 poolCtx,
-		cancel:              cancel,
 		sc:                  sc,
 		dial:                dial,
-		scaleUpSignal:       make(chan struct{}, 1),
-		done:                make(chan struct{}),
 		drainIdleFloor:      dcpDrainIdleFloor,
 	}
-	entries := make([]*dcpEntry, 0, cfg.DCPInitialChannels)
-	for i := 0; i < cfg.DCPInitialChannels; i++ {
+}
+
+func (p *dynamicChannelPool) createInitialEntries(ctx context.Context) error {
+	entries := make([]*dcpEntry, 0, p.cfg.DCPInitialChannels)
+	for i := 0; i < p.cfg.DCPInitialChannels; i++ {
 		e, err := p.newEntry(ctx, false)
 		if err != nil {
 			for _, entry := range entries {
 				entry.close()
 			}
-			cancel()
-			return nil, err
+			return err
 		}
 		entries = append(entries, e)
 	}
 	p.entries.Store(&entries)
-	p.metrics = newDCPMetrics(p, mp)
-	go p.scaleUpWorker()
-	go p.scaleDownMonitor()
-	return p, nil
+	return nil
 }
 
 func (p *dynamicChannelPool) Num() int { return len(p.getEntries()) }
@@ -315,6 +374,9 @@ func (p *dynamicChannelPool) Invoke(ctx context.Context, method string, args, re
 	e, err := p.pick(ctx)
 	if err != nil {
 		return err
+	}
+	if p.fixed {
+		return e.pool.Invoke(ctx, method, args, reply, opts...)
 	}
 	e.unaryLoad.Add(1)
 	p.totalRPCLoad.Add(1)
@@ -335,6 +397,9 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 	if err != nil {
 		return nil, err
 	}
+	if p.fixed {
+		return e.pool.NewStream(ctx, desc, method, opts...)
+	}
 	e.streamLoad.Add(1)
 	p.totalRPCLoad.Add(1)
 	p.maybeSignalScaleUp(e)
@@ -352,18 +417,28 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 func (p *dynamicChannelPool) Close() error {
 	p.stopOnce.Do(func() {
 		p.metrics.close(p.sc.logger)
-		p.cancel()
-		close(p.done)
+		if !p.fixed {
+			p.cancel()
+			close(p.done)
+		}
 	})
 	p.dialMu.Lock()
 	defer p.dialMu.Unlock()
 	entries := p.getEntries()
-	p.entries.Store(&[]*dcpEntry{})
+	// A fixed pool keeps its closed entries, so that RPCs after Close fail
+	// with CANCELED as they do with the static pool.
+	if !p.fixed {
+		p.entries.Store(&[]*dcpEntry{})
+	}
 	var errs []error
 	for _, e := range entries {
 		if err := e.close(); err != nil {
 			errs = append(errs, err)
 		}
+	}
+	if p.underlying != nil {
+		errs = append(errs, p.underlying.Close())
+		p.underlying = nil
 	}
 	return errors.Join(errs...)
 }
@@ -380,7 +455,7 @@ func (p *dynamicChannelPool) getEntries() []*dcpEntry {
 // priming. Initial channels are created during client startup and are not
 // primed through this path.
 func (p *dynamicChannelPool) setPrimeSession(id string) {
-	if id != "" {
+	if id != "" && !p.fixed {
 		p.primeSession.Store(id)
 		select {
 		case p.scaleUpSignal <- struct{}{}:
@@ -416,7 +491,11 @@ func (p *dynamicChannelPool) newEntry(ctx context.Context, prime bool) (*dcpEntr
 		return nil, err
 	}
 	e.delegate = client
-	e.client = &dcpSpannerClient{entry: e, delegate: client}
+	if p.fixed {
+		e.client = client
+	} else {
+		e.client = &dcpSpannerClient{entry: e, delegate: client}
+	}
 	if prime {
 		if err := p.prime(ctx, e); err != nil {
 			e.close()
@@ -472,7 +551,9 @@ func (p *dynamicChannelPool) pick(ctx context.Context) (*dcpEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	e.lastActivity.Store(time.Now().UnixNano())
+	if !p.fixed {
+		e.lastActivity.Store(time.Now().UnixNano())
+	}
 	return e, nil
 }
 
@@ -883,6 +964,18 @@ func (e *dcpEntry) Invoke(ctx context.Context, method string, args, reply interf
 func (e *dcpEntry) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	return e.pool.NewStream(ctx, desc, method, opts...)
 }
+
+// borrowedConn is a ConnPool over one connection that it does not close.
+type borrowedConn struct{ *grpc.ClientConn }
+
+func (c borrowedConn) Conn() *grpc.ClientConn { return c.ClientConn }
+func (c borrowedConn) Num() int               { return 1 }
+func (c borrowedConn) Close() error           { return nil }
+
+// borrowedPool is a ConnPool that does not close the pool it wraps.
+type borrowedPool struct{ gtransport.ConnPool }
+
+func (borrowedPool) Close() error { return nil }
 
 // acquire takes a reference that keeps drain from closing the entry until
 // release is called. It fails once the entry is closed.
