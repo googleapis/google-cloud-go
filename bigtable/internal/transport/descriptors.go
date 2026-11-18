@@ -15,189 +15,223 @@
 package internal
 
 import (
+	"fmt"
+
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/protobuf/proto"
 )
 
-// VRpcDescriptor defines the interface for virtual RPC encoding and decoding.
-type VRpcDescriptor interface {
-	Method() string
-	Encode(req interface{}) ([]byte, error)
-	Decode(buf []byte) (interface{}, error)
+// ResourceEnvelope wraps method-level session request protos into the outer
+// wire envelope for a specific Bigtable resource kind (TableRequest,
+// AuthorizedViewRequest, or MaterializedViewRequest) and unwraps the
+// corresponding wire response back into the method-level session response
+// proto.
+type ResourceEnvelope interface {
+	WrapRequest(inner proto.Message) ([]byte, error)
+	UnwrapResponse(buf []byte) (proto.Message, error)
 }
 
-// VRpcDescriptorImpl implements VRpcDescriptor using custom encoder/decoder closures.
-type VRpcDescriptorImpl struct {
-	MethodName string
-	EncodeFn   func(req interface{}) ([]byte, error)
-	DecodeFn   func(buf []byte) (interface{}, error)
-}
-
-// Method returns the virtual RPC method identifier name.
-func (d *VRpcDescriptorImpl) Method() string {
-	return d.MethodName
-}
-
-// Encode serializes standard Bigtable request payload into virtual RPC bytes.
-func (d *VRpcDescriptorImpl) Encode(req interface{}) ([]byte, error) {
-	return d.EncodeFn(req)
-}
-
-// Decode de-serializes virtual RPC bytes back into standard Bigtable response message.
-func (d *VRpcDescriptorImpl) Decode(buf []byte) (interface{}, error) {
-	return d.DecodeFn(buf)
-}
-
-// vRPC Encoder/Decoder factories
-
-func createTableEncoder(subEncoder func(req interface{}, envelope *btpb.TableRequest)) func(interface{}) ([]byte, error) {
-	return func(req interface{}) ([]byte, error) {
-		envelope := &btpb.TableRequest{}
-		subEncoder(req, envelope)
-		return proto.Marshal(envelope)
+// Envelope returns the ResourceEnvelope corresponding to this SessionType.
+func (t SessionType) Envelope() (ResourceEnvelope, error) {
+	switch t {
+	case SessionTypeTable:
+		return TableEnvelope, nil
+	case SessionTypeAuthorizedView:
+		return AuthorizedViewEnvelope, nil
+	case SessionTypeMaterializedView:
+		return MaterializedViewEnvelope, nil
+	default:
+		return nil, fmt.Errorf("unknown session type: %v", t)
 	}
 }
 
-func createTableDecoder(subDecoder func(envelope *btpb.TableResponse) interface{}) func([]byte) (interface{}, error) {
-	return func(buf []byte) (interface{}, error) {
-		envelope := &btpb.TableResponse{}
-		if err := proto.Unmarshal(buf, envelope); err != nil {
-			return nil, err
-		}
-		return subDecoder(envelope), nil
+type tableEnvelope struct{}
+
+func (tableEnvelope) WrapRequest(inner proto.Message) ([]byte, error) {
+	if inner == nil || !inner.ProtoReflect().IsValid() {
+		return nil, fmt.Errorf("nil table vRPC request payload (%T)", inner)
 	}
-}
-
-func createAuthViewEncoder(subEncoder func(req interface{}, envelope *btpb.AuthorizedViewRequest)) func(interface{}) ([]byte, error) {
-	return func(req interface{}) ([]byte, error) {
-		envelope := &btpb.AuthorizedViewRequest{}
-		subEncoder(req, envelope)
-		return proto.Marshal(envelope)
+	env := &btpb.TableRequest{}
+	switch r := inner.(type) {
+	case *btpb.SessionReadRowRequest:
+		env.Payload = &btpb.TableRequest_ReadRow{ReadRow: r}
+	case *btpb.SessionMutateRowRequest:
+		env.Payload = &btpb.TableRequest_MutateRow{MutateRow: r}
+	default:
+		return nil, fmt.Errorf("unsupported table vRPC request payload %T", inner)
 	}
+	return proto.Marshal(env)
 }
 
-func createAuthViewDecoder(subDecoder func(envelope *btpb.AuthorizedViewResponse) interface{}) func([]byte) (interface{}, error) {
-	return func(buf []byte) (interface{}, error) {
-		envelope := &btpb.AuthorizedViewResponse{}
-		if err := proto.Unmarshal(buf, envelope); err != nil {
-			return nil, err
-		}
-		return subDecoder(envelope), nil
+func (tableEnvelope) UnwrapResponse(buf []byte) (proto.Message, error) {
+	env := &btpb.TableResponse{}
+	if err := proto.Unmarshal(buf, env); err != nil {
+		return nil, err
 	}
-}
-
-func createMatViewEncoder(subEncoder func(req interface{}, envelope *btpb.MaterializedViewRequest)) func(interface{}) ([]byte, error) {
-	return func(req interface{}) ([]byte, error) {
-		envelope := &btpb.MaterializedViewRequest{}
-		subEncoder(req, envelope)
-		return proto.Marshal(envelope)
+	var inner proto.Message
+	switch p := env.Payload.(type) {
+	case *btpb.TableResponse_ReadRow:
+		inner = p.ReadRow
+	case *btpb.TableResponse_MutateRow:
+		inner = p.MutateRow
+	case nil:
+		return nil, fmt.Errorf("missing table vRPC response payload")
+	default:
+		return nil, fmt.Errorf("unsupported table vRPC response payload %T", env.Payload)
 	}
-}
-
-func createMatViewDecoder(subDecoder func(envelope *btpb.MaterializedViewResponse) interface{}) func([]byte) (interface{}, error) {
-	return func(buf []byte) (interface{}, error) {
-		envelope := &btpb.MaterializedViewResponse{}
-		if err := proto.Unmarshal(buf, envelope); err != nil {
-			return nil, err
-		}
-		return subDecoder(envelope), nil
+	if inner == nil || !inner.ProtoReflect().IsValid() {
+		return nil, fmt.Errorf("missing table vRPC response payload (%T)", env.Payload)
 	}
+	return inner, nil
 }
 
-// ReadRowArgs contains arguments required for a virtual RPC ReadRow call.
-type ReadRowArgs struct {
-	RowKey string
-	Filter *btpb.RowFilter
-}
+type authorizedViewEnvelope struct{}
 
-// MutateRowArgs contains arguments required for a virtual RPC MutateRow call.
-type MutateRowArgs struct {
-	RowKey    string
-	Mutations []*btpb.Mutation
-}
-
-func encodeReadRow(args ReadRowArgs) *btpb.SessionReadRowRequest {
-	return &btpb.SessionReadRowRequest{
-		Key:    []byte(args.RowKey),
-		Filter: args.Filter,
+func (authorizedViewEnvelope) WrapRequest(inner proto.Message) ([]byte, error) {
+	if inner == nil || !inner.ProtoReflect().IsValid() {
+		return nil, fmt.Errorf("nil authorized view vRPC request payload (%T)", inner)
 	}
+	env := &btpb.AuthorizedViewRequest{}
+	switch r := inner.(type) {
+	case *btpb.SessionReadRowRequest:
+		env.Payload = &btpb.AuthorizedViewRequest_ReadRow{ReadRow: r}
+	case *btpb.SessionMutateRowRequest:
+		env.Payload = &btpb.AuthorizedViewRequest_MutateRow{MutateRow: r}
+	default:
+		return nil, fmt.Errorf("unsupported authorized view vRPC request payload %T", inner)
+	}
+	return proto.Marshal(env)
 }
 
-func encodeMutateRow(args MutateRowArgs) *btpb.SessionMutateRowRequest {
-	return &btpb.SessionMutateRowRequest{
-		Key:       []byte(args.RowKey),
-		Mutations: args.Mutations,
+func (authorizedViewEnvelope) UnwrapResponse(buf []byte) (proto.Message, error) {
+	env := &btpb.AuthorizedViewResponse{}
+	if err := proto.Unmarshal(buf, env); err != nil {
+		return nil, err
 	}
+	var inner proto.Message
+	switch p := env.Payload.(type) {
+	case *btpb.AuthorizedViewResponse_ReadRow:
+		inner = p.ReadRow
+	case *btpb.AuthorizedViewResponse_MutateRow:
+		inner = p.MutateRow
+	case nil:
+		return nil, fmt.Errorf("missing authorized view vRPC response payload")
+	default:
+		return nil, fmt.Errorf("unsupported authorized view vRPC response payload %T", env.Payload)
+	}
+	if inner == nil || !inner.ProtoReflect().IsValid() {
+		return nil, fmt.Errorf("missing authorized view vRPC response payload (%T)", env.Payload)
+	}
+	return inner, nil
+}
+
+type materializedViewEnvelope struct{}
+
+func (materializedViewEnvelope) WrapRequest(inner proto.Message) ([]byte, error) {
+	if inner == nil || !inner.ProtoReflect().IsValid() {
+		return nil, fmt.Errorf("nil materialized view vRPC request payload (%T)", inner)
+	}
+	env := &btpb.MaterializedViewRequest{}
+	switch r := inner.(type) {
+	case *btpb.SessionReadRowRequest:
+		env.Payload = &btpb.MaterializedViewRequest_ReadRow{ReadRow: r}
+	default:
+		return nil, fmt.Errorf("unsupported materialized view vRPC request payload %T", inner)
+	}
+	return proto.Marshal(env)
+}
+
+func (materializedViewEnvelope) UnwrapResponse(buf []byte) (proto.Message, error) {
+	env := &btpb.MaterializedViewResponse{}
+	if err := proto.Unmarshal(buf, env); err != nil {
+		return nil, err
+	}
+	var inner proto.Message
+	switch p := env.Payload.(type) {
+	case *btpb.MaterializedViewResponse_ReadRow:
+		inner = p.ReadRow
+	case nil:
+		return nil, fmt.Errorf("missing materialized view vRPC response payload")
+	default:
+		return nil, fmt.Errorf("unsupported materialized view vRPC response payload %T", env.Payload)
+	}
+	if inner == nil || !inner.ProtoReflect().IsValid() {
+		return nil, fmt.Errorf("missing materialized view vRPC response payload (%T)", env.Payload)
+	}
+	return inner, nil
 }
 
 var (
-	// READ_ROW executes Point Reads on standard tables.
-	READ_ROW = &VRpcDescriptorImpl{
-		MethodName: "ReadRow",
-		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
-			args := req.(ReadRowArgs)
-			env.Payload = &btpb.TableRequest_ReadRow{
-				ReadRow: encodeReadRow(args),
-			}
-		}),
-		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
-			return env.GetReadRow()
-		}),
-	}
+	// TableEnvelope frames vRPC payloads in TableRequest / TableResponse.
+	TableEnvelope ResourceEnvelope = tableEnvelope{}
+	// AuthorizedViewEnvelope frames vRPC payloads in AuthorizedViewRequest / AuthorizedViewResponse.
+	AuthorizedViewEnvelope ResourceEnvelope = authorizedViewEnvelope{}
+	// MaterializedViewEnvelope frames vRPC payloads in MaterializedViewRequest / MaterializedViewResponse.
+	MaterializedViewEnvelope ResourceEnvelope = materializedViewEnvelope{}
+)
 
-	// MUTATE_ROW executes Point Mutations on standard tables.
-	MUTATE_ROW = &VRpcDescriptorImpl{
-		MethodName: "MutateRow",
-		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
-			args := req.(MutateRowArgs)
-			env.Payload = &btpb.TableRequest_MutateRow{
-				MutateRow: encodeMutateRow(args),
-			}
-		}),
-		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
-			return env.GetMutateRow()
-		}),
-	}
+// VRpcDescriptor defines a virtual RPC method and its method-level request and
+// response conversion, independent of the outer resource envelope.
+type VRpcDescriptor interface {
+	Method() string
+	Encode(env ResourceEnvelope, req interface{}) ([]byte, error)
+	Decode(env ResourceEnvelope, buf []byte) (interface{}, error)
+}
 
-	// READ_ROW_AUTH_VIEW executes Point Reads on Authorized Views.
-	READ_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
-		MethodName: "ReadRow",
-		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
-			args := req.(ReadRowArgs)
-			env.Payload = &btpb.AuthorizedViewRequest_ReadRow{
-				ReadRow: encodeReadRow(args),
-			}
-		}),
-		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
-			return env.GetReadRow()
-		}),
-	}
+type vrpcDescriptor[ReqVal any, RespVal any, Req interface {
+	*ReqVal
+	proto.Message
+}, Resp interface {
+	*RespVal
+	proto.Message
+}] struct {
+	method string
+}
 
-	// MUTATE_ROW_AUTH_VIEW executes Point Mutations on Authorized Views.
-	MUTATE_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
-		MethodName: "MutateRow",
-		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
-			args := req.(MutateRowArgs)
-			env.Payload = &btpb.AuthorizedViewRequest_MutateRow{
-				MutateRow: encodeMutateRow(args),
-			}
-		}),
-		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
-			return env.GetMutateRow()
-		}),
-	}
+func (d vrpcDescriptor[ReqVal, RespVal, Req, Resp]) Method() string {
+	return d.method
+}
 
-	// READ_ROW_MAT_VIEW executes Point Reads on Materialized Views.
-	READ_ROW_MAT_VIEW = &VRpcDescriptorImpl{
-		MethodName: "ReadRow",
-		EncodeFn: createMatViewEncoder(func(req interface{}, env *btpb.MaterializedViewRequest) {
-			args := req.(ReadRowArgs)
-			env.Payload = &btpb.MaterializedViewRequest_ReadRow{
-				ReadRow: encodeReadRow(args),
-			}
-		}),
-		DecodeFn: createMatViewDecoder(func(env *btpb.MaterializedViewResponse) interface{} {
-			return env.GetReadRow()
-		}),
+func (d vrpcDescriptor[ReqVal, RespVal, Req, Resp]) Encode(env ResourceEnvelope, req interface{}) ([]byte, error) {
+	if env == nil {
+		return nil, fmt.Errorf("nil resource envelope for %s", d.method)
 	}
+	typed, ok := req.(Req)
+	if !ok || typed == nil {
+		return nil, fmt.Errorf("invalid %s request payload (%T)", d.method, req)
+	}
+	return env.WrapRequest(typed)
+}
+
+func (d vrpcDescriptor[ReqVal, RespVal, Req, Resp]) Decode(env ResourceEnvelope, buf []byte) (interface{}, error) {
+	if env == nil {
+		return nil, fmt.Errorf("nil resource envelope for %s", d.method)
+	}
+	inner, err := env.UnwrapResponse(buf)
+	if err != nil {
+		return nil, err
+	}
+	resp, ok := inner.(Resp)
+	if !ok || resp == nil {
+		return nil, fmt.Errorf("unexpected %s response payload %T", d.method, inner)
+	}
+	return resp, nil
+}
+
+func newVRpcDescriptor[ReqVal any, RespVal any, Req interface {
+	*ReqVal
+	proto.Message
+}, Resp interface {
+	*RespVal
+	proto.Message
+}](method string) VRpcDescriptor {
+	return vrpcDescriptor[ReqVal, RespVal, Req, Resp]{method: method}
+}
+
+var (
+	// READ_ROW describes the ReadRow virtual RPC across all session resource kinds.
+	READ_ROW = newVRpcDescriptor[btpb.SessionReadRowRequest, btpb.SessionReadRowResponse]("ReadRow")
+
+	// MUTATE_ROW describes the MutateRow virtual RPC across writable session resource kinds.
+	MUTATE_ROW = newVRpcDescriptor[btpb.SessionMutateRowRequest, btpb.SessionMutateRowResponse]("MutateRow")
 )

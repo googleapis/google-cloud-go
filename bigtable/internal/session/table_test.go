@@ -96,8 +96,6 @@ func newTestTableWithReadWrite(t *testing.T, readInv, writeInv, readWriteInv Inv
 		nil, // closeRead — fake pools don't back a real poolCloser
 		nil, // closeWrite
 		nil, // closeReadWrite
-		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
-		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil,
 		factory,
 	)
@@ -511,8 +509,6 @@ func TestSessionTable_Close_CallsAllReleasers(t *testing.T) {
 		func() error { reads++; return nil },
 		func() error { writes++; return nil },
 		func() error { readWrites++; return nil },
-		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
-		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil, nil,
 	)
 	if err := tbl.Close(); err != nil {
@@ -535,8 +531,6 @@ func TestSessionTable_Close_NilWriteReleaserOK(t *testing.T) {
 		nil,
 		func() error { reads++; return nil },
 		nil,
-		nil,
-		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
 		nil, nil,
 	)
@@ -563,8 +557,6 @@ func TestSessionTable_Close_JoinsErrors(t *testing.T) {
 		func() error { return readErr },
 		func() error { return writeErr },
 		func() error { return readWriteErr },
-		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
-		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil, nil,
 	)
 	err := tbl.Close()
@@ -591,8 +583,6 @@ func TestSessionTable_Close_ReleasersIdempotent(t *testing.T) {
 		nil,
 		func() error { reads++; return nil },
 		nil,
-		nil,
-		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
 		nil, nil,
 	)
@@ -648,8 +638,6 @@ func TestSessionTable_Close_RacingLazyOpen_NoLeak(t *testing.T) {
 		func() error { releaseCalls.Add(1); return nil },
 		nil,
 		nil,
-		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
-		nil,
 		nil, nil,
 	)
 
@@ -695,8 +683,6 @@ func TestSessionTable_Close_BeforeLazyOpen_EarlyBail(t *testing.T) {
 		nil,
 		func() error { releaseCalls.Add(1); return nil },
 		nil,
-		nil,
-		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
 		nil, nil,
 	)
