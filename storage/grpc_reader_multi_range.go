@@ -36,7 +36,6 @@ import (
 )
 
 const (
-	mrdCommandChannelSize    = 1
 	mrdResponseChannelSize   = 100
 	mrdSendChannelSize       = 100
 	mrdAddStreamsChannelSize = 100
@@ -166,7 +165,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		client:         c,
 		settings:       s,
 		params:         params,
-		cmds:           make(chan mrdCommand, mrdCommandChannelSize),
+		cmds:           make(chan mrdCommand),
 		sessionResps:   make(chan mrdSessionResult, mrdResponseChannelSize),
 		readIDCounter:  1,
 		readSpec:       readSpec,
@@ -388,7 +387,7 @@ type multiRangeDownloaderManager struct {
 	attrsReady         chan struct{}
 	attrsOnce          sync.Once
 	spanCtx            context.Context
-	callbackWg         sync.WaitGroup
+	callbacks          callbackTracker
 	streamCreating     bool
 	streamPicker       streamPickerStrategy
 	streamIDCounter    int
@@ -439,8 +438,11 @@ func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64
 }
 
 func (m *multiRangeDownloaderManager) close(err error) error {
+	// In every branch, wait for the event loop and then for in-flight
+	// callbacks, so that Close covers every Add that happened before it.
 	if m.ctx.Err() != nil {
 		m.wg.Wait()
+		m.callbacks.wait()
 		if pErr := m.getPermanentError(); pErr != nil {
 			return pErr
 		}
@@ -451,12 +453,14 @@ func (m *multiRangeDownloaderManager) close(err error) error {
 	case m.cmds <- cmd:
 		<-m.ctx.Done()
 		m.wg.Wait()
+		m.callbacks.wait()
 		if pErr := m.getPermanentError(); pErr != nil && !errors.Is(pErr, errClosed) {
 			return pErr
 		}
 		return nil
 	case <-m.ctx.Done():
 		m.wg.Wait()
+		m.callbacks.wait()
 		if m.getPermanentError() != nil {
 			return m.getPermanentError()
 		}
@@ -465,26 +469,23 @@ func (m *multiRangeDownloaderManager) close(err error) error {
 }
 
 func (m *multiRangeDownloaderManager) wait() {
-	if err := m.ctx.Err(); err != nil {
-		m.callbackWg.Wait()
-		return
-	}
-	doneC := make(chan struct{})
-	cmd := &mrdWaitCmd{doneC: doneC}
-	select {
-	case m.cmds <- cmd:
+	if m.ctx.Err() == nil {
+		doneC := make(chan struct{})
+		cmd := &mrdWaitCmd{doneC: doneC}
 		select {
-		case <-doneC:
-			m.callbackWg.Wait()
-			return
+		case m.cmds <- cmd:
+			select {
+			case <-doneC:
+			case <-m.ctx.Done():
+			}
 		case <-m.ctx.Done():
-			m.callbackWg.Wait()
-			return
 		}
-	case <-m.ctx.Done():
-		m.callbackWg.Wait()
-		return
 	}
+	if m.ctx.Err() != nil {
+		// Let cleanup finish, as it may still start callbacks.
+		m.wg.Wait()
+	}
+	m.callbacks.wait()
 }
 
 func (m *multiRangeDownloaderManager) getHandle() []byte {
@@ -532,9 +533,9 @@ func (m *multiRangeDownloaderManager) runCallback(origOffset, numBytes int64, er
 	if cb == nil {
 		return
 	}
-	m.callbackWg.Add(1)
+	m.callbacks.add()
 	go func() {
-		defer m.callbackWg.Done()
+		defer m.callbacks.done()
 		cb(origOffset, numBytes, err)
 	}()
 }
@@ -666,42 +667,12 @@ sessionDrainLoop:
 	m.attrsOnce.Do(func() { close(m.attrsReady) })
 	clear(m.streams)
 	// Stop any session that is still being opened and make new calls to Add,
-	// Wait and Close return immediately.
+	// Wait and Close return immediately. cmds is unbuffered, so no command can
+	// be left in it now that the event loop has stopped receiving; senders
+	// fall back on ctx.Done() instead.
 	m.cancel()
-	// Complete any commands leftover in cmds channel.
-cmdDrainLoop:
-	for {
-		select {
-		case cmd, ok := <-m.cmds:
-			if !ok {
-				break cmdDrainLoop
-			}
-			// Parse type of command.
-			switch cmd := cmd.(type) {
-			case *mrdCloseCmd:
-			case *mrdWaitCmd:
-				close(cmd.doneC)
-			case *mrdAddCmd:
-				m.runCallback(cmd.offset, cmd.length, finalErr, cmd.callback)
-			case *mrdGetHandleCmd:
-				// Non-blocking send of handle if attributes are ready, otherwise close.
-				select {
-				case <-m.attrsReady:
-					select {
-					case cmd.respC <- m.lastReadHandle:
-					default:
-						close(cmd.respC)
-					}
-				default:
-					close(cmd.respC)
-				}
-			}
-		default:
-			break cmdDrainLoop
-		}
-	}
-	// Wait for all callbacks (including any initiated by the drained command) to finish.
-	m.callbackWg.Wait()
+	// Wait for all callbacks to finish.
+	m.callbacks.wait()
 }
 
 func (m *multiRangeDownloaderManager) addNewStream() {
@@ -1556,5 +1527,52 @@ func (q *requestQueue) Front() *rangeRequest {
 func (q *requestQueue) RemoveFront() {
 	if f := q.l.Front(); f != nil {
 		q.l.Remove(f)
+	}
+}
+
+// --- callbackTracker ---
+
+// callbackTracker counts in-flight user callbacks. Unlike sync.WaitGroup, add
+// may be called concurrently with wait, even when the count is zero. The zero
+// value is ready to use.
+type callbackTracker struct {
+	mu   sync.Mutex
+	n    int
+	idle chan struct{} // Closed when n returns to zero; nil while n == 0.
+}
+
+// add records the start of one callback.
+func (t *callbackTracker) add() {
+	t.mu.Lock()
+	if t.n == 0 {
+		t.idle = make(chan struct{})
+	}
+	t.n++
+	t.mu.Unlock()
+}
+
+// done records the completion of one callback.
+func (t *callbackTracker) done() {
+	t.mu.Lock()
+	t.n--
+	if t.n < 0 {
+		t.mu.Unlock()
+		panic("storage: callbackTracker counter negative")
+	}
+	if t.n == 0 {
+		close(t.idle)
+		t.idle = nil
+	}
+	t.mu.Unlock()
+}
+
+// wait blocks until the number of in-flight callbacks next drops to zero.
+// Calling it from inside a callback deadlocks.
+func (t *callbackTracker) wait() {
+	t.mu.Lock()
+	ch := t.idle
+	t.mu.Unlock()
+	if ch != nil {
+		<-ch
 	}
 }

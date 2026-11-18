@@ -65,20 +65,24 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 		defer serverTeardown()
 
 		const wantStaticDesc = "Connection pool mismatch: NumChannels=4, WithGRPCConnectionPool=6. Only set one of these options, or set both to the same value."
-		badClient, err := NewClientWithConfig(
-			context.Background(),
-			"projects/p/instances/i/databases/d",
-			ClientConfig{
-				NumChannels:          4,
-				DisableNativeMetrics: true,
-			},
-			append(opts, option.WithGRPCConnectionPool(6))...,
-		)
-		if err == nil {
-			badClient.Close()
-			t.Fatal("expected InvalidArgument when NumChannels=4 conflicts with WithGRPCConnectionPool(6)")
+		for _, legacyStatic := range []string{"false", "true"} {
+			t.Setenv("GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL", legacyStatic)
+			badClient, err := NewClientWithConfig(
+				context.Background(),
+				"projects/p/instances/i/databases/d",
+				ClientConfig{
+					NumChannels:          4,
+					DisableNativeMetrics: true,
+				},
+				append(opts, option.WithGRPCConnectionPool(6))...,
+			)
+			if err == nil {
+				badClient.Close()
+				t.Fatalf("legacyStatic=%s: expected InvalidArgument when NumChannels=4 conflicts with WithGRPCConnectionPool(6)", legacyStatic)
+			}
+			assertPoolMismatchErrorChain(t, err, wantStaticDesc)
 		}
-		assertPoolMismatchErrorChain(t, err, wantStaticDesc)
+		t.Setenv("GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL", "")
 
 		t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "true")
 		t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
@@ -116,10 +120,11 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 			t.Fatal("expected dynamicPool to be initialized when DCPEnabled=true and emulator unset")
 		}
 		if got := dcpClient.sc.dynamicPool.Num(); got != 3 {
-			t.Fatalf("expected 3 DCP channels, got %d", got)
+			t.Fatalf("expected 3 DCP channels (distinct from default NumChannels=%d), got %d", numChannels, got)
 		}
 
-		// When SPANNER_EMULATOR_HOST is set, DCP is bypassed and a single leading emulator scheme is stripped.
+		// When SPANNER_EMULATOR_HOST is set, dynamic DCP mode is bypassed (pool uses NumChannels
+		// instead of DCPInitialChannels) and a single leading emulator scheme is stripped.
 		server, _, serverTeardown := NewMockedSpannerInMemTestServer(t)
 		defer serverTeardown()
 		for _, scheme := range []string{"", "http://", "https://", "passthrough:///"} {
@@ -130,16 +135,19 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 				ClientConfig{
 					DisableNativeMetrics: true,
 					DynamicChannelPoolConfig: DynamicChannelPoolConfig{
-						DCPEnabled: true,
+						DCPEnabled:         true,
+						DCPInitialChannels: 3,
+						DCPMinChannels:     2,
+						DCPMaxChannels:     6,
 					},
 				},
 			)
 			if err != nil {
 				t.Fatalf("NewClientWithConfig with SPANNER_EMULATOR_HOST(%q) failed: %v", scheme, err)
 			}
-			if emuClient.sc.dynamicPool != nil {
+			if got := emuClient.sc.connPool.Num(); got != numChannels {
 				emuClient.Close()
-				t.Fatalf("expected DCP to be disabled when SPANNER_EMULATOR_HOST(%q) is set", scheme)
+				t.Fatalf("expected dynamic DCP mode to be bypassed on SPANNER_EMULATOR_HOST(%q): pool.Num()=%d, want default NumChannels=%d", scheme, got, numChannels)
 			}
 			iter := emuClient.Single().Query(context.Background(), NewStatement(SelectFooFromBar))
 			for {

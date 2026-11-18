@@ -262,10 +262,10 @@ func (rr *ResultRow) GetByIndex(index int, dest any) error {
 	}
 
 	if _, isSQLStruct := sqlType.(StructSQLType); isSQLStruct {
-		// Column is STRUCT. Check if destination is *bigtable.Struct or *any.
+		// Column is STRUCT. Check if destination is *bigtable.Struct, **bigtable.Struct, or *any.
 		destElemType := destVal.Type()
-		if !(destElemType == reflect.TypeOf(Struct{}) || (destElemType.Kind() == reflect.Interface && destElemType.NumMethod() == 0)) {
-			return fmt.Errorf("bigtable: Get destination for STRUCT column %q must be *bigtable.Struct or *any (got pointer to %s)", colInfo.Name, destElemType)
+		if !(destElemType == structType || destElemType == reflect.PointerTo(structType) || (destElemType.Kind() == reflect.Interface && destElemType.NumMethod() == 0)) {
+			return fmt.Errorf("bigtable: Get destination for STRUCT column %q must be *bigtable.Struct, **bigtable.Struct, or *any (got pointer to %s)", colInfo.Name, destElemType)
 		}
 	} else if destVal.Kind() == reflect.Struct {
 		// For non-STRUCT columns, still disallow general struct pointers (allow time/date)
@@ -445,9 +445,14 @@ func pbTypeToGoReflectTypeInternal(pbType *btpb.Type, pointerIfNullable bool) (r
 		if errK != nil || errV != nil {
 			return nil, fmt.Errorf("invalid map key/value type: %v / %v", errK, errV)
 		}
+		if keyGoType == bytesType {
+			keyGoType = stringType
+		}
+		if !keyGoType.Comparable() {
+			return nil, fmt.Errorf("unsupported non-comparable map key type: %s", keyGoType)
+		}
 		baseType = reflect.MapOf(keyGoType, valGoType)
 	case *btpb.Type_StructType:
-		needsPointerWrapperForNull = false
 		baseType = structType
 	default:
 		return nil, fmt.Errorf("unrecognized response type kind: %T. You might need to upgrade your client", k)
@@ -595,7 +600,10 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 			return nil, errors.New("map key or value type is nil")
 		}
 		// Determine Go map key type (use string for BYTES keys, or any if any key is NULL)
-		keyGoType, _ := pbTypeToGoReflectTypeInternal(keyPbType, false) // Key type T (Bytes, String, Int64)
+		keyGoType, errK := pbTypeToGoReflectTypeInternal(keyPbType, false) // Key type T (Bytes, String, Int64)
+		if errK != nil {
+			return nil, fmt.Errorf("internal error getting map key Go type: %w", errK)
+		}
 		isBytesKey := keyGoType == bytesType
 		mapKeyGoType := keyGoType
 		if isBytesKey {
@@ -611,8 +619,14 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 				}
 			}
 		}
+		if !mapKeyGoType.Comparable() {
+			return nil, fmt.Errorf("unsupported non-comparable map key type: %s", mapKeyGoType)
+		}
 
-		valGoType, _ := pbTypeToGoReflectTypeInternal(valPbType, true)   // Value type *V (or V if map/slice/...)
+		valGoType, errV := pbTypeToGoReflectTypeInternal(valPbType, true) // Value type *V (or V if map/slice/...)
+		if errV != nil {
+			return nil, fmt.Errorf("internal error getting map value Go type: %w", errV)
+		}
 		goMap := reflect.MakeMap(reflect.MapOf(mapKeyGoType, valGoType)) // map[K]*V (or map[K]V)
 		if mapArrProto.ArrayValue == nil || len(mapArrProto.ArrayValue.Values) == 0 {
 			return goMap.Interface(), nil
@@ -740,8 +754,8 @@ func assignValue(dest reflect.Value, src any) error {
 
 	srcVal := reflect.ValueOf(src)
 
-	// Direct assignment check
-	if srcVal.Type().AssignableTo(dest.Type()) {
+	// Direct assignment check (maps are cloned below so pre-populated destination maps never alias src)
+	if srcVal.Type().AssignableTo(dest.Type()) && dest.Kind() != reflect.Map {
 		dest.Set(srcVal)
 		return nil
 	}
@@ -781,78 +795,16 @@ func assignValue(dest reflect.Value, src any) error {
 	if dest.Kind() == reflect.Slice && srcVal.Kind() == reflect.Slice {
 		destElemType := dest.Type().Elem()
 		srcElemType := srcVal.Type().Elem()
-		srcLen := srcVal.Len()
-
-		// Case: Assigning []*T source to *[]T destination (e.g., []*int64 -> []int64)
-		if srcElemType.Kind() == reflect.Ptr && destElemType == srcElemType.Elem() {
-			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
-			for i := 0; i < srcLen; i++ {
-				srcPtrVal := srcVal.Index(i)
-				if srcPtrVal.IsNil() {
-					return fmt.Errorf("cannot assign slice containing nil element to destination slice with non-pointer element type %s", destElemType)
-				}
-				// Assign dereferenced value T to destination slice element T
-				if err := assignValue(newSlice.Index(i), srcPtrVal.Elem().Interface()); err != nil {
-					return fmt.Errorf("error assigning dereferenced slice element %d: %w", i, err)
-				}
+		if canAssignType(srcElemType, destElemType) {
+			if srcVal.IsNil() {
+				dest.Set(reflect.Zero(dest.Type()))
+				return nil
 			}
-			dest.Set(newSlice)
-			return nil
-		}
-		// Case: Assigning []T source to *[]*T destination (e.g., []int64 -> []*int64)
-		if destElemType.Kind() == reflect.Ptr && srcElemType == destElemType.Elem() {
+			srcLen := srcVal.Len()
 			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
 			for i := 0; i < srcLen; i++ {
-				srcValue := srcVal.Index(i)
-				elemPtrDest := newSlice.Index(i) // Dest element *T
-				// Assign T to *T: Need to allocate pointer
-				newElemPtr := reflect.New(destElemType.Elem()) // New *T
-				if err := assignValue(newElemPtr.Elem(), srcValue.Interface()); err != nil {
-					return fmt.Errorf("error assigning value element %d to pointer slice: %w", i, err)
-				}
-				elemPtrDest.Set(newElemPtr)
-			}
-			dest.Set(newSlice)
-			return nil
-		}
-		// Case: Assigning []*T source to *[]any destination (e.g., []*int64 -> []any)
-		if destElemType.Kind() == reflect.Interface && destElemType.NumMethod() == 0 && srcElemType.Kind() == reflect.Ptr {
-			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
-			for i := 0; i < srcLen; i++ {
-				srcPtrVal := srcVal.Index(i)
-				var elemValToSet any
-				if !srcPtrVal.IsNil() {
-					elemValToSet = srcPtrVal.Elem().Interface()
-				} else {
-					elemValToSet = nil
-				}
-				if err := assignValue(newSlice.Index(i), elemValToSet); err != nil {
-					return fmt.Errorf("error assigning slice element %d to destination interface slice: %w", i, err)
-				}
-			}
-			dest.Set(newSlice)
-			return nil
-		}
-		// Case: Assigning []T source to *[]any destination (e.g. []float64 -> []any)
-		if destElemType.Kind() == reflect.Interface && destElemType.NumMethod() == 0 && srcElemType.Kind() != reflect.Ptr {
-			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
-			for i := 0; i < srcLen; i++ {
-				srcElemVal := srcVal.Index(i).Interface()
-				if err := assignValue(newSlice.Index(i), srcElemVal); err != nil {
-					return fmt.Errorf("error assigning slice element %d to destination interface slice: %w", i, err)
-				}
-			}
-			dest.Set(newSlice)
-			return nil
-		}
-		// Case: Assigning []any source to *[]T or *[]*T
-		if srcElemType.Kind() == reflect.Interface && srcElemType.NumMethod() == 0 {
-			newSlice := reflect.MakeSlice(dest.Type(), srcLen, srcLen)
-			for i := 0; i < srcLen; i++ {
-				srcElemInterface := srcVal.Index(i).Interface() // Get T/*T/nil from []any
-				// Assign element to destination slice element (T or *T)
-				if err := assignValue(newSlice.Index(i), srcElemInterface); err != nil {
-					return fmt.Errorf("error assigning from interface slice element %d (type %T) to %s: %w", i, srcElemInterface, newSlice.Index(i).Type(), err)
+				if err := assignContainerElement(newSlice.Index(i), destElemType, srcVal.Index(i), srcElemType); err != nil {
+					return fmt.Errorf("error assigning slice element %d: %w", i, err)
 				}
 			}
 			dest.Set(newSlice)
@@ -869,116 +821,99 @@ func assignValue(dest reflect.Value, src any) error {
 		srcKeyType := srcType.Key()
 		srcValType := srcType.Elem()
 
-		// Case: Assigning map[K]*V source to map[K]V destination (Error on nil source value)
-		if destKeyType == srcKeyType && srcValType.Kind() == reflect.Ptr && destValType == srcValType.Elem() {
-			if dest.IsNil() {
-				dest.Set(reflect.MakeMap(destType))
-			} // Initialize dest map if nil
-			mapIter := srcVal.MapRange()
-			for mapIter.Next() {
-				srcKey := mapIter.Key()
-				srcValPtr := mapIter.Value() // K and *V
-				if srcValPtr.IsNil() {
-					// Cannot put nil *V into destination type V
-					return fmt.Errorf(
-						"cannot assign nil map value from source type %s to non-pointer destination map value type %s for key %v",
-						srcType, destType, srcKey.Interface())
-				}
-				srcValElem := srcValPtr.Elem() // Dereferenced V
-				// Need new instances for map SetMapIndex
-				destKey := reflect.New(destKeyType).Elem()
-				destValue := reflect.New(destValType).Elem()
-				// Assign K to K and V to V recursively
-				if err := assignValue(destKey, srcKey.Interface()); err != nil {
-					return fmt.Errorf("error assigning map key type %s to %s: %w", srcKeyType, destKeyType, err)
-				}
-				if err := assignValue(destValue, srcValElem.Interface()); err != nil {
-					return fmt.Errorf("error assigning map value type %s to %s: %w", srcValElem.Type(), destValType, err)
-				}
-				dest.SetMapIndex(destKey, destValue)
+		if canAssignMapKeyType(srcKeyType, destKeyType) && canAssignType(srcValType, destValType) {
+			if srcVal.IsNil() {
+				dest.Set(reflect.Zero(destType))
+				return nil
 			}
-			return nil
-		}
-
-		// Case: Assigning map[K]V source to map[K]*V destination (Allocate pointers)
-		if destKeyType == srcKeyType && destValType.Kind() == reflect.Ptr && srcValType == destValType.Elem() {
-			if dest.IsNil() {
-				dest.Set(reflect.MakeMap(destType))
-			}
-			mapIter := srcVal.MapRange()
-			for mapIter.Next() {
-				srcKey := mapIter.Key()
-				srcValue := mapIter.Value() // K and V
-				// Need new instances for map SetMapIndex
-				destKey := reflect.New(destKeyType).Elem()
-				destValPtr := reflect.New(destValType).Elem() // Destination element *V
-				// Assign K to K
-				if err := assignValue(destKey, srcKey.Interface()); err != nil {
-					return fmt.Errorf("error assigning map key type %s to %s: %w", srcKeyType, destKeyType, err)
-				}
-				// Assign V to *V (will allocate pointer)
-				if err := assignValue(destValPtr, srcValue.Interface()); err != nil {
-					return fmt.Errorf("error assigning map value type %s to %s: %w", srcValType, destValType, err)
-				}
-				dest.SetMapIndex(destKey, destValPtr)
-			}
-			return nil
-		}
-
-		// Case: Assigning map[K]V or map[K]*V source to map[string]any
-		// If dest is map[string]any, destValType will be anyType (interface{})
-		if destKeyType.Kind() == reflect.String && destValType.Kind() == reflect.Interface {
-			// Source map keys must be assignable/convertible to string
-			// Check if keys are compatible string types
-			if !srcKeyType.AssignableTo(destKeyType) && !(srcKeyType.Kind() == reflect.String && destKeyType.Kind() == reflect.String) {
-				// If srcKeyType is []byte, do not allow conversion
-				return fmt.Errorf("cannot assign source map with key type %s to destination map with key type %s", srcKeyType, destKeyType)
-			}
-			if dest.IsNil() {
-				dest.Set(reflect.MakeMap(destType))
-			}
-			mapIter := srcVal.MapRange()
-			for mapIter.Next() {
-				srcKey := mapIter.Key()     // K
-				srcValue := mapIter.Value() // V or *V
-				// Key: Assume string assignable or kind string
-				destKey := reflect.ValueOf(srcKey.Convert(destKeyType).Interface())
-				// Value: Assign V or *V to interface{} element
-				destValue := reflect.New(destValType).Elem()
-				if err := assignValue(destValue, srcValue.Interface()); err != nil {
-					return fmt.Errorf("error assigning map value type %s to interface{}: %w", srcValue.Type(), err)
-				}
-				dest.SetMapIndex(destKey, destValue)
-			}
-			return nil
-		}
-
-		// Case: Assigning maps where source or destination uses interface{} (any) keys
-		if (destKeyType.Kind() == reflect.Interface && destKeyType.NumMethod() == 0) ||
-			(srcKeyType.Kind() == reflect.Interface && srcKeyType.NumMethod() == 0) {
-			if dest.IsNil() {
-				dest.Set(reflect.MakeMap(destType))
-			}
+			newMap := reflect.MakeMapWithSize(destType, srcVal.Len())
 			mapIter := srcVal.MapRange()
 			for mapIter.Next() {
 				srcKey := mapIter.Key()
 				srcValue := mapIter.Value()
-				if srcKey.Kind() == reflect.Interface && srcKey.IsNil() && destKeyType.Kind() != reflect.Interface {
-					return fmt.Errorf("cannot assign nil map key from source type %s to non-interface destination map key type %s", srcType, destKeyType)
-				}
+
 				destKey := reflect.New(destKeyType).Elem()
-				if err := assignValue(destKey, srcKey.Interface()); err != nil {
+				if srcKey.Kind() == reflect.Interface && srcKey.IsNil() {
+					if destKeyType.Kind() != reflect.Interface {
+						return fmt.Errorf("cannot assign nil map key from source type %s to non-interface destination map key type %s", srcType, destKeyType)
+					}
+				} else if srcKey.Kind() == reflect.String && destKeyType.Kind() == reflect.String {
+					destKey.Set(srcKey.Convert(destKeyType))
+				} else if err := assignValue(destKey, srcKey.Interface()); err != nil {
 					return fmt.Errorf("error assigning map key type %s to %s: %w", srcKeyType, destKeyType, err)
 				}
+
 				destValue := reflect.New(destValType).Elem()
-				if err := assignValue(destValue, srcValue.Interface()); err != nil {
-					return fmt.Errorf("error assigning map value type %s to %s: %w", srcValType, destValType, err)
+				if err := assignContainerElement(destValue, destValType, srcValue, srcValType); err != nil {
+					return fmt.Errorf("error assigning map value for key %v (type %s to %s): %w", srcKey.Interface(), srcValType, destValType, err)
 				}
-				dest.SetMapIndex(destKey, destValue)
+				newMap.SetMapIndex(destKey, destValue)
 			}
+			dest.Set(newMap)
 			return nil
 		}
 	}
 
 	return fmt.Errorf("unsupported type conversion or assignment from %s to %s", srcVal.Type(), dest.Type())
+}
+
+// assignContainerElement assigns a slice element or map value srcElem (of static type srcElemType)
+// into destElem (of type destElemType), unwrapping pointers when converting *T -> T or *T -> any
+// so SQL NULL values become untyped nil in any destinations and error on non-nillable destinations.
+func assignContainerElement(destElem reflect.Value, destElemType reflect.Type, srcElem reflect.Value, srcElemType reflect.Type) error {
+	if srcElemType.Kind() == reflect.Ptr {
+		if srcElem.IsNil() {
+			return assignValue(destElem, nil)
+		}
+		if destElemType.Kind() == reflect.Interface && destElemType.NumMethod() == 0 {
+			return assignValue(destElem, srcElem.Elem().Interface())
+		}
+	}
+	return assignValue(destElem, srcElem.Interface())
+}
+
+// canAssignType reports whether values of srcType can be structural-converted or assigned to destType by assignValue.
+func canAssignType(srcType, destType reflect.Type) bool {
+	if srcType == structType {
+		if destType.Kind() == reflect.Map {
+			return false
+		}
+		if destType.Kind() == reflect.Struct && destType != structType {
+			return false
+		}
+	}
+	if (destType.Kind() == reflect.Interface && destType.NumMethod() == 0) ||
+		(srcType.Kind() == reflect.Interface && srcType.NumMethod() == 0) {
+		return true
+	}
+	if srcType.AssignableTo(destType) {
+		return true
+	}
+	if destType.Kind() == reflect.Ptr && canAssignType(srcType, destType.Elem()) {
+		return true
+	}
+	if srcType.Kind() == reflect.Ptr && canAssignType(srcType.Elem(), destType) {
+		return true
+	}
+	if srcType.Kind() == reflect.Slice && destType.Kind() == reflect.Slice {
+		return canAssignType(srcType.Elem(), destType.Elem())
+	}
+	if srcType.Kind() == reflect.Map && destType.Kind() == reflect.Map {
+		return canAssignMapKeyType(srcType.Key(), destType.Key()) && canAssignType(srcType.Elem(), destType.Elem())
+	}
+	return false
+}
+
+func canAssignMapKeyType(srcKeyType, destKeyType reflect.Type) bool {
+	if srcKeyType.AssignableTo(destKeyType) {
+		return true
+	}
+	if (destKeyType.Kind() == reflect.Interface && destKeyType.NumMethod() == 0) ||
+		(srcKeyType.Kind() == reflect.Interface && srcKeyType.NumMethod() == 0) {
+		return true
+	}
+	if srcKeyType.Kind() == reflect.String && destKeyType.Kind() == reflect.String {
+		return true
+	}
+	return canAssignType(srcKeyType, destKeyType)
 }

@@ -234,6 +234,16 @@ func (fw *FallbackPool) Num() int {
 	return fw.primaryConn.Num()
 }
 
+// PrimaryConn returns the underlying DirectPath primary connection pool.
+func (fw *FallbackPool) PrimaryConn() gtransport.ConnPool {
+	return fw.primaryConn
+}
+
+// FallbackConn returns the underlying CloudPath fallback connection pool.
+func (fw *FallbackPool) FallbackConn() gtransport.ConnPool {
+	return fw.fallbackConn
+}
+
 // Close closes the fallback wrapper and both underlying connection pools.
 func (fw *FallbackPool) Close() error {
 	fw.GCPFallback.Close()

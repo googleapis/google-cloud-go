@@ -23,13 +23,14 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
 // ErrWriteNotSupported is returned by MutateRow when the resource has
 // no write pool — e.g. materialized views, which are read-only.
-var ErrWriteNotSupported = errors.New("bigtable/session: write operations not supported on this resource")
+var ErrWriteNotSupported = errors.New("write operations not supported on this resource")
 
 // ErrClientClosed is returned when a Read/MutateRow is issued
 // against a Client whose Close() has already run. Distinct from
@@ -61,21 +62,23 @@ type sessionTable struct {
 	tableID        string
 	readPool       *lazyPool
 	writePool      *lazyPool
+	readWritePool  *lazyPool
 	readVRpcDesc   btransport.VRpcDescriptor
 	writeVRpcDesc  btransport.VRpcDescriptor
 	md             metadata.MD
 	metricsFactory *metrics.Factory
-	// closeRead / closeWrite tear down the specific pools this
-	// sessionTable's openers created, on its Close(). Both are supplied by
+	// closeRead / closeWrite / closeReadWrite tear down the specific pools this
+	// sessionTable's openers created, on its Close(). All are supplied by
 	// sessionClient as a per-owner poolCloser.Close (see client.go's
 	// poolCloser): they close exactly the pool the matching opener minted,
 	// by captured identity — never a sibling sessionTable's pool that
 	// happens to share a poolKey — and no-op cleanly when the pool was
-	// never opened or the client already tore itself down. closeWrite is
-	// nil for materialized views (read-only resources), mirroring the nil
-	// write side of the openRead/openWrite pair.
-	closeRead  func() error
-	closeWrite func() error
+	// never opened or the client already tore itself down. closeWrite and
+	// closeReadWrite are nil for materialized views (read-only resources),
+	// mirroring the nil write / read-write side of the openers.
+	closeRead      func() error
+	closeWrite     func() error
+	closeReadWrite func() error
 	// closed is set by Close() BEFORE the releasers run, and re-checked
 	// inside the lazy-open wrapper (guardOpen) around openRead/openWrite
 	// so an opener whose slow path straddles Close cleans up its own
@@ -87,14 +90,16 @@ type sessionTable struct {
 // newSessionTable is the internal constructor. Callers (sessionClient)
 // build the lazyPool open + release closures, supply the vRPC
 // descriptors, and resource-scoped metadata. metricsFactory may be nil
-// to disable per-attempt metrics. closeWrite may be nil for
-// materialized views (no write side).
+// to disable per-attempt metrics. closeWrite and closeReadWrite may be nil for
+// materialized views (no write or read-write side).
 func newSessionTable(
 	tableID string,
 	openRead func() (Invoker, error),
 	openWrite func() (Invoker, error),
+	openReadWrite func() (Invoker, error),
 	closeRead func() error,
 	closeWrite func() error,
+	closeReadWrite func() error,
 	readVRpcDesc btransport.VRpcDescriptor,
 	writeVRpcDesc btransport.VRpcDescriptor,
 	md metadata.MD,
@@ -108,12 +113,14 @@ func newSessionTable(
 		metricsFactory: metricsFactory,
 		closeRead:      closeRead,
 		closeWrite:     closeWrite,
+		closeReadWrite: closeReadWrite,
 	}
 	// Wrap the raw openers with a closed-bit guard so an open racing
 	// with Close either bails early or cleans up its own insert. Nil
 	// openers stay nil to preserve the MV-write-side "no pool" contract.
 	t.readPool = &lazyPool{open: t.guardOpen(openRead, closeRead)}
 	t.writePool = &lazyPool{open: t.guardOpen(openWrite, closeWrite)}
+	t.readWritePool = &lazyPool{open: t.guardOpen(openReadWrite, closeReadWrite)}
 	return t
 }
 
@@ -273,21 +280,27 @@ func dispatch[Args any, R any, Resp interface {
 	ctx = btransport.WithVRpcMetadata(ctx, spec.desc.Method(), 0)
 	chained := btransport.ChainInterceptors(retryInterceptor)
 	res, err := chained(ctx, spec.args, baseHandler)
-	if ownedTracer {
-		mt.SetCurrOpStatus(metrics.GrpcCodeOf(err))
-	}
 	if err != nil {
+		if ownedTracer {
+			mt.SetCurrOpStatus(metrics.GrpcCodeOf(err))
+		}
 		return zero, fmt.Errorf("session %s vRPC: %w", spec.method, err)
 	}
 	resp, ok := res.(Resp)
 	if !ok || resp == nil {
+		if ownedTracer {
+			mt.SetCurrOpStatus(codes.Internal)
+		}
 		return zero, fmt.Errorf("session %s: missing response payload (%T)", spec.method, res)
+	}
+	if ownedTracer {
+		mt.SetCurrOpStatus(codes.OK)
 	}
 	return resp, nil
 }
 
-// Close releases this sessionTable's underlying read + write session
-// pools from the sessionClient's per-resource keyed map. Both release
+// Close releases this sessionTable's underlying read, write, and read-write
+// session pools from the sessionClient's per-resource keyed map. All release
 // closures are idempotent (second call finds the map entry absent
 // and no-ops) so double-close from the cache sweeper + explicit
 // caller is safe.
@@ -306,8 +319,8 @@ func dispatch[Args any, R any, Resp interface {
 // ever gains a caller that bypasses that cache, this method must gain
 // a refcount on the sessionClient side (or the caller must add its own).
 //
-// Returns the joined read + write teardown errors (nil for the
-// materialized-view case where closeWrite is nil).
+// Returns the joined read, write, and read-write teardown errors (nil for the
+// materialized-view case where closeWrite and closeReadWrite are nil).
 func (t *sessionTable) Close() error {
 	t.closed.Store(true)
 	var errs []error
@@ -318,6 +331,11 @@ func (t *sessionTable) Close() error {
 	}
 	if t.closeWrite != nil {
 		if err := t.closeWrite(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	if t.closeReadWrite != nil {
+		if err := t.closeReadWrite(); err != nil {
 			errs = append(errs, err)
 		}
 	}

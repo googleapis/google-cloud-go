@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	cloud.google.com/go/translate v1.20.1
-	google.golang.org/api v0.312.0
+	google.golang.org/api v0.315.0
 	google.golang.org/grpc v1.85.0
 )
 
