@@ -40,8 +40,19 @@ const (
 	executeSQLMethod = "/google.spanner.v1.Spanner/ExecuteSql"
 	commitMethod     = "/google.spanner.v1.Spanner/Commit"
 
+	directAccessEnv            = "GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"
+	gcpFallbackEnv             = "GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"
 	legacyStaticChannelPoolEnv = "GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL"
 )
+
+// clearChannelPoolEnv resets channel-pool selection environment variables so
+// ambient process settings do not leak into tests.
+func clearChannelPoolEnv(t *testing.T) {
+	t.Helper()
+	t.Setenv(directAccessEnv, "")
+	t.Setenv(gcpFallbackEnv, "")
+	t.Setenv(legacyStaticChannelPoolEnv, "")
+}
 
 var sawGoogleSQLPass atomic.Bool
 
@@ -147,6 +158,7 @@ func channelPoolKind(client *Client) string {
 
 func TestFixedChannelPoolBindsTransactionsToEntries(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQLMethod: true, commitMethod: true}}
 	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{
 		DisableNativeMetrics: true,
@@ -170,10 +182,6 @@ func TestFixedChannelPoolBindsTransactionsToEntries(t *testing.T) {
 
 func TestChannelPoolSelection(t *testing.T) {
 	skipDialectRerun(t)
-	const (
-		directAccessEnv = "GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"
-		gcpFallbackEnv  = "GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"
-	)
 	for _, tt := range []struct {
 		name string
 		env  map[string]string
@@ -195,6 +203,7 @@ func TestChannelPoolSelection(t *testing.T) {
 		{name: "dynamic pool with DirectPath and fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, dcp: true, want: "dynamic"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
+			clearChannelPoolEnv(t)
 			for k, v := range tt.env {
 				t.Setenv(k, v)
 			}
@@ -214,6 +223,7 @@ func TestChannelPoolSelection(t *testing.T) {
 
 func TestFixedChannelPoolIsTheDefault(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	for _, tt := range []struct {
 		name   string
 		config ClientConfig
@@ -238,6 +248,7 @@ func TestFixedChannelPoolIsTheDefault(t *testing.T) {
 
 func TestFixedChannelPoolWithGRPCConnectionPool(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{DisableNativeMetrics: true}, []option.ClientOption{option.WithGRPCConnectionPool(6)})
 	defer teardown()
 	if got, want := fixedPoolOf(t, client).Num(), 6; got != want {
@@ -247,6 +258,7 @@ func TestFixedChannelPoolWithGRPCConnectionPool(t *testing.T) {
 
 func TestFixedChannelPoolKeepsNumChannelsMismatchCheck(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	_, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{DisableNativeMetrics: true, NumChannels: 2}, append(opts, option.WithGRPCConnectionPool(3))...)
@@ -261,6 +273,7 @@ func (emptyConnPool) Num() int { return 0 }
 
 func TestFixedChannelPoolRejectsPoolWithoutConnections(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	dialed, err := gtransport.DialPool(context.Background(), opts...)
@@ -295,6 +308,7 @@ func (p repeatingConnPool) Conn() *grpc.ClientConn { return p.conn }
 
 func TestFixedChannelPoolWithPoolThatRepeatsAConnection(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQLMethod: true, commitMethod: true}}
@@ -318,6 +332,7 @@ func TestFixedChannelPoolWithPoolThatRepeatsAConnection(t *testing.T) {
 
 func TestFixedChannelPoolPicksWithoutActivityTracking(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
 	defer teardown()
 	p := fixedPoolOf(t, client)
@@ -336,6 +351,7 @@ func TestFixedChannelPoolPicksWithoutActivityTracking(t *testing.T) {
 
 func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	// Use a bare server: these raw RPCs lack headers that setupMockedTestServer checks.
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
@@ -366,6 +382,7 @@ func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
 
 func TestFixedChannelPoolDoesNotRetainCallerContext(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -384,6 +401,7 @@ func TestFixedChannelPoolDoesNotRetainCallerContext(t *testing.T) {
 
 func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
 	defer teardown()
 	p := fixedPoolOf(t, client)
@@ -416,6 +434,7 @@ func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 // stream adds no load or references to its entry.
 func TestFixedChannelPoolStreamsSkipLoadAccounting(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
 	defer teardown()
 	p := fixedPoolOf(t, client)
@@ -456,6 +475,7 @@ func TestFixedChannelPoolStreamsSkipLoadAccounting(t *testing.T) {
 
 func TestFixedChannelPoolEmitsNoPoolMetrics(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	enableOpenTelemetryMetricsForTest(t)
 	reader, mp := newDCPManualReader()
 	t.Cleanup(func() { mp.Shutdown(context.Background()) })
@@ -475,6 +495,7 @@ func TestFixedChannelPoolEmitsNoPoolMetrics(t *testing.T) {
 
 func TestFixedChannelPoolWithCallerSuppliedConnection(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	conn, err := gtransport.Dial(context.Background(), opts...)
@@ -509,6 +530,7 @@ func (hiddenConnPool) Conn() *grpc.ClientConn { return nil }
 
 func TestFixedChannelPoolWithPoolThatHidesItsConnections(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	dialed, err := gtransport.DialPool(context.Background(), append(opts, option.WithGRPCConnectionPool(2))...)
@@ -575,6 +597,7 @@ func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 // fail with CANCELED, as with the static pool.
 func TestFixedChannelPoolAfterClientClose(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	logger := &lockedBuffer{}
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, Logger: log.New(logger, "", 0)})
 	defer teardown()
@@ -618,6 +641,7 @@ func TestLegacyStaticChannelPool(t *testing.T) {
 		{name: "WithGRPCConnectionPool", config: ClientConfig{DisableNativeMetrics: true}, opts: []option.ClientOption{option.WithGRPCConnectionPool(6)}, want: 6},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
+			clearChannelPoolEnv(t)
 			t.Setenv(legacyStaticChannelPoolEnv, "true")
 			recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQLMethod: true, commitMethod: true}}
 			opts := append([]option.ClientOption{option.WithGRPCDialOption(grpc.WithUnaryInterceptor(recorder.unaryInterceptor))}, tt.opts...)
@@ -651,8 +675,9 @@ func TestDirectPathFallbackKeepsStaticChannelPool(t *testing.T) {
 	skipDialectRerun(t)
 	for _, legacy := range []string{"", "true"} {
 		t.Run(fmt.Sprintf("legacy static pool=%q", legacy), func(t *testing.T) {
-			t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
-			t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "true")
+			clearChannelPoolEnv(t)
+			t.Setenv(directAccessEnv, "true")
+			t.Setenv(gcpFallbackEnv, "true")
 			if legacy != "" {
 				t.Setenv(legacyStaticChannelPoolEnv, legacy)
 			}
@@ -737,6 +762,7 @@ func TestFixedChannelPoolWithEmulator(t *testing.T) {
 		legacy     bool
 	}{{false, false}, {true, false}, {true, true}} {
 		t.Run(fmt.Sprintf("DCPEnabled=%v/legacy static pool=%v", tt.dcpEnabled, tt.legacy), func(t *testing.T) {
+			clearChannelPoolEnv(t)
 			server, _, teardown := NewMockedSpannerInMemTestServer(t)
 			defer teardown()
 			t.Setenv("SPANNER_EMULATOR_HOST", server.ServerAddress)
@@ -770,6 +796,7 @@ func TestFixedChannelPoolWithEmulator(t *testing.T) {
 
 func TestFixedChannelPoolWithLocationAwareRouting(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	for _, dcpEnabled := range []bool{false, true} {
 		t.Run(fmt.Sprintf("DCPEnabled=%v", dcpEnabled), func(t *testing.T) {
 			logger := &lockedBuffer{}
