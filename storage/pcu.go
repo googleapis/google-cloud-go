@@ -17,13 +17,14 @@ package storage
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
 	"log"
-	"path"
 	"runtime"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 )
@@ -90,10 +91,22 @@ func newPCUSettings(maxConcurrency int) *pcuSettings {
 	return c
 }
 
+// objectNameDigest returns a short hex SHA-256 digest of name so temporary
+// part keys remain under the 1024-byte object-name limit and never interpret
+// slashes or dot segments in name.
+func objectNameDigest(name string) string {
+	sum := sha256.Sum256([]byte(name))
+	return hex.EncodeToString(sum[:8])
+}
+
 // newPartName creates a unique name for a temporary part to avoid hotspotting.
 func newPartName(bucket, prefix, finalName string, partNumber int) string {
 	rnd := generateRandomBytes(4)
-	return path.Join(prefix, fmt.Sprintf("%x-%s-part-%d", rnd, finalName, partNumber))
+	cleanPrefix := strings.TrimSuffix(prefix, "/")
+	if cleanPrefix != "" {
+		cleanPrefix += "/"
+	}
+	return fmt.Sprintf("%s%x-%s-part-%d", cleanPrefix, rnd, objectNameDigest(finalName), partNumber)
 }
 
 type pcuState struct {
@@ -269,13 +282,27 @@ func (s *pcuState) worker() {
 	}
 }
 
+func (s *pcuState) tempObjectHandle(name string) *ObjectHandle {
+	bkt := s.w.o.c.Bucket(s.w.o.bucket)
+	if s.w.o.userProject != "" {
+		bkt = bkt.UserProject(s.w.o.userProject)
+	}
+	return bkt.Object(name)
+}
+
 func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
 	partName := newPartName(s.w.o.bucket, tmpObjectPrefix, s.w.o.object, task.partNumber)
-	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
+	partHandle := s.tempObjectHandle(partName)
 
-	pw := partHandle.NewWriter(s.ctx)
+	writeHandle := partHandle.If(Conditions{DoesNotExist: true})
+	if len(s.w.o.encryptionKey) > 0 {
+		writeHandle = writeHandle.Key(s.w.o.encryptionKey)
+	}
+
+	pw := writeHandle.NewWriter(s.ctx)
 	pw.ObjectAttrs.Name = partName
 	pw.ObjectAttrs.Size = task.size
+	pw.ObjectAttrs.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
 	pw.DisableAutoChecksum = s.w.DisableAutoChecksum
 	pw.ChunkSize = 0 // Force single-shot upload for parts.
 
@@ -297,8 +324,12 @@ func (s *pcuState) resultCollector() {
 		if result.err != nil {
 			s.setError(result.err)
 		} else if result.handle != nil {
+			h := result.handle
+			if result.obj != nil && result.obj.Generation > 0 {
+				h = h.Generation(result.obj.Generation)
+			}
 			s.mu.Lock()
-			s.partMap[result.partNumber] = result.handle
+			s.partMap[result.partNumber] = h
 			s.mu.Unlock()
 
 			cumulativeSize += result.size
@@ -531,16 +562,24 @@ func (s *pcuState) composeParts() error {
 
 				// Level-based naming with hash to prevent exceeding 1024 bytes.
 				h := hex.EncodeToString(generateRandomBytes(4))
-				compName := path.Join(tmpObjectPrefix, fmt.Sprintf("int-%s-lv%d-%d", h, level, idx))
+				compName := fmt.Sprintf("%sint-%s-%s-lv%d-%d", tmpObjectPrefix, h, objectNameDigest(s.w.o.object), level, idx)
 
-				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
-				composer := interHandle.ComposerFrom(finalComps[start:end]...)
+				interHandle := s.tempObjectHandle(compName)
+				interDst := interHandle.If(Conditions{DoesNotExist: true})
+				if len(s.w.o.encryptionKey) > 0 {
+					interDst = interDst.Key(s.w.o.encryptionKey)
+				}
+				composer := interDst.ComposerFrom(finalComps[start:end]...)
+				composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
 				composer.DeleteSourceObjects = true
 
-				_, err := s.composeFn(s.ctx, composer)
+				interAttrs, err := s.composeFn(s.ctx, composer)
 				if err != nil {
 					errOnce.Do(func() { levelErr = err })
 					return
+				}
+				if interAttrs != nil && interAttrs.Generation > 0 {
+					interHandle = interHandle.Generation(interAttrs.Generation)
 				}
 				nextLevel[idx] = interHandle
 			}(i)

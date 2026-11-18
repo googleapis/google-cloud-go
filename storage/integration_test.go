@@ -9450,7 +9450,7 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 							return err
 						}
 						// Only count temporary chunks belonging to this specific test object to avoid test flakes.
-						if strings.Contains(attrsObj.Name, objName) {
+						if strings.Contains(attrsObj.Name, objectNameDigest(objName)) {
 							count++
 						}
 					}

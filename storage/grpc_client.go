@@ -1182,6 +1182,7 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	rawReq := &storagepb.ComposeObjectRequest{
 		Destination:   dstObjPb,
 		SourceObjects: srcs,
+		KmsKey:        req.dstObject.attrs.KMSKeyName,
 	}
 	if req.deleteSourceObjects {
 		rawReq.DeleteSourceObjects = proto.Bool(true)

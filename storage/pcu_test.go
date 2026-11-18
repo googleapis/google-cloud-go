@@ -19,7 +19,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"net"
 	"os"
 	"runtime"
 	"strings"
@@ -27,37 +29,59 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestNewPartName(t *testing.T) {
-	bucket := "my-bucket"
-	prefix := "gcs-go-sdk-pu-tmp/"
-	finalName := "my-object"
-	partNumber := 42
-
-	partName := newPartName(bucket, prefix, finalName, partNumber)
-
-	if !strings.HasPrefix(partName, prefix) {
-		t.Errorf("NewPartName() should start with the prefix %q, but got %q", prefix, partName)
+	const (
+		bucket     = "my-bucket"
+		prefix     = "gcs-go-sdk-pu-tmp/"
+		partNumber = 42
+	)
+	tests := []struct {
+		name      string
+		finalName string
+	}{
+		{
+			name:      "simple_name",
+			finalName: "my-object",
+		},
+		{
+			name:      "dot_dot_segments",
+			finalName: "tenant-a/../../../../other-prefix/target",
+		},
+		{
+			name:      "max_length_object_name",
+			finalName: strings.Repeat("a", 1024),
+		},
 	}
 
-	expectedFormat := prefix + "%x-" + finalName + "-part-%d"
-	var randSuffix uint64
-	var parsedPartNum int
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			partName := newPartName(bucket, prefix, tc.finalName, partNumber)
 
-	_, err := fmt.Sscanf(partName, expectedFormat, &randSuffix, &parsedPartNum)
-	if err != nil {
-		t.Errorf("NewPartName() returned a name with an unexpected format. Got %q, want format ~%q. Error: %v", partName, prefix+"<hex>-"+finalName+"-part-<int>", err)
-		return // Return to avoid further checks if parsing failed.
-	}
-
-	if parsedPartNum != partNumber {
-		t.Errorf("NewPartName() did not include the correct part number. Got %d, want %d", parsedPartNum, partNumber)
-	}
-
-	if randSuffix == 0 {
-		t.Errorf("NewPartName() did not include a non-zero random hex part. Got %x", randSuffix)
+			if !strings.HasPrefix(partName, prefix) {
+				t.Fatalf("newPartName(%q, %q, %q, %d) = %q, want prefix %q", bucket, prefix, tc.finalName, partNumber, partName, prefix)
+			}
+			if len(partName) > 1024 {
+				t.Errorf("len(newPartName(%q, ...)) = %d, want <= 1024", tc.name, len(partName))
+			}
+			trimmed := strings.TrimPrefix(partName, prefix)
+			if strings.Contains(trimmed, "/") || strings.Contains(trimmed, "..") {
+				t.Errorf("newPartName(%q, %q, %q, %d) = %q, want flat suffix without '/' or '..'", bucket, prefix, tc.finalName, partNumber, partName)
+			}
+			wantSuffix := fmt.Sprintf("-part-%d", partNumber)
+			if !strings.HasSuffix(partName, wantSuffix) {
+				t.Errorf("newPartName(%q, %q, %q, %d) = %q, want suffix %q", bucket, prefix, tc.finalName, partNumber, partName, wantSuffix)
+			}
+		})
 	}
 }
 
@@ -1168,5 +1192,278 @@ func TestPCUState_Close(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+type pcuRecordedPartWrite struct {
+	name          string
+	kmsKey        string
+	hasIfGenMatch bool
+	ifGenMatch    int64
+	csekKeyBytes  []byte
+	assignedGen   int64
+}
+
+type pcuFakeGRPCServer struct {
+	storagepb.UnimplementedStorageServer
+
+	mu               sync.Mutex
+	nextGen          int64
+	partWrites       []pcuRecordedPartWrite
+	composeReqs      []*storagepb.ComposeObjectRequest
+	deleteReqs       []*storagepb.DeleteObjectRequest
+	failFinalCompose bool
+}
+
+func (s *pcuFakeGRPCServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	var spec *storagepb.WriteObjectSpec
+	var csek *storagepb.CommonObjectRequestParams
+	var totalSize int64
+
+	for {
+		req, err := stream.Recv()
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		if ws := req.GetWriteObjectSpec(); ws != nil {
+			spec = ws
+			csek = req.GetCommonObjectRequestParams()
+		}
+		totalSize += int64(len(req.GetChecksummedData().GetContent()))
+
+		if req.GetFinishWrite() {
+			if spec == nil {
+				return status.Error(codes.InvalidArgument, "missing WriteObjectSpec")
+			}
+			s.mu.Lock()
+			s.nextGen++
+			gen := s.nextGen
+			rec := pcuRecordedPartWrite{
+				name:          spec.GetResource().GetName(),
+				kmsKey:        spec.GetResource().GetKmsKey(),
+				hasIfGenMatch: spec.IfGenerationMatch != nil,
+				ifGenMatch:    spec.GetIfGenerationMatch(),
+				csekKeyBytes:  append([]byte(nil), csek.GetEncryptionKeyBytes()...),
+				assignedGen:   gen,
+			}
+			s.partWrites = append(s.partWrites, rec)
+			s.mu.Unlock()
+
+			return stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
+					Resource: &storagepb.Object{
+						Bucket:     spec.GetResource().GetBucket(),
+						Name:       spec.GetResource().GetName(),
+						Size:       totalSize,
+						Generation: gen,
+						KmsKey:     spec.GetResource().GetKmsKey(),
+					},
+				},
+			})
+		}
+	}
+}
+
+func (s *pcuFakeGRPCServer) ComposeObject(ctx context.Context, req *storagepb.ComposeObjectRequest) (*storagepb.Object, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.composeReqs = append(s.composeReqs, req)
+	if s.failFinalCompose && !strings.HasPrefix(req.GetDestination().GetName(), tmpObjectPrefix) {
+		return nil, status.Error(codes.Aborted, "simulated final compose failure")
+	}
+
+	s.nextGen++
+	gen := s.nextGen
+	return &storagepb.Object{
+		Bucket:     req.GetDestination().GetBucket(),
+		Name:       req.GetDestination().GetName(),
+		Generation: gen,
+		KmsKey:     req.GetKmsKey(),
+	}, nil
+}
+
+func (s *pcuFakeGRPCServer) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRequest) (*emptypb.Empty, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.deleteReqs = append(s.deleteReqs, req)
+	return &emptypb.Empty{}, nil
+}
+
+func newPCUTestGRPCClient(t *testing.T, srv storagepb.StorageServer) *Client {
+	t.Helper()
+	lis, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	grpcSrv := grpc.NewServer()
+	storagepb.RegisterStorageServer(grpcSrv, srv)
+	go grpcSrv.Serve(lis)
+	t.Cleanup(grpcSrv.Stop)
+
+	client, err := NewGRPCClient(t.Context(),
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithoutAuthentication(),
+	)
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	t.Cleanup(func() { _ = client.Close() })
+	return client
+}
+
+func TestPCU_PartEncryptionPreconditionsAndGenerationPinning(t *testing.T) {
+	csek := bytes.Repeat([]byte{0x42}, 32)
+	const kmsKey = "projects/p/locations/us/keyRings/kr/cryptoKeys/k"
+
+	tests := []struct {
+		name       string
+		csek       []byte
+		kmsKeyName string
+	}{
+		{
+			name: "csek",
+			csek: csek,
+		},
+		{
+			name:       "cmek",
+			kmsKeyName: kmsKey,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			srv := &pcuFakeGRPCServer{nextGen: 1000}
+			client := newPCUTestGRPCClient(t, srv)
+
+			obj := client.Bucket("my-bucket").Object("tenant-a/../../dest-obj")
+			if len(tc.csek) > 0 {
+				obj = obj.Key(tc.csek)
+			}
+			w := obj.NewWriter(t.Context())
+			w.EnableParallelUpload = true
+			w.ParallelUploadConfig = ParallelUploadConfig{PartSize: minPartSize, MaxConcurrency: 2}
+			w.KMSKeyName = tc.kmsKeyName
+
+			// Write 2 parts (8 MiB + 1 MiB) so both part upload and compose run.
+			payload := make([]byte, minPartSize+(1<<20))
+			if _, err := w.Write(payload); err != nil {
+				t.Fatalf("Writer.Write() failed: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("Writer.Close() failed: %v", err)
+			}
+
+			srv.mu.Lock()
+			defer srv.mu.Unlock()
+
+			if len(srv.partWrites) != 2 {
+				t.Fatalf("partWrites count = %d, want 2", len(srv.partWrites))
+			}
+			wantGenByName := make(map[string]int64, len(srv.partWrites))
+			for i, pw := range srv.partWrites {
+				if !strings.HasPrefix(pw.name, tmpObjectPrefix) {
+					t.Errorf("partWrites[%d].name = %q, want prefix %q", i, pw.name, tmpObjectPrefix)
+				}
+				if !pw.hasIfGenMatch || pw.ifGenMatch != 0 {
+					t.Errorf("partWrites[%d] IfGenerationMatch = (%v, %d), want (true, 0)", i, pw.hasIfGenMatch, pw.ifGenMatch)
+				}
+				if !bytes.Equal(pw.csekKeyBytes, tc.csek) {
+					t.Errorf("partWrites[%d] CSEK len = %d, want %d", i, len(pw.csekKeyBytes), len(tc.csek))
+				}
+				if pw.kmsKey != tc.kmsKeyName {
+					t.Errorf("partWrites[%d].kmsKey = %q, want %q", i, pw.kmsKey, tc.kmsKeyName)
+				}
+				wantGenByName[pw.name] = pw.assignedGen
+			}
+
+			if len(srv.composeReqs) != 1 {
+				t.Fatalf("composeReqs count = %d, want 1", len(srv.composeReqs))
+			}
+			comp := srv.composeReqs[0]
+			if comp.GetKmsKey() != tc.kmsKeyName {
+				t.Errorf("ComposeObjectRequest.KmsKey = %q, want %q", comp.GetKmsKey(), tc.kmsKeyName)
+			}
+			if !bytes.Equal(comp.GetCommonObjectRequestParams().GetEncryptionKeyBytes(), tc.csek) {
+				t.Errorf("ComposeObjectRequest CSEK len = %d, want %d", len(comp.GetCommonObjectRequestParams().GetEncryptionKeyBytes()), len(tc.csek))
+			}
+			for i, src := range comp.GetSourceObjects() {
+				wantGen := wantGenByName[src.GetName()]
+				if src.GetGeneration() != wantGen || wantGen == 0 {
+					t.Errorf("ComposeObjectRequest.SourceObjects[%d] (%q) Generation = %d, want %d", i, src.GetName(), src.GetGeneration(), wantGen)
+				}
+			}
+		})
+	}
+}
+
+func TestPCU_MultiLevelComposeEncryptionAndCleanupGenerations(t *testing.T) {
+	csek := bytes.Repeat([]byte{0x24}, 32)
+	srv := &pcuFakeGRPCServer{nextGen: 5000, failFinalCompose: true}
+	client := newPCUTestGRPCClient(t, srv)
+
+	obj := client.Bucket("my-bucket").Object("multi-level-dest").Key(csek)
+	w := obj.NewWriter(t.Context())
+	w.EnableParallelUpload = true
+	w.ParallelUploadConfig = ParallelUploadConfig{PartSize: minPartSize, MaxConcurrency: 4}
+
+	// Write 33 parts (32*minPartSize + 1024 bytes) to trigger intermediate composition.
+	chunk := make([]byte, minPartSize)
+	for i := 0; i < 32; i++ {
+		if _, err := w.Write(chunk); err != nil {
+			t.Fatalf("Writer.Write(part %d) failed: %v", i+1, err)
+		}
+	}
+	if _, err := w.Write(make([]byte, 1024)); err != nil {
+		t.Fatalf("Writer.Write(tail) failed: %v", err)
+	}
+	if err := w.Close(); err == nil {
+		t.Fatalf("Writer.Close() = nil, want simulated final compose error")
+	}
+
+	// Wait briefly for background doCleanup to issue DeleteObject RPCs.
+	deadline := time.Now().Add(2 * time.Second)
+	for time.Now().Before(deadline) {
+		srv.mu.Lock()
+		nDel := len(srv.deleteReqs)
+		srv.mu.Unlock()
+		if nDel >= 35 { // 33 parts + 2 intermediates
+			break
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
+
+	if len(srv.composeReqs) != 3 { // 2 intermediate + 1 failed final
+		t.Fatalf("composeReqs count = %d, want 3", len(srv.composeReqs))
+	}
+	for i := 0; i < 2; i++ {
+		inter := srv.composeReqs[i]
+		if inter.IfGenerationMatch == nil || inter.GetIfGenerationMatch() != 0 {
+			t.Errorf("intermediate compose[%d] IfGenerationMatch = %v, want 0", i, inter.IfGenerationMatch)
+		}
+		if !bytes.Equal(inter.GetCommonObjectRequestParams().GetEncryptionKeyBytes(), csek) {
+			t.Errorf("intermediate compose[%d] CSEK len = %d, want %d", i, len(inter.GetCommonObjectRequestParams().GetEncryptionKeyBytes()), len(csek))
+		}
+	}
+	finalComp := srv.composeReqs[2]
+	for i, src := range finalComp.GetSourceObjects() {
+		if src.GetGeneration() == 0 {
+			t.Errorf("final compose SourceObjects[%d] (%q) Generation = 0, want pinned intermediate generation", i, src.GetName())
+		}
+	}
+	if len(srv.deleteReqs) != 35 {
+		t.Fatalf("deleteReqs count = %d, want 35", len(srv.deleteReqs))
+	}
+	for i, del := range srv.deleteReqs {
+		if del.GetGeneration() == 0 {
+			t.Errorf("deleteReqs[%d] (%q) Generation = 0, want pinned generation", i, del.GetObject())
+		}
 	}
 }
