@@ -282,11 +282,11 @@ func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 // optimal usage of server side caches.
 func (sc *sessionClient) nextClient() (spannerClient, error) {
 	if sc.dynamicPool != nil {
-		entry, err := sc.dynamicPool.pick(context.Background())
+		entry, err := sc.dynamicPool.Pick(context.Background())
 		if err != nil {
 			return nil, err
 		}
-		return entry.client, nil
+		return entry.Client, nil
 	}
 	var clientOpt option.ClientOption
 	var channelID uint64
