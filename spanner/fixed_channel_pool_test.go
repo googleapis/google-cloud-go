@@ -145,10 +145,14 @@ func fixedPoolOf(t *testing.T, client *Client) *dynamicChannelPool {
 func channelPoolKind(client *Client) string {
 	switch p := client.sc.connPool.(type) {
 	case *dynamicChannelPool:
+		kind := "dynamic"
 		if p.fixed {
-			return "fixed"
+			kind = "fixed"
 		}
-		return "dynamic"
+		if p.fallback != nil {
+			kind += " with fallback"
+		}
+		return kind
 	case *fallbackWrapper:
 		return "static with GCPFallback"
 	default:
@@ -199,9 +203,10 @@ func TestChannelPoolSelection(t *testing.T) {
 		{name: "DirectPath", env: map[string]string{directAccessEnv: "true"}, want: "fixed"},
 		{name: "DirectPath with legacy static pool", env: map[string]string{directAccessEnv: "true", legacyStaticChannelPoolEnv: "true"}, want: "static"},
 		{name: "fallback without DirectPath", env: map[string]string{gcpFallbackEnv: "true"}, want: "fixed"},
-		{name: "DirectPath with fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, want: "static with GCPFallback"},
+		{name: "DirectPath with fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, want: "fixed with fallback"},
 		{name: "DirectPath with fallback and legacy static pool", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true", legacyStaticChannelPoolEnv: "true"}, want: "static with GCPFallback"},
-		{name: "dynamic pool with DirectPath and fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, dcp: true, want: "dynamic"},
+		{name: "dynamic pool with DirectPath and fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, dcp: true, want: "dynamic with fallback"},
+		{name: "dynamic pool with DirectPath, fallback and legacy static pool", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true", legacyStaticChannelPoolEnv: "true"}, dcp: true, want: "dynamic with fallback"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			for k, v := range tt.env {
@@ -573,7 +578,7 @@ func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 	underlying := &closeCountingConnPool{ConnPool: dialed}
 	database := "projects/p/instances/i/databases/d"
 	sc := newSessionClient(nil, database, "", nil, "", false, metadata.Pairs(resourcePrefixHeader, database), 0, nil, nil)
-	p, err := newFixedChannelPool(context.Background(), sc, underlying)
+	p, err := newFixedChannelPool(context.Background(), sc, underlying, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -672,49 +677,43 @@ func TestLegacyStaticChannelPool(t *testing.T) {
 	}
 }
 
-func TestDirectPathFallbackKeepsStaticChannelPool(t *testing.T) {
+func TestLegacyStaticChannelPoolKeepsGCPFallback(t *testing.T) {
 	skipDialectRerun(t)
 	isolateChannelPoolEnv(t)
-	for _, legacy := range []string{"", "true"} {
-		t.Run(fmt.Sprintf("legacy static pool=%q", legacy), func(t *testing.T) {
-			t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
-			t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "true")
-			if legacy != "" {
-				t.Setenv(legacyStaticChannelPoolEnv, legacy)
-			}
-			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 3})
-			defer teardown()
-			fw, ok := client.sc.connPool.(*fallbackWrapper)
-			if !ok || client.sc.dynamicPool != nil {
-				t.Fatalf("channel pool = %T (dynamic pool %v), want *fallbackWrapper", client.sc.connPool, client.sc.dynamicPool != nil)
-			}
-			if fw.GCPFallback == nil {
-				t.Fatal("fallback pool has no GCPFallback")
-			}
-			if p, f := fw.primaryConn.Num(), fw.fallbackConn.Num(); p != 3 || f != 3 {
-				t.Fatalf("connections = {primary: %d, fallback: %d}, want {3, 3}", p, f)
-			}
-			if _, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
-				_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
-				return err
-			}); err != nil {
-				t.Fatalf("ReadWriteTransaction() failed: %v", err)
-			}
-			ro := client.Single()
-			defer ro.Close()
-			iter := ro.Query(context.Background(), NewStatement(SelectFooFromBar))
-			defer iter.Stop()
-			if _, err := iter.Next(); err != nil {
-				t.Fatal(err)
-			}
-			c, ok := ro.sh.getClient().(*grpcSpannerClient)
-			if !ok {
-				t.Fatalf("session handle client = %T, want *grpcSpannerClient", ro.sh.getClient())
-			}
-			if c.channelID != 0 {
-				t.Fatalf("session handle channel id = %d, want 0", c.channelID)
-			}
-		})
+	t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
+	t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "true")
+	t.Setenv(legacyStaticChannelPoolEnv, "true")
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 3})
+	defer teardown()
+	fw, ok := client.sc.connPool.(*fallbackWrapper)
+	if !ok || client.sc.dynamicPool != nil {
+		t.Fatalf("channel pool = %T (dynamic pool %v), want *fallbackWrapper", client.sc.connPool, client.sc.dynamicPool != nil)
+	}
+	if fw.GCPFallback == nil {
+		t.Fatal("fallback pool has no GCPFallback")
+	}
+	if p, f := fw.primaryConn.Num(), fw.fallbackConn.Num(); p != 3 || f != 3 {
+		t.Fatalf("connections = {primary: %d, fallback: %d}, want {3, 3}", p, f)
+	}
+	if _, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		return err
+	}); err != nil {
+		t.Fatalf("ReadWriteTransaction() failed: %v", err)
+	}
+	ro := client.Single()
+	defer ro.Close()
+	iter := ro.Query(context.Background(), NewStatement(SelectFooFromBar))
+	defer iter.Stop()
+	if _, err := iter.Next(); err != nil {
+		t.Fatal(err)
+	}
+	c, ok := ro.sh.getClient().(*grpcSpannerClient)
+	if !ok {
+		t.Fatalf("session handle client = %T, want *grpcSpannerClient", ro.sh.getClient())
+	}
+	if c.channelID != 0 {
+		t.Fatalf("session handle channel id = %d, want 0", c.channelID)
 	}
 }
 

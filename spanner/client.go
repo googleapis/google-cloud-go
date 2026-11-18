@@ -25,6 +25,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -238,7 +239,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 			copts = append(copts, option.WithGRPCDialOption(do))
 		}
 
-		allOpts := allClientOpts(1, config.Compression, config.EnableDirectAccess, copts...)
+		allOpts := allClientOpts(1, config.Compression, directAccessEnabled(config.EnableDirectAccess), copts...)
 
 		// Overwrite endpoint and pool config.
 		allOpts = append(allOpts,
@@ -306,8 +307,7 @@ type ClientConfig struct {
 	// Unless DCPEnabled is true, the client uses a fixed pool of NumChannels
 	// channels and assigns transactions to them round robin. Set
 	// GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL=true to use the earlier
-	// static pool instead. Multi-endpoint and GCP fallback clients keep their
-	// own pools.
+	// static pool instead. Multi-endpoint clients keep their own pool.
 	DynamicChannelPoolConfig DynamicChannelPoolConfig
 
 	// SessionLabels for the sessions created by this client.
@@ -579,6 +579,7 @@ func createDCPConnPool(
 	sessionLabels map[string]string,
 	md metadata.MD,
 	metricsTracerFactory *builtinMetricsTracerFactory,
+	directPathFallbackEnabled bool,
 	opts ...option.ClientOption,
 ) (gtransport.ConnPool, *sessionClient, error) {
 	reqIDInjector := new(requestIDHeaderInjector)
@@ -589,11 +590,24 @@ func createDCPConnPool(
 	)
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 	sc.metricsTracerFactory = metricsTracerFactory
+	var firstDialed atomic.Pointer[gtransport.ConnPool]
 	dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
-		return gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
+		pool, err := gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
+		if err == nil {
+			firstDialed.CompareAndSwap(nil, &pool)
+		}
+		return pool, err
 	}
-	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, dial)
+	fallback, err := newPoolFallback(directPathFallbackEnabled, config, metricsTracerFactory.meterProvider, dcpOpts, func(pool gtransport.ConnPool) bool {
+		first := firstDialed.Load()
+		return first != nil && sameConnPool(pool, *first)
+	})
 	if err != nil {
+		return nil, nil, err
+	}
+	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, dial, fallback)
+	if err != nil {
+		fallback.close()
 		return nil, nil, err
 	}
 	sc.connPool = dcp
@@ -611,6 +625,7 @@ func createFixedConnPool(
 	sessionLabels map[string]string,
 	md metadata.MD,
 	metricsTracerFactory *builtinMetricsTracerFactory,
+	directPathFallbackEnabled bool,
 	opts ...option.ClientOption,
 ) (gtransport.ConnPool, *sessionClient, []option.ClientOption, error) {
 	reqIDInjector := new(requestIDHeaderInjector)
@@ -632,10 +647,18 @@ func createFixedConnPool(
 		dialedPool.Close()
 		return nil, nil, nil, spannerError(codes.InvalidArgument, "gRPC connection pool has no connections")
 	}
+	fallback, err := newPoolFallback(directPathFallbackEnabled, config, metricsTracerFactory.meterProvider, fixedOpts, func(pool gtransport.ConnPool) bool {
+		return sameConnPool(pool, dialedPool)
+	})
+	if err != nil {
+		dialedPool.Close()
+		return nil, nil, nil, err
+	}
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 	sc.metricsTracerFactory = metricsTracerFactory
-	pool, err := newFixedChannelPool(ctx, sc, dialedPool)
+	pool, err := newFixedChannelPool(ctx, sc, dialedPool, fallback)
 	if err != nil {
+		fallback.close()
 		dialedPool.Close()
 		return nil, nil, nil, err
 	}
@@ -772,10 +795,8 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	isAFEBuiltInMetricEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_AFE_SERVER_TIMING"))
 	isGRPCBuiltInMetricsEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS"))
 	// enable the AFE/GRPC built-in metrics if direct-path is enabled
+	config.EnableDirectAccess = directAccessEnabled(config.EnableDirectAccess)
 	isDirectPathEnabled := config.EnableDirectAccess
-	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
-		isDirectPathEnabled, _ = strconv.ParseBool(enableDirectPathXdsString)
-	}
 	if isDirectPathEnabled {
 		isAFEBuiltInMetricEnabled = true
 		isGRPCBuiltInMetricsEnabled = true
@@ -800,15 +821,12 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	var endpointClientOpts []option.ClientOption
 	var sc *sessionClient
 
-	// DirectPath to CloudPath fallback is disabled by default, because the
-	// fallback connection pool does not keep the requests of a read-write
-	// transaction on the same channel. Set GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=true
-	// to enable it. See https://github.com/googleapis/google-cloud-go/pull/14414,
-	// which originally enabled it by default.
+	// DirectPath to CloudPath fallback is disabled by default. Set
+	// GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=true to enable it.
 	isFallbackEnabled := false
 	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"); ok {
 		if b, err := strconv.ParseBool(val); err == nil {
-			isFallbackEnabled = b
+			isFallbackEnabled = b && isDirectPathEnabled
 		}
 	}
 
@@ -847,7 +865,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	if isDCPEnabledForConfig(config, gme) {
-		pool, sc, err = createDCPConnPool(ctx, database, config, sessionLabels, md, metricsTracerFactory, opts...)
+		pool, sc, err = createDCPConnPool(ctx, database, config, sessionLabels, md, metricsTracerFactory, isFallbackEnabled, opts...)
 		if err != nil {
 			return nil, err
 		}
@@ -855,8 +873,8 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		// Use GCPMultiEndpoint if provided.
 		pool = &gmeWrapper{gme}
 		endpointClientOpts = append(endpointClientOpts, opts...)
-	} else if isFallbackEnabled && isDirectPathEnabled {
-		// The fixed-size channel pool does not support DirectPath fallback yet.
+	} else if isLegacyStaticChannelPoolEnabled && isFallbackEnabled {
+		// The legacy static pool keeps grpc-gcp-go's GCPFallback.
 		pool, endpointClientOpts, err = createFallbackConnPool(ctx, config, hasNumChannelsConfig, metricsTracerFactory, opts...)
 		if err != nil {
 			return nil, err
@@ -884,7 +902,8 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		if config.DynamicChannelPoolConfig.DCPEnabled && isExperimentalLocationAPIEnabledForConfig(config) {
 			logf(config.Logger, "spanner: DynamicChannelPoolConfig is ignored with location-aware routing; using a fixed-size channel pool")
 		}
-		pool, sc, endpointClientOpts, err = createFixedConnPool(ctx, database, config, hasNumChannelsConfig, sessionLabels, md, metricsTracerFactory, opts...)
+		// The emulator has no DirectPath to fall back from.
+		pool, sc, endpointClientOpts, err = createFixedConnPool(ctx, database, config, hasNumChannelsConfig, sessionLabels, md, metricsTracerFactory, isFallbackEnabled && !emulatorEnabled, opts...)
 		if err != nil {
 			return nil, err
 		}
@@ -1052,7 +1071,7 @@ func NewMultiEndpointClientWithConfig(ctx context.Context, database string, conf
 // Combines the default options from the generated client, the default options
 // of the hand-written client and the user options to one list of options.
 // Precedence: userOpts > clientDefaultOpts > generatedDefaultOpts
-func allClientOpts(numChannels int, compression string, enableDirectAccess bool, userOpts ...option.ClientOption) []option.ClientOption {
+func allClientOpts(numChannels int, compression string, directPath bool, userOpts ...option.ClientOption) []option.ClientOption {
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
@@ -1061,12 +1080,7 @@ func allClientOpts(numChannels int, compression string, enableDirectAccess bool,
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 120 * time.Second})),
 	}
-	enableDirectPathXds := enableDirectAccess
-	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
-		enableDirectPathXds, _ = strconv.ParseBool(enableDirectPathXdsString)
-	}
-
-	if enableDirectPathXds {
+	if directPath {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN")); !disableBoundToken {
@@ -1079,6 +1093,17 @@ func allClientOpts(numChannels int, compression string, enableDirectAccess bool,
 	}
 	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
 	return append(allDefaultOpts, userOpts...)
+}
+
+// directAccessEnabled reports whether the client uses DirectPath. The
+// GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS environment variable overrides
+// ClientConfig.EnableDirectAccess.
+func directAccessEnabled(configured bool) bool {
+	if v := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); v != "" {
+		enabled, _ := strconv.ParseBool(v)
+		return enabled
+	}
+	return configured
 }
 
 // metricsInterceptor is a gRPC unary client interceptor that records metrics for unary RPCs.
@@ -1964,12 +1989,12 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 
 	// The iterator uses its own context, so that the deferred EndSpan above
 	// ends the BatchWrite span and not the span of the iterator.
-	iterCtx, cancel := context.WithCancel(ctx)
+	iterCtx, cancelCause := context.WithCancelCause(ctx)
 	iterCtx, _ = startSpan(iterCtx, "BatchWriteResponseIterator", c.otConfig.commonTraceStartOptions...)
 	iter := newBatchWriteResponseIterator(iterCtx, mgsPb, rpc, DefaultRetryBackoff)
 	iter.meterTracerFactory = c.metricsTracerFactory
 	iter.release = release
-	iter.cancel = cancel
+	iter.cancel = func() { cancelCause(errStreamStoppedByReader) }
 	return iter
 }
 
