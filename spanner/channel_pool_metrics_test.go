@@ -558,7 +558,7 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 			}
 			server, client, teardown := setupMockedTestServerWithConfig(t, config)
 			defer teardown()
-			if got := client.sc.dynamicPool != nil; got != tt.dcp {
+			if got := client.sc.dynamicPool != nil && !client.sc.dynamicPool.fixed; got != tt.dcp {
 				t.Fatalf("dynamic pool enabled mismatch:\n Got: %v\nWant: %v", got, tt.dcp)
 			}
 			addSelect1Result(server)

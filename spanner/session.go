@@ -447,7 +447,12 @@ func (p *sessionManager) newSessionHandleLocked(ctx context.Context, s *session)
 		if err != nil {
 			return nil, err
 		}
-		sh.client = newDCPResolvingSpannerClient(p.sc.dynamicPool, entry)
+		if p.sc.dynamicPool.fixed {
+			// Fixed entries never drain, so the handle can keep the client.
+			sh.client = entry.client
+		} else {
+			sh.client = newDCPResolvingSpannerClient(p.sc.dynamicPool, entry)
+		}
 		return sh, nil
 	}
 	client, idx := p.getRoundRobinClientLocked()
