@@ -182,6 +182,7 @@ func TestFixedChannelPoolBindsTransactionsToEntries(t *testing.T) {
 
 func TestChannelPoolSelection(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	for _, tt := range []struct {
 		name string
 		env  map[string]string
@@ -203,7 +204,6 @@ func TestChannelPoolSelection(t *testing.T) {
 		{name: "dynamic pool with DirectPath and fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, dcp: true, want: "dynamic"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			clearChannelPoolEnv(t)
 			for k, v := range tt.env {
 				t.Setenv(k, v)
 			}
@@ -632,6 +632,7 @@ func TestFixedChannelPoolAfterClientClose(t *testing.T) {
 
 func TestLegacyStaticChannelPool(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	for _, tt := range []struct {
 		name   string
 		config ClientConfig
@@ -642,7 +643,6 @@ func TestLegacyStaticChannelPool(t *testing.T) {
 		{name: "WithGRPCConnectionPool", config: ClientConfig{DisableNativeMetrics: true}, opts: []option.ClientOption{option.WithGRPCConnectionPool(6)}, want: 6},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			clearChannelPoolEnv(t)
 			t.Setenv(legacyStaticChannelPoolEnv, "true")
 			recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQLMethod: true, commitMethod: true}}
 			opts := append([]option.ClientOption{option.WithGRPCDialOption(grpc.WithUnaryInterceptor(recorder.unaryInterceptor))}, tt.opts...)
@@ -674,9 +674,9 @@ func TestLegacyStaticChannelPool(t *testing.T) {
 
 func TestDirectPathFallbackKeepsStaticChannelPool(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	for _, legacy := range []string{"", "true"} {
 		t.Run(fmt.Sprintf("legacy static pool=%q", legacy), func(t *testing.T) {
-			clearChannelPoolEnv(t)
 			t.Setenv(directAccessEnv, "true")
 			t.Setenv(gcpFallbackEnv, "true")
 			if legacy != "" {
@@ -758,12 +758,12 @@ func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, wantLogs int, l
 
 func TestFixedChannelPoolWithEmulator(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	for _, tt := range []struct {
 		dcpEnabled bool
 		legacy     bool
 	}{{false, false}, {true, false}, {true, true}} {
 		t.Run(fmt.Sprintf("DCPEnabled=%v/legacy static pool=%v", tt.dcpEnabled, tt.legacy), func(t *testing.T) {
-			clearChannelPoolEnv(t)
 			server, _, teardown := NewMockedSpannerInMemTestServer(t)
 			defer teardown()
 			t.Setenv("SPANNER_EMULATOR_HOST", server.ServerAddress)
