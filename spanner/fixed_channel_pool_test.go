@@ -563,6 +563,7 @@ func TestFixedChannelPoolWithPoolThatHidesItsConnections(t *testing.T) {
 
 func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 	skipDialectRerun(t)
+	clearChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	dialed, err := gtransport.DialPool(context.Background(), append(opts, option.WithGRPCConnectionPool(3))...)
