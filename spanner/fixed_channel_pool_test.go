@@ -28,6 +28,7 @@ import (
 	adminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"cloud.google.com/go/spanner/internal/transport"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -125,8 +126,8 @@ func assertTransactionsBindToChannels(t *testing.T, client *Client, recorder *dc
 func fixedPoolOf(t *testing.T, client *Client) *dynamicChannelPool {
 	t.Helper()
 	p := client.sc.dynamicPool
-	if p == nil || !p.fixed {
-		t.Fatalf("channel pool = %T (fixed: %v), want the dynamic channel pool in fixed mode", client.sc.connPool, p != nil && p.fixed)
+	if p == nil || !p.IsFixed() {
+		t.Fatalf("channel pool = %T (fixed: %v), want the dynamic channel pool in fixed mode", client.sc.connPool, p != nil && p.IsFixed())
 	}
 	return p
 }
@@ -134,7 +135,7 @@ func fixedPoolOf(t *testing.T, client *Client) *dynamicChannelPool {
 func channelPoolKind(client *Client) string {
 	switch p := client.sc.connPool.(type) {
 	case *dynamicChannelPool:
-		if p.fixed {
+		if p.IsFixed() {
 			return "fixed"
 		}
 		return "dynamic"
@@ -160,9 +161,9 @@ func TestFixedChannelPoolBindsTransactionsToEntries(t *testing.T) {
 	if got, want := p.Num(), 4; got != want {
 		t.Fatalf("entry count = %d, want %d", got, want)
 	}
-	for i, e := range p.getEntries() {
-		if e.id != uint64(i+1) {
-			t.Fatalf("entry %d id = %d, want %d", i, e.id, i+1)
+	for i, e := range p.GetEntries() {
+		if e.ID != uint64(i+1) {
+			t.Fatalf("entry %d id = %d, want %d", i, e.ID, i+1)
 		}
 	}
 	assertTransactionsBindToChannels(t, client, recorder, 4)
@@ -229,8 +230,8 @@ func TestFixedChannelPoolIsTheDefault(t *testing.T) {
 			if got := p.Num(); got != tt.want {
 				t.Fatalf("entry count = %d, want %d", got, tt.want)
 			}
-			if p.cfg.DCPSelectionStrategy != DCPRoundRobin || p.cfg.DCPMinChannels != tt.want || p.cfg.DCPMaxChannels != tt.want {
-				t.Fatalf("fixed pool config = {strategy: %v, min: %d, max: %d}, want {round robin, %d, %d}", p.cfg.DCPSelectionStrategy, p.cfg.DCPMinChannels, p.cfg.DCPMaxChannels, tt.want, tt.want)
+			if p.Cfg.DCPSelectionStrategy != transport.DCPRoundRobin || p.Cfg.DCPMinChannels != tt.want || p.Cfg.DCPMaxChannels != tt.want {
+				t.Fatalf("fixed pool config = {strategy: %v, min: %d, max: %d}, want {round robin, %d, %d}", p.Cfg.DCPSelectionStrategy, p.Cfg.DCPMinChannels, p.Cfg.DCPMaxChannels, tt.want, tt.want)
 			}
 		})
 	}
@@ -321,14 +322,14 @@ func TestFixedChannelPoolPicksWithoutActivityTracking(t *testing.T) {
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
 	defer teardown()
 	p := fixedPoolOf(t, client)
-	for _, e := range p.getEntries() {
-		e.lastActivity.Store(0)
+	for _, e := range p.GetEntries() {
+		e.LastActivity.Store(0)
 	}
 	for i := 0; i < 4; i++ {
 		queryFooFromBar(t, client)
 	}
-	for i, e := range p.getEntries() {
-		if got := e.lastActivity.Load(); got != 0 {
+	for i, e := range p.GetEntries() {
+		if got := e.LastActivity.Load(); got != 0 {
 			t.Fatalf("entry %d activity time after picks = %d, want 0", i, got)
 		}
 	}
@@ -345,8 +346,8 @@ func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
 	}
 	defer client.Close()
 	p := fixedPoolOf(t, client)
-	e := p.getEntries()[0]
-	e.lastActivity.Store(0)
+	e := p.GetEntries()[0]
+	e.LastActivity.Store(0)
 	ctx, cancel := context.WithCancel(context.Background())
 	// More streams than the default DCPMaxRPCPerChannel (25).
 	for i := 0; i < 26; i++ {
@@ -356,10 +357,10 @@ func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
 	}
 	cancel()
 	_ = p.Invoke(context.Background(), "/google.spanner.v1.Spanner/GetSession", &spannerpb.GetSessionRequest{Name: "s"}, &spannerpb.Session{})
-	if load, total := e.rpcLoad(), p.totalRPCLoad.Load(); load != 0 || total != 0 {
+	if load, total := e.RPCLoad(), p.TotalRPCLoad.Load(); load != 0 || total != 0 {
 		t.Fatalf("load after abandoned streams = {entry: %d, pool: %d}, want {0, 0}", load, total)
 	}
-	if got := e.lastActivity.Load(); got != 0 {
+	if got := e.LastActivity.Load(); got != 0 {
 		t.Fatalf("entry activity time = %d, want 0", got)
 	}
 }
@@ -376,8 +377,8 @@ func TestFixedChannelPoolDoesNotRetainCallerContext(t *testing.T) {
 	}
 	defer client.Close()
 	p := fixedPoolOf(t, client)
-	if p.ctx != nil || p.cancel != nil || p.done != nil || p.scaleUpSignal != nil {
-		t.Fatalf("fixed pool background state = {ctx: %v, cancel: %v, done: %v, scale-up signal: %v}, want none", p.ctx != nil, p.cancel != nil, p.done != nil, p.scaleUpSignal != nil)
+	if p.Ctx != nil || p.ScaleUpSignal != nil {
+		t.Fatalf("fixed pool background state = {ctx: %v, scale-up signal: %v}, want none", p.Ctx != nil, p.ScaleUpSignal != nil)
 	}
 	queryFooFromBar(t, client)
 }
@@ -387,7 +388,7 @@ func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
 	defer teardown()
 	p := fixedPoolOf(t, client)
-	if p.metrics != nil {
+	if p.Metrics != nil {
 		t.Fatal("fixed pool has pool metrics")
 	}
 	var g errgroup.Group
@@ -401,10 +402,10 @@ func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 	if err := g.Wait(); err != nil {
 		t.Fatal(err)
 	}
-	if got := len(p.scaleUpSignal); got != 0 {
+	if got := len(p.ScaleUpSignal); got != 0 {
 		t.Fatalf("fixed pool signalled scale-up %d times, want 0", got)
 	}
-	if p.hasPrimeSession() {
+	if p.PrimeSessionID() != "" {
 		t.Fatal("fixed pool recorded a session to prime channels with")
 	}
 	if got, want := p.Num(), 2; got != want {
@@ -419,9 +420,9 @@ func TestFixedChannelPoolStreamsSkipLoadAccounting(t *testing.T) {
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
 	defer teardown()
 	p := fixedPoolOf(t, client)
-	for i, e := range p.getEntries() {
-		if _, ok := e.client.(*grpcSpannerClient); !ok {
-			t.Fatalf("entry %d client = %T, want *grpcSpannerClient", i, e.client)
+	for i, e := range p.GetEntries() {
+		if _, ok := e.Client.(*grpcSpannerClient); !ok {
+			t.Fatalf("entry %d client = %T, want *grpcSpannerClient", i, e.Client)
 		}
 	}
 	// Keep the stream open after its first row.
@@ -438,17 +439,17 @@ func TestFixedChannelPoolStreamsSkipLoadAccounting(t *testing.T) {
 	if _, ok := ro.sh.getClient().(*grpcSpannerClient); !ok {
 		t.Fatalf("session handle client = %T, want *grpcSpannerClient", ro.sh.getClient())
 	}
-	for i, e := range p.getEntries() {
-		if load, refs := e.streamLoad.Load(), e.refs.Load(); load != 0 || refs != 0 {
+	for i, e := range p.GetEntries() {
+		if load, refs := e.StreamLoad.Load(), e.Refs.Load(); load != 0 || refs != 0 {
 			t.Fatalf("entry %d with an open stream: stream load %d, references %d, want 0 and 0", i, load, refs)
 		}
 	}
-	if got := p.totalRPCLoad.Load(); got != 0 {
+	if got := p.TotalRPCLoad.Load(); got != 0 {
 		t.Fatalf("pool load with an open stream = %d, want 0", got)
 	}
 	iter.Stop()
-	for i, e := range p.getEntries() {
-		if refs := e.refs.Load(); refs != 0 {
+	for i, e := range p.GetEntries() {
+		if refs := e.Refs.Load(); refs != 0 {
 			t.Fatalf("entry %d references after Stop = %d, want 0", i, refs)
 		}
 	}
@@ -555,11 +556,11 @@ func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 		t.Fatal(err)
 	}
 	seen := map[*grpc.ClientConn]bool{}
-	for i, e := range p.getEntries() {
-		if e.id != uint64(i+1) {
-			t.Fatalf("entry %d id = %d, want %d", i, e.id, i+1)
+	for i, e := range p.GetEntries() {
+		if e.ID != uint64(i+1) {
+			t.Fatalf("entry %d id = %d, want %d", i, e.ID, i+1)
 		}
-		seen[e.pool.Conn()] = true
+		seen[e.Pool.Conn()] = true
 	}
 	if len(seen) != 3 {
 		t.Fatalf("entries share connections: %d distinct connections for 3 entries", len(seen))
@@ -719,10 +720,10 @@ func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, wantLogs int, l
 	if got, want := p.Num(), numChannels; got != want {
 		t.Fatalf("entry count = %d, want NumChannels (%d)", got, want)
 	}
-	if p.cfg.DCPSelectionStrategy != DCPRoundRobin || p.cfg.DCPMinChannels != numChannels || p.cfg.DCPMaxChannels != numChannels {
-		t.Fatalf("fixed pool config = {strategy: %v, min: %d, max: %d}, want {round robin, %d, %d}", p.cfg.DCPSelectionStrategy, p.cfg.DCPMinChannels, p.cfg.DCPMaxChannels, numChannels, numChannels)
+	if p.Cfg.DCPSelectionStrategy != transport.DCPRoundRobin || p.Cfg.DCPMinChannels != numChannels || p.Cfg.DCPMaxChannels != numChannels {
+		t.Fatalf("fixed pool config = {strategy: %v, min: %d, max: %d}, want {round robin, %d, %d}", p.Cfg.DCPSelectionStrategy, p.Cfg.DCPMinChannels, p.Cfg.DCPMaxChannels, numChannels, numChannels)
 	}
-	if p.metrics != nil {
+	if p.Metrics != nil {
 		t.Fatal("fixed pool has pool metrics")
 	}
 	if got := strings.Count(logger.String(), dcpUnavailableLog); got != wantLogs {
