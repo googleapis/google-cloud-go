@@ -863,3 +863,64 @@ func TestManagedStream_CloseWithRetriesDoesNotStallMultiplexedWriters(t *testing
 		t.Errorf("GetResult(sibling): got %v, want success", err)
 	}
 }
+
+// Closing the Client shuts down its connectionPool (detaching connections from
+// the router) without setting a terminal error on attached ManagedStream
+// writers. In-flight appends that fail and enter processRetry then fail
+// selectConn on re-enqueue and must be finalized once without panicking.
+// Related: https://github.com/googleapis/google-cloud-go/issues/20922
+func TestManagedStream_PoolCloseWithRetriesCompletesInflight(t *testing.T) {
+	tests := []struct {
+		name      string
+		multiplex bool
+	}{
+		{name: "exclusive"},
+		{name: "multiplex", multiplex: true},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := t.Context()
+			c := &Client{
+				ctx: ctx,
+				cfg: &writerClientConfig{
+					useMultiplex:         tc.multiplex,
+					maxMultiplexPoolSize: 1,
+				},
+			}
+			pool, err := c.createPool("", openGatedArc(func(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
+				<-ctx.Done()
+				return nil, status.Error(codes.Canceled, "context canceled")
+			}))
+			if err != nil {
+				t.Fatalf("createPool() failed: %v", err)
+			}
+
+			ms := newRetryingTestWriter(t, ctx, pool, "writer", "t")
+			ms.retry = &statelessRetryer{minBackoff: time.Millisecond, maxAttempts: defaultRetryAttempts}
+
+			// Enqueue two writes so that waiting on the second guarantees the
+			// receive processor has completely finished processRetry for the first.
+			var results []*AppendResult
+			for i := range 2 {
+				res, err := ms.AppendRows(ctx, [][]byte{[]byte("row")})
+				if err != nil {
+					t.Fatalf("ms.AppendRows(%d) failed: %v", i, err)
+				}
+				results = append(results, res)
+			}
+
+			if err := pool.Close(); err != nil {
+				t.Fatalf("pool.Close() = %v, want nil", err)
+			}
+
+			waitCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+			defer cancel()
+			for i, res := range results {
+				_, err := res.GetResult(waitCtx)
+				if err == nil || errors.Is(err, context.DeadlineExceeded) {
+					t.Errorf("results[%d].GetResult() = (_, %v), want non-timeout error", i, err)
+				}
+			}
+		})
+	}
+}
