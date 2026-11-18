@@ -2052,9 +2052,11 @@ func grpcNetworkMetricsRawDialOptions(host string, metrics *clientMetrics) []grp
 
 // metricsTokenProvider wraps an auth.TokenProvider and records
 // gcp.storage.client.auth.credential_refresh.duration whenever a token fetch
-// returns a new token or an error (ignoring cached token reads; background
-// refreshes performed inside the underlying TokenProvider are not visible at
-// this layer).
+// returns a new token or an error (ignoring repeated cached reads of the same
+// token). Note: if the underlying TokenProvider refreshes tokens asynchronously
+// in the background, the next Token() call returns the newly cached token in
+// ~0s, so that rotation is recorded here with the fast cache-read duration
+// rather than the background network latency.
 type metricsTokenProvider struct {
 	base    auth.TokenProvider
 	metrics *clientMetrics
@@ -2064,17 +2066,15 @@ type metricsTokenProvider struct {
 func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	start := time.Now()
 	tok, err := p.base.Token(ctx)
-	prev := p.last.Load()
-	if err != nil || prev == nil || tok == nil || tok.Value != prev.Value || !tok.Expiry.Equal(prev.Expiry) {
-		if err == nil && tok != nil {
-			p.last.Store(tok)
-		}
-		p.metrics.recordCredentialRefreshDuration(ctx, time.Since(start), err)
-	}
 	if err != nil {
-		err = &credentialError{err: err}
+		p.metrics.recordCredentialRefreshDuration(ctx, time.Since(start), err)
+		return tok, &credentialError{err: err}
 	}
-	return tok, err
+	prev := p.last.Load()
+	if (prev == nil || tok == nil || tok.Value != prev.Value || !tok.Expiry.Equal(prev.Expiry)) && (tok == nil || p.last.CompareAndSwap(prev, tok)) {
+		p.metrics.recordCredentialRefreshDuration(ctx, time.Since(start), nil)
+	}
+	return tok, nil
 }
 
 // wrapAuthCredentials wraps an auth.Credentials object to track credential refresh durations.

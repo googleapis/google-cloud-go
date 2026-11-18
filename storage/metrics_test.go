@@ -1517,9 +1517,7 @@ func TestGRPCNetworkMetricsDialOptions_DNSLookup(t *testing.T) {
 	})
 
 	isDefaultDNSLookupHost = false
-	lookupDone := make(chan struct{}, 4)
 	dnsLookupHost = func(ctx context.Context, host string) ([]string, error) {
-		defer func() { lookupDone <- struct{}{} }()
 		return []string{"127.0.0.1"}, nil
 	}
 	currentTime := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -1543,20 +1541,40 @@ func TestGRPCNetworkMetricsDialOptions_DNSLookup(t *testing.T) {
 		}
 	}
 
+	waitDNSCount := func(want uint64) metricdata.ResourceMetrics {
+		deadline := time.Now().Add(2 * time.Second)
+		var rm metricdata.ResourceMetrics
+		for {
+			rm = metricdata.ResourceMetrics{}
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("Collect: %v", err)
+			}
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if m.Name == "gcp.storage.client.network.dns.lookup.duration" {
+						dps := m.Data.(metricdata.Histogram[float64]).DataPoints
+						if len(dps) == 1 && dps[0].Count == want {
+							return rm
+						}
+					}
+				}
+			}
+			if time.Now().After(deadline) {
+				t.Fatalf("timed out waiting for DNS lookup count == %d", want)
+			}
+			time.Sleep(5 * time.Millisecond)
+		}
+	}
+
 	// 1st dial triggers async DNS probe; 2nd immediate dial hits the 60s cooldown.
 	dialOnce()
-	<-lookupDone
+	waitDNSCount(1)
 	dialOnce()
 
 	// Advance clock past the 60s cooldown; 3rd dial triggers a second DNS probe.
 	currentTime = currentTime.Add(61 * time.Second)
 	dialOnce()
-	<-lookupDone
-
-	var rm metricdata.ResourceMetrics
-	if err := mr.Collect(ctx, &rm); err != nil {
-		t.Fatalf("Collect: %v", err)
-	}
+	rm := waitDNSCount(2)
 
 	foundDNS := false
 	for _, sm := range rm.ScopeMetrics {
