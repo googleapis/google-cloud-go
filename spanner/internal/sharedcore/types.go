@@ -17,10 +17,9 @@ limitations under the License.
 package sharedcore
 
 import (
-	"time"
 	"unsafe"
 
-	"google.golang.org/api/option"
+	"cloud.google.com/go/spanner/internal/transport"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -67,27 +66,12 @@ type SpannerValue struct {
 }
 
 // DynamicChannelPoolConfig configures opt-in dynamic gRPC channel pooling,
-// mirroring spanner.DynamicChannelPoolConfig. Zero values use DefaultDynamicChannelPoolConfig
-// when Enabled is true.
-type DynamicChannelPoolConfig struct {
-	Enabled                           bool
-	InitialChannels                   int
-	MinChannels                       int
-	MaxChannels                       int
-	MaxRPCPerChannel                  float64
-	MinRPCPerChannel                  float64
-	ErrorPenaltyStep                  int32
-	ErrorPenaltyDuration              time.Duration
-	ScaleDownCheckInterval            time.Duration
-	ScaleUpCooldown                   time.Duration
-	DownscaleConsecutiveLowLoadChecks int
-	MaxScaleUpPercent                 int
-	MaxRemoveChannels                 int
-	DrainIdleGrace                    time.Duration
-	PrimeTimeout                      time.Duration
-	PrimeMaxAttempts                  int
-	SelectionStrategy                 int // 0 = DCPPowerOfTwoLeastBusy, 1 = DCPRoundRobin
-}
+// aliasing transport.DCPConfig. Zero values use transport.DefaultDCPConfig
+// when DCPEnabled is true.
+type DynamicChannelPoolConfig = transport.DCPConfig
+
+// DCPSelectionStrategy controls how a DynamicChannelPool chooses an active channel.
+type DCPSelectionStrategy = transport.DCPSelectionStrategy
 
 // ClientConfig configures a shared core gRPC client transport and connection pool.
 type ClientConfig struct {
@@ -95,26 +79,27 @@ type ClientConfig struct {
 	Endpoint string
 	// UniverseDomain overrides the default universe domain when dialing a non-plaintext endpoint.
 	UniverseDomain string
-	// NumChannels sets the static pool size when > 0 (must match option.WithGRPCConnectionPool if both are set).
-	// When <= 0, transport.DefaultNumChannels (4) is used unless overridden via ClientOptions.
+	// NumChannels sets the fixed/fallback pool size when > 0. When <= 0, transport.DefaultNumChannels (4)
+	// is used. Ignored when DynamicChannelPoolConfig.DCPEnabled is active (use DCPInitialChannels/DCPMinChannels/DCPMaxChannels).
 	NumChannels int
-	// Compression enables request/response compression when set to "gzip".
+	// Compression enables request/response compression when set to "gzip" (overrides any per-call default compressor).
 	Compression string
 	// EnableDirectAccess enables DirectPath when allowed by credentials and environment variables.
 	EnableDirectAccess bool
-	// UserAgent sets an optional product/version token appended to x-goog-api-client.
+	// UserAgent sets an optional product/version token appended to x-goog-api-client after "gccl/<go-ver>".
+	// Must use "name/version" format; tokens without "/" are ignored.
 	UserAgent string
-	// PlainText dials without TLS or authentication.
+	// PlainText dials without TLS or authentication. Requires a non-empty Endpoint or SPANNER_EMULATOR_HOST.
 	PlainText bool
 	// DisableBuiltInAuth omits default Google credentials (for host bindings supplying per-RPC auth headers).
+	// On non-plaintext endpoints, DisableBuiltInAuth disables DirectPath and dynamic channel pooling
+	// (falling back to a fixed pool) because background DCP channel priming cannot attach host auth headers.
 	DisableBuiltInAuth bool
 	// DynamicChannelPoolConfig configures opt-in dynamic gRPC channel pooling.
 	DynamicChannelPoolConfig DynamicChannelPoolConfig
-	// LogFunc is an optional callback for transport log messages. Must be safe for concurrent calls.
+	// LogFunc is an optional callback for transport warning messages (emitted with level "WARN").
+	// Must be safe for concurrent calls.
 	LogFunc func(level string, message string)
-	// ClientOptions appends caller-provided google.golang.org/api/option options (higher precedence than defaults).
-	// Do not combine option.WithGRPCConn or gtransport.WithConnPool with DynamicChannelPoolConfig.Enabled.
-	ClientOptions []option.ClientOption
 }
 
 // RetrySettings configures total stream timeout and retry backoff parameters in milliseconds

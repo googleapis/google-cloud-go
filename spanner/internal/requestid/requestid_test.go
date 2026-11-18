@@ -423,22 +423,64 @@ func TestWithRequestIDAndWrapLogicalRequestKey(t *testing.T) {
 		t.Fatalf("after trailing WithGRPCOptions reset, LogicalRequestKeyFromCallOptions = %q, want empty", got)
 	}
 
-	// WithRequestID restores the header across gax.Invoke retries after gRPC overwrites *HeaderAddr.
-	var csRetry gax.CallSettings
-	csRetry.Retry = func() gax.Retryer {
-		return WrapRetryFn(func(error) (time.Duration, bool) { return 0, true })
+	// GRPCCallOptionsToRequestID returns populated metadata.MD for public contract parity,
+	// and callOption strips prior literalRequestIDGRPCOption cleanly.
+	var csPublic gax.CallSettings
+	sharedOpt.Resolve(&csPublic)
+	mdPub, pubID, pubFound := GRPCCallOptionsToRequestID(csPublic.GRPC)
+	if !pubFound || string(pubID) != customID || len(mdPub.Get(Header)) != 1 || mdPub.Get(Header)[0] != customID {
+		t.Fatalf("GRPCCallOptionsToRequestID = (%v, %q, %v), want %q", mdPub, pubID, pubFound, customID)
 	}
-	sharedOpt.Resolve(&csRetry)
-	for _, gopt := range csRetry.GRPC {
-		if hdr, ok := gopt.(grpc.HeaderCallOption); ok && hdr.HeaderAddr != nil {
-			*hdr.HeaderAddr = metadata.Pairs("server-timing", "gfet4t7; dur=0.5")
-		}
+	w.WithNextRetryAttempt(3).Resolve(&csPublic)
+	_, replacedID, replacedFound := GRPCCallOptionsToRequestID(csPublic.GRPC)
+	if !replacedFound || string(replacedID) == customID {
+		t.Fatalf("expected Wrap.WithNextRetryAttempt to strip prior literalRequestIDGRPCOption, got (%q, %v)", replacedID, replacedFound)
 	}
-	_, shouldRetry := csRetry.Retry().Retry(errors.New("transient"))
-	if !shouldRetry {
-		t.Fatal("expected retryer to allow retry")
+
+	// Nil-returning retry factory does not panic, and Resolve/inspection never eagerly call Retry().
+	var retryFactoryCalls atomic.Int32
+	nilRetryOpt := gax.WithRetry(func() gax.Retryer {
+		retryFactoryCalls.Add(1)
+		return nil
+	})
+	var csNilRetry gax.CallSettings
+	nilRetryOpt.Resolve(&csNilRetry)
+	sharedOpt.Resolve(&csNilRetry)
+	_ = LogicalRequestKeyFromCallOptions([]gax.CallOption{nilRetryOpt, sharedOpt})
+	_ = tr.OptsWithNextRequestID([]gax.CallOption{nilRetryOpt, sharedOpt})
+	if got := retryFactoryCalls.Load(); got != 0 {
+		t.Fatalf("Retry factory called %d times during Resolve/inspection, want 0", got)
 	}
-	if _, retryID, found := GRPCCallOptionsToRequestID(csRetry.GRPC); !found || string(retryID) != customID {
-		t.Fatalf("after retry, got (%q, %v), want (%q, true)", retryID, found, customID)
+	if got := csNilRetry.Retry(); got != nil {
+		t.Fatalf("expected nil retryer preserved, got %v", got)
+	}
+
+	// Trailing gax.WithRetry preserves x-goog-spanner-request-id on retry attempt 2+ via HeaderInjector.
+	var attempts atomic.Int32
+	var seenWireIDs []string
+	inj := NewHeaderInjector(nil)
+	err := gax.Invoke(context.Background(), func(ctx context.Context, settings gax.CallSettings) error {
+		return inj.InterceptUnary(ctx, "/google.spanner.v1.Spanner/ExecuteSql", nil, nil, nil,
+			func(callCtx context.Context, _ string, _, _ any, _ *grpc.ClientConn, _ ...grpc.CallOption) error {
+				if md, ok := metadata.FromOutgoingContext(callCtx); ok {
+					if vals := md.Get(Header); len(vals) > 0 {
+						seenWireIDs = append(seenWireIDs, vals[0])
+					}
+				}
+				if attempts.Add(1) == 1 {
+					return errors.New("transient attempt 1")
+				}
+				return nil
+			},
+			settings.GRPC...,
+		)
+	}, sharedOpt, gax.WithRetry(func() gax.Retryer {
+		return WrapRetryFn(func(error) (time.Duration, bool) { return time.Millisecond, true })
+	}))
+	if err != nil {
+		t.Fatalf("gax.Invoke with WithRequestID + trailing WithRetry failed: %v", err)
+	}
+	if len(seenWireIDs) != 2 || seenWireIDs[0] != customID || seenWireIDs[1] != customID {
+		t.Fatalf("wire request IDs across retry = %v, want [%q, %q]", seenWireIDs, customID, customID)
 	}
 }

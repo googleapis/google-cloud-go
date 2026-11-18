@@ -21,7 +21,9 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 	"sync/atomic"
+	"unicode"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -37,10 +39,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// PlaceholderDB is the database name used when initializing a database-agnostic
-// shared core transport pool.
-const PlaceholderDB = "projects/shared-core/instances/shared-core/databases/shared-core"
-
 var sharedCoreClientIDCounter atomic.Uint32
 
 type logWriter struct {
@@ -55,70 +53,39 @@ func (w *logWriter) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-// NewLogger constructs a *log.Logger that routes messages to logFn when non-nil,
-// or discards log output when logFn is nil.
-func NewLogger(logFn func(level, msg string)) *log.Logger {
+func newLogger(logFn func(level, msg string)) *log.Logger {
 	if logFn != nil {
 		return log.New(&logWriter{logFn: logFn}, "", 0)
 	}
 	return log.New(io.Discard, "", 0)
 }
 
-// stripEndpointSchemes removes leading passthrough:///, https://, and http://
-// schemes (including chained prefixes) in an order-independent loop.
-func stripEndpointSchemes(endpoint string) string {
-	s := endpoint
-	for {
-		advanced := false
-		for _, prefix := range []string{"passthrough:///", "https://", "http://"} {
-			if after, ok := strings.CutPrefix(s, prefix); ok {
-				s = after
-				advanced = true
-				break
-			}
-		}
-		if !advanced {
-			return s
-		}
-	}
+type transportSettings struct {
+	rawEmulator          string
+	emulatorAddr         string
+	isEmulator           bool
+	isPlain              bool
+	isDirectPathEnabled  bool
+	isFallbackEnabled    bool
+	useDCP               bool
+	dcpDisabledForNoAuth bool
+	hasNumChannelsConfig bool
+	numChannels          int
 }
 
-// TransportSettings holds the resolved connection pool, endpoint, and DirectPath/DCP settings.
-type TransportSettings struct {
-	// EmulatorAddr is the scheme-stripped SPANNER_EMULATOR_HOST target.
-	EmulatorAddr string
-	// EndpointAddr is the scheme-stripped cfg.Endpoint target.
-	EndpointAddr string
-	// IsEmulator reports whether the resolved target is the Spanner emulator.
-	IsEmulator bool
-	// IsPlain reports whether the transport uses plaintext credentials (PlainText or emulator).
-	IsPlain bool
-	// IsDirectPathEnabled reports whether DirectPath is enabled (always false for plaintext/no-auth).
-	IsDirectPathEnabled bool
-	// IsFallbackEnabled reports whether DirectPath-to-CloudPath fallback is enabled.
-	IsFallbackEnabled bool
-	// UseDCP reports whether DynamicChannelPool is enabled for this transport.
-	UseDCP bool
-	// HasNumChannelsConfig reports whether cfg.NumChannels was explicitly set (> 0).
-	HasNumChannelsConfig bool
-	// NumChannels is the resolved default channel count (cfg.NumChannels when > 0, else transport.DefaultNumChannels).
-	NumChannels int
-}
-
-// ResolveSettings resolves TransportSettings from ClientConfig and standard Spanner environment variables.
-func ResolveSettings(cfg ClientConfig) TransportSettings {
+func resolveSettings(cfg ClientConfig) transportSettings {
 	rawEmulator := os.Getenv("SPANNER_EMULATOR_HOST")
-	emulatorAddr := stripEndpointSchemes(rawEmulator)
-	endpointAddr := stripEndpointSchemes(cfg.Endpoint)
-	isEmulator := rawEmulator != "" && (cfg.Endpoint == "" || (emulatorAddr != "" && endpointAddr == emulatorAddr))
+	emulatorAddr := transport.StripEndpointScheme(rawEmulator)
+	endpointAddr := transport.StripEndpointScheme(cfg.Endpoint)
+	isEmulator := rawEmulator != "" && (cfg.Endpoint == "" || cfg.Endpoint == rawEmulator || (emulatorAddr != "" && endpointAddr == emulatorAddr))
 	isPlain := cfg.PlainText || isEmulator
 
-	var isDirectPathEnabled, isFallbackEnabled bool
-	if !isPlain && !cfg.DisableBuiltInAuth {
-		isDirectPathEnabled = transport.ResolveDirectPathEnabled(cfg.EnableDirectAccess)
-		isFallbackEnabled = transport.ResolveGCPFallbackEnabled()
-	}
-	useDCP := cfg.DynamicChannelPoolConfig.Enabled && !isEmulator
+	dcpRequested := cfg.DynamicChannelPoolConfig.DCPEnabled
+	dcpDisabledForNoAuth := dcpRequested && !isEmulator && !isPlain && cfg.DisableBuiltInAuth
+	useDCP := dcpRequested && !isEmulator && (isPlain || !cfg.DisableBuiltInAuth)
+
+	isDirectPathEnabled := !isPlain && !cfg.DisableBuiltInAuth && transport.ResolveDirectPathEnabled(cfg.EnableDirectAccess)
+	isFallbackEnabled := isDirectPathEnabled && !useDCP && transport.ResolveGCPFallbackEnabled()
 
 	hasNumChannelsConfig := cfg.NumChannels > 0
 	numCh := cfg.NumChannels
@@ -126,26 +93,39 @@ func ResolveSettings(cfg ClientConfig) TransportSettings {
 		numCh = transport.DefaultNumChannels
 	}
 
-	return TransportSettings{
-		EmulatorAddr:         emulatorAddr,
-		EndpointAddr:         endpointAddr,
-		IsEmulator:           isEmulator,
-		IsPlain:              isPlain,
-		IsDirectPathEnabled:  isDirectPathEnabled,
-		IsFallbackEnabled:    isFallbackEnabled,
-		UseDCP:               useDCP,
-		HasNumChannelsConfig: hasNumChannelsConfig,
-		NumChannels:          numCh,
+	return transportSettings{
+		rawEmulator:          rawEmulator,
+		emulatorAddr:         emulatorAddr,
+		isEmulator:           isEmulator,
+		isPlain:              isPlain,
+		isDirectPathEnabled:  isDirectPathEnabled,
+		isFallbackEnabled:    isFallbackEnabled,
+		useDCP:               useDCP,
+		dcpDisabledForNoAuth: dcpDisabledForNoAuth,
+		hasNumChannelsConfig: hasNumChannelsConfig,
+		numChannels:          numCh,
 	}
 }
 
-// BuildClientOptions builds the base option.ClientOption slice from ClientConfig and TransportSettings.
-func BuildClientOptions(cfg ClientConfig, settings TransportSettings) []option.ClientOption {
+func buildClientOptions(cfg ClientConfig, settings transportSettings, extraOpts ...option.ClientOption) []option.ClientOption {
 	var opts []option.ClientOption
-	if settings.IsEmulator {
-		opts = append(opts, transport.PlainTextClientOptions(settings.EmulatorAddr, true)...)
-	} else if settings.IsPlain {
-		opts = append(opts, transport.PlainTextClientOptions(settings.EndpointAddr, cfg.Endpoint != "")...)
+	if settings.isEmulator {
+		opts = append(opts, transport.EmulatorClientOptions(settings.rawEmulator)...)
+	} else if settings.isPlain {
+		if cfg.Endpoint != "" {
+			addr := cfg.Endpoint
+			if after, ok := strings.CutPrefix(addr, "http://"); ok {
+				addr = after
+			} else if after, ok := strings.CutPrefix(addr, "https://"); ok {
+				addr = after
+			}
+			if strings.Contains(addr, "://") {
+				opts = append(opts, option.WithEndpoint(addr))
+			} else {
+				opts = append(opts, option.WithEndpoint("passthrough:///"+addr))
+			}
+		}
+		opts = append(opts, transport.PlainTextClientOptions()...)
 	} else {
 		if cfg.Endpoint != "" {
 			opts = append(opts, option.WithEndpoint(cfg.Endpoint))
@@ -153,42 +133,76 @@ func BuildClientOptions(cfg ClientConfig, settings TransportSettings) []option.C
 		if cfg.DisableBuiltInAuth {
 			opts = append(opts, option.WithoutAuthentication())
 		}
+		if cfg.UniverseDomain != "" {
+			opts = append(opts, option.WithUniverseDomain(cfg.UniverseDomain))
+		}
 	}
 
-	if cfg.UniverseDomain != "" && !settings.IsPlain {
-		opts = append(opts, option.WithUniverseDomain(cfg.UniverseDomain))
-	}
-
-	return append(opts, cfg.ClientOptions...)
+	return append(opts, extraOpts...)
 }
 
+func isValidResourceSegment(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	for _, r := range s {
+		if unicode.IsSpace(r) {
+			return false
+		}
+	}
+	return true
+}
+
+// parseSessionDatabasePrefix validates the strict 8-segment Spanner session name
+// "projects/<p>/instances/<i>/databases/<d>/sessions/<s>" with non-empty,
+// non-whitespace segments and returns "projects/<p>/instances/<i>/databases/<d>"
+// without allocating.
 func parseSessionDatabasePrefix(sessionID string) (string, bool) {
-	const marker = "/sessions/"
-	idx := strings.Index(sessionID, marker)
-	if idx <= 0 || idx+len(marker) >= len(sessionID) {
+	rest, ok := strings.CutPrefix(sessionID, "projects/")
+	if !ok {
 		return "", false
 	}
-	return sessionID[:idx], true
+	i := strings.IndexByte(rest, '/')
+	if i <= 0 || !isValidResourceSegment(rest[:i]) {
+		return "", false
+	}
+	rest, ok = strings.CutPrefix(rest[i+1:], "instances/")
+	if !ok {
+		return "", false
+	}
+	i = strings.IndexByte(rest, '/')
+	if i <= 0 || !isValidResourceSegment(rest[:i]) {
+		return "", false
+	}
+	rest, ok = strings.CutPrefix(rest[i+1:], "databases/")
+	if !ok {
+		return "", false
+	}
+	i = strings.IndexByte(rest, '/')
+	if i <= 0 || !isValidResourceSegment(rest[:i]) {
+		return "", false
+	}
+	afterDB := rest[i+1:]
+	sess, ok := strings.CutPrefix(afterDB, "sessions/")
+	if !ok || strings.IndexByte(sess, '/') >= 0 || !isValidResourceSegment(sess) {
+		return "", false
+	}
+	dbLen := len(sessionID) - len(afterDB) - 1
+	return sessionID[:dbLen], true
 }
 
-// ApplyDCPPrimeMetadata attaches the database resource-prefix header (extracted from sessionID),
-// route-to-leader header, and sessionMD (e.g. x-response-encoding: gzip) without mutating
-// any existing outgoing metadata or sessionMD.
-func ApplyDCPPrimeMetadata(ctx context.Context, sessionMD metadata.MD, sessionID string) context.Context {
-	dbPrefix := PlaceholderDB
-	if prefix, ok := parseSessionDatabasePrefix(sessionID); ok {
-		dbPrefix = prefix
-	}
+// applyDCPPrimeMetadata attaches the validated database resource-prefix header,
+// route-to-leader header, and sessionMD (e.g. x-response-encoding: gzip) without
+// mutating any existing outgoing metadata or sessionMD.
+func applyDCPPrimeMetadata(ctx context.Context, sessionMD metadata.MD, dbPrefix string) context.Context {
 	outMD := metadata.Pairs(
 		transport.ResourcePrefixHeader, dbPrefix,
 		transport.RouteToLeaderHeader, "true",
 	)
-	if len(sessionMD) > 0 {
-		for k, vals := range sessionMD {
-			lk := strings.ToLower(k)
-			if lk != transport.ResourcePrefixHeader && lk != transport.RouteToLeaderHeader {
-				outMD.Append(lk, vals...)
-			}
+	for k, vals := range sessionMD {
+		lk := strings.ToLower(k)
+		if lk != transport.ResourcePrefixHeader && lk != transport.RouteToLeaderHeader {
+			outMD.Append(lk, vals...)
 		}
 	}
 	if existing, ok := metadata.FromOutgoingContext(ctx); ok {
@@ -204,30 +218,14 @@ func ApplyDCPPrimeMetadata(ctx context.Context, sessionMD metadata.MD, sessionID
 	return metadata.NewOutgoingContext(ctx, outMD)
 }
 
-func toTransportDCPConfig(cfg DynamicChannelPoolConfig) transport.DCPConfig {
-	return transport.DCPConfig{
-		DCPEnabled:                           cfg.Enabled,
-		DCPInitialChannels:                   cfg.InitialChannels,
-		DCPMinChannels:                       cfg.MinChannels,
-		DCPMaxChannels:                       cfg.MaxChannels,
-		DCPMaxRPCPerChannel:                  cfg.MaxRPCPerChannel,
-		DCPMinRPCPerChannel:                  cfg.MinRPCPerChannel,
-		DCPErrorPenaltyStep:                  cfg.ErrorPenaltyStep,
-		DCPErrorPenaltyDuration:              cfg.ErrorPenaltyDuration,
-		DCPScaleDownCheckInterval:            cfg.ScaleDownCheckInterval,
-		DCPScaleUpCooldown:                   cfg.ScaleUpCooldown,
-		DCPDownscaleConsecutiveLowLoadChecks: cfg.DownscaleConsecutiveLowLoadChecks,
-		DCPMaxScaleUpPercent:                 cfg.MaxScaleUpPercent,
-		DCPMaxRemoveChannels:                 cfg.MaxRemoveChannels,
-		DCPDrainIdleGrace:                    cfg.DrainIdleGrace,
-		DCPPrimeTimeout:                      cfg.PrimeTimeout,
-		DCPPrimeMaxAttempts:                  cfg.PrimeMaxAttempts,
-		DCPSelectionStrategy:                 transport.DCPSelectionStrategy(cfg.SelectionStrategy),
-	}
-}
-
 // ChannelClient is the per-channel Spanner RPC client interface returned by Transport.PickClient.
 // Underlying connections are owned by Transport and released via Transport.Close.
+//
+// Request-ID contract:
+//   - ExecuteSql automatically injects x-goog-spanner-request-id unless opts already carry one.
+//   - ExecuteStreamingSql does not inject a request ID; callers must obtain a *requestid.Wrap
+//     from RequestIDHeaderInjector (or supply requestid.WithRequestID) and pass per-attempt
+//     CallOptions so retries reuse the same logical request key.
 type ChannelClient interface {
 	RequestIDHeaderInjector(context.Context) (*requestid.Wrap, error)
 	ExecuteSql(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (*sppb.ResultSet, error)
@@ -261,9 +259,6 @@ func (c *rawChannelClient) Close() error {
 }
 
 func (c *rawChannelClient) RequestIDHeaderInjector(context.Context) (*requestid.Wrap, error) {
-	if c == nil {
-		return nil, status.Error(codes.Internal, "request-id header provider is unavailable")
-	}
 	return c.tracker.NewWrap(), nil
 }
 
@@ -286,28 +281,31 @@ func (c *dcpChannelClient) RequestIDHeaderInjector(ctx context.Context) (*reques
 	return c.delegate.RequestIDHeaderInjector(ctx)
 }
 
-func (c *dcpChannelClient) ExecuteSql(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (*sppb.ResultSet, error) {
+func (c *dcpChannelClient) ExecuteSql(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (resp *sppb.ResultSet, err error) {
 	done := c.entry.StartUnary(ctx)
-	resp, err := c.delegate.ExecuteSql(ctx, req, opts...)
-	done(err)
-	return resp, err
+	defer func() { done(err) }()
+	return c.delegate.ExecuteSql(ctx, req, opts...)
 }
 
-func (c *dcpChannelClient) ExecuteStreamingSql(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (sppb.Spanner_ExecuteStreamingSqlClient, error) {
+func (c *dcpChannelClient) ExecuteStreamingSql(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (stream sppb.Spanner_ExecuteStreamingSqlClient, err error) {
 	ref := c.entry.StartStream(ctx)
-	stream, err := c.delegate.ExecuteStreamingSql(ctx, req, opts...)
+	var ok bool
+	defer func() {
+		if !ok {
+			ref.Done(err)
+		}
+	}()
+	stream, err = c.delegate.ExecuteStreamingSql(ctx, req, opts...)
 	if err != nil {
-		ref.Done(err)
 		return nil, err
 	}
+	ok = true
 	return &transport.DCPExecuteStreamingSQLClient{Spanner_ExecuteStreamingSqlClient: stream, Ref: ref}, nil
 }
 
 type dcpResolvingChannelClient struct {
 	transport.DCPResolver[managedChannelClient]
 }
-
-var errSharedCoreDCPNoEntries = status.Error(codes.Unavailable, "spanner_dcp: no available channels")
 
 func newDCPResolvingChannelClient(pool *transport.DynamicChannelPool[managedChannelClient], entry *transport.DCPEntry[managedChannelClient]) *dcpResolvingChannelClient {
 	c := &dcpResolvingChannelClient{
@@ -319,7 +317,7 @@ func newDCPResolvingChannelClient(pool *transport.DynamicChannelPool[managedChan
 
 func (c *dcpResolvingChannelClient) Acquire(ctx context.Context) (*transport.DCPEntry[managedChannelClient], error) {
 	if c == nil || c.Pool == nil {
-		return nil, errSharedCoreDCPNoEntries
+		return nil, transport.ErrDCPNoEntries
 	}
 	return c.DCPResolver.Acquire(ctx)
 }
@@ -330,9 +328,6 @@ func (c *dcpResolvingChannelClient) RequestIDHeaderInjector(ctx context.Context)
 		return nil, err
 	}
 	defer e.Release()
-	if e.Client == nil {
-		return nil, errSharedCoreDCPNoEntries
-	}
 	return e.Client.RequestIDHeaderInjector(ctx)
 }
 
@@ -342,9 +337,6 @@ func (c *dcpResolvingChannelClient) ExecuteSql(ctx context.Context, req *sppb.Ex
 		return nil, err
 	}
 	defer e.Release()
-	if e.Client == nil {
-		return nil, errSharedCoreDCPNoEntries
-	}
 	return e.Client.ExecuteSql(ctx, req, opts...)
 }
 
@@ -354,22 +346,26 @@ func (c *dcpResolvingChannelClient) ExecuteStreamingSql(ctx context.Context, req
 		return nil, err
 	}
 	defer e.Release()
-	if e.Client == nil {
-		return nil, errSharedCoreDCPNoEntries
-	}
 	return e.Client.ExecuteStreamingSql(ctx, req, opts...)
 }
 
-// Transport manages the gRPC connection pool (static, DirectPath fallback, or DynamicChannelPool)
-// and per-channel GAPIC clients for the shared native core.
+type primeSessionState struct {
+	sessionID string
+	dbPrefix  string
+	stale     bool
+}
+
+// Transport manages the gRPC connection pool (fixed-mode pool, DirectPath fallback,
+// or DynamicChannelPool) and per-channel GAPIC clients for the shared native core.
 type Transport struct {
-	closed    atomic.Bool
-	pool      gtransport.ConnPool
-	dcp       *transport.DynamicChannelPool[managedChannelClient]
-	clients   []ChannelClient
-	sessionMD metadata.MD
-	logger    *log.Logger
-	rrCounter atomic.Uint32
+	closed         atomic.Bool
+	pool           gtransport.ConnPool
+	dcp            *transport.DynamicChannelPool[managedChannelClient]
+	fallbackClient ChannelClient
+	sessionMD      metadata.MD
+	logger         *log.Logger
+	primeMu        sync.Mutex
+	primeState     atomic.Pointer[primeSessionState]
 }
 
 // NewTransport initializes a new Transport using the shared transport and requestid packages.
@@ -377,9 +373,24 @@ type Transport struct {
 // operations (and GCPFallback monitoring when enabled); callers must call Close to release
 // connections and stop background DCP workers.
 func NewTransport(ctx context.Context, cfg ClientConfig) (*Transport, error) {
-	logger := NewLogger(cfg.LogFunc)
-	settings := ResolveSettings(cfg)
-	opts := BuildClientOptions(cfg, settings)
+	return newTransport(ctx, cfg)
+}
+
+func newTransport(ctx context.Context, cfg ClientConfig, extraOpts ...option.ClientOption) (*Transport, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	settings := resolveSettings(cfg)
+	if settings.isPlain && !settings.isEmulator && cfg.Endpoint == "" && len(extraOpts) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "sharedcore: PlainText requires a non-empty Endpoint or SPANNER_EMULATOR_HOST")
+	}
+
+	logger := newLogger(cfg.LogFunc)
+	if settings.dcpDisabledForNoAuth {
+		logger.Printf("spanner sharedcore: DynamicChannelPoolConfig is disabled when DisableBuiltInAuth is true on a non-plaintext endpoint; falling back to fixed channel pool")
+	}
+
+	opts := buildClientOptions(cfg, settings, extraOpts...)
 
 	sessionMD := metadata.MD{}
 	if cfg.Compression == gzip.Name {
@@ -394,7 +405,7 @@ func NewTransport(ctx context.Context, cfg ClientConfig) (*Transport, error) {
 		logger:    logger,
 	}
 
-	if settings.UseDCP {
+	if settings.useDCP {
 		if err := t.initDCPPool(ctx, cfg, settings, clientID, nthRequest, opts); err != nil {
 			return nil, err
 		}
@@ -410,25 +421,25 @@ func NewTransport(ctx context.Context, cfg ClientConfig) (*Transport, error) {
 func (t *Transport) initDCPPool(
 	ctx context.Context,
 	cfg ClientConfig,
-	settings TransportSettings,
+	settings transportSettings,
 	clientID int,
 	nthRequest *atomic.Uint32,
 	opts []option.ClientOption,
 ) error {
-	userOpts := append([]option.ClientOption(nil), opts...)
 	dcpPoolCfg := transport.PoolConfig{
 		NumChannels:          1,
 		HasNumChannelsConfig: true,
 		Compression:          cfg.Compression,
-		EnableDirectAccess:   settings.IsDirectPathEnabled,
+		EnableDirectAccess:   settings.isDirectPathEnabled,
+		DisableDirectPath:    !settings.isDirectPathEnabled,
 	}
 	dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
-		pool, _, err := transport.DialStaticPool(dialCtx, dcpPoolCfg, userOpts...)
+		pool, _, err := transport.DialStaticPool(dialCtx, dcpPoolCfg, opts...)
 		return pool, err
 	}
 	dcp, err := transport.NewDynamicChannelPool[managedChannelClient](
 		ctx,
-		toTransportDCPConfig(cfg.DynamicChannelPoolConfig),
+		cfg.DynamicChannelPoolConfig,
 		transport.DCPHooks[managedChannelClient]{
 			Logger: t.logger,
 			Dial:   dial,
@@ -442,11 +453,21 @@ func (t *Transport) initDCPPool(
 				return nil
 			},
 			PrimeRPC: func(primeCtx context.Context, e *transport.DCPEntry[managedChannelClient], sessionID string) error {
+				dbPrefix, ok := parseSessionDatabasePrefix(sessionID)
+				if !ok {
+					return status.Errorf(codes.InvalidArgument, "sharedcore: invalid DCP prime session %q", sessionID)
+				}
 				stmt := &sppb.ExecuteSqlRequest{Session: sessionID, Sql: "SELECT 1"}
-				_, err := e.Delegate.ExecuteSql(ApplyDCPPrimeMetadata(primeCtx, t.sessionMD, sessionID), stmt)
+				_, err := e.Delegate.ExecuteSql(applyDCPPrimeMetadata(primeCtx, t.sessionMD, dbPrefix), stmt)
+				if err != nil {
+					switch status.Code(err) {
+					case codes.NotFound, codes.PermissionDenied, codes.InvalidArgument, codes.FailedPrecondition:
+						t.markPrimeSessionStale(sessionID)
+					}
+				}
 				return err
 			},
-			NoEntriesErr: errSharedCoreDCPNoEntries,
+			NoEntriesErr: transport.ErrDCPNoEntries,
 		},
 	)
 	if err != nil {
@@ -455,7 +476,7 @@ func (t *Transport) initDCPPool(
 	t.pool = dcp
 	t.dcp = dcp
 
-	if !settings.IsPlain {
+	if !settings.isPlain {
 		for _, e := range dcp.GetEntries() {
 			if e.Pool != nil {
 				if conn := e.Pool.Conn(); conn != nil {
@@ -470,124 +491,177 @@ func (t *Transport) initDCPPool(
 func (t *Transport) initStaticOrFallbackPool(
 	ctx context.Context,
 	cfg ClientConfig,
-	settings TransportSettings,
+	settings transportSettings,
 	clientID int,
 	nthRequest *atomic.Uint32,
 	opts []option.ClientOption,
 ) error {
 	poolCfg := transport.PoolConfig{
-		NumChannels:          settings.NumChannels,
-		HasNumChannelsConfig: settings.HasNumChannelsConfig,
+		NumChannels:          settings.numChannels,
+		HasNumChannelsConfig: settings.hasNumChannelsConfig,
 		Compression:          cfg.Compression,
-		EnableDirectAccess:   settings.IsDirectPathEnabled,
-	}
-	var (
-		pool gtransport.ConnPool
-		err  error
-	)
-	if settings.IsFallbackEnabled && settings.IsDirectPathEnabled {
-		pool, _, err = transport.CreateFallbackConnPool(ctx, poolCfg, opts...)
-	} else {
-		pool, _, err = transport.DialStaticPool(ctx, poolCfg, opts...)
-	}
-	if err != nil {
-		return err
-	}
-	actualPoolSize := pool.Num()
-	if actualPoolSize <= 0 {
-		_ = pool.Close()
-		return status.Error(codes.InvalidArgument, "gRPC connection pool has no connections")
+		EnableDirectAccess:   settings.isDirectPathEnabled,
+		DisableDirectPath:    !settings.isDirectPathEnabled,
 	}
 
-	channelIDMap := make(map[*grpc.ClientConn]uint64, actualPoolSize)
-	clients := make([]ChannelClient, actualPoolSize)
-	for i := 0; i < actualPoolSize; i++ {
-		var (
-			clientOpt option.ClientOption
-			channelID uint64
-		)
-		if conn := pool.Conn(); conn == nil {
-			clientOpt = gtransport.WithConnPool(pool)
-			channelID = uint64(i + 1)
-		} else {
-			var ok bool
-			channelID, ok = channelIDMap[conn]
-			if !ok {
-				channelID = uint64(len(channelIDMap)) + 1
-				channelIDMap[conn] = channelID
-			}
-			clientOpt = option.WithGRPCConn(conn)
+	if settings.isFallbackEnabled {
+		pool, _, err := transport.CreateFallbackConnPool(ctx, poolCfg, opts...)
+		if err != nil {
+			return err
 		}
-		c, err := newRawChannelClient(ctx, cfg.UserAgent, clientID, channelID, nthRequest, clientOpt)
+		if pool.Num() <= 0 {
+			_ = pool.Close()
+			return status.Error(codes.InvalidArgument, "gRPC connection pool has no connections")
+		}
+		fbClient, err := newRawChannelClient(ctx, cfg.UserAgent, clientID, 0, nthRequest, gtransport.WithConnPool(pool))
 		if err != nil {
 			_ = pool.Close()
 			return err
 		}
-		clients[i] = c
+		if !settings.isPlain {
+			if fbPool, ok := pool.(*transport.FallbackPool); ok && fbPool.PrimaryConn() != nil {
+				primary := fbPool.PrimaryConn()
+				seen := make(map[*grpc.ClientConn]struct{}, primary.Num())
+				for i := 0; i < primary.Num(); i++ {
+					if conn := primary.Conn(); conn != nil {
+						if _, dup := seen[conn]; !dup {
+							seen[conn] = struct{}{}
+							conn.Connect()
+						}
+					}
+				}
+			}
+		}
+		t.pool = pool
+		t.fallbackClient = fbClient
+		return nil
 	}
 
-	if !settings.IsPlain {
-		for conn := range channelIDMap {
-			if conn != nil {
-				conn.Connect()
+	pool, _, err := transport.DialStaticPool(ctx, poolCfg, opts...)
+	if err != nil {
+		return err
+	}
+	if pool.Num() <= 0 {
+		_ = pool.Close()
+		return status.Error(codes.InvalidArgument, "gRPC connection pool has no connections")
+	}
+
+	fixedPool, err := transport.NewFixedChannelPool[managedChannelClient](
+		ctx,
+		pool,
+		transport.DCPHooks[managedChannelClient]{
+			Logger: t.logger,
+			NewEntryClient: func(entryCtx context.Context, e *transport.DCPEntry[managedChannelClient]) error {
+				rawClient, err := newRawChannelClient(entryCtx, cfg.UserAgent, clientID, e.ID, nthRequest, gtransport.WithConnPool(e))
+				if err != nil {
+					return err
+				}
+				e.Delegate = rawClient
+				e.Client = rawClient
+				return nil
+			},
+			NoEntriesErr: transport.ErrDCPNoEntries,
+		},
+	)
+	if err != nil {
+		_ = pool.Close()
+		return err
+	}
+
+	if !settings.isPlain {
+		for _, e := range fixedPool.GetEntries() {
+			if e.Pool != nil {
+				if conn := e.Pool.Conn(); conn != nil {
+					conn.Connect()
+				}
 			}
 		}
 	}
 
-	t.pool = pool
-	t.clients = clients
+	t.pool = fixedPool
+	t.dcp = fixedPool
 	return nil
 }
 
-// UpdateDCPPrimeSession records the multiplexed session ID used to prime newly scaled-up DCP channels.
-// Once a valid prime session is recorded for a database on a shared multi-database Transport,
-// sessions from other databases do not overwrite it (avoiding PrimeSession thrashing and
-// repeated scaleUpWorker wakeups), while session rotations for the same database still update it.
+func (t *Transport) markPrimeSessionStale(sessionID string) {
+	t.primeMu.Lock()
+	defer t.primeMu.Unlock()
+	cur := t.primeState.Load()
+	if cur != nil && cur.sessionID == sessionID && !cur.stale {
+		t.primeState.Store(&primeSessionState{
+			sessionID: cur.sessionID,
+			dbPrefix:  cur.dbPrefix,
+			stale:     true,
+		})
+	}
+}
+
+// UpdateDCPPrimeSession records a multiplexed session ID used to prime newly scaled-up
+// DCP channels. Callers must pass a valid multiplexed session name
+// ("projects/<p>/instances/<i>/databases/<d>/sessions/<s>").
+//
+// Once a healthy prime session is recorded for a database on a shared multi-database
+// Transport, sessions from other databases do not overwrite it (avoiding PrimeSession
+// thrashing and repeated scale-up wakeups). Same-database session rotations still update
+// the recorded session, and if the pinned session encounters a terminal session/database
+// error during priming it is marked stale so another live database can take over.
 func (t *Transport) UpdateDCPPrimeSession(sessionStr string) {
-	if t == nil || t.dcp == nil {
+	if t == nil || t.closed.Load() || t.dcp == nil || t.dcp.IsFixed() {
 		return
 	}
-	newDB, ok := parseSessionDatabasePrefix(sessionStr)
+	if cur := t.primeState.Load(); cur != nil && cur.sessionID == sessionStr {
+		return
+	}
+	dbPrefix, ok := parseSessionDatabasePrefix(sessionStr)
 	if !ok {
 		return
 	}
-	prev := t.dcp.PrimeSessionID()
-	if prev == sessionStr {
+	if cur := t.primeState.Load(); cur != nil && !cur.stale && cur.dbPrefix != dbPrefix {
 		return
 	}
-	if prev != "" {
-		if prevDB, ok := parseSessionDatabasePrefix(prev); ok && prevDB != newDB {
-			return
-		}
+
+	t.primeMu.Lock()
+	defer t.primeMu.Unlock()
+	if t.closed.Load() {
+		return
 	}
+	cur := t.primeState.Load()
+	if cur != nil && cur.sessionID == sessionStr {
+		return
+	}
+	if cur != nil && !cur.stale && cur.dbPrefix != dbPrefix {
+		return
+	}
+	t.primeState.Store(&primeSessionState{
+		sessionID: sessionStr,
+		dbPrefix:  dbPrefix,
+	})
 	t.dcp.SetPrimeSession(sessionStr)
 }
 
 // PickClient selects a ChannelClient for an RPC.
-//   - When DynamicChannelPool is active (t.dcp != nil), it delegates to t.dcp.Pick(ctx)
-//     and returns a resolving client that uses the configured DCP selection strategy
-//     and drain reference counting.
-//   - On a static pool (t.dcp == nil), it uses atomic round-robin across the
-//     pre-initialized t.clients slice.
+//   - When dynamic channel pooling is active, it delegates to the pool's configured
+//     selection strategy and returns a resolving client with drain reference counting.
+//   - On a fixed pool, it uses lock-free round-robin across pre-initialized channel clients.
+//   - On a DirectPath fallback pool, it returns the shared fallback channel client.
 func (t *Transport) PickClient(ctx context.Context) (ChannelClient, error) {
 	if t == nil || t.closed.Load() || t.pool == nil {
-		return nil, status.Error(codes.FailedPrecondition, "sharedcore.Transport is closed")
+		return nil, status.Error(codes.FailedPrecondition, "sharedcore.Transport is closed or uninitialized")
 	}
 	if t.dcp != nil {
 		entry, err := t.dcp.Pick(ctx)
 		if err != nil {
 			return nil, err
 		}
+		if t.dcp.IsFixed() {
+			return entry.Client, nil
+		}
 		return newDCPResolvingChannelClient(t.dcp, entry), nil
 	}
-	if len(t.clients) == 0 {
-		return nil, status.Error(codes.FailedPrecondition, "sharedcore.Transport is closed")
+	if t.fallbackClient != nil {
+		return t.fallbackClient, nil
 	}
-	if len(t.clients) == 1 {
-		return t.clients[0], nil
-	}
-	idx := (t.rrCounter.Add(1) - 1) % uint32(len(t.clients))
-	return t.clients[idx], nil
+	return nil, status.Error(codes.FailedPrecondition, "sharedcore.Transport is closed or uninitialized")
 }
 
 // Close shuts down the underlying connection pool and any background DCP workers.
@@ -595,6 +669,9 @@ func (t *Transport) Close() error {
 	if t == nil || !t.closed.CompareAndSwap(false, true) {
 		return nil
 	}
+	// Drain any in-flight UpdateDCPPrimeSession before closing the pool.
+	t.primeMu.Lock()
+	t.primeMu.Unlock()
 	if t.pool != nil {
 		return t.pool.Close()
 	}
