@@ -333,3 +333,68 @@ func TestDialStaticPoolFallbackPoolAndRequestIDInjection(t *testing.T) {
 		t.Fatalf("fbRaw.Close() (delegating to FallbackPool.Close()) failed: %v", err)
 	}
 }
+
+func TestPlainTextClientOptions(t *testing.T) {
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen failed: %v", err)
+	}
+	srv := grpc.NewServer()
+	capSrv := &headerCapturingSpannerServer{}
+	spannerpb.RegisterSpannerServer(srv, capSrv)
+	go func() { _ = srv.Serve(lis) }()
+	defer func() {
+		srv.Stop()
+		_ = lis.Close()
+	}()
+	addr := lis.Addr().String()
+
+	t.Run("includeEndpoint=true binds passthrough endpoint and dials plaintext", func(t *testing.T) {
+		opts := PlainTextClientOptions(addr, true)
+		if len(opts) != 4 {
+			t.Fatalf("len(PlainTextClientOptions(addr, true)) = %d, want 4", len(opts))
+		}
+		pool, err := gtransport.DialPool(context.Background(), DefaultClientOptions(1, "", false, nil, nil, opts...)...)
+		if err != nil {
+			t.Fatalf("DialPool failed: %v", err)
+		}
+		defer pool.Close()
+		if got := pool.Conn().Target(); got != "passthrough:///"+addr {
+			t.Fatalf("conn target = %q, want %q", got, "passthrough:///"+addr)
+		}
+		raw, err := NewGAPICClient(context.Background(), "", gtransport.WithConnPool(pool))
+		if err != nil {
+			t.Fatalf("NewGAPICClient failed: %v", err)
+		}
+		defer raw.Close()
+		if _, err := raw.ExecuteSql(context.Background(), &spannerpb.ExecuteSqlRequest{Sql: "SELECT 1"}); err != nil {
+			t.Fatalf("ExecuteSql failed: %v", err)
+		}
+	})
+
+	t.Run("includeEndpoint=false omits WithEndpoint so caller endpoint applies", func(t *testing.T) {
+		opts := PlainTextClientOptions("ignored-host:1", false)
+		if len(opts) != 3 {
+			t.Fatalf("len(PlainTextClientOptions(ignored, false)) = %d, want 3", len(opts))
+		}
+		// Prepending caller's WithEndpoint before PlainTextClientOptions("ignored-host:1", false)
+		// must preserve the caller's endpoint (proving no WithEndpoint was appended).
+		combined := append([]option.ClientOption{option.WithEndpoint("passthrough:///" + addr)}, opts...)
+		pool, err := gtransport.DialPool(context.Background(), DefaultClientOptions(1, "", false, nil, nil, combined...)...)
+		if err != nil {
+			t.Fatalf("DialPool failed: %v", err)
+		}
+		defer pool.Close()
+		if got := pool.Conn().Target(); got != "passthrough:///"+addr {
+			t.Fatalf("conn target = %q, want %q", got, "passthrough:///"+addr)
+		}
+		raw, err := NewGAPICClient(context.Background(), "", gtransport.WithConnPool(pool))
+		if err != nil {
+			t.Fatalf("NewGAPICClient failed: %v", err)
+		}
+		defer raw.Close()
+		if _, err := raw.ExecuteSql(context.Background(), &spannerpb.ExecuteSqlRequest{Sql: "SELECT 1"}); err != nil {
+			t.Fatalf("ExecuteSql failed: %v", err)
+		}
+	})
+}

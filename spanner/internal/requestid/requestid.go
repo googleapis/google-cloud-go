@@ -132,16 +132,9 @@ func LogicalRequestKeyFromCallOptions(opts []gax.CallOption) string {
 	if len(opts) == 0 {
 		return ""
 	}
-	for _, opt := range opts {
-		if opt == nil {
-			continue
-		}
-		reqIDOpt, ok := opt.(logicalRequestKeyOption)
-		if !ok {
-			continue
-		}
-		if key := reqIDOpt.logicalRequestKey(); key != "" {
-			return key
+	if len(opts) == 1 && opts[0] != nil {
+		if reqIDOpt, ok := opts[0].(logicalRequestKeyOption); ok {
+			return reqIDOpt.logicalRequestKey()
 		}
 	}
 
@@ -308,6 +301,10 @@ func (t Tracker) nextNthRequest() uint32 {
 	return t.nthRequest.Add(1)
 }
 
+func (t Tracker) formatLogicalRequestKey(nthRequest uint32) string {
+	return fmt.Sprintf("%d.%s.%d.%d.%d", Version, randIDForProcess, t.clientID, t.channelID, nthRequest)
+}
+
 func (t Tracker) formatRequestID(nthRequest, attempt uint32) string {
 	// Google Engineering has requested that each value be added in Decimal unpadded.
 	return fmt.Sprintf("%d.%s.%d.%d.%d.%d", Version, randIDForProcess, t.clientID, t.channelID, nthRequest, attempt)
@@ -399,10 +396,60 @@ type Wrap struct {
 	tracker    Tracker
 }
 
+// LogicalRequestKey returns the logical request key (without attempt suffix) for riw,
+// or "" if riw or its tracker is zero/nil.
+func (riw *Wrap) LogicalRequestKey() string {
+	if riw == nil || riw.tracker.nthRequest == nil {
+		return ""
+	}
+	return riw.tracker.formatLogicalRequestKey(riw.nthRequest)
+}
+
 // WithNextRetryAttempt updates the wrapped metadata with the given attempt number and returns a CallOption.
 func (riw *Wrap) WithNextRetryAttempt(attempt uint32) gax.CallOption {
 	riw.tracker.generateAndInsertRequestID(riw.md, riw.nthRequest, attempt)
 	return callOption{md: riw.md}
+}
+
+// WithRequestID returns an immutable CallOption that sets x-goog-spanner-request-id
+// to reqID, replacing any prior request-ID gRPC header option on Resolve.
+// When reqID is empty, the returned CallOption is a no-op.
+// It allocates a fresh metadata.MD on each Resolve so a single CallOption value
+// is safe for repeated and concurrent reuse across RPCs even when gRPC mutates
+// *HeaderAddr with response headers.
+func WithRequestID(reqID string) gax.CallOption {
+	return literalRequestIDOption(reqID)
+}
+
+type literalRequestIDOption string
+
+var _ gax.CallOption = literalRequestIDOption("")
+var _ logicalRequestKeyOption = literalRequestIDOption("")
+
+func (opt literalRequestIDOption) Resolve(cs *gax.CallSettings) {
+	if opt == "" {
+		return
+	}
+	md := metadata.MD{Header: []string{string(opt)}}
+	cs.GRPC = stripRequestIDGRPCOptions(cs.GRPC)
+	cs.GRPC = append(cs.GRPC, grpc.Header(&md))
+	if cs.Retry == nil {
+		return
+	}
+	originalRetryer := cs.Retry()
+	cs.Retry = func() gax.Retryer {
+		return (WrapRetryFn)(func(err error) (time.Duration, bool) {
+			md = metadata.MD{Header: []string{string(opt)}}
+			return originalRetryer.Retry(err)
+		})
+	}
+}
+
+func (opt literalRequestIDOption) logicalRequestKey() string {
+	if opt == "" {
+		return ""
+	}
+	return RequestID(opt).LogicalRequestKey()
 }
 
 // LogicalWrap builds retry CallOptions from a pre-existing logical request key (e.g. "1.proc.1.1.5").

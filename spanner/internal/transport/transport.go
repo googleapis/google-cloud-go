@@ -13,7 +13,8 @@
 // limitations under the License.
 
 // Package transport provides internal gRPC connection pool, GAPIC client,
-// and DirectPath/fallback primitives shared across Spanner packages.
+// DirectPath/fallback, and DynamicChannelPool primitives shared across Spanner
+// packages.
 package transport
 
 import (
@@ -68,16 +69,27 @@ func stripEndpointScheme(endpoint string) string {
 	return endpoint
 }
 
-// EmulatorClientOptions returns the ClientOptions needed to connect to a Spanner
-// emulator endpoint.
-func EmulatorClientOptions(emulatorAddr string) []option.ClientOption {
-	schemeRemoved := stripEndpointScheme(emulatorAddr)
-	return []option.ClientOption{
-		option.WithEndpoint("passthrough:///" + schemeRemoved),
+// PlainTextClientOptions returns the ClientOptions needed to connect to a plaintext
+// gRPC endpoint without authentication. When includeEndpoint is true, addr must be
+// scheme-free (e.g. "localhost:9010") and option.WithEndpoint("passthrough:///" + addr)
+// is prepended; when includeEndpoint is false, addr is ignored and no endpoint option
+// is added.
+func PlainTextClientOptions(addr string, includeEndpoint bool) []option.ClientOption {
+	opts := make([]option.ClientOption, 0, 4)
+	if includeEndpoint {
+		opts = append(opts, option.WithEndpoint("passthrough:///"+addr))
+	}
+	return append(opts,
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		option.WithoutAuthentication(),
 		internaloption.SkipDialSettingsValidation(),
-	}
+	)
+}
+
+// EmulatorClientOptions returns the ClientOptions needed to connect to a Spanner
+// emulator endpoint.
+func EmulatorClientOptions(emulatorAddr string) []option.ClientOption {
+	return PlainTextClientOptions(stripEndpointScheme(emulatorAddr), true)
 }
 
 // ResolveDirectPathEnabled resolves whether DirectPath is enabled by checking the
