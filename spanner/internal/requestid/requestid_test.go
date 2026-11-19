@@ -24,6 +24,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
@@ -346,4 +347,140 @@ func TestHeaderInjectorAugmentsErrorAndEnforcesContract(t *testing.T) {
 			}
 		}
 	})
+}
+
+func TestWithRequestIDAndWrapLogicalRequestKey(t *testing.T) {
+	var nilWrap *Wrap
+	if got := nilWrap.LogicalRequestKey(); got != "" {
+		t.Fatalf("nilWrap.LogicalRequestKey() = %q, want empty", got)
+	}
+	if got := (&Wrap{}).LogicalRequestKey(); got != "" {
+		t.Fatalf("zero Wrap.LogicalRequestKey() = %q, want empty", got)
+	}
+
+	var nth atomic.Uint32
+	tr := NewTracker(7, 3, &nth)
+	w := tr.NewWrap()
+	wantKey := w.LogicalRequestKey()
+	if wantKey == "" {
+		t.Fatal("expected non-empty Wrap.LogicalRequestKey()")
+	}
+	var csWrap gax.CallSettings
+	w.WithNextRetryAttempt(2).Resolve(&csWrap)
+	_, wireID, ok := GRPCCallOptionsToRequestID(csWrap.GRPC)
+	if !ok || wireID.LogicalRequestKey() != wantKey {
+		t.Fatalf("wireID=%q logicalKey=%q, want %q", wireID, wireID.LogicalRequestKey(), wantKey)
+	}
+
+	// Empty WithRequestID is a no-op and preserves any prior request ID.
+	emptyOpt := WithRequestID("")
+	if got := LogicalRequestKeyFromCallOptions([]gax.CallOption{emptyOpt}); got != "" {
+		t.Fatalf("LogicalRequestKeyFromCallOptions(empty) = %q, want empty", got)
+	}
+	emptyOpt.Resolve(&csWrap)
+	if _, afterEmpty, ok := GRPCCallOptionsToRequestID(csWrap.GRPC); !ok || afterEmpty != wireID {
+		t.Fatalf("empty WithRequestID clobbered existing request ID: got %q (ok=%v), want %q", afterEmpty, ok, wireID)
+	}
+
+	// Non-empty WithRequestID overrides prior request ID and is safe for concurrent reuse
+	// even when simulated gRPC calls overwrite *hdrOpt.HeaderAddr with response headers.
+	const customID = "1.0123456789abcdef.9.4.12.1"
+	sharedOpt := WithRequestID(customID)
+	if got := LogicalRequestKeyFromCallOptions([]gax.CallOption{sharedOpt}); got != "1.0123456789abcdef.9.4.12" {
+		t.Fatalf("LogicalRequestKeyFromCallOptions = %q, want 1.0123456789abcdef.9.4.12", got)
+	}
+
+	var wg sync.WaitGroup
+	for g := 0; g < 16; g++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := 0; i < 64; i++ {
+				var cs gax.CallSettings
+				seed := metadata.MD{Header: []string{"1.seed.1.1.1.1"}}
+				cs.GRPC = []grpc.CallOption{grpc.Header(&seed)}
+				sharedOpt.Resolve(&cs)
+				_, gotID, found := GRPCCallOptionsToRequestID(cs.GRPC)
+				if !found || string(gotID) != customID {
+					t.Errorf("got (%q, %v), want (%q, true)", gotID, found, customID)
+					return
+				}
+				for _, gopt := range cs.GRPC {
+					if hdr, ok := gopt.(grpc.HeaderCallOption); ok && hdr.HeaderAddr != nil {
+						*hdr.HeaderAddr = metadata.Pairs("server-timing", "gfet4t7; dur=1.2")
+					}
+				}
+			}
+		}()
+	}
+	wg.Wait()
+
+	// Multi-option LogicalRequestKeyFromCallOptions obeys last-wins and trailing WithGRPCOptions resets.
+	if got := LogicalRequestKeyFromCallOptions([]gax.CallOption{w.WithNextRetryAttempt(1), sharedOpt}); got != "1.0123456789abcdef.9.4.12" {
+		t.Fatalf("last-wins LogicalRequestKeyFromCallOptions = %q, want 1.0123456789abcdef.9.4.12", got)
+	}
+	if got := LogicalRequestKeyFromCallOptions([]gax.CallOption{sharedOpt, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(1024))}); got != "" {
+		t.Fatalf("after trailing WithGRPCOptions reset, LogicalRequestKeyFromCallOptions = %q, want empty", got)
+	}
+
+	// GRPCCallOptionsToRequestID returns populated metadata.MD for public contract parity,
+	// and callOption strips prior literalRequestIDGRPCOption cleanly.
+	var csPublic gax.CallSettings
+	sharedOpt.Resolve(&csPublic)
+	mdPub, pubID, pubFound := GRPCCallOptionsToRequestID(csPublic.GRPC)
+	if !pubFound || string(pubID) != customID || len(mdPub.Get(Header)) != 1 || mdPub.Get(Header)[0] != customID {
+		t.Fatalf("GRPCCallOptionsToRequestID = (%v, %q, %v), want %q", mdPub, pubID, pubFound, customID)
+	}
+	w.WithNextRetryAttempt(3).Resolve(&csPublic)
+	_, replacedID, replacedFound := GRPCCallOptionsToRequestID(csPublic.GRPC)
+	if !replacedFound || string(replacedID) == customID {
+		t.Fatalf("expected Wrap.WithNextRetryAttempt to strip prior literalRequestIDGRPCOption, got (%q, %v)", replacedID, replacedFound)
+	}
+
+	// Nil-returning retry factory does not panic, and Resolve/inspection never eagerly call Retry().
+	var retryFactoryCalls atomic.Int32
+	nilRetryOpt := gax.WithRetry(func() gax.Retryer {
+		retryFactoryCalls.Add(1)
+		return nil
+	})
+	var csNilRetry gax.CallSettings
+	nilRetryOpt.Resolve(&csNilRetry)
+	sharedOpt.Resolve(&csNilRetry)
+	_ = LogicalRequestKeyFromCallOptions([]gax.CallOption{nilRetryOpt, sharedOpt})
+	_ = tr.OptsWithNextRequestID([]gax.CallOption{nilRetryOpt, sharedOpt})
+	if got := retryFactoryCalls.Load(); got != 0 {
+		t.Fatalf("Retry factory called %d times during Resolve/inspection, want 0", got)
+	}
+	if got := csNilRetry.Retry(); got != nil {
+		t.Fatalf("expected nil retryer preserved, got %v", got)
+	}
+
+	// Trailing gax.WithRetry preserves x-goog-spanner-request-id on retry attempt 2+ via HeaderInjector.
+	var attempts atomic.Int32
+	var seenWireIDs []string
+	inj := NewHeaderInjector(nil)
+	err := gax.Invoke(context.Background(), func(ctx context.Context, settings gax.CallSettings) error {
+		return inj.InterceptUnary(ctx, "/google.spanner.v1.Spanner/ExecuteSql", nil, nil, nil,
+			func(callCtx context.Context, _ string, _, _ any, _ *grpc.ClientConn, _ ...grpc.CallOption) error {
+				if md, ok := metadata.FromOutgoingContext(callCtx); ok {
+					if vals := md.Get(Header); len(vals) > 0 {
+						seenWireIDs = append(seenWireIDs, vals[0])
+					}
+				}
+				if attempts.Add(1) == 1 {
+					return errors.New("transient attempt 1")
+				}
+				return nil
+			},
+			settings.GRPC...,
+		)
+	}, sharedOpt, gax.WithRetry(func() gax.Retryer {
+		return WrapRetryFn(func(error) (time.Duration, bool) { return time.Millisecond, true })
+	}))
+	if err != nil {
+		t.Fatalf("gax.Invoke with WithRequestID + trailing WithRetry failed: %v", err)
+	}
+	if len(seenWireIDs) != 2 || seenWireIDs[0] != customID || seenWireIDs[1] != customID {
+		t.Fatalf("wire request IDs across retry = %v, want [%q, %q]", seenWireIDs, customID, customID)
+	}
 }

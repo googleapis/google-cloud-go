@@ -84,23 +84,56 @@ type logicalRequestKeyOption interface {
 	logicalRequestKey() string
 }
 
+// literalRequestIDGRPCOption carries an immutable x-goog-spanner-request-id across
+// gRPC calls and gax retries without allocating metadata.MD or wrapping cs.Retry.
+type literalRequestIDGRPCOption struct {
+	grpc.EmptyCallOption
+	reqID RequestID
+}
+
+func extractRequestID(opts []grpc.CallOption) (RequestID, bool) {
+	for _, opt := range opts {
+		switch o := opt.(type) {
+		case literalRequestIDGRPCOption:
+			if o.reqID != "" {
+				return o.reqID, true
+			}
+		case grpc.HeaderCallOption:
+			if o.HeaderAddr == nil {
+				continue
+			}
+			reqIDs := o.HeaderAddr.Get(Header)
+			if len(reqIDs) != 0 && len(reqIDs[0]) != 0 {
+				return RequestID(reqIDs[0]), true
+			}
+		}
+	}
+	return "", false
+}
+
 // GRPCCallOptionsToRequestID extracts the x-goog-spanner-request-id header from gRPC CallOptions.
 func GRPCCallOptionsToRequestID(opts []grpc.CallOption) (md metadata.MD, reqID RequestID, found bool) {
 	for _, opt := range opts {
-		hdrOpt, ok := opt.(grpc.HeaderCallOption)
-		if !ok {
-			continue
-		}
-		mdPtr := hdrOpt.HeaderAddr
-		if mdPtr == nil {
-			continue
-		}
-		reqIDs := mdPtr.Get(Header)
-		if len(reqIDs) != 0 && len(reqIDs[0]) != 0 {
-			md = *mdPtr
-			reqID = RequestID(reqIDs[0])
-			found = true
-			break
+		switch o := opt.(type) {
+		case literalRequestIDGRPCOption:
+			if o.reqID != "" {
+				md = metadata.MD{Header: []string{string(o.reqID)}}
+				reqID = o.reqID
+				found = true
+				return
+			}
+		case grpc.HeaderCallOption:
+			mdPtr := o.HeaderAddr
+			if mdPtr == nil {
+				continue
+			}
+			reqIDs := mdPtr.Get(Header)
+			if len(reqIDs) != 0 && len(reqIDs[0]) != 0 {
+				md = *mdPtr
+				reqID = RequestID(reqIDs[0])
+				found = true
+				return
+			}
 		}
 	}
 	return
@@ -132,21 +165,15 @@ func LogicalRequestKeyFromCallOptions(opts []gax.CallOption) string {
 	if len(opts) == 0 {
 		return ""
 	}
-	for _, opt := range opts {
-		if opt == nil {
-			continue
-		}
-		reqIDOpt, ok := opt.(logicalRequestKeyOption)
-		if !ok {
-			continue
-		}
-		if key := reqIDOpt.logicalRequestKey(); key != "" {
-			return key
+	// Fast path for a single request-ID option; equivalent to resolveCallSettings(opts, false).
+	if len(opts) == 1 && opts[0] != nil {
+		if reqIDOpt, ok := opts[0].(logicalRequestKeyOption); ok {
+			return reqIDOpt.logicalRequestKey()
 		}
 	}
 
 	settings := resolveCallSettings(opts, false)
-	_, reqID, found := GRPCCallOptionsToRequestID(settings.GRPC)
+	reqID, found := extractRequestID(settings.GRPC)
 	if !found {
 		return ""
 	}
@@ -158,21 +185,32 @@ func callOptionsHaveRequestID(opts []gax.CallOption) bool {
 		return false
 	}
 	settings := resolveCallSettings(opts, true)
-	_, _, found := GRPCCallOptionsToRequestID(settings.GRPC)
+	_, found := extractRequestID(settings.GRPC)
 	return found
 }
 
-// stripRequestIDGRPCOptions returns a slice without any grpc.HeaderCallOption
-// carrying x-goog-spanner-request-id. It never mutates opts's backing array and
-// never returns a slice sharing spare capacity with opts (which callOption.Resolve's
-// subsequent append relies on).
+func isRequestIDGRPCOption(opt grpc.CallOption) bool {
+	switch o := opt.(type) {
+	case literalRequestIDGRPCOption:
+		return true
+	case grpc.HeaderCallOption:
+		return o.HeaderAddr != nil && len(o.HeaderAddr.Get(Header)) > 0
+	default:
+		return false
+	}
+}
+
+// stripRequestIDGRPCOptions returns a slice without any gRPC CallOption carrying
+// x-goog-spanner-request-id (either grpc.HeaderCallOption or literalRequestIDGRPCOption).
+// It never mutates opts's backing array and never returns a slice sharing spare capacity
+// with opts (which subsequent Resolve appends rely on).
 func stripRequestIDGRPCOptions(opts []grpc.CallOption) []grpc.CallOption {
 	if len(opts) == 0 {
 		return nil
 	}
 	hasReqID := false
 	for _, opt := range opts {
-		if hdrOpt, ok := opt.(grpc.HeaderCallOption); ok && hdrOpt.HeaderAddr != nil && len(hdrOpt.HeaderAddr.Get(Header)) > 0 {
+		if isRequestIDGRPCOption(opt) {
 			hasReqID = true
 			break
 		}
@@ -182,8 +220,7 @@ func stripRequestIDGRPCOptions(opts []grpc.CallOption) []grpc.CallOption {
 	}
 	filtered := make([]grpc.CallOption, 0, len(opts))
 	for _, opt := range opts {
-		hdrOpt, ok := opt.(grpc.HeaderCallOption)
-		if !ok || hdrOpt.HeaderAddr == nil || len(hdrOpt.HeaderAddr.Get(Header)) == 0 {
+		if !isRequestIDGRPCOption(opt) {
 			filtered = append(filtered, opt)
 		}
 	}
@@ -225,7 +262,7 @@ func NewHeaderInjector(augment ErrorAugmenter) *HeaderInjector {
 func injectRequestIDIntoContext(ctx context.Context, opts []grpc.CallOption) (context.Context, RequestID, bool) {
 	// It is imperative to search for the requestID before the call
 	// because gRPC's internals will consume the headers.
-	_, reqID, found := GRPCCallOptionsToRequestID(opts)
+	reqID, found := extractRequestID(opts)
 	if found {
 		ctx = metadata.AppendToOutgoingContext(ctx, Header, string(reqID))
 		// Associate the requestId as an attribute on the span in the current context.
@@ -306,6 +343,10 @@ func NewTracker(clientID int, channelID uint64, nthRequest *atomic.Uint32) Track
 
 func (t Tracker) nextNthRequest() uint32 {
 	return t.nthRequest.Add(1)
+}
+
+func (t Tracker) formatLogicalRequestKey(nthRequest uint32) string {
+	return fmt.Sprintf("%d.%s.%d.%d.%d", Version, randIDForProcess, t.clientID, t.channelID, nthRequest)
 }
 
 func (t Tracker) formatRequestID(nthRequest, attempt uint32) string {
@@ -399,10 +440,51 @@ type Wrap struct {
 	tracker    Tracker
 }
 
+// LogicalRequestKey returns the logical request key (without attempt suffix) for riw,
+// or "" if riw or its tracker is zero/nil.
+func (riw *Wrap) LogicalRequestKey() string {
+	if riw == nil || riw.tracker.nthRequest == nil {
+		return ""
+	}
+	return riw.tracker.formatLogicalRequestKey(riw.nthRequest)
+}
+
 // WithNextRetryAttempt updates the wrapped metadata with the given attempt number and returns a CallOption.
 func (riw *Wrap) WithNextRetryAttempt(attempt uint32) gax.CallOption {
 	riw.tracker.generateAndInsertRequestID(riw.md, riw.nthRequest, attempt)
 	return callOption{md: riw.md}
+}
+
+// WithRequestID returns an immutable CallOption that sets x-goog-spanner-request-id
+// to the exact literal value reqID, replacing any prior request-ID gRPC CallOption
+// on Resolve. When reqID is empty, the returned CallOption is a no-op.
+//
+// Because it carries reqID via a private grpc.EmptyCallOption rather than grpc.Header,
+// it allocates no metadata.MD, does not touch cs.Retry, and is safe for repeated and
+// concurrent reuse across RPCs and gax retries (including when trailing gax.WithRetry
+// options are applied or retry factories return nil).
+func WithRequestID(reqID string) gax.CallOption {
+	return literalRequestIDOption(reqID)
+}
+
+type literalRequestIDOption string
+
+var _ gax.CallOption = literalRequestIDOption("")
+var _ logicalRequestKeyOption = literalRequestIDOption("")
+
+func (opt literalRequestIDOption) Resolve(cs *gax.CallSettings) {
+	if opt == "" {
+		return
+	}
+	cs.GRPC = stripRequestIDGRPCOptions(cs.GRPC)
+	cs.GRPC = append(cs.GRPC, literalRequestIDGRPCOption{reqID: RequestID(opt)})
+}
+
+func (opt literalRequestIDOption) logicalRequestKey() string {
+	if opt == "" {
+		return ""
+	}
+	return RequestID(opt).LogicalRequestKey()
 }
 
 // LogicalWrap builds retry CallOptions from a pre-existing logical request key (e.g. "1.proc.1.1.5").
