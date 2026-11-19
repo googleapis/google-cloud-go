@@ -106,9 +106,23 @@ func TestManagerPoll_SessionConfigurationDebugTags(t *testing.T) {
 			wantZeroTag: 1,
 		},
 		{
-			name: "session_load_nonzero",
+			name: "deprecated_session_load_ignored_when_diversion_absent",
 			resp: &bigtablepb.ClientConfiguration{
 				SessionConfiguration: &bigtablepb.SessionClientConfiguration{SessionLoad: 0.5},
+			},
+			wantNullTag: 0,
+			wantZeroTag: 1,
+		},
+		{
+			name: "global_diversion_nonzero",
+			resp: &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+						DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_GlobalDiversion{
+							GlobalDiversion: &bigtablepb.SessionScopeDiversionConfiguration{SessionLoad: 0.5},
+						},
+					},
+				},
 			},
 			wantNullTag: 0,
 			wantZeroTag: 0,
@@ -548,7 +562,13 @@ func TestAddSessionDiversionListener_UnregisterStopsCallbacks(t *testing.T) {
 	client.getConfigFunc = func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
 		return &bigtablepb.ClientConfiguration{
 			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
-				SessionLoad: 0.75,
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_GlobalDiversion{
+						GlobalDiversion: &bigtablepb.SessionScopeDiversionConfiguration{
+							SessionLoad: 0.75,
+						},
+					},
+				},
 			},
 		}, nil
 	}
@@ -700,6 +720,44 @@ func TestAddSessionDiversionListener(t *testing.T) {
 				},
 			},
 		},
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(1200 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+						PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+							ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+								"method:Bigtable.ReadRow":   {SessionLoad: 1.0},
+								"method:Bigtable.MutateRow": {SessionLoad: 1.0},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(1500 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+						PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+							ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+								"method:Bigtable.ReadRow":   {SessionLoad: 1.0},
+								"method:Bigtable.MutateRow": {SessionLoad: 1.0},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	var idx int
@@ -734,20 +792,94 @@ func TestAddSessionDiversionListener(t *testing.T) {
 	}
 	mu.Unlock()
 
-	manager.poll(context.Background()) // fires
-	manager.poll(context.Background()) // unchanged diversion config -> skipped
+	manager.poll(context.Background()) // fires (#1: MutateRow=0.5)
+	manager.poll(context.Background()) // unchanged served scopes -> skipped
+	manager.poll(context.Background()) // MutateRow 0.5 -> 1.0 -> fires (#2)
+	manager.poll(context.Background()) // unchanged after update -> skipped
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(deliveries) != 2 {
+		t.Fatalf("AddSessionDiversionListener deliveries = %d, want 2", len(deliveries))
+	}
+	psd0 := deliveries[0].GetSessionDiversionConfiguration().GetPerScopeDiversion()
+	if psd0 == nil {
+		t.Fatal("expected PerScopeDiversion in first delivered SessionClientConfiguration")
+	}
+	if got := psd0.GetScopeDiversions()["method:Bigtable.ReadRow"].GetSessionLoad(); got != 1.0 {
+		t.Errorf("first delivery ReadRow SessionLoad = %v, want 1.0", got)
+	}
+	if got := psd0.GetScopeDiversions()["method:Bigtable.MutateRow"].GetSessionLoad(); got != 0.5 {
+		t.Errorf("first delivery MutateRow SessionLoad = %v, want 0.5", got)
+	}
+	psd1 := deliveries[1].GetSessionDiversionConfiguration().GetPerScopeDiversion()
+	if psd1 == nil {
+		t.Fatal("expected PerScopeDiversion in second delivered SessionClientConfiguration")
+	}
+	if got := psd1.GetScopeDiversions()["method:Bigtable.MutateRow"].GetSessionLoad(); got != 1.0 {
+		t.Errorf("second delivery MutateRow SessionLoad = %v, want 1.0", got)
+	}
+}
+
+func TestAddSessionDiversionListener_DropsOutOfOrderSeq(t *testing.T) {
+	manager := NewClientConfigurationManager(&mockBigtableClient{}, "instance", "profile", nil, nil)
+
+	var mu sync.Mutex
+	var deliveries []*bigtablepb.SessionClientConfiguration
+	unregister := manager.AddSessionDiversionListener(func(sc *bigtablepb.SessionClientConfiguration) {
+		mu.Lock()
+		deliveries = append(deliveries, sc)
+		mu.Unlock()
+	})
+	defer unregister()
+
+	// Snapshot the internal raw listener registered by AddSessionDiversionListener
+	// so we can simulate overlapping poll() invocations arriving out of seq order.
+	manager.mu.RLock()
+	if len(manager.listeners) != 1 {
+		manager.mu.RUnlock()
+		t.Fatalf("len(manager.listeners) = %d, want 1", len(manager.listeners))
+	}
+	var rawListener func(*bigtablepb.ClientConfiguration, int64)
+	for _, fn := range manager.listeners {
+		rawListener = fn
+	}
+	manager.mu.RUnlock()
+
+	cfgSeq2 := &bigtablepb.ClientConfiguration{
+		SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+				DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_GlobalDiversion{
+					GlobalDiversion: &bigtablepb.SessionScopeDiversionConfiguration{SessionLoad: 1.0},
+				},
+			},
+		},
+	}
+	cfgSeq1Stale := &bigtablepb.ClientConfiguration{
+		SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+				DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_GlobalDiversion{
+					GlobalDiversion: &bigtablepb.SessionScopeDiversionConfiguration{SessionLoad: 0.25},
+				},
+			},
+		},
+	}
+
+	// Deliver newer seq=2 first, then stale seq=1; seq=1 must be dropped without
+	// overwriting prevLoads or invoking listener.
+	rawListener(cfgSeq2, 2)
+	rawListener(cfgSeq1Stale, 1)
+	// A subsequent seq=3 with the same 1.0 load must also be suppressed, proving
+	// stale seq=1 did not overwrite prevLoads.
+	rawListener(cfgSeq2, 3)
 
 	mu.Lock()
 	defer mu.Unlock()
 	if len(deliveries) != 1 {
-		t.Fatalf("AddSessionDiversionListener deliveries = %d, want 1", len(deliveries))
+		t.Fatalf("deliveries = %d, want 1 (stale seq=1 and unchanged seq=3 must be dropped)", len(deliveries))
 	}
-	psd := deliveries[0].GetSessionDiversionConfiguration().GetPerScopeDiversion()
-	if psd == nil {
-		t.Fatal("expected PerScopeDiversion in delivered SessionClientConfiguration")
-	}
-	if got := psd.GetScopeDiversions()["method:Bigtable.ReadRow"].GetSessionLoad(); got != 1.0 {
-		t.Errorf("ReadRow SessionLoad = %v, want 1.0", got)
+	if got := deliveries[0].GetSessionDiversionConfiguration().GetGlobalDiversion().GetSessionLoad(); got != 1.0 {
+		t.Errorf("delivered GlobalDiversion SessionLoad = %v, want 1.0", got)
 	}
 }
 

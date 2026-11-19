@@ -30,75 +30,50 @@ const (
 	ScopeMethodReadModifyWriteRow = "method:Bigtable.ReadModifyWriteRow"
 )
 
-type sessionScopeSpec struct {
-	key                       string
-	fallbackToFlatSessionLoad bool
-}
-
 // servedMethodScopes enumerates the exact method scopes this client serves via
-// sessions, along with whether each scope falls back to the deprecated flat
-// SessionClientConfiguration.session_load field when
-// session_diversion_configuration is absent.
-//
-// Sharing this list and resolveScopeSessionLoads between Diverter and
+// sessions. Sharing this list and resolveScopeSessionLoads between Diverter and
 // ClientConfigurationManager guarantees that per-RPC diversion and client-wide
 // "are sessions in use" checks always agree (unserved scopes cannot keep
 // session machinery or non-zero debug tags active while diverting zero RPCs).
-var servedMethodScopes = []sessionScopeSpec{
-	{key: ScopeMethodReadRow, fallbackToFlatSessionLoad: true},
-	{key: ScopeMethodMutateRow, fallbackToFlatSessionLoad: true},
-	{key: ScopeMethodCheckAndMutateRow, fallbackToFlatSessionLoad: false},
-	{key: ScopeMethodReadModifyWriteRow, fallbackToFlatSessionLoad: false},
+var servedMethodScopes = []string{
+	ScopeMethodReadRow,
+	ScopeMethodMutateRow,
+	ScopeMethodCheckAndMutateRow,
+	ScopeMethodReadModifyWriteRow,
 }
 
 // resolveScopeSessionLoads resolves the effective session load ratio for each
-// served method scope from a server-supplied SessionClientConfiguration:
-//   - The server only sends the deprecated flat session_load field to support
-//     Bigtable.ReadRow and Bigtable.MutateRow in older client versions. Newer
-//     clients ignore session_load entirely when session_diversion_configuration
-//     is present (including for scopes omitted from PerScopeDiversion or when
-//     DiversionStrategy is unset/unknown, which resolve to 0).
-//   - The client checks deprecated session_load only as a fallback for
-//     Bigtable.ReadRow and Bigtable.MutateRow when
-//     session_diversion_configuration is absent (0 for all other scopes) until
-//     the server fully rolls out SessionDiversionConfiguration.
+// served method scope from a server-supplied SessionClientConfiguration using
+// SessionDiversionConfiguration exclusively (deprecated SessionLoad is
+// ignored). Absent, empty, or unrecognized diversion strategies resolve to 0
+// across all served scopes.
 func resolveScopeSessionLoads(sc *bigtablepb.SessionClientConfiguration) map[string]float64 {
 	loads := make(map[string]float64, len(servedMethodScopes))
-	if sc == nil {
-		for _, s := range servedMethodScopes {
-			loads[s.key] = 0
+	divCfg := sc.GetSessionDiversionConfiguration()
+	if divCfg == nil {
+		for _, scope := range servedMethodScopes {
+			loads[scope] = 0
 		}
 		return loads
 	}
-	if divCfg := sc.GetSessionDiversionConfiguration(); divCfg != nil {
-		switch strategy := divCfg.GetDiversionStrategy().(type) {
-		case *bigtablepb.SessionDiversionConfiguration_GlobalDiversion:
-			load := float64(strategy.GlobalDiversion.GetSessionLoad())
-			for _, s := range servedMethodScopes {
-				loads[s.key] = load
-			}
-		case *bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_:
-			scopeDiversions := strategy.PerScopeDiversion.GetScopeDiversions()
-			for _, s := range servedMethodScopes {
-				var load float64
-				if scopeCfg := scopeDiversions[s.key]; scopeCfg != nil {
-					load = float64(scopeCfg.GetSessionLoad())
-				}
-				loads[s.key] = load
-			}
-		default:
-			for _, s := range servedMethodScopes {
-				loads[s.key] = 0
-			}
+	switch strategy := divCfg.GetDiversionStrategy().(type) {
+	case *bigtablepb.SessionDiversionConfiguration_GlobalDiversion:
+		load := float64(strategy.GlobalDiversion.GetSessionLoad())
+		for _, scope := range servedMethodScopes {
+			loads[scope] = load
 		}
-		return loads
-	}
-	flatLoad := float64(sc.GetSessionLoad())
-	for _, s := range servedMethodScopes {
-		if s.fallbackToFlatSessionLoad {
-			loads[s.key] = flatLoad
-		} else {
-			loads[s.key] = 0
+	case *bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_:
+		scopeDiversions := strategy.PerScopeDiversion.GetScopeDiversions()
+		for _, scope := range servedMethodScopes {
+			var load float64
+			if scopeCfg := scopeDiversions[scope]; scopeCfg != nil {
+				load = float64(scopeCfg.GetSessionLoad())
+			}
+			loads[scope] = load
+		}
+	default:
+		for _, scope := range servedMethodScopes {
+			loads[scope] = 0
 		}
 	}
 	return loads
@@ -118,11 +93,12 @@ type Diverter struct {
 	classicPicks atomic.Int64
 }
 
-// NewDiverter creates a new Diverter with the given uniform session load ratio
-// (0.0 to 1.0) across all served method scopes.
-func NewDiverter(sessionLoad float64) *Diverter {
+// NewDiverter creates a new Diverter with 0.0 session load across all served
+// method scopes until updated by ApplySessionClientConfiguration (or test
+// setters).
+func NewDiverter() *Diverter {
 	d := &Diverter{}
-	d.SetSessionLoad(sessionLoad)
+	d.SetSessionLoad(0.0)
 	return d
 }
 
@@ -130,8 +106,8 @@ func NewDiverter(sessionLoad float64) *Diverter {
 // method scopes.
 func (d *Diverter) SetSessionLoad(load float64) {
 	loads := make(map[string]float64, len(servedMethodScopes))
-	for _, s := range servedMethodScopes {
-		loads[s.key] = load
+	for _, scope := range servedMethodScopes {
+		loads[scope] = load
 	}
 	d.scopeLoads.Store(&loads)
 }
@@ -142,17 +118,15 @@ func (d *Diverter) SetSessionLoad(load float64) {
 // ignored.
 func (d *Diverter) SetScopeSessionLoads(loads map[string]float64) {
 	copied := make(map[string]float64, len(servedMethodScopes))
-	for _, s := range servedMethodScopes {
-		copied[s.key] = loads[s.key]
+	for _, scope := range servedMethodScopes {
+		copied[scope] = loads[scope]
 	}
 	d.scopeLoads.Store(&copied)
 }
 
 // ApplySessionClientConfiguration updates the Diverter according to the
-// server-supplied SessionClientConfiguration. When
-// SessionDiversionConfiguration is present it is authoritative (deprecated
-// session_load is ignored); otherwise deprecated session_load applies to
-// Bigtable.ReadRow and Bigtable.MutateRow only.
+// server-supplied SessionClientConfiguration's SessionDiversionConfiguration
+// (deprecated SessionLoad is ignored).
 func (d *Diverter) ApplySessionClientConfiguration(cfg *bigtablepb.SessionClientConfiguration) {
 	loads := resolveScopeSessionLoads(cfg)
 	d.scopeLoads.Store(&loads)
@@ -173,11 +147,11 @@ func (d *Diverter) SessionLoadForMethod(scope string) float64 {
 func (d *Diverter) ScopeSessionLoads() map[string]float64 {
 	copied := make(map[string]float64, len(servedMethodScopes))
 	m := d.scopeLoads.Load()
-	for _, s := range servedMethodScopes {
+	for _, scope := range servedMethodScopes {
 		if m != nil {
-			copied[s.key] = (*m)[s.key]
+			copied[scope] = (*m)[scope]
 		} else {
-			copied[s.key] = 0
+			copied[scope] = 0
 		}
 	}
 	return copied

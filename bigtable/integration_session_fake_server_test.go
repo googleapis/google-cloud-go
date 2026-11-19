@@ -370,9 +370,8 @@ func (s *fakeBigtableServer) GetClientConfiguration(ctx context.Context, req *bt
 			},
 		}
 	}
-	// SessionLoad: 1.0 (plus GlobalDiversion: 1.0 by default) pins the
-	// Diverter to the session path so every session-eligible RPC on the
-	// TableShim routes through SessionTable.
+	// GlobalDiversion: 1.0 by default pins the Diverter to the session path so
+	// every session-eligible RPC on the TableShim routes through SessionTable.
 	//
 	// Explicit SessionPool sizing is included because ClientConfigurationManager
 	// treats server values as authoritative and overwrites the per-pool
@@ -381,7 +380,6 @@ func (s *fakeBigtableServer) GetClientConfiguration(ctx context.Context, req *bt
 	// more sessions than tests expect. See setSessionPoolSizing.
 	return &btpb.ClientConfiguration{
 		SessionConfiguration: &btpb.SessionClientConfiguration{
-			SessionLoad:                   1.0,
 			SessionDiversionConfiguration: divCfg,
 			SessionPoolConfiguration: &btpb.SessionClientConfiguration_SessionPoolConfiguration{
 				MinSessionCount: minC,

@@ -33,12 +33,14 @@ import (
 // values without dialing.
 func newBareClientForOpenTests(t *testing.T, sessionLoad float64) *Client {
 	t.Helper()
+	d := btransport.NewDiverter()
+	d.SetSessionLoad(sessionLoad)
 	return &Client{
 		project:        "p",
 		instance:       "i",
 		appProfile:     "ap",
 		featureFlagsMD: metadata.MD{},
-		diverter:       btransport.NewDiverter(sessionLoad),
+		diverter:       d,
 	}
 }
 
@@ -576,7 +578,7 @@ func newSessionWiredClient(t *testing.T, fsc *fakeSessionClient) *Client {
 		instance:       "i",
 		appProfile:     "ap",
 		featureFlagsMD: metadata.MD{},
-		diverter:       btransport.NewDiverter(0.0),
+		diverter:       btransport.NewDiverter(),
 		sessionImpl:    fsc,
 	}
 	// Cache with a huge TTL and huge sweep interval so eviction never

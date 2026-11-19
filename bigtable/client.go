@@ -262,7 +262,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		executeQueryRetryOption: executeQueryRetryOption,
 		featureFlagsMD:          directAccessMD,
 		mPool:                   mPool,
-		diverter:                btransport.NewDiverter(0.0),
+		diverter:                btransport.NewDiverter(),
 	}
 
 	// Session data-plane backend construction has two guardrails so it

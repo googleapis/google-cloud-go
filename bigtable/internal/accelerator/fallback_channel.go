@@ -262,6 +262,14 @@ func (s *fallbackReadRowsStream) SendMsg(m any) error {
 	s.req = req
 	s.sent = true
 
+	// Validate request shape before consulting the diverter or dialing a
+	// session client so unsupported shapes (multi-row, range scans, reversed)
+	// return codes.Unimplemented without skewing Diverter pick counts or
+	// reaching classicFallback.ReadRow.
+	if err := validateSingleRowReadRequest(req); err != nil {
+		return err
+	}
+
 	if s.inner != nil && s.fc != nil {
 		instanceID := extractInstanceFromReadRowsReq(req)
 		if s.fc.isInstanceTripped(instanceID) || !s.fc.session.useSessionForMethod(instanceID, req.GetAppProfileId(), btransport.ScopeMethodReadRow) {
@@ -269,11 +277,7 @@ func (s *fallbackReadRowsStream) SendMsg(m any) error {
 		}
 	}
 	if s.inner == nil {
-		// Target instance already tripped or diverted to classic via SessionLoad —
-		// validate shape before going classic. Without this call, a multi-row or
-		// range-scan request would reach classicFallback.ReadRow and return
-		// codes.Internal rather than codes.Unimplemented.
-		return validateSingleRowReadRequest(req)
+		return nil
 	}
 	// Forward to session. Any error — including Unimplemented for unsupported
 	// shapes — propagates to the caller. Do NOT catch Unimplemented here: a

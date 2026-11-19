@@ -21,6 +21,23 @@ import (
 	bigtablepb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 )
 
+func TestNewDiverter_DefaultsToZero(t *testing.T) {
+	d := NewDiverter()
+	for _, m := range []string{
+		ScopeMethodReadRow,
+		ScopeMethodMutateRow,
+		ScopeMethodCheckAndMutateRow,
+		ScopeMethodReadModifyWriteRow,
+	} {
+		if got := d.SessionLoadForMethod(m); got != 0 {
+			t.Errorf("SessionLoadForMethod(%q) = %v, want 0", m, got)
+		}
+		if d.UseSessionForMethod(m) {
+			t.Errorf("UseSessionForMethod(%q) = true, want false", m)
+		}
+	}
+}
+
 func TestDiverterZeroAndOne(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -51,7 +68,8 @@ func TestDiverterZeroAndOne(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			d := NewDiverter(tc.sessionLoad)
+			d := NewDiverter()
+			d.SetSessionLoad(tc.sessionLoad)
 			for i := 0; i < 1000; i++ {
 				if got := d.UseSessionForMethod(ScopeMethodReadRow); got != tc.expectedRes {
 					t.Errorf("UseSessionForMethod(ReadRow) = %v, want %v for load %f", got, tc.expectedRes, tc.sessionLoad)
@@ -62,7 +80,7 @@ func TestDiverterZeroAndOne(t *testing.T) {
 }
 
 func TestDiverterSetSessionLoad(t *testing.T) {
-	d := NewDiverter(0.0)
+	d := NewDiverter()
 	if got := d.UseSessionForMethod(ScopeMethodReadRow); got != false {
 		t.Errorf("Expected initial UseSessionForMethod(ReadRow) to be false, got %v", got)
 	}
@@ -75,7 +93,8 @@ func TestDiverterSetSessionLoad(t *testing.T) {
 
 func TestDiverterProbabilistic(t *testing.T) {
 	load := 0.4
-	d := NewDiverter(load)
+	d := NewDiverter()
+	d.SetSessionLoad(load)
 	iterations := 10000
 	trueCount := 0
 
@@ -94,7 +113,8 @@ func TestDiverterProbabilistic(t *testing.T) {
 }
 
 func TestDiverterConcurrentAccess(t *testing.T) {
-	d := NewDiverter(0.5)
+	d := NewDiverter()
+	d.SetSessionLoad(0.5)
 	var wg sync.WaitGroup
 	numWorkers := 20
 	iterations := 1000
@@ -117,7 +137,8 @@ func TestDiverterConcurrentAccess(t *testing.T) {
 
 func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 	t.Run("nil config resets all methods to 0", func(t *testing.T) {
-		d := NewDiverter(1.0)
+		d := NewDiverter()
+		d.SetSessionLoad(1.0)
 		d.ApplySessionClientConfiguration(nil)
 		for _, m := range []string{
 			ScopeMethodReadRow,
@@ -134,18 +155,15 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 		}
 	})
 
-	t.Run("deprecated session_load applies only to ReadRow and MutateRow when diversion config is absent", func(t *testing.T) {
-		d := NewDiverter(0.0)
+	t.Run("deprecated session_load is ignored when diversion config is absent", func(t *testing.T) {
+		d := NewDiverter()
+		d.SetSessionLoad(1.0)
 		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
 			SessionLoad: 1.0,
 		})
-		if got := d.SessionLoadForMethod(ScopeMethodReadRow); got != 1.0 {
-			t.Errorf("SessionLoadForMethod(%q) = %v, want 1.0", ScopeMethodReadRow, got)
-		}
-		if got := d.SessionLoadForMethod(ScopeMethodMutateRow); got != 1.0 {
-			t.Errorf("SessionLoadForMethod(%q) = %v, want 1.0", ScopeMethodMutateRow, got)
-		}
 		for _, m := range []string{
+			ScopeMethodReadRow,
+			ScopeMethodMutateRow,
 			ScopeMethodCheckAndMutateRow,
 			ScopeMethodReadModifyWriteRow,
 		} {
@@ -159,7 +177,7 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 	})
 
 	t.Run("diversion config present ignores deprecated session_load completely", func(t *testing.T) {
-		d := NewDiverter(0.0)
+		d := NewDiverter()
 		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
 			SessionLoad: 1.0,
 			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
@@ -190,7 +208,8 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 	})
 
 	t.Run("empty diversion config resolves to zero for all scopes", func(t *testing.T) {
-		d := NewDiverter(1.0)
+		d := NewDiverter()
+		d.SetSessionLoad(1.0)
 		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
 			SessionLoad:                   1.0,
 			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{},
@@ -211,7 +230,7 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 	})
 
 	t.Run("global_diversion sets uniform load across all served methods", func(t *testing.T) {
-		d := NewDiverter(0.0)
+		d := NewDiverter()
 		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
 			SessionLoad: 0.0,
 			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
@@ -238,7 +257,7 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 	})
 
 	t.Run("per_scope_diversion sets method-specific loads and ignores unserved scopes", func(t *testing.T) {
-		d := NewDiverter(0.0)
+		d := NewDiverter()
 		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
 			SessionLoad: 0.5,
 			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{

@@ -226,7 +226,7 @@ func NewChannel(
 			return nil, err
 		}
 		key := clientKey{instance: instance, appProfile: appProfile}
-		d := btransport.NewDiverter(0.0)
+		d := btransport.NewDiverter()
 		sc.AddSessionDiversionListener(d.ApplySessionClientConfiguration)
 		ch.clients[key] = sc
 		ch.diverters[key] = d
@@ -300,7 +300,7 @@ func (c *Channel) getOrCreateSessionClientAndDiverter(instanceID, appProfile str
 			if err != nil {
 				return
 			}
-			d = btransport.NewDiverter(0.0)
+			d = btransport.NewDiverter()
 			sc.AddSessionDiversionListener(d.ApplySessionClientConfiguration)
 
 			c.mu.Lock()

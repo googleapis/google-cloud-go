@@ -459,6 +459,8 @@ func (m *ClientConfigurationManager) AddChannelPoolConfigListener(listener func(
 func (m *ClientConfigurationManager) AddSessionDiversionListener(listener func(*bigtablepb.SessionClientConfiguration)) func() {
 	var (
 		diffMu    sync.Mutex
+		hasPrev   bool
+		lastSeq   int64
 		prevLoads map[string]float64
 	)
 	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, seq int64) {
@@ -468,10 +470,16 @@ func (m *ClientConfigurationManager) AddSessionDiversionListener(listener func(*
 		sc := cfg.GetSessionConfiguration()
 		loads := resolveScopeSessionLoads(sc)
 		diffMu.Lock()
-		if prevLoads != nil && maps.Equal(prevLoads, loads) {
+		if hasPrev && seq < lastSeq {
 			diffMu.Unlock()
 			return
 		}
+		lastSeq = seq
+		if hasPrev && maps.Equal(prevLoads, loads) {
+			diffMu.Unlock()
+			return
+		}
+		hasPrev = true
 		prevLoads = loads
 		diffMu.Unlock()
 		listener(sc)

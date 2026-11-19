@@ -109,7 +109,15 @@ func (m *mockSessionClient) ConfigDebug() btransport.ConfigDebugProvider   { ret
 func (m *mockSessionClient) AddSessionDiversionListener(fn func(*v2pb.SessionClientConfiguration)) func() {
 	m.diversionListener = fn
 	if !m.skipInitialLoad && fn != nil {
-		fn(&v2pb.SessionClientConfiguration{SessionLoad: 1.0})
+		fn(&v2pb.SessionClientConfiguration{
+			SessionDiversionConfiguration: &v2pb.SessionDiversionConfiguration{
+				DiversionStrategy: &v2pb.SessionDiversionConfiguration_GlobalDiversion{
+					GlobalDiversion: &v2pb.SessionScopeDiversionConfiguration{
+						SessionLoad: 1.0,
+					},
+				},
+			},
+		})
 	}
 	return func() { m.diversionListener = nil }
 }
