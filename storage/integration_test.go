@@ -9527,6 +9527,77 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 	})
 }
 
+// TestIntegration_ParallelUpload_Encryption verifies that parallel uploads with a
+// customer-supplied encryption key or a Cloud KMS key succeed and that the
+// final object is encrypted with the configured key.
+func TestIntegration_ParallelUpload_Encryption(t *testing.T) {
+	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "ZB does not support CSEK or KMS")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+		if keyRingName == "" {
+			t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+		}
+		kmsKeyName := keyRingName + "/cryptoKeys/key1"
+		csek := []byte("my-secret-AES-256-encryption-key")
+		csekHash := sha256.Sum256(csek)
+		csekHashB64 := base64.StdEncoding.EncodeToString(csekHash[:])
+
+		const partSize = 8 << 20
+		testCases := []struct {
+			name       string
+			size       int
+			csek       []byte
+			kmsKeyName string
+		}{
+			{name: "csek_single_level", size: 18 << 20, csek: csek},
+			{name: "kms_single_level", size: 18 << 20, kmsKeyName: kmsKeyName},
+			// 33 parts exceed the compose limit and exercise intermediate composites.
+			{name: "csek_multi_level", size: 33 * partSize, csek: csek},
+			{name: "kms_multi_level", size: 33 * partSize, kmsKeyName: kmsKeyName},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				content := bytes.Repeat([]byte("e"), tc.size)
+				obj := client.Bucket(bucket).Object("pcu-enc-" + uidSpaceObjects.New())
+				if len(tc.csek) > 0 {
+					obj = obj.Key(tc.csek)
+				}
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: partSize, MaxConcurrency: 16}
+				w.KMSKeyName = tc.kmsKeyName
+				if _, err := w.Write(content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+
+				attrs := h.mustObjectAttrs(obj)
+				if attrs.Size != int64(tc.size) {
+					t.Errorf("attrs.Size = %d, want %d", attrs.Size, tc.size)
+				}
+				if len(tc.csek) > 0 && attrs.CustomerKeySHA256 != csekHashB64 {
+					t.Errorf("attrs.CustomerKeySHA256 = %q, want %q", attrs.CustomerKeySHA256, csekHashB64)
+				}
+				if !strings.HasPrefix(attrs.KMSKeyName, tc.kmsKeyName) || (tc.kmsKeyName == "") != (attrs.KMSKeyName == "") {
+					t.Errorf("attrs.KMSKeyName = %q, want prefix %q", attrs.KMSKeyName, tc.kmsKeyName)
+				}
+				if got := h.mustRead(obj); !bytes.Equal(got, content) {
+					t.Errorf("read %d bytes that differ from the %d bytes written", len(got), len(content))
+				}
+			})
+		}
+	})
+}
+
 func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {

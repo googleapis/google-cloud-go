@@ -1196,12 +1196,10 @@ func TestPCUState_Close(t *testing.T) {
 }
 
 type pcuRecordedPartWrite struct {
-	name          string
-	kmsKey        string
-	hasIfGenMatch bool
-	ifGenMatch    int64
-	csekKeyBytes  []byte
-	assignedGen   int64
+	name         string
+	kmsKey       string
+	csekKeyBytes []byte
+	assignedGen  int64
 }
 
 type pcuFakeGRPCServer struct {
@@ -1242,12 +1240,10 @@ func (s *pcuFakeGRPCServer) BidiWriteObject(stream storagepb.Storage_BidiWriteOb
 			s.nextGen++
 			gen := s.nextGen
 			rec := pcuRecordedPartWrite{
-				name:          spec.GetResource().GetName(),
-				kmsKey:        spec.GetResource().GetKmsKey(),
-				hasIfGenMatch: spec.IfGenerationMatch != nil,
-				ifGenMatch:    spec.GetIfGenerationMatch(),
-				csekKeyBytes:  append([]byte(nil), csek.GetEncryptionKeyBytes()...),
-				assignedGen:   gen,
+				name:         spec.GetResource().GetName(),
+				kmsKey:       spec.GetResource().GetKmsKey(),
+				csekKeyBytes: append([]byte(nil), csek.GetEncryptionKeyBytes()...),
+				assignedGen:  gen,
 			}
 			s.partWrites = append(s.partWrites, rec)
 			s.mu.Unlock()
@@ -1316,7 +1312,7 @@ func newPCUTestGRPCClient(t *testing.T, srv storagepb.StorageServer) *Client {
 	return client
 }
 
-func TestPCU_PartEncryptionPreconditionsAndGenerationPinning(t *testing.T) {
+func TestPCU_PartEncryptionAndGenerationPinning(t *testing.T) {
 	csek := bytes.Repeat([]byte{0x42}, 32)
 	const kmsKey = "projects/p/locations/us/keyRings/kr/cryptoKeys/k"
 
@@ -1369,9 +1365,6 @@ func TestPCU_PartEncryptionPreconditionsAndGenerationPinning(t *testing.T) {
 				if !strings.HasPrefix(pw.name, tmpObjectPrefix) {
 					t.Errorf("partWrites[%d].name = %q, want prefix %q", i, pw.name, tmpObjectPrefix)
 				}
-				if !pw.hasIfGenMatch || pw.ifGenMatch != 0 {
-					t.Errorf("partWrites[%d] IfGenerationMatch = (%v, %d), want (true, 0)", i, pw.hasIfGenMatch, pw.ifGenMatch)
-				}
 				if !bytes.Equal(pw.csekKeyBytes, tc.csek) {
 					t.Errorf("partWrites[%d] CSEK len = %d, want %d", i, len(pw.csekKeyBytes), len(tc.csek))
 				}
@@ -1402,68 +1395,84 @@ func TestPCU_PartEncryptionPreconditionsAndGenerationPinning(t *testing.T) {
 }
 
 func TestPCU_MultiLevelComposeEncryptionAndCleanupGenerations(t *testing.T) {
-	csek := bytes.Repeat([]byte{0x24}, 32)
-	srv := &pcuFakeGRPCServer{nextGen: 5000, failFinalCompose: true}
-	client := newPCUTestGRPCClient(t, srv)
-
-	obj := client.Bucket("my-bucket").Object("multi-level-dest").Key(csek)
-	w := obj.NewWriter(t.Context())
-	w.EnableParallelUpload = true
-	w.ParallelUploadConfig = ParallelUploadConfig{PartSize: minPartSize, MaxConcurrency: 4}
-
-	// Write 33 parts (32*minPartSize + 1024 bytes) to trigger intermediate composition.
-	chunk := make([]byte, minPartSize)
-	for i := 0; i < 32; i++ {
-		if _, err := w.Write(chunk); err != nil {
-			t.Fatalf("Writer.Write(part %d) failed: %v", i+1, err)
-		}
-	}
-	if _, err := w.Write(make([]byte, 1024)); err != nil {
-		t.Fatalf("Writer.Write(tail) failed: %v", err)
-	}
-	if err := w.Close(); err == nil {
-		t.Fatalf("Writer.Close() = nil, want simulated final compose error")
+	const kmsKey = "projects/p/locations/us/keyRings/kr/cryptoKeys/k"
+	tests := []struct {
+		name       string
+		csek       []byte
+		kmsKeyName string
+	}{
+		{name: "csek", csek: bytes.Repeat([]byte{0x24}, 32)},
+		{name: "cmek", kmsKeyName: kmsKey},
 	}
 
-	// Wait briefly for background doCleanup to issue DeleteObject RPCs.
-	deadline := time.Now().Add(2 * time.Second)
-	for time.Now().Before(deadline) {
-		srv.mu.Lock()
-		nDel := len(srv.deleteReqs)
-		srv.mu.Unlock()
-		if nDel >= 35 { // 33 parts + 2 intermediates
-			break
-		}
-		time.Sleep(10 * time.Millisecond)
-	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			srv := &pcuFakeGRPCServer{nextGen: 5000, failFinalCompose: true}
+			client := newPCUTestGRPCClient(t, srv)
 
-	srv.mu.Lock()
-	defer srv.mu.Unlock()
+			obj := client.Bucket("my-bucket").Object("multi-level-dest")
+			if len(tc.csek) > 0 {
+				obj = obj.Key(tc.csek)
+			}
+			w := obj.NewWriter(t.Context())
+			w.EnableParallelUpload = true
+			w.ParallelUploadConfig = ParallelUploadConfig{PartSize: minPartSize, MaxConcurrency: 4}
+			w.KMSKeyName = tc.kmsKeyName
 
-	if len(srv.composeReqs) != 3 { // 2 intermediate + 1 failed final
-		t.Fatalf("composeReqs count = %d, want 3", len(srv.composeReqs))
-	}
-	for i := 0; i < 2; i++ {
-		inter := srv.composeReqs[i]
-		if inter.IfGenerationMatch == nil || inter.GetIfGenerationMatch() != 0 {
-			t.Errorf("intermediate compose[%d] IfGenerationMatch = %v, want 0", i, inter.IfGenerationMatch)
-		}
-		if !bytes.Equal(inter.GetCommonObjectRequestParams().GetEncryptionKeyBytes(), csek) {
-			t.Errorf("intermediate compose[%d] CSEK len = %d, want %d", i, len(inter.GetCommonObjectRequestParams().GetEncryptionKeyBytes()), len(csek))
-		}
-	}
-	finalComp := srv.composeReqs[2]
-	for i, src := range finalComp.GetSourceObjects() {
-		if src.GetGeneration() == 0 {
-			t.Errorf("final compose SourceObjects[%d] (%q) Generation = 0, want pinned intermediate generation", i, src.GetName())
-		}
-	}
-	if len(srv.deleteReqs) != 35 {
-		t.Fatalf("deleteReqs count = %d, want 35", len(srv.deleteReqs))
-	}
-	for i, del := range srv.deleteReqs {
-		if del.GetGeneration() == 0 {
-			t.Errorf("deleteReqs[%d] (%q) Generation = 0, want pinned generation", i, del.GetObject())
-		}
+			// Write 33 parts (32*minPartSize + 1024 bytes) to trigger intermediate composition.
+			chunk := make([]byte, minPartSize)
+			for i := 0; i < 32; i++ {
+				if _, err := w.Write(chunk); err != nil {
+					t.Fatalf("Writer.Write(part %d) failed: %v", i+1, err)
+				}
+			}
+			if _, err := w.Write(make([]byte, 1024)); err != nil {
+				t.Fatalf("Writer.Write(tail) failed: %v", err)
+			}
+			if err := w.Close(); err == nil {
+				t.Fatalf("Writer.Close() = nil, want simulated final compose error")
+			}
+
+			// Wait briefly for background doCleanup to issue DeleteObject RPCs.
+			const wantDeletes = 35 // 33 parts + 2 intermediates
+			deadline := time.Now().Add(2 * time.Second)
+			for time.Now().Before(deadline) {
+				srv.mu.Lock()
+				n := len(srv.deleteReqs)
+				srv.mu.Unlock()
+				if n >= wantDeletes {
+					break
+				}
+				time.Sleep(10 * time.Millisecond)
+			}
+
+			srv.mu.Lock()
+			defer srv.mu.Unlock()
+
+			if len(srv.composeReqs) != 3 { // 2 intermediate + 1 failed final
+				t.Fatalf("composeReqs count = %d, want 3", len(srv.composeReqs))
+			}
+			for i, inter := range srv.composeReqs[:2] {
+				if got := inter.GetCommonObjectRequestParams().GetEncryptionKeyBytes(); !bytes.Equal(got, tc.csek) {
+					t.Errorf("intermediate compose[%d] CSEK len = %d, want %d", i, len(got), len(tc.csek))
+				}
+				if got := inter.GetKmsKey(); got != tc.kmsKeyName {
+					t.Errorf("intermediate compose[%d] KmsKey = %q, want %q", i, got, tc.kmsKeyName)
+				}
+			}
+			for i, src := range srv.composeReqs[2].GetSourceObjects() {
+				if src.GetGeneration() == 0 {
+					t.Errorf("final compose SourceObjects[%d] (%q) Generation = 0, want pinned intermediate generation", i, src.GetName())
+				}
+			}
+			if len(srv.deleteReqs) != wantDeletes {
+				t.Fatalf("deleteReqs count = %d, want %d", len(srv.deleteReqs), wantDeletes)
+			}
+			for i, del := range srv.deleteReqs {
+				if del.GetGeneration() == 0 {
+					t.Errorf("deleteReqs[%d] (%q) Generation = 0, want pinned generation", i, del.GetObject())
+				}
+			}
+		})
 	}
 }

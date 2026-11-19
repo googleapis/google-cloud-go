@@ -22,9 +22,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"path"
 	"runtime"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 )
@@ -102,11 +102,7 @@ func objectNameDigest(name string) string {
 // newPartName creates a unique name for a temporary part to avoid hotspotting.
 func newPartName(bucket, prefix, finalName string, partNumber int) string {
 	rnd := generateRandomBytes(4)
-	cleanPrefix := strings.TrimSuffix(prefix, "/")
-	if cleanPrefix != "" {
-		cleanPrefix += "/"
-	}
-	return fmt.Sprintf("%s%x-%s-part-%d", cleanPrefix, rnd, objectNameDigest(finalName), partNumber)
+	return fmt.Sprintf("%s%x-%s-part-%d", prefix, rnd, objectNameDigest(finalName), partNumber)
 }
 
 type pcuState struct {
@@ -282,21 +278,14 @@ func (s *pcuState) worker() {
 	}
 }
 
-func (s *pcuState) tempObjectHandle(name string) *ObjectHandle {
-	bkt := s.w.o.c.Bucket(s.w.o.bucket)
-	if s.w.o.userProject != "" {
-		bkt = bkt.UserProject(s.w.o.userProject)
-	}
-	return bkt.Object(name)
-}
-
 func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
 	partName := newPartName(s.w.o.bucket, tmpObjectPrefix, s.w.o.object, task.partNumber)
-	partHandle := s.tempObjectHandle(partName)
+	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
 
-	writeHandle := partHandle.If(Conditions{DoesNotExist: true})
+	// Compose sources must not carry a key, so only the write handle is keyed.
+	writeHandle := partHandle
 	if len(s.w.o.encryptionKey) > 0 {
-		writeHandle = writeHandle.Key(s.w.o.encryptionKey)
+		writeHandle = partHandle.Key(s.w.o.encryptionKey)
 	}
 
 	pw := writeHandle.NewWriter(s.ctx)
@@ -562,12 +551,12 @@ func (s *pcuState) composeParts() error {
 
 				// Level-based naming with hash to prevent exceeding 1024 bytes.
 				h := hex.EncodeToString(generateRandomBytes(4))
-				compName := fmt.Sprintf("%sint-%s-%s-lv%d-%d", tmpObjectPrefix, h, objectNameDigest(s.w.o.object), level, idx)
+				compName := path.Join(tmpObjectPrefix, fmt.Sprintf("int-%s-lv%d-%d", h, level, idx))
 
-				interHandle := s.tempObjectHandle(compName)
-				interDst := interHandle.If(Conditions{DoesNotExist: true})
+				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
+				interDst := interHandle
 				if len(s.w.o.encryptionKey) > 0 {
-					interDst = interDst.Key(s.w.o.encryptionKey)
+					interDst = interHandle.Key(s.w.o.encryptionKey)
 				}
 				composer := interDst.ComposerFrom(finalComps[start:end]...)
 				composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName

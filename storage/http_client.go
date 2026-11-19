@@ -926,9 +926,6 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	if req.predefinedACL != "" {
 		call.DestinationPredefinedAcl(req.predefinedACL)
 	}
-	if req.dstObject.attrs.KMSKeyName != "" {
-		call.KmsKeyName(req.dstObject.attrs.KMSKeyName)
-	}
 	if err := setEncryptionHeaders(call.Header(), req.dstObject.encryptionKey, false); err != nil {
 		return nil, err
 	}
