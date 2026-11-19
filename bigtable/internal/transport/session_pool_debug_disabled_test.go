@@ -55,6 +55,7 @@ func TestSessionPool_DebugDisabled_NoRecorderState(t *testing.T) {
 	p.recordSlowVRpc(SlowVRpcEvent{At: time.Now(), Method: "ReadRow", Latency: 100 * time.Millisecond})
 	p.recordScaling(ScalingEvent{At: time.Now(), Reason: "test"})
 	p.recordTimeSeries()
+	p.recordCheckoutFailure(time.Now().Add(-100*time.Millisecond), fakeVRpcDesc{method: "ReadRow"}, context.DeadlineExceeded)
 
 	p.m.pickHistoryMu.Lock()
 	if n := len(p.m.pickHistory); n != 0 {
@@ -89,6 +90,10 @@ func TestSessionPool_DebugDisabled_NoRecorderState(t *testing.T) {
 		t.Errorf("timeSeries has %d entries, want 0 (debug off)", n)
 	}
 	p.m.timeSeriesMu.Unlock()
+
+	if _, _, _, n := p.m.totalLatencyHist.snapshot(); n != 0 {
+		t.Errorf("totalLatencyHist has %d samples, want 0 (debug off)", n)
+	}
 }
 
 // TestSession_DebugDisabled_NoRingBufferState pins the equivalent

@@ -19,6 +19,7 @@
 package internal
 
 import (
+	"math"
 	"math/bits"
 	"sync"
 	"sync/atomic"
@@ -59,7 +60,8 @@ type poolMetrics struct {
 	pickHistoryMu   sync.Mutex
 	pickHistory     []PickHistoryEvent
 	pickHistoryHead int
-	afePickCounts   map[AfeID]int64
+	afePickCounts   map[AfeID]afePickStat
+	afePickSeq      uint64
 
 	// Pool-wide latency histograms — lifetime-of-pool, survive session
 	// churn (per-session ring buffers cap at 256 samples each).
@@ -319,6 +321,9 @@ func (p *SessionPoolImpl) recordSlowVRpc(ev SlowVRpcEvent) {
 // that never got a session. Empty Session cell in the sessionz table
 // marks "checkout never returned a handle".
 func (p *SessionPoolImpl) recordCheckoutFailure(checkoutStart time.Time, desc VRpcDescriptor, err error) {
+	if !p.debugEnabled {
+		return
+	}
 	poolWait := time.Since(checkoutStart)
 	p.m.totalLatencyHist.record(poolWait)
 	if poolWait <= defaultSlowThreshold {
@@ -347,6 +352,18 @@ func (p *SessionPoolImpl) snapshotSlowVRpcs() []SlowVRpcEvent {
 // maxPickHistory sizes the pick-decision ring for ~1s of decisions at a
 // few thousand picks/sec.
 const maxPickHistory = 500
+
+// maxAfePickCounts bounds the per-AFE cumulative counter map so churned
+// or rotated AFEs do not grow the map indefinitely.
+const maxAfePickCounts = 512
+
+// afePickStat tracks cumulative picks and the most recent pick sequence
+// number for an AFE so bounded map eviction drops the least-recently-picked
+// (stale/rotated) AFE rather than newly arrived AFEs with small counts.
+type afePickStat struct {
+	count   int64
+	lastSeq uint64
+}
 
 // PickHistoryEvent is one row in the pick-decision log. Populated even
 // for no-candidate picks so loadz can show the fallback frequency.
@@ -383,7 +400,28 @@ func (p *SessionPoolImpl) recordPickDecision(d PickDecision, pickerName string) 
 		}
 	}
 	if d.Winner != 0 {
-		p.m.afePickCounts[d.Winner]++
+		p.m.afePickSeq++
+		if st, ok := p.m.afePickCounts[d.Winner]; ok {
+			st.count++
+			st.lastSeq = p.m.afePickSeq
+			p.m.afePickCounts[d.Winner] = st
+		} else {
+			for len(p.m.afePickCounts) >= maxAfePickCounts {
+				var oldestKey AfeID
+				var oldestSeq uint64 = math.MaxUint64
+				for k, v := range p.m.afePickCounts {
+					if v.lastSeq < oldestSeq {
+						oldestSeq = v.lastSeq
+						oldestKey = k
+					}
+				}
+				delete(p.m.afePickCounts, oldestKey)
+			}
+			p.m.afePickCounts[d.Winner] = afePickStat{
+				count:   1,
+				lastSeq: p.m.afePickSeq,
+			}
+		}
 	}
 	p.m.pickHistoryMu.Unlock()
 }
@@ -412,7 +450,7 @@ func (p *SessionPoolImpl) snapshotAfePickCounts() map[AfeID]int64 {
 	defer p.m.pickHistoryMu.Unlock()
 	out := make(map[AfeID]int64, len(p.m.afePickCounts))
 	for k, v := range p.m.afePickCounts {
-		out[k] = v
+		out[k] = v.count
 	}
 	return out
 }
