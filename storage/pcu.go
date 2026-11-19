@@ -91,18 +91,28 @@ func newPCUSettings(maxConcurrency int) *pcuSettings {
 	return c
 }
 
+const partNameDigestBytes = 8
+
 // objectNameDigest returns a short hex SHA-256 digest of name so temporary
 // part keys remain under the 1024-byte object-name limit and never interpret
 // slashes or dot segments in name.
 func objectNameDigest(name string) string {
 	sum := sha256.Sum256([]byte(name))
-	return hex.EncodeToString(sum[:8])
+	return hex.EncodeToString(sum[:partNameDigestBytes])
 }
 
 // newPartName creates a unique name for a temporary part to avoid hotspotting.
-func newPartName(bucket, prefix, finalName string, partNumber int) string {
+func newPartName(prefix, finalName string, partNumber int) string {
 	rnd := generateRandomBytes(4)
-	return fmt.Sprintf("%s%x-%s-part-%d", prefix, rnd, objectNameDigest(finalName), partNumber)
+	return path.Join(prefix, fmt.Sprintf("%x-%s-part-%d", rnd, objectNameDigest(finalName), partNumber))
+}
+
+// pinGeneration pins h to attrs.Generation so compose and cleanup touch only this upload's object.
+func pinGeneration(h *ObjectHandle, attrs *ObjectAttrs) *ObjectHandle {
+	if attrs == nil || attrs.Generation <= 0 {
+		return h
+	}
+	return h.Generation(attrs.Generation)
 }
 
 type pcuState struct {
@@ -279,7 +289,7 @@ func (s *pcuState) worker() {
 }
 
 func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
-	partName := newPartName(s.w.o.bucket, tmpObjectPrefix, s.w.o.object, task.partNumber)
+	partName := newPartName(tmpObjectPrefix, s.w.o.object, task.partNumber)
 	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
 
 	// Compose sources must not carry a key, so only the write handle is keyed.
@@ -308,10 +318,7 @@ func (s *pcuState) resultCollector() {
 		if result.err != nil {
 			s.setError(result.err)
 		} else if result.handle != nil {
-			h := result.handle
-			if result.obj != nil && result.obj.Generation > 0 {
-				h = h.Generation(result.obj.Generation)
-			}
+			h := pinGeneration(result.handle, result.obj)
 			s.mu.Lock()
 			s.partMap[result.partNumber] = h
 			s.mu.Unlock()
@@ -558,10 +565,7 @@ func (s *pcuState) composeParts() error {
 					errOnce.Do(func() { levelErr = err })
 					return
 				}
-				if interAttrs != nil && interAttrs.Generation > 0 {
-					interHandle = interHandle.Generation(interAttrs.Generation)
-				}
-				nextLevel[idx] = interHandle
+				nextLevel[idx] = pinGeneration(interHandle, interAttrs)
 			}(i)
 		}
 		wg.Wait()

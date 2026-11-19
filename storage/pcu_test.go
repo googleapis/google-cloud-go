@@ -22,6 +22,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"regexp"
 	"runtime"
 	"strings"
 	"sync"
@@ -37,7 +38,6 @@ import (
 
 func TestNewPartName(t *testing.T) {
 	const (
-		bucket     = "my-bucket"
 		prefix     = "gcs-go-sdk-pu-tmp/"
 		partNumber = 42
 	)
@@ -61,24 +61,10 @@ func TestNewPartName(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			partName := newPartName(bucket, prefix, tc.finalName, partNumber)
-
-			if !strings.HasPrefix(partName, prefix) {
-				t.Fatalf("newPartName(%q, %q, %q, %d) = %q, want prefix %q", bucket, prefix, tc.finalName, partNumber, partName, prefix)
-			}
-			if len(partName) > 1024 {
-				t.Errorf("len(newPartName(%q, ...)) = %d, want <= 1024", tc.finalName, len(partName))
-			}
-			if wantDigest := objectNameDigest(tc.finalName); !strings.Contains(partName, wantDigest) {
-				t.Errorf("newPartName(%q, %q, %q, %d) = %q, want it to contain digest %q", bucket, prefix, tc.finalName, partNumber, partName, wantDigest)
-			}
-			trimmed := strings.TrimPrefix(partName, prefix)
-			if strings.Contains(trimmed, "/") || strings.Contains(trimmed, "..") {
-				t.Errorf("newPartName(%q, %q, %q, %d) = %q, want flat suffix without '/' or '..'", bucket, prefix, tc.finalName, partNumber, partName)
-			}
-			wantSuffix := fmt.Sprintf("-part-%d", partNumber)
-			if !strings.HasSuffix(partName, wantSuffix) {
-				t.Errorf("newPartName(%q, %q, %q, %d) = %q, want suffix %q", bucket, prefix, tc.finalName, partNumber, partName, wantSuffix)
+			partName := newPartName(prefix, tc.finalName, partNumber)
+			wantPattern := fmt.Sprintf(`^gcs-go-sdk-pu-tmp/[0-9a-f]{8}-%s-part-%d$`, objectNameDigest(tc.finalName), partNumber)
+			if !regexp.MustCompile(wantPattern).MatchString(partName) {
+				t.Errorf("newPartName() = %q, want match %q", partName, wantPattern)
 			}
 		})
 	}
@@ -204,16 +190,22 @@ func TestPCUState_ResultCollector(t *testing.T) {
 		ctx:      pCtx,
 		w:        w,
 		cancel:   cancel,
-		resultCh: make(chan uploadResult, 2),
+		resultCh: make(chan uploadResult, 4),
 		partMap:  make(map[int]*ObjectHandle),
 	}
 
 	state.collectorWG.Add(1)
 	go state.resultCollector()
 
-	// Successful result.
-	objHandle1 := &ObjectHandle{object: "part1"}
-	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, err: nil, size: 50}
+	// Successful result with positive generation gets pinned.
+	objHandle1 := &ObjectHandle{object: "part1", gen: defaultGen}
+	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, obj: &ObjectAttrs{Generation: 42}, err: nil, size: 50}
+
+	// Zero generation and nil attrs stay unpinned (defaultGen).
+	objHandle3 := &ObjectHandle{object: "part3", gen: defaultGen}
+	state.resultCh <- uploadResult{partNumber: 3, handle: objHandle3, obj: &ObjectAttrs{Generation: 0}, err: nil, size: 10}
+	objHandle4 := &ObjectHandle{object: "part4", gen: defaultGen}
+	state.resultCh <- uploadResult{partNumber: 4, handle: objHandle4, obj: nil, err: nil, size: 10}
 
 	// Error result.
 	errResult := fmt.Errorf("upload failed")
@@ -222,12 +214,18 @@ func TestPCUState_ResultCollector(t *testing.T) {
 	close(state.resultCh)
 	state.collectorWG.Wait()
 
-	if progressSize != 50 {
-		t.Errorf("resultCollector: progressSize got %d, want 50", progressSize)
+	if progressSize != 70 {
+		t.Errorf("resultCollector: progressSize got %d, want 70", progressSize)
 	}
 
-	if handle, ok := state.partMap[1]; !ok || handle.object != objHandle1.object {
-		t.Errorf("resultCollector: partMap[1] got (%v, %v), want (%v, true)", handle, ok, objHandle1)
+	if handle, ok := state.partMap[1]; !ok || handle.object != objHandle1.object || handle.gen != 42 {
+		t.Errorf("resultCollector: partMap[1] got (%v, %v), want (object=%q gen=42, true)", handle, ok, objHandle1.object)
+	}
+	if handle, ok := state.partMap[3]; !ok || handle.gen != defaultGen {
+		t.Errorf("resultCollector: partMap[3] gen got %v (ok=%v), want %d", handle, ok, defaultGen)
+	}
+	if handle, ok := state.partMap[4]; !ok || handle.gen != defaultGen {
+		t.Errorf("resultCollector: partMap[4] gen got %v (ok=%v), want %d", handle, ok, defaultGen)
 	}
 	if _, ok := state.partMap[2]; ok {
 		t.Errorf("resultCollector: partMap[2] should not be present on error")
@@ -524,13 +522,12 @@ func TestPCUWorker_WriteContextCancellation(t *testing.T) {
 }
 
 func TestNewPartName_Uniqueness(t *testing.T) {
-	bucket := "my-bucket"
 	prefix := "gcs-go-sdk-pu-tmp/"
 	finalName := "my-object"
 	partNumber := 42
 
-	name1 := newPartName(bucket, prefix, finalName, partNumber)
-	name2 := newPartName(bucket, prefix, finalName, partNumber)
+	name1 := newPartName(prefix, finalName, partNumber)
+	name2 := newPartName(prefix, finalName, partNumber)
 
 	if name1 == name2 {
 		t.Errorf("NewPartName() returned the same name twice: %q", name1)
@@ -784,11 +781,16 @@ func TestPCUState_GetSortedParts(t *testing.T) {
 }
 
 func TestPCUState_ComposeParts(t *testing.T) {
+	csek := bytes.Repeat([]byte{0x24}, 32)
+	const kmsKey = "projects/p/locations/us/keyRings/kr/cryptoKeys/k"
+
 	tests := []struct {
 		name     string
 		numParts int
 		// We'll simulate maxComposeComponents by checking how many calls occur.
 		wantIntermediates int
+		csek              []byte
+		kmsKeyName        string
 	}{
 		{
 			name:              "Under limit (Single Level)",
@@ -805,12 +807,26 @@ func TestPCUState_ComposeParts(t *testing.T) {
 			numParts:          46,
 			wantIntermediates: 2, // 2 intermediate groups (32+14) merged in final.
 		},
+		{
+			name:              "Over limit with CSEK",
+			numParts:          46,
+			wantIntermediates: 2,
+			csek:              csek,
+		},
+		{
+			name:              "Over limit with CMEK",
+			numParts:          46,
+			wantIntermediates: 2,
+			kmsKeyName:        kmsKey,
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			var mu sync.Mutex
 			intermediateCount := 0
+			var nextGen int64 = 100
+			interGenByName := make(map[string]int64)
 
 			partMap := make(map[int]*ObjectHandle)
 			for i := 1; i <= tc.numParts; i++ {
@@ -822,7 +838,8 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				partMap:         partMap,
 				intermediateMap: make(map[string]*ObjectHandle),
 				w: &Writer{
-					o: &ObjectHandle{c: dummyClient, object: "final-dest", bucket: "b"},
+					ObjectAttrs: ObjectAttrs{KMSKeyName: tc.kmsKeyName},
+					o:           &ObjectHandle{c: dummyClient, object: "final-dest", bucket: "b", encryptionKey: tc.csek},
 				},
 				config: &ParallelUploadConfig{},
 			}
@@ -834,14 +851,32 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				if !c.DeleteSourceObjects {
 					t.Errorf("expected DeleteSourceObjects to be true, got false")
 				}
+				if !bytes.Equal(c.dst.encryptionKey, tc.csek) {
+					t.Errorf("compose dst(%q) encryptionKey = %x, want %x", c.dst.object, c.dst.encryptionKey, tc.csek)
+				}
+				if c.KMSKeyName != tc.kmsKeyName {
+					t.Errorf("compose dst(%q) KMSKeyName = %q, want %q", c.dst.object, c.KMSKeyName, tc.kmsKeyName)
+				}
 
+				nextGen++
+				gen := nextGen
 				// If the destination isn't the final object, it's an intermediate.
 				if c.dst.object != "final-dest" {
 					intermediateCount++
+					interGenByName[c.dst.object] = gen
+				} else if tc.wantIntermediates > 0 {
+					for _, src := range c.srcs {
+						wantGen, ok := interGenByName[src.object]
+						if !ok {
+							t.Errorf("final compose source %q was not created as an intermediate", src.object)
+						} else if src.gen != wantGen {
+							t.Errorf("final compose source %q gen = %d, want %d", src.object, src.gen, wantGen)
+						}
+					}
 				}
 
-				// Return the name of the destination object as the "attribute".
-				return &ObjectAttrs{Name: c.dst.object}, nil
+				// Return the name and generation of the destination object as the "attribute".
+				return &ObjectAttrs{Name: c.dst.object, Generation: gen}, nil
 			}
 
 			// Execute.
@@ -861,6 +896,11 @@ func TestPCUState_ComposeParts(t *testing.T) {
 
 			if len(state.intermediateMap) != intermediateCount {
 				t.Errorf("intermediate map count mismatch: got %d, want %d", len(state.intermediateMap), intermediateCount)
+			}
+			for name, h := range state.intermediateMap {
+				if wantGen := interGenByName[name]; h.gen != wantGen {
+					t.Errorf("intermediateMap[%q].gen = %d, want %d", name, h.gen, wantGen)
+				}
 			}
 		})
 	}
@@ -1209,6 +1249,8 @@ type pcuFakeGRPCServer struct {
 	partWrites       []pcuRecordedPartWrite
 	composeReqs      []*storagepb.ComposeObjectRequest
 	deleteReqs       []*storagepb.DeleteObjectRequest
+	wantDeletes      int
+	deletesDone      chan struct{}
 	failFinalCompose bool
 }
 
@@ -1285,6 +1327,9 @@ func (s *pcuFakeGRPCServer) DeleteObject(ctx context.Context, req *storagepb.Del
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.deleteReqs = append(s.deleteReqs, req)
+	if s.deletesDone != nil && len(s.deleteReqs) == s.wantDeletes {
+		close(s.deletesDone)
+	}
 	return &emptypb.Empty{}, nil
 }
 
@@ -1341,11 +1386,8 @@ func TestPCU_PartEncryptionAndGenerationPinning(t *testing.T) {
 			}
 			wantGenByName := make(map[string]int64, len(srv.partWrites))
 			for i, pw := range srv.partWrites {
-				if !strings.HasPrefix(pw.name, tmpObjectPrefix) {
-					t.Errorf("partWrites[%d].name = %q, want prefix %q", i, pw.name, tmpObjectPrefix)
-				}
 				if !bytes.Equal(pw.csekKeyBytes, tc.csek) {
-					t.Errorf("partWrites[%d] CSEK len = %d, want %d", i, len(pw.csekKeyBytes), len(tc.csek))
+					t.Errorf("partWrites[%d] CSEK = %x, want %x", i, pw.csekKeyBytes, tc.csek)
 				}
 				if pw.kmsKey != tc.kmsKeyName {
 					t.Errorf("partWrites[%d].kmsKey = %q, want %q", i, pw.kmsKey, tc.kmsKeyName)
@@ -1360,13 +1402,15 @@ func TestPCU_PartEncryptionAndGenerationPinning(t *testing.T) {
 			if comp.GetKmsKey() != tc.kmsKeyName {
 				t.Errorf("ComposeObjectRequest.KmsKey = %q, want %q", comp.GetKmsKey(), tc.kmsKeyName)
 			}
-			if !bytes.Equal(comp.GetCommonObjectRequestParams().GetEncryptionKeyBytes(), tc.csek) {
-				t.Errorf("ComposeObjectRequest CSEK len = %d, want %d", len(comp.GetCommonObjectRequestParams().GetEncryptionKeyBytes()), len(tc.csek))
+			if got := comp.GetCommonObjectRequestParams().GetEncryptionKeyBytes(); !bytes.Equal(got, tc.csek) {
+				t.Errorf("ComposeObjectRequest CSEK = %x, want %x", got, tc.csek)
 			}
-			for i, src := range comp.GetSourceObjects() {
-				wantGen := wantGenByName[src.GetName()]
-				if src.GetGeneration() != wantGen || wantGen == 0 {
-					t.Errorf("ComposeObjectRequest.SourceObjects[%d] (%q) Generation = %d, want %d", i, src.GetName(), src.GetGeneration(), wantGen)
+			for _, src := range comp.GetSourceObjects() {
+				wantGen, ok := wantGenByName[src.GetName()]
+				if !ok {
+					t.Errorf("compose source %q was never uploaded as a part", src.GetName())
+				} else if src.GetGeneration() != wantGen {
+					t.Errorf("compose source %q generation = %d, want %d", src.GetName(), src.GetGeneration(), wantGen)
 				}
 			}
 		})
@@ -1374,84 +1418,64 @@ func TestPCU_PartEncryptionAndGenerationPinning(t *testing.T) {
 }
 
 func TestPCU_MultiLevelComposeEncryptionAndCleanupGenerations(t *testing.T) {
-	const kmsKey = "projects/p/locations/us/keyRings/kr/cryptoKeys/k"
-	tests := []struct {
-		name       string
-		csek       []byte
-		kmsKeyName string
-	}{
-		{name: "csek", csek: bytes.Repeat([]byte{0x24}, 32)},
-		{name: "cmek", kmsKeyName: kmsKey},
+	csek := bytes.Repeat([]byte{0x24}, 32)
+	const wantDeletes = 35 // 33 parts + 2 intermediates
+
+	srv := &pcuFakeGRPCServer{
+		nextGen:          5000,
+		wantDeletes:      wantDeletes,
+		deletesDone:      make(chan struct{}),
+		failFinalCompose: true,
+	}
+	client := newBufconnGRPCClient(t, srv)
+
+	obj := client.Bucket("my-bucket").Object("multi-level-dest").Key(csek)
+	w := obj.NewWriter(t.Context())
+	w.EnableParallelUpload = true
+	w.ParallelUploadConfig = ParallelUploadConfig{PartSize: minPartSize, MaxConcurrency: 4}
+
+	// Write 33 parts (32*minPartSize + 1024 bytes) to trigger intermediate composition.
+	chunk := make([]byte, minPartSize)
+	for i := 0; i < 32; i++ {
+		if _, err := w.Write(chunk); err != nil {
+			t.Fatalf("Writer.Write(part %d) failed: %v", i+1, err)
+		}
+	}
+	if _, err := w.Write(make([]byte, 1024)); err != nil {
+		t.Fatalf("Writer.Write(tail) failed: %v", err)
+	}
+	if err := w.Close(); err == nil {
+		t.Fatalf("Writer.Close() = nil, want simulated final compose error")
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			srv := &pcuFakeGRPCServer{nextGen: 5000, failFinalCompose: true}
-			client := newBufconnGRPCClient(t, srv)
+	select {
+	case <-srv.deletesDone:
+	case <-time.After(30 * time.Second):
+		t.Fatal("timed out waiting for cleanup deletes")
+	}
 
-			obj := client.Bucket("my-bucket").Object("multi-level-dest")
-			if len(tc.csek) > 0 {
-				obj = obj.Key(tc.csek)
-			}
-			w := obj.NewWriter(t.Context())
-			w.EnableParallelUpload = true
-			w.ParallelUploadConfig = ParallelUploadConfig{PartSize: minPartSize, MaxConcurrency: 4}
-			w.KMSKeyName = tc.kmsKeyName
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
 
-			// Write 33 parts (32*minPartSize + 1024 bytes) to trigger intermediate composition.
-			chunk := make([]byte, minPartSize)
-			for i := 0; i < 32; i++ {
-				if _, err := w.Write(chunk); err != nil {
-					t.Fatalf("Writer.Write(part %d) failed: %v", i+1, err)
-				}
-			}
-			if _, err := w.Write(make([]byte, 1024)); err != nil {
-				t.Fatalf("Writer.Write(tail) failed: %v", err)
-			}
-			if err := w.Close(); err == nil {
-				t.Fatalf("Writer.Close() = nil, want simulated final compose error")
-			}
-
-			// Wait briefly for background doCleanup to issue DeleteObject RPCs.
-			const wantDeletes = 35 // 33 parts + 2 intermediates
-			deadline := time.Now().Add(2 * time.Second)
-			for time.Now().Before(deadline) {
-				srv.mu.Lock()
-				n := len(srv.deleteReqs)
-				srv.mu.Unlock()
-				if n >= wantDeletes {
-					break
-				}
-				time.Sleep(10 * time.Millisecond)
-			}
-
-			srv.mu.Lock()
-			defer srv.mu.Unlock()
-
-			if len(srv.composeReqs) != 3 { // 2 intermediate + 1 failed final
-				t.Fatalf("composeReqs count = %d, want 3", len(srv.composeReqs))
-			}
-			for i, inter := range srv.composeReqs[:2] {
-				if got := inter.GetCommonObjectRequestParams().GetEncryptionKeyBytes(); !bytes.Equal(got, tc.csek) {
-					t.Errorf("intermediate compose[%d] CSEK len = %d, want %d", i, len(got), len(tc.csek))
-				}
-				if got := inter.GetKmsKey(); got != tc.kmsKeyName {
-					t.Errorf("intermediate compose[%d] KmsKey = %q, want %q", i, got, tc.kmsKeyName)
-				}
-			}
-			for i, src := range srv.composeReqs[2].GetSourceObjects() {
-				if src.GetGeneration() == 0 {
-					t.Errorf("final compose SourceObjects[%d] (%q) Generation = 0, want pinned intermediate generation", i, src.GetName())
-				}
-			}
-			if len(srv.deleteReqs) != wantDeletes {
-				t.Fatalf("deleteReqs count = %d, want %d", len(srv.deleteReqs), wantDeletes)
-			}
-			for i, del := range srv.deleteReqs {
-				if del.GetGeneration() == 0 {
-					t.Errorf("deleteReqs[%d] (%q) Generation = 0, want pinned generation", i, del.GetObject())
-				}
-			}
-		})
+	if len(srv.composeReqs) != 3 { // 2 intermediate + 1 failed final
+		t.Fatalf("composeReqs count = %d, want 3", len(srv.composeReqs))
+	}
+	for i, inter := range srv.composeReqs[:2] {
+		if got := inter.GetCommonObjectRequestParams().GetEncryptionKeyBytes(); !bytes.Equal(got, csek) {
+			t.Errorf("intermediate compose[%d] CSEK = %x, want %x", i, got, csek)
+		}
+	}
+	for i, src := range srv.composeReqs[2].GetSourceObjects() {
+		if src.GetGeneration() == 0 {
+			t.Errorf("final compose SourceObjects[%d] (%q) Generation = 0, want pinned intermediate generation", i, src.GetName())
+		}
+	}
+	if len(srv.deleteReqs) != wantDeletes {
+		t.Fatalf("deleteReqs count = %d, want %d", len(srv.deleteReqs), wantDeletes)
+	}
+	for i, del := range srv.deleteReqs {
+		if del.GetGeneration() == 0 {
+			t.Errorf("deleteReqs[%d] (%q) Generation = 0, want pinned generation", i, del.GetObject())
+		}
 	}
 }

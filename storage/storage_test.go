@@ -1830,6 +1830,17 @@ func TestObjectCompose(t *testing.T) {
 			},
 		},
 		{
+			desc: "kms key with csek",
+			dst:  c.Bucket("foo").Object("bar").Key(testEncryptionKey),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+			},
+			attrs: &ObjectAttrs{
+				KMSKeyName: "projects/p/locations/us/keyRings/kr/cryptoKeys/k",
+			},
+			wantErr: true,
+		},
+		{
 			desc:    "no sources",
 			dst:     c.Bucket("foo").Object("bar"),
 			wantErr: true,

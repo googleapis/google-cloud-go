@@ -6853,6 +6853,25 @@ func TestIntegration_KMS(t *testing.T) {
 		src.Delete(ctx)
 		dest.Delete(ctx)
 
+		// Compose two objects into a destination encrypted with a CMEK.
+		compSrc1 := bkt.Object("kms-compose-src1")
+		compSrc2 := bkt.Object("kms-compose-src2")
+		compDst := bkt.Object("kms-compose-dst")
+		write(compSrc1, true)
+		write(compSrc2, true)
+		comp := compDst.ComposerFrom(compSrc1, compSrc2)
+		comp.KMSKeyName = keyName1
+		compAttrs, err := comp.Run(ctx)
+		if err != nil {
+			t.Fatalf("Composer.Run: %v", err)
+		}
+		if !strings.HasPrefix(compAttrs.KMSKeyName, keyName1) {
+			t.Errorf("compAttrs.KMSKeyName = %q, want prefix %q", compAttrs.KMSKeyName, keyName1)
+		}
+		compSrc1.Delete(ctx)
+		compSrc2.Delete(ctx)
+		compDst.Delete(ctx)
+
 		// Create a bucket with a default key, then write and read an object.
 		bkt = client.Bucket(prefix + uidSpace.New())
 		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
@@ -9531,7 +9550,7 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 // customer-supplied encryption key or a Cloud KMS key succeed and that the
 // final object is encrypted with the configured key.
 func TestIntegration_ParallelUpload_Encryption(t *testing.T) {
-	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "ZB does not support CSEK or KMS")
+	ctx := skipZonalBucket(skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no read API variants needed"), "ZB does not support CSEK or KMS")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
@@ -9587,8 +9606,11 @@ func TestIntegration_ParallelUpload_Encryption(t *testing.T) {
 				if len(tc.csek) > 0 && attrs.CustomerKeySHA256 != csekHashB64 {
 					t.Errorf("attrs.CustomerKeySHA256 = %q, want %q", attrs.CustomerKeySHA256, csekHashB64)
 				}
-				if !strings.HasPrefix(attrs.KMSKeyName, tc.kmsKeyName) || (tc.kmsKeyName == "") != (attrs.KMSKeyName == "") {
+				if tc.kmsKeyName != "" && !strings.HasPrefix(attrs.KMSKeyName, tc.kmsKeyName) {
 					t.Errorf("attrs.KMSKeyName = %q, want prefix %q", attrs.KMSKeyName, tc.kmsKeyName)
+				}
+				if tc.kmsKeyName == "" && attrs.KMSKeyName != "" {
+					t.Errorf("attrs.KMSKeyName = %q, want empty", attrs.KMSKeyName)
 				}
 				if got := h.mustRead(obj); !bytes.Equal(got, content) {
 					t.Errorf("read %d bytes that differ from the %d bytes written", len(got), len(content))
