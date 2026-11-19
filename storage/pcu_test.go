@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net"
 	"os"
 	"runtime"
 	"strings"
@@ -31,10 +30,7 @@ import (
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -71,7 +67,10 @@ func TestNewPartName(t *testing.T) {
 				t.Fatalf("newPartName(%q, %q, %q, %d) = %q, want prefix %q", bucket, prefix, tc.finalName, partNumber, partName, prefix)
 			}
 			if len(partName) > 1024 {
-				t.Errorf("len(newPartName(%q, ...)) = %d, want <= 1024", tc.name, len(partName))
+				t.Errorf("len(newPartName(%q, ...)) = %d, want <= 1024", tc.finalName, len(partName))
+			}
+			if wantDigest := objectNameDigest(tc.finalName); !strings.Contains(partName, wantDigest) {
+				t.Errorf("newPartName(%q, %q, %q, %d) = %q, want it to contain digest %q", bucket, prefix, tc.finalName, partNumber, partName, wantDigest)
 			}
 			trimmed := strings.TrimPrefix(partName, prefix)
 			if strings.Contains(trimmed, "/") || strings.Contains(trimmed, "..") {
@@ -1289,29 +1288,6 @@ func (s *pcuFakeGRPCServer) DeleteObject(ctx context.Context, req *storagepb.Del
 	return &emptypb.Empty{}, nil
 }
 
-func newPCUTestGRPCClient(t *testing.T, srv storagepb.StorageServer) *Client {
-	t.Helper()
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		t.Fatalf("net.Listen: %v", err)
-	}
-	grpcSrv := grpc.NewServer()
-	storagepb.RegisterStorageServer(grpcSrv, srv)
-	go grpcSrv.Serve(lis)
-	t.Cleanup(grpcSrv.Stop)
-
-	client, err := NewGRPCClient(t.Context(),
-		option.WithEndpoint(lis.Addr().String()),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		option.WithoutAuthentication(),
-	)
-	if err != nil {
-		t.Fatalf("NewGRPCClient: %v", err)
-	}
-	t.Cleanup(func() { _ = client.Close() })
-	return client
-}
-
 func TestPCU_PartEncryptionAndGenerationPinning(t *testing.T) {
 	csek := bytes.Repeat([]byte{0x42}, 32)
 	const kmsKey = "projects/p/locations/us/keyRings/kr/cryptoKeys/k"
@@ -1321,6 +1297,9 @@ func TestPCU_PartEncryptionAndGenerationPinning(t *testing.T) {
 		csek       []byte
 		kmsKeyName string
 	}{
+		{
+			name: "no_key",
+		},
 		{
 			name: "csek",
 			csek: csek,
@@ -1334,7 +1313,7 @@ func TestPCU_PartEncryptionAndGenerationPinning(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			srv := &pcuFakeGRPCServer{nextGen: 1000}
-			client := newPCUTestGRPCClient(t, srv)
+			client := newBufconnGRPCClient(t, srv)
 
 			obj := client.Bucket("my-bucket").Object("tenant-a/../../dest-obj")
 			if len(tc.csek) > 0 {
@@ -1408,7 +1387,7 @@ func TestPCU_MultiLevelComposeEncryptionAndCleanupGenerations(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			srv := &pcuFakeGRPCServer{nextGen: 5000, failFinalCompose: true}
-			client := newPCUTestGRPCClient(t, srv)
+			client := newBufconnGRPCClient(t, srv)
 
 			obj := client.Bucket("my-bucket").Object("multi-level-dest")
 			if len(tc.csek) > 0 {

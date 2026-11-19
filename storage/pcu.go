@@ -283,12 +283,7 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
 
 	// Compose sources must not carry a key, so only the write handle is keyed.
-	writeHandle := partHandle
-	if len(s.w.o.encryptionKey) > 0 {
-		writeHandle = partHandle.Key(s.w.o.encryptionKey)
-	}
-
-	pw := writeHandle.NewWriter(s.ctx)
+	pw := partHandle.Key(s.w.o.encryptionKey).NewWriter(s.ctx)
 	pw.ObjectAttrs.Name = partName
 	pw.ObjectAttrs.Size = task.size
 	pw.ObjectAttrs.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
@@ -554,11 +549,7 @@ func (s *pcuState) composeParts() error {
 				compName := path.Join(tmpObjectPrefix, fmt.Sprintf("int-%s-lv%d-%d", h, level, idx))
 
 				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
-				interDst := interHandle
-				if len(s.w.o.encryptionKey) > 0 {
-					interDst = interHandle.Key(s.w.o.encryptionKey)
-				}
-				composer := interDst.ComposerFrom(finalComps[start:end]...)
+				composer := interHandle.Key(s.w.o.encryptionKey).ComposerFrom(finalComps[start:end]...)
 				composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
 				composer.DeleteSourceObjects = true
 
