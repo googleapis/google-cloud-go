@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -360,7 +359,7 @@ func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 
 // attemptStatsHandler records gcp.client.retry.attempt_number and the payload
 // offset and size on the transport's gRPC attempt span, and Storage.UploadChunk
-// spans for resumable BidiWriteObject streams.
+// spans for resumable and appendable BidiWriteObject streams.
 type attemptStatsHandler struct{}
 
 // payloadAttempt tracks the object bytes sent or received on one gRPC stream.
@@ -611,7 +610,7 @@ func isOneshotUpload(w *Writer) bool {
 }
 
 // withUploadChunkSize attaches the 256 KiB-aligned chunk size to ctx for
-// resumable uploads when dev tracing is enabled.
+// resumable and appendable uploads when dev tracing is enabled.
 func withUploadChunkSize(ctx context.Context, chunkSize int) context.Context {
 	if _, ok := recordingSpan(ctx); !ok || chunkSize <= 0 {
 		return ctx
@@ -620,7 +619,8 @@ func withUploadChunkSize(ctx context.Context, chunkSize int) context.Context {
 }
 
 // uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
-// gRPC resumable upload, which may be sent across several messages.
+// gRPC resumable or appendable upload, which may be sent across several
+// messages.
 type uploadChunkSpan struct {
 	ctx       context.Context
 	span      trace.Span
@@ -650,15 +650,28 @@ type grpcUploadChunkTracker struct {
 
 func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectRequest) {
 	n := writeRequestDataLen(req)
-	if n == 0 {
+	flushed := req.GetFlush() || req.GetFinishWrite()
+	if n == 0 && !flushed {
 		return
 	}
-	offset := req.GetWriteOffset()
-	number := offset/ct.chunkSize + 1
-	flushed := req.GetFlush() || req.GetFinishWrite()
 
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
+	if n == 0 {
+		// A flush without data, such as one sent by Writer.Flush or Close
+		// after all buffered data was sent, completes the open chunk.
+		if m := len(ct.spans); m > 0 {
+			ct.spans[m-1].flushed = true
+			ct.finishConfirmedLocked()
+		}
+		return
+	}
+	offset := req.GetWriteOffset()
+	// number is the 1-based index of the chunkSize window that holds the
+	// chunk's first byte. Spans can share a number after a Flush in the
+	// middle of a chunk or an unaligned takeover offset; their
+	// gcp.storage.payload.offset attributes tell them apart.
+	number := offset/ct.chunkSize + 1
 	if ct.ended && number <= (ct.lastEndOffset+ct.chunkSize-1)/ct.chunkSize {
 		return
 	}
@@ -696,9 +709,10 @@ func (ct *grpcUploadChunkTracker) onResponse(resp *storagepb.BidiWriteObjectResp
 	case *storagepb.BidiWriteObjectResponse_PersistedSize:
 		flushOffset = ws.PersistedSize
 	case *storagepb.BidiWriteObjectResponse_Resource:
-		if ws.Resource != nil {
-			flushOffset = math.MaxInt64
-		}
+		// The object's size is its persisted size: every chunk once it is
+		// finalized, or the bytes persisted so far for an unfinalized
+		// appendable object, whose later chunks may still be in flight.
+		flushOffset = ws.Resource.GetSize()
 	default:
 		return
 	}
