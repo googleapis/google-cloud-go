@@ -25,20 +25,25 @@ import (
 	genai_types "google.golang.org/genai"
 )
 
-// The identity type to use for the Reasoning Engine. If not specified, the `service_account`
-// field will be used if set, otherwise the default Vertex AI Reasoning Engine Service
-// Agent in the project will be used.
+// The identity type to use for the Reasoning Engine.
 type IdentityType string
 
 const (
 	// Default value. Use a custom service account if the `service_account` field is set,
 	// otherwise use the default Vertex AI Reasoning Engine Service Agent in the project.
-	// Same behavior as SERVICE_ACCOUNT.
+	// Same behavior as `SERVICE_ACCOUNT`. WARNING: The default service agent is shared
+	// across all Reasoning Engines in the project that do not specify an isolated identity
+	// or custom service account; see `identity_type` for security guidance.
 	IdentityTypeUnspecified IdentityType = "IDENTITY_TYPE_UNSPECIFIED"
 	// Use a custom service account if the `service_account` field is set, otherwise use
-	// the default Vertex AI Reasoning Engine Service Agent in the project.
+	// the default Vertex AI Reasoning Engine Service Agent in the project. WARNING: The
+	// default service agent is shared across all Reasoning Engines in the project that
+	// do not specify an isolated identity or custom service account; see `identity_type`
+	// for security guidance.
 	IdentityTypeServiceAccount IdentityType = "SERVICE_ACCOUNT"
-	// Use Agent Identity. The `service_account` field must not be set.
+	// Use Agent Identity. The `service_account` field must not be set. Restrict `aiplatform.reasoningEngines.update`
+	// permissions on the engine because any principal permitted to update it can run code
+	// as its identity.
 	IdentityTypeAgentIdentity IdentityType = "AGENT_IDENTITY"
 )
 
@@ -435,9 +440,21 @@ type ReasoningEngineSpecDeploymentSpec struct {
 	// * The only supported values for memory are '1Gi', '2Gi', ... '32 Gi'. * For required
 	// cpu on different memory values, go to https://cloud.google.com/run/docs/configuring/memory-limits
 	ResourceLimits map[string]string `json:"resourceLimits,omitempty"`
-	// Optional. Environment variables where the value is a secret in Cloud Secret Manager.
-	// To use this feature, add 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor)
-	// to AI Platform Reasoning Engine Service Agent.
+	// Optional. Environment variables where the value is a secret in Secret Manager. Secrets
+	// must be global secrets in the same project as the Reasoning Engine. At startup (and
+	// during deployment validation for service-account-based deployments), the Reasoning
+	// Engine accesses the referenced secrets using its configured runtime identity. Grant
+	// the Secret Manager Secret Accessor role (`roles/secretmanager.secretAccessor`) on
+	// the specific secret to an isolated per-agent identity (`identity_type = AGENT_IDENTITY`)
+	// or a dedicated custom `service_account`. When using `AGENT_IDENTITY`, create the
+	// Reasoning Engine first without `secret_env`, grant access to its provisioned agent
+	// identity (prepend `principal://` to `effective_identity`), and then update the Reasoning
+	// Engine to add `secret_env`. WARNING: Avoid granting secret access to the default
+	// Vertex AI Reasoning Engine Service Agent (`service-{project_number}@gcp-sa-aiplatform-re.iam.gserviceaccount.com`),
+	// which is shared across all Reasoning Engines in the project that do not specify an
+	// isolated identity or custom service account; any principal with permission to deploy
+	// or update agents in the project can access secrets granted to it. Also restrict `aiplatform.reasoningEngines.update`
+	// permissions on `AGENT_IDENTITY` engines.
 	SecretEnv []*SecretEnvVar `json:"secretEnv,omitempty"`
 	// Optional. Agent Gateway configuration for the Reasoning Engine deployment.
 	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
@@ -583,14 +600,26 @@ type ReasoningEngineSpec struct {
 	// Optional. The specification of a Reasoning Engine deployment.
 	DeploymentSpec *ReasoningEngineSpecDeploymentSpec `json:"deploymentSpec,omitempty"`
 	// Output only. The identity to use for the Reasoning Engine. It can contain one of
-	// the following values: * service-{project}@gcp-sa-aiplatform-re.googleapis.com (for
-	// SERVICE_AGENT identity type) * {name}@{project}.gserviceaccount.com (for SERVICE_ACCOUNT
-	// identity type) * agents.global.{org}.system.id.goog/resources/aiplatform/projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}
-	// (for AGENT_IDENTITY identity type)
+	// the following values: * `service-{project_number}@gcp-sa-aiplatform-re.iam.gserviceaccount.com`
+	// (for the default service agent when `identity_type` is `IDENTITY_TYPE_UNSPECIFIED`
+	// or `SERVICE_ACCOUNT` and `service_account` is not set) * `{name}@{project}.iam.gserviceaccount.com`
+	// (for a custom `service_account` when `identity_type` is `IDENTITY_TYPE_UNSPECIFIED`
+	// or `SERVICE_ACCOUNT`) * `agents.global.org-{org}.system.id.goog/resources/aiplatform/projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}`
+	// (or `agents.global.proj-{project_number}.system.id.goog/...` for org-less projects;
+	// for `AGENT_IDENTITY` identity type -- prepend `principal://` when used in IAM policy
+	// bindings)
 	EffectiveIdentity string `json:"effectiveIdentity,omitempty"`
 	// Optional. The identity type to use for the Reasoning Engine. If not specified, the
 	// `service_account` field will be used if set, otherwise the default Vertex AI Reasoning
-	// Engine Service Agent in the project will be used.
+	// Engine Service Agent in the project will be used. WARNING: The default Vertex AI
+	// Reasoning Engine Service Agent (`service-{project_number}@gcp-sa-aiplatform-re.iam.gserviceaccount.com`)
+	// is shared across all Reasoning Engines in the project that do not specify an isolated
+	// identity or custom service account. Any permissions or secrets granted to it can
+	// be accessed by any principal permitted to deploy or update agents in the project
+	// (even without using `secret_env`, by calling APIs directly from agent code). Prefer
+	// `AGENT_IDENTITY` (and restrict `aiplatform.reasoningEngines.update` permissions on
+	// the engine) or a dedicated custom `service_account` when granting access to sensitive
+	// resources such as Secret Manager secrets.
 	IdentityType IdentityType `json:"identityType,omitempty"`
 	// Optional. User provided package spec of the ReasoningEngine. Ignored when users directly
 	// specify a deployment image through `deployment_spec.first_party_image_override`,
@@ -599,8 +628,17 @@ type ReasoningEngineSpec struct {
 	PackageSpec *ReasoningEngineSpecPackageSpec `json:"packageSpec,omitempty"`
 	// Optional. The service account that the Reasoning Engine artifact runs as. It should
 	// have "roles/storage.objectViewer" for reading the user project's Cloud Storage and
-	// "roles/aiplatform.user" for using Vertex extensions. If not specified, the Vertex
-	// AI Reasoning Engine Service Agent in the project will be used.
+	// "roles/aiplatform.user" for using Vertex extensions. If not specified and `identity_type`
+	// is not `AGENT_IDENTITY`, the default Vertex AI Reasoning Engine Service Agent in
+	// the project will be used. WARNING: The default Vertex AI Reasoning Engine Service
+	// Agent (`service-{project_number}@gcp-sa-aiplatform-re.iam.gserviceaccount.com`) is
+	// shared across all Reasoning Engines in the project that do not specify an isolated
+	// identity or custom service account. Any permissions or secrets granted to it can
+	// be accessed by any principal permitted to deploy or update agents in the project
+	// (even without using `secret_env`, by calling APIs directly from agent code). For
+	// sensitive resources such as Secret Manager secrets, use `identity_type = AGENT_IDENTITY`
+	// (restricting `aiplatform.reasoningEngines.update` access to that engine) or a dedicated
+	// custom `service_account`.
 	ServiceAccount string `json:"serviceAccount,omitempty"`
 	// Deploy from source code files with a defined entrypoint.
 	SourceCodeSpec *ReasoningEngineSpecSourceCodeSpec `json:"sourceCodeSpec,omitempty"`
@@ -4409,12 +4447,41 @@ type AgentEngineConfig struct {
 	ExtraPackages []string `json:"extraPackages,omitempty"`
 	// Optional. The environment variables to be set when running the Agent Engine.
 	// If it is a dictionary, the keys are the environment variable names, and
-	// the values are the corresponding values.
+	// the values are the corresponding values (strings or Secret Manager
+	// references of the form `{'secret': '<secret_id>', 'version': '<version>'}`).
+	// When referencing Secret Manager secrets, grant
+	// `roles/secretmanager.secretAccessor` on the specific secret to an isolated
+	// `AGENT_IDENTITY` (create the Agent Engine first without secrets, grant
+	// access to `principal://{effective_identity}`, then update) or a dedicated
+	// custom `service_account`. Avoid granting secret access to the shared
+	// default Vertex AI Reasoning Engine Service Agent.
 	EnvVars any `json:"envVars,omitempty"`
 	// Optional. The service account to be used for the Agent Engine.
-	// If not specified, the default Reasoning Engine P6SA service agent will be used.
+	// When creating an Agent Engine, if not specified and `identity_type` is
+	// not `AGENT_IDENTITY`, the default Vertex AI Reasoning Engine Service
+	// Agent
+	// (`service-{project_number}@gcp-sa-aiplatform-re.iam.gserviceaccount.com`)
+	// will be used; when updating, omitting it preserves the existing service
+	// account.
+	// WARNING: The default service agent is shared across all Agent Engines in
+	// the project that do not specify an isolated identity or custom service
+	// account, so any principal with permission to deploy or update agents in
+	// the project can access permissions or secrets granted to it. Prefer
+	// `identity_type='AGENT_IDENTITY'` (restricting
+	// `aiplatform.reasoningEngines.update` permissions on the engine) or a
+	// dedicated custom `service_account` for sensitive resources such as Secret
+	// Manager secrets.
 	ServiceAccount string `json:"serviceAccount,omitempty"`
 	// Optional. The identity type to use for the Agent Engine.
+	// Set to `AGENT_IDENTITY` to run the Agent Engine under a resource-scoped
+	// per-agent identity (`service_account` must not be set), or
+	// `SERVICE_ACCOUNT` to use `service_account` (if set) or the shared default
+	// Vertex AI Reasoning Engine Service Agent.
+	// WARNING: Avoid granting sensitive permissions or Secret Manager secrets to
+	// the shared default service agent. Prefer `AGENT_IDENTITY` (restricting
+	// `aiplatform.reasoningEngines.update` permissions on the engine, since any
+	// principal permitted to update it can run code as its identity) or a
+	// dedicated custom `service_account`.
 	IdentityType IdentityType `json:"identityType,omitempty"`
 	// Optional. The context spec to be used for the Agent Engine.
 	ContextSpec *ReasoningEngineContextSpec `json:"contextSpec,omitempty"`
