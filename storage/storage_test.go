@@ -1811,6 +1811,36 @@ func TestObjectCompose(t *testing.T) {
 			},
 		},
 		{
+			desc: "with kms key",
+			dst:  c.Bucket("foo").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+				c.Bucket("foo").Object("quux"),
+			},
+			attrs: &ObjectAttrs{
+				KMSKeyName: "projects/p/locations/us/keyRings/kr/cryptoKeys/k",
+			},
+			wantURL: "/storage/v1/b/foo/o/bar/compose?alt=json&kmsKeyName=projects%2Fp%2Flocations%2Fus%2FkeyRings%2Fkr%2FcryptoKeys%2Fk&prettyPrint=false",
+			wantReq: raw.ComposeRequest{
+				Destination: &raw.Object{Bucket: "foo"},
+				SourceObjects: []*raw.ComposeRequestSourceObjects{
+					{Name: "baz"},
+					{Name: "quux"},
+				},
+			},
+		},
+		{
+			desc: "kms key with csek",
+			dst:  c.Bucket("foo").Object("bar").Key(testEncryptionKey),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+			},
+			attrs: &ObjectAttrs{
+				KMSKeyName: "projects/p/locations/us/keyRings/kr/cryptoKeys/k",
+			},
+			wantErr: true,
+		},
+		{
 			desc:    "no sources",
 			dst:     c.Bucket("foo").Object("bar"),
 			wantErr: true,
