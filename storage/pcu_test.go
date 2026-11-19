@@ -62,7 +62,7 @@ func TestNewPartName(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			partName := newPartName(prefix, tc.finalName, partNumber)
-			wantPattern := fmt.Sprintf(`^gcs-go-sdk-pu-tmp/[0-9a-f]{8}-%s-part-%d$`, objectNameDigest(tc.finalName), partNumber)
+			wantPattern := fmt.Sprintf(`^gcs-go-sdk-pu-tmp/[0-9a-f]{8}-[0-9a-f]{%d}-part-%d$`, 2*partNameDigestBytes, partNumber)
 			if !regexp.MustCompile(wantPattern).MatchString(partName) {
 				t.Errorf("newPartName() = %q, want match %q", partName, wantPattern)
 			}
