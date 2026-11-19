@@ -218,6 +218,24 @@ func (t *sessionTable) CheckAndMutateRow(ctx context.Context, req *btpb.SessionC
 	})
 }
 
+// ReadModifyWriteRow dispatches a proto-native ReadModifyWriteRow through a
+// lazily-opened READ_WRITE session pool. Errors with ErrWriteNotSupported when
+// the resource has no read-write pool (materialized views).
+//
+// ReadModifyWrite operations (increment/append) are never idempotent.
+func (t *sessionTable) ReadModifyWriteRow(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error) {
+	if req == nil {
+		return nil, errors.New("bigtable/session: SessionReadModifyWriteRowRequest is nil")
+	}
+	return dispatch[*btpb.SessionReadModifyWriteRowRequest, btpb.SessionReadModifyWriteRowResponse, *btpb.SessionReadModifyWriteRowResponse](ctx, t, opSpec[*btpb.SessionReadModifyWriteRowRequest, btpb.SessionReadModifyWriteRowResponse, *btpb.SessionReadModifyWriteRowResponse]{
+		pool:       t.readWritePool,
+		desc:       btransport.READ_MODIFY_WRITE_ROW,
+		idempotent: false,
+		req:        req,
+		errNoPool:  ErrWriteNotSupported,
+	})
+}
+
 // opSpec parameterises dispatch over the per-operation axes: pool, method
 // descriptor, idempotence, request proto, and the error to return when the
 // lazy pool resolves to nil.

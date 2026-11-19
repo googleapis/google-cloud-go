@@ -59,6 +59,8 @@ func (tableEnvelope) WrapRequest(inner proto.Message) ([]byte, error) {
 		env.Payload = &btpb.TableRequest_MutateRow{MutateRow: r}
 	case *btpb.SessionCheckAndMutateRowRequest:
 		env.Payload = &btpb.TableRequest_CheckAndMutateRow{CheckAndMutateRow: r}
+	case *btpb.SessionReadModifyWriteRowRequest:
+		env.Payload = &btpb.TableRequest_ReadModifyWriteRow{ReadModifyWriteRow: r}
 	default:
 		return nil, fmt.Errorf("unsupported table vRPC request payload %T", inner)
 	}
@@ -78,6 +80,8 @@ func (tableEnvelope) UnwrapResponse(buf []byte) (proto.Message, error) {
 		inner = p.MutateRow
 	case *btpb.TableResponse_CheckAndMutateRow:
 		inner = p.CheckAndMutateRow
+	case *btpb.TableResponse_ReadModifyWriteRow:
+		inner = p.ReadModifyWriteRow
 	case nil:
 		return nil, fmt.Errorf("missing table vRPC response payload")
 	default:
@@ -103,6 +107,8 @@ func (authorizedViewEnvelope) WrapRequest(inner proto.Message) ([]byte, error) {
 		env.Payload = &btpb.AuthorizedViewRequest_MutateRow{MutateRow: r}
 	case *btpb.SessionCheckAndMutateRowRequest:
 		env.Payload = &btpb.AuthorizedViewRequest_CheckAndMutateRow{CheckAndMutateRow: r}
+	case *btpb.SessionReadModifyWriteRowRequest:
+		env.Payload = &btpb.AuthorizedViewRequest_ReadModifyWriteRow{ReadModifyWriteRow: r}
 	default:
 		return nil, fmt.Errorf("unsupported authorized view vRPC request payload %T", inner)
 	}
@@ -122,6 +128,8 @@ func (authorizedViewEnvelope) UnwrapResponse(buf []byte) (proto.Message, error) 
 		inner = p.MutateRow
 	case *btpb.AuthorizedViewResponse_CheckAndMutateRow:
 		inner = p.CheckAndMutateRow
+	case *btpb.AuthorizedViewResponse_ReadModifyWriteRow:
+		inner = p.ReadModifyWriteRow
 	case nil:
 		return nil, fmt.Errorf("missing authorized view vRPC response payload")
 	default:
@@ -245,4 +253,7 @@ var (
 
 	// CHECK_AND_MUTATE_ROW describes the CheckAndMutateRow virtual RPC across writable session resource kinds.
 	CHECK_AND_MUTATE_ROW = newVRpcDescriptor[btpb.SessionCheckAndMutateRowRequest, btpb.SessionCheckAndMutateRowResponse]("CheckAndMutateRow")
+
+	// READ_MODIFY_WRITE_ROW describes the ReadModifyWriteRow virtual RPC across writable session resource kinds.
+	READ_MODIFY_WRITE_ROW = newVRpcDescriptor[btpb.SessionReadModifyWriteRowRequest, btpb.SessionReadModifyWriteRowResponse]("ReadModifyWriteRow")
 )

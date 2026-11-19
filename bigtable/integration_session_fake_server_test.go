@@ -512,7 +512,7 @@ func (s *fakeBigtableServer) OpenTable(stream btpb.Bigtable_OpenTableServer) err
 		s.mu.Unlock()
 
 		var payload []byte
-		switch tableReq.Payload.(type) {
+		switch p := tableReq.Payload.(type) {
 		case *btpb.TableRequest_ReadRow:
 			payload = readBytes
 		case *btpb.TableRequest_MutateRow:
@@ -522,6 +522,30 @@ func (s *fakeBigtableServer) OpenTable(stream btpb.Bigtable_OpenTableServer) err
 				Payload: &btpb.TableResponse_CheckAndMutateRow{
 					CheckAndMutateRow: &btpb.SessionCheckAndMutateRowResponse{
 						PredicateMatched: true,
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			payload = b
+		case *btpb.TableRequest_ReadModifyWriteRow:
+			b, err := proto.Marshal(&btpb.TableResponse{
+				Payload: &btpb.TableResponse_ReadModifyWriteRow{
+					ReadModifyWriteRow: &btpb.SessionReadModifyWriteRowResponse{
+						Row: &btpb.Row{
+							Key: p.ReadModifyWriteRow.GetKey(),
+							Families: []*btpb.Family{{
+								Name: "fam1",
+								Columns: []*btpb.Column{{
+									Qualifier: []byte("col1"),
+									Cells: []*btpb.Cell{{
+										Value:           []byte("rmw-value"),
+										TimestampMicros: 2000,
+									}},
+								}},
+							}},
+						},
 					},
 				},
 			})
