@@ -41,6 +41,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/connectivity"
@@ -1347,6 +1348,83 @@ func TestNewClient_DebugMetricsRecordsCredentialRefresh(t *testing.T) {
 	}
 	if !found {
 		t.Errorf("metric gcp.storage.client.auth.credential_refresh.duration not found")
+	}
+}
+
+type debugOnlyGRPCServer struct {
+	storagepb.UnimplementedStorageServer
+}
+
+func (s *debugOnlyGRPCServer) GetObject(ctx context.Context, req *storagepb.GetObjectRequest) (*storagepb.Object, error) {
+	_ = grpc.SetHeader(ctx, metadata.Pairs("x-goog-gfe-service-time", "12"))
+	return &storagepb.Object{Name: req.GetObject(), Bucket: req.GetBucket()}, nil
+}
+
+func TestNewGRPCClient_DebugMetricsOnly(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	srv := grpc.NewServer()
+	storagepb.RegisterStorageServer(srv, &debugOnlyGRPCServer{})
+	go func() { _ = srv.Serve(lis) }()
+	t.Cleanup(srv.Stop)
+
+	t.Setenv(envOtelDebugMetrics, "true")
+	t.Setenv(envOtelMetrics, "false")
+	client, err := NewGRPCClient(ctx,
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		internaloption.EnableDirectPath(false),
+		withMeterProvider(provider),
+	)
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	defer client.Close()
+
+	if _, err := client.Bucket("my-bucket").Object("my-object").Attrs(ctx); err != nil {
+		t.Fatalf("Attrs: %v", err)
+	}
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	standard := map[string]bool{
+		"rpc.client.call.duration":              true,
+		"http.client.request.duration":          true,
+		"gcp.client.request.duration":           true,
+		"gcp.storage.client.operations":         true,
+		"gcp.storage.client.attempts":           true,
+		"gcp.storage.client.errors":             true,
+		"gcp.storage.client.ttfb":               true,
+		"gcp.storage.client.request.body.size":  true,
+		"gcp.storage.client.response.body.size": true,
+		"gcp.storage.client.server.unreached":   true,
+	}
+	seen := make(map[string]bool)
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			seen[m.Name] = true
+			if standard[m.Name] {
+				t.Errorf("standard metric %s emitted with only debug metrics enabled", m.Name)
+			}
+		}
+	}
+	for _, wantDebug := range []string{
+		"gcp.storage.client.network.tcp.connect.duration",
+		"gcp.storage.client.server.duration",
+	} {
+		if !seen[wantDebug] {
+			t.Errorf("expected debug metric %s to be emitted, seen=%v", wantDebug, seen)
+		}
 	}
 }
 

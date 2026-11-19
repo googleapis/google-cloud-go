@@ -303,7 +303,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	// recorded or exported for them.
 	stdMeter := meter
 	if !isOtelMetricsEnabled(config) {
-		stdMeter = noop.NewMeterProvider().Meter("cloud.google.com/go/storage")
+		stdMeter = noop.Meter{}
 	}
 
 	rpcDuration, err := stdMeter.Float64Histogram(
@@ -2072,6 +2072,13 @@ type metricsTokenProvider struct {
 }
 
 func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	if p.metrics == nil || p.metrics.credentialRefreshDuration == nil {
+		tok, err := p.base.Token(ctx)
+		if err != nil {
+			return tok, &credentialError{err: err}
+		}
+		return tok, nil
+	}
 	start := time.Now()
 	tok, err := p.base.Token(ctx)
 	if err != nil {
