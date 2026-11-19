@@ -91,12 +91,12 @@ type literalRequestIDGRPCOption struct {
 	reqID RequestID
 }
 
-func extractRequestID(opts []grpc.CallOption) (RequestID, bool) {
-	for _, opt := range opts {
-		switch o := opt.(type) {
+func extractRequestIDOption(opts []grpc.CallOption) (RequestID, *metadata.MD, bool) {
+	for i := len(opts) - 1; i >= 0; i-- {
+		switch o := opts[i].(type) {
 		case literalRequestIDGRPCOption:
 			if o.reqID != "" {
-				return o.reqID, true
+				return o.reqID, nil, true
 			}
 		case grpc.HeaderCallOption:
 			if o.HeaderAddr == nil {
@@ -104,39 +104,29 @@ func extractRequestID(opts []grpc.CallOption) (RequestID, bool) {
 			}
 			reqIDs := o.HeaderAddr.Get(Header)
 			if len(reqIDs) != 0 && len(reqIDs[0]) != 0 {
-				return RequestID(reqIDs[0]), true
+				return RequestID(reqIDs[0]), o.HeaderAddr, true
 			}
 		}
 	}
-	return "", false
+	return "", nil, false
+}
+
+func extractRequestID(opts []grpc.CallOption) (RequestID, bool) {
+	reqID, _, found := extractRequestIDOption(opts)
+	return reqID, found
 }
 
 // GRPCCallOptionsToRequestID extracts the x-goog-spanner-request-id header from gRPC CallOptions.
+// When multiple request-ID options are present, the last matching option wins.
 func GRPCCallOptionsToRequestID(opts []grpc.CallOption) (md metadata.MD, reqID RequestID, found bool) {
-	for _, opt := range opts {
-		switch o := opt.(type) {
-		case literalRequestIDGRPCOption:
-			if o.reqID != "" {
-				md = metadata.MD{Header: []string{string(o.reqID)}}
-				reqID = o.reqID
-				found = true
-				return
-			}
-		case grpc.HeaderCallOption:
-			mdPtr := o.HeaderAddr
-			if mdPtr == nil {
-				continue
-			}
-			reqIDs := mdPtr.Get(Header)
-			if len(reqIDs) != 0 && len(reqIDs[0]) != 0 {
-				md = *mdPtr
-				reqID = RequestID(reqIDs[0])
-				found = true
-				return
-			}
-		}
+	reqID, mdPtr, found := extractRequestIDOption(opts)
+	if !found {
+		return
 	}
-	return
+	if mdPtr != nil {
+		return *mdPtr, reqID, true
+	}
+	return metadata.MD{Header: []string{string(reqID)}}, reqID, true
 }
 
 func resolveCallSettings(opts []gax.CallOption, includeRetryerPlaceholder bool) gax.CallSettings {
@@ -148,9 +138,9 @@ func resolveCallSettings(opts []gax.CallOption, includeRetryerPlaceholder bool) 
 		if _, isRetryer := opt.(*retryerWithRequestID); isRetryer {
 			// Avoid calling (*retryerWithRequestID).Resolve during inspection so
 			// Tracker.nthRequest is never incremented as a side effect.
+			settings.GRPC = stripRequestIDGRPCOptions(settings.GRPC)
 			if includeRetryerPlaceholder {
-				md := metadata.MD{Header: []string{"1"}}
-				settings.GRPC = append(settings.GRPC[:len(settings.GRPC):len(settings.GRPC)], grpc.Header(&md))
+				settings.GRPC = append(settings.GRPC, literalRequestIDGRPCOption{reqID: "1"})
 			}
 			continue
 		}
@@ -160,7 +150,8 @@ func resolveCallSettings(opts []gax.CallOption, includeRetryerPlaceholder bool) 
 }
 
 // LogicalRequestKeyFromCallOptions extracts the logical request key (without attempt suffix)
-// from a slice of gax.CallOptions.
+// from a slice of gax.CallOptions. When multiple options set or reset request-ID gRPC
+// CallOptions, the last effective option wins.
 func LogicalRequestKeyFromCallOptions(opts []gax.CallOption) string {
 	if len(opts) == 0 {
 		return ""
@@ -408,7 +399,8 @@ func (wr *retryerWithRequestID) Resolve(cs *gax.CallSettings) {
 	md := new(metadata.MD)
 	wr.tracker.generateAndInsertRequestID(md, nthRequest, attempt)
 	// Insert our grpc.CallOption that'll be updated by reference on every retry attempt.
-	cs.GRPC = append(cs.GRPC[:len(cs.GRPC):len(cs.GRPC)], grpc.Header(md))
+	cs.GRPC = stripRequestIDGRPCOptions(cs.GRPC)
+	cs.GRPC = append(cs.GRPC, grpc.Header(md))
 
 	if cs.Retry == nil {
 		// If there was no retry manager, our journey has ended.
@@ -462,7 +454,10 @@ func (riw *Wrap) WithNextRetryAttempt(attempt uint32) gax.CallOption {
 // Because it carries reqID via a private grpc.EmptyCallOption rather than grpc.Header,
 // it allocates no metadata.MD, does not touch cs.Retry, and is safe for repeated and
 // concurrent reuse across RPCs and gax retries (including when trailing gax.WithRetry
-// options are applied or retry factories return nil).
+// options are applied or retry factories return nil). Because WithRequestID does not
+// wrap cs.Retry, gax retries resend the exact same literal reqID without incrementing
+// any trailing ".attempt" segment (unlike Tracker.OptsWithNextRequestID); callers
+// needing per-attempt IDs should pass a fresh WithRequestID per attempt.
 func WithRequestID(reqID string) gax.CallOption {
 	return literalRequestIDOption(reqID)
 }
