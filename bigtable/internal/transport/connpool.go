@@ -723,18 +723,23 @@ func (p *BigtableChannelPool) Close() error {
 	for _, m := range p.monitors {
 		m.Stop()
 	}
-	conns := p.getConns()
-	var errs multiError
 
-	// immediately store zero-length slice
+	p.dialMu.Lock()
+	conns := p.getConns()
+	// immediately store zero-length slice under dialMu so concurrent
+	// replaceConnection / addConnections cannot repopulate p.conns after Close.
 	p.conns.Store((&[]*connEntry{}))
 	p.drainingMu.Lock()
 	p.drainingConns = nil
 	p.drainingMu.Unlock()
+	p.dialMu.Unlock()
 
+	var errs multiError
 	for _, entry := range conns {
-		if err := entry.conn.Close(); err != nil {
-			errs = append(errs, err)
+		if entry != nil && entry.conn != nil {
+			if err := entry.conn.Close(); err != nil {
+				errs = append(errs, err)
+			}
 		}
 	}
 	if len(errs) == 0 {
@@ -1055,6 +1060,14 @@ func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
 
 	if len(newEntries) == 0 {
 		btopt.Debugf(p.logger, "bigtable_connpool: No new connections were successfully created and primed.\n")
+		return false
+	}
+	if p.poolCtx.Err() != nil {
+		for _, entry := range newEntries {
+			if entry != nil && entry.conn != nil {
+				entry.conn.Close()
+			}
+		}
 		return false
 	}
 
