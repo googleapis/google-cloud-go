@@ -24,6 +24,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/http/httptrace"
 	"net/url"
 	"os"
 	"testing"
@@ -50,6 +51,8 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/test/bufconn"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestFormatMetricWithPrefix(t *testing.T) {
@@ -886,6 +889,504 @@ func TestRecordTTFB_MetadataOnly(t *testing.T) {
 
 	if !w.recordedTTFB.Load() {
 		t.Errorf("recordTTFB did not trigger TTFB for metadata-only ReadObjectResponse")
+	}
+}
+
+type concurrentFlushMockStream struct {
+	mockClientStream
+	onFlushSend func()
+}
+
+func (c *concurrentFlushMockStream) SendMsg(msg interface{}) error {
+	if req, ok := msg.(*storagepb.BidiWriteObjectRequest); ok && req.GetFlush() && c.onFlushSend != nil {
+		fn := c.onFlushSend
+		c.onFlushSend = nil
+		fn()
+	}
+	return nil
+}
+
+func (c *concurrentFlushMockStream) CloseSend() error {
+	return nil
+}
+
+func TestTTFB_ClientObservedReadsAndWrites(t *testing.T) {
+	setup := func(t *testing.T) (context.Context, *sdkmetric.ManualReader, *clientMetrics) {
+		t.Helper()
+		ctx := context.Background()
+		mr := sdkmetric.NewManualReader()
+		provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+		t.Cleanup(func() { _ = provider.Shutdown(ctx) })
+
+		cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+			enableOtelMetrics: true,
+			meterProvider:     provider,
+		})
+		if err != nil {
+			t.Fatalf("initMetrics: %v", err)
+		}
+		return ctx, mr, cm
+	}
+
+	collectTTFB := func(t *testing.T, ctx context.Context, mr *sdkmetric.ManualReader) []metricdata.HistogramDataPoint[float64] {
+		t.Helper()
+		var rm metricdata.ResourceMetrics
+		if err := mr.Collect(ctx, &rm); err != nil {
+			t.Fatalf("Collect: %v", err)
+		}
+		for _, sm := range rm.ScopeMetrics {
+			for _, m := range sm.Metrics {
+				if m.Name == "gcp.storage.client.ttfb" {
+					return m.Data.(metricdata.Histogram[float64]).DataPoints
+				}
+			}
+		}
+		return nil
+	}
+
+	newWriteStream := func(ctx context.Context, cm *clientMetrics, method string, cs grpc.ClientStream, start time.Time) *wrappedClientStream {
+		return &wrappedClientStream{
+			ClientStream:  cs,
+			metrics:       cm,
+			ctx:           ctx,
+			method:        method,
+			target:        "storage.googleapis.com",
+			startTime:     start,
+			serverStreams: method == "/google.storage.v2.Storage/BidiWriteObject",
+			clientStreams: true,
+		}
+	}
+
+	t.Run("HTTP download records TTFB before body Read", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		releaseBody := make(chan struct{})
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			if f, ok := w.(http.Flusher); ok {
+				f.Flush()
+			}
+			<-releaseBody
+			_, _ = w.Write([]byte("hello"))
+		}))
+		defer server.Close()
+
+		hc := &http.Client{Transport: &metricsRoundTripper{base: http.DefaultTransport, metrics: cm}}
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, server.URL+"/storage/v1/b/bkt/o/obj?alt=media", nil)
+		if err != nil {
+			t.Fatalf("NewRequest: %v", err)
+		}
+		resp, err := hc.Do(req)
+		if err != nil {
+			close(releaseBody)
+			t.Fatalf("Do: %v", err)
+		}
+
+		// TTFB must already be recorded upon receiving response headers, before Read() is called.
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			close(releaseBody)
+			_ = resp.Body.Close()
+			t.Fatalf("expected 1 ttfb sample before resp.Body.Read(), got %+v", dps)
+		}
+
+		close(releaseBody)
+		if _, err := io.ReadAll(resp.Body); err != nil {
+			t.Fatalf("ReadAll: %v", err)
+		}
+		_ = resp.Body.Close()
+
+		if dpsAfter := collectTTFB(t, ctx, mr); len(dpsAfter) != 1 || dpsAfter[0].Count != 1 {
+			t.Fatalf("expected ttfb count to remain 1 after body Close(), got %+v", dpsAfter)
+		}
+	})
+
+	t.Run("HTTP upload measures from WroteRequest to GotFirstResponseByte", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		gotFirstChunk := make(chan struct{})
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			buf := make([]byte, 7)
+			if _, err := io.ReadFull(r.Body, buf); err == nil {
+				close(gotFirstChunk)
+			}
+			_, _ = io.ReadAll(r.Body)
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"name":"obj"}`))
+		}))
+		defer server.Close()
+
+		pr, pw := io.Pipe()
+		const uploadInterval = 50 * time.Millisecond
+		go func() {
+			_, _ = pw.Write([]byte("chunk-1"))
+			<-gotFirstChunk
+			<-time.After(uploadInterval)
+			_, _ = pw.Write([]byte("chunk-2"))
+			_ = pw.Close()
+		}()
+
+		hc := &http.Client{Transport: &metricsRoundTripper{base: http.DefaultTransport, metrics: cm}}
+		req, err := http.NewRequestWithContext(ctx, http.MethodPut, server.URL+"/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=123", pr)
+		if err != nil {
+			t.Fatalf("NewRequest: %v", err)
+		}
+		beforeDo := time.Now()
+		resp, err := hc.Do(req)
+		totalDo := time.Since(beforeDo).Seconds()
+		if err != nil {
+			t.Fatalf("Do: %v", err)
+		}
+		_, _ = io.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+		// Since WroteRequest occurs after uploadInterval elapses past startTime,
+		// totalDo - ttfb >= uploadInterval regardless of scheduler jitter.
+		if totalDo-dps[0].Sum < 0.045 {
+			t.Errorf("HTTP upload ttfb = %vs out of totalDo = %vs; expected upload streaming interval (>= 45ms) to be excluded", dps[0].Sum, totalDo)
+		}
+	})
+
+	t.Run("HTTP error response records TTFB while failed round trip omits TTFB", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		hcFail := &http.Client{Transport: &metricsRoundTripper{base: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			return nil, &url.Error{Op: "Get", URL: r.URL.String(), Err: errors.New("connection refused")}
+		}), metrics: cm}}
+		reqFail, _ := http.NewRequestWithContext(ctx, http.MethodGet, "https://storage.googleapis.com/storage/v1/b/bkt/o/obj", nil)
+		_, _ = hcFail.Do(reqFail)
+
+		if dps := collectTTFB(t, ctx, mr); len(dps) != 0 {
+			t.Fatalf("expected 0 ttfb datapoints on failed HTTP round trip, got %+v", dps)
+		}
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+			_, _ = w.Write([]byte(`{"error":{"code":404}}`))
+		}))
+		defer server.Close()
+
+		hc404 := &http.Client{Transport: &metricsRoundTripper{base: http.DefaultTransport, metrics: cm}}
+		req404, _ := http.NewRequestWithContext(ctx, http.MethodGet, server.URL+"/storage/v1/b/bkt/o/missing", nil)
+		resp, err := hc404.Do(req404)
+		if err != nil {
+			t.Fatalf("Do(404): %v", err)
+		}
+		_ = resp.Body.Close()
+
+		if dps := collectTTFB(t, ctx, mr); len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint on HTTP 404 response, got %+v", dps)
+		}
+	})
+
+	t.Run("HTTP upload trace hook edge cases", func(t *testing.T) {
+		for _, tc := range []struct {
+			name          string
+			fireFirstByte bool
+			fireWrote     bool
+			wroteErr      error
+			wantCount     uint64
+			wantZeroSum   bool
+		}{
+			{name: "WroteRequest defer trails GotFirstResponseByte clamps to 0", fireFirstByte: true, fireWrote: true, wantCount: 1, wantZeroSum: true},
+			{name: "first byte before body was written skips sample", fireFirstByte: true, wantCount: 0},
+			{name: "first byte then failed body write skips sample", fireFirstByte: true, fireWrote: true, wroteErr: errors.New("write: broken pipe"), wantCount: 0},
+			{name: "transport without trace hooks falls back to startTime", wantCount: 1},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				ctx, mr, cm := setup(t)
+				hc := &http.Client{Transport: &metricsRoundTripper{base: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+					if trace := httptrace.ContextClientTrace(r.Context()); trace != nil {
+						if tc.fireFirstByte && trace.GotFirstResponseByte != nil {
+							trace.GotFirstResponseByte()
+						}
+						if tc.fireWrote && trace.WroteRequest != nil {
+							trace.WroteRequest(httptrace.WroteRequestInfo{Err: tc.wroteErr})
+						}
+					}
+					return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(bytes.NewReader(nil)), Header: make(http.Header)}, nil
+				}), metrics: cm}}
+				req, err := http.NewRequestWithContext(ctx, http.MethodPut, "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=123", bytes.NewReader([]byte("payload")))
+				if err != nil {
+					t.Fatalf("NewRequest: %v", err)
+				}
+				resp, err := hc.Do(req)
+				if err != nil {
+					t.Fatalf("Do: %v", err)
+				}
+				_ = resp.Body.Close()
+
+				dps := collectTTFB(t, ctx, mr)
+				var got uint64
+				for _, dp := range dps {
+					got += dp.Count
+				}
+				if got != tc.wantCount {
+					t.Fatalf("ttfb sample count = %d, want %d", got, tc.wantCount)
+				}
+				if tc.wantZeroSum && dps[0].Sum != 0 {
+					t.Errorf("expected clamped ttfb = 0s, got %vs", dps[0].Sum)
+				}
+			})
+		}
+	})
+
+	t.Run("gRPC BidiWriteObject pipelined flush does not overwrite the first flush anchor", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/BidiWriteObject", &concurrentFlushMockStream{}, time.Now())
+
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 0, Flush: true}); err != nil {
+			t.Fatalf("SendMsg first flush: %v", err)
+		}
+		firstAnchor := w.firstFlushSentAt.Load()
+		if firstAnchor == nil {
+			t.Fatalf("expected firstFlushSentAt to be set on first flush")
+		}
+		// Both flushes are sent before the first response is received.
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 1024, FinishWrite: true}); err != nil {
+			t.Fatalf("SendMsg second flush: %v", err)
+		}
+		if err := w.CloseSend(); err != nil {
+			t.Fatalf("CloseSend: %v", err)
+		}
+		if got := w.firstFlushSentAt.Load(); got != firstAnchor {
+			t.Errorf("pipelined FinishWrite or CloseSend overwrote the first flush anchor")
+		}
+		if err := w.RecvMsg(&storagepb.BidiWriteObjectResponse{}); err != nil {
+			t.Fatalf("RecvMsg: %v", err)
+		}
+		if dps := collectTTFB(t, ctx, mr); len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+	})
+
+	t.Run("gRPC BidiWriteObject anchors first flush when RecvMsg runs during SendMsg", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		recvReady := make(chan struct{})
+		recvDone := make(chan error, 1)
+		mockStream := &concurrentFlushMockStream{
+			onFlushSend: func() {
+				// Unblock RecvMsg inside ClientStream.SendMsg before SendMsg returns
+				// so the anchor must already be stamped.
+				close(recvReady)
+				<-recvDone
+			},
+		}
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/BidiWriteObject", mockStream, time.Now().Add(-2*time.Second))
+
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 0}); err != nil {
+			t.Fatalf("SendMsg non-flush: %v", err)
+		}
+		if w.firstFlushSentAt.Load() != nil {
+			t.Fatalf("expected firstFlushSentAt to remain nil after non-flush frame")
+		}
+
+		go func() {
+			<-recvReady
+			recvDone <- w.RecvMsg(&storagepb.BidiWriteObjectResponse{})
+		}()
+
+		beforeFlush := time.Now()
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 1024, Flush: true}); err != nil {
+			t.Fatalf("SendMsg first flush: %v", err)
+		}
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+		if maxExpected := time.Since(beforeFlush).Seconds(); dps[0].Sum > maxExpected || dps[0].Sum >= 1.0 {
+			t.Errorf("BidiWriteObject ttfb = %vs, want <= %vs (and < 1.0s)", dps[0].Sum, maxExpected)
+		}
+	})
+
+	t.Run("gRPC BidiWriteObject append takeover with typed-nil Data anchors TTFB", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		// Construct the takeover probe via bidiWriteObjectRequest with nil buf so
+		// req.Data holds a typed-nil *BidiWriteObjectRequest_ChecksummedData.
+		probe := bidiWriteObjectRequest(gRPCBidiWriteRequest{}, nil, nil)
+		proto.Merge(probe, &storagepb.BidiWriteObjectRequest{
+			FirstMessage: &storagepb.BidiWriteObjectRequest_AppendObjectSpec{
+				AppendObjectSpec: &storagepb.AppendObjectSpec{Bucket: "projects/_/buckets/bkt", Object: "obj", Generation: 42},
+			},
+		})
+		if !isWriteFlushMsg(probe) {
+			t.Fatalf("expected isWriteFlushMsg(probe) = true for append-takeover probe with typed-nil Data")
+		}
+
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/BidiWriteObject", &concurrentFlushMockStream{}, time.Now().Add(-2*time.Second))
+		beforeProbe := time.Now()
+		if err := w.SendMsg(probe); err != nil {
+			t.Fatalf("SendMsg(probe): %v", err)
+		}
+		if err := w.RecvMsg(&storagepb.BidiWriteObjectResponse{}); err != nil {
+			t.Fatalf("RecvMsg: %v", err)
+		}
+
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+		if maxExpected := time.Since(beforeProbe).Seconds(); dps[0].Sum > maxExpected || dps[0].Sum >= 1.0 {
+			t.Errorf("append takeover ttfb = %vs, want <= %vs (and < 1.0s)", dps[0].Sum, maxExpected)
+		}
+	})
+
+	t.Run("gRPC WriteObject CloseSend anchors TTFB when no prior FinishWrite was sent", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/WriteObject", &concurrentFlushMockStream{}, time.Now().Add(-2*time.Second))
+
+		if err := w.SendMsg(&storagepb.WriteObjectRequest{WriteOffset: 0}); err != nil {
+			t.Fatalf("SendMsg: %v", err)
+		}
+		beforeClose := time.Now()
+		if err := w.CloseSend(); err != nil {
+			t.Fatalf("CloseSend: %v", err)
+		}
+		if err := w.RecvMsg(&storagepb.WriteObjectResponse{}); err != nil {
+			t.Fatalf("RecvMsg: %v", err)
+		}
+
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+		if maxExpected := time.Since(beforeClose).Seconds(); dps[0].Sum > maxExpected || dps[0].Sum >= 1.0 {
+			t.Errorf("WriteObject CloseSend ttfb = %vs, want <= %vs (and < 1.0s)", dps[0].Sum, maxExpected)
+		}
+	})
+
+	t.Run("gRPC unary records TTFB only on genuine server responses", func(t *testing.T) {
+		t.Run("real server response over bufconn records TTFB", func(t *testing.T) {
+			ctx, mr, cm := setup(t)
+			unaryInt, _ := metricsInterceptors(cm)
+
+			lis := bufconn.Listen(1024 * 1024)
+			srv := grpc.NewServer()
+			storagepb.RegisterStorageServer(srv, &storagepb.UnimplementedStorageServer{})
+			go func() { _ = srv.Serve(lis) }()
+			t.Cleanup(srv.Stop)
+
+			conn, err := grpc.NewClient("passthrough:///bufnet",
+				grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) { return lis.Dial() }),
+				grpc.WithTransportCredentials(insecure.NewCredentials()),
+				grpc.WithUnaryInterceptor(unaryInt),
+			)
+			if err != nil {
+				t.Fatalf("grpc.NewClient: %v", err)
+			}
+			t.Cleanup(func() { _ = conn.Close() })
+
+			_, err = storagepb.NewStorageClient(conn).GetObject(ctx, &storagepb.GetObjectRequest{Bucket: "projects/_/buckets/bkt", Object: "obj"})
+			if status.Code(err) != codes.Unimplemented {
+				t.Fatalf("GetObject err = %v, want Unimplemented", err)
+			}
+			if dps := collectTTFB(t, ctx, mr); len(dps) != 1 || dps[0].Count != 1 {
+				t.Errorf("expected 1 ttfb datapoint from server Unimplemented response, got %+v", dps)
+			}
+		})
+
+		for _, tc := range []struct {
+			name       string
+			withHeader bool
+			err        error
+			wantCount  uint64
+		}{
+			{name: "successful call", withHeader: true, err: nil, wantCount: 1},
+			{name: "server NotFound with headers", withHeader: true, err: status.Error(codes.NotFound, "object not found"), wantCount: 1},
+			{name: "local transport closing without metadata", withHeader: false, err: status.Error(codes.Unavailable, "transport is closing"), wantCount: 0},
+			{name: "local dial connection refused", withHeader: false, err: status.Error(codes.Unavailable, "connection error: desc = \"transport: Error while dialing: dial tcp: connection refused\""), wantCount: 0},
+			{name: "connection reset after server headers", withHeader: true, err: status.Error(codes.Unavailable, "connection error: desc = \"transport: read tcp: connection reset by peer\""), wantCount: 0},
+			{name: "client cancel after server headers", withHeader: true, err: status.Error(codes.Canceled, "context canceled"), wantCount: 0},
+			{name: "client deadline after server headers", withHeader: true, err: status.Error(codes.DeadlineExceeded, "context deadline exceeded"), wantCount: 0},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				ctx, mr, cm := setup(t)
+				unaryInt, _ := metricsInterceptors(cm)
+				_ = unaryInt(ctx, "/google.storage.v2.Storage/GetObject", nil, nil, nil, func(_ context.Context, _ string, _, _ interface{}, _ *grpc.ClientConn, opts ...grpc.CallOption) error {
+					if tc.withHeader {
+						for _, o := range opts {
+							if h, ok := o.(grpc.HeaderCallOption); ok {
+								*h.HeaderAddr = metadata.Pairs(uploadIDHeader, "u-123")
+							}
+						}
+					}
+					return tc.err
+				})
+
+				var got uint64
+				for _, dp := range collectTTFB(t, ctx, mr) {
+					got += dp.Count
+				}
+				if got != tc.wantCount {
+					t.Errorf("ttfb sample count = %d, want %d", got, tc.wantCount)
+				}
+			})
+		}
+	})
+}
+
+func TestIsHTTPPayloadUpload(t *testing.T) {
+	for _, tc := range []struct {
+		name          string
+		method        string
+		url           string
+		body          io.Reader
+		logicalMethod string
+		want          bool
+	}{
+		{name: "resumable chunk PUT", method: http.MethodPut, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=1", body: bytes.NewReader([]byte("x")), logicalMethod: "WriteObject", want: true},
+		{name: "resumable chunk POST", method: http.MethodPost, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=1", body: bytes.NewReader([]byte("x")), logicalMethod: "WriteObject", want: true},
+		{name: "multipart upload POST", method: http.MethodPost, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=multipart", body: bytes.NewReader([]byte("x")), logicalMethod: "WriteObject", want: true},
+		{name: "write operation PUT outside the upload path", method: http.MethodPut, url: "https://bkt.storage.googleapis.com/obj?partNumber=1&uploadId=1", body: bytes.NewReader([]byte("x")), logicalMethod: "WriteObject", want: true},
+		{name: "resumable session initiation POST", method: http.MethodPost, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable", body: bytes.NewReader([]byte("{}")), logicalMethod: "WriteObject", want: false},
+		{name: "compose POST with JSON body", method: http.MethodPost, url: "https://storage.googleapis.com/storage/v1/b/bkt/o/obj/compose", body: bytes.NewReader([]byte("{}")), logicalMethod: "ComposeObject", want: false},
+		{name: "bucket insert POST with JSON body", method: http.MethodPost, url: "https://storage.googleapis.com/storage/v1/b", body: bytes.NewReader([]byte("{}")), logicalMethod: "CreateBucket", want: false},
+		{name: "object PATCH with JSON body", method: http.MethodPatch, url: "https://storage.googleapis.com/storage/v1/b/bkt/o/obj", body: bytes.NewReader([]byte("{}")), logicalMethod: "UpdateObject", want: false},
+		{name: "upload PUT without body", method: http.MethodPut, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=1", logicalMethod: "WriteObject", want: false},
+		{name: "download GET", method: http.MethodGet, url: "https://storage.googleapis.com/storage/v1/b/bkt/o/obj?alt=media", logicalMethod: "ReadObject", want: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			req, err := http.NewRequest(tc.method, tc.url, tc.body)
+			if err != nil {
+				t.Fatalf("NewRequest: %v", err)
+			}
+			if got := isHTTPPayloadUpload(req, tc.logicalMethod); got != tc.want {
+				t.Errorf("isHTTPPayloadUpload = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestIsWriteFlushMsg(t *testing.T) {
+	appendSpec := &storagepb.BidiWriteObjectRequest_AppendObjectSpec{AppendObjectSpec: &storagepb.AppendObjectSpec{Object: "obj"}}
+	data := &storagepb.BidiWriteObjectRequest_ChecksummedData{ChecksummedData: &storagepb.ChecksummedData{Content: []byte("x")}}
+	for _, tc := range []struct {
+		name string
+		msg  interface{}
+		want bool
+	}{
+		{name: "bidi data only", msg: &storagepb.BidiWriteObjectRequest{Data: data}, want: false},
+		{name: "bidi flush", msg: &storagepb.BidiWriteObjectRequest{Data: data, Flush: true}, want: true},
+		{name: "bidi finish_write", msg: &storagepb.BidiWriteObjectRequest{Data: data, FinishWrite: true}, want: true},
+		{name: "bidi state_lookup", msg: &storagepb.BidiWriteObjectRequest{StateLookup: true}, want: true},
+		{name: "bidi append spec without data", msg: &storagepb.BidiWriteObjectRequest{FirstMessage: appendSpec}, want: true},
+		{name: "bidi append spec with data", msg: &storagepb.BidiWriteObjectRequest{FirstMessage: appendSpec, Data: data}, want: false},
+		{name: "write data only", msg: &storagepb.WriteObjectRequest{WriteOffset: 1}, want: false},
+		{name: "write finish_write", msg: &storagepb.WriteObjectRequest{FinishWrite: true}, want: true},
+		{name: "read request", msg: &storagepb.BidiReadObjectRequest{}, want: false},
+		{name: "nil message", msg: nil, want: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := isWriteFlushMsg(tc.msg); got != tc.want {
+				t.Errorf("isWriteFlushMsg = %v, want %v", got, tc.want)
+			}
+		})
 	}
 }
 
