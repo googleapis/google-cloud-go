@@ -40,6 +40,7 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -47,6 +48,7 @@ import (
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
@@ -3267,9 +3269,9 @@ func TestPayloadTracing(t *testing.T) {
 		// Without the dev flag no span (the otelhttp attempt and the two
 		// non-dev storage spans) carries payload attributes.
 		{"http/untraced read", untraced(httpClient(nil, rangeResp(10, 20, body(20)))), read, [][2]int64{{-1, -1}, {-1, -1}, {-1, -1}}},
-		// The read is reopened where the broken body stopped, after the
-		// NewRangeReader span ended; the first response still reports its
-		// full Content-Length.
+		// The read is reopened where the broken body stopped, under the
+		// Object.Reader span; the first response still reports its full
+		// Content-Length.
 		{"http/range read reopened mid-body", httpClient(nil,
 			rangeResp(10, 20, io.NopCloser(io.MultiReader(bytes.NewReader(make([]byte, 5)), iotest.ErrReader(io.ErrUnexpectedEOF)))),
 			rangeResp(15, 15, body(15))), read, [][2]int64{{10, 20}, {15, 15}}},
@@ -3301,5 +3303,610 @@ func TestPayloadTracing(t *testing.T) {
 				t.Errorf("attempt span (offset, size) mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+// readerSpanTestServer is a fake storage server for Object.Reader span tests.
+// Its ReadObject serves the requested range of a 100-byte object of zeros in
+// two responses, the first of which also carries the object metadata.
+type readerSpanTestServer struct {
+	storagepb.UnimplementedStorageServer
+	// openErr, if set, is returned by every read call.
+	openErr error
+	// breakMidStream makes the first read call fail after its first
+	// response, and the second call fail before sending anything.
+	breakMidStream bool
+	// reopenErr, if set, is the error of the second call with
+	// breakMidStream, instead of a retryable UNAVAILABLE error.
+	reopenErr error
+	// badCRC makes the server report a wrong CRC32C for the object.
+	badCRC bool
+
+	mu    sync.Mutex
+	calls int
+}
+
+func (s *readerSpanTestServer) nextCall() int {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.calls++
+	return s.calls
+}
+
+// reopenError returns the error for the second call with breakMidStream.
+func (s *readerSpanTestServer) reopenError() error {
+	if s.reopenErr != nil {
+		return s.reopenErr
+	}
+	return status.Error(codes.Unavailable, "retry me")
+}
+
+func (s *readerSpanTestServer) ReadObject(req *storagepb.ReadObjectRequest, stream storagepb.Storage_ReadObjectServer) error {
+	call := s.nextCall()
+	if s.openErr != nil {
+		return s.openErr
+	}
+	if s.breakMidStream && call == 2 {
+		return s.reopenError()
+	}
+	const size = 100
+	n := req.GetReadLimit()
+	if n <= 0 {
+		n = size - req.GetReadOffset()
+	}
+	chunk := func(n int64) *storagepb.ChecksummedData {
+		data := make([]byte, n)
+		crc := crc32.Checksum(data, crc32cTable)
+		return &storagepb.ChecksummedData{Content: data, Crc32C: &crc}
+	}
+	first := &storagepb.ReadObjectResponse{
+		ChecksummedData: chunk(n / 2),
+		ContentRange:    &storagepb.ContentRange{Start: req.GetReadOffset(), End: req.GetReadOffset() + n, CompleteLength: size},
+		Metadata:        &storagepb.Object{Bucket: "projects/_/buckets/bucket", Name: "object", Size: size, Generation: 1},
+	}
+	if s.badCRC {
+		wrong := uint32(1)
+		first.ObjectChecksums = &storagepb.ObjectChecksums{Crc32C: &wrong}
+	}
+	if err := stream.Send(first); err != nil {
+		return err
+	}
+	if s.breakMidStream && call == 1 {
+		return status.Error(codes.Unavailable, "broken stream")
+	}
+	return stream.Send(&storagepb.ReadObjectResponse{ChecksummedData: chunk(n - n/2)})
+}
+
+// BidiReadObject serves the single range requested on the stream, with the
+// object metadata, in one response, except as described for breakMidStream.
+// A range without a length is read to the end of the object.
+func (s *readerSpanTestServer) BidiReadObject(stream storagepb.Storage_BidiReadObjectServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		return err
+	}
+	call := s.nextCall()
+	if s.openErr != nil {
+		return s.openErr
+	}
+	if s.breakMidStream && call == 2 {
+		return s.reopenError()
+	}
+	const size = 100
+	r := req.GetReadRanges()[0]
+	n := r.GetReadLength()
+	if n <= 0 {
+		n = size - r.GetReadOffset()
+	}
+	data := func(n int64, end bool) []*storagepb.ObjectRangeData {
+		return []*storagepb.ObjectRangeData{{
+			ChecksummedData: &storagepb.ChecksummedData{Content: make([]byte, n)},
+			ReadRange:       &storagepb.ReadRange{ReadOffset: r.GetReadOffset(), ReadLength: n, ReadId: r.GetReadId()},
+			RangeEnd:        end,
+		}}
+	}
+	metadata := &storagepb.Object{Bucket: "projects/_/buckets/bucket", Name: "object", Size: size, Generation: 1}
+	if s.badCRC {
+		wrong := uint32(1)
+		metadata.Checksums = &storagepb.ObjectChecksums{Crc32C: &wrong}
+	}
+	if s.breakMidStream && call == 1 {
+		// Send half of the range, then break the stream.
+		if err := stream.Send(&storagepb.BidiReadObjectResponse{Metadata: metadata, ObjectDataRanges: data(n/2, false)}); err != nil {
+			return err
+		}
+		return status.Error(codes.Unavailable, "broken stream")
+	}
+	return stream.Send(&storagepb.BidiReadObjectResponse{Metadata: metadata, ObjectDataRanges: data(n, true)})
+}
+
+// newReaderSpanHTTPClient returns an HTTP client, traced by otelhttp, whose
+// requests get responses in order.
+func newReaderSpanHTTPClient(t *testing.T, opts []option.ClientOption, responses ...*http.Response) *Client {
+	t.Helper()
+	mock := &mockTransport{}
+	for _, r := range responses {
+		mock.addResult(r, nil)
+	}
+	c, err := NewClient(context.Background(), append(opts, option.WithHTTPClient(&http.Client{Transport: otelhttp.NewTransport(mock)}))...)
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	t.Cleanup(func() { c.Close() })
+	c.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}))
+	return c
+}
+
+// newReaderSpanGRPCClient returns a gRPC client whose requests are served by
+// srv.
+func newReaderSpanGRPCClient(t *testing.T, srv storagepb.StorageServer, opts ...option.ClientOption) *Client {
+	t.Helper()
+	startFakeStorageServer(t, srv)
+	c, err := NewGRPCClient(context.Background(), opts...)
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	t.Cleanup(func() { c.Close() })
+	c.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}))
+	return c
+}
+
+// partialResponse returns a 206 response serving body as the n bytes of a
+// 100-byte object starting at start.
+func partialResponse(start, n int64, body io.ReadCloser) *http.Response {
+	return &http.Response{StatusCode: http.StatusPartialContent, Header: http.Header{"Content-Range": {fmt.Sprintf("bytes %d-%d/100", start, start+n-1)}}, ContentLength: n, Body: body}
+}
+
+// singleSpan returns the only span in spans named with the package-qualified
+// form of name. It fails the test if there is not exactly one.
+func singleSpan(t *testing.T, spans tracetest.SpanStubs, name string) tracetest.SpanStub {
+	t.Helper()
+	found := findSpans(spans, name)
+	if len(found) != 1 {
+		t.Fatalf("got %d %s spans, want 1", len(found), name)
+	}
+	return found[0]
+}
+
+func TestReaderSpanEndsOnClose(t *testing.T) {
+	ctx := context.Background()
+	body := func(n int) io.ReadCloser { return bodyReader(strings.Repeat("a", n)) }
+	for _, tc := range []struct {
+		name          string
+		client        func(*testing.T) *Client
+		transportSpan string
+	}{
+		{
+			name:          "http/XML",
+			client:        func(t *testing.T) *Client { return newReaderSpanHTTPClient(t, nil, partialResponse(10, 20, body(20))) },
+			transportSpan: "httpStorageClient.NewRangeReader",
+		},
+		{
+			name: "http/JSON",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanHTTPClient(t, []option.ClientOption{WithJSONReads()}, partialResponse(10, 20, body(20)))
+			},
+			transportSpan: "httpStorageClient.NewRangeReader",
+		},
+		{
+			name:          "grpc",
+			client:        func(t *testing.T) *Client { return newReaderSpanGRPCClient(t, &readerSpanTestServer{}) },
+			transportSpan: "grpcStorageClient.NewRangeReaderReadObject",
+		},
+		{
+			name: "grpc/bidi",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanGRPCClient(t, &retryAttemptTestServer{}, WithGRPCBidiReads())
+			},
+			transportSpan: "grpcStorageClient.NewRangeReader",
+		},
+	} {
+		for _, devTracing := range []string{"true", "false"} {
+			t.Run(fmt.Sprintf("%s/devTracing=%s", tc.name, devTracing), func(t *testing.T) {
+				te := testutil.NewOpenTelemetryTestExporter()
+				t.Cleanup(func() { te.Unregister(ctx) })
+				t.Setenv(storageOtelTracingDevVar, devTracing)
+				t.Setenv(storageBucketMetadataDisabledVar, "true")
+				c := tc.client(t)
+
+				r, err := c.Bucket("bucket").Object("object").NewRangeReader(ctx, 10, 20)
+				if err != nil {
+					t.Fatalf("NewRangeReader: %v", err)
+				}
+				if got := len(findSpans(te.Spans(), "Object.Reader")); got != 0 {
+					t.Errorf("got %d Object.Reader spans before Close, want 0", got)
+				}
+				if n, err := io.Copy(io.Discard, r); err != nil || n != 20 {
+					t.Fatalf("read %d bytes, err %v; want 20 bytes", n, err)
+				}
+				// Closing again must not end the span again.
+				for i := 1; i <= 2; i++ {
+					if err := r.Close(); err != nil {
+						t.Fatalf("Close #%d: %v", i, err)
+					}
+				}
+
+				spans := te.Spans()
+				reader := singleSpan(t, spans, "Object.Reader")
+				if reader.Status.Code != otcodes.Unset {
+					t.Errorf("Object.Reader span status = %v, want Unset", reader.Status.Code)
+				}
+				// error.type is only set with dev tracing enabled.
+				if devTracing == "true" {
+					if got, ok := spanStringAttribute(t, spans, "Object.Reader", "error.type"); ok {
+						t.Errorf("Object.Reader span error.type = %q, want none", got)
+					}
+				}
+				transport := singleSpan(t, spans, tc.transportSpan)
+				if got, want := transport.Parent.SpanID(), reader.SpanContext.SpanID(); got != want {
+					t.Errorf("%s span parent ID = %v, want %v", tc.transportSpan, got, want)
+				}
+				if reader.EndTime.Before(transport.EndTime) {
+					t.Errorf("Object.Reader span ended at %v, before %s span end %v", reader.EndTime, tc.transportSpan, transport.EndTime)
+				}
+			})
+		}
+	}
+}
+
+func TestReaderSpanEndsOnOpenFailure(t *testing.T) {
+	ctx := context.Background()
+	for _, tc := range []struct {
+		name   string
+		client func(*testing.T) *Client
+	}{
+		{
+			name: "http/XML",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanHTTPClient(t, nil, &http.Response{StatusCode: http.StatusNotFound, Body: bodyReader("")})
+			},
+		},
+		{
+			name: "http/JSON",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanHTTPClient(t, []option.ClientOption{WithJSONReads()}, &http.Response{StatusCode: http.StatusNotFound, Body: bodyReader("")})
+			},
+		},
+		{
+			name: "grpc",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanGRPCClient(t, &readerSpanTestServer{openErr: status.Error(codes.NotFound, "no such object")})
+			},
+		},
+		{
+			name: "grpc/bidi",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanGRPCClient(t, &readerSpanTestServer{openErr: status.Error(codes.NotFound, "no such object")}, WithGRPCBidiReads())
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() { te.Unregister(ctx) })
+			t.Setenv(storageOtelTracingDevVar, "true")
+			t.Setenv(storageBucketMetadataDisabledVar, "true")
+			c := tc.client(t)
+
+			if _, err := c.Bucket("bucket").Object("object").NewReader(ctx); !errors.Is(err, ErrObjectNotExist) {
+				t.Fatalf("NewReader error = %v, want %v", err, ErrObjectNotExist)
+			}
+
+			spans := te.Spans()
+			reader := singleSpan(t, spans, "Object.Reader")
+			if reader.Status.Code != otcodes.Error {
+				t.Errorf("Object.Reader span status = %v, want Error", reader.Status.Code)
+			}
+			if got, _ := spanStringAttribute(t, spans, "Object.Reader", "error.type"); got != "NOT_FOUND" {
+				t.Errorf("Object.Reader span error.type = %q, want %q", got, "NOT_FOUND")
+			}
+		})
+	}
+}
+
+func TestReaderSpanRecordsChecksumMismatch(t *testing.T) {
+	ctx := context.Background()
+	for _, tc := range []struct {
+		name   string
+		client func(*testing.T) *Client
+	}{
+		{
+			name: "http/XML",
+			client: func(t *testing.T) *Client {
+				// The header reports a CRC32C of 0, which does not match the body.
+				return newReaderSpanHTTPClient(t, nil, &http.Response{
+					StatusCode:    http.StatusOK,
+					Header:        http.Header{"X-Goog-Hash": {"crc32c=AAAAAA=="}},
+					ContentLength: 10,
+					Body:          bodyReader(strings.Repeat("a", 10)),
+				})
+			},
+		},
+		{
+			name:   "grpc",
+			client: func(t *testing.T) *Client { return newReaderSpanGRPCClient(t, &readerSpanTestServer{badCRC: true}) },
+		},
+		{
+			name: "grpc/bidi",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanGRPCClient(t, &readerSpanTestServer{badCRC: true}, WithGRPCBidiReads())
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() { te.Unregister(ctx) })
+			t.Setenv(storageOtelTracingDevVar, "true")
+			t.Setenv(storageBucketMetadataDisabledVar, "true")
+			c := tc.client(t)
+
+			r, err := c.Bucket("bucket").Object("object").NewReader(ctx)
+			if err != nil {
+				t.Fatalf("NewReader: %v", err)
+			}
+			if _, err := io.Copy(io.Discard, r); !errors.Is(err, errChecksumMismatch) {
+				t.Fatalf("read error = %v, want %v", err, errChecksumMismatch)
+			}
+			if err := r.Close(); !errors.Is(err, errChecksumMismatch) {
+				t.Errorf("Close error = %v, want %v", err, errChecksumMismatch)
+			}
+
+			spans := te.Spans()
+			reader := singleSpan(t, spans, "Object.Reader")
+			if reader.Status.Code != otcodes.Error {
+				t.Errorf("Object.Reader span status = %v, want Error", reader.Status.Code)
+			}
+			if got, _ := spanStringAttribute(t, spans, "Object.Reader", "error.type"); got != "CHECKSUM_MISMATCH" {
+				t.Errorf("Object.Reader span error.type = %q, want %q", got, "CHECKSUM_MISMATCH")
+			}
+			if !slices.ContainsFunc(reader.Events, func(e sdktrace.Event) bool { return e.Name == "exception" }) {
+				t.Errorf("Object.Reader span events = %v, want an exception event", reader.Events)
+			}
+		})
+	}
+}
+
+func TestReaderSpanRecordsReadError(t *testing.T) {
+	ctx := context.Background()
+	for _, tc := range []struct {
+		name   string
+		client func(*testing.T) *Client
+		read   func(r *Reader) error
+	}{
+		{
+			// The body breaks after 5 bytes, and the reopen is denied. The
+			// reader is read through Reader.Read.
+			name: "http/XML",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanHTTPClient(t, nil,
+					partialResponse(10, 20, io.NopCloser(io.MultiReader(bytes.NewReader(make([]byte, 5)), iotest.ErrReader(io.ErrUnexpectedEOF)))),
+					&http.Response{StatusCode: http.StatusForbidden, Body: bodyReader("")})
+			},
+			read: func(r *Reader) error {
+				_, err := io.ReadAll(r)
+				return err
+			},
+		},
+		{
+			// The stream breaks after 10 bytes, and the reopen is denied. The
+			// reader is read through Reader.WriteTo.
+			name: "grpc/bidi",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanGRPCClient(t, &readerSpanTestServer{breakMidStream: true, reopenErr: status.Error(codes.PermissionDenied, "denied")}, WithGRPCBidiReads())
+			},
+			read: func(r *Reader) error {
+				_, err := io.Copy(io.Discard, r)
+				return err
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() { te.Unregister(ctx) })
+			t.Setenv(storageOtelTracingDevVar, "true")
+			t.Setenv(storageBucketMetadataDisabledVar, "true")
+			c := tc.client(t)
+
+			r, err := c.Bucket("bucket").Object("object").NewRangeReader(ctx, 10, 20)
+			if err != nil {
+				t.Fatalf("NewRangeReader: %v", err)
+			}
+			readErr := tc.read(r)
+			if readErr == nil {
+				t.Fatal("read succeeded, want an error")
+			}
+			if err := r.Close(); !errors.Is(err, readErr) {
+				t.Errorf("Close error = %v, want %v", err, readErr)
+			}
+
+			spans := te.Spans()
+			reader := singleSpan(t, spans, "Object.Reader")
+			if reader.Status.Code != otcodes.Error {
+				t.Errorf("Object.Reader span status = %v, want Error", reader.Status.Code)
+			}
+			if got, _ := spanStringAttribute(t, spans, "Object.Reader", "error.type"); got != "PERMISSION_DENIED" {
+				t.Errorf("Object.Reader span error.type = %q, want %q", got, "PERMISSION_DENIED")
+			}
+			exceptions := 0
+			for _, e := range reader.Events {
+				if e.Name == "exception" {
+					exceptions++
+				}
+			}
+			if exceptions != 1 {
+				t.Errorf("got %d exception events on the Object.Reader span, want 1", exceptions)
+			}
+		})
+	}
+}
+
+func TestReaderSpanMidStreamReopen(t *testing.T) {
+	ctx := context.Background()
+	brokenBody := func() io.ReadCloser {
+		return io.NopCloser(io.MultiReader(bytes.NewReader(make([]byte, 5)), iotest.ErrReader(io.ErrUnexpectedEOF)))
+	}
+	for _, tc := range []struct {
+		name          string
+		client        func(*testing.T) *Client
+		transportSpan string
+	}{
+		{
+			// The body breaks after 5 bytes, and the first reopen attempt fails.
+			name: "http/XML",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanHTTPClient(t, nil,
+					partialResponse(10, 20, brokenBody()),
+					&http.Response{StatusCode: http.StatusServiceUnavailable, Body: bodyReader("")},
+					partialResponse(15, 15, bodyReader(strings.Repeat("a", 15))))
+			},
+			transportSpan: "httpStorageClient.NewRangeReader",
+		},
+		{
+			// The stream breaks after 10 bytes, and the first reopen attempt fails.
+			name: "grpc",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanGRPCClient(t, &readerSpanTestServer{breakMidStream: true})
+			},
+			transportSpan: "grpcStorageClient.NewRangeReaderReadObject",
+		},
+		{
+			name: "http/JSON",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanHTTPClient(t, []option.ClientOption{WithJSONReads()},
+					partialResponse(10, 20, brokenBody()),
+					&http.Response{StatusCode: http.StatusServiceUnavailable, Body: bodyReader("")},
+					partialResponse(15, 15, bodyReader(strings.Repeat("a", 15))))
+			},
+			transportSpan: "httpStorageClient.NewRangeReader",
+		},
+		{
+			name: "grpc/bidi",
+			client: func(t *testing.T) *Client {
+				return newReaderSpanGRPCClient(t, &readerSpanTestServer{breakMidStream: true}, WithGRPCBidiReads())
+			},
+			transportSpan: "grpcStorageClient.NewRangeReader",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() { te.Unregister(ctx) })
+			t.Setenv(storageOtelTracingDevVar, "true")
+			t.Setenv(storageBucketMetadataDisabledVar, "true")
+			c := tc.client(t)
+
+			r, err := c.Bucket("bucket").Object("object").NewRangeReader(ctx, 10, 20)
+			if err != nil {
+				t.Fatalf("NewRangeReader: %v", err)
+			}
+			if n, err := io.Copy(io.Discard, r); err != nil || n != 20 {
+				t.Fatalf("read %d bytes, err %v; want 20 bytes", n, err)
+			}
+			if err := r.Close(); err != nil {
+				t.Fatalf("Close: %v", err)
+			}
+
+			spans := te.Spans()
+			reader := singleSpan(t, spans, "Object.Reader")
+			transport := singleSpan(t, spans, tc.transportSpan)
+
+			// The backoff before the reopen's second attempt is recorded
+			// under the Object.Reader span, within its lifetime.
+			backoffs := findSpans(spans, "RetryBackoff")
+			if len(backoffs) != 1 {
+				t.Fatalf("got %d RetryBackoff spans, want 1", len(backoffs))
+			}
+			backoff := backoffs[0]
+			if got, want := backoff.Parent.SpanID(), reader.SpanContext.SpanID(); got != want {
+				t.Errorf("RetryBackoff span parent ID = %v, want Object.Reader span ID %v", got, want)
+			}
+			if backoff.StartTime.Before(reader.StartTime) || backoff.EndTime.After(reader.EndTime) {
+				t.Errorf("RetryBackoff span [%v, %v] is outside Object.Reader span [%v, %v]", backoff.StartTime, backoff.EndTime, reader.StartTime, reader.EndTime)
+			}
+
+			// The open attempt is a child of the transport span; the two
+			// reopen attempts are children of the Object.Reader span.
+			var underTransport, underReader int
+			for _, s := range spans {
+				if s.InstrumentationScope.Name == defaultTracerName {
+					continue
+				}
+				switch s.Parent.SpanID() {
+				case transport.SpanContext.SpanID():
+					underTransport++
+				case reader.SpanContext.SpanID():
+					underReader++
+				default:
+					t.Errorf("attempt span %s has parent ID %v, want the %s or Object.Reader span", s.Name, s.Parent.SpanID(), tc.transportSpan)
+				}
+			}
+			if underTransport != 1 || underReader != 2 {
+				t.Errorf("got %d attempt spans under %s and %d under Object.Reader, want 1 and 2", underTransport, tc.transportSpan, underReader)
+			}
+		})
+	}
+}
+
+func TestReaderSpanMidStreamReopenDevTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() { te.Unregister(ctx) })
+	t.Setenv(storageOtelTracingDevVar, "false")
+	t.Setenv(storageBucketMetadataDisabledVar, "true")
+	c := newReaderSpanHTTPClient(t, nil,
+		partialResponse(10, 20, io.NopCloser(io.MultiReader(bytes.NewReader(make([]byte, 5)), iotest.ErrReader(io.ErrUnexpectedEOF)))),
+		&http.Response{StatusCode: http.StatusServiceUnavailable, Body: bodyReader("")},
+		partialResponse(15, 15, bodyReader(strings.Repeat("a", 15))))
+
+	r, err := c.Bucket("bucket").Object("object").NewRangeReader(ctx, 10, 20)
+	if err != nil {
+		t.Fatalf("NewRangeReader: %v", err)
+	}
+	if n, err := io.Copy(io.Discard, r); err != nil || n != 20 {
+		t.Fatalf("read %d bytes, err %v; want 20 bytes", n, err)
+	}
+	if err := r.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+
+	spans := te.Spans()
+	singleSpan(t, spans, "Object.Reader")
+	if got := len(findSpans(spans, "RetryBackoff")); got != 0 {
+		t.Errorf("got %d RetryBackoff spans, want 0 when dev tracing is disabled", got)
+	}
+}
+
+func TestReaderCloseRecordsOnce(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() { te.Unregister(ctx) })
+	t.Setenv(storageOtelTracingDevVar, "true")
+
+	spanCtx, _ := startSpan(ctx, "Object.Reader")
+	var recorded []error
+	r := &Reader{
+		reader:       io.NopCloser(strings.NewReader("")),
+		ctx:          spanCtx,
+		metricsState: &metricsState{record: func(err error) { recorded = append(recorded, err) }},
+	}
+	readErr := errors.New("read failed")
+	r.recordRead(0, readErr)
+	for i := 1; i <= 2; i++ {
+		if err := r.Close(); !errors.Is(err, readErr) {
+			t.Errorf("Close #%d error = %v, want %v", i, err, readErr)
+		}
+	}
+
+	if diff := cmp.Diff([]error{readErr}, recorded, cmpopts.EquateErrors()); diff != "" {
+		t.Errorf("recorded metrics errors mismatch (-want +got):\n%s", diff)
+	}
+	reader := singleSpan(t, te.Spans(), "Object.Reader")
+	if reader.Status.Code != otcodes.Error {
+		t.Errorf("Object.Reader span status = %v, want Error", reader.Status.Code)
+	}
+
+	// A Reader without a span context must close without panicking, even on
+	// a not-found error, for which endSpan reads values from the context.
+	noSpan := &Reader{reader: io.NopCloser(strings.NewReader("")), err: ErrObjectNotExist}
+	if err := noSpan.Close(); !errors.Is(err, ErrObjectNotExist) {
+		t.Errorf("Close error = %v, want %v", err, ErrObjectNotExist)
 	}
 }
