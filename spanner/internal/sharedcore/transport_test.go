@@ -933,9 +933,10 @@ func TestTransport_DirectPathPoolSizingAndFallback(t *testing.T) {
 			if err != nil {
 				t.Fatalf("RequestIDHeaderInjector(%d) failed: %v", i, err)
 			}
-			parts := strings.Split(riw.LogicalRequestKey(), ".")
+			key := requestid.LogicalRequestKeyFromCallOptions([]gax.CallOption{riw.WithNextRetryAttempt(1)})
+			parts := strings.Split(key, ".")
 			if len(parts) != 5 {
-				t.Fatalf("unexpected logical request key %q", riw.LogicalRequestKey())
+				t.Fatalf("unexpected logical request key %q", key)
 			}
 			seenCh[parts[3]] = true
 		}

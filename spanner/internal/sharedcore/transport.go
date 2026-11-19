@@ -224,8 +224,8 @@ func applyDCPPrimeMetadata(ctx context.Context, sessionMD metadata.MD, dbPrefix 
 // Request-ID contract:
 //   - ExecuteSql automatically injects x-goog-spanner-request-id unless opts already carry one.
 //   - ExecuteStreamingSql does not inject a request ID; callers must obtain a *requestid.Wrap
-//     from RequestIDHeaderInjector (or supply requestid.WithRequestID) and pass per-attempt
-//     CallOptions so retries reuse the same logical request key.
+//     from RequestIDHeaderInjector and pass per-attempt CallOptions so retries reuse the same
+//     logical request key.
 type ChannelClient interface {
 	RequestIDHeaderInjector(context.Context) (*requestid.Wrap, error)
 	ExecuteSql(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (*sppb.ResultSet, error)
