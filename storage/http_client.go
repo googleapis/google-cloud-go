@@ -125,7 +125,7 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 
 	var clientMetrics *clientMetrics
 	var metricsCleanup func()
-	if isOtelMetricsEnabled(&config) {
+	if isOtelMetricsEnabled(&config) || isOtelDebugMetricsEnabled(&config) {
 		var project string
 		if creds != nil {
 			project, _ = creds.ProjectID(ctx)
