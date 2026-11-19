@@ -22,6 +22,7 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
+	"google.golang.org/protobuf/proto"
 )
 
 // TableShim implements TableAPI by routing between a classic gRPC
@@ -34,9 +35,9 @@ import (
 // ApplyReadModifyWrite) always delegate to classic. ReadRows delegates
 // to classic for the general multi-row case; the single-key shape
 // (see singleRowKey) is served by the session ReadRow vRPC since it is
-// semantically identical to Table.ReadRow. Conditional mutations always
-// route to classic — session vRPC does not support the CheckAndMutateRow
-// shape today.
+// semantically identical to Table.ReadRow. Apply routes non-conditional
+// mutations to the session MutateRow vRPC and conditional mutations to
+// the session CheckAndMutateRow vRPC.
 //
 // ReadRow, single-key ReadRows, and Apply pass their session call's
 // error to session.UnimplementedBreaker.ShouldFallback: a
@@ -102,18 +103,19 @@ func (t *TableShim) readRowSession(ctx context.Context, row string, opts ...Read
 	return protoRowToRow(resp.GetRow()), nil
 }
 
-// Apply implements TableAPI. Non-conditional mutations may route
-// through the session path (subject to the diverter); conditional
-// mutations always go to classic — CheckAndMutateRow has no session
-// equivalent. Nil mutations also route to classic so the classic
-// client's nil-handling error surfaces exactly as it always has,
-// rather than panicking here on m.ops.
+// Apply implements TableAPI. Both non-conditional mutations (MutateRow)
+// and conditional mutations (CheckAndMutateRow) may route through the
+// session path (subject to the diverter). Nil mutations route to
+// classic so the classic client's nil-handling error surfaces as-is.
 func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
-	if m == nil || m.isConditional {
+	if m == nil {
 		return t.classic.Apply(ctx, row, m, opts...)
 	}
 	if !t.useSession() {
 		return t.classic.Apply(ctx, row, m, opts...)
+	}
+	if m.isConditional {
+		return t.checkAndMutateRowSession(ctx, row, m, opts...)
 	}
 	req := &btpb.SessionMutateRowRequest{
 		Key:       []byte(row),
@@ -128,7 +130,55 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 	if t.breaker.ShouldFallback(err) {
 		return t.classic.Apply(ctx, row, m, opts...)
 	}
+	if err == nil {
+		applyOptionsAfter(opts, &btpb.MutateRowResponse{})
+	}
 	return err
+}
+
+// checkAndMutateRowSession executes a conditional mutation over the session
+// CheckAndMutateRow vRPC, falling back to classic on codes.Unimplemented and
+// running ApplyOption callbacks on success.
+func (t *TableShim) checkAndMutateRowSession(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
+	req := &btpb.SessionCheckAndMutateRowRequest{
+		Key: []byte(row),
+	}
+	if m.cond != nil {
+		req.PredicateFilter = m.cond.proto()
+	}
+	if m.mtrue != nil {
+		if m.mtrue.isConditional {
+			return errors.New("bigtable: conditional mutations cannot be nested")
+		}
+		req.TrueMutations = m.mtrue.ops
+	}
+	if m.mfalse != nil {
+		if m.mfalse.isConditional {
+			return errors.New("bigtable: conditional mutations cannot be nested")
+		}
+		req.FalseMutations = m.mfalse.ops
+	}
+	resp, err := t.session.CheckAndMutateRow(ctx, req)
+	if errors.Is(err, session.ErrWriteNotSupported) {
+		// Client-local capability rejection (e.g. materialized view) did not
+		// reach the server and must not reset consecutive Unimplemented strikes.
+		return fmt.Errorf("bigtable: %w", err)
+	}
+	if t.breaker.ShouldFallback(err) {
+		return t.classic.Apply(ctx, row, m, opts...)
+	}
+	if err == nil {
+		applyOptionsAfter(opts, &btpb.CheckAndMutateRowResponse{
+			PredicateMatched: resp.GetPredicateMatched(),
+		})
+	}
+	return err
+}
+
+func applyOptionsAfter(opts []ApplyOption, res proto.Message) {
+	for _, o := range opts {
+		o.after(res)
+	}
 }
 
 // ReadRows sends a single-key read through the session data plane and

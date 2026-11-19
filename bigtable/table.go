@@ -50,12 +50,12 @@ type Table struct {
 
 	// divertible, when non-nil, layers session routing on top of the
 	// classic body for the methods that have session equivalents:
-	// Apply, ReadRow, and single-row shapes of ReadRows. Populated by
-	// Open when c.diverter != nil so callers that hold a bare *Table
-	// transparently participate in the session/classic split. Nil for
-	// classic-only clients — the gate in Table.Apply / Table.ReadRow /
-	// Table.ReadRows short-circuits to the *Classic helper, preserving
-	// the old fast path.
+	// Apply (MutateRow and CheckAndMutateRow), ReadRow, and single-row
+	// shapes of ReadRows. Populated by Open when c.diverter != nil so
+	// callers that hold a bare *Table transparently participate in the
+	// session/classic split. Nil for classic-only clients — the gate in
+	// Table.Apply / Table.ReadRow / Table.ReadRows short-circuits to the
+	// *Classic helper, preserving the old fast path.
 	//
 	// The value is a *TableShim whose classic side wraps a *tableImpl
 	// built from a snapshot of this Table with divertible EXPLICITLY

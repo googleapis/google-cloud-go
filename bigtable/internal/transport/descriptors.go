@@ -57,6 +57,8 @@ func (tableEnvelope) WrapRequest(inner proto.Message) ([]byte, error) {
 		env.Payload = &btpb.TableRequest_ReadRow{ReadRow: r}
 	case *btpb.SessionMutateRowRequest:
 		env.Payload = &btpb.TableRequest_MutateRow{MutateRow: r}
+	case *btpb.SessionCheckAndMutateRowRequest:
+		env.Payload = &btpb.TableRequest_CheckAndMutateRow{CheckAndMutateRow: r}
 	default:
 		return nil, fmt.Errorf("unsupported table vRPC request payload %T", inner)
 	}
@@ -74,6 +76,8 @@ func (tableEnvelope) UnwrapResponse(buf []byte) (proto.Message, error) {
 		inner = p.ReadRow
 	case *btpb.TableResponse_MutateRow:
 		inner = p.MutateRow
+	case *btpb.TableResponse_CheckAndMutateRow:
+		inner = p.CheckAndMutateRow
 	case nil:
 		return nil, fmt.Errorf("missing table vRPC response payload")
 	default:
@@ -97,6 +101,8 @@ func (authorizedViewEnvelope) WrapRequest(inner proto.Message) ([]byte, error) {
 		env.Payload = &btpb.AuthorizedViewRequest_ReadRow{ReadRow: r}
 	case *btpb.SessionMutateRowRequest:
 		env.Payload = &btpb.AuthorizedViewRequest_MutateRow{MutateRow: r}
+	case *btpb.SessionCheckAndMutateRowRequest:
+		env.Payload = &btpb.AuthorizedViewRequest_CheckAndMutateRow{CheckAndMutateRow: r}
 	default:
 		return nil, fmt.Errorf("unsupported authorized view vRPC request payload %T", inner)
 	}
@@ -114,6 +120,8 @@ func (authorizedViewEnvelope) UnwrapResponse(buf []byte) (proto.Message, error) 
 		inner = p.ReadRow
 	case *btpb.AuthorizedViewResponse_MutateRow:
 		inner = p.MutateRow
+	case *btpb.AuthorizedViewResponse_CheckAndMutateRow:
+		inner = p.CheckAndMutateRow
 	case nil:
 		return nil, fmt.Errorf("missing authorized view vRPC response payload")
 	default:
@@ -234,4 +242,7 @@ var (
 
 	// MUTATE_ROW describes the MutateRow virtual RPC across writable session resource kinds.
 	MUTATE_ROW = newVRpcDescriptor[btpb.SessionMutateRowRequest, btpb.SessionMutateRowResponse]("MutateRow")
+
+	// CHECK_AND_MUTATE_ROW describes the CheckAndMutateRow virtual RPC across writable session resource kinds.
+	CHECK_AND_MUTATE_ROW = newVRpcDescriptor[btpb.SessionCheckAndMutateRowRequest, btpb.SessionCheckAndMutateRowResponse]("CheckAndMutateRow")
 )
