@@ -1295,7 +1295,9 @@ func TestNewClient_DebugMetricsRecordsCredentialRefresh(t *testing.T) {
 	}))
 	defer server.Close()
 
+	// Debug metrics on and standard metrics off: only debug metrics are emitted.
 	t.Setenv(envOtelDebugMetrics, "true")
+	t.Setenv(envOtelMetrics, "false")
 	client, err := NewClient(ctx,
 		option.WithEndpoint(server.URL+"/storage/v1/"),
 		option.WithAuthCredentials(auth.NewCredentials(&auth.CredentialsOptions{
@@ -1316,9 +1318,24 @@ func TestNewClient_DebugMetricsRecordsCredentialRefresh(t *testing.T) {
 	if err := mr.Collect(ctx, &rm); err != nil {
 		t.Fatalf("Collect: %v", err)
 	}
+	standard := map[string]bool{
+		"rpc.client.call.duration":              true,
+		"http.client.request.duration":          true,
+		"gcp.client.request.duration":           true,
+		"gcp.storage.client.operations":         true,
+		"gcp.storage.client.attempts":           true,
+		"gcp.storage.client.errors":             true,
+		"gcp.storage.client.ttfb":               true,
+		"gcp.storage.client.request.body.size":  true,
+		"gcp.storage.client.response.body.size": true,
+		"gcp.storage.client.server.unreached":   true,
+	}
 	var found bool
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
+			if standard[m.Name] {
+				t.Errorf("standard metric %s emitted with only debug metrics enabled", m.Name)
+			}
 			if m.Name == "gcp.storage.client.auth.credential_refresh.duration" {
 				found = true
 				dps := m.Data.(metricdata.Histogram[float64]).DataPoints

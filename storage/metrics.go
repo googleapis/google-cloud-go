@@ -42,6 +42,7 @@ import (
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/noop"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/exemplar"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
@@ -297,8 +298,15 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	}
 
 	meter := provider.Meter("cloud.google.com/go/storage")
+	// Standard and debug metrics are enabled independently. When only debug
+	// metrics are enabled, the standard instruments are no-ops so nothing is
+	// recorded or exported for them.
+	stdMeter := meter
+	if !isOtelMetricsEnabled(config) {
+		stdMeter = noop.NewMeterProvider().Meter("cloud.google.com/go/storage")
+	}
 
-	rpcDuration, err := meter.Float64Histogram(
+	rpcDuration, err := stdMeter.Float64Histogram(
 		"rpc.client.call.duration",
 		metric.WithDescription("Duration of one gRPC request. Retries not included (Otel)"),
 		metric.WithUnit("s"),
@@ -307,7 +315,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	httpDuration, err := meter.Float64Histogram(
+	httpDuration, err := stdMeter.Float64Histogram(
 		"http.client.request.duration",
 		metric.WithDescription("Duration of one HTTP client request. Retried not included (Otel)"),
 		metric.WithUnit("s"),
@@ -316,7 +324,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	duration, err := meter.Float64Histogram(
+	duration, err := stdMeter.Float64Histogram(
 		"gcp.client.request.duration",
 		metric.WithDescription("Latency of a client operation"),
 		metric.WithUnit("s"),
@@ -325,7 +333,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	operations, err := meter.Int64Counter(
+	operations, err := stdMeter.Int64Counter(
 		"gcp.storage.client.operations",
 		metric.WithDescription("Number of GCS client operations"),
 		metric.WithUnit("{operation}"),
@@ -334,7 +342,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	attempts, err := meter.Int64Counter(
+	attempts, err := stdMeter.Int64Counter(
 		"gcp.storage.client.attempts",
 		metric.WithDescription("Number of GCS client attempts"),
 		metric.WithUnit("{attempt}"),
@@ -343,7 +351,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	requestBodySize, err := meter.Int64Histogram(
+	requestBodySize, err := stdMeter.Int64Histogram(
 		"gcp.storage.client.request.body.size",
 		metric.WithDescription("Size of GCS client request body"),
 		metric.WithUnit("By"),
@@ -352,7 +360,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	responseBodySize, err := meter.Int64Histogram(
+	responseBodySize, err := stdMeter.Int64Histogram(
 		"gcp.storage.client.response.body.size",
 		metric.WithDescription("Size of GCS client response body"),
 		metric.WithUnit("By"),
@@ -361,7 +369,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	ttfb, err := meter.Float64Histogram(
+	ttfb, err := stdMeter.Float64Histogram(
 		"gcp.storage.client.ttfb",
 		metric.WithDescription("Time to first byte of GCS client operations"),
 		metric.WithUnit("s"),
@@ -370,7 +378,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	errors, err := meter.Int64Counter(
+	errors, err := stdMeter.Int64Counter(
 		"gcp.storage.client.errors",
 		metric.WithDescription("Number of GCS client errors"),
 		metric.WithUnit("{error}"),
@@ -379,7 +387,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	serverUnreached, err := meter.Int64Counter(
+	serverUnreached, err := stdMeter.Int64Counter(
 		"gcp.storage.client.server.unreached",
 		metric.WithDescription("Number of GCS requests that did not reach a Cloud Storage server"),
 		metric.WithUnit("{request}"),
