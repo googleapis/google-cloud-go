@@ -118,6 +118,17 @@ func DefaultClientOptions(
 	streamInterceptors []grpc.StreamClientInterceptor,
 	userOpts ...option.ClientOption,
 ) []option.ClientOption {
+	return defaultClientOptions(numChannels, compression, ResolveDirectPathEnabled(enableDirectAccess), unaryInterceptors, streamInterceptors, userOpts...)
+}
+
+func defaultClientOptions(
+	numChannels int,
+	compression string,
+	directPath bool,
+	unaryInterceptors []grpc.UnaryClientInterceptor,
+	streamInterceptors []grpc.StreamClientInterceptor,
+	userOpts ...option.ClientOption,
+) []option.ClientOption {
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
@@ -133,7 +144,7 @@ func DefaultClientOptions(
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 120 * time.Second})),
 	)
 
-	if ResolveDirectPathEnabled(enableDirectAccess) {
+	if directPath {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN")); !disableBoundToken {
@@ -186,7 +197,8 @@ type PoolConfig struct {
 	// errors. May be nil (headers are still injected without wrapping errors).
 	AugmentError requestid.ErrorAugmenter
 	// MeterProvider configures OpenTelemetry metrics on CreateFallbackConnPool
-	// (unused by DialStaticPool and ClientOptions).
+	// and the spanner package's DirectPath fallback (unused by DialStaticPool
+	// and ClientOptions).
 	MeterProvider metric.MeterProvider
 	// UnaryInterceptors are prepended before userOpts unary client interceptors.
 	UnaryInterceptors []grpc.UnaryClientInterceptor
@@ -199,6 +211,13 @@ type PoolConfig struct {
 func (cfg PoolConfig) ClientOptions(userOpts ...option.ClientOption) []option.ClientOption {
 	opts := WithRequestIDInterceptors(cfg.AugmentError, userOpts...)
 	return DefaultClientOptions(cfg.NumChannels, cfg.Compression, cfg.EnableDirectAccess, cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
+}
+
+// CloudPathClientOptions is ClientOptions without the DirectPath options that
+// ClientOptions adds.
+func (cfg PoolConfig) CloudPathClientOptions(userOpts ...option.ClientOption) []option.ClientOption {
+	opts := WithRequestIDInterceptors(cfg.AugmentError, userOpts...)
+	return defaultClientOptions(cfg.NumChannels, cfg.Compression, false, cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
 }
 
 // PoolSizeMismatchError is returned when an explicit NumChannels configuration

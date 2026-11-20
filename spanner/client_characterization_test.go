@@ -87,21 +87,30 @@ func TestNewClientWithConfig_Characterization(t *testing.T) {
 		t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "true")
 		t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
 		const wantFallbackDesc = "Connection pool mismatch: NumChannels=4, primaryConn.Num()=6, fallbackConn.Num()=6"
-		badFbClient, fbErr := NewClientWithConfig(
-			context.Background(),
-			"projects/p/instances/i/databases/d",
-			ClientConfig{
-				NumChannels:          4,
-				EnableDirectAccess:   true,
-				DisableNativeMetrics: true,
-			},
-			append(opts, option.WithGRPCConnectionPool(6))...,
-		)
-		if fbErr == nil {
-			badFbClient.Close()
-			t.Fatal("expected InvalidArgument on fallback pool NumChannels mismatch")
+		for _, tc := range []struct {
+			legacyStatic string
+			wantDesc     string
+		}{
+			{legacyStatic: "false", wantDesc: wantStaticDesc},
+			{legacyStatic: "true", wantDesc: wantFallbackDesc},
+		} {
+			t.Setenv("GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL", tc.legacyStatic)
+			badFbClient, fbErr := NewClientWithConfig(
+				context.Background(),
+				"projects/p/instances/i/databases/d",
+				ClientConfig{
+					NumChannels:          4,
+					EnableDirectAccess:   true,
+					DisableNativeMetrics: true,
+				},
+				append(opts, option.WithGRPCConnectionPool(6))...,
+			)
+			if fbErr == nil {
+				badFbClient.Close()
+				t.Fatalf("legacyStatic=%s: expected InvalidArgument on fallback pool NumChannels mismatch", tc.legacyStatic)
+			}
+			assertPoolMismatchErrorChain(t, fbErr, tc.wantDesc)
 		}
-		assertPoolMismatchErrorChain(t, fbErr, wantFallbackDesc)
 	})
 
 	t.Run("DCP enabled vs bypassed on SPANNER_EMULATOR_HOST", func(t *testing.T) {

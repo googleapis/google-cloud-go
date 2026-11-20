@@ -75,6 +75,26 @@ func TestNormalizeDCPConfig(t *testing.T) {
 	}); err == nil || !strings.Contains(err.Error(), "DCPMaxChannels") {
 		t.Fatalf("expected validation error when MinChannels > MaxChannels, got %v", err)
 	}
+
+	for _, in := range []DCPConfig{
+		{},
+		{DCPMinChannels: 6},
+		{DCPInitialChannels: 1, DCPMinChannels: 1, DCPMaxChannels: 1},
+		{DCPMaxRPCPerChannel: 2, DCPMinRPCPerChannel: 1},
+		{DCPErrorPenaltyDuration: -1, DCPPrimeTimeout: time.Second, DCPSelectionStrategy: DCPRoundRobin},
+	} {
+		once, err := NormalizeDCPConfig(in)
+		if err != nil {
+			t.Fatalf("NormalizeDCPConfig(%+v) failed: %v", in, err)
+		}
+		twice, err := NormalizeDCPConfig(once)
+		if err != nil {
+			t.Fatalf("NormalizeDCPConfig of the normalized %+v failed: %v", in, err)
+		}
+		if twice != once {
+			t.Fatalf("NormalizeDCPConfig changed a normalized config\n Got: %+v\nWant: %+v", twice, once)
+		}
+	}
 }
 
 func TestNewDynamicChannelPool_RejectsInvalidHooks(t *testing.T) {
@@ -377,4 +397,208 @@ func TestNewFixedChannelPool(t *testing.T) {
 			t.Fatalf("underlying Close count = %d, want 1", got)
 		}
 	})
+}
+
+type scriptedDCPConnPool struct {
+	fakeDCPConnPool
+	onCall  func() error
+	recvErr error
+}
+
+func (p *scriptedDCPConnPool) Invoke(context.Context, string, any, any, ...grpc.CallOption) error {
+	return p.onCall()
+}
+
+func (p *scriptedDCPConnPool) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.CallOption) (grpc.ClientStream, error) {
+	if err := p.onCall(); err != nil {
+		return nil, err
+	}
+	return scriptedClientStream{err: p.recvErr}, nil
+}
+
+type scriptedClientStream struct {
+	grpc.ClientStream
+	err error
+}
+
+func (s scriptedClientStream) RecvMsg(any) error { return s.err }
+
+func TestDynamicChannelPoolPenaltyEpoch(t *testing.T) {
+	ctx := context.Background()
+	unavailable := status.Error(codes.Unavailable, "down")
+	conn := &scriptedDCPConnPool{recvErr: unavailable}
+	var epoch atomic.Uint64
+	pool, err := NewDynamicChannelPool[*fakeDCPClient](
+		ctx,
+		DCPConfig{DCPEnabled: true, DCPInitialChannels: 1, DCPMinChannels: 1, DCPMaxChannels: 1},
+		DCPHooks[*fakeDCPClient]{
+			Dial: func(context.Context) (gtransport.ConnPool, error) { return conn, nil },
+			NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+				e.Client = &fakeDCPClient{}
+				return nil
+			},
+			PrimeRPC:     func(context.Context, *DCPEntry[*fakeDCPClient], string) error { return nil },
+			PenaltyEpoch: epoch.Load,
+		},
+	)
+	if err != nil {
+		t.Fatalf("NewDynamicChannelPool failed: %v", err)
+	}
+	defer pool.Close()
+	e := pool.GetEntries()[0]
+
+	for _, op := range []struct {
+		name                string
+		failWithUnavailable func(whileInFlight func())
+	}{
+		{"StartUnary", func(whileInFlight func()) {
+			done := e.StartUnary(ctx)
+			whileInFlight()
+			done(unavailable)
+		}},
+		{"StartStream", func(whileInFlight func()) {
+			ref := e.StartStream(ctx)
+			whileInFlight()
+			ref.Done(unavailable)
+		}},
+		{"Invoke", func(whileInFlight func()) {
+			conn.onCall = func() error {
+				whileInFlight()
+				return unavailable
+			}
+			pool.Invoke(ctx, "/test/Method", nil, nil)
+		}},
+		{"NewStream", func(whileInFlight func()) {
+			conn.onCall = func() error {
+				whileInFlight()
+				return unavailable
+			}
+			pool.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method")
+		}},
+		{"RecvMsg", func(whileInFlight func()) {
+			conn.onCall = func() error { return nil }
+			stream, err := pool.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method")
+			if err != nil {
+				t.Fatalf("NewStream failed: %v", err)
+			}
+			whileInFlight()
+			stream.RecvMsg(nil)
+		}},
+	} {
+		t.Run(op.name, func(t *testing.T) {
+			op.failWithUnavailable(func() {})
+			if got := e.CurrentPenalty(); got <= 0 {
+				t.Fatalf("penalty after a failure within one epoch = %d, want > 0", got)
+			}
+			e.ClearErrorPenalty()
+
+			op.failWithUnavailable(func() { epoch.Add(1) })
+			if got := e.CurrentPenalty(); got != 0 {
+				t.Fatalf("penalty after a failure across an epoch change = %d, want 0", got)
+			}
+			if got := pool.TotalPenaltyLoad.Load(); got != 0 {
+				t.Fatalf("TotalPenaltyLoad = %d, want 0", got)
+			}
+			if got := pool.TotalRPCLoad.Load(); got != 0 {
+				t.Fatalf("TotalRPCLoad = %d, want 0", got)
+			}
+		})
+	}
+}
+
+func TestDynamicChannelPoolClearStaleErrorPenalties(t *testing.T) {
+	unavailable := status.Error(codes.Unavailable, "down")
+	var epoch atomic.Uint64
+	pool, err := NewDynamicChannelPool[*fakeDCPClient](
+		context.Background(),
+		DCPConfig{DCPEnabled: true, DCPInitialChannels: 3, DCPMinChannels: 3, DCPMaxChannels: 3},
+		DCPHooks[*fakeDCPClient]{
+			Dial: func(context.Context) (gtransport.ConnPool, error) { return &fakeDCPConnPool{}, nil },
+			NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+				e.Client = &fakeDCPClient{}
+				return nil
+			},
+			PrimeRPC:     func(context.Context, *DCPEntry[*fakeDCPClient], string) error { return nil },
+			PenaltyEpoch: epoch.Load,
+		},
+	)
+	if err != nil {
+		t.Fatalf("NewDynamicChannelPool failed: %v", err)
+	}
+	defer pool.Close()
+	step := pool.Cfg.DCPErrorPenaltyStep
+	entries := pool.GetEntries()
+	stale, renewed, current := entries[0], entries[1], entries[2]
+
+	stale.ApplyErrorPenalty(unavailable)
+	renewed.ApplyErrorPenalty(unavailable)
+	epoch.Add(1)
+	renewed.ApplyErrorPenalty(unavailable)
+	current.ApplyErrorPenalty(unavailable)
+	if got := renewed.CurrentPenalty(); got != step {
+		t.Fatalf("penalty earned on top of one from an earlier epoch = %d, want %d", got, step)
+	}
+
+	pool.ClearStaleErrorPenalties()
+	for _, tc := range []struct {
+		name  string
+		entry *DCPEntry[*fakeDCPClient]
+		want  int32
+	}{
+		{"earned in an earlier epoch", stale, 0},
+		{"earned in both epochs", renewed, step},
+		{"earned in the current epoch", current, step},
+	} {
+		if got := tc.entry.CurrentPenalty(); got != tc.want {
+			t.Errorf("penalty %s after ClearStaleErrorPenalties = %d, want %d", tc.name, got, tc.want)
+		}
+	}
+	if got, want := pool.TotalPenaltyLoad.Load(), int64(2*step); got != want {
+		t.Errorf("TotalPenaltyLoad = %d, want %d", got, want)
+	}
+
+	current.ApplyErrorPenalty(unavailable)
+	if got, want := current.CurrentPenalty(), 2*step; got != want {
+		t.Errorf("penalty after two failures in one epoch = %d, want %d", got, want)
+	}
+}
+
+func TestDynamicChannelPoolOnClose(t *testing.T) {
+	newEntryClient := func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+		e.Client = &fakeDCPClient{}
+		return nil
+	}
+	for _, tc := range []struct {
+		name string
+		new  func(hooks DCPHooks[*fakeDCPClient]) (*DynamicChannelPool[*fakeDCPClient], error)
+	}{
+		{"dynamic", func(hooks DCPHooks[*fakeDCPClient]) (*DynamicChannelPool[*fakeDCPClient], error) {
+			hooks.Dial = func(context.Context) (gtransport.ConnPool, error) { return &fakeDCPConnPool{}, nil }
+			hooks.PrimeRPC = func(context.Context, *DCPEntry[*fakeDCPClient], string) error { return nil }
+			return NewDynamicChannelPool(context.Background(), DCPConfig{DCPEnabled: true}, hooks)
+		}},
+		{"fixed", func(hooks DCPHooks[*fakeDCPClient]) (*DynamicChannelPool[*fakeDCPClient], error) {
+			underlying := &fakeFixedUnderlyingPool{conns: []*grpc.ClientConn{new(grpc.ClientConn)}}
+			return NewFixedChannelPool(context.Background(), underlying, hooks)
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var closes atomic.Int32
+			p, err := tc.new(DCPHooks[*fakeDCPClient]{
+				NewEntryClient: newEntryClient,
+				OnClose:        func() { closes.Add(1) },
+			})
+			if err != nil {
+				t.Fatalf("creating the pool failed: %v", err)
+			}
+			if got := closes.Load(); got != 0 {
+				t.Fatalf("OnClose calls before Close = %d, want 0", got)
+			}
+			p.Close()
+			p.Close()
+			if got := closes.Load(); got != 1 {
+				t.Fatalf("OnClose calls after two Close calls = %d, want 1", got)
+			}
+		})
+	}
 }

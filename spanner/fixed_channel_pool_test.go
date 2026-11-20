@@ -41,8 +41,19 @@ const (
 	executeSQLMethod = "/google.spanner.v1.Spanner/ExecuteSql"
 	commitMethod     = "/google.spanner.v1.Spanner/Commit"
 
+	directAccessEnv            = "GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"
+	gcpFallbackEnv             = "GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"
 	legacyStaticChannelPoolEnv = "GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL"
 )
+
+// isolateChannelPoolEnv keeps variables already set in the environment from
+// choosing the channel pool.
+func isolateChannelPoolEnv(t *testing.T) {
+	t.Helper()
+	for _, k := range []string{directAccessEnv, gcpFallbackEnv, legacyStaticChannelPoolEnv} {
+		t.Setenv(k, "")
+	}
+}
 
 var sawGoogleSQLPass atomic.Bool
 
@@ -132,13 +143,26 @@ func fixedPoolOf(t *testing.T, client *Client) *dynamicChannelPool {
 	return p
 }
 
+func poolFallback(p *dynamicChannelPool) *directPathFallback {
+	for _, e := range p.GetEntries() {
+		if slot, ok := e.Pool.(*channelSlot); ok {
+			return slot.fallback
+		}
+	}
+	return nil
+}
+
 func channelPoolKind(client *Client) string {
 	switch p := client.sc.connPool.(type) {
 	case *dynamicChannelPool:
+		kind := "dynamic"
 		if p.IsFixed() {
-			return "fixed"
+			kind = "fixed"
 		}
-		return "dynamic"
+		if poolFallback(p) != nil {
+			kind += " with fallback"
+		}
+		return kind
 	case *fallbackWrapper:
 		return "static with GCPFallback"
 	default:
@@ -148,6 +172,7 @@ func channelPoolKind(client *Client) string {
 
 func TestFixedChannelPoolBindsTransactionsToEntries(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQLMethod: true, commitMethod: true}}
 	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{
 		DisableNativeMetrics: true,
@@ -171,10 +196,7 @@ func TestFixedChannelPoolBindsTransactionsToEntries(t *testing.T) {
 
 func TestChannelPoolSelection(t *testing.T) {
 	skipDialectRerun(t)
-	const (
-		directAccessEnv = "GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"
-		gcpFallbackEnv  = "GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"
-	)
+	isolateChannelPoolEnv(t)
 	for _, tt := range []struct {
 		name string
 		env  map[string]string
@@ -191,9 +213,10 @@ func TestChannelPoolSelection(t *testing.T) {
 		{name: "DirectPath", env: map[string]string{directAccessEnv: "true"}, want: "fixed"},
 		{name: "DirectPath with legacy static pool", env: map[string]string{directAccessEnv: "true", legacyStaticChannelPoolEnv: "true"}, want: "static"},
 		{name: "fallback without DirectPath", env: map[string]string{gcpFallbackEnv: "true"}, want: "fixed"},
-		{name: "DirectPath with fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, want: "static with GCPFallback"},
+		{name: "DirectPath with fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, want: "fixed with fallback"},
 		{name: "DirectPath with fallback and legacy static pool", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true", legacyStaticChannelPoolEnv: "true"}, want: "static with GCPFallback"},
-		{name: "dynamic pool with DirectPath and fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, dcp: true, want: "dynamic"},
+		{name: "dynamic pool with DirectPath and fallback", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true"}, dcp: true, want: "dynamic with fallback"},
+		{name: "dynamic pool with DirectPath, fallback and legacy static pool", env: map[string]string{directAccessEnv: "true", gcpFallbackEnv: "true", legacyStaticChannelPoolEnv: "true"}, dcp: true, want: "dynamic with fallback"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			for k, v := range tt.env {
@@ -215,6 +238,7 @@ func TestChannelPoolSelection(t *testing.T) {
 
 func TestFixedChannelPoolIsTheDefault(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	for _, tt := range []struct {
 		name   string
 		config ClientConfig
@@ -239,6 +263,7 @@ func TestFixedChannelPoolIsTheDefault(t *testing.T) {
 
 func TestFixedChannelPoolWithGRPCConnectionPool(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{DisableNativeMetrics: true}, []option.ClientOption{option.WithGRPCConnectionPool(6)})
 	defer teardown()
 	if got, want := fixedPoolOf(t, client).Num(), 6; got != want {
@@ -248,6 +273,7 @@ func TestFixedChannelPoolWithGRPCConnectionPool(t *testing.T) {
 
 func TestFixedChannelPoolKeepsNumChannelsMismatchCheck(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	_, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{DisableNativeMetrics: true, NumChannels: 2}, append(opts, option.WithGRPCConnectionPool(3))...)
@@ -262,6 +288,7 @@ func (emptyConnPool) Num() int { return 0 }
 
 func TestFixedChannelPoolRejectsPoolWithoutConnections(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	dialed, err := gtransport.DialPool(context.Background(), opts...)
@@ -296,6 +323,7 @@ func (p repeatingConnPool) Conn() *grpc.ClientConn { return p.conn }
 
 func TestFixedChannelPoolWithPoolThatRepeatsAConnection(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQLMethod: true, commitMethod: true}}
@@ -319,6 +347,7 @@ func TestFixedChannelPoolWithPoolThatRepeatsAConnection(t *testing.T) {
 
 func TestFixedChannelPoolPicksWithoutActivityTracking(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
 	defer teardown()
 	p := fixedPoolOf(t, client)
@@ -337,6 +366,7 @@ func TestFixedChannelPoolPicksWithoutActivityTracking(t *testing.T) {
 
 func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	// Use a bare server: these raw RPCs lack headers that setupMockedTestServer checks.
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
@@ -367,6 +397,7 @@ func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
 
 func TestFixedChannelPoolDoesNotRetainCallerContext(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -385,6 +416,7 @@ func TestFixedChannelPoolDoesNotRetainCallerContext(t *testing.T) {
 
 func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
 	defer teardown()
 	p := fixedPoolOf(t, client)
@@ -417,6 +449,7 @@ func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 // stream adds no load or references to its entry.
 func TestFixedChannelPoolStreamsSkipLoadAccounting(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
 	defer teardown()
 	p := fixedPoolOf(t, client)
@@ -457,6 +490,7 @@ func TestFixedChannelPoolStreamsSkipLoadAccounting(t *testing.T) {
 
 func TestFixedChannelPoolEmitsNoPoolMetrics(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	enableOpenTelemetryMetricsForTest(t)
 	reader, mp := newDCPManualReader()
 	t.Cleanup(func() { mp.Shutdown(context.Background()) })
@@ -476,6 +510,7 @@ func TestFixedChannelPoolEmitsNoPoolMetrics(t *testing.T) {
 
 func TestFixedChannelPoolWithCallerSuppliedConnection(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	conn, err := gtransport.Dial(context.Background(), opts...)
@@ -510,6 +545,7 @@ func (hiddenConnPool) Conn() *grpc.ClientConn { return nil }
 
 func TestFixedChannelPoolWithPoolThatHidesItsConnections(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	dialed, err := gtransport.DialPool(context.Background(), append(opts, option.WithGRPCConnectionPool(2))...)
@@ -542,6 +578,7 @@ func TestFixedChannelPoolWithPoolThatHidesItsConnections(t *testing.T) {
 
 func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	dialed, err := gtransport.DialPool(context.Background(), append(opts, option.WithGRPCConnectionPool(3))...)
@@ -551,7 +588,7 @@ func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 	underlying := &closeCountingConnPool{ConnPool: dialed}
 	database := "projects/p/instances/i/databases/d"
 	sc := newSessionClient(nil, database, "", nil, "", false, metadata.Pairs(resourcePrefixHeader, database), 0, nil, nil)
-	p, err := newFixedChannelPool(context.Background(), sc, underlying)
+	p, err := newFixedChannelPool(context.Background(), sc, underlying, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -576,6 +613,7 @@ func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 // fail with CANCELED, as with the static pool.
 func TestFixedChannelPoolAfterClientClose(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	logger := &lockedBuffer{}
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, Logger: log.New(logger, "", 0)})
 	defer teardown()
@@ -609,6 +647,7 @@ func TestFixedChannelPoolAfterClientClose(t *testing.T) {
 
 func TestLegacyStaticChannelPool(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	for _, tt := range []struct {
 		name   string
 		config ClientConfig
@@ -648,48 +687,43 @@ func TestLegacyStaticChannelPool(t *testing.T) {
 	}
 }
 
-func TestDirectPathFallbackKeepsStaticChannelPool(t *testing.T) {
+func TestLegacyStaticChannelPoolKeepsGCPFallback(t *testing.T) {
 	skipDialectRerun(t)
-	for _, legacy := range []string{"", "true"} {
-		t.Run(fmt.Sprintf("legacy static pool=%q", legacy), func(t *testing.T) {
-			t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
-			t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "true")
-			if legacy != "" {
-				t.Setenv(legacyStaticChannelPoolEnv, legacy)
-			}
-			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 3})
-			defer teardown()
-			fw, ok := client.sc.connPool.(*fallbackWrapper)
-			if !ok || client.sc.dynamicPool != nil {
-				t.Fatalf("channel pool = %T (dynamic pool %v), want *fallbackWrapper", client.sc.connPool, client.sc.dynamicPool != nil)
-			}
-			if fw.GCPFallback == nil {
-				t.Fatal("fallback pool has no GCPFallback")
-			}
-			if p, f := fw.PrimaryConn().Num(), fw.FallbackConn().Num(); p != 3 || f != 3 {
-				t.Fatalf("connections = {primary: %d, fallback: %d}, want {3, 3}", p, f)
-			}
-			if _, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
-				_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
-				return err
-			}); err != nil {
-				t.Fatalf("ReadWriteTransaction() failed: %v", err)
-			}
-			ro := client.Single()
-			defer ro.Close()
-			iter := ro.Query(context.Background(), NewStatement(SelectFooFromBar))
-			defer iter.Stop()
-			if _, err := iter.Next(); err != nil {
-				t.Fatal(err)
-			}
-			c, ok := ro.sh.getClient().(*grpcSpannerClient)
-			if !ok {
-				t.Fatalf("session handle client = %T, want *grpcSpannerClient", ro.sh.getClient())
-			}
-			if c.channelID != 0 {
-				t.Fatalf("session handle channel id = %d, want 0", c.channelID)
-			}
-		})
+	isolateChannelPoolEnv(t)
+	t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
+	t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "true")
+	t.Setenv(legacyStaticChannelPoolEnv, "true")
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 3})
+	defer teardown()
+	fw, ok := client.sc.connPool.(*fallbackWrapper)
+	if !ok || client.sc.dynamicPool != nil {
+		t.Fatalf("channel pool = %T (dynamic pool %v), want *fallbackWrapper", client.sc.connPool, client.sc.dynamicPool != nil)
+	}
+	if fw.GCPFallback == nil {
+		t.Fatal("fallback pool has no GCPFallback")
+	}
+	if p, f := fw.PrimaryConn().Num(), fw.FallbackConn().Num(); p != 3 || f != 3 {
+		t.Fatalf("connections = {primary: %d, fallback: %d}, want {3, 3}", p, f)
+	}
+	if _, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		return err
+	}); err != nil {
+		t.Fatalf("ReadWriteTransaction() failed: %v", err)
+	}
+	ro := client.Single()
+	defer ro.Close()
+	iter := ro.Query(context.Background(), NewStatement(SelectFooFromBar))
+	defer iter.Stop()
+	if _, err := iter.Next(); err != nil {
+		t.Fatal(err)
+	}
+	c, ok := ro.sh.getClient().(*grpcSpannerClient)
+	if !ok {
+		t.Fatalf("session handle client = %T, want *grpcSpannerClient", ro.sh.getClient())
+	}
+	if c.channelID != 0 {
+		t.Fatalf("session handle channel id = %d, want 0", c.channelID)
 	}
 }
 
@@ -733,6 +767,7 @@ func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, wantLogs int, l
 
 func TestFixedChannelPoolWithEmulator(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	for _, tt := range []struct {
 		dcpEnabled bool
 		legacy     bool
@@ -771,6 +806,7 @@ func TestFixedChannelPoolWithEmulator(t *testing.T) {
 
 func TestFixedChannelPoolWithLocationAwareRouting(t *testing.T) {
 	skipDialectRerun(t)
+	isolateChannelPoolEnv(t)
 	for _, dcpEnabled := range []bool{false, true} {
 		t.Run(fmt.Sprintf("DCPEnabled=%v", dcpEnabled), func(t *testing.T) {
 			logger := &lockedBuffer{}

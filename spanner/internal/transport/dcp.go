@@ -213,8 +213,8 @@ type DCPMetricsRecorder interface {
 	Close(logger *log.Logger)
 }
 
-// DCPHooks configures the dial, client-construction, priming, metrics, and error
-// sentinel callbacks for NewDynamicChannelPool and NewFixedChannelPool.
+// DCPHooks configures the callbacks, lifecycle hooks, and error sentinels for
+// NewDynamicChannelPool and NewFixedChannelPool.
 type DCPHooks[C DCPClient] struct {
 	// Logger receives scaled-up channel dial/priming failure warnings.
 	// When nil, warnings are written via the standard log.Printf logger.
@@ -223,8 +223,9 @@ type DCPHooks[C DCPClient] struct {
 	// a single-channel gtransport.ConnPool for a new DCPEntry.
 	Dial func(context.Context) (gtransport.ConnPool, error)
 	// NewEntryClient (required) initializes e.Client (and optionally e.Delegate for
-	// use by PrimeRPC) for a newly dialed DCPEntry. Returning nil without setting
-	// e.Client to a non-zero value fails entry creation and closes the entry.
+	// use by PrimeRPC, or wraps e.Pool) for a newly dialed DCPEntry. Returning nil
+	// without setting e.Client to a non-zero value fails entry creation and closes
+	// the entry.
 	NewEntryClient func(ctx context.Context, e *DCPEntry[C]) error
 	// PrimeRPC (required by NewDynamicChannelPool; unused by NewFixedChannelPool)
 	// verifies a scaled-up DCPEntry against sessionID before the entry is published
@@ -239,6 +240,11 @@ type DCPHooks[C DCPClient] struct {
 	// PrimeNotReadyErr overrides the FailedPrecondition error used when priming is
 	// attempted before SetPrimeSession. When nil, a default status error is used.
 	PrimeNotReadyErr error
+	// OnClose optionally runs once, when the pool is closed.
+	OnClose func()
+	// PenaltyEpoch optionally returns a number. An error does not penalize its
+	// entry if the number changed while the operation was in flight.
+	PenaltyEpoch func() uint64
 }
 
 // DynamicChannelPool owns the copy-on-write slice of DCP entries and the
@@ -263,6 +269,8 @@ type DynamicChannelPool[C DCPClient] struct {
 	primeRPC         func(ctx context.Context, e *DCPEntry[C], sessionID string) error
 	noEntriesErr     error
 	primeNotReadyErr error
+	onClose          func()
+	penaltyEpoch     func() uint64
 
 	rrIndex          atomic.Uint64
 	nextID           atomic.Uint64
@@ -287,9 +295,9 @@ type DynamicChannelPool[C DCPClient] struct {
 
 // DCPEntry represents one logical DCP slot.
 //
-// Production callers populate Client (and optionally Delegate for PrimeRPC) inside
-// DCPHooks.NewEntryClient and read ID, Pool, Delegate, and Client; remaining fields
-// are exported for in-module white-box tests.
+// Production callers populate Client (and optionally Delegate for PrimeRPC or
+// wrap Pool) inside DCPHooks.NewEntryClient and read ID, Pool, Delegate, and
+// Client; remaining fields are exported for in-module white-box tests.
 type DCPEntry[C DCPClient] struct {
 	ID            uint64
 	Pool          gtransport.ConnPool
@@ -304,6 +312,7 @@ type DCPEntry[C DCPClient] struct {
 	PenaltyExpiry atomic.Int64 // UnixNano penalty expiry; zero means no penalty
 	PenaltyLoad   atomic.Int32 // Accumulated error penalty, capped by config
 	penaltyMu     sync.Mutex   // Serializes rare penalty updates and removal
+	penaltyEpoch  uint64       // Guarded by penaltyMu; epoch of the current penalty
 	Refs          atomic.Int64 // RPCs keeping the channel open; negative once closed
 }
 
@@ -403,6 +412,8 @@ func newEmptyDCP[C DCPClient](cfg DCPConfig, hooks DCPHooks[C]) *DynamicChannelP
 		primeRPC:            hooks.PrimeRPC,
 		noEntriesErr:        hooks.NoEntriesErr,
 		primeNotReadyErr:    hooks.PrimeNotReadyErr,
+		onClose:             hooks.OnClose,
+		penaltyEpoch:        hooks.PenaltyEpoch,
 		DrainIdleFloor:      DCPDrainIdleFloor,
 	}
 }
@@ -451,6 +462,13 @@ func (p *DynamicChannelPool[C]) primeNotReadyError() error {
 	return defaultDCPPrimeNotReadyErr
 }
 
+func (p *DynamicChannelPool[C]) currentPenaltyEpoch() uint64 {
+	if p.penaltyEpoch == nil {
+		return 0
+	}
+	return p.penaltyEpoch()
+}
+
 // Num returns the number of active channels in the pool.
 func (p *DynamicChannelPool[C]) Num() int { return len(p.GetEntries()) }
 
@@ -481,8 +499,9 @@ func (p *DynamicChannelPool[C]) Invoke(ctx context.Context, method string, args,
 		p.TotalRPCLoad.Add(-1)
 		e.LastActivity.Store(time.Now().UnixNano())
 	}()
+	epoch := p.currentPenaltyEpoch()
 	err = e.Pool.Invoke(ctx, method, args, reply, opts...)
-	e.ApplyErrorPenalty(err)
+	e.applyErrorPenalty(epoch, err)
 	return err
 }
 
@@ -499,14 +518,15 @@ func (p *DynamicChannelPool[C]) NewStream(ctx context.Context, desc *grpc.Stream
 	p.TotalRPCLoad.Add(1)
 	p.MaybeSignalScaleUp(e)
 	e.LastActivity.Store(time.Now().UnixNano())
+	epoch := p.currentPenaltyEpoch()
 	s, err := e.Pool.NewStream(ctx, desc, method, opts...)
 	if err != nil {
-		e.ApplyErrorPenalty(err)
+		e.applyErrorPenalty(epoch, err)
 		e.StreamLoad.Add(-1)
 		p.TotalRPCLoad.Add(-1)
 		return nil, err
 	}
-	return &DCPConnPoolTrackedStream[C]{ClientStream: s, Entry: e}, nil
+	return &DCPConnPoolTrackedStream[C]{ClientStream: s, Entry: e, penaltyEpoch: epoch}, nil
 }
 
 // Close stops background workers, unregisters metrics, and closes all active entries.
@@ -518,6 +538,9 @@ func (p *DynamicChannelPool[C]) Close() error {
 		if !p.fixed {
 			p.cancel()
 			close(p.done)
+		}
+		if p.onClose != nil {
+			p.onClose()
 		}
 	})
 	p.DialMu.Lock()
@@ -667,8 +690,9 @@ func (p *DynamicChannelPool[C]) MaxActiveRPCPerChannel() int64 {
 // and decrements stream load when the stream finishes.
 type DCPConnPoolTrackedStream[C DCPClient] struct {
 	grpc.ClientStream
-	Entry *DCPEntry[C]
-	once  sync.Once
+	Entry        *DCPEntry[C]
+	penaltyEpoch uint64
+	once         sync.Once
 }
 
 // RecvMsg receives a message and finishes stream tracking on error/EOF.
@@ -692,7 +716,7 @@ func (s *DCPConnPoolTrackedStream[C]) CloseSend() error {
 // Finish records error penalty, decrements stream load, and updates LastActivity once.
 func (s *DCPConnPoolTrackedStream[C]) Finish(err error) {
 	s.once.Do(func() {
-		s.Entry.ApplyErrorPenalty(err)
+		s.Entry.applyErrorPenalty(s.penaltyEpoch, err)
 		s.Entry.StreamLoad.Add(-1)
 		s.Entry.Parent.TotalRPCLoad.Add(-1)
 		s.Entry.LastActivity.Store(time.Now().UnixNano())
@@ -1167,6 +1191,10 @@ func (e *DCPEntry[C]) WeightedLoad() int32 { return e.RPCLoad() }
 // Updates are serialized because they are rare and must keep the pool aggregate
 // consistent. The hot pick path remains lock-free while the penalty is active.
 func (e *DCPEntry[C]) ApplyErrorPenalty(err error) {
+	e.applyErrorPenalty(e.Parent.currentPenaltyEpoch(), err)
+}
+
+func (e *DCPEntry[C]) applyErrorPenalty(epoch uint64, err error) {
 	if err == nil || e.Parent.Cfg.DCPErrorPenaltyDuration < 0 {
 		return
 	}
@@ -1179,13 +1207,18 @@ func (e *DCPEntry[C]) ApplyErrorPenalty(err error) {
 	if e.State.Load() != DCPStateActive {
 		return
 	}
+	// Check the epoch under penaltyMu so a late error cannot apply after
+	// ClearStaleErrorPenalties.
+	if e.Parent.currentPenaltyEpoch() != epoch {
+		return
+	}
 	now := time.Now()
 	expiry := e.PenaltyExpiry.Load()
 	current := int32(0)
 	oldContribution := int32(0)
 	if expiry != 0 {
 		oldContribution = e.PenaltyLoad.Load()
-		if now.UnixNano() < expiry {
+		if now.UnixNano() < expiry && e.penaltyEpoch == epoch {
 			current = oldContribution
 		}
 	}
@@ -1198,6 +1231,7 @@ func (e *DCPEntry[C]) ApplyErrorPenalty(err error) {
 			load = current + e.Parent.Cfg.DCPErrorPenaltyStep
 		}
 	}
+	e.penaltyEpoch = epoch
 	e.PenaltyLoad.Store(load)
 	e.PenaltyExpiry.Store(now.Add(e.Parent.Cfg.DCPErrorPenaltyDuration).UnixNano())
 	e.Parent.TotalPenaltyLoad.Add(int64(load - oldContribution))
@@ -1238,17 +1272,31 @@ func (e *DCPEntry[C]) ClearErrorPenalty() {
 	}
 }
 
+// ClearStaleErrorPenalties clears the penalties that active entries earned
+// before the current PenaltyEpoch.
+func (p *DynamicChannelPool[C]) ClearStaleErrorPenalties() {
+	epoch := p.currentPenaltyEpoch()
+	for _, e := range p.GetEntries() {
+		e.penaltyMu.Lock()
+		if e.penaltyEpoch != epoch && e.PenaltyExpiry.Swap(0) != 0 {
+			p.TotalPenaltyLoad.Add(-int64(e.PenaltyLoad.Load()))
+		}
+		e.penaltyMu.Unlock()
+	}
+}
+
 // PickLoad returns the in-flight RPC load plus any active error penalty.
 func (e *DCPEntry[C]) PickLoad() int32 { return e.RPCLoad() + e.CurrentPenalty() }
 
 // StartUnary increments unary load and returns a completion callback.
 func (e *DCPEntry[C]) StartUnary(ctx context.Context) func(error) {
+	epoch := e.Parent.currentPenaltyEpoch()
 	e.UnaryLoad.Add(1)
 	e.Parent.TotalRPCLoad.Add(1)
 	e.Parent.MaybeSignalScaleUp(e)
 	e.LastActivity.Store(time.Now().UnixNano())
 	return func(err error) {
-		e.ApplyErrorPenalty(err)
+		e.applyErrorPenalty(epoch, err)
 		e.UnaryLoad.Add(-1)
 		e.Parent.TotalRPCLoad.Add(-1)
 		e.LastActivity.Store(time.Now().UnixNano())
@@ -1257,6 +1305,7 @@ func (e *DCPEntry[C]) StartUnary(ctx context.Context) func(error) {
 
 // StartStream increments stream load and entry reference count, returning a DCPStreamRef.
 func (e *DCPEntry[C]) StartStream(ctx context.Context) *DCPStreamRef {
+	epoch := e.Parent.currentPenaltyEpoch()
 	// A stream outlives the call that starts it, so it holds its own reference.
 	e.Refs.Add(1)
 	e.StreamLoad.Add(1)
@@ -1264,7 +1313,7 @@ func (e *DCPEntry[C]) StartStream(ctx context.Context) *DCPStreamRef {
 	e.Parent.MaybeSignalScaleUp(e)
 	e.LastActivity.Store(time.Now().UnixNano())
 	ref := &DCPStreamRef{finish: func(err error) {
-		e.ApplyErrorPenalty(err)
+		e.applyErrorPenalty(epoch, err)
 		e.StreamLoad.Add(-1)
 		e.Parent.TotalRPCLoad.Add(-1)
 		e.LastActivity.Store(time.Now().UnixNano())

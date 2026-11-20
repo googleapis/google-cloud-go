@@ -139,68 +139,96 @@ type dcpExecuteStreamingSqlClient = transport.DCPExecuteStreamingSQLClient
 var errDCPNoEntries = spannerErrorf(codes.Unavailable, "spanner_dcp: no available channels")
 var errDCPPrimeNotReady = spannerErrorf(codes.FailedPrecondition, "spanner_dcp: cannot prime channel before multiplexed session is available")
 
+// newDynamicChannelPool returns a dynamic channel pool that dials via dial.
+// When fallback is non-nil, entries fall back from DirectPath to CloudPath and
+// the pool closes fallback when it closes.
 func newDynamicChannelPool(
 	ctx context.Context,
 	sc *sessionClient,
 	cfg DynamicChannelPoolConfig,
 	mp metric.MeterProvider,
 	dial func(context.Context) (gtransport.ConnPool, error),
+	fallback *directPathFallback,
 ) (*dynamicChannelPool, error) {
-	return transport.NewDynamicChannelPool[spannerClient](
-		ctx,
-		toTransportDCPConfig(cfg),
-		transport.DCPHooks[spannerClient]{
-			Logger: sc.logger,
-			Dial:   dial,
-			NewEntryClient: func(entryCtx context.Context, e *dcpEntry) error {
-				client, err := newGRPCSpannerClient(entryCtx, sc, e.ID, gtransport.WithConnPool(e))
-				if err != nil {
-					return err
-				}
-				e.Delegate = client
-				e.Client = &dcpSpannerClient{entry: e, delegate: client}
-				return nil
-			},
-			// Verify scaled-up channels via SELECT 1 through the new entry's delegate
-			// so failed channels are never published to normal request picking.
-			PrimeRPC: func(primeCtx context.Context, e *dcpEntry, sessionID string) error {
-				stmt := &spannerpb.ExecuteSqlRequest{Session: sessionID, Sql: "SELECT 1"}
-				_, err := e.Delegate.ExecuteSql(contextWithOutgoingMetadata(primeCtx, sc.md, sc.disableRouteToLeader), stmt)
-				return err
-			},
-			InitMetrics: func(p *dynamicChannelPool) transport.DCPMetricsRecorder {
-				return newDCPMetrics(p, sc, mp)
-			},
-			NoEntriesErr:     errDCPNoEntries,
-			PrimeNotReadyErr: errDCPPrimeNotReady,
+	tcfg, err := transport.NormalizeDCPConfig(toTransportDCPConfig(cfg))
+	if err != nil {
+		return nil, err
+	}
+	hooks := transport.DCPHooks[spannerClient]{
+		Logger: sc.logger,
+		Dial: func(dialCtx context.Context) (gtransport.ConnPool, error) {
+			slot, err := dialChannelSlot(dialCtx, dial, fallback, tcfg.DCPPrimeTimeout)
+			if err != nil {
+				return nil, err
+			}
+			return slot, nil
 		},
-	)
+		NewEntryClient: func(entryCtx context.Context, e *dcpEntry) error {
+			client, err := newGRPCSpannerClient(entryCtx, sc, e.ID, gtransport.WithConnPool(e))
+			if err != nil {
+				return err
+			}
+			e.Delegate = client
+			e.Client = &dcpSpannerClient{entry: e, delegate: client}
+			return nil
+		},
+		// Verify scaled-up channels via SELECT 1 through the new entry's delegate
+		// so failed channels are never published to normal request picking.
+		PrimeRPC: func(primeCtx context.Context, e *dcpEntry, sessionID string) error {
+			stmt := &spannerpb.ExecuteSqlRequest{Session: sessionID, Sql: "SELECT 1"}
+			_, err := e.Delegate.ExecuteSql(contextWithOutgoingMetadata(withoutFallbackAccounting(primeCtx), sc.md, sc.disableRouteToLeader), stmt)
+			return err
+		},
+		InitMetrics: func(p *dynamicChannelPool) transport.DCPMetricsRecorder {
+			return newDCPMetrics(p, sc, mp)
+		},
+		NoEntriesErr:     errDCPNoEntries,
+		PrimeNotReadyErr: errDCPPrimeNotReady,
+	}
+	if fallback != nil {
+		hooks.OnClose = fallback.close
+		hooks.PenaltyEpoch = func() uint64 { return fallback.current().generation }
+	}
+	p, err := transport.NewDynamicChannelPool[spannerClient](ctx, tcfg, hooks)
+	if err != nil {
+		return nil, err
+	}
+	if fallback != nil {
+		// Penalties earned on DirectPath say nothing about CloudPath.
+		fallback.addSwitchHook(p.ClearStaleErrorPenalties)
+	}
+	return p, nil
 }
 
 // newFixedChannelPool returns a fixed pool with one entry per connection of
-// underlying. The pool takes ownership of underlying.
+// underlying. The pool closes underlying and, if non-nil, fallback when
+// closed.
 func newFixedChannelPool(
 	ctx context.Context,
 	sc *sessionClient,
 	underlying gtransport.ConnPool,
+	fallback *directPathFallback,
 ) (*dynamicChannelPool, error) {
-	return transport.NewFixedChannelPool[spannerClient](
-		ctx,
-		underlying,
-		transport.DCPHooks[spannerClient]{
-			Logger: sc.logger,
-			NewEntryClient: func(entryCtx context.Context, e *dcpEntry) error {
-				client, err := newGRPCSpannerClient(entryCtx, sc, e.ID, gtransport.WithConnPool(e))
-				if err != nil {
-					return err
-				}
-				e.Delegate = client
-				e.Client = client
-				return nil
-			},
-			NoEntriesErr: errDCPNoEntries,
+	hooks := transport.DCPHooks[spannerClient]{
+		Logger: sc.logger,
+		NewEntryClient: func(entryCtx context.Context, e *dcpEntry) error {
+			client, err := newGRPCSpannerClient(entryCtx, sc, e.ID, gtransport.WithConnPool(e))
+			if err != nil {
+				return err
+			}
+			// Wrap e.Pool only after client creation succeeds so an error leaves
+			// the underlying pool untouched.
+			e.Pool = newChannelSlot(e.Pool, fallback)
+			e.Delegate = client
+			e.Client = client
+			return nil
 		},
-	)
+		NoEntriesErr: errDCPNoEntries,
+	}
+	if fallback != nil {
+		hooks.OnClose = fallback.close
+	}
+	return transport.NewFixedChannelPool[spannerClient](ctx, underlying, hooks)
 }
 
 // TODO: Investigate replacing dcpSpannerClient and transport.DCPConnPoolTrackedStream with

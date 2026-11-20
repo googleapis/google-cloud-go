@@ -17,6 +17,7 @@ package transport
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"strings"
 	"sync"
@@ -139,6 +140,47 @@ func TestResolveDirectPathAndFallbackEnv(t *testing.T) {
 	t.Setenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK", "true")
 	if !ResolveGCPFallbackEnabled() {
 		t.Fatal("expected ResolveGCPFallbackEnabled=true when env=true")
+	}
+}
+
+func directPathOptionNames(opts []option.ClientOption) []string {
+	var names []string
+	for _, o := range opts {
+		switch name := fmt.Sprintf("%T", o); name {
+		case "internaloption.enableDirectPath",
+			"internaloption.enableDirectPathXds",
+			"internaloption.allowHardBoundTokens",
+			"internaloption.allowNonDefaultServiceAccount":
+			names = append(names, name)
+		}
+	}
+	return names
+}
+
+func TestCloudPathClientOptionsHaveNoDirectPathOptions(t *testing.T) {
+	t.Setenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN", "")
+	for _, tc := range []struct {
+		env        string
+		configured bool
+	}{
+		{env: "", configured: true},
+		{env: "true", configured: false},
+		{env: "true", configured: true},
+	} {
+		t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", tc.env)
+		cfg := PoolConfig{NumChannels: 1, Compression: gzip.Name, EnableDirectAccess: tc.configured}
+		userOpts := []option.ClientOption{option.WithUserAgent("caller-ua/1.0")}
+		direct := cfg.ClientOptions(userOpts...)
+		if got := directPathOptionNames(direct); len(got) != 4 {
+			t.Fatalf("env %q, configured %v: DirectPath options of ClientOptions = %v, want 4", tc.env, tc.configured, got)
+		}
+		cloud := cfg.CloudPathClientOptions(userOpts...)
+		if got := directPathOptionNames(cloud); len(got) != 0 {
+			t.Fatalf("env %q, configured %v: DirectPath options of CloudPathClientOptions = %v, want none", tc.env, tc.configured, got)
+		}
+		if got, want := len(cloud), len(direct)-4; got != want {
+			t.Fatalf("env %q, configured %v: CloudPathClientOptions has %d options, want the %d other options of ClientOptions", tc.env, tc.configured, got, want)
+		}
 	}
 }
 
