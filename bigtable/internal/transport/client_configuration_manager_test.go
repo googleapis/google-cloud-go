@@ -689,6 +689,79 @@ func TestManagerPoll_StopPollingFlagsCurrentConfig(t *testing.T) {
 	}
 }
 
+func TestManagerPoll_PerPollTimeoutExpiresLeaseToDefault(t *testing.T) {
+	client := &mockBigtableClient{
+		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			<-ctx.Done()
+			return nil, status.FromContextError(ctx.Err()).Err()
+		},
+	}
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+	manager.ctx, manager.cancel = context.WithCancel(context.Background())
+	defer manager.cancel()
+
+	// Seed an expired non-default config with 0 retries so a timed-out pollCtx
+	// terminates immediately without manager.ctx being cancelled.
+	manager.currentConfig = &bigtablepb.ClientConfiguration{
+		Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+			PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+				MaxRpcRetryCount: 0,
+			},
+		},
+		SessionConfiguration: &bigtablepb.SessionClientConfiguration{SessionLoad: 0.75},
+	}
+	manager.validUntil = time.Now().Add(-time.Second)
+
+	pollCtx, cancel := context.WithTimeout(manager.ctx, 10*time.Millisecond)
+	defer cancel()
+	manager.poll(pollCtx)
+
+	if !proto.Equal(manager.getConfig(), manager.defaultConfig) {
+		t.Fatalf("expected expired config to fall back to defaultConfig on per-poll timeout, got %v", manager.getConfig())
+	}
+	if snap := manager.Snapshot(); snap.LastErr == nil {
+		t.Fatal("expected LastErr to be recorded on per-poll timeout")
+	}
+}
+
+func TestPollingLoop_StopPollingExpiresNonDefaultLease(t *testing.T) {
+	client := &mockBigtableClient{
+		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			return &bigtablepb.ClientConfiguration{
+				Polling: &bigtablepb.ClientConfiguration_StopPolling{StopPolling: true},
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionLoad: 0.75,
+				},
+			}, nil
+		},
+	}
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+	manager.poll(context.Background())
+
+	manager.mu.Lock()
+	manager.validUntil = time.Now().Add(25 * time.Millisecond)
+	manager.mu.Unlock()
+
+	manager.ctx, manager.cancel = context.WithCancel(context.Background())
+	defer manager.cancel()
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		manager.pollingLoop()
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("pollingLoop did not exit after StopPolling lease expiry")
+	}
+
+	if !proto.Equal(manager.getConfig(), manager.defaultConfig) {
+		t.Fatalf("expected non-default StopPolling config to revert to defaultConfig after validUntil, got %v", manager.getConfig())
+	}
+}
+
 // TestManagerNotifyListeners_Race was removed when addListener moved to
 // holding m.mu across the registration-time fire. The race it guarded
 // against — poll() fan-out interleaving with addListener's deferred fire
