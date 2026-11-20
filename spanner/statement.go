@@ -40,12 +40,12 @@ import (
 // Spanner types.
 type Statement struct {
 	SQL    string
-	Params map[string]interface{}
+	Params map[string]any
 }
 
 // NewStatement returns a Statement with the given SQL and an empty Params map.
 func NewStatement(sql string) Statement {
-	return Statement{SQL: sql, Params: map[string]interface{}{}}
+	return Statement{SQL: sql, Params: map[string]any{}}
 }
 
 // convertParams converts a statement's parameters into proto Param and
