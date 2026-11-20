@@ -126,11 +126,11 @@ func forceDirectPathFallback(t *testing.T, f *directPathFallback) {
 	}
 }
 
-func newTestSlot(id uint64, direct gtransport.ConnPool, f *directPathFallback, dialCloud func(context.Context) (gtransport.ConnPool, error)) *channelSlot {
+func newTestSlot(direct gtransport.ConnPool, f *directPathFallback, dialCloud func(context.Context) (gtransport.ConnPool, error)) *channelSlot {
 	if f != nil {
 		f.dialCloud = dialCloud
 	}
-	return newChannelSlot(id, direct, f)
+	return newChannelSlot(direct, f)
 }
 
 type slotTest struct {
@@ -146,7 +146,7 @@ func newSlotTest(t *testing.T) *slotTest {
 	st := &slotTest{direct: newPathTestServer(t), cloud: newPathTestServer(t)}
 	st.dial = &countingDial{t: t, opts: st.cloud.opts}
 	st.fallback = newTestDirectPathFallback(t)
-	st.slot = newTestSlot(7, dialTestPath(t, st.direct.opts), st.fallback, st.dial.dial)
+	st.slot = newTestSlot(dialTestPath(t, st.direct.opts), st.fallback, st.dial.dial)
 	t.Cleanup(func() { st.slot.Close() })
 	st.client = spannerpb.NewSpannerClient(st.slot)
 	return st
@@ -179,7 +179,9 @@ func TestChannelSlotRoutesBySwitchAndDialsCloudPathLazily(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			st.createSession(t)
+			if _, err := st.client.CreateSession(context.Background(), &spannerpb.CreateSessionRequest{Database: "projects/p/instances/i/databases/d"}); err != nil {
+				t.Errorf("CreateSession() after the switch failed: %v", err)
+			}
 		}()
 	}
 	wg.Wait()
@@ -347,7 +349,7 @@ func TestChannelSlotBlackholedDirectPathFallsBack(t *testing.T) {
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		option.WithoutAuthentication(),
 	})
-	slot := newTestSlot(1, direct, f, dial.dial)
+	slot := newTestSlot(direct, f, dial.dial)
 	t.Cleanup(func() { slot.Close() })
 	client := spannerpb.NewSpannerClient(slot)
 
@@ -405,7 +407,7 @@ func TestChannelSlotCloseClosesBothSidesOnce(t *testing.T) {
 	direct := &closeCountingPool{}
 	cloud := &closeCountingPool{}
 	f := newTestDirectPathFallback(t)
-	slot := newTestSlot(1, direct, f, func(context.Context) (gtransport.ConnPool, error) { return cloud, nil })
+	slot := newTestSlot(direct, f, func(context.Context) (gtransport.ConnPool, error) { return cloud, nil })
 	forceDirectPathFallback(t, f)
 	if _, err := slot.cloudConn(context.Background()); err != nil {
 		t.Fatal(err)
@@ -425,7 +427,7 @@ func TestChannelSlotDoesNotDialAfterClose(t *testing.T) {
 	skipDialectRerun(t)
 	f := newTestDirectPathFallback(t)
 	dials := 0
-	slot := newTestSlot(1, &closeCountingPool{}, f, func(context.Context) (gtransport.ConnPool, error) {
+	slot := newTestSlot(&closeCountingPool{}, f, func(context.Context) (gtransport.ConnPool, error) {
 		dials++
 		return &closeCountingPool{}, nil
 	})
@@ -442,7 +444,7 @@ func TestChannelSlotDoesNotDialAfterClose(t *testing.T) {
 func TestChannelSlotWithoutFallbackOnlyUsesDirect(t *testing.T) {
 	skipDialectRerun(t)
 	direct := newPathTestServer(t)
-	slot := newTestSlot(3, dialTestPath(t, direct.opts), nil, nil)
+	slot := newTestSlot(dialTestPath(t, direct.opts), nil, nil)
 	t.Cleanup(func() { slot.Close() })
 	client := spannerpb.NewSpannerClient(slot)
 	if _, err := client.CreateSession(context.Background(), &spannerpb.CreateSessionRequest{Database: "projects/p/instances/i/databases/d"}); err != nil {
@@ -460,10 +462,149 @@ type failingClosePool struct {
 
 func (p failingClosePool) Close() error { return p.err }
 
+func TestChannelSlotConnWithoutDirectSide(t *testing.T) {
+	skipDialectRerun(t)
+	f := newTestDirectPathFallback(t)
+	slot := newCloudPathSlot(&closeCountingPool{}, f)
+	defer slot.Close()
+	if got := slot.Conn(); got != nil {
+		t.Fatalf("Conn() of a slot without a direct side = %v, want nil", got)
+	}
+}
+
+func TestDialChannelSlot(t *testing.T) {
+	skipDialectRerun(t)
+	errDirect := errors.New("direct dial failed")
+	errCloud := status.Error(codes.PermissionDenied, "CloudPath dial failed")
+	const timeout = 20 * time.Millisecond
+	untilDone := func(ctx context.Context) (gtransport.ConnPool, error) {
+		<-ctx.Done()
+		return nil, ctx.Err()
+	}
+	for _, tt := range []struct {
+		name                    string
+		noFallback, afterSwitch bool
+		dialCloud               func(ctx context.Context, cloud gtransport.ConnPool) (gtransport.ConnPool, error)
+		cancelCaller            bool
+		directErr               error
+
+		wantDirectDials, wantCloudDials int
+		wantDirect, wantCloud           bool
+		wantCode                        codes.Code
+		wantErr                         error
+		wantCloudCloses                 int32
+	}{
+		{name: "fallback off", noFallback: true, wantDirectDials: 1, wantDirect: true},
+		{name: "before the switch", wantDirectDials: 1, wantDirect: true},
+		{name: "before the switch, direct dial fails", directErr: errDirect, wantDirectDials: 1, wantErr: errDirect},
+		{name: "after the switch", afterSwitch: true, wantCloudDials: 1, wantCloud: true},
+		{
+			name: "after the switch, without a CloudPath", afterSwitch: true,
+			dialCloud: func(context.Context, gtransport.ConnPool) (gtransport.ConnPool, error) {
+				return nil, errNoCloudPath
+			},
+			wantDirectDials: 1, wantCloudDials: 1, wantDirect: true,
+		},
+		{
+			name: "after the switch, CloudPath dial fails", afterSwitch: true,
+			dialCloud: func(context.Context, gtransport.ConnPool) (gtransport.ConnPool, error) {
+				return nil, errCloud
+			},
+			wantCloudDials: 1, wantCode: codes.PermissionDenied,
+		},
+		{
+			name: "after the switch, CloudPath dial times out", afterSwitch: true,
+			dialCloud: func(ctx context.Context, _ gtransport.ConnPool) (gtransport.ConnPool, error) {
+				return untilDone(ctx)
+			},
+			wantCloudDials: 1, wantCode: codes.DeadlineExceeded,
+		},
+		{
+			name: "after the switch, CloudPath dial completes after the timeout", afterSwitch: true,
+			dialCloud: func(ctx context.Context, cloud gtransport.ConnPool) (gtransport.ConnPool, error) {
+				<-ctx.Done()
+				return cloud, nil
+			},
+			wantCloudDials: 1, wantCode: codes.DeadlineExceeded, wantCloudCloses: 1,
+		},
+		{
+			name: "after the switch, caller gives up during the CloudPath dial", afterSwitch: true, cancelCaller: true,
+			dialCloud: func(ctx context.Context, _ gtransport.ConnPool) (gtransport.ConnPool, error) {
+				return untilDone(ctx)
+			},
+			wantCloudDials: 1, wantCode: codes.Canceled,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			var f *directPathFallback
+			direct, cloud := &closeCountingPool{}, &closeCountingPool{}
+			var directDials, cloudDials int
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			if !tt.noFallback {
+				f = newTestDirectPathFallback(t)
+				f.dialCloud = func(ctx context.Context) (gtransport.ConnPool, error) {
+					cloudDials++
+					if tt.cancelCaller {
+						cancel()
+					}
+					if tt.dialCloud != nil {
+						return tt.dialCloud(ctx, cloud)
+					}
+					return cloud, nil
+				}
+			}
+			if tt.afterSwitch {
+				forceDirectPathFallback(t, f)
+			}
+			dialDirect := func(context.Context) (gtransport.ConnPool, error) {
+				directDials++
+				if tt.directErr != nil {
+					return nil, tt.directErr
+				}
+				return direct, nil
+			}
+
+			slot, err := dialChannelSlot(ctx, dialDirect, f, timeout)
+			if directDials != tt.wantDirectDials || cloudDials != tt.wantCloudDials {
+				t.Fatalf("dials = {direct: %d, cloud: %d}, want {direct: %d, cloud: %d}", directDials, cloudDials, tt.wantDirectDials, tt.wantCloudDials)
+			}
+			if got := cloud.closes.Load(); got != tt.wantCloudCloses {
+				t.Fatalf("CloudPath connection closes = %d, want %d", got, tt.wantCloudCloses)
+			}
+			if tt.wantErr != nil || tt.wantCode != codes.OK {
+				if slot != nil {
+					t.Fatalf("dialChannelSlot() returned a slot with error %v", err)
+				}
+				if tt.wantErr != nil && err != tt.wantErr {
+					t.Fatalf("dialChannelSlot() error = %v, want %v", err, tt.wantErr)
+				}
+				if tt.wantErr == nil && ErrCode(err) != tt.wantCode {
+					t.Fatalf("dialChannelSlot() error = %v, want code %v", err, tt.wantCode)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("dialChannelSlot() failed: %v", err)
+			}
+			defer slot.Close()
+			if slot.fallback != f {
+				t.Fatalf("slot fallback = %p, want %p", slot.fallback, f)
+			}
+			if got := slot.direct != nil; got != tt.wantDirect {
+				t.Fatalf("slot has a direct side = %v, want %v", got, tt.wantDirect)
+			}
+			if got := slot.cloud.Load() != nil; got != tt.wantCloud {
+				t.Fatalf("slot has a CloudPath side = %v, want %v", got, tt.wantCloud)
+			}
+		})
+	}
+}
+
 func TestChannelSlotCloseReturnsDirectError(t *testing.T) {
 	skipDialectRerun(t)
 	want := errors.New("close failed")
-	if got := newChannelSlot(1, failingClosePool{err: want}, nil).Close(); got != want {
+	if got := newChannelSlot(failingClosePool{err: want}, nil).Close(); got != want {
 		t.Fatalf("Close() error = %v, want the direct connection's own error", got)
 	}
 }
@@ -508,7 +649,7 @@ func TestChannelSlotCloudDialHonorsEachCallersContext(t *testing.T) {
 	skipDialectRerun(t)
 	f := newTestDirectPathFallback(t)
 	dial := newBlockingCloudDial()
-	slot := newTestSlot(1, &closeCountingPool{}, f, dial.dial)
+	slot := newTestSlot(&closeCountingPool{}, f, dial.dial)
 	t.Cleanup(func() { slot.Close() })
 	forceDirectPathFallback(t, f)
 
@@ -558,7 +699,7 @@ func TestChannelSlotCloseCancelsCloudDial(t *testing.T) {
 	f := newTestDirectPathFallback(t)
 	dial := newBlockingCloudDial()
 	direct := &closeCountingPool{}
-	slot := newTestSlot(1, direct, f, dial.dial)
+	slot := newTestSlot(direct, f, dial.dial)
 	forceDirectPathFallback(t, f)
 
 	waiter := make(chan error, 1)
@@ -594,7 +735,7 @@ func TestChannelSlotClosesCloudPathDialedAfterClose(t *testing.T) {
 	started := make(chan struct{})
 	release := make(chan struct{})
 	cloud := &closeCountingPool{}
-	slot := newTestSlot(1, &closeCountingPool{}, f, func(context.Context) (gtransport.ConnPool, error) {
+	slot := newTestSlot(&closeCountingPool{}, f, func(context.Context) (gtransport.ConnPool, error) {
 		close(started)
 		<-release // a dial that ignores cancellation
 		return cloud, nil
@@ -646,7 +787,7 @@ func TestChannelSlotWithoutCloudPathKeepsDirectSide(t *testing.T) {
 	t.Cleanup(func() { conn.Close() })
 	f := newTestDirectPathFallback(t)
 	direct := &connWrapper{conn: conn}
-	slot := newTestSlot(1, direct, f, func(context.Context) (gtransport.ConnPool, error) { return nil, errNoCloudPath })
+	slot := newTestSlot(direct, f, func(context.Context) (gtransport.ConnPool, error) { return nil, errNoCloudPath })
 	forceDirectPathFallback(t, f)
 	if _, err := spannerpb.NewSpannerClient(slot).CreateSession(context.Background(), &spannerpb.CreateSessionRequest{Database: "projects/p/instances/i/databases/d"}); err != nil {
 		t.Fatal(err)
@@ -719,7 +860,7 @@ func TestChannelSlotDoesNotRecordLocalErrors(t *testing.T) {
 	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader))
 	t.Cleanup(func() { provider.Shutdown(context.Background()) })
 	f := newTestDirectPathFallbackWithMetrics(t, provider)
-	slot := newTestSlot(1, &closeCountingPool{}, f, func(context.Context) (gtransport.ConnPool, error) {
+	slot := newTestSlot(&closeCountingPool{}, f, func(context.Context) (gtransport.ConnPool, error) {
 		return nil, errors.New("dial failed")
 	})
 	forceDirectPathFallback(t, f)

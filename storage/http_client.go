@@ -125,7 +125,7 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 
 	var clientMetrics *clientMetrics
 	var metricsCleanup func()
-	if isOtelMetricsEnabled(&config) {
+	if isOtelMetricsEnabled(&config) || isOtelDebugMetricsEnabled(&config) {
 		var project string
 		if creds != nil {
 			project, _ = creds.ProjectID(ctx)
@@ -925,6 +925,9 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	}
 	if req.predefinedACL != "" {
 		call.DestinationPredefinedAcl(req.predefinedACL)
+	}
+	if req.dstObject.attrs.KMSKeyName != "" {
+		call.KmsKeyName(req.dstObject.attrs.KMSKeyName)
 	}
 	if err := setEncryptionHeaders(call.Header(), req.dstObject.encryptionKey, false); err != nil {
 		return nil, err

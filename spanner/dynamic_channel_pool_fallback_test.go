@@ -21,10 +21,13 @@ import (
 	"io"
 	"log"
 	"net"
+	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -49,10 +52,31 @@ func dcpFallbackTestConfig() DynamicChannelPoolConfig {
 	}
 }
 
-// applyErrorPenalty penalizes the entry for an error of an attempt sent on
-// the pool's current path.
-func (e *dcpEntry) applyErrorPenalty(err error) {
-	e.applyErrorPenaltyAt(e.parent.fallbackGeneration(), err)
+func addPrimedDCPEntry(t *testing.T, client *Client) *dcpEntry {
+	t.Helper()
+	p := dynamicPoolOf(t, client)
+	waitForDCPScaleUpWorkerIdle(p)
+	before := p.GetEntries()
+	if got, want := p.Cfg.DCPMaxChannels, len(before)+1; got != want {
+		t.Fatalf("DCPMaxChannels = %d, want %d to scale up by one entry", got, want)
+	}
+	client.sm.mu.Lock()
+	p.PrimeSession.Store(client.sm.multiplexedSession.id)
+	client.sm.mu.Unlock()
+	p.LastScaleUp.Store(0)
+	load := int32(2 * p.Cfg.DCPMaxRPCPerChannel)
+	for _, e := range before {
+		e.UnaryLoad.Add(load)
+	}
+	p.ScaleUp()
+	for _, e := range before {
+		e.UnaryLoad.Add(-load)
+	}
+	after := p.GetEntries()
+	if len(after) == len(before) {
+		return nil
+	}
+	return after[len(after)-1]
 }
 
 func dynamicPoolOf(t *testing.T, client *Client) *dynamicChannelPool {
@@ -83,16 +107,16 @@ func TestDCPDirectPathFallbackDefaults(t *testing.T) {
 			paths := newSharedBackendPaths(t)
 			client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: dcpFallbackTestConfig()}, paths.opts...)
 			p := dynamicPoolOf(t, client)
-			if got := p.fallback != nil; got != tt.want {
+			if got := poolFallback(p) != nil; got != tt.want {
 				t.Fatalf("fallback enabled = %v, want %v", got, tt.want)
 			}
-			for _, e := range p.getEntries() {
-				slot, ok := e.pool.(*channelSlot)
+			for _, e := range p.GetEntries() {
+				slot, ok := e.Pool.(*channelSlot)
 				if !ok {
-					t.Fatalf("entry pool type = %T, want *channelSlot", e.pool)
+					t.Fatalf("entry pool type = %T, want *channelSlot", e.Pool)
 				}
-				if slot.channelID != e.id || slot.fallback != p.fallback {
-					t.Fatalf("entry %d slot = {id: %d, fallback: %p}, want {id: %d, fallback: %p}", e.id, slot.channelID, slot.fallback, e.id, p.fallback)
+				if slot.fallback != poolFallback(p) {
+					t.Fatalf("entry %d slot fallback = %p, want %p", e.ID, slot.fallback, poolFallback(p))
 				}
 			}
 		})
@@ -111,8 +135,8 @@ func TestDCPDirectPathFallbackKeepsTransactionOnEntry(t *testing.T) {
 		if _, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
 			return err
 		}
-		if !p.fallback.current().fallback {
-			forceDirectPathFallback(t, p.fallback)
+		if !poolFallback(p).current().fallback {
+			forceDirectPathFallback(t, poolFallback(p))
 		}
 		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
 		return err
@@ -131,8 +155,8 @@ func TestDCPDirectPathFallbackKeepsTransactionOnEntry(t *testing.T) {
 	}
 	entry := direct[0].channelID
 	found := false
-	for _, e := range p.getEntries() {
-		found = found || e.id == entry
+	for _, e := range p.GetEntries() {
+		found = found || e.ID == entry
 	}
 	if !found {
 		t.Fatalf("transaction channel %d is not a DCP entry", entry)
@@ -157,13 +181,11 @@ func TestDCPDirectPathFallbackPrimesNewEntriesOverCloudPath(t *testing.T) {
 	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: cfg}, paths.opts...)
 	p := dynamicPoolOf(t, client)
 
-	forceDirectPathFallback(t, p.fallback)
+	forceDirectPathFallback(t, poolFallback(p))
 	directBefore := paths.direct.count(executeSQLMethod)
-	e, err := p.newEntry(context.Background(), true)
-	if err != nil {
-		t.Fatalf("newEntry() after the switch failed: %v", err)
+	if addPrimedDCPEntry(t, client) == nil {
+		t.Fatal("scale-up after the switch added no entry")
 	}
-	defer e.close()
 	if got, want := paths.cloud.count(executeSQLMethod), 1; got != want {
 		t.Fatalf("CloudPath priming queries = %d, want %d", got, want)
 	}
@@ -179,19 +201,19 @@ func TestDCPDirectPathFallbackClearsErrorPenalties(t *testing.T) {
 	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: dcpFallbackTestConfig()}, paths.opts...)
 	p := dynamicPoolOf(t, client)
 
-	for _, e := range p.getEntries() {
-		e.applyErrorPenalty(status.Error(codes.Unavailable, "DirectPath failed"))
-		if e.currentPenalty() == 0 {
-			t.Fatalf("entry %d has no penalty after an UNAVAILABLE error", e.id)
+	for _, e := range p.GetEntries() {
+		e.ApplyErrorPenalty(status.Error(codes.Unavailable, "DirectPath failed"))
+		if e.CurrentPenalty() == 0 {
+			t.Fatalf("entry %d has no penalty after an UNAVAILABLE error", e.ID)
 		}
 	}
-	forceDirectPathFallback(t, p.fallback)
-	for _, e := range p.getEntries() {
-		if got := e.currentPenalty(); got != 0 {
-			t.Fatalf("entry %d penalty after the switch = %d, want 0", e.id, got)
+	forceDirectPathFallback(t, poolFallback(p))
+	for _, e := range p.GetEntries() {
+		if got := e.CurrentPenalty(); got != 0 {
+			t.Fatalf("entry %d penalty after the switch = %d, want 0", e.ID, got)
 		}
 	}
-	if got := p.totalPenaltyLoad.Load(); got != 0 {
+	if got := p.TotalPenaltyLoad.Load(); got != 0 {
 		t.Fatalf("pool penalty load after the switch = %d, want 0", got)
 	}
 }
@@ -233,7 +255,7 @@ func TestDCPDirectPathUnreachableFallsBackToCloudPath(t *testing.T) {
 	if rows == 0 {
 		t.Fatal("query returned no rows")
 	}
-	if !dynamicPoolOf(t, client).fallback.current().fallback {
+	if !poolFallback(dynamicPoolOf(t, client)).current().fallback {
 		t.Fatal("pool did not fall back to CloudPath")
 	}
 	if got := paths.cloud.count(createSessionMethod); got == 0 {
@@ -255,7 +277,7 @@ func TestDCPBlockingCloudPathDialHonorsQueryDeadline(t *testing.T) {
 	opts := append(append([]option.ClientOption{}, paths.opts...), option.WithGRPCDialOption(grpc.WithBlock()))
 	started := redirectCloudPathTo(t, unreachableAddr(t))
 	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: dcpOneEntryFallbackTestConfig()}, opts...)
-	forceDirectPathFallback(t, dynamicPoolOf(t, client).fallback)
+	forceDirectPathFallback(t, poolFallback(dynamicPoolOf(t, client)))
 	queryHonorsDeadlineDuringCloudPathDial(t, client, started)
 }
 
@@ -269,18 +291,17 @@ func TestDCPPrimingHonorsTimeoutDuringBlockingCloudPathDial(t *testing.T) {
 	cfg.DCPPrimeTimeout = 20 * time.Millisecond
 	opts := append(append([]option.ClientOption{}, paths.opts...), option.WithGRPCDialOption(grpc.WithBlock()))
 	redirectCloudPathTo(t, unreachableAddr(t))
-	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: cfg}, opts...)
+	logger := &lockedBuffer{}
+	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: cfg, Logger: log.New(logger, "", 0)}, opts...)
 	p := dynamicPoolOf(t, client)
-	forceDirectPathFallback(t, p.fallback)
+	forceDirectPathFallback(t, poolFallback(p))
 
 	start := time.Now()
-	e, err := p.newEntry(context.Background(), true)
-	if err == nil {
-		e.close()
-		t.Fatal("newEntry() primed over an unreachable CloudPath")
+	if addPrimedDCPEntry(t, client) != nil {
+		t.Fatal("scale-up added an entry over an unreachable CloudPath")
 	}
-	if ErrCode(err) != codes.DeadlineExceeded {
-		t.Fatalf("newEntry() error = %v, want DEADLINE_EXCEEDED", err)
+	if got, want := logger.String(), `code = "DeadlineExceeded", desc = "spanner: CloudPath dial did not complete within 20ms"`; !strings.Contains(got, want) {
+		t.Fatalf("scale-up log = %q, want it to contain %q", got, want)
 	}
 	if elapsed := time.Since(start); elapsed > 2*time.Second {
 		t.Fatalf("priming took %v with a %v prime timeout", elapsed, cfg.DCPPrimeTimeout)
@@ -304,7 +325,7 @@ func TestDCPDirectPathFallbackDoesNotCloseCallerSuppliedPoolAgain(t *testing.T) 
 			userPool := &closeCountingConnPool{ConnPool: dialTestPath(t, paths.opts)}
 			client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: dcpOneEntryFallbackTestConfig()}, gtransport.WithConnPool(userPool))
 			if tt.doSwitch {
-				forceDirectPathFallback(t, dynamicPoolOf(t, client).fallback)
+				forceDirectPathFallback(t, poolFallback(dynamicPoolOf(t, client)))
 			}
 			queryFooFromBar(t, client)
 			client.Close()
@@ -344,7 +365,7 @@ func TestDCPLateDirectPathStreamErrorDoesNotPenalizeCloudPath(t *testing.T) {
 		}
 		return nil
 	})
-	forceDirectPathFallback(t, p.fallback)
+	forceDirectPathFallback(t, poolFallback(p))
 	close(release)
 	if err := <-done; err != nil {
 		t.Fatalf("query failed: %v", err)
@@ -352,71 +373,132 @@ func TestDCPLateDirectPathStreamErrorDoesNotPenalizeCloudPath(t *testing.T) {
 	if paths.cloud.count(executeStreamingSQLMethod) == 0 {
 		t.Fatal("query did not resume over CloudPath")
 	}
-	if got := p.totalPenaltyLoad.Load(); got != 0 {
+	if got := p.TotalPenaltyLoad.Load(); got != 0 {
 		t.Fatalf("pool penalty load after a late DirectPath failure = %d, want 0", got)
 	}
 }
 
-func TestDCPPenaltyFollowsTheLastAttemptsPath(t *testing.T) {
+func TestDCPPenaltySkipsOperationsThatStraddleTheSwitch(t *testing.T) {
 	skipDialectRerun(t)
 	errUnavailable := status.Error(codes.Unavailable, "unavailable")
-	tests := []struct {
-		name                   string
-		lastAttemptOnCloudPath bool
-		wantPenalty            bool
+	operations := []struct {
+		name  string
+		start func(c *dcpSpannerClient) (finish func(error))
 	}{
-		{name: "late DirectPath failure after the switch", lastAttemptOnCloudPath: false, wantPenalty: false},
-		{name: "retry failed on CloudPath after the switch", lastAttemptOnCloudPath: true, wantPenalty: true},
+		{name: "unary", start: func(c *dcpSpannerClient) func(error) {
+			return c.startUnary(context.Background())
+		}},
+		{name: "stream", start: func(c *dcpSpannerClient) func(error) {
+			return c.startStream(context.Background()).Done
+		}},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			enableDirectPathForTest(t)
-			paths := newSharedBackendPaths(t)
-			client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: dcpOneEntryFallbackTestConfig()}, paths.opts...)
-			p := dynamicPoolOf(t, client)
-			e := p.getEntries()[0]
-			slot := e.pool.(*channelSlot)
+	tests := []struct {
+		name              string
+		startsAfterSwitch bool
+		wantPenalty       bool
+	}{
+		{name: "started on DirectPath, failed after the switch", startsAfterSwitch: false, wantPenalty: false},
+		{name: "started and failed after the switch", startsAfterSwitch: true, wantPenalty: true},
+	}
+	for _, op := range operations {
+		for _, tt := range tests {
+			t.Run(op.name+"/"+tt.name, func(t *testing.T) {
+				enableDirectPathForTest(t)
+				paths := newSharedBackendPaths(t)
+				client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: dcpOneEntryFallbackTestConfig()}, paths.opts...)
+				p := dynamicPoolOf(t, client)
+				e := p.GetEntries()[0]
+				c := e.Client.(*dcpSpannerClient)
 
-			ctx, done := e.client.(*dcpSpannerClient).startUnary(context.Background())
-			if _, _, err := slot.route(ctx); err != nil { // first attempt, on DirectPath
-				t.Fatal(err)
-			}
-			forceDirectPathFallback(t, p.fallback)
-			if tt.lastAttemptOnCloudPath {
-				if _, _, err := slot.route(ctx); err != nil { // retry, on CloudPath
-					t.Fatal(err)
+				var finish func(error)
+				if !tt.startsAfterSwitch {
+					finish = op.start(c)
 				}
-			}
-			done(errUnavailable)
-			if got := e.currentPenalty() > 0; got != tt.wantPenalty {
-				t.Fatalf("entry penalized = %v, want %v", got, tt.wantPenalty)
-			}
-		})
+				forceDirectPathFallback(t, poolFallback(p))
+				if tt.startsAfterSwitch {
+					finish = op.start(c)
+				}
+				finish(errUnavailable)
+				if got := e.CurrentPenalty() > 0; got != tt.wantPenalty {
+					t.Fatalf("entry penalized = %v, want %v", got, tt.wantPenalty)
+				}
+				if got := p.TotalPenaltyLoad.Load() > 0; got != tt.wantPenalty {
+					t.Fatalf("pool carries penalty load = %v, want %v", got, tt.wantPenalty)
+				}
+			})
+		}
 	}
 }
 
-// TestDCPSwitchKeepsPenaltiesEarnedOnCloudPath covers a CloudPath failure that
-// lands after the switch is published but before the switch hook clears the
-// DirectPath penalties: the hook must keep it.
+type switchLogBarrier struct {
+	reached chan struct{}
+	release chan struct{}
+	once    sync.Once
+}
+
+func (b *switchLogBarrier) Write(p []byte) (int, error) {
+	if strings.Contains(string(p), "switching to CloudPath") {
+		b.once.Do(func() { close(b.reached) })
+		<-b.release
+	}
+	return len(p), nil
+}
+
 func TestDCPSwitchKeepsPenaltiesEarnedOnCloudPath(t *testing.T) {
 	skipDialectRerun(t)
 	enableDirectPathForTest(t)
 	paths := newSharedBackendPaths(t)
-	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: dcpFallbackTestConfig()}, paths.opts...)
+	barrier := &switchLogBarrier{reached: make(chan struct{}), release: make(chan struct{})}
+	var releaseOnce sync.Once
+	release := func() { releaseOnce.Do(func() { close(barrier.release) }) }
+	t.Cleanup(release)
+	config := ClientConfig{DynamicChannelPoolConfig: dcpOneEntryFallbackTestConfig(), Logger: log.New(barrier, "", 0)}
+	client := newDirectPathFallbackTestClient(t, config, paths.opts...)
 	p := dynamicPoolOf(t, client)
-	forceDirectPathFallback(t, p.fallback)
-	e := p.getEntries()[0]
-	e.applyErrorPenalty(status.Error(codes.Unavailable, "CloudPath failed"))
-	want := e.currentPenalty()
-	if want == 0 {
-		t.Fatal("CloudPath failure did not penalize the entry")
+	e := p.GetEntries()[0]
+	f := poolFallback(p)
+
+	paths.backend.TestSpanner.PutExecutionTime(MethodCreateSession, SimulatedExecutionTime{
+		Errors:    []error{status.Error(codes.Unavailable, "unavailable")},
+		KeepError: true,
+	})
+	failCreateSession := func() {
+		t.Helper()
+		_, err := spannerpb.NewSpannerClient(p).CreateSession(context.Background(), &spannerpb.CreateSessionRequest{Database: client.DatabaseName()})
+		if status.Code(err) != codes.Unavailable {
+			t.Fatalf("CreateSession() error = %v, want UNAVAILABLE", err)
+		}
 	}
-	p.clearStaleErrorPenalties() // the switch hook running late
-	if got := e.currentPenalty(); got != want {
-		t.Fatalf("CloudPath penalty after the switch hook = %d, want %d", got, want)
+	step := p.Cfg.DCPErrorPenaltyStep
+
+	f.closeWindow(time.Now())
+	failCreateSession()
+	if got := e.CurrentPenalty(); got != step {
+		t.Fatalf("penalty after a DirectPath failure = %d, want %d", got, step)
 	}
-	if got := p.totalPenaltyLoad.Load(); got != int64(want) {
-		t.Fatalf("pool penalty load = %d, want %d", got, want)
+
+	switched := make(chan struct{})
+	go func() {
+		defer close(switched)
+		f.closeWindow(time.Now())
+	}()
+	select {
+	case <-barrier.reached:
+	case <-time.After(5 * time.Second):
+		t.Fatal("the pool did not switch")
+	}
+	failCreateSession()
+	if got, want := paths.cloud.count(createSessionMethod), 1; got != want {
+		t.Fatalf("CloudPath CreateSession calls during the switch = %d, want %d", got, want)
+	}
+	release()
+	<-switched
+
+	if got := e.CurrentPenalty(); got != step {
+		t.Fatalf("penalty after the switch = %d, want %d for the one CloudPath failure", got, step)
+	}
+	if got := p.TotalPenaltyLoad.Load(); got != int64(step) {
+		t.Fatalf("pool penalty load after the switch = %d, want %d", got, step)
 	}
 }
 
@@ -435,8 +517,8 @@ func TestDCPDrainAndFallbackKeepTransactionOnEntry(t *testing.T) {
 		if bound == nil {
 			rpcs := paths.direct.recorded()
 			channelID = rpcs[len(rpcs)-1].channelID
-			for _, e := range p.getEntries() {
-				if e.id == channelID {
+			for _, e := range p.GetEntries() {
+				if e.ID == channelID {
 					bound = e
 				}
 			}
@@ -445,10 +527,10 @@ func TestDCPDrainAndFallbackKeepTransactionOnEntry(t *testing.T) {
 			}
 			removeDCPEntryForTest(p, bound)
 			t.Cleanup(func() {
-				bound.close()
-				p.drainingCount.Add(-1)
+				bound.Close()
+				p.DrainingCount.Add(-1)
 			})
-			forceDirectPathFallback(t, p.fallback)
+			forceDirectPathFallback(t, poolFallback(p))
 		}
 		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
 		return err
@@ -465,9 +547,9 @@ func TestDCPDrainAndFallbackKeepTransactionOnEntry(t *testing.T) {
 			t.Fatalf("CloudPath RPC %s ran on channel %d, want the drained entry %d", rpc.method, rpc.channelID, channelID)
 		}
 	}
-	slot := bound.pool.(*channelSlot)
+	slot := bound.Pool.(*channelSlot)
 	direct, cloudConn := slot.direct.Conn(), slot.cloud.Load().Conn()
-	if !bound.closeIfIdle(0) {
+	if !bound.CloseIfIdle(0) {
 		t.Fatal("drained entry did not close")
 	}
 	if direct.GetState() != connectivity.Shutdown || cloudConn.GetState() != connectivity.Shutdown {
@@ -488,20 +570,19 @@ func TestDCPPrimingDoesNotFeedFallbackSwitch(t *testing.T) {
 	cfg.DCPPrimeTimeout = 50 * time.Millisecond
 	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: cfg}, paths.opts...)
 	p := dynamicPoolOf(t, client)
-	p.fallback.closeWindow(time.Now())
+	poolFallback(p).closeWindow(time.Now())
 
 	paths.backend.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{
 		Errors:    []error{status.Error(codes.Unavailable, "new channel lands on a broken frontend")},
 		KeepError: true,
 	})
-	if e, err := p.newEntry(context.Background(), true); err == nil {
-		e.close()
-		t.Fatal("newEntry() primed a channel whose priming always fails")
+	if addPrimedDCPEntry(t, client) != nil {
+		t.Fatal("scale-up added a channel whose priming always fails")
 	}
 	if got := paths.direct.count(executeSQLMethod); got == 0 {
 		t.Fatal("priming sent no query")
 	}
-	if res := p.fallback.closeWindow(time.Now()); res.failures != 0 || res.switched {
+	if res := poolFallback(p).closeWindow(time.Now()); res.failures != 0 || res.switched {
 		t.Fatalf("priming failures fed the fallback window: %+v", res)
 	}
 }
@@ -515,21 +596,12 @@ func TestDCPEntryAfterSwitchDialsOnlyCloudPath(t *testing.T) {
 	cfg.DCPMaxChannels = 3
 	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: cfg}, paths.opts...)
 	p := dynamicPoolOf(t, client)
-	forceDirectPathFallback(t, p.fallback)
+	forceDirectPathFallback(t, poolFallback(p))
 
-	directDials := 0
-	dial := p.dial
-	p.dial = func(ctx context.Context) (gtransport.ConnPool, error) {
-		directDials++
-		return dial(ctx)
-	}
 	cloudDialsBefore := paths.cloudDials.Load()
-	e, err := p.newEntry(context.Background(), true)
-	if err != nil {
-		t.Fatalf("newEntry() after the switch failed: %v", err)
-	}
-	if directDials != 0 {
-		t.Fatalf("DirectPath dials for an entry created after the switch = %d, want 0", directDials)
+	e := addPrimedDCPEntry(t, client)
+	if e == nil {
+		t.Fatal("scale-up after the switch added no entry")
 	}
 	if got := paths.cloudDials.Load() - cloudDialsBefore; got != 1 {
 		t.Fatalf("CloudPath dials = %d, want 1", got)
@@ -537,19 +609,19 @@ func TestDCPEntryAfterSwitchDialsOnlyCloudPath(t *testing.T) {
 	if got, want := paths.cloud.count(executeSQLMethod), 1; got != want {
 		t.Fatalf("CloudPath priming queries = %d, want %d", got, want)
 	}
-	slot := e.pool.(*channelSlot)
+	slot := e.Pool.(*channelSlot)
 	if slot.direct != nil {
 		t.Fatal("entry created after the switch has a direct connection")
 	}
 	conn := slot.Conn()
-	e.close()
+	e.Close()
 	if got := conn.GetState(); got != connectivity.Shutdown {
 		t.Fatalf("CloudPath connection state after close = %v, want Shutdown", got)
 	}
 }
 
-// A CloudPath connection keeps the context it was dialed with, so that
-// context must outlive the call that created the entry.
+// TestDCPEntryAfterSwitchKeepsItsDialContext checks that a CloudPath dial
+// context outlives the Dial call and is canceled when the slot closes.
 func TestDCPEntryAfterSwitchKeepsItsDialContext(t *testing.T) {
 	skipDialectRerun(t)
 	enableDirectPathForTest(t)
@@ -558,26 +630,26 @@ func TestDCPEntryAfterSwitchKeepsItsDialContext(t *testing.T) {
 	cfg.DCPMaxChannels = 3
 	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: cfg}, paths.opts...)
 	p := dynamicPoolOf(t, client)
-	forceDirectPathFallback(t, p.fallback)
+	forceDirectPathFallback(t, poolFallback(p))
 
 	var dialCtx context.Context
-	dialCloud := p.fallback.dialCloud
-	p.fallback.dialCloud = func(ctx context.Context) (gtransport.ConnPool, error) {
+	dialCloud := poolFallback(p).dialCloud
+	poolFallback(p).dialCloud = func(ctx context.Context) (gtransport.ConnPool, error) {
 		dialCtx = ctx
 		return dialCloud(ctx)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	e, err := p.newEntry(ctx, false)
+	slot, err := p.Dial(ctx)
 	if err != nil {
-		t.Fatalf("newEntry() after the switch failed: %v", err)
+		t.Fatalf("Dial() after the switch failed: %v", err)
 	}
 	cancel()
 	if err := dialCtx.Err(); err != nil {
 		t.Fatalf("CloudPath dial context after the creating call ended = %v, want it open", err)
 	}
-	e.close()
+	slot.Close()
 	if dialCtx.Err() == nil {
-		t.Fatal("closing the entry did not end its CloudPath dial context")
+		t.Fatal("closing the slot did not end its CloudPath dial context")
 	}
 }
 
@@ -594,13 +666,13 @@ func TestDCPEntryAfterSwitchWithCallerSuppliedPool(t *testing.T) {
 	cfg.DCPMaxChannels = 3
 	client := newDirectPathFallbackTestClient(t, ClientConfig{DynamicChannelPoolConfig: cfg}, gtransport.WithConnPool(userPool))
 	p := dynamicPoolOf(t, client)
-	forceDirectPathFallback(t, p.fallback)
+	forceDirectPathFallback(t, poolFallback(p))
 
-	e, err := p.newEntry(context.Background(), true)
-	if err != nil {
-		t.Fatalf("newEntry() after the switch failed: %v", err)
+	e := addPrimedDCPEntry(t, client)
+	if e == nil {
+		t.Fatal("scale-up after the switch added no entry")
 	}
-	if slot := e.pool.(*channelSlot); !sameConnPool(slot.direct, userPool) {
+	if slot := e.Pool.(*channelSlot); !sameConnPool(slot.direct, userPool) {
 		t.Fatalf("entry direct side = %T, want the caller's pool", slot.direct)
 	}
 	if got := paths.direct.count(executeSQLMethod); got == 0 {

@@ -18,6 +18,8 @@ import (
 	"context"
 	"io"
 	"log"
+	"math"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -41,10 +43,7 @@ func newTestDirectPathFallback(t *testing.T) *directPathFallback {
 
 func newTestDirectPathFallbackWithMetrics(t *testing.T, mp metric.MeterProvider) *directPathFallback {
 	t.Helper()
-	f, err := newDirectPathFallback(mp, log.New(io.Discard, "", 0), nil, time.Hour)
-	if err != nil {
-		t.Fatalf("newDirectPathFallback() failed: %v", err)
-	}
+	f := newDirectPathFallback(mp, log.New(io.Discard, "", 0), nil, time.Hour)
 	t.Cleanup(f.close)
 	return f
 }
@@ -219,10 +218,7 @@ func (f *directPathFallback) closeWindowForTest(now time.Time) fallbackWindowRes
 
 func TestDirectPathFallbackLoopSwitchesAndStops(t *testing.T) {
 	skipDialectRerun(t)
-	f, err := newDirectPathFallback(nil, log.New(io.Discard, "", 0), nil, 5*time.Millisecond)
-	if err != nil {
-		t.Fatal(err)
-	}
+	f := newDirectPathFallback(nil, log.New(io.Discard, "", 0), nil, 5*time.Millisecond)
 	t.Cleanup(f.close)
 	var hookCalls int
 	var mu sync.Mutex
@@ -301,6 +297,53 @@ func TestDirectPathFallbackMetrics(t *testing.T) {
 		if got[k] != v {
 			t.Fatalf("metric points mismatch\n Got: %v\nWant: %v", got, want)
 		}
+	}
+}
+
+func TestDirectPathFallbackWithoutMetricsWhenACounterCannotBeCreated(t *testing.T) {
+	skipDialectRerun(t)
+	for _, counter := range []string{metricNameEEFFallbackCount, metricNameEEFCallStatus} {
+		t.Run(counter, func(t *testing.T) {
+			logger := &lockedBuffer{}
+			mp := &failingDCPMeterProvider{meter: &failingDCPMeter{failCounterName: counter}}
+			f := newDirectPathFallback(mp, log.New(logger, "", 0), nil, time.Hour)
+			t.Cleanup(f.close)
+			if got, want := logger.String(), "spanner: DirectPath fallback metrics are disabled: test counter registration failure"; !strings.Contains(got, want) {
+				t.Fatalf("log = %q, want it to contain %q", got, want)
+			}
+			recordDirectPathOutcomes(f, codes.OK, codes.Unavailable)
+			if res := f.closeWindow(time.Now()); res.switched || res.failures != 1 || res.successes != 1 {
+				t.Fatalf("window with a success = %+v, want 1 failure, 1 success and no switch", res)
+			}
+			recordDirectPathOutcomes(f, codes.Unavailable)
+			if res := f.closeWindow(time.Now()); !res.switched {
+				t.Fatalf("pool did not fall back: %+v", res)
+			}
+			recordDirectPathOutcomes(f, codes.OK)
+		})
+	}
+}
+
+func TestDirectPathFallbackMetricsWithCodeBeyondInt32(t *testing.T) {
+	skipDialectRerun(t)
+	reader := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader))
+	t.Cleanup(func() { provider.Shutdown(context.Background()) })
+	f := newTestDirectPathFallbackWithMetrics(t, provider)
+
+	for _, code := range []codes.Code{1 << 31, math.MaxUint32} {
+		f.metrics.recordCall(context.Background(), false, code)
+	}
+	var rm metricdata.ResourceMetrics
+	if err := reader.Collect(context.Background(), &rm); err != nil {
+		t.Fatal(err)
+	}
+	m, ok := findTestMetric(rm, metricNameEEFCallStatus)
+	if !ok {
+		t.Fatalf("no %s metric", metricNameEEFCallStatus)
+	}
+	if got, want := len(m.Data.(metricdata.Sum[int64]).DataPoints), 2; got != want {
+		t.Fatalf("%s points = %d, want %d", metricNameEEFCallStatus, got, want)
 	}
 }
 

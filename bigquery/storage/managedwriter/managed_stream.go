@@ -204,7 +204,8 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite) error {
 		}
 		conn, err := ms.pool.selectConn(pw)
 		if err != nil {
-			pw.markDone(nil, err)
+			// Do not call markDone here; finalization of the pending write is the
+			// responsibility of callers (e.g. processRetry).
 			return err
 		}
 		appendErr := conn.lockingAppend(pw)

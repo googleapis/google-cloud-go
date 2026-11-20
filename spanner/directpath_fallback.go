@@ -19,10 +19,12 @@ import (
 	"errors"
 	"log"
 	"reflect"
+	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"cloud.google.com/go/spanner/internal/transport"
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -33,9 +35,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// The pool falls back when every DirectPath attempt that finished in one
-// window failed, and at least one did. These are the values the client used
-// with grpc-gcp-go's GCPFallback.
+// Fallback triggers when at least one DirectPath RPC finishes during a window
+// and 100% of them fail. These match the thresholds used with grpc-gcp-go's
+// GCPFallback.
 const (
 	directPathFallbackErrorRateThreshold = 1.0
 	directPathFallbackMinFailedCalls     = 1
@@ -61,10 +63,11 @@ const (
 	fallbackWindowSuccess uint64 = 1
 )
 
-// fallbackWindow is one error-rate window. Only outcomes changes after a
-// window is published.
+// fallbackWindow represents one error-rate evaluation window. Once stored in
+// directPathFallback.window, all fields except outcomes are immutable, so
+// concurrent RPCs can read generation, fallback, and start without locking.
 type fallbackWindow struct {
-	generation uint64 // increases with every switch between paths
+	generation uint64 // increases on fallback
 	fallback   bool   // new attempts go to CloudPath
 	start      time.Time
 	// outcomes packs both counts so that one atomic operation reads or seals
@@ -104,11 +107,11 @@ type directPathFallback struct {
 
 // newDirectPathFallback returns the fallback state of a pool on DirectPath
 // and starts closing a window every period. The caller must call close. No
-// eef.* metrics are recorded if mp is nil.
-func newDirectPathFallback(mp metric.MeterProvider, logger *log.Logger, dialCloud func(context.Context) (gtransport.ConnPool, error), period time.Duration) (*directPathFallback, error) {
+// eef.* metrics are recorded if mp is nil or counter creation fails.
+func newDirectPathFallback(mp metric.MeterProvider, logger *log.Logger, dialCloud func(context.Context) (gtransport.ConnPool, error), period time.Duration) *directPathFallback {
 	metrics, err := newDirectPathFallbackMetrics(mp)
 	if err != nil {
-		return nil, err
+		logf(logger, "spanner: DirectPath fallback metrics are disabled: %v", err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	f := &directPathFallback{
@@ -121,7 +124,7 @@ func newDirectPathFallback(mp metric.MeterProvider, logger *log.Logger, dialClou
 	}
 	f.window.Store(&fallbackWindow{start: time.Now()})
 	go f.run(period)
-	return f, nil
+	return f
 }
 
 func (f *directPathFallback) run(period time.Duration) {
@@ -165,12 +168,12 @@ var errNoCloudPath = errors.New("spanner: the client's connection pool is suppli
 // newPoolFallback returns the fallback state of a channel pool that dials
 // with opts. It returns nil if fallback is off, or if opts supply the client's
 // gRPC connection, which has no CloudPath to fall back to.
-func newPoolFallback(enabled bool, config ClientConfig, mp metric.MeterProvider, opts []option.ClientOption, isDirect func(gtransport.ConnPool) bool) (*directPathFallback, error) {
+func newPoolFallback(enabled bool, cfg transport.PoolConfig, logger *log.Logger, opts []option.ClientOption, isDirect func(gtransport.ConnPool) bool) *directPathFallback {
 	if !enabled || suppliesGRPCConn(opts) {
-		return nil, nil
+		return nil
 	}
-	dialCloud := newCloudPathDialer(config.Compression, opts, isDirect)
-	return newDirectPathFallback(mp, config.Logger, dialCloud, directPathFallbackPeriod)
+	dialCloud := newCloudPathDialer(cfg, opts, isDirect)
+	return newDirectPathFallback(cfg.MeterProvider, logger, dialCloud, directPathFallbackPeriod)
 }
 
 func suppliesGRPCConn(opts []option.ClientOption) bool {
@@ -178,12 +181,12 @@ func suppliesGRPCConn(opts []option.ClientOption) bool {
 	return err != nil || r.ResolvedGRPCConnIsCustom()
 }
 
-// newCloudPathDialer returns a dial of one CloudPath connection with opts.
-// The dial fails with errNoCloudPath if isDirect reports its result as the
-// client's direct pool: the transport returns a pool supplied with
-// gtransport.WithConnPool from every dial.
-func newCloudPathDialer(compression string, opts []option.ClientOption, isDirect func(gtransport.ConnPool) bool) func(context.Context) (gtransport.ConnPool, error) {
-	cloudOpts := append(allClientOpts(1, compression, false, opts...), option.WithGRPCConnectionPool(1))
+// newCloudPathDialer returns a function that dials one CloudPath connection
+// with opts. It returns errNoCloudPath if isDirect matches the dialed pool,
+// which happens when opts supply a fixed pool via gtransport.WithConnPool.
+func newCloudPathDialer(cfg transport.PoolConfig, opts []option.ClientOption, isDirect func(gtransport.ConnPool) bool) func(context.Context) (gtransport.ConnPool, error) {
+	// Clip spare capacity so concurrent dial calls cannot race on append.
+	cloudOpts := slices.Clip(append(cfg.CloudPathClientOptions(opts...), option.WithGRPCConnectionPool(1)))
 	dial := dialDirectPathFallbackCloudPath
 	return func(ctx context.Context) (gtransport.ConnPool, error) {
 		cloud, err := dial(ctx, cloudOpts...)
@@ -195,6 +198,31 @@ func newCloudPathDialer(compression string, opts []option.ClientOption, isDirect
 		}
 		return cloud, nil
 	}
+}
+
+// dialCloudPath dials a CloudPath connection and gives up after timeout so a
+// blocking dial cannot hold up pool scale-up.
+func (f *directPathFallback) dialCloudPath(ctx context.Context, timeout time.Duration) (gtransport.ConnPool, error) {
+	// The connection keeps dialCtx, so ctx must only bound the dial itself.
+	dialCtx, cancel := context.WithCancel(f.ctx)
+	stop := context.AfterFunc(ctx, cancel)
+	timer := time.AfterFunc(timeout, cancel)
+	cloud, err := f.dialCloud(dialCtx)
+	timedOut, callerDone := !timer.Stop(), !stop()
+	if err == nil && !timedOut && !callerDone {
+		return cloudPathConn{ConnPool: cloud, cancel: cancel}, nil
+	}
+	cancel()
+	if err == nil {
+		cloud.Close()
+	}
+	switch {
+	case timedOut:
+		return nil, spannerErrorf(codes.DeadlineExceeded, "spanner: CloudPath dial did not complete within %v", timeout)
+	case callerDone:
+		return nil, ctx.Err()
+	}
+	return nil, err
 }
 
 // sameConnPool reports whether a and b are the same pool. Pools of a type
@@ -235,8 +263,8 @@ func (f *directPathFallback) recordAttempt(ctx context.Context, w *fallbackWindo
 
 type fallbackAccountingOffKey struct{}
 
-// withoutFallbackAccounting is for priming a new channel. A channel that
-// fails priming is discarded before any request uses it.
+// withoutFallbackAccounting marks ctx so priming RPCs on a new channel are
+// excluded from fallback accounting.
 func withoutFallbackAccounting(ctx context.Context) context.Context {
 	return context.WithValue(ctx, fallbackAccountingOffKey{}, true)
 }
@@ -317,8 +345,8 @@ func isDirectPathFallbackFailure(code codes.Code) bool {
 }
 
 // directPathFallbackMetrics records eef.fallback_count and eef.call_status
-// under grpc-gcp-go's meter scope, names and attributes, so that the exported
-// series continue.
+// under grpc-gcp-go's meter scope, names, and attributes to match
+// grpc-gcp-go's exported series.
 type directPathFallbackMetrics struct {
 	fallbackCount metric.Int64Counter
 	callStatus    metric.Int64Counter
@@ -381,7 +409,7 @@ func (m *directPathFallbackMetrics) recordCall(ctx context.Context, fallback boo
 		i = 1
 		name = directPathFallbackFallbackChannelName
 	}
-	if int(code) < len(m.callAttrs[i]) {
+	if code < codes.Code(len(m.callAttrs[i])) {
 		m.callStatus.Add(ctx, 1, m.callAttrs[i][code])
 		return
 	}

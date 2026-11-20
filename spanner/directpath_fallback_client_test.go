@@ -33,6 +33,7 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"cloud.google.com/go/spanner/internal/transport"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -214,7 +215,9 @@ func enableDirectPathForTest(t *testing.T) {
 func newDirectPathFallbackTestClient(t *testing.T, config ClientConfig, opts ...option.ClientOption) *Client {
 	t.Helper()
 	config.DisableNativeMetrics = true
-	config.Logger = log.New(io.Discard, "", 0)
+	if config.Logger == nil {
+		config.Logger = log.New(io.Discard, "", 0)
+	}
 	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, opts...)
 	if err != nil {
 		t.Fatalf("NewClientWithConfig() failed: %v", err)
@@ -252,7 +255,7 @@ func TestFixedPoolDirectPathFallbackDefaults(t *testing.T) {
 			paths := newSharedBackendPaths(t)
 			client := newDirectPathFallbackTestClient(t, ClientConfig{NumChannels: 4}, paths.opts...)
 			pool := fixedPoolOf(t, client)
-			if got := pool.fallback != nil; got != tt.want {
+			if got := poolFallback(pool) != nil; got != tt.want {
 				t.Fatalf("fallback enabled = %v, want %v", got, tt.want)
 			}
 			if got, want := pool.Num(), 4; got != want {
@@ -280,7 +283,7 @@ func TestFixedPoolDirectPathFallbackDialsCloudPathLazily(t *testing.T) {
 		t.Fatalf("CloudPath dials before the switch = %d, want 0", got)
 	}
 
-	forceDirectPathFallback(t, pool.fallback)
+	forceDirectPathFallback(t, poolFallback(pool))
 	queryFooFromBar(t, client)
 	if got, want := paths.cloud.count(executeStreamingSQLMethod), 1; got != want {
 		t.Fatalf("CloudPath queries = %d, want %d", got, want)
@@ -302,8 +305,8 @@ func TestFixedPoolDirectPathFallbackKeepsTransactionOnSlot(t *testing.T) {
 		if _, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
 			return err
 		}
-		if !pool.fallback.current().fallback {
-			forceDirectPathFallback(t, pool.fallback)
+		if !poolFallback(pool).current().fallback {
+			forceDirectPathFallback(t, poolFallback(pool))
 		}
 		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
 		return err
@@ -340,13 +343,24 @@ func TestFixedPoolDirectPathFallbackInFlightStreamStaysOnDirectPath(t *testing.T
 	paths := newSharedBackendPaths(t)
 	client := newDirectPathFallbackTestClient(t, ClientConfig{NumChannels: 4}, paths.opts...)
 	pool := fixedPoolOf(t, client)
+	endStream := make(chan struct{})
+	paths.direct.setTrailerHold(func(ctx context.Context, method string) {
+		if method != executeStreamingSQLMethod {
+			return
+		}
+		select {
+		case <-endStream:
+		case <-ctx.Done():
+		}
+	})
 
 	iter := client.Single().Query(context.Background(), NewStatement(SelectFooFromBar))
 	defer iter.Stop()
 	if _, err := iter.Next(); err != nil {
 		t.Fatalf("first row failed: %v", err)
 	}
-	forceDirectPathFallback(t, pool.fallback)
+	forceDirectPathFallback(t, poolFallback(pool))
+	close(endStream)
 	for {
 		_, err := iter.Next()
 		if errors.Is(err, iterator.Done) {
@@ -407,7 +421,7 @@ func TestFixedPoolDirectPathUnreachableFallsBackToCloudPath(t *testing.T) {
 		t.Fatal("query returned no rows")
 	}
 	pool := fixedPoolOf(t, client)
-	if !pool.fallback.current().fallback {
+	if !poolFallback(pool).current().fallback {
 		t.Fatal("pool did not fall back to CloudPath")
 	}
 	if got := paths.cloud.count(createSessionMethod); got == 0 {
@@ -432,13 +446,114 @@ func TestFixedPoolDirectPathFallbackAfterClientClose(t *testing.T) {
 	if err := ro.Query(ctx, NewStatement(SelectFooFromBar)).Do(func(*Row) error { return nil }); err != nil {
 		t.Fatal(err)
 	}
-	forceDirectPathFallback(t, fixedPoolOf(t, client).fallback)
+	forceDirectPathFallback(t, poolFallback(fixedPoolOf(t, client)))
 	client.Close()
 	if err := ro.Query(ctx, NewStatement(SelectFooFromBar)).Do(func(*Row) error { return nil }); ErrCode(err) != codes.Canceled {
 		t.Fatalf("query after Client.Close error = %v, want CANCELED", err)
 	}
 	if got := paths.cloudDials.Load(); got != 0 {
 		t.Fatalf("CloudPath dials after Client.Close = %d, want 0", got)
+	}
+}
+
+func TestClientCloseStopsDirectPathFallback(t *testing.T) {
+	skipDialectRerun(t)
+	for _, dynamic := range []bool{false, true} {
+		t.Run(fmt.Sprintf("dynamic=%v", dynamic), func(t *testing.T) {
+			enableDirectPathForTest(t)
+			paths := newSharedBackendPaths(t)
+			config := ClientConfig{NumChannels: 1}
+			if dynamic {
+				config.DynamicChannelPoolConfig = dcpFallbackTestConfig()
+			}
+			client := newDirectPathFallbackTestClient(t, config, paths.opts...)
+			f := poolFallback(client.sc.dynamicPool)
+			if f == nil {
+				t.Fatal("the pool has no fallback")
+			}
+			client.Close()
+			select {
+			case <-f.done:
+			default:
+				t.Fatal("Client.Close did not stop the fallback window loop")
+			}
+			if f.ctx.Err() == nil {
+				t.Fatal("Client.Close did not cancel the fallback context")
+			}
+		})
+	}
+}
+
+func TestDirectPathFallbackWorksWhenItsCountersCannotBeCreated(t *testing.T) {
+	skipDialectRerun(t)
+	for _, dynamic := range []bool{false, true} {
+		t.Run(fmt.Sprintf("dynamic=%v", dynamic), func(t *testing.T) {
+			enableDirectPathForTest(t)
+			paths := newSharedBackendPaths(t)
+			logger := &lockedBuffer{}
+			config := ClientConfig{NumChannels: 1, Logger: log.New(logger, "", 0)}
+			factory := &builtinMetricsTracerFactory{
+				meterProvider: &failingDCPMeterProvider{meter: &failingDCPMeter{failCounterName: metricNameEEFCallStatus}},
+			}
+			ctx := context.Background()
+			database := "projects/p/instances/i/databases/d"
+			md := metadata.Pairs(resourcePrefixHeader, database)
+			var pool gtransport.ConnPool
+			var err error
+			if dynamic {
+				config.DynamicChannelPoolConfig = dcpOneEntryFallbackTestConfig()
+				pool, _, err = createDCPConnPool(ctx, database, config, nil, md, factory, true, paths.opts...)
+			} else {
+				pool, _, _, err = createFixedConnPool(ctx, database, config, true, nil, md, factory, true, paths.opts...)
+			}
+			if err != nil {
+				t.Fatalf("creating the channel pool failed: %v", err)
+			}
+			defer pool.Close()
+			if got, want := logger.String(), "test counter registration failure"; !strings.Contains(got, want) {
+				t.Fatalf("log = %q, want it to contain %q", got, want)
+			}
+			f := poolFallback(pool.(*dynamicChannelPool))
+			if f == nil {
+				t.Fatal("the pool has no fallback")
+			}
+			forceDirectPathFallback(t, f)
+			if _, err := spannerpb.NewSpannerClient(pool).CreateSession(ctx, &spannerpb.CreateSessionRequest{Database: database}); err != nil {
+				t.Fatalf("CreateSession() after the switch failed: %v", err)
+			}
+			if got, want := paths.cloud.count(createSessionMethod), 1; got != want {
+				t.Fatalf("CloudPath CreateSession calls = %d, want %d", got, want)
+			}
+		})
+	}
+}
+
+func TestChannelPoolsWithFallbackAndNoMetricsTracerFactory(t *testing.T) {
+	skipDialectRerun(t)
+	for _, dynamic := range []bool{false, true} {
+		t.Run(fmt.Sprintf("dynamic=%v", dynamic), func(t *testing.T) {
+			enableDirectPathForTest(t)
+			paths := newSharedBackendPaths(t)
+			config := ClientConfig{NumChannels: 1}
+			ctx := context.Background()
+			database := "projects/p/instances/i/databases/d"
+			md := metadata.Pairs(resourcePrefixHeader, database)
+			var pool gtransport.ConnPool
+			var err error
+			if dynamic {
+				config.DynamicChannelPoolConfig = dcpOneEntryFallbackTestConfig()
+				pool, _, err = createDCPConnPool(ctx, database, config, nil, md, nil, true, paths.opts...)
+			} else {
+				pool, _, _, err = createFixedConnPool(ctx, database, config, true, nil, md, nil, true, paths.opts...)
+			}
+			if err != nil {
+				t.Fatalf("creating the channel pool failed: %v", err)
+			}
+			defer pool.Close()
+			if poolFallback(pool.(*dynamicChannelPool)) == nil {
+				t.Fatal("the pool has no fallback")
+			}
+		})
 	}
 }
 
@@ -472,7 +587,7 @@ func TestFixedPoolDirectPathFallbackWithCallerSuppliedPool(t *testing.T) {
 			}
 			client := newDirectPathFallbackTestClient(t, ClientConfig{}, opt)
 			pool := fixedPoolOf(t, client)
-			if pool.fallback == nil {
+			if poolFallback(pool) == nil {
 				t.Fatal("fallback not enabled")
 			}
 			connsPerTransaction := func() int {
@@ -501,7 +616,7 @@ func TestFixedPoolDirectPathFallbackWithCallerSuppliedPool(t *testing.T) {
 			if got := connsPerTransaction(); got != 1 {
 				t.Fatalf("connections used by a transaction before the switch = %d, want 1", got)
 			}
-			forceDirectPathFallback(t, pool.fallback)
+			forceDirectPathFallback(t, poolFallback(pool))
 			if got := connsPerTransaction(); got != 1 {
 				t.Fatalf("connections used by a transaction after the switch = %d, want 1", got)
 			}
@@ -593,7 +708,7 @@ func TestFixedPoolBlockingCloudPathDialHonorsQueryDeadline(t *testing.T) {
 	opts := append(append([]option.ClientOption{}, paths.opts...), option.WithGRPCDialOption(grpc.WithBlock()))
 	started := redirectCloudPathTo(t, unreachableAddr(t))
 	client := newDirectPathFallbackTestClient(t, ClientConfig{NumChannels: 1}, opts...)
-	forceDirectPathFallback(t, fixedPoolOf(t, client).fallback)
+	forceDirectPathFallback(t, poolFallback(fixedPoolOf(t, client)))
 	queryHonorsDeadlineDuringCloudPathDial(t, client, started)
 }
 
@@ -603,7 +718,7 @@ func TestFixedPoolNonBlockingCloudPathDialHonorsQueryDeadline(t *testing.T) {
 	paths := newSharedBackendPaths(t)
 	started := redirectCloudPathTo(t, unreachableAddr(t))
 	client := newDirectPathFallbackTestClient(t, ClientConfig{NumChannels: 1}, paths.opts...)
-	forceDirectPathFallback(t, fixedPoolOf(t, client).fallback)
+	forceDirectPathFallback(t, poolFallback(fixedPoolOf(t, client)))
 	queryHonorsDeadlineDuringCloudPathDial(t, client, started)
 }
 
@@ -629,11 +744,11 @@ func TestDirectPathFallbackOffWithCallerSuppliedConnection(t *testing.T) {
 				}
 				client := newDirectPathFallbackTestClient(t, config, opt)
 				p := client.sc.dynamicPool
-				if p.fallback != nil {
+				if poolFallback(p) != nil {
 					t.Fatal("the client has fallback state")
 				}
-				for i, e := range p.getEntries() {
-					if slot := e.pool.(*channelSlot); slot.fallback != nil {
+				for i, e := range p.GetEntries() {
+					if slot := e.Pool.(*channelSlot); slot.fallback != nil {
 						t.Fatalf("entry %d has fallback state", i)
 					}
 				}
@@ -657,7 +772,7 @@ func TestDirectPathFallbackOffWithEmulator(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
-	if fixedPoolOf(t, client).fallback != nil {
+	if poolFallback(fixedPoolOf(t, client)) != nil {
 		t.Fatal("the emulator client has fallback state")
 	}
 	queryFooFromBar(t, client)
@@ -692,7 +807,7 @@ func TestDirectPathFallbackWithClearedConnectionOption(t *testing.T) {
 				if p.Conn() == cleared.Conn() {
 					t.Fatal("the client uses the cleared connection")
 				}
-				forceDirectPathFallback(t, p.fallback)
+				forceDirectPathFallback(t, poolFallback(p))
 				queryFooFromBar(t, client)
 				if got, want := paths.cloud.count(executeStreamingSQLMethod), 1; got != want {
 					t.Fatalf("CloudPath queries = %d, want %d", got, want)
@@ -727,7 +842,9 @@ func countDirectPathOptions(opts []option.ClientOption) int {
 func TestCloudPathDialHasNoDirectPathOptions(t *testing.T) {
 	skipDialectRerun(t)
 	t.Setenv(directAccessEnv, "true")
-	if got := countDirectPathOptions(allClientOpts(1, "", directAccessEnabled(false))); got != len(directPathOptionTypes) {
+	t.Setenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN", "")
+	cfg := transport.PoolConfig{NumChannels: 1}
+	if got := countDirectPathOptions(cfg.ClientOptions()); got != len(directPathOptionTypes) {
 		t.Fatalf("DirectPath options for a DirectPath dial = %d, want %d", got, len(directPathOptionTypes))
 	}
 	var cloudOpts []option.ClientOption
@@ -737,7 +854,7 @@ func TestCloudPathDialHasNoDirectPathOptions(t *testing.T) {
 		return nil, errors.New("not dialed")
 	}
 	t.Cleanup(func() { dialDirectPathFallbackCloudPath = old })
-	newCloudPathDialer("", nil, nil)(context.Background())
+	newCloudPathDialer(cfg, nil, nil)(context.Background())
 	if len(cloudOpts) == 0 {
 		t.Fatal("the CloudPath dial got no options")
 	}
@@ -746,23 +863,18 @@ func TestCloudPathDialHasNoDirectPathOptions(t *testing.T) {
 	}
 }
 
-func TestDirectAccessEnabled(t *testing.T) {
+func TestConcurrentCloudPathDialsShareNoSpareOptionCapacity(t *testing.T) {
 	skipDialectRerun(t)
-	for _, tt := range []struct {
-		env        string
-		configured bool
-		want       bool
-	}{
-		{env: "", configured: false, want: false},
-		{env: "", configured: true, want: true},
-		{env: "true", configured: false, want: true},
-		{env: "false", configured: true, want: false},
-		{env: "invalid", configured: true, want: false},
-	} {
-		t.Setenv(directAccessEnv, tt.env)
-		if got := directAccessEnabled(tt.configured); got != tt.want {
-			t.Errorf("directAccessEnabled(%v) with %s=%q = %v, want %v", tt.configured, directAccessEnv, tt.env, got, tt.want)
-		}
+	spare := -1
+	old := dialDirectPathFallbackCloudPath
+	dialDirectPathFallbackCloudPath = func(_ context.Context, opts ...option.ClientOption) (gtransport.ConnPool, error) {
+		spare = cap(opts) - len(opts)
+		return nil, errors.New("not dialed")
+	}
+	t.Cleanup(func() { dialDirectPathFallbackCloudPath = old })
+	newCloudPathDialer(transport.PoolConfig{NumChannels: 1}, nil, nil)(context.Background())
+	if spare != 0 {
+		t.Fatalf("spare capacity of the options every CloudPath dial gets = %d, want 0", spare)
 	}
 }
 
@@ -829,7 +941,7 @@ func TestCloudPathOfCallerSuppliedConnections(t *testing.T) {
 			}
 			got := noFallback
 			if !suppliesGRPCConn(tt.opts) {
-				dial := newCloudPathDialer("", tt.opts, func(c gtransport.ConnPool) bool { return sameConnPool(c, direct) })
+				dial := newCloudPathDialer(transport.PoolConfig{NumChannels: 1}, tt.opts, func(c gtransport.ConnPool) bool { return sameConnPool(c, direct) })
 				cloud, err := dial(context.Background())
 				switch {
 				case errors.Is(err, errNoCloudPath):
@@ -896,13 +1008,13 @@ func TestCallerSuppliedPoolUnderConcurrentUseAndSwitch(t *testing.T) {
 			client := newDirectPathFallbackTestClient(t, config, gtransport.WithConnPool(userPool))
 			var fallback *directPathFallback
 			if dynamic {
-				fallback = dynamicPoolOf(t, client).fallback
+				fallback = poolFallback(dynamicPoolOf(t, client))
 			} else {
 				pool := fixedPoolOf(t, client)
 				if got, want := pool.Num(), 3; got != want {
 					t.Fatalf("slot count = %d, want %d", got, want)
 				}
-				fallback = pool.fallback
+				fallback = poolFallback(pool)
 			}
 
 			stop := make(chan struct{})
@@ -976,7 +1088,7 @@ func TestDirectPathFallbackCountsReadsTheReaderStopped(t *testing.T) {
 				config.DynamicChannelPoolConfig = dcpOneEntryFallbackTestConfig()
 			}
 			client := newDirectPathFallbackTestClient(t, config, paths.opts...)
-			f := client.sc.dynamicPool.fallback
+			f := poolFallback(client.sc.dynamicPool)
 			holdAfterFirstRow := func(sql string) {
 				paths.backend.TestSpanner.AddPartialResultSetError(sql, PartialResultSetExecutionTime{
 					ResumeToken:   EncodeResumeToken(2),
@@ -1170,17 +1282,15 @@ func TestCloudPathAuthenticatesWithLegacyAuthLibrary(t *testing.T) {
 				option.WithGRPCDialOption(grpc.WithTransportCredentials(clientTLS)),
 			)
 			p := client.sc.dynamicPool
-			forceDirectPathFallback(t, p.fallback)
+			forceDirectPathFallback(t, poolFallback(p))
 			queryFooFromBar(t, client)
 			if got := cloud.count(executeStreamingSQLMethod); got != 1 {
 				t.Fatalf("CloudPath queries = %d, want 1", got)
 			}
 			if dynamic {
-				e, err := p.newEntry(context.Background(), true)
-				if err != nil {
-					t.Fatalf("newEntry() after the switch failed: %v", err)
+				if addPrimedDCPEntry(t, client) == nil {
+					t.Fatal("scale-up after the switch added no entry")
 				}
-				defer e.close()
 				if got := cloud.count(executeSQLMethod); got != 1 {
 					t.Fatalf("CloudPath priming queries = %d, want 1", got)
 				}

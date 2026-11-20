@@ -19,6 +19,7 @@ import (
 	"errors"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
@@ -26,8 +27,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// errChannelSlotClosed has the code of an RPC on a closed gRPC connection,
-// which callers do not retry.
+// errChannelSlotClosed is returned when a slot is closed before or during a
+// CloudPath dial. It uses codes.Canceled to match gRPC's error for a closed
+// ClientConn, ensuring callers do not retry it.
 var errChannelSlotClosed = spannerErrorf(codes.Canceled, "spanner: channel is closed")
 
 // channelSlot is the connection of one channel pool entry. It pairs the
@@ -35,9 +37,8 @@ var errChannelSlotClosed = spannerErrorf(codes.Canceled, "spanner: channel is cl
 // first use after the pool falls back. An attempt finishes on the side it was
 // sent on.
 type channelSlot struct {
-	channelID uint64
-	direct    gtransport.ConnPool // nil for an entry created after the pool fell back
-	fallback  *directPathFallback // nil when fallback is off
+	direct   gtransport.ConnPool // nil for an entry created after the pool fell back
+	fallback *directPathFallback // nil when fallback is off
 
 	cloudMu sync.Mutex
 	cloud   atomic.Pointer[slotConn]
@@ -47,8 +48,8 @@ type channelSlot struct {
 
 type slotConn struct{ gtransport.ConnPool }
 
-// cloudDial is one CloudPath dial of a slot, shared by the attempts that wait
-// for it.
+// cloudDial tracks an in-flight CloudPath dial for a channelSlot so that
+// concurrent RPCs share a single dial instead of opening duplicate connections.
 type cloudDial struct {
 	cancel context.CancelFunc
 	done   chan struct{}
@@ -57,16 +58,36 @@ type cloudDial struct {
 	err  error
 }
 
-func newChannelSlot(channelID uint64, direct gtransport.ConnPool, fallback *directPathFallback) *channelSlot {
-	return &channelSlot{channelID: channelID, direct: direct, fallback: fallback}
+func newChannelSlot(direct gtransport.ConnPool, fallback *directPathFallback) *channelSlot {
+	return &channelSlot{direct: direct, fallback: fallback}
 }
 
-// newCloudPathSlot returns a slot for an entry created after the pool fell
-// back. The switch is one way, so the slot only needs cloud, which it owns.
-func newCloudPathSlot(channelID uint64, cloud gtransport.ConnPool, fallback *directPathFallback) *channelSlot {
-	s := &channelSlot{channelID: channelID, fallback: fallback}
+// newCloudPathSlot returns a slot with only a CloudPath connection, for
+// entries created after fallback. The slot closes cloud when closed.
+func newCloudPathSlot(cloud gtransport.ConnPool, fallback *directPathFallback) *channelSlot {
+	s := &channelSlot{fallback: fallback}
 	s.cloud.Store(&slotConn{cloud})
 	return s
+}
+
+// dialChannelSlot dials a slot's connection. Once the pool has fallen back, it
+// dials CloudPath directly with cloudDialTimeout unless the client has no
+// separate CloudPath.
+func dialChannelSlot(ctx context.Context, dial func(context.Context) (gtransport.ConnPool, error), fallback *directPathFallback, cloudDialTimeout time.Duration) (*channelSlot, error) {
+	if fallback != nil && fallback.current().fallback {
+		cloud, err := fallback.dialCloudPath(ctx, cloudDialTimeout)
+		if err == nil {
+			return newCloudPathSlot(cloud, fallback), nil
+		}
+		if !errors.Is(err, errNoCloudPath) {
+			return nil, ToSpannerError(err)
+		}
+	}
+	direct, err := dial(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return newChannelSlot(direct, fallback), nil
 }
 
 // route returns the connection for a new attempt and the fallback window the
@@ -76,9 +97,6 @@ func (s *channelSlot) route(ctx context.Context) (gtransport.ConnPool, *fallback
 		return s.direct, nil, nil
 	}
 	w := s.fallback.current()
-	if a, ok := ctx.Value(slotAttemptKey{}).(*slotAttempt); ok {
-		a.window.Store(w)
-	}
 	if !w.fallback {
 		return s.direct, w, nil
 	}
@@ -86,8 +104,9 @@ func (s *channelSlot) route(ctx context.Context) (gtransport.ConnPool, *fallback
 	return c, w, err
 }
 
-// Concurrent callers of cloudConn share one dial, and each stops waiting when
-// its own ctx ends. A failed dial is not cached.
+// cloudConn returns the CloudPath connection, dialing it on first use.
+// Concurrent callers share one dial and stop waiting when their own ctx ends;
+// a failed dial is not cached.
 func (s *channelSlot) cloudConn(ctx context.Context) (gtransport.ConnPool, error) {
 	if c := s.cloud.Load(); c != nil {
 		return c.ConnPool, nil
@@ -123,7 +142,7 @@ func (s *channelSlot) runCloudDial(ctx context.Context, d *cloudDial) {
 	case err == nil:
 		c = cloudPathConn{ConnPool: c, cancel: d.cancel}
 	case errors.Is(err, errNoCloudPath):
-		// The slot keeps using its direct side and owns nothing more.
+		// Reuse s.direct without closing it twice when the slot closes.
 		d.cancel()
 		c, err = borrowedPool{s.direct}, nil
 	default:
@@ -143,7 +162,7 @@ func (s *channelSlot) runCloudDial(ctx context.Context, d *cloudDial) {
 		}
 		d.err = errChannelSlotClosed
 	case err != nil:
-		d.err = spannerErrorf(codes.Unavailable, "spanner: failed to dial CloudPath fallback for channel %d: %v", s.channelID, err)
+		d.err = spannerErrorf(codes.Unavailable, "spanner: failed to dial CloudPath fallback: %v", err)
 	default:
 		d.conn = c
 	}
@@ -157,6 +176,9 @@ func (s *channelSlot) Conn() *grpc.ClientConn {
 		if c := s.cloud.Load(); c != nil {
 			return c.Conn()
 		}
+	}
+	if s.direct == nil {
+		return nil
 	}
 	return s.direct.Conn()
 }
@@ -218,8 +240,7 @@ func (s *channelSlot) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 		if !recorded.CompareAndSwap(false, true) {
 			return
 		}
-		// A stream that delivered data before its reader stopped it did its
-		// work.
+		// A stream that delivered data before the reader stopped it succeeded.
 		if status.Code(err) == codes.Canceled && stream.received.Load() && errors.Is(context.Cause(ctx), errStreamStoppedByReader) {
 			err = nil
 		}
@@ -249,9 +270,10 @@ func (s *slotStream) RecvMsg(m any) error {
 	return err
 }
 
-// cloudPathConn is a CloudPath connection that keeps the context it was
-// dialed with until it closes. Some credentials refresh tokens with that
-// context.
+// cloudPathConn wraps a CloudPath ConnPool with the cancel function of the
+// context it was dialed with. That dial context must stay uncanceled until the
+// connection closes (because some credentials capture it for token refreshes),
+// at which point Close calls cancel.
 type cloudPathConn struct {
 	gtransport.ConnPool
 	cancel context.CancelFunc
@@ -263,16 +285,7 @@ func (c cloudPathConn) Close() error {
 	return err
 }
 
-// slotAttempt holds the fallback window of the last attempt that an operation
-// sent through a channel slot. Retries of one operation can take different
-// paths; the last attempt produced the operation's outcome.
-type slotAttempt struct {
-	window atomic.Pointer[fallbackWindow]
-}
+// borrowedPool is a ConnPool that does not close the pool it wraps.
+type borrowedPool struct{ gtransport.ConnPool }
 
-type slotAttemptKey struct{}
-
-func withSlotAttempt(ctx context.Context) (context.Context, *slotAttempt) {
-	a := &slotAttempt{}
-	return context.WithValue(ctx, slotAttemptKey{}, a), a
-}
+func (borrowedPool) Close() error { return nil }
