@@ -3,6 +3,13 @@
 
 
 
+## [1.86.4](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.86.3...bigquery/v1.86.4) (2026-11-20)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Address panic on client close ([#20932](https://github.com/googleapis/google-cloud-go/issues/20932)) ([7a5e14f](https://github.com/googleapis/google-cloud-go/commit/7a5e14f0c362bf7ccdeb9dd160924afe2e2598d2))
+
 ## [1.86.3](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.86.2...bigquery/v1.86.3) (2026-11-17)
 
 
