@@ -254,7 +254,9 @@ func (s *Session) readLoop(ctx context.Context) {
 	// observe state immediately. Unblocking Recv() requires the underlying
 	// stream's context to be cancelled by the caller.
 	readLoopDone := make(chan struct{})
+	s.loops.Add(1)
 	go func() {
+		defer s.loops.Done()
 		select {
 		case <-ctx.Done():
 			s.ForceClose(&spb.CloseSessionRequest{
@@ -422,6 +424,8 @@ func (s *Session) handleGoAway(goAway *spb.GoAwayResponse) {
 	// the actual stream close.
 	s.notifyClosing()
 	s.setCloseReason("GoAway")
+	s.recordEvent(SessionEventGoAway, "reason=%q description=%q %s",
+		goAway.GetReason(), goAway.GetDescription(), s.peerInfoSummary())
 
 	s.debugf("received GOAWAY reason=%q description=%q",
 		goAway.GetReason(), goAway.GetDescription())
@@ -433,7 +437,9 @@ func (s *Session) handleGoAway(goAway *spb.GoAwayResponse) {
 	// Derive the drain ctx from the stream's ctx so a pool teardown that
 	// cancels the stream also unblocks this drain wait cleanly, instead of
 	// hanging up to 30s on a detached background ctx.
+	s.loops.Add(1)
 	go func() {
+		defer s.loops.Done()
 		ctx, cancel := context.WithTimeout(s.stream.Context(), 30*time.Second)
 		defer cancel()
 		_ = s.Close(ctx, &spb.CloseSessionRequest{
