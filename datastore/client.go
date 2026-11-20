@@ -144,6 +144,26 @@ func (dc *datastoreClient) ReserveIds(ctx context.Context, in *pb.ReserveIdsRequ
 }
 
 func (dc *datastoreClient) invoke(ctx context.Context, f func(ctx context.Context) error) error {
-	ctx = metadata.NewOutgoingContext(ctx, dc.md)
+	md := dc.md.Copy()
+	if existingMD, ok := metadata.FromOutgoingContext(ctx); ok {
+		for k, v := range existingMD {
+			md[k] = v
+		}
+	}
+	if _, exists := md[isTransactionHeader]; !exists {
+		md[isTransactionHeader] = []string{"false"}
+	}
+	ctx = metadata.NewOutgoingContext(ctx, md)
 	return f(ctx)
+}
+
+func withTransactionHeader(ctx context.Context) context.Context {
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.MD{}
+	} else {
+		md = md.Copy()
+	}
+	md[isTransactionHeader] = []string{"true"}
+	return metadata.NewOutgoingContext(ctx, md)
 }
