@@ -1,5 +1,20 @@
 # Changes
 
+## [1.97.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.96.1...spanner/v1.97.0) (2026-11-20)
+
+
+### Features
+
+* **spanner:** Move DirectPath fallback into the library with paired channel slots ([#20651](https://github.com/googleapis/google-cloud-go/issues/20651)) ([84b31d1](https://github.com/googleapis/google-cloud-go/commit/84b31d12ad7a5fb8917309a938030bdfbb1afe97))
+* **spanner:** Use a fixed-mode dynamic channel pool by default ([#20669](https://github.com/googleapis/google-cloud-go/issues/20669)) ([85fd07b](https://github.com/googleapis/google-cloud-go/commit/85fd07bd7a14625c4bb0c4052acd52de88d894ca))
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+* **spanner/spansql:** Limit expression nesting depth to prevent stack overflow ([#20845](https://github.com/googleapis/google-cloud-go/issues/20845)) ([95c2bab](https://github.com/googleapis/google-cloud-go/commit/95c2bab67a52fbe3454c36ca40845d6f0bb5be12))
+
 ## [1.96.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.96.0...spanner/v1.96.1) (2026-10-08)
 
 
