@@ -689,6 +689,119 @@ func TestManagerPoll_StopPollingFlagsCurrentConfig(t *testing.T) {
 	}
 }
 
+func TestListeners_IgnoreOutOfOrderSeq(t *testing.T) {
+	poll1Entered := make(chan struct{})
+	allowPoll1Return := make(chan struct{})
+	var call int
+	var callMu sync.Mutex
+
+	client := &mockBigtableClient{
+		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			callMu.Lock()
+			call++
+			n := call
+			callMu.Unlock()
+			if n == 1 {
+				close(poll1Entered)
+				<-allowPoll1Return
+				return &bigtablepb.ClientConfiguration{
+					SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+						SessionLoad: 0.25,
+						SessionPoolConfiguration: &bigtablepb.SessionClientConfiguration_SessionPoolConfiguration{
+							MinSessionCount: 10,
+							MaxSessionCount: 100,
+						},
+					},
+				}, nil
+			}
+			return &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionLoad: 0.75,
+					SessionPoolConfiguration: &bigtablepb.SessionClientConfiguration_SessionPoolConfiguration{
+						MinSessionCount: 20,
+						MaxSessionCount: 200,
+					},
+				},
+			}, nil
+		},
+	}
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+
+	var mu sync.Mutex
+	var loads []float64
+	var mins []int32
+	manager.AddSessionLoadListener(func(load float64) {
+		mu.Lock()
+		loads = append(loads, load)
+		mu.Unlock()
+	})
+	manager.AddSessionPoolListener(func(sp *bigtablepb.SessionClientConfiguration_SessionPoolConfiguration) {
+		mu.Lock()
+		mins = append(mins, sp.GetMinSessionCount())
+		mu.Unlock()
+	})
+
+	// Simulate an out-of-order listener delivery directly via m.listeners:
+	// seq=2 arrives before stale seq=1.
+	manager.mu.RLock()
+	var cbs []configListener
+	for _, l := range manager.listeners {
+		cbs = append(cbs, l)
+	}
+	manager.mu.RUnlock()
+
+	cfgSeq2 := &bigtablepb.ClientConfiguration{
+		SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+			SessionLoad: 0.75,
+			SessionPoolConfiguration: &bigtablepb.SessionClientConfiguration_SessionPoolConfiguration{
+				MinSessionCount: 20,
+				MaxSessionCount: 200,
+			},
+		},
+	}
+	cfgSeq1 := &bigtablepb.ClientConfiguration{
+		SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+			SessionLoad: 0.25,
+			SessionPoolConfiguration: &bigtablepb.SessionClientConfiguration_SessionPoolConfiguration{
+				MinSessionCount: 10,
+				MaxSessionCount: 100,
+			},
+		},
+	}
+	for _, cb := range cbs {
+		cb(cfgSeq2, 2)
+		cb(cfgSeq1, 1) // stale seq must be ignored without holding diffMu across callback
+	}
+
+	mu.Lock()
+	gotLoads := append([]float64(nil), loads...)
+	gotMins := append([]int32(nil), mins...)
+	mu.Unlock()
+
+	if len(gotLoads) != 1 || gotLoads[0] != 0.75 {
+		t.Fatalf("SessionLoad deliveries = %v, want [0.75] (stale seq=1 must be dropped)", gotLoads)
+	}
+	// mins[0] is bootstrap default, mins[1] is seq=2 (20); seq=1 (10) must be dropped.
+	if len(gotMins) != 2 || gotMins[1] != 20 {
+		t.Fatalf("SessionPool MinSessionCount deliveries = %v, want [<default>, 20]", gotMins)
+	}
+
+	// Also exercise concurrent poll() calls to verify notifyListeners monotonicity.
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		manager.poll(context.Background())
+	}()
+	<-poll1Entered
+	go func() {
+		defer wg.Done()
+		manager.poll(context.Background())
+	}()
+	close(allowPoll1Return)
+	wg.Wait()
+}
+
 // TestManagerNotifyListeners_Race was removed when addListener moved to
 // holding m.mu across the registration-time fire. The race it guarded
 // against — poll() fan-out interleaving with addListener's deferred fire
