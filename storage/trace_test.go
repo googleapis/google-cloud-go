@@ -49,6 +49,8 @@ import (
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -2535,6 +2537,66 @@ func TestHTTPClientAuthTracingWithMetrics(t *testing.T) {
 	authSpans := findSpansByName(te.Spans(), wantSpanName)
 	if len(authSpans) != 1 {
 		t.Fatalf("expected exactly 1 %q span per fetch with metrics+tracing enabled, got %d", wantSpanName, len(authSpans))
+	}
+}
+
+func TestHTTPClientAuthTracingCallerCredentials(t *testing.T) {
+	const wantToken = "user-creds"
+	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: wantToken})
+	for _, tc := range []struct {
+		name string
+		opt  option.ClientOption
+	}{
+		{
+			name: "WithCredentials",
+			opt:  option.WithCredentials(&google.Credentials{ProjectID: "my-project", TokenSource: ts}),
+		},
+		{
+			name: "WithTokenSource",
+			opt:  option.WithTokenSource(ts),
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+			t.Setenv("STORAGE_EMULATOR_HOST", "")
+
+			var mu sync.Mutex
+			var gotAuth string
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				mu.Lock()
+				gotAuth = r.Header.Get("Authorization")
+				mu.Unlock()
+				w.Header().Set("Content-Type", "application/json")
+				fmt.Fprint(w, `{"name":"bucket"}`)
+			}))
+			t.Cleanup(srv.Close)
+
+			client, err := NewClient(ctx, tc.opt, option.WithEndpoint(srv.URL+"/storage/v1/"))
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			t.Cleanup(func() {
+				_ = client.Close()
+			})
+
+			if _, err := client.Bucket("bucket").Attrs(ctx); err != nil {
+				t.Fatalf("Bucket.Attrs: %v", err)
+			}
+			mu.Lock()
+			defer mu.Unlock()
+			if want := "Bearer " + wantToken; gotAuth != want {
+				t.Errorf("got Authorization header %q, want %q", gotAuth, want)
+			}
+			const wantSpanName = "cloud.google.com/go/storage.Auth.RefreshAccessToken"
+			if got := len(findSpansByName(te.Spans(), wantSpanName)); got == 0 {
+				t.Errorf("got 0 %q spans, want at least 1", wantSpanName)
+			}
+		})
 	}
 }
 
