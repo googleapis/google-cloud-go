@@ -366,3 +366,66 @@ func TestToOtelMetricAttrsAttemptLatencies2(t *testing.T) {
 		t.Errorf("attr count = %d, want %d", attrSet.Len(), len(want))
 	}
 }
+
+// TestToOtelMetricAttrsAttemptLatencies2_EmptyLabelsFallback pins the
+// deadline-exceeded / transport-failure path: when an attempt errors
+// BEFORE the server's PeerInfo metadata arrives, every location and
+// transport_* field on the AttemptTracer is left as its zero value
+// (empty string). toOtelMetricAttrs mirrors Java's fallbacks:
+//
+//	cluster_id       → "<unspecified>" (defaultCluster) — Java parity
+//	zone_id          → "global"        (defaultZone)    — Java parity
+//	transport_type   → "unknown"       (defaultTransportType, matches
+//	                   Java's Util.formatTransportType(null peerInfo))
+//	transport_region → ""              (Java emits empty on this path)
+//	transport_zone   → ""              (Java emits empty on this path)
+//	transport_subzone → ""             (Java emits empty on this path)
+func TestToOtelMetricAttrsAttemptLatencies2_EmptyLabelsFallback(t *testing.T) {
+	tracer := &Tracer{
+		method:      metricMethodPrefix + "ReadRows",
+		tableName:   "test-table",
+		isStreaming: true,
+		clientAttributes: []attribute.KeyValue{
+			attribute.String(MetricLabelKeyProject, "test-project"),
+		},
+		currOp: OpTracer{
+			status: "DEADLINE_EXCEEDED",
+			currAttempt: AttemptTracer{
+				status: "DEADLINE_EXCEEDED",
+				// clusterID, zoneID, transport* all zero-value
+				// (empty string) — simulates PeerInfo never arriving.
+			},
+		},
+	}
+
+	attrSet, err := tracer.toOtelMetricAttrs(MetricNameAttemptLatencies2)
+	if err != nil {
+		t.Fatalf("toOtelMetricAttrs: %v", err)
+	}
+	want := map[attribute.Key]attribute.Value{
+		MetricLabelKeyMethod:             attribute.StringValue("Bigtable.ReadRows"),
+		MetricLabelKeyTable:              attribute.StringValue("test-table"),
+		MetricLabelKeyCluster:            attribute.StringValue(defaultCluster),       // <unspecified>
+		MetricLabelKeyZone:               attribute.StringValue(defaultZone),          // global
+		MetricLabelKeyProject:            attribute.StringValue("test-project"),
+		MetricLabelKeyStatus:             attribute.StringValue("DEADLINE_EXCEEDED"),
+		MetricLabelKeyStreamingOperation: attribute.BoolValue(true),
+		MetricTransportType:              attribute.StringValue(defaultTransportType), // unknown
+		MetricTransportRegion:            attribute.StringValue(""),                   // Java parity: empty
+		MetricTransportZone:              attribute.StringValue(""),                   // Java parity: empty
+		MetricTransportSubZone:           attribute.StringValue(""),                   // Java parity: empty
+	}
+	for key, expected := range want {
+		val, ok := attrSet.Value(key)
+		if !ok {
+			t.Errorf("missing attribute %v", key)
+			continue
+		}
+		if val != expected {
+			t.Errorf("attr[%v] = %v, want %v", key, val.Emit(), expected.Emit())
+		}
+	}
+	if attrSet.Len() != len(want) {
+		t.Errorf("attr count = %d, want %d", attrSet.Len(), len(want))
+	}
+}
