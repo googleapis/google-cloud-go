@@ -25,13 +25,17 @@ import (
 	"time"
 
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
+	. "cloud.google.com/go/spanner/internal/testutil"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/noop"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
+	gtransport "google.golang.org/api/transport/grpc"
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
-	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -95,6 +99,14 @@ func channelLoadPoint(t *testing.T, rm metricdata.ResourceMetrics, wantLane stri
 	return dp
 }
 
+func newPoolBuiltinMetricsForTest(t *testing.T, p *dynamicChannelPool, cfg channelPoolBuiltinMetricsConfig, fallback *directPathFallback) *channelPoolBuiltinMetrics {
+	t.Helper()
+	m := newChannelPoolBuiltinMetrics(nil, cfg, fallback)
+	m.registerChannelCount(p)
+	t.Cleanup(m.close)
+	return m
+}
+
 func TestChannelPoolBuiltinMetricsConfig(t *testing.T) {
 	_, mp := newDCPManualReader()
 	tests := []struct {
@@ -133,17 +145,16 @@ func TestChannelPoolBuiltinMetricsReportsActiveAndDrainingChannels(t *testing.T)
 	defer teardown()
 	p := client.sc.dynamicPool
 	reader, mp := newDCPManualReader()
-	m := newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath})
-	defer m.close(nil)
+	newPoolBuiltinMetricsForTest(t, p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath}, nil)
 
 	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneCloudPath), 3, 0)
 
-	drained := p.getEntries()[0]
+	drained := p.GetEntries()[0]
 	removeDCPEntryForTest(p, drained)
 	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneCloudPath), 2, 1)
 
 	done := make(chan struct{})
-	go func() { p.waitForDrainAndClose(drained); close(done) }()
+	go func() { p.WaitForDrainAndClose(drained); close(done) }()
 	select {
 	case <-done:
 	case <-time.After(10 * time.Second):
@@ -159,15 +170,14 @@ func TestChannelPoolBuiltinMetricsCountsScaledUpChannels(t *testing.T) {
 	defer teardown()
 	p := client.sc.dynamicPool
 	reader, mp := newDCPManualReader()
-	m := newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath})
-	defer m.close(nil)
+	newPoolBuiltinMetricsForTest(t, p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath}, nil)
 
-	p.primeSession.Store(client.sm.multiplexedSession.id)
-	p.getEntries()[0].unaryLoad.Store(3)
-	p.totalRPCLoad.Store(3)
-	p.scaleUp()
-	p.getEntries()[0].unaryLoad.Store(0)
-	p.totalRPCLoad.Store(0)
+	p.PrimeSession.Store(client.sm.multiplexedSession.id)
+	p.GetEntries()[0].UnaryLoad.Store(3)
+	p.TotalRPCLoad.Store(3)
+	p.ScaleUp()
+	p.GetEntries()[0].UnaryLoad.Store(0)
+	p.TotalRPCLoad.Store(0)
 
 	if got := p.Num(); got != 3 {
 		t.Fatalf("channels after scale-up mismatch:\n Got: %d\nWant: 3", got)
@@ -181,36 +191,75 @@ func TestChannelPoolBuiltinMetricsDirectPathLane(t *testing.T) {
 	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	reader, mp := newDCPManualReader()
-	m := newChannelPoolBuiltinMetrics(client.sc.dynamicPool, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneDirectPath})
-	defer m.close(nil)
+	newPoolBuiltinMetricsForTest(t, client.sc.dynamicPool, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneDirectPath}, nil)
 
 	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneDirectPath), 2, 0)
 }
 
 func TestChannelPoolBuiltinMetricsDisabledWithoutMeterProvider(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
-	defer teardown()
-	if got := newChannelPoolBuiltinMetrics(client.sc.dynamicPool, channelPoolBuiltinMetricsConfig{lane: laneCloudPath}); got != nil {
+	if got := newChannelPoolBuiltinMetrics(nil, channelPoolBuiltinMetricsConfig{lane: laneCloudPath}, nil); got != nil {
 		t.Fatalf("metrics without a meter provider mismatch:\n Got: %+v\nWant: nil", got)
-	}
-	if got := client.sc.dynamicPool.builtinMetrics; got != nil {
-		t.Fatalf("pool built-in metrics with native metrics disabled mismatch:\n Got: %+v\nWant: nil", got)
 	}
 }
 
-func TestChannelPoolBuiltinMetricsPoolCloseUnregistersCallback(t *testing.T) {
-	cfg := testDCPConfig(1, 1, 2)
-	cfg.DCPScaleDownCheckInterval = time.Hour
-	_, client, teardown := setupDCPMockedTestServer(t, cfg)
+func TestChannelPoolBuiltinMetricsPoolWiring(t *testing.T) {
+	disableDCPDrainIdleFloor(t)
+	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
-	p := client.sc.dynamicPool
+	database := "projects/p/instances/i/databases/d"
+	sc := newSessionClient(nil, database, "", nil, "", false, metadata.Pairs(resourcePrefixHeader, database), 0, nil, nil)
+	dial := func(ctx context.Context) (gtransport.ConnPool, error) {
+		return gtransport.DialPool(ctx, append(opts, option.WithGRPCConnectionPool(1))...)
+	}
+	cfg := testDCPConfig(2, 1, 2)
+	cfg.DCPScaleDownCheckInterval = time.Hour
 	reader, mp := newDCPManualReader()
-	p.builtinMetrics = newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath})
+	p, err := newDynamicChannelPool(context.Background(), sc, cfg, nil, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath}, dial, nil)
+	if err != nil {
+		t.Fatalf("newDynamicChannelPool() failed: %v", err)
+	}
+	defer p.Close()
 
-	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneCloudPath), 1, 0)
+	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), laneCloudPath), 2, 0)
+	p.GetEntries()[0].Client.(*dcpSpannerClient).startUnary(context.Background())(nil)
+	if dp := channelLoadPoint(t, collectDCPMetrics(t, reader), laneCloudPath); dp.Count != 1 || dp.Sum != 1 {
+		t.Fatalf("channel_load mismatch:\n Got: count %d, sum %v\nWant: count 1, sum 1", dp.Count, dp.Sum)
+	}
+
 	p.Close()
 	if _, ok := findDCPMetric(collectDCPMetrics(t, reader), channelCountMetricName); ok {
-		t.Fatal("channel_count still reported after dynamicChannelPool.Close")
+		t.Fatal("channel_count still reported after the pool closed")
+	}
+}
+
+func TestChannelPoolBuiltinMetricsLaneFollowsFallback(t *testing.T) {
+	p, _ := newDCPRefTestPool(t, 2)
+	f := newTestDirectPathFallback(t)
+	reader, mp := newDCPManualReader()
+	m := newPoolBuiltinMetricsForTest(t, p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneDirectPath}, f)
+
+	m.recordChannelLoad(context.Background(), 2)
+	rm := collectDCPMetrics(t, reader)
+	requireChannelCounts(t, channelCountByState(t, rm, laneDirectPath), 2, 0)
+	if dp := channelLoadPoint(t, rm, laneDirectPath); dp.Count != 1 || dp.Sum != 2 {
+		t.Fatalf("channel_load before the switch mismatch:\n Got: count %d, sum %v\nWant: count 1, sum 2", dp.Count, dp.Sum)
+	}
+
+	recordDirectPathOutcomes(f, codes.Unavailable)
+	if !f.closeWindow(time.Now()).switched {
+		t.Fatal("fallback did not switch to CloudPath")
+	}
+	m.recordChannelLoad(context.Background(), 3)
+	rm = collectDCPMetrics(t, reader)
+	requireChannelCounts(t, channelCountByState(t, rm, laneCloudPath), 2, 0)
+	hist := requireDCPMetric(t, rm, channelLoadMetricName).Data.(metricdata.Histogram[float64])
+	got := map[string]float64{}
+	for _, dp := range hist.DataPoints {
+		lane, _ := dp.Attributes.Value(attribute.Key(metricLabelKeyLane))
+		got[lane.AsString()] += dp.Sum
+	}
+	if want := map[string]float64{laneDirectPath: 2, laneCloudPath: 3}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("channel_load sums by lane mismatch:\n Got: %v\nWant: %v", got, want)
 	}
 }
 
@@ -252,12 +301,7 @@ func (m *failingChannelPoolMeter) RegisterCallback(f metric.Callback, instrument
 }
 
 func TestChannelPoolBuiltinMetricsRegistrationErrorKeepsOtherMetric(t *testing.T) {
-	cfg := testDCPConfig(1, 1, 2)
-	cfg.DCPScaleDownCheckInterval = time.Hour
-	server, client, teardown := setupDCPMockedTestServer(t, cfg)
-	defer teardown()
-	addSelect1Result(server)
-	p := client.sc.dynamicPool
+	p, _ := newDCPRefTestPool(t, 1)
 	tests := []struct {
 		name      string
 		fail      func(m *failingChannelPoolMeter)
@@ -273,12 +317,8 @@ func TestChannelPoolBuiltinMetricsRegistrationErrorKeepsOtherMetric(t *testing.T
 			reader, sdkMP := newDCPManualReader()
 			meter := &failingChannelPoolMeter{Meter: sdkMP.Meter(builtInMetricsMeterName)}
 			tt.fail(meter)
-			p.builtinMetrics = newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: &failingChannelPoolMeterProvider{meter: meter}, lane: laneCloudPath})
-			defer func() {
-				p.builtinMetrics.close(nil)
-				p.builtinMetrics = nil
-			}()
-			runSelect1(t, client)
+			m := newPoolBuiltinMetricsForTest(t, p, channelPoolBuiltinMetricsConfig{meterProvider: &failingChannelPoolMeterProvider{meter: meter}, lane: laneCloudPath}, nil)
+			m.recordChannelLoad(context.Background(), 1)
 
 			rm := collectDCPMetrics(t, reader)
 			if _, got := findDCPMetric(rm, channelCountMetricName); got != tt.wantCount {
@@ -297,10 +337,9 @@ func TestChannelPoolBuiltinMetricsCollectWhilePoolChanges(t *testing.T) {
 	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	p := client.sc.dynamicPool
-	p.primeSession.Store(client.sm.multiplexedSession.id)
+	p.PrimeSession.Store(client.sm.multiplexedSession.id)
 	reader, mp := newDCPManualReader()
-	m := newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath})
-	defer m.close(nil)
+	newPoolBuiltinMetricsForTest(t, p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath}, nil)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
@@ -317,20 +356,20 @@ func TestChannelPoolBuiltinMetricsCollectWhilePoolChanges(t *testing.T) {
 		}
 	}()
 	for i := 0; i < 20; i++ {
-		p.getEntries()[0].unaryLoad.Store(3)
-		p.totalRPCLoad.Store(3)
-		p.scaleUp()
-		p.getEntries()[0].unaryLoad.Store(0)
-		p.totalRPCLoad.Store(0)
-		p.removeEntries(cfg.DCPMaxChannels)
+		p.GetEntries()[0].UnaryLoad.Store(3)
+		p.TotalRPCLoad.Store(3)
+		p.ScaleUp()
+		p.GetEntries()[0].UnaryLoad.Store(0)
+		p.TotalRPCLoad.Store(0)
+		p.RemoveEntries(cfg.DCPMaxChannels)
 	}
 	cancel()
 	wg.Wait()
 
 	deadline := time.Now().Add(10 * time.Second)
-	for p.drainingCount.Load() != 0 {
+	for p.DrainingCount.Load() != 0 {
 		if time.Now().After(deadline) {
-			t.Fatalf("draining channels were not closed:\n Got: %d\nWant: 0", p.drainingCount.Load())
+			t.Fatalf("draining channels were not closed:\n Got: %d\nWant: 0", p.DrainingCount.Load())
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
@@ -338,81 +377,15 @@ func TestChannelPoolBuiltinMetricsCollectWhilePoolChanges(t *testing.T) {
 }
 
 func TestChannelPoolBuiltinMetricsRecordsChannelLoad(t *testing.T) {
-	tests := []struct {
-		name  string
-		start func(p *dynamicChannelPool, e *dcpEntry) error
-	}{
-		{name: "ConnPool Invoke", start: func(p *dynamicChannelPool, e *dcpEntry) error {
-			return p.Invoke(context.Background(), "method", nil, nil)
-		}},
-		{name: "ConnPool NewStream", start: func(p *dynamicChannelPool, e *dcpEntry) error {
-			_, err := p.NewStream(context.Background(), &grpc.StreamDesc{}, "method")
-			return err
-		}},
-		{name: "spannerClient unary", start: func(p *dynamicChannelPool, e *dcpEntry) error {
-			(&dcpSpannerClient{entry: e}).startUnary(context.Background())(nil)
-			return nil
-		}},
-		{name: "spannerClient stream", start: func(p *dynamicChannelPool, e *dcpEntry) error {
-			(&dcpSpannerClient{entry: e}).startStream(context.Background()).done(nil)
-			return nil
-		}},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p, entries := newDCPRefTestPool(t, 1)
-			e := entries[0]
-			e.pool = &fakeDCPConnPool{}
-			reader, mp := newDCPManualReader()
-			p.builtinMetrics = newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneDirectPath})
-			defer p.builtinMetrics.close(nil)
-			e.unaryLoad.Store(1)
-			e.streamLoad.Store(1)
-
-			if err := tt.start(p, e); err != nil {
-				t.Fatalf("call failed: %v", err)
-			}
-			dp := channelLoadPoint(t, collectDCPMetrics(t, reader), laneDirectPath)
-			if dp.Count != 1 || dp.Sum != 3 {
-				t.Fatalf("channel_load mismatch:\n Got: count %d, sum %v\nWant: count 1, sum 3", dp.Count, dp.Sum)
-			}
-		})
-	}
-}
-
-func TestChannelPoolBuiltinMetricsRecordsConcurrentChannelLoad(t *testing.T) {
-	p, entries := newDCPRefTestPool(t, 2)
+	p, _ := newDCPRefTestPool(t, 1)
 	reader, mp := newDCPManualReader()
-	p.builtinMetrics = newChannelPoolBuiltinMetrics(p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath})
-	defer p.builtinMetrics.close(nil)
-
-	const goroutines, calls = 8, 100
-	var wg sync.WaitGroup
-	for i := 0; i < goroutines; i++ {
-		client := &dcpSpannerClient{entry: entries[i%len(entries)]}
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for j := 0; j < calls; j++ {
-				client.startUnary(context.Background())(nil)
-				if err := reader.Collect(context.Background(), &metricdata.ResourceMetrics{}); err != nil {
-					t.Errorf("Collect() failed: %v", err)
-					return
-				}
-			}
-		}()
+	m := newPoolBuiltinMetricsForTest(t, p, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneDirectPath}, nil)
+	m.recordChannelLoad(context.Background(), 3)
+	if dp := channelLoadPoint(t, collectDCPMetrics(t, reader), laneDirectPath); dp.Count != 1 || dp.Sum != 3 {
+		t.Fatalf("channel_load mismatch:\n Got: count %d, sum %v\nWant: count 1, sum 3", dp.Count, dp.Sum)
 	}
-	wg.Wait()
-
-	dp := channelLoadPoint(t, collectDCPMetrics(t, reader), laneCloudPath)
-	if dp.Count != goroutines*calls {
-		t.Fatalf("channel_load count mismatch:\n Got: %d\nWant: %d", dp.Count, goroutines*calls)
-	}
-	if min, ok := dp.Min.Value(); !ok || min < 1 {
-		t.Fatalf("channel_load min mismatch:\n Got: %v\nWant: at least 1", min)
-	}
-	if max, ok := dp.Max.Value(); !ok || max > float64(goroutines/len(entries)) {
-		t.Fatalf("channel_load max mismatch:\n Got: %v\nWant: at most %d", max, goroutines/len(entries))
+	if allocs := testing.AllocsPerRun(100, func() { m.recordChannelLoad(context.Background(), 3) }); allocs != 0 {
+		t.Fatalf("allocations per channel_load record mismatch:\n Got: %v\nWant: 0", allocs)
 	}
 }
 
@@ -558,7 +531,7 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 			}
 			server, client, teardown := setupMockedTestServerWithConfig(t, config)
 			defer teardown()
-			if got := client.sc.dynamicPool != nil && !client.sc.dynamicPool.fixed; got != tt.dcp {
+			if got := client.sc.dynamicPool != nil && !client.sc.dynamicPool.IsFixed(); got != tt.dcp {
 				t.Fatalf("dynamic pool enabled mismatch:\n Got: %v\nWant: %v", got, tt.dcp)
 			}
 			addSelect1Result(server)
@@ -566,7 +539,7 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 			runSelect1(t, client)
 			if tt.drainOne {
 				p := client.sc.dynamicPool
-				drainDCPEntryForTest(t, p, p.getEntries()[0])
+				drainDCPEntryForTest(t, p, p.GetEntries()[0])
 			}
 
 			client.Close()

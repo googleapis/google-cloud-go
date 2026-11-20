@@ -2,8 +2,6 @@ module cloud.google.com/go/internal/testing/observability
 
 go 1.26.0
 
-replace cloud.google.com/go/secretmanager => ../../../secretmanager
-
 require (
 	cloud.google.com/go/secretmanager v1.24.0
 	github.com/googleapis/gax-go/v2 v2.27.0
