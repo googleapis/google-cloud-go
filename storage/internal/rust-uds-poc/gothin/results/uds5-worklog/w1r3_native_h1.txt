@@ -1,0 +1,15 @@
+backend=go-json-h1 bucket=cpriti-thickthin-poc-usw1 parallel=1 vcpus=192
+backend    style  op      size          p50       p90       p99       max      mean  p50 MiB/s  agg MiB/s   ffi/op cpu s/GiB   cpu %  peak MiB
+go-json-h1 whole  write   1MiB        334ms     382ms     382ms     527ms     360ms        3.0        3.4      0.0      6.10    0.0%        90
+go-json-h1 whole  read    1MiB        270ms     301ms     309ms     322ms     278ms        3.7        3.4      0.0      6.10    0.0%        90
+go-json-h1 whole  write   16MiB       823ms     897ms     897ms     952ms     836ms       19.4       28.1      0.0      1.88    0.0%       161
+go-json-h1 whole  read    16MiB       484ms     589ms     616ms     624ms     479ms       33.0       28.1      0.0      1.88    0.0%       161
+go-json-h1 whole  write   128MiB     4.652s     4.93s     4.93s    4.952s    4.693s       27.5       56.6      0.0      1.59    0.0%       476
+go-json-h1 whole  read    128MiB     1.459s    1.593s    1.689s    1.701s    1.452s       87.7       56.6      0.0      1.59    0.0%       476
+go-json-h1 32k    write   1MiB        306ms     348ms     348ms     366ms     316ms        3.3        5.0      0.0      4.77    0.0%       486
+go-json-h1 32k    read    1MiB        144ms     263ms     268ms     271ms     164ms        6.9        5.0      0.0      4.77    0.0%       486
+go-json-h1 32k    write   16MiB       687ms     734ms     734ms     811ms     694ms       23.3       37.7      0.0      1.84    0.0%       156
+go-json-h1 32k    read    16MiB       309ms     458ms     477ms     498ms     335ms       51.8       37.7      0.0      1.84    0.0%       156
+go-json-h1 32k    write   128MiB     4.338s    4.394s    4.394s    4.409s    4.279s       29.5       61.3      0.0      1.48    0.0%       349
+go-json-h1 32k    read    128MiB      1.31s    1.567s    1.578s    1.742s    1.359s       97.7       61.3      0.0      1.48    0.0%       349
+go-json-h1 -      list    -            59ms      69ms      69ms      76ms      64ms          -          -      0.0   0.23ms/call    0.0%    349  (objects=0)

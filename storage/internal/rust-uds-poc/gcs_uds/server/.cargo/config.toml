@@ -1,0 +1,4 @@
+[build]
+# Enables the crate's appendable-object (BidiWriteObject) API, which is still
+# behind an unstable cfg in google-cloud-storage 1.21.
+rustflags = ["--cfg", "google_cloud_unstable_storage_bidi", "-A", "unexpected_cfgs"]

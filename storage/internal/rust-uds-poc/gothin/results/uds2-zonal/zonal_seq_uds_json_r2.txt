@@ -1,0 +1,55 @@
+gcs-core-server pid=10827 listening on /tmp/gcs-core-0/core.sock
+client init: 25.214293ms (sidecar spawn 20.115091ms, pid 10827, owned=true, how=, session=false)
+backend=go-uds-json bucket=cpriti-zb-central1-b parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-uds-json whole  write   1MiB        122ms     140ms     213ms     130ms        8.2      3.0      5.17        71
+go-uds-json whole  read    1MiB         57ms     159ms     190ms      81ms       17.4      1.0      5.17        71
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+go-uds-json whole  write   16MiB          0s        0s        0s        0s        0.0      0.0      0.00       135
+go-uds-json whole  read    16MiB          0s        0s        0s        0s        0.0      0.0      0.00       135
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+go-uds-json whole  write   128MiB         0s        0s        0s        0s        0.0      0.0      0.00       264
+go-uds-json whole  read    128MiB         0s        0s        0s        0s        0.0      0.0      0.00       264
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+write: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+go-uds-json whole  write   512MiB         0s        0s        0s        0s        0.0      0.0      0.00       785
+go-uds-json whole  read    512MiB         0s        0s        0s        0s        0.0      0.0      0.00       785
+panic: Cannot free freed buffer
+
+goroutine 163 [running]:
+google.golang.org/grpc/mem.(*buffer).Free(0x1527920?)
+	/root/go/pkg/mod/google.golang.org/grpc@v1.84.0/mem/buffers.go:158 +0x125
+google.golang.org/grpc/mem.BufferSlice.Free(...)
+	/root/go/pkg/mod/google.golang.org/grpc@v1.84.0/mem/buffer_slice.go:71
+poc/gothin/udsthin.(*Reader).Close(0x3558bf59eb60)
+	/opt/poc2/gothin/udsthin/udsthin.go:419 +0x3a
+poc/gothin/bench2.Run[...].func2()
+	/opt/poc2/gothin/bench2/bench2.go:219 +0x80d
+created by poc/gothin/bench2.Run[...] in goroutine 1
+	/opt/poc2/gothin/bench2/bench2.go:168 +0x74d

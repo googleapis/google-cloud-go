@@ -1,0 +1,4 @@
+backend=go-json-range bucket=cpriti-thickthin-poc-zonal-usw1a vcpus=192
+backend        sli                            p50       p90       p99       max      mean      MiB/s  cpu s/GiB cpu ms/op   cpu %  peak MiB
+go-json-range  list-objects-100         148.451ms 156.484ms 156.484ms 157.677ms 144.579ms        0.0       0.00      5.26    0.0%        45
+go-json-range  list-buckets-100         939.013ms 962.655ms 962.655ms  970.09ms 935.461ms        0.0       0.00      7.01    0.0%        47

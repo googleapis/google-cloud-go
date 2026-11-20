@@ -1,0 +1,12 @@
+gcs-core-server pid=2599 listening on /tmp/ping3.sock
+client init: 23.476792ms (sidecar spawn 19.842368ms, pid 2599, owned=true, how=, session=false)
+uds          payload=0        rtt=53µs              0 MiB/s (echo, both directions)
+uds          payload=4096     rtt=62µs            125 MiB/s (echo, both directions)
+uds          payload=65536    rtt=212µs           590 MiB/s (echo, both directions)
+uds          payload=1048576  rtt=1.964ms        1018 MiB/s (echo, both directions)
+uds          payload=4194304  rtt=6.545ms        1222 MiB/s (echo, both directions)
+tcp-loopback payload=0        rtt=57µs              0 MiB/s (echo, both directions)
+tcp-loopback payload=4096     rtt=69µs            114 MiB/s (echo, both directions)
+tcp-loopback payload=65536    rtt=221µs           565 MiB/s (echo, both directions)
+tcp-loopback payload=1048576  rtt=1.394ms        1435 MiB/s (echo, both directions)
+tcp-loopback payload=4194304  rtt=5.368ms        1490 MiB/s (echo, both directions)

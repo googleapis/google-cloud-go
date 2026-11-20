@@ -1,0 +1,1680 @@
+{
+  "timeSeries": [
+    {
+      "metric": {
+        "labels": {
+          "state": "buffered"
+        },
+        "type": "agent.googleapis.com/memory/percent_used"
+      },
+      "resource": {
+        "type": "gce_instance",
+        "labels": {
+          "instance_id": "8515920295490933521",
+          "project_id": "gcs-go-sdk-playground",
+          "zone": "us-central1-b"
+        }
+      },
+      "metricKind": "GAUGE",
+      "valueType": "DOUBLE",
+      "points": [
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:28:46.371558Z",
+            "endTime": "2026-11-04T18:28:46.371558Z"
+          },
+          "value": {
+            "doubleValue": 0.0044511833988869791
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:27:46.379721Z",
+            "endTime": "2026-11-04T18:27:46.379721Z"
+          },
+          "value": {
+            "doubleValue": 0.0044490399513174251
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:26:46.397109Z",
+            "endTime": "2026-11-04T18:26:46.397109Z"
+          },
+          "value": {
+            "doubleValue": 0.0044458234918878514
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:25:46.387151Z",
+            "endTime": "2026-11-04T18:25:46.387151Z"
+          },
+          "value": {
+            "doubleValue": 0.0044436799718717739
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:24:46.387824Z",
+            "endTime": "2026-11-04T18:24:46.387824Z"
+          },
+          "value": {
+            "doubleValue": 0.0044415375226380515
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:23:46.408747Z",
+            "endTime": "2026-11-04T18:23:46.408747Z"
+          },
+          "value": {
+            "doubleValue": 0.0044393954763364144
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:22:46.398074Z",
+            "endTime": "2026-11-04T18:22:46.398074Z"
+          },
+          "value": {
+            "doubleValue": 0.0044372539988768358
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:21:46.406853Z",
+            "endTime": "2026-11-04T18:21:46.406853Z"
+          },
+          "value": {
+            "doubleValue": 0.0044340370124700051
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:20:46.404518Z",
+            "endTime": "2026-11-04T18:20:46.404518Z"
+          },
+          "value": {
+            "doubleValue": 0.0044318937254612294
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:19:46.389042Z",
+            "endTime": "2026-11-04T18:19:46.389042Z"
+          },
+          "value": {
+            "doubleValue": 0.0044281434400501611
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:18:46.402390Z",
+            "endTime": "2026-11-04T18:18:46.402390Z"
+          },
+          "value": {
+            "doubleValue": 0.0044259976832365187
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:17:46.391821Z",
+            "endTime": "2026-11-04T18:17:46.391821Z"
+          },
+          "value": {
+            "doubleValue": 0.004423890604502218
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:16:46.396517Z",
+            "endTime": "2026-11-04T18:16:46.396517Z"
+          },
+          "value": {
+            "doubleValue": 0.0044212107887770784
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:15:46.392786Z",
+            "endTime": "2026-11-04T18:15:46.392786Z"
+          },
+          "value": {
+            "doubleValue": 0.0044190664621324306
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:14:46.391471Z",
+            "endTime": "2026-11-04T18:14:46.391471Z"
+          },
+          "value": {
+            "doubleValue": 0.0044147810987933455
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:13:46.376559Z",
+            "endTime": "2026-11-04T18:13:46.376559Z"
+          },
+          "value": {
+            "doubleValue": 0.0044126392310429386
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:12:46.400541Z",
+            "endTime": "2026-11-04T18:12:46.400541Z"
+          },
+          "value": {
+            "doubleValue": 0.0044104966754755634
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:11:46.378093Z",
+            "endTime": "2026-11-04T18:11:46.378093Z"
+          },
+          "value": {
+            "doubleValue": 0.0044083558906449216
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:10:46.401506Z",
+            "endTime": "2026-11-04T18:10:46.401506Z"
+          },
+          "value": {
+            "doubleValue": 0.0044062132130444987
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:09:46.374515Z",
+            "endTime": "2026-11-04T18:09:46.374515Z"
+          },
+          "value": {
+            "doubleValue": 0.0044040867523612469
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:08:46.400549Z",
+            "endTime": "2026-11-04T18:08:46.400549Z"
+          },
+          "value": {
+            "doubleValue": 0.0044019443943725351
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:07:46.397046Z",
+            "endTime": "2026-11-04T18:07:46.397046Z"
+          },
+          "value": {
+            "doubleValue": 0.0043236894456934183
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:06:46.377184Z",
+            "endTime": "2026-11-04T18:06:46.377184Z"
+          },
+          "value": {
+            "doubleValue": 0.00432154566089558
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:05:46.391774Z",
+            "endTime": "2026-11-04T18:05:46.391774Z"
+          },
+          "value": {
+            "doubleValue": 0.0043194040521767072
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:04:46.404483Z",
+            "endTime": "2026-11-04T18:04:46.404483Z"
+          },
+          "value": {
+            "doubleValue": 0.0043172641766004837
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:03:46.394296Z",
+            "endTime": "2026-11-04T18:03:46.394296Z"
+          },
+          "value": {
+            "doubleValue": 0.0043151292699088592
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:02:46.383815Z",
+            "endTime": "2026-11-04T18:02:46.383815Z"
+          },
+          "value": {
+            "doubleValue": 0.0043119100197221106
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:01:46.378144Z",
+            "endTime": "2026-11-04T18:01:46.378144Z"
+          },
+          "value": {
+            "doubleValue": 0.0043097674054446014
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:00:46.404743Z",
+            "endTime": "2026-11-04T18:00:46.404743Z"
+          },
+          "value": {
+            "doubleValue": 0.0043076240045467409
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:59:46.390022Z",
+            "endTime": "2026-11-04T17:59:46.390022Z"
+          },
+          "value": {
+            "doubleValue": 0.004305482079955879
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:58:46.396435Z",
+            "endTime": "2026-11-04T17:58:46.396435Z"
+          },
+          "value": {
+            "doubleValue": 0.0043028043654761827
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:57:46.394973Z",
+            "endTime": "2026-11-04T17:57:46.394973Z"
+          },
+          "value": {
+            "doubleValue": 0.004292705914838965
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:56:46.413881Z",
+            "endTime": "2026-11-04T17:56:46.413881Z"
+          },
+          "value": {
+            "doubleValue": 0.0042905701239786612
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:55:46.419908Z",
+            "endTime": "2026-11-04T17:55:46.419908Z"
+          },
+          "value": {
+            "doubleValue": 0.0042884269225062117
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:54:46.409281Z",
+            "endTime": "2026-11-04T17:54:46.409281Z"
+          },
+          "value": {
+            "doubleValue": 0.004286291279394585
+          }
+        }
+      ]
+    },
+    {
+      "metric": {
+        "labels": {
+          "state": "cached"
+        },
+        "type": "agent.googleapis.com/memory/percent_used"
+      },
+      "resource": {
+        "type": "gce_instance",
+        "labels": {
+          "instance_id": "8515920295490933521",
+          "zone": "us-central1-b",
+          "project_id": "gcs-go-sdk-playground"
+        }
+      },
+      "metricKind": "GAUGE",
+      "valueType": "DOUBLE",
+      "points": [
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:28:46.371558Z",
+            "endTime": "2026-11-04T18:28:46.371558Z"
+          },
+          "value": {
+            "doubleValue": 0.1263264502407386
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:27:46.379721Z",
+            "endTime": "2026-11-04T18:27:46.379721Z"
+          },
+          "value": {
+            "doubleValue": 0.12632432508519562
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:26:46.397109Z",
+            "endTime": "2026-11-04T18:26:46.397109Z"
+          },
+          "value": {
+            "doubleValue": 0.12629697948693611
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:25:46.387151Z",
+            "endTime": "2026-11-04T18:25:46.387151Z"
+          },
+          "value": {
+            "doubleValue": 0.12629592435375103
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:24:46.387824Z",
+            "endTime": "2026-11-04T18:24:46.387824Z"
+          },
+          "value": {
+            "doubleValue": 0.12627560263492418
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:23:46.408747Z",
+            "endTime": "2026-11-04T18:23:46.408747Z"
+          },
+          "value": {
+            "doubleValue": 0.12627137328780685
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:22:46.398074Z",
+            "endTime": "2026-11-04T18:22:46.398074Z"
+          },
+          "value": {
+            "doubleValue": 0.12622266971412424
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:21:46.406853Z",
+            "endTime": "2026-11-04T18:21:46.406853Z"
+          },
+          "value": {
+            "doubleValue": 0.12622050259155582
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:20:46.404518Z",
+            "endTime": "2026-11-04T18:20:46.404518Z"
+          },
+          "value": {
+            "doubleValue": 0.12620283729107304
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:19:46.389042Z",
+            "endTime": "2026-11-04T18:19:46.389042Z"
+          },
+          "value": {
+            "doubleValue": 0.12619485163706684
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:18:46.402390Z",
+            "endTime": "2026-11-04T18:18:46.402390Z"
+          },
+          "value": {
+            "doubleValue": 0.12618033215919947
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:17:46.391821Z",
+            "endTime": "2026-11-04T18:17:46.391821Z"
+          },
+          "value": {
+            "doubleValue": 0.12613743384091167
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:16:46.396517Z",
+            "endTime": "2026-11-04T18:16:46.396517Z"
+          },
+          "value": {
+            "doubleValue": 0.126127259331581
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:15:46.392786Z",
+            "endTime": "2026-11-04T18:15:46.392786Z"
+          },
+          "value": {
+            "doubleValue": 0.12612403771732189
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:14:46.391471Z",
+            "endTime": "2026-11-04T18:14:46.391471Z"
+          },
+          "value": {
+            "doubleValue": 0.12611554431988883
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:13:46.376559Z",
+            "endTime": "2026-11-04T18:13:46.376559Z"
+          },
+          "value": {
+            "doubleValue": 0.12610381645050345
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:12:46.400541Z",
+            "endTime": "2026-11-04T18:12:46.400541Z"
+          },
+          "value": {
+            "doubleValue": 0.12608510051191191
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:11:46.378093Z",
+            "endTime": "2026-11-04T18:11:46.378093Z"
+          },
+          "value": {
+            "doubleValue": 0.12603802536081474
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:10:46.401506Z",
+            "endTime": "2026-11-04T18:10:46.401506Z"
+          },
+          "value": {
+            "doubleValue": 0.12603002671349844
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:09:46.374515Z",
+            "endTime": "2026-11-04T18:09:46.374515Z"
+          },
+          "value": {
+            "doubleValue": 0.12599032987767617
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:08:46.400549Z",
+            "endTime": "2026-11-04T18:08:46.400549Z"
+          },
+          "value": {
+            "doubleValue": 0.12596143515051444
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:07:46.397046Z",
+            "endTime": "2026-11-04T18:07:46.397046Z"
+          },
+          "value": {
+            "doubleValue": 0.12593107336812656
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:06:46.377184Z",
+            "endTime": "2026-11-04T18:06:46.377184Z"
+          },
+          "value": {
+            "doubleValue": 0.12592733189641672
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:05:46.391774Z",
+            "endTime": "2026-11-04T18:05:46.391774Z"
+          },
+          "value": {
+            "doubleValue": 0.12590221230516307
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:04:46.404483Z",
+            "endTime": "2026-11-04T18:04:46.404483Z"
+          },
+          "value": {
+            "doubleValue": 0.12588411180742914
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:03:46.394296Z",
+            "endTime": "2026-11-04T18:03:46.394296Z"
+          },
+          "value": {
+            "doubleValue": 0.12584310657402278
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:02:46.383815Z",
+            "endTime": "2026-11-04T18:02:46.383815Z"
+          },
+          "value": {
+            "doubleValue": 0.12582425746138132
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:01:46.378144Z",
+            "endTime": "2026-11-04T18:01:46.378144Z"
+          },
+          "value": {
+            "doubleValue": 0.12581090163276987
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:00:46.404743Z",
+            "endTime": "2026-11-04T18:00:46.404743Z"
+          },
+          "value": {
+            "doubleValue": 0.1258082436838123
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:59:46.390022Z",
+            "endTime": "2026-11-04T17:59:46.390022Z"
+          },
+          "value": {
+            "doubleValue": 0.12579490807165911
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:58:46.396435Z",
+            "endTime": "2026-11-04T17:58:46.396435Z"
+          },
+          "value": {
+            "doubleValue": 0.12577943569666861
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:57:46.394973Z",
+            "endTime": "2026-11-04T17:57:46.394973Z"
+          },
+          "value": {
+            "doubleValue": 0.12560346007963882
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:56:46.413881Z",
+            "endTime": "2026-11-04T17:56:46.413881Z"
+          },
+          "value": {
+            "doubleValue": 0.12559030517698508
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:55:46.419908Z",
+            "endTime": "2026-11-04T17:55:46.419908Z"
+          },
+          "value": {
+            "doubleValue": 0.12554208999627339
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:54:46.409281Z",
+            "endTime": "2026-11-04T17:54:46.409281Z"
+          },
+          "value": {
+            "doubleValue": 0.12546514917660592
+          }
+        }
+      ]
+    },
+    {
+      "metric": {
+        "labels": {
+          "state": "free"
+        },
+        "type": "agent.googleapis.com/memory/percent_used"
+      },
+      "resource": {
+        "type": "gce_instance",
+        "labels": {
+          "zone": "us-central1-b",
+          "instance_id": "8515920295490933521",
+          "project_id": "gcs-go-sdk-playground"
+        }
+      },
+      "metricKind": "GAUGE",
+      "valueType": "DOUBLE",
+      "points": [
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:28:46.371558Z",
+            "endTime": "2026-11-04T18:28:46.371558Z"
+          },
+          "value": {
+            "doubleValue": 99.157361608210849
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:27:46.379721Z",
+            "endTime": "2026-11-04T18:27:46.379721Z"
+          },
+          "value": {
+            "doubleValue": 99.146989858365188
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:26:46.397109Z",
+            "endTime": "2026-11-04T18:26:46.397109Z"
+          },
+          "value": {
+            "doubleValue": 99.014482503197385
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:25:46.387151Z",
+            "endTime": "2026-11-04T18:25:46.387151Z"
+          },
+          "value": {
+            "doubleValue": 99.026983638236331
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:24:46.387824Z",
+            "endTime": "2026-11-04T18:24:46.387824Z"
+          },
+          "value": {
+            "doubleValue": 99.037112079926615
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:23:46.408747Z",
+            "endTime": "2026-11-04T18:23:46.408747Z"
+          },
+          "value": {
+            "doubleValue": 99.0903934891039
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:22:46.398074Z",
+            "endTime": "2026-11-04T18:22:46.398074Z"
+          },
+          "value": {
+            "doubleValue": 99.059765817943486
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:21:46.406853Z",
+            "endTime": "2026-11-04T18:21:46.406853Z"
+          },
+          "value": {
+            "doubleValue": 99.059758484886544
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:20:46.404518Z",
+            "endTime": "2026-11-04T18:20:46.404518Z"
+          },
+          "value": {
+            "doubleValue": 99.062791164643556
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:19:46.389042Z",
+            "endTime": "2026-11-04T18:19:46.389042Z"
+          },
+          "value": {
+            "doubleValue": 99.134676662631847
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:18:46.402390Z",
+            "endTime": "2026-11-04T18:18:46.402390Z"
+          },
+          "value": {
+            "doubleValue": 99.15405285021815
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:17:46.391821Z",
+            "endTime": "2026-11-04T18:17:46.391821Z"
+          },
+          "value": {
+            "doubleValue": 99.116184596599339
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:16:46.396517Z",
+            "endTime": "2026-11-04T18:16:46.396517Z"
+          },
+          "value": {
+            "doubleValue": 99.1279435096623
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:15:46.392786Z",
+            "endTime": "2026-11-04T18:15:46.392786Z"
+          },
+          "value": {
+            "doubleValue": 99.124024600563487
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:14:46.391471Z",
+            "endTime": "2026-11-04T18:14:46.391471Z"
+          },
+          "value": {
+            "doubleValue": 99.089692077916538
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:13:46.376559Z",
+            "endTime": "2026-11-04T18:13:46.376559Z"
+          },
+          "value": {
+            "doubleValue": 99.087612866166779
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:12:46.400541Z",
+            "endTime": "2026-11-04T18:12:46.400541Z"
+          },
+          "value": {
+            "doubleValue": 99.0933057671216
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:11:46.378093Z",
+            "endTime": "2026-11-04T18:11:46.378093Z"
+          },
+          "value": {
+            "doubleValue": 99.101591649651965
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:10:46.401506Z",
+            "endTime": "2026-11-04T18:10:46.401506Z"
+          },
+          "value": {
+            "doubleValue": 99.14061903618439
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:09:46.374515Z",
+            "endTime": "2026-11-04T18:09:46.374515Z"
+          },
+          "value": {
+            "doubleValue": 98.8819151559334
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:08:46.400549Z",
+            "endTime": "2026-11-04T18:08:46.400549Z"
+          },
+          "value": {
+            "doubleValue": 98.891227825365917
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:07:46.397046Z",
+            "endTime": "2026-11-04T18:07:46.397046Z"
+          },
+          "value": {
+            "doubleValue": 98.892398984508688
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:06:46.377184Z",
+            "endTime": "2026-11-04T18:06:46.377184Z"
+          },
+          "value": {
+            "doubleValue": 98.91611968318621
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:05:46.391774Z",
+            "endTime": "2026-11-04T18:05:46.391774Z"
+          },
+          "value": {
+            "doubleValue": 98.913422766796145
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:04:46.404483Z",
+            "endTime": "2026-11-04T18:04:46.404483Z"
+          },
+          "value": {
+            "doubleValue": 98.998593581777328
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:03:46.394296Z",
+            "endTime": "2026-11-04T18:03:46.394296Z"
+          },
+          "value": {
+            "doubleValue": 99.145337992229216
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:02:46.383815Z",
+            "endTime": "2026-11-04T18:02:46.383815Z"
+          },
+          "value": {
+            "doubleValue": 98.679440569663569
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:01:46.378144Z",
+            "endTime": "2026-11-04T18:01:46.378144Z"
+          },
+          "value": {
+            "doubleValue": 98.678472005844171
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:00:46.404743Z",
+            "endTime": "2026-11-04T18:00:46.404743Z"
+          },
+          "value": {
+            "doubleValue": 98.666580778633389
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:59:46.390022Z",
+            "endTime": "2026-11-04T17:59:46.390022Z"
+          },
+          "value": {
+            "doubleValue": 98.622940979715125
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:58:46.396435Z",
+            "endTime": "2026-11-04T17:58:46.396435Z"
+          },
+          "value": {
+            "doubleValue": 98.485290109870434
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:57:46.394973Z",
+            "endTime": "2026-11-04T17:57:46.394973Z"
+          },
+          "value": {
+            "doubleValue": 99.138931330969712
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:56:46.413881Z",
+            "endTime": "2026-11-04T17:56:46.413881Z"
+          },
+          "value": {
+            "doubleValue": 98.769922385119571
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:55:46.419908Z",
+            "endTime": "2026-11-04T17:55:46.419908Z"
+          },
+          "value": {
+            "doubleValue": 98.764231888516392
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:54:46.409281Z",
+            "endTime": "2026-11-04T17:54:46.409281Z"
+          },
+          "value": {
+            "doubleValue": 98.75309556695953
+          }
+        }
+      ]
+    },
+    {
+      "metric": {
+        "labels": {
+          "state": "slab"
+        },
+        "type": "agent.googleapis.com/memory/percent_used"
+      },
+      "resource": {
+        "type": "gce_instance",
+        "labels": {
+          "project_id": "gcs-go-sdk-playground",
+          "instance_id": "8515920295490933521",
+          "zone": "us-central1-b"
+        }
+      },
+      "metricKind": "GAUGE",
+      "valueType": "DOUBLE",
+      "points": [
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:28:46.371558Z",
+            "endTime": "2026-11-04T18:28:46.371558Z"
+          },
+          "value": {
+            "doubleValue": 0.0665887173543032
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:27:46.379721Z",
+            "endTime": "2026-11-04T18:27:46.379721Z"
+          },
+          "value": {
+            "doubleValue": 0.066576934712461386
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:26:46.397109Z",
+            "endTime": "2026-11-04T18:26:46.397109Z"
+          },
+          "value": {
+            "doubleValue": 0.066598371585014984
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:25:46.387151Z",
+            "endTime": "2026-11-04T18:25:46.387151Z"
+          },
+          "value": {
+            "doubleValue": 0.066587659930735732
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:24:46.387824Z",
+            "endTime": "2026-11-04T18:24:46.387824Z"
+          },
+          "value": {
+            "doubleValue": 0.066562491545815283
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:23:46.408747Z",
+            "endTime": "2026-11-04T18:23:46.408747Z"
+          },
+          "value": {
+            "doubleValue": 0.066516960088087218
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:22:46.398074Z",
+            "endTime": "2026-11-04T18:22:46.398074Z"
+          },
+          "value": {
+            "doubleValue": 0.066482157733594754
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:21:46.406853Z",
+            "endTime": "2026-11-04T18:21:46.406853Z"
+          },
+          "value": {
+            "doubleValue": 0.066500906653899156
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:20:46.404518Z",
+            "endTime": "2026-11-04T18:20:46.404518Z"
+          },
+          "value": {
+            "doubleValue": 0.066486982357439411
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:19:46.389042Z",
+            "endTime": "2026-11-04T18:19:46.389042Z"
+          },
+          "value": {
+            "doubleValue": 0.0664527053080618
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:18:46.402390Z",
+            "endTime": "2026-11-04T18:18:46.402390Z"
+          },
+          "value": {
+            "doubleValue": 0.066503067526755708
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:17:46.391821Z",
+            "endTime": "2026-11-04T18:17:46.391821Z"
+          },
+          "value": {
+            "doubleValue": 0.065691532469689964
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:16:46.396517Z",
+            "endTime": "2026-11-04T18:16:46.396517Z"
+          },
+          "value": {
+            "doubleValue": 0.0656829612030552
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:15:46.392786Z",
+            "endTime": "2026-11-04T18:15:46.392786Z"
+          },
+          "value": {
+            "doubleValue": 0.06568403045491529
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:14:46.391471Z",
+            "endTime": "2026-11-04T18:14:46.391471Z"
+          },
+          "value": {
+            "doubleValue": 0.06562618202333298
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:13:46.376559Z",
+            "endTime": "2026-11-04T18:13:46.376559Z"
+          },
+          "value": {
+            "doubleValue": 0.0655833330027785
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:12:46.400541Z",
+            "endTime": "2026-11-04T18:12:46.400541Z"
+          },
+          "value": {
+            "doubleValue": 0.065559234977803027
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:11:46.378093Z",
+            "endTime": "2026-11-04T18:11:46.378093Z"
+          },
+          "value": {
+            "doubleValue": 0.065515866004656392
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:10:46.401506Z",
+            "endTime": "2026-11-04T18:10:46.401506Z"
+          },
+          "value": {
+            "doubleValue": 0.065488549959132919
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:09:46.374515Z",
+            "endTime": "2026-11-04T18:09:46.374515Z"
+          },
+          "value": {
+            "doubleValue": 0.065108762074251966
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:08:46.400549Z",
+            "endTime": "2026-11-04T18:08:46.400549Z"
+          },
+          "value": {
+            "doubleValue": 0.065083594810903034
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:07:46.397046Z",
+            "endTime": "2026-11-04T18:07:46.397046Z"
+          },
+          "value": {
+            "doubleValue": 0.064985599128409385
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:06:46.377184Z",
+            "endTime": "2026-11-04T18:06:46.377184Z"
+          },
+          "value": {
+            "doubleValue": 0.064979708274011921
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:05:46.391774Z",
+            "endTime": "2026-11-04T18:05:46.391774Z"
+          },
+          "value": {
+            "doubleValue": 0.064934719294189869
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:04:46.404483Z",
+            "endTime": "2026-11-04T18:04:46.404483Z"
+          },
+          "value": {
+            "doubleValue": 0.064845265049358974
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:03:46.394296Z",
+            "endTime": "2026-11-04T18:03:46.394296Z"
+          },
+          "value": {
+            "doubleValue": 0.0646513572812966
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:02:46.383815Z",
+            "endTime": "2026-11-04T18:02:46.383815Z"
+          },
+          "value": {
+            "doubleValue": 0.06472850206508006
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:01:46.378144Z",
+            "endTime": "2026-11-04T18:01:46.378144Z"
+          },
+          "value": {
+            "doubleValue": 0.064701723276042247
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:00:46.404743Z",
+            "endTime": "2026-11-04T18:00:46.404743Z"
+          },
+          "value": {
+            "doubleValue": 0.0646851174560309
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:59:46.390022Z",
+            "endTime": "2026-11-04T17:59:46.390022Z"
+          },
+          "value": {
+            "doubleValue": 0.064636907391090626
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:58:46.396435Z",
+            "endTime": "2026-11-04T17:58:46.396435Z"
+          },
+          "value": {
+            "doubleValue": 0.064594061498518873
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:57:46.394973Z",
+            "endTime": "2026-11-04T17:57:46.394973Z"
+          },
+          "value": {
+            "doubleValue": 0.062680582245519492
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:56:46.413881Z",
+            "endTime": "2026-11-04T17:56:46.413881Z"
+          },
+          "value": {
+            "doubleValue": 0.062562237456200084
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:55:46.419908Z",
+            "endTime": "2026-11-04T17:55:46.419908Z"
+          },
+          "value": {
+            "doubleValue": 0.062495245541683023
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:54:46.409281Z",
+            "endTime": "2026-11-04T17:54:46.409281Z"
+          },
+          "value": {
+            "doubleValue": 0.062334554168724354
+          }
+        }
+      ]
+    },
+    {
+      "metric": {
+        "labels": {
+          "state": "used"
+        },
+        "type": "agent.googleapis.com/memory/percent_used"
+      },
+      "resource": {
+        "type": "gce_instance",
+        "labels": {
+          "zone": "us-central1-b",
+          "instance_id": "8515920295490933521",
+          "project_id": "gcs-go-sdk-playground"
+        }
+      },
+      "metricKind": "GAUGE",
+      "valueType": "DOUBLE",
+      "points": [
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:28:46.371558Z",
+            "endTime": "2026-11-04T18:28:46.371558Z"
+          },
+          "value": {
+            "doubleValue": 0.64527204079522449
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:27:46.379721Z",
+            "endTime": "2026-11-04T18:27:46.379721Z"
+          },
+          "value": {
+            "doubleValue": 0.65565984188583715
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:26:46.397109Z",
+            "endTime": "2026-11-04T18:26:46.397109Z"
+          },
+          "value": {
+            "doubleValue": 0.78817632223877554
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:25:46.387151Z",
+            "endTime": "2026-11-04T18:25:46.387151Z"
+          },
+          "value": {
+            "doubleValue": 0.77568909750730519
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:24:46.387824Z",
+            "endTime": "2026-11-04T18:24:46.387824Z"
+          },
+          "value": {
+            "doubleValue": 0.76560828837000228
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:23:46.408747Z",
+            "endTime": "2026-11-04T18:23:46.408747Z"
+          },
+          "value": {
+            "doubleValue": 0.71237878204386429
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:22:46.398074Z",
+            "endTime": "2026-11-04T18:22:46.398074Z"
+          },
+          "value": {
+            "doubleValue": 0.74309210060992625
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:21:46.406853Z",
+            "endTime": "2026-11-04T18:21:46.406853Z"
+          },
+          "value": {
+            "doubleValue": 0.743086068855524
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:20:46.404518Z",
+            "endTime": "2026-11-04T18:20:46.404518Z"
+          },
+          "value": {
+            "doubleValue": 0.74008712198246085
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:19:46.389042Z",
+            "endTime": "2026-11-04T18:19:46.389042Z"
+          },
+          "value": {
+            "doubleValue": 0.66824763698297707
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:18:46.402390Z",
+            "endTime": "2026-11-04T18:18:46.402390Z"
+          },
+          "value": {
+            "doubleValue": 0.64883775241265917
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:17:46.391821Z",
+            "endTime": "2026-11-04T18:17:46.391821Z"
+          },
+          "value": {
+            "doubleValue": 0.68756254648555959
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:16:46.396517Z",
+            "endTime": "2026-11-04T18:16:46.396517Z"
+          },
+          "value": {
+            "doubleValue": 0.67582505901429257
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:15:46.392786Z",
+            "endTime": "2026-11-04T18:15:46.392786Z"
+          },
+          "value": {
+            "doubleValue": 0.679748264802148
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:14:46.391471Z",
+            "endTime": "2026-11-04T18:14:46.391471Z"
+          },
+          "value": {
+            "doubleValue": 0.714151414641451
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:13:46.376559Z",
+            "endTime": "2026-11-04T18:13:46.376559Z"
+          },
+          "value": {
+            "doubleValue": 0.71628734514890036
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:12:46.400541Z",
+            "endTime": "2026-11-04T18:12:46.400541Z"
+          },
+          "value": {
+            "doubleValue": 0.71063940071320431
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:11:46.378093Z",
+            "endTime": "2026-11-04T18:11:46.378093Z"
+          },
+          "value": {
+            "doubleValue": 0.7024461030919219
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:10:46.401506Z",
+            "endTime": "2026-11-04T18:10:46.401506Z"
+          },
+          "value": {
+            "doubleValue": 0.66345617392993839
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:09:46.374515Z",
+            "endTime": "2026-11-04T18:09:46.374515Z"
+          },
+          "value": {
+            "doubleValue": 0.9225816653623079
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:08:46.400549Z",
+            "endTime": "2026-11-04T18:08:46.400549Z"
+          },
+          "value": {
+            "doubleValue": 0.91332520027828523
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:07:46.397046Z",
+            "endTime": "2026-11-04T18:07:46.397046Z"
+          },
+          "value": {
+            "doubleValue": 0.91236065354908458
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:06:46.377184Z",
+            "endTime": "2026-11-04T18:06:46.377184Z"
+          },
+          "value": {
+            "doubleValue": 0.888651730982464
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:05:46.391774Z",
+            "endTime": "2026-11-04T18:05:46.391774Z"
+          },
+          "value": {
+            "doubleValue": 0.89142089755232856
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:04:46.404483Z",
+            "endTime": "2026-11-04T18:04:46.404483Z"
+          },
+          "value": {
+            "doubleValue": 0.80635977718928709
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:03:46.394296Z",
+            "endTime": "2026-11-04T18:03:46.394296Z"
+          },
+          "value": {
+            "doubleValue": 0.65985241464556377
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:02:46.383815Z",
+            "endTime": "2026-11-04T18:02:46.383815Z"
+          },
+          "value": {
+            "doubleValue": 1.1256947607902519
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:01:46.378144Z",
+            "endTime": "2026-11-04T18:01:46.378144Z"
+          },
+          "value": {
+            "doubleValue": 1.12670560184157
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T18:00:46.404743Z",
+            "endTime": "2026-11-04T18:00:46.404743Z"
+          },
+          "value": {
+            "doubleValue": 1.1386182362222312
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:59:46.390022Z",
+            "endTime": "2026-11-04T17:59:46.390022Z"
+          },
+          "value": {
+            "doubleValue": 1.182321722742167
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:58:46.396435Z",
+            "endTime": "2026-11-04T17:58:46.396435Z"
+          },
+          "value": {
+            "doubleValue": 1.3200335885689127
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:57:46.394973Z",
+            "endTime": "2026-11-04T17:57:46.394973Z"
+          },
+          "value": {
+            "doubleValue": 0.66849192079029152
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:56:46.413881Z",
+            "endTime": "2026-11-04T17:56:46.413881Z"
+          },
+          "value": {
+            "doubleValue": 1.0376345021232667
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:55:46.419908Z",
+            "endTime": "2026-11-04T17:55:46.419908Z"
+          },
+          "value": {
+            "doubleValue": 1.0434423490231561
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-04T17:54:46.409281Z",
+            "endTime": "2026-11-04T17:54:46.409281Z"
+          },
+          "value": {
+            "doubleValue": 1.0548184384157451
+          }
+        }
+      ]
+    }
+  ],
+  "unit": "%"
+}

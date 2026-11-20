@@ -1,0 +1,34 @@
+{
+  "timeSeries": [
+    {
+      "metric": {
+        "labels": {
+          "instance_name": "thickthin-poc-uds5"
+        },
+        "type": "compute.googleapis.com/instance/cpu/utilization"
+      },
+      "resource": {
+        "type": "gce_instance",
+        "labels": {
+          "zone": "us-central1-b",
+          "project_id": "gcs-go-sdk-playground",
+          "instance_id": "4800314160389265979"
+        }
+      },
+      "metricKind": "GAUGE",
+      "valueType": "DOUBLE",
+      "points": [
+        {
+          "interval": {
+            "startTime": "2026-11-03T18:17:00Z",
+            "endTime": "2026-11-03T18:17:00Z"
+          },
+          "value": {
+            "doubleValue": 0.0040779026819782868
+          }
+        }
+      ]
+    }
+  ],
+  "unit": "10^2.%"
+}

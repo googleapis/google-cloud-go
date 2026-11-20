@@ -1,0 +1,9 @@
+gcs-core-server pid=7360 listening on /tmp/gcs-core-0/core.sock
+client init: 26.297644ms (sidecar spawn 21.245599ms, pid 7360, owned=true, how=, session=false)
+missing object -> errors.Is(ErrObjectNotExist)=true (storage: object doesn't exist)
+create -> ok size=1 gen=1793598552647488
+DoesNotExist on existing -> googleapi.Error=true code=412 (googleapi: Error 412: the service reports an error with code UNKNOWN described as: At least one of the pre-conditions you specified did not hold.)
+range read -> attrs={Size:1 StartOffset:0 ContentType:application/octet-stream ContentEncoding:identity CacheControl: LastModified:0001-01-01 00:00:00 +0000 UTC Generation:1793598552647488 Metageneration:1 CRC32C:2839306131 Decompressed:false} remain=0 data="x"
+64MiB write -> <nil>
+ctx timeout 30ms mid-stream -> after 30ms copied=0 err=context deadline exceeded ctxErr=true
+open+readAt 8KiB@1MiB -> n=8192 err=<nil> in 4.907ms (attrs size=67108864)

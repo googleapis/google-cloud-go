@@ -1,0 +1,70 @@
+{
+  "timeSeries": [
+    {
+      "metric": {
+        "labels": {
+          "instance_name": "thickthin-poc-uds7"
+        },
+        "type": "compute.googleapis.com/instance/cpu/utilization"
+      },
+      "resource": {
+        "type": "gce_instance",
+        "labels": {
+          "project_id": "gcs-go-sdk-playground",
+          "instance_id": "2574102563557324183",
+          "zone": "us-central1-b"
+        }
+      },
+      "metricKind": "GAUGE",
+      "valueType": "DOUBLE",
+      "points": [
+        {
+          "interval": {
+            "startTime": "2026-11-05T05:06:00Z",
+            "endTime": "2026-11-05T05:06:00Z"
+          },
+          "value": {
+            "doubleValue": 0.031225007884396305
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-05T05:05:00Z",
+            "endTime": "2026-11-05T05:05:00Z"
+          },
+          "value": {
+            "doubleValue": 0.031393642252251337
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-05T05:04:00Z",
+            "endTime": "2026-11-05T05:04:00Z"
+          },
+          "value": {
+            "doubleValue": 0.031433150932816491
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-05T05:03:00Z",
+            "endTime": "2026-11-05T05:03:00Z"
+          },
+          "value": {
+            "doubleValue": 0.029364194493048265
+          }
+        },
+        {
+          "interval": {
+            "startTime": "2026-11-05T05:02:00Z",
+            "endTime": "2026-11-05T05:02:00Z"
+          },
+          "value": {
+            "doubleValue": 0.028309220964824314
+          }
+        }
+      ]
+    }
+  ],
+  "unit": "10^2.%"
+}

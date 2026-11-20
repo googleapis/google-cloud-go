@@ -1,0 +1,19 @@
+backend=go-json bucket=cpriti-thickthin-poc-asse1 parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-json    whole  write   1MiB         87ms     104ms     106ms      93ms       11.5      0.0      4.19        84
+go-json    whole  read    1MiB         37ms      45ms      89ms      38ms       27.0      0.0      4.19        84
+go-json    whole  write   16MiB       312ms     387ms     404ms     321ms       51.3      0.0      2.46       133
+go-json    whole  read    16MiB       108ms     136ms     169ms     109ms      148.2      0.0      2.46       133
+go-json    whole  write   128MiB      1.44s    1.806s    2.065s     1.57s       88.9      0.0      2.35       491
+go-json    whole  read    128MiB      608ms     835ms     935ms     646ms      210.7      0.0      2.35       491
+go-json    whole  write   512MiB     6.526s    8.283s    8.335s    6.745s       78.5      0.0      2.32      1520
+go-json    whole  read    512MiB     2.094s    2.976s    3.785s    2.279s      244.5      0.0      2.32      1520
+go-json    32k    write   1MiB         92ms     104ms     114ms      93ms       10.8      0.0      3.42      1479
+go-json    32k    read    1MiB         37ms      52ms      57ms      40ms       27.0      0.0      3.42      1479
+go-json    32k    write   16MiB       285ms     402ms     603ms     351ms       56.1      0.0      2.36      1573
+go-json    32k    read    16MiB       103ms     147ms     194ms     113ms      155.9      0.0      2.36      1573
+go-json    32k    write   128MiB     1.424s    1.555s    1.744s    1.461s       89.9      0.0      2.42      1865
+go-json    32k    read    128MiB      627ms     785ms     913ms     635ms      204.1      0.0      2.42      1865
+go-json    32k    write   512MiB     5.625s    6.424s    6.812s    5.837s       91.0      0.0      2.40      2378
+go-json    32k    read    512MiB     2.105s    2.752s    3.568s    2.236s      243.2      0.0      2.40      2378
+go-json    -      list    -            68ms      74ms      89ms      69ms          -      0.0  10.98ms/call   1513  (objects=1000)

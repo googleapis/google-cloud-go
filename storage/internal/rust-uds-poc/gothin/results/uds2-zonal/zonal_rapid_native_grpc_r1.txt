@@ -1,0 +1,6 @@
+backend=go-grpc-mrd bucket=cpriti-zb-central1-b
+backend      sli                          p50       p90       p99       max  cpu s/GiB cpu ms/op  peak MiB
+go-grpc-mrd  open                    29.774ms  48.309ms  48.309ms  53.305ms       0.00      4.71        40
+go-grpc-mrd  read50x2x4/serial      555.397ms 617.532ms 617.532ms 677.505ms       2.65    259.00       150
+go-grpc-mrd  read50x2x4/concurrent  315.775ms 356.682ms 356.682ms 452.065ms       2.68    262.12       221
+go-grpc-mrd  random8k                 1.397ms    1.77ms   2.556ms   4.945ms      12.22      0.09       221
