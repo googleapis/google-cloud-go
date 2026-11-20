@@ -13,7 +13,8 @@
 // limitations under the License.
 
 // Package transport provides internal gRPC connection pool, GAPIC client,
-// and DirectPath/fallback primitives shared across Spanner packages.
+// DirectPath/fallback, and DynamicChannelPool primitives shared across Spanner
+// packages.
 package transport
 
 import (
@@ -57,9 +58,9 @@ const (
 	DefaultNumChannels = 4
 )
 
-// stripEndpointScheme removes a single leading http://, https://, or passthrough:///
+// StripEndpointScheme removes a single leading http://, https://, or passthrough:///
 // prefix from endpoint, matching the historical client.go emulator scheme stripping.
-func stripEndpointScheme(endpoint string) string {
+func StripEndpointScheme(endpoint string) string {
 	for _, prefix := range []string{"http://", "https://", "passthrough:///"} {
 		if after, ok := strings.CutPrefix(endpoint, prefix); ok {
 			return after
@@ -68,16 +69,24 @@ func stripEndpointScheme(endpoint string) string {
 	return endpoint
 }
 
-// EmulatorClientOptions returns the ClientOptions needed to connect to a Spanner
-// emulator endpoint.
-func EmulatorClientOptions(emulatorAddr string) []option.ClientOption {
-	schemeRemoved := stripEndpointScheme(emulatorAddr)
+// PlainTextClientOptions returns the ClientOptions needed to connect to a plaintext
+// gRPC endpoint without authentication (insecure transport credentials, no auth,
+// and dial settings validation skipped). Callers supply option.WithEndpoint separately.
+func PlainTextClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("passthrough:///" + schemeRemoved),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		option.WithoutAuthentication(),
 		internaloption.SkipDialSettingsValidation(),
 	}
+}
+
+// EmulatorClientOptions returns the ClientOptions needed to connect to a Spanner
+// emulator endpoint.
+func EmulatorClientOptions(emulatorAddr string) []option.ClientOption {
+	return append(
+		[]option.ClientOption{option.WithEndpoint("passthrough:///" + StripEndpointScheme(emulatorAddr))},
+		PlainTextClientOptions()...,
+	)
 }
 
 // ResolveDirectPathEnabled resolves whether DirectPath is enabled by checking the
@@ -118,6 +127,24 @@ func DefaultClientOptions(
 	streamInterceptors []grpc.StreamClientInterceptor,
 	userOpts ...option.ClientOption,
 ) []option.ClientOption {
+	return defaultClientOptions(
+		numChannels,
+		compression,
+		ResolveDirectPathEnabled(enableDirectAccess),
+		unaryInterceptors,
+		streamInterceptors,
+		userOpts...,
+	)
+}
+
+func defaultClientOptions(
+	numChannels int,
+	compression string,
+	enableDirectPath bool,
+	unaryInterceptors []grpc.UnaryClientInterceptor,
+	streamInterceptors []grpc.StreamClientInterceptor,
+	userOpts ...option.ClientOption,
+) []option.ClientOption {
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
@@ -133,7 +160,7 @@ func DefaultClientOptions(
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 120 * time.Second})),
 	)
 
-	if ResolveDirectPathEnabled(enableDirectAccess) {
+	if enableDirectPath {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN")); !disableBoundToken {
@@ -180,8 +207,13 @@ type PoolConfig struct {
 	HasNumChannelsConfig bool
 	// Compression enables request compression when set to "gzip".
 	Compression string
-	// EnableDirectAccess enables DirectPath unless overridden by GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS.
+	// EnableDirectAccess enables DirectPath unless overridden by GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS
+	// or suppressed by DisableDirectPath.
 	EnableDirectAccess bool
+	// DisableDirectPath unconditionally suppresses DirectPath options even when
+	// EnableDirectAccess or GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS=true is set (for example,
+	// on plaintext or unauthenticated transports).
+	DisableDirectPath bool
 	// AugmentError optionally attaches x-goog-spanner-request-id to non-EOF RPC
 	// errors. May be nil (headers are still injected without wrapping errors).
 	AugmentError requestid.ErrorAugmenter
@@ -198,7 +230,8 @@ type PoolConfig struct {
 // userOpts, and x-goog-spanner-request-id interceptors for cfg.
 func (cfg PoolConfig) ClientOptions(userOpts ...option.ClientOption) []option.ClientOption {
 	opts := WithRequestIDInterceptors(cfg.AugmentError, userOpts...)
-	return DefaultClientOptions(cfg.NumChannels, cfg.Compression, cfg.EnableDirectAccess, cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
+	enableDirectPath := !cfg.DisableDirectPath && ResolveDirectPathEnabled(cfg.EnableDirectAccess)
+	return defaultClientOptions(cfg.NumChannels, cfg.Compression, enableDirectPath, cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
 }
 
 // PoolSizeMismatchError is returned when an explicit NumChannels configuration

@@ -17,6 +17,7 @@ package transport
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"strings"
 	"sync"
@@ -86,8 +87,8 @@ func TestStripEndpointSchemeAndEmulatorClientOptions(t *testing.T) {
 		{"", ""},
 	}
 	for _, tc := range cases {
-		if got := stripEndpointScheme(tc.in); got != tc.want {
-			t.Errorf("stripEndpointScheme(%q) = %q, want %q", tc.in, got, tc.want)
+		if got := StripEndpointScheme(tc.in); got != tc.want {
+			t.Errorf("StripEndpointScheme(%q) = %q, want %q", tc.in, got, tc.want)
 		}
 	}
 
@@ -332,4 +333,76 @@ func TestDialStaticPoolFallbackPoolAndRequestIDInjection(t *testing.T) {
 	if err := fbRaw.Close(); err != nil {
 		t.Fatalf("fbRaw.Close() (delegating to FallbackPool.Close()) failed: %v", err)
 	}
+}
+
+func TestPlainTextClientOptionsAndDisableDirectPath(t *testing.T) {
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen failed: %v", err)
+	}
+	srv := grpc.NewServer()
+	capSrv := &headerCapturingSpannerServer{}
+	spannerpb.RegisterSpannerServer(srv, capSrv)
+	go func() { _ = srv.Serve(lis) }()
+	t.Cleanup(func() {
+		srv.Stop()
+		_ = lis.Close()
+	})
+	addr := lis.Addr().String()
+
+	t.Run("PlainTextClientOptions dials plaintext with caller-supplied endpoint", func(t *testing.T) {
+		combined := append([]option.ClientOption{option.WithEndpoint("passthrough:///" + addr)}, PlainTextClientOptions()...)
+		pool, err := gtransport.DialPool(context.Background(), DefaultClientOptions(1, "", false, nil, nil, combined...)...)
+		if err != nil {
+			t.Fatalf("DialPool failed: %v", err)
+		}
+		defer pool.Close()
+		if got := pool.Conn().Target(); got != "passthrough:///"+addr {
+			t.Fatalf("conn target = %q, want %q", got, "passthrough:///"+addr)
+		}
+		raw, err := NewGAPICClient(context.Background(), "", gtransport.WithConnPool(pool))
+		if err != nil {
+			t.Fatalf("NewGAPICClient failed: %v", err)
+		}
+		defer raw.Close()
+		if _, err := raw.ExecuteSql(context.Background(), &spannerpb.ExecuteSqlRequest{Sql: "SELECT 1"}); err != nil {
+			t.Fatalf("ExecuteSql failed: %v", err)
+		}
+	})
+
+	t.Run("EmulatorClientOptions binds stripped passthrough endpoint and dials plaintext", func(t *testing.T) {
+		opts := EmulatorClientOptions("http://" + addr)
+		pool, err := gtransport.DialPool(context.Background(), DefaultClientOptions(1, "", false, nil, nil, opts...)...)
+		if err != nil {
+			t.Fatalf("DialPool failed: %v", err)
+		}
+		defer pool.Close()
+		if got := pool.Conn().Target(); got != "passthrough:///"+addr {
+			t.Fatalf("conn target = %q, want %q", got, "passthrough:///"+addr)
+		}
+	})
+
+	t.Run("PoolConfig.DisableDirectPath suppresses DirectPath even when GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS=true", func(t *testing.T) {
+		t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
+		t.Setenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN", "false")
+
+		enabledOpts := (PoolConfig{NumChannels: 1, EnableDirectAccess: true}).ClientOptions()
+		suppressedOpts := (PoolConfig{NumChannels: 1, EnableDirectAccess: true, DisableDirectPath: true}).ClientOptions()
+
+		hasDirectPathOpt := func(opts []option.ClientOption) bool {
+			for _, o := range opts {
+				desc := fmt.Sprintf("%T", o)
+				if strings.Contains(desc, "DirectPath") || strings.Contains(desc, "HardBound") || strings.Contains(desc, "NonDefaultServiceAccount") {
+					return true
+				}
+			}
+			return false
+		}
+		if !hasDirectPathOpt(enabledOpts) {
+			t.Fatal("expected DirectPath internal options when DisableDirectPath is false and GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS=true")
+		}
+		if hasDirectPathOpt(suppressedOpts) {
+			t.Fatalf("expected DisableDirectPath=true to suppress all DirectPath options, got %v", suppressedOpts)
+		}
+	})
 }

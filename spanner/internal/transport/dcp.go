@@ -54,7 +54,9 @@ const dcpRefsClosed = math.MinInt64 / 2
 var DCPDrainIdleFloor = 15 * time.Second
 
 var (
-	defaultDCPNoEntriesErr     = status.Error(codes.Unavailable, "spanner_dcp: no available channels")
+	// ErrDCPNoEntries is the default Unavailable error returned when a DynamicChannelPool
+	// or DCPResolver has no available channels.
+	ErrDCPNoEntries            = status.Error(codes.Unavailable, "spanner_dcp: no available channels")
 	defaultDCPPrimeNotReadyErr = status.Error(codes.FailedPrecondition, "spanner_dcp: cannot prime channel before multiplexed session is available")
 )
 
@@ -441,7 +443,7 @@ func (p *DynamicChannelPool[C]) noEntriesError() error {
 	if p != nil && p.noEntriesErr != nil {
 		return p.noEntriesErr
 	}
-	return defaultDCPNoEntriesErr
+	return ErrDCPNoEntries
 }
 
 func (p *DynamicChannelPool[C]) primeNotReadyError() error {
