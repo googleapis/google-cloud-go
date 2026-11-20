@@ -245,6 +245,9 @@ type DCPHooks[C DCPClient] struct {
 	// PenaltyEpoch optionally returns a number. An error does not penalize its
 	// entry if the number changed while the operation was in flight.
 	PenaltyEpoch func() uint64
+	// OnCallStart optionally runs when a call starts on an entry of a
+	// non-fixed pool, with the entry's in-flight call count including it.
+	OnCallStart func(ctx context.Context, load int32)
 }
 
 // DynamicChannelPool owns the copy-on-write slice of DCP entries and the
@@ -271,6 +274,7 @@ type DynamicChannelPool[C DCPClient] struct {
 	primeNotReadyErr error
 	onClose          func()
 	penaltyEpoch     func() uint64
+	onCallStart      func(ctx context.Context, load int32)
 
 	rrIndex          atomic.Uint64
 	nextID           atomic.Uint64
@@ -414,6 +418,7 @@ func newEmptyDCP[C DCPClient](cfg DCPConfig, hooks DCPHooks[C]) *DynamicChannelP
 		primeNotReadyErr:    hooks.PrimeNotReadyErr,
 		onClose:             hooks.OnClose,
 		penaltyEpoch:        hooks.PenaltyEpoch,
+		onCallStart:         hooks.OnCallStart,
 		DrainIdleFloor:      DCPDrainIdleFloor,
 	}
 }
@@ -492,6 +497,7 @@ func (p *DynamicChannelPool[C]) Invoke(ctx context.Context, method string, args,
 	}
 	e.UnaryLoad.Add(1)
 	p.TotalRPCLoad.Add(1)
+	p.callStarted(ctx, e)
 	p.MaybeSignalScaleUp(e)
 	e.LastActivity.Store(time.Now().UnixNano())
 	defer func() {
@@ -516,6 +522,7 @@ func (p *DynamicChannelPool[C]) NewStream(ctx context.Context, desc *grpc.Stream
 	}
 	e.StreamLoad.Add(1)
 	p.TotalRPCLoad.Add(1)
+	p.callStarted(ctx, e)
 	p.MaybeSignalScaleUp(e)
 	e.LastActivity.Store(time.Now().UnixNano())
 	epoch := p.currentPenaltyEpoch()
@@ -1285,6 +1292,12 @@ func (p *DynamicChannelPool[C]) ClearStaleErrorPenalties() {
 	}
 }
 
+func (p *DynamicChannelPool[C]) callStarted(ctx context.Context, e *DCPEntry[C]) {
+	if p.onCallStart != nil {
+		p.onCallStart(ctx, e.RPCLoad())
+	}
+}
+
 // PickLoad returns the in-flight RPC load plus any active error penalty.
 func (e *DCPEntry[C]) PickLoad() int32 { return e.RPCLoad() + e.CurrentPenalty() }
 
@@ -1293,6 +1306,7 @@ func (e *DCPEntry[C]) StartUnary(ctx context.Context) func(error) {
 	epoch := e.Parent.currentPenaltyEpoch()
 	e.UnaryLoad.Add(1)
 	e.Parent.TotalRPCLoad.Add(1)
+	e.Parent.callStarted(ctx, e)
 	e.Parent.MaybeSignalScaleUp(e)
 	e.LastActivity.Store(time.Now().UnixNano())
 	return func(err error) {
@@ -1310,6 +1324,7 @@ func (e *DCPEntry[C]) StartStream(ctx context.Context) *DCPStreamRef {
 	e.Refs.Add(1)
 	e.StreamLoad.Add(1)
 	e.Parent.TotalRPCLoad.Add(1)
+	e.Parent.callStarted(ctx, e)
 	e.Parent.MaybeSignalScaleUp(e)
 	e.LastActivity.Store(time.Now().UnixNano())
 	ref := &DCPStreamRef{finish: func(err error) {
