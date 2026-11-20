@@ -1,6 +1,15 @@
 # Changes
 
 
+## [1.71.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.71.0...storage/v1.71.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* **storage:** Classify error.type from structured errors and normalize server.address ([#20797](https://github.com/googleapis/google-cloud-go/issues/20797)) ([0a11639](https://github.com/googleapis/google-cloud-go/commit/0a116399f83abcf8eb7213799f67efd32a7cee49))
+* **storage:** Fix part naming, generation pinning, and encryption key handling in parallel uploads and Composer ([#20936](https://github.com/googleapis/google-cloud-go/issues/20936)) ([76b4a6f](https://github.com/googleapis/google-cloud-go/commit/76b4a6fcac72ffd7b10298dc63e2b940ccb3a971))
+* **storage:** Refine auth refresh, stall duration, and gRPC DNS lookup metrics ([#20798](https://github.com/googleapis/google-cloud-go/issues/20798)) ([ceca8c9](https://github.com/googleapis/google-cloud-go/commit/ceca8c9739f7d1c12233c05e42400504b7a6e16a))
+
 ## [1.71.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.70.0...storage/v1.71.0) (2026-11-14)
 
 
