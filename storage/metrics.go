@@ -37,6 +37,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/contrib/detectors/gcp"
@@ -771,7 +772,7 @@ func mapHTTPStatusCode(code int) string {
 	}
 }
 
-func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, duration float64, err error) {
+func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, duration float64, err error, recordUnaryTTFB bool) {
 	statusCode := int64(codes.OK)
 	if err != nil && err != io.EOF {
 		statusCode = int64(status.Code(err))
@@ -827,9 +828,11 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		cm.errors.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, errorAttrs)...))
 	}
 
-	// For unary calls, record TTFB equal to the total attempt latency.
-	isStreaming := methodName == "ReadObject" || methodName == "WriteObject" || methodName == "BidiReadObject" || methodName == "BidiWriteObject"
-	if !isStreaming {
+	// For unary calls that received a server response, record TTFB equal to the
+	// attempt latency. Calls that failed with a transport, auth, timeout or
+	// cancel error after response headers arrived are skipped, because their
+	// duration is the time to the failure and not to the first response.
+	if recordUnaryTTFB && !isPreServerErrorType(errorType) && errorType != "TIMEOUT" && errorType != "CANCELLED" {
 		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "grpc"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(target))}
 		cm.ttfb.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, ttfbAttrs)...))
 	}
@@ -961,15 +964,28 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 		}
 	}()
 
-	if rt.metrics != nil && (rt.metrics.dnsLookupDuration != nil || rt.metrics.tcpConnectDuration != nil || rt.metrics.tlsHandshakeDuration != nil) {
+	var firstByteTime, wroteRequestTime atomic.Pointer[time.Time]
+	if rt.metrics != nil {
 		var dnsStart, tlsStart time.Time
 		var tcpStarts sync.Map
 
 		trace := &httptrace.ClientTrace{
-			DNSStart: func(info httptrace.DNSStartInfo) {
-				dnsStart = time.Now()
+			WroteRequest: func(info httptrace.WroteRequestInfo) {
+				if info.Err == nil {
+					t := time.Now()
+					wroteRequestTime.Store(&t)
+				}
 			},
-			DNSDone: func(info httptrace.DNSDoneInfo) {
+			GotFirstResponseByte: func() {
+				t := time.Now()
+				firstByteTime.Store(&t)
+			},
+		}
+		if rt.metrics.dnsLookupDuration != nil || rt.metrics.tcpConnectDuration != nil || rt.metrics.tlsHandshakeDuration != nil {
+			trace.DNSStart = func(info httptrace.DNSStartInfo) {
+				dnsStart = time.Now()
+			}
+			trace.DNSDone = func(info httptrace.DNSDoneInfo) {
 				if rt.metrics.dnsLookupDuration != nil {
 					start := dnsStart
 					if !start.IsZero() {
@@ -977,22 +993,22 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 						rt.metrics.dnsLookupDuration.Record(req.Context(), duration, netAttrs)
 					}
 				}
-			},
-			ConnectStart: func(network, addr string) {
+			}
+			trace.ConnectStart = func(network, addr string) {
 				tcpStarts.Store(addr, time.Now())
-			},
-			ConnectDone: func(network, addr string, err error) {
+			}
+			trace.ConnectDone = func(network, addr string, err error) {
 				if err == nil && rt.metrics.tcpConnectDuration != nil {
 					if startV, ok := tcpStarts.LoadAndDelete(addr); ok {
 						duration := time.Since(startV.(time.Time)).Seconds()
 						rt.metrics.tcpConnectDuration.Record(req.Context(), duration, netAttrs)
 					}
 				}
-			},
-			TLSHandshakeStart: func() {
+			}
+			trace.TLSHandshakeStart = func() {
 				tlsStart = time.Now()
-			},
-			TLSHandshakeDone: func(state tls.ConnectionState, err error) {
+			}
+			trace.TLSHandshakeDone = func(state tls.ConnectionState, err error) {
 				if err == nil && rt.metrics.tlsHandshakeDuration != nil {
 					start := tlsStart
 					if !start.IsZero() {
@@ -1000,7 +1016,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 						rt.metrics.tlsHandshakeDuration.Record(req.Context(), duration, netAttrs)
 					}
 				}
-			},
+			}
 		}
 		req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	}
@@ -1044,13 +1060,41 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 
 		rt.metrics.recordHTTPServerMetrics(req.Context(), resp, logicalMethod, stripPort(req.URL.Host), errorType, rpcAttrs)
 
-		// Record TTFB.
-		isDownload := req.Method == "GET" && req.URL.Query().Get("alt") == "media"
-		isResumableInit := req.Method == "POST" && strings.Contains(req.URL.Path, "/upload/") && req.URL.Query().Get("uploadType") == "resumable"
-		if !isDownload || isResumableInit {
-			duration := time.Since(startTime).Seconds()
-			ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(req.URL.Host))}
-			rt.metrics.ttfb.Record(req.Context(), duration, metric.WithAttributes(injectAPIMethod(req.Context(), ttfbAttrs)...))
+		// Record TTFB only when a server response was received. For object
+		// payload uploads, measure from WroteRequest to GotFirstResponseByte so
+		// TTFB excludes client upload transmission; for reads and metadata calls
+		// (including those with a JSON body), measure from attempt start to
+		// GotFirstResponseByte (excluding any delay before Read() is called).
+		if err == nil && resp != nil {
+			fb, wr := firstByteTime.Load(), wroteRequestTime.Load()
+			end := time.Now()
+			if fb != nil {
+				end = *fb
+			}
+			start := startTime
+			recordTTFB := true
+			if isHTTPPayloadUpload(req, logicalMethod) {
+				if wr != nil {
+					start = *wr
+				} else if fb != nil {
+					// The server responded before the body was fully written (for
+					// example an early 412), so there is no request-sent anchor and
+					// the elapsed time is dominated by the upload itself.
+					recordTTFB = false
+				}
+			}
+			// WroteRequest runs in a deferred call on the transport's write
+			// goroutine and can be stamped just after GotFirstResponseByte.
+			ttfbSeconds := max(end.Sub(start).Seconds(), 0)
+			if recordTTFB {
+				ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(req.URL.Host))}
+				// Media downloads keep their existing attribute set, which has no
+				// gcp.client.method.
+				if req.Method != http.MethodGet || req.URL.Query().Get("alt") != "media" {
+					ttfbAttrs = injectAPIMethod(req.Context(), ttfbAttrs)
+				}
+				rt.metrics.ttfb.Record(req.Context(), ttfbSeconds, metric.WithAttributes(ttfbAttrs...))
+			}
 		}
 	}
 
@@ -1070,7 +1114,6 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 			req:        req,
 			resp:       resp,
 			metrics:    rt.metrics,
-			isDownload: req.Method == "GET" && req.URL.Query().Get("alt") == "media",
 		}
 	} else {
 		if rt.metrics != nil {
@@ -1081,27 +1124,31 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 	return resp, nil
 }
 
+// isHTTPPayloadUpload reports whether req carries object data: a PUT or POST
+// with a body that belongs to a write operation or targets the upload
+// endpoint. The resumable session-initiation POST only carries JSON metadata,
+// so it is treated like any other metadata call.
+func isHTTPPayloadUpload(req *http.Request, logicalMethod string) bool {
+	if (req.Method != http.MethodPut && req.Method != http.MethodPost) || req.Body == nil || req.Body == http.NoBody {
+		return false
+	}
+	if logicalMethod != "WriteObject" && !strings.HasPrefix(req.URL.Path, "/upload/") {
+		return false
+	}
+	q := req.URL.Query()
+	return !(req.Method == http.MethodPost && q.Get("uploadType") == "resumable" && q.Get("upload_id") == "")
+}
+
 type wrappedResponseBody struct {
 	io.ReadCloser
-	startTime  time.Time
-	req        *http.Request
-	resp       *http.Response
-	metrics    *clientMetrics
-	recorded   atomic.Bool
-	isDownload bool
-	firstRead  atomic.Bool
+	startTime time.Time
+	req       *http.Request
+	resp      *http.Response
+	metrics   *clientMetrics
+	recorded  atomic.Bool
 }
 
 func (w *wrappedResponseBody) Read(p []byte) (n int, err error) {
-	if w.isDownload && w.metrics != nil && w.firstRead.CompareAndSwap(false, true) {
-		duration := time.Since(w.startTime).Seconds()
-		state := metricsStateFromContext(w.req.Context())
-		logicalMethod := "ReadObject"
-		if state != nil {
-			logicalMethod = state.method
-		}
-		w.metrics.ttfb.Record(w.req.Context(), duration, metric.WithAttributes(attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(w.req.URL.Host))))
-	}
 	n, err = w.ReadCloser.Read(p)
 	if err != nil {
 		w.record(err)
@@ -1320,8 +1367,9 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 
 		cm.recordServerMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, rpcAttrs, &p)
 
+		responded := err == nil || len(headerMD) > 0 || len(trailerMD) > 0
 		duration := time.Since(startTime).Seconds()
-		cm.recordRPC(ctx, method, target, duration, err)
+		cm.recordRPC(ctx, method, target, duration, err, responded)
 		return err
 	}
 
@@ -1354,7 +1402,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 			}
 			cm.recordServerMetrics(ctx, nil, nil, err, logicalMethod, target, rpcAttrs, nil)
 			duration := time.Since(startTime).Seconds()
-			cm.recordRPC(ctx, method, target, duration, err)
+			cm.recordRPC(ctx, method, target, duration, err, false)
 			return nil, err
 		}
 
@@ -1375,19 +1423,48 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 
 type wrappedClientStream struct {
 	grpc.ClientStream
-	startTime     time.Time
-	method        string
-	target        string
-	metrics       *clientMetrics
-	ctx           context.Context
-	recorded      atomic.Bool
-	serverStreams bool
-	clientStreams bool
-	recordedTTFB  atomic.Bool
+	startTime        time.Time
+	firstFlushSentAt atomic.Pointer[time.Time]
+	method           string
+	target           string
+	metrics          *clientMetrics
+	ctx              context.Context
+	recorded         atomic.Bool
+	serverStreams    bool
+	clientStreams    bool
+	recordedTTFB     atomic.Bool
+}
+
+func isWriteStreamMethod(method string) bool {
+	m := getLogicalMethod(method)
+	return m == "WriteObject" || m == "BidiWriteObject"
+}
+
+// isWriteFlushMsg reports whether a write request elicits a server response:
+// flush, finish_write, state_lookup, or an append takeover probe.
+func isWriteFlushMsg(m interface{}) bool {
+	switch req := m.(type) {
+	case *storagepb.BidiWriteObjectRequest:
+		if req.GetFlush() || req.GetFinishWrite() || req.GetStateLookup() {
+			return true
+		}
+		// Append takeover opens with an AppendObjectSpec (and empty payload)
+		// that elicits an immediate persisted_size response from the server.
+		if _, ok := req.GetFirstMessage().(*storagepb.BidiWriteObjectRequest_AppendObjectSpec); ok && writeRequestDataLen(req) == 0 {
+			return true
+		}
+	case *storagepb.WriteObjectRequest:
+		if req.GetFinishWrite() {
+			return true
+		}
+	}
+	return false
 }
 
 func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	err := w.ClientStream.RecvMsg(m)
+	// Streams record TTFB on the first received message only. A stream that
+	// ends with an error before any message has no first response to time.
 	if err == nil {
 		w.recordTTFB(m)
 	}
@@ -1400,18 +1477,52 @@ func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	return err
 }
 
+// stampFirstFlush anchors write TTFB at the first request that elicits a
+// server response. It stamps before send so a concurrent RecvMsg always sees an
+// anchor, re-stamps once send returns, and clears the anchor if send fails.
+// Later flushes never overwrite the first one.
+func (w *wrappedClientStream) stampFirstFlush(send func() error) error {
+	if !isWriteStreamMethod(w.method) || w.recordedTTFB.Load() || w.firstFlushSentAt.Load() != nil {
+		return send()
+	}
+	pre := time.Now()
+	if !w.firstFlushSentAt.CompareAndSwap(nil, &pre) {
+		return send()
+	}
+	err := send()
+	if err != nil {
+		w.firstFlushSentAt.CompareAndSwap(&pre, nil)
+		return err
+	}
+	post := time.Now()
+	w.firstFlushSentAt.CompareAndSwap(&pre, &post)
+	return nil
+}
+
 func (w *wrappedClientStream) SendMsg(m interface{}) error {
-	err := w.ClientStream.SendMsg(m)
+	send := func() error { return w.ClientStream.SendMsg(m) }
+	var err error
+	if isWriteFlushMsg(m) {
+		err = w.stampFirstFlush(send)
+	} else {
+		err = send()
+	}
 	if err != nil {
 		w.record(err)
 	}
 	return err
 }
 
+// CloseSend half-closes the stream, which also elicits the final response of a
+// write that did not send finish_write.
+func (w *wrappedClientStream) CloseSend() error {
+	return w.stampFirstFlush(w.ClientStream.CloseSend)
+}
+
 func (w *wrappedClientStream) record(err error) {
 	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
-		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
+		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err, false)
 
 		logicalMethod := getLogicalMethod(w.method)
 
@@ -1442,9 +1553,16 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 	methodName := getLogicalMethod(w.method)
 
 	// The first response from the server, whether it contains metadata,
-	// persisted size, or actual content, indicates TTFB.
+	// persisted size, or actual content, indicates TTFB. For streaming writes,
+	// measure from the first response-eliciting request (see isWriteFlushMsg and
+	// CloseSend) so TTFB excludes client upload transmission and application
+	// Write() intervals.
 	if w.recordedTTFB.CompareAndSwap(false, true) {
-		duration := time.Since(w.startTime).Seconds()
+		start := w.startTime
+		if flushPtr := w.firstFlushSentAt.Load(); flushPtr != nil {
+			start = *flushPtr
+		}
+		duration := time.Since(start).Seconds()
 		state := metricsStateFromContext(w.ctx)
 		logicalMethod := methodName
 		if state != nil {
