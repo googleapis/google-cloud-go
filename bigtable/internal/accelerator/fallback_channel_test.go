@@ -552,8 +552,8 @@ func TestFallbackChannel_SessionLoadDivertsToClassicWithoutTripping(t *testing.T
 		},
 	}
 	sessionChannel := newTestChannel(t, sc)
-	if sc.loadListener == nil {
-		t.Fatal("expected Channel to register a SessionLoadListener on session.Client")
+	if sc.diversionListener == nil {
+		t.Fatal("expected Channel to register a SessionDiversionListener on session.Client")
 	}
 
 	classicCalls := 0
@@ -594,31 +594,124 @@ func TestFallbackChannel_SessionLoadDivertsToClassicWithoutTripping(t *testing.T
 		t.Error("expected initial SessionLoad=0.0 diversion not to trip the sticky Unimplemented breaker")
 	}
 
-	// 2. Server updates SessionLoad to 1.0 -> routes MutateRow through session.
-	sc.loadListener(1.0)
+	// 2. Server updates GlobalDiversion to 1.0 -> routes MutateRow through session.
+	sc.diversionListener(&v2pb.SessionClientConfiguration{
+		SessionDiversionConfiguration: &v2pb.SessionDiversionConfiguration{
+			DiversionStrategy: &v2pb.SessionDiversionConfiguration_GlobalDiversion{
+				GlobalDiversion: &v2pb.SessionScopeDiversionConfiguration{SessionLoad: 1.0},
+			},
+		},
+	})
 	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
 		TableName: testTableName,
 		RowKey:    []byte("k"),
 	}, &v2pb.MutateRowResponse{}); err != nil {
-		t.Fatalf("Invoke (load=1.0): %v", err)
+		t.Fatalf("Invoke (global load=1.0): %v", err)
 	}
 	if sessionCalls != 1 || classicCalls != 2 {
-		t.Fatalf("after load=1.0 Invoke: sessionCalls=%d, classicCalls=%d; want 1, 2", sessionCalls, classicCalls)
+		t.Fatalf("after global load=1.0 Invoke: sessionCalls=%d, classicCalls=%d; want 1, 2", sessionCalls, classicCalls)
 	}
 
-	// 3. Server lowers SessionLoad back to 0.0 -> routes back to classic without tripping breaker.
-	sc.loadListener(0.0)
+	// 3. Server switches to PerScopeDiversion (ReadRow=1.0, MutateRow=0.0) ->
+	// routes ReadRows through session and MutateRow through classic independently.
+	sc.diversionListener(&v2pb.SessionClientConfiguration{
+		SessionDiversionConfiguration: &v2pb.SessionDiversionConfiguration{
+			DiversionStrategy: &v2pb.SessionDiversionConfiguration_PerScopeDiversion_{
+				PerScopeDiversion: &v2pb.SessionDiversionConfiguration_PerScopeDiversion{
+					ScopeDiversions: map[string]*v2pb.SessionScopeDiversionConfiguration{
+						btransport.ScopeMethodReadRow:   {SessionLoad: 1.0},
+						btransport.ScopeMethodMutateRow: {SessionLoad: 0.0},
+					},
+				},
+			},
+		},
+	})
+	stream, err = fc.NewStream(context.Background(), &grpc.StreamDesc{}, v2pb.Bigtable_ReadRows_FullMethodName)
+	if err != nil {
+		t.Fatalf("NewStream (per-scope ReadRow=1.0): %v", err)
+	}
+	if err := stream.SendMsg(singleKeyReadReq("k")); err != nil {
+		t.Fatalf("SendMsg (per-scope ReadRow=1.0): %v", err)
+	}
+	if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); err != nil {
+		t.Fatalf("RecvMsg (per-scope ReadRow=1.0): %v", err)
+	}
 	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
 		TableName: testTableName,
 		RowKey:    []byte("k"),
 	}, &v2pb.MutateRowResponse{}); err != nil {
-		t.Fatalf("Invoke (load=0.0): %v", err)
+		t.Fatalf("Invoke (per-scope MutateRow=0.0): %v", err)
 	}
-	if sessionCalls != 1 || classicCalls != 3 {
-		t.Fatalf("after load=0.0 Invoke: sessionCalls=%d, classicCalls=%d; want 1, 3", sessionCalls, classicCalls)
+	if sessionCalls != 2 || classicCalls != 3 {
+		t.Fatalf("after per-scope ReadRow=1.0/MutateRow=0.0: sessionCalls=%d, classicCalls=%d; want 2, 3", sessionCalls, classicCalls)
+	}
+
+	// 4. Server lowers GlobalDiversion back to 0.0 -> routes back to classic without tripping breaker.
+	sc.diversionListener(&v2pb.SessionClientConfiguration{
+		SessionDiversionConfiguration: &v2pb.SessionDiversionConfiguration{
+			DiversionStrategy: &v2pb.SessionDiversionConfiguration_GlobalDiversion{
+				GlobalDiversion: &v2pb.SessionScopeDiversionConfiguration{SessionLoad: 0.0},
+			},
+		},
+	})
+	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
+		TableName: testTableName,
+		RowKey:    []byte("k"),
+	}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("Invoke (global load=0.0): %v", err)
+	}
+	if sessionCalls != 2 || classicCalls != 4 {
+		t.Fatalf("after global load=0.0 Invoke: sessionCalls=%d, classicCalls=%d; want 2, 4", sessionCalls, classicCalls)
 	}
 	if fc.isInstanceTripped("i") {
 		t.Error("expected SessionLoad=0.0 diversion not to trip the sticky Unimplemented breaker")
+	}
+}
+
+func TestFallbackStream_UnsupportedReadRowsShapeDoesNotSkewDiverter(t *testing.T) {
+	sc := &mockSessionClient{table: &mockSessionTableAPI{}}
+	sessionChannel := newTestChannel(t, sc)
+	cf := newClassicFallbackWithMock(map[string]bigtable.TableAPI{testTableName: &mockTableAPI{}})
+	fc := newTestFallbackChannel(sessionChannel, cf)
+
+	diverter := sessionChannel.diverters[clientKey{instance: "i", appProfile: "ap"}]
+	if diverter == nil {
+		t.Fatal("expected diverter to be initialized for pinned instance")
+	}
+
+	unsupportedReqs := []*v2pb.ReadRowsRequest{
+		{
+			TableName: testTableName,
+			Rows:      &v2pb.RowSet{RowKeys: [][]byte{[]byte("k1"), []byte("k2")}},
+		},
+		{
+			TableName: testTableName,
+			Rows: &v2pb.RowSet{RowRanges: []*v2pb.RowRange{{
+				StartKey: &v2pb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &v2pb.RowRange_EndKeyOpen{EndKeyOpen: []byte("z")},
+			}}},
+		},
+		{
+			TableName: testTableName,
+			Rows:      &v2pb.RowSet{RowKeys: [][]byte{[]byte("k1")}},
+			Reversed:  true,
+		},
+	}
+
+	for i, req := range unsupportedReqs {
+		stream, err := fc.NewStream(context.Background(), &grpc.StreamDesc{}, v2pb.Bigtable_ReadRows_FullMethodName)
+		if err != nil {
+			t.Fatalf("case %d: NewStream: %v", i, err)
+		}
+		if err := stream.SendMsg(req); status.Code(err) != codes.Unimplemented {
+			t.Errorf("case %d: SendMsg err = %v, want codes.Unimplemented", i, err)
+		}
+	}
+
+	snap := diverter.Snapshot()
+	if snap.SessionPicks != 0 || snap.ClassicPicks != 0 {
+		t.Errorf("unsupported ReadRows shapes skewed Diverter picks: session=%d classic=%d, want 0/0",
+			snap.SessionPicks, snap.ClassicPicks)
 	}
 }
 

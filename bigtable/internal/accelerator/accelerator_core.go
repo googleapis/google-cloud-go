@@ -226,8 +226,8 @@ func NewChannel(
 			return nil, err
 		}
 		key := clientKey{instance: instance, appProfile: appProfile}
-		d := btransport.NewDiverter(0.0)
-		sc.AddSessionLoadListener(d.SetSessionLoad)
+		d := btransport.NewDiverter()
+		sc.AddSessionDiversionListener(d.ApplySessionClientConfiguration)
 		ch.clients[key] = sc
 		ch.diverters[key] = d
 	}
@@ -300,8 +300,8 @@ func (c *Channel) getOrCreateSessionClientAndDiverter(instanceID, appProfile str
 			if err != nil {
 				return
 			}
-			d = btransport.NewDiverter(0.0)
-			sc.AddSessionLoadListener(d.SetSessionLoad)
+			d = btransport.NewDiverter()
+			sc.AddSessionDiversionListener(d.ApplySessionClientConfiguration)
 
 			c.mu.Lock()
 			if c.closed {
@@ -331,13 +331,13 @@ func (c *Channel) getOrCreateSessionClientAndDiverter(instanceID, appProfile str
 	}
 }
 
-// useSession reports whether the next RPC for (instanceID, reqAppProfile)
+// useSessionForMethod reports whether the next RPC for (instanceID, reqAppProfile, methodScope)
 // should be routed to the session data path according to its server-driven
-// SessionLoad ratio. Returns true when c is nil or instanceID is empty
+// per-scope SessionLoad ratio. Returns true when c is nil or instanceID is empty
 // (letting downstream resource validation surface any malformed name error).
 // If resolving the session client or diverter fails, records a debug tag and
 // returns false so FallbackChannel routes the traffic to classic.
-func (c *Channel) useSession(instanceID, reqAppProfile string) bool {
+func (c *Channel) useSessionForMethod(instanceID, reqAppProfile, methodScope string) bool {
 	if c == nil || instanceID == "" {
 		return true
 	}
@@ -351,7 +351,7 @@ func (c *Channel) useSession(instanceID, reqAppProfile string) bool {
 		btransport.RecordDebugTag(btransport.TagAcceleratorSessionDiverterError)
 		return false
 	}
-	return d.UseSession()
+	return d.UseSessionForMethod(methodScope)
 }
 
 // resolveAppProfile returns the effective app profile for an RPC, checking

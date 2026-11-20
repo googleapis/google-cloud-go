@@ -76,10 +76,10 @@ type mockSessionClient struct {
 	lastMVView  string
 	newMVCalled int
 
-	closeCalled     int
-	closeErr        error
-	loadListener    func(float64)
-	skipInitialLoad bool
+	closeCalled       int
+	closeErr          error
+	diversionListener func(*v2pb.SessionClientConfiguration)
+	skipInitialLoad   bool
 }
 
 func (m *mockSessionClient) OpenTable(name string) session.TableAPI {
@@ -106,12 +106,20 @@ func (m *mockSessionClient) SessionDebug() btransport.SessionDebugProvider { ret
 func (m *mockSessionClient) ChannelDebug() btransport.ChannelDebugProvider { return nil }
 func (m *mockSessionClient) ConfigDebug() btransport.ConfigDebugProvider   { return nil }
 
-func (m *mockSessionClient) AddSessionLoadListener(fn func(float64)) func() {
-	m.loadListener = fn
+func (m *mockSessionClient) AddSessionDiversionListener(fn func(*v2pb.SessionClientConfiguration)) func() {
+	m.diversionListener = fn
 	if !m.skipInitialLoad && fn != nil {
-		fn(1.0)
+		fn(&v2pb.SessionClientConfiguration{
+			SessionDiversionConfiguration: &v2pb.SessionDiversionConfiguration{
+				DiversionStrategy: &v2pb.SessionDiversionConfiguration_GlobalDiversion{
+					GlobalDiversion: &v2pb.SessionScopeDiversionConfiguration{
+						SessionLoad: 1.0,
+					},
+				},
+			},
+		})
 	}
-	return func() { m.loadListener = nil }
+	return func() { m.diversionListener = nil }
 }
 
 func (m *mockSessionClient) Close() error {

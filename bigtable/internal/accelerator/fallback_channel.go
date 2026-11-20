@@ -23,6 +23,7 @@ import (
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/accelerator/adapters"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -148,7 +149,7 @@ func (fc *FallbackChannel) Invoke(ctx context.Context, method string, args, repl
 	}
 
 	instanceID := extractInstanceFromMutateRowReq(req)
-	if !fc.isInstanceTripped(instanceID) && fc.session.useSession(instanceID, req.GetAppProfileId()) {
+	if !fc.isInstanceTripped(instanceID) && fc.session.useSessionForMethod(instanceID, req.GetAppProfileId(), btransport.ScopeMethodMutateRow) {
 		err := fc.session.Invoke(ctx, method, args, reply, opts...)
 		if err == nil {
 			return nil
@@ -261,18 +262,22 @@ func (s *fallbackReadRowsStream) SendMsg(m any) error {
 	s.req = req
 	s.sent = true
 
+	// Validate request shape before consulting the diverter or dialing a
+	// session client so unsupported shapes (multi-row, range scans, reversed)
+	// return codes.Unimplemented without skewing Diverter pick counts or
+	// reaching classicFallback.ReadRow.
+	if err := validateSingleRowReadRequest(req); err != nil {
+		return err
+	}
+
 	if s.inner != nil && s.fc != nil {
 		instanceID := extractInstanceFromReadRowsReq(req)
-		if s.fc.isInstanceTripped(instanceID) || !s.fc.session.useSession(instanceID, req.GetAppProfileId()) {
+		if s.fc.isInstanceTripped(instanceID) || !s.fc.session.useSessionForMethod(instanceID, req.GetAppProfileId(), btransport.ScopeMethodReadRow) {
 			s.inner = nil
 		}
 	}
 	if s.inner == nil {
-		// Target instance already tripped or diverted to classic via SessionLoad —
-		// validate shape before going classic. Without this call, a multi-row or
-		// range-scan request would reach classicFallback.ReadRow and return
-		// codes.Internal rather than codes.Unimplemented.
-		return validateSingleRowReadRequest(req)
+		return nil
 	}
 	// Forward to session. Any error — including Unimplemented for unsupported
 	// shapes — propagates to the caller. Do NOT catch Unimplemented here: a

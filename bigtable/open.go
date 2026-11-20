@@ -66,8 +66,8 @@ func (c *Client) buildDivertible(t *Table, openSession func() session.TableAPI) 
 // classic path. The session TableAPI is wired from the Client's
 // sessionImpl when present; it's nil when the caller pre-dialed a
 // custom gRPC conn or opted out via ClientConfig.DisableSession, in
-// which case the shim runs classic-only and useSession() reports
-// false. Server-driven SessionLoad updates from
+// which case the shim runs classic-only and useSessionForMethod reports
+// false. Server-driven diversion updates from
 // ClientConfigurationManager retarget traffic without re-opening the
 // table.
 func (c *Client) OpenTable(table string) TableAPI {
