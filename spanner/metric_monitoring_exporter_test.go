@@ -36,6 +36,7 @@ type MetricsTestServer struct {
 	srv                         *grpc.Server
 	Endpoint                    string
 	userAgent                   string
+	authHeaders                 []string
 	createMetricDescriptorReqs  []*monitoringpb.CreateMetricDescriptorRequest
 	createServiceTimeSeriesReqs []*monitoringpb.CreateTimeSeriesRequest
 	RetryCount                  int
@@ -65,6 +66,15 @@ func (m *MetricsTestServer) CreateServiceTimeSeriesRequests() []*monitoringpb.Cr
 	return reqs
 }
 
+// AuthHeaders returns and clears the authorization metadata received on CreateServiceTimeSeries requests.
+func (m *MetricsTestServer) AuthHeaders() []string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	headers := m.authHeaders
+	m.authHeaders = nil
+	return headers
+}
+
 func (m *MetricsTestServer) appendCreateMetricDescriptorReq(ctx context.Context, req *monitoringpb.CreateMetricDescriptorRequest) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -77,6 +87,9 @@ func (m *MetricsTestServer) appendCreateServiceTimeSeriesReq(ctx context.Context
 	m.createServiceTimeSeriesReqs = append(m.createServiceTimeSeriesReqs, req)
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		m.userAgent = strings.Join(md.Get("User-Agent"), ";")
+		if auth := md.Get("authorization"); len(auth) > 0 {
+			m.authHeaders = append(m.authHeaders, strings.Join(auth, ";"))
+		}
 	}
 }
 

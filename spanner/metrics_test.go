@@ -20,13 +20,17 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net"
 	"sort"
+	"sync"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel/attribute"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/api/metric"
 	"google.golang.org/grpc"
@@ -34,6 +38,7 @@ import (
 	"google.golang.org/grpc/credentials/alts"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/status"
 )
 
@@ -455,6 +460,178 @@ func TestMonitoringExporterEndpoint(t *testing.T) {
 
 			if got := exporter.client.Connection().Target(); got != tc.wantTarget {
 				t.Errorf("monitoring client target = %q, want %q", got, tc.wantTarget)
+			}
+		})
+	}
+}
+
+// staticDNSResolverBuilder resolves any "dns" target directly to its literal
+// endpoint string so tests can intercept dialed hostnames via WithContextDialer
+// without performing real DNS lookups or modifying global resolver state.
+type staticDNSResolverBuilder struct{}
+
+func (staticDNSResolverBuilder) Build(target resolver.Target, cc resolver.ClientConn, _ resolver.BuildOptions) (resolver.Resolver, error) {
+	endpoint := target.Endpoint()
+	host, _, err := net.SplitHostPort(endpoint)
+	if err != nil {
+		host = endpoint
+	}
+	if err := cc.UpdateState(resolver.State{
+		Addresses: []resolver.Address{{Addr: endpoint, ServerName: host}},
+	}); err != nil {
+		return nil, err
+	}
+	return noopResolver{}, nil
+}
+
+func (staticDNSResolverBuilder) Scheme() string { return "dns" }
+
+type noopResolver struct{}
+
+func (noopResolver) ResolveNow(resolver.ResolveNowOptions) {}
+func (noopResolver) Close()                                {}
+
+// TestBuiltinMetricsExporterUniverseDomainEndToEnd verifies end-to-end that a
+// Spanner client configured for a non-default universe domain exports built-in
+// metrics with its credentials to monitoring.<universe_domain>:443 and never
+// dials monitoring.googleapis.com:443.
+func TestBuiltinMetricsExporterUniverseDomainEndToEnd(t *testing.T) {
+	const universeDomain = "example-universe.test"
+	const wantSpannerAddr = "spanner." + universeDomain + ":443"
+	const wantMonitoringAddr = "monitoring." + universeDomain + ":443"
+	const wantToken = "test-universe-token"
+
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
+
+	creds := &google.Credentials{
+		ProjectID:              "test-project",
+		TokenSource:            oauth2.StaticTokenSource(&oauth2.Token{AccessToken: wantToken}),
+		UniverseDomainProvider: func() (string, error) { return universeDomain, nil },
+	}
+
+	tests := []struct {
+		name              string
+		envUniverseDomain string
+		extraOpts         []option.ClientOption
+	}{
+		{
+			name:      "WithUniverseDomain option",
+			extraOpts: []option.ClientOption{option.WithUniverseDomain(universeDomain)},
+		},
+		{
+			name:              "GOOGLE_CLOUD_UNIVERSE_DOMAIN env var",
+			envUniverseDomain: universeDomain,
+		},
+		{
+			name: "WithUniverseDomain and Spanner WithEndpoint",
+			extraOpts: []option.ClientOption{
+				option.WithUniverseDomain(universeDomain),
+				option.WithEndpoint(wantSpannerAddr),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("SPANNER_EMULATOR_HOST", "")
+			t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+			t.Setenv("SPANNER_MONITORING_HOST", "")
+			t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.envUniverseDomain)
+
+			spannerServer, _, teardownSpanner := NewMockedSpannerInMemTestServer(t)
+			defer teardownSpanner()
+
+			monitoringServer, err := NewMetricTestServer()
+			if err != nil {
+				t.Fatalf("NewMetricTestServer() failed: %v", err)
+			}
+			go monitoringServer.Serve()
+			defer monitoringServer.Shutdown()
+
+			var mu sync.Mutex
+			dialedAddrs := map[string]int{}
+			unexpectedAddrs := []string{}
+
+			dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+				mu.Lock()
+				dialedAddrs[addr]++
+				mu.Unlock()
+
+				var target string
+				switch addr {
+				case wantSpannerAddr:
+					target = spannerServer.ServerAddress
+				case wantMonitoringAddr:
+					target = monitoringServer.Endpoint
+				default:
+					mu.Lock()
+					unexpectedAddrs = append(unexpectedAddrs, addr)
+					mu.Unlock()
+					return nil, fmt.Errorf("unexpected dial to %q", addr)
+				}
+				return (&net.Dialer{}).DialContext(ctx, "tcp", target)
+			}
+
+			opts := []option.ClientOption{
+				option.WithCredentials(creds),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+				option.WithGRPCDialOption(grpc.WithResolvers(staticDNSResolverBuilder{})),
+				option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
+			}
+			opts = append(opts, tc.extraOpts...)
+
+			ctx := context.Background()
+			client, err := NewClientWithConfig(ctx, "projects/test-project/instances/test-instance/databases/test-db", ClientConfig{
+				NumChannels: 1,
+			}, opts...)
+			if err != nil {
+				t.Fatalf("NewClientWithConfig() failed: %v", err)
+			}
+
+			iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
+			var rowCount int
+			err = iter.Do(func(*Row) error {
+				rowCount++
+				return nil
+			})
+			if err != nil {
+				client.Close()
+				t.Fatalf("Query() failed: %v", err)
+			}
+			if rowCount == 0 {
+				client.Close()
+				t.Fatalf("Query() returned 0 rows, want > 0")
+			}
+
+			// Closing the client flushes the built-in metrics PeriodicReader.
+			client.Close()
+
+			mu.Lock()
+			gotUnexpected := append([]string(nil), unexpectedAddrs...)
+			gotSpannerDials := dialedAddrs[wantSpannerAddr]
+			gotMonitoringDials := dialedAddrs[wantMonitoringAddr]
+			mu.Unlock()
+
+			if len(gotUnexpected) > 0 {
+				t.Errorf("client attempted to dial unexpected endpoints: %v", gotUnexpected)
+			}
+			if gotSpannerDials == 0 {
+				t.Errorf("expected at least one dial to %q, got 0", wantSpannerAddr)
+			}
+			if gotMonitoringDials == 0 {
+				t.Errorf("expected at least one dial to %q, got 0", wantMonitoringAddr)
+			}
+
+			reqs := monitoringServer.CreateServiceTimeSeriesRequests()
+			if len(reqs) == 0 {
+				t.Fatalf("expected CreateServiceTimeSeries requests at %q, got 0", wantMonitoringAddr)
+			}
+			wantAuth := "Bearer " + wantToken
+			if authHeaders := monitoringServer.AuthHeaders(); len(authHeaders) == 0 || authHeaders[0] != wantAuth {
+				t.Errorf("CreateServiceTimeSeries authorization header = %v, want [%q]", authHeaders, wantAuth)
 			}
 		})
 	}
