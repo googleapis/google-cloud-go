@@ -21,12 +21,15 @@ package internal
 import (
 	"context"
 	"runtime/debug"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // waitServerCloseGrace bounds StateWaitServerClose before the pool
@@ -312,12 +315,17 @@ func (p *SessionPoolImpl) onActive(sh *SessionHandle) {
 	p.m.sessionsOpened.Add(1)
 
 	// A successful session-open signals sustained transport health;
-	// clear the consecutive-failure counter. Reset lives here (not on
-	// per-vRPC OK) so a long-lived healthy session can't mask a run
-	// of failing opens. Under sustained failures no session reaches
-	// this point, so the counter grows unimpeded toward the trip.
+	// clear the pool-level consecutive-failure counter. Reset lives here
+	// (not on per-vRPC OK) so a long-lived healthy session can't mask a
+	// run of failing opens.
 	p.consecutiveFailures.Store(0)
 	p.lastAbnormalCloseErr.Store(nil)
+
+	// Also reset the per-channel failure counter for this session's channel.
+	// Mirrors Java's ChannelWrapper.consecutiveFailures = 0 in onBeforeSessionStart.
+	if idx := sh.session.ChannelIndex(); idx >= 0 {
+		p.channelFailureCounter(idx).Store(0)
+	}
 
 	// PeerInfo is guaranteed populated: handleOpenSession parses it
 	// synchronously before firing onActive.
@@ -373,6 +381,24 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 		p.budget.Release(false)
 		p.bumpStartingClose(sh.session)
 		p.noteAbnormalCloseIfAny(sh)
+
+		// Increment per-channel failure counter and maybe recycle the channel.
+		// Mirrors Java: consecutiveFailures++ when afeId==null (pre-ready) and
+		// the error is not CANCELLED (which indicates pool teardown or context
+		// cancel, not a channel fault). shouldRecycleChannel checks
+		// UNIMPLEMENTED, "server is draining", and the per-channel threshold —
+		// mirroring Java's ChannelPoolDpImpl.shouldRecycleChannel.
+		//
+		// We keep per-channel counts (not p.consecutiveFailures) because the
+		// pool-level counter resets whenever ANY channel opens a session
+		// successfully; a single bad channel in an otherwise-healthy pool would
+		// never accumulate enough failures to trigger recycling.
+		var channelFailures int32
+		if idx := sh.session.ChannelIndex(); idx >= 0 && status.Code(sh.session.closeError()) != codes.Canceled {
+			channelFailures = p.channelFailureCounter(idx).Add(1)
+		}
+		p.maybeRecycleChannel(sh, channelFailures)
+
 		// Re-drive creation after a session died before ever reaching
 		// Ready. This is the load-bearing fix for the deadline-less
 		// CheckoutSession hang: a session that dies in Starting fires
@@ -406,6 +432,61 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 	p.sl.OnSessionClosed(sh)
 	p.recordSessionClose(sh.session, "")
 	p.noteAbnormalCloseIfAny(sh)
+	// For ready sessions, consecutive failures aren't incremented (mirrors
+	// Java: consecutiveFailures++ only when afeId==null). Pass 0 so only
+	// UNIMPLEMENTED / "server is draining" / GoAway trigger recycling.
+	p.maybeRecycleChannel(sh, 0)
+}
+
+// channelConsecutiveFailureThreshold mirrors Java's
+// CONSECUTIVE_OPEN_SESSION_FAILURE_THRESHOLD = 5 in ChannelPoolDpImpl.
+const channelConsecutiveFailureThreshold = 5
+
+// shouldRecycleChannel mirrors Java's ChannelPoolDpImpl.shouldRecycleChannel.
+// Returns true when the underlying gRPC connection should be replaced:
+//  1. UNIMPLEMENTED — server does not support sessions on this channel.
+//  2. "server is draining" in status description — gRPC-level transport GOAWAY.
+//  3. Per-channel consecutive failures have reached the threshold.
+//
+// Application-level GoAway protos (session-level close reason "GoAway") are
+// intentionally excluded: they indicate graceful session drain, not a channel
+// fault, and are not recycled in Java's shouldRecycleChannel either.
+func shouldRecycleChannel(closeErr error, channelFailures int32) bool {
+	if status.Code(closeErr) == codes.Unimplemented {
+		return true
+	}
+	if msg := status.Convert(closeErr).Message(); strings.Contains(strings.ToLower(msg), "server is draining") {
+		return true
+	}
+	return channelFailures >= channelConsecutiveFailureThreshold
+}
+
+// channelFailureCounter returns (or lazily creates) the per-channel
+// consecutive-failure counter for channelIdx.
+func (p *SessionPoolImpl) channelFailureCounter(channelIdx int32) *atomic.Int32 {
+	if v, ok := p.channelConsecutiveFailures.Load(channelIdx); ok {
+		return v.(*atomic.Int32)
+	}
+	v, _ := p.channelConsecutiveFailures.LoadOrStore(channelIdx, new(atomic.Int32))
+	return v.(*atomic.Int32)
+}
+
+// maybeRecycleChannel calls channelRecycler when the session's close
+// warrants replacing the underlying gRPC connection. channelFailures is
+// the per-channel consecutive-failure count AFTER incrementing for this
+// failure (pass 0 for ready-session closes where the counter does not
+// advance).
+func (p *SessionPoolImpl) maybeRecycleChannel(sh *SessionHandle, channelFailures int32) {
+	if p.channelRecycler == nil || sh == nil || sh.session == nil {
+		return
+	}
+	idx := sh.session.ChannelIndex()
+	if idx < 0 {
+		return
+	}
+	if shouldRecycleChannel(sh.session.closeError(), channelFailures) {
+		p.channelRecycler(idx)
+	}
 }
 
 // noteAbnormalCloseIfAny bumps the consecutive-failure counter when a
