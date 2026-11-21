@@ -856,3 +856,52 @@ func TestStreamingPullKeepAlive_ReopenStream(t *testing.T) {
 		t.Fatalf("expected at least 2 streams opened, got %v", streamsOpened)
 	}
 }
+
+// A message nacked as soon as it arrives has its receipt modack and its nack
+// queued together. The receipt must reach the server first: sent after the
+// nack, it would extend a message the handler asked to have redelivered.
+func TestIterator_ReceiptModackNeverFollowsNack(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topicName := fmt.Sprintf("projects/%s/topics/t", projName)
+	publisher := mustCreateTopic(t, client, topicName)
+	s := mustCreateSubConfig(t, client, &pb.Subscription{
+		Name:  fmt.Sprintf("projects/%s/subscriptions/s", projName),
+		Topic: topicName,
+	})
+	const n = 50
+	for i := 0; i < n; i++ {
+		if _, err := publisher.Publish(ctx, &Message{Data: []byte{byte(i)}}).Get(ctx); err != nil {
+			t.Fatal(err)
+		}
+	}
+	var acked atomic.Int32
+	err := s.Receive(ctx, func(_ context.Context, m *Message) {
+		if srv.Message(m.ID).Deliveries == 1 {
+			m.Nack()
+			return
+		}
+		m.Ack()
+		if acked.Add(1) == n {
+			cancel()
+		}
+	})
+	if err != nil && !errors.Is(err, context.Canceled) {
+		t.Fatal(err)
+	}
+	for _, m := range srv.Messages() {
+		nacked := map[string]bool{}
+		for _, ma := range m.Modacks {
+			if ma.AckDeadline == 0 {
+				nacked[ma.AckID] = true
+			} else if nacked[ma.AckID] {
+				t.Errorf("message %s: modack of %ds sent for ack ID %s after it was nacked", m.ID, ma.AckDeadline, ma.AckID)
+			}
+		}
+	}
+}
