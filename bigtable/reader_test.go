@@ -508,3 +508,57 @@ func ccReset() *btspb.ReadRowsResponse_CellChunk {
 	return &btspb.ReadRowsResponse_CellChunk{
 		RowStatus: &btspb.ReadRowsResponse_CellChunk_ResetRow{ResetRow: true}}
 }
+
+func TestMakeFullReadStats_NilSubMessagesSafe(t *testing.T) {
+	tests := []struct {
+		name  string
+		input *btspb.RequestStats
+		want  FullReadStats
+	}{
+		{
+			name:  "nil_request_stats",
+			input: nil,
+		},
+		{
+			name:  "empty_request_stats",
+			input: &btspb.RequestStats{},
+		},
+		{
+			name: "nil_iteration_and_latency_stats",
+			input: &btspb.RequestStats{
+				StatsView: &btspb.RequestStats_FullReadStatsView{
+					FullReadStatsView: &btspb.FullReadStatsView{},
+				},
+			},
+		},
+		{
+			name: "nil_frontend_server_latency",
+			input: &btspb.RequestStats{
+				StatsView: &btspb.RequestStats_FullReadStatsView{
+					FullReadStatsView: &btspb.FullReadStatsView{
+						ReadIterationStats: &btspb.ReadIterationStats{
+							RowsReturnedCount: 3,
+							RowsSeenCount:     5,
+						},
+						RequestLatencyStats: &btspb.RequestLatencyStats{},
+					},
+				},
+			},
+			want: FullReadStats{
+				ReadIterationStats: ReadIterationStats{
+					RowsReturnedCount: 3,
+					RowsSeenCount:     5,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := makeFullReadStats(tc.input)
+			if !testutil.Equal(got, tc.want) {
+				t.Errorf("makeFullReadStats(%s) = %+v, want %+v", tc.name, got, tc.want)
+			}
+		})
+	}
+}
