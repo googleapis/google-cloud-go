@@ -20,6 +20,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -35,6 +36,8 @@ import (
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/jwt"
+	"cloud.google.com/go/auth/internal/regionalaccessboundary"
+	"cloud.google.com/go/auth/internal/transport/headers"
 )
 
 type tokResp struct {
@@ -1296,5 +1299,181 @@ func TestDefaultCredentials_OnGCE(t *testing.T) {
 	}
 	if !strings.Contains(logBuf.String(), "metadata request") {
 		t.Errorf("log output missing 'metadata request': got %q", logBuf.String())
+	}
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func TestDefaultCredentials_ImpersonatedServiceAccount_NonDefaultUniverseNoRABLeak(t *testing.T) {
+	t.Setenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED", "true")
+	regionalaccessboundary.TestOnlyResetIsEnabled()
+	t.Cleanup(regionalaccessboundary.TestOnlyResetIsEnabled)
+	if enabled, err := regionalaccessboundary.IsEnabled(); err != nil || !enabled {
+		t.Fatalf("regionalaccessboundary.IsEnabled() = (%v, %v), want (true, nil)", enabled, err)
+	}
+
+	const (
+		nonDefaultUD = "example.com"
+		targetSA     = "target-sa@fake_project.iam.gserviceaccount.com"
+		middleSA     = "middle-sa@fake_project.iam.gserviceaccount.com"
+		sourceSA     = "source-sa@fake_project.iam.gserviceaccount.com"
+		targetImpURL = "https://iamcredentials.example.com/v1/projects/-/serviceAccounts/" + targetSA + ":generateAccessToken"
+		middleImpURL = "https://iamcredentials.example.com/v1/projects/-/serviceAccounts/" + middleSA + ":generateAccessToken"
+		sourceImpURL = "https://iamcredentials.example.com/v1/projects/-/serviceAccounts/" + sourceSA + ":generateAccessToken"
+	)
+
+	saBytes := readTestFile(t, "../internal/testdata/sa.json")
+	saCustomTokenURI, err := credsfile.ParseServiceAccount(saBytes)
+	if err != nil {
+		t.Fatal(err)
+	}
+	saCustomTokenURI.TokenURL = "https://oauth2.example.com/token"
+	saCustomTokenURIBytes := marshalTestFile(t, saCustomTokenURI)
+
+	externalAccountSource := marshalTestFile(t, &credsfile.ExternalAccountFile{
+		Type:                           string(ExternalAccount),
+		Audience:                       "//iam.example.com/projects/123456/locations/global/workloadIdentityPools/pool/providers/provider",
+		SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
+		TokenURL:                       "https://sts.example.com/v1/token",
+		ServiceAccountImpersonationURL: sourceImpURL,
+		CredentialSource: &credsfile.CredentialSource{
+			URL: "https://idp.example.com/subject",
+			Format: &credsfile.Format{
+				Type:                  "json",
+				SubjectTokenFieldName: "id_token",
+			},
+		},
+	})
+
+	nestedImpersonatedSource := marshalTestFile(t, &credsfile.ImpersonatedServiceAccountFile{
+		Type:                           string(ImpersonatedServiceAccount),
+		ServiceAccountImpersonationURL: middleImpURL,
+		CredSource:                     json.RawMessage(saCustomTokenURIBytes),
+	})
+
+	tests := []struct {
+		name       string
+		credSource json.RawMessage
+	}{
+		{
+			name:       "external_account with impersonation",
+			credSource: json.RawMessage(externalAccountSource),
+		},
+		{
+			name:       "nested impersonated_service_account",
+			credSource: json.RawMessage(nestedImpersonatedSource),
+		},
+		{
+			name:       "service_account with custom non-default token_uri",
+			credSource: json.RawMessage(saCustomTokenURIBytes),
+		},
+		{
+			name:       "service_account with default token_uri",
+			credSource: json.RawMessage(saBytes),
+		},
+	}
+
+	expireTime := time.Now().Add(time.Hour).UTC().Format(time.RFC3339)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			leakedCh := make(chan string, 10)
+
+			jsonResp := func(status int, body string) *http.Response {
+				return &http.Response{
+					StatusCode: status,
+					Header:     http.Header{"Content-Type": []string{"application/json"}},
+					Body:       io.NopCloser(strings.NewReader(body)),
+				}
+			}
+
+			client := &http.Client{
+				Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+					host := req.URL.Hostname()
+					if host == internal.DefaultUniverseDomain || strings.HasSuffix(host, "."+internal.DefaultUniverseDomain) {
+						leakedCh <- fmt.Sprintf("%s %s (Authorization: %q)", req.Method, req.URL.String(), req.Header.Get("Authorization"))
+						return jsonResp(http.StatusForbidden, `{"error":"forbidden"}`), nil
+					}
+					switch req.URL.String() {
+					case "https://idp.example.com/subject":
+						return jsonResp(http.StatusOK, `{"id_token":"fake_subject_token"}`), nil
+					case "https://sts.example.com/v1/token":
+						return jsonResp(http.StatusOK, `{"access_token":"fake_sts_token","token_type":"Bearer","expires_in":3600}`), nil
+					case "https://oauth2.example.com/token":
+						return jsonResp(http.StatusOK, `{"access_token":"fake_sa_token","token_type":"Bearer","expires_in":3600}`), nil
+					case sourceImpURL:
+						return jsonResp(http.StatusOK, fmt.Sprintf(`{"accessToken":"fake_source_token","expireTime":%q}`, expireTime)), nil
+					case middleImpURL:
+						return jsonResp(http.StatusOK, fmt.Sprintf(`{"accessToken":"fake_middle_token","expireTime":%q}`, expireTime)), nil
+					case targetImpURL:
+						if req.Header.Get("Authorization") == "" {
+							t.Errorf("impersonation request missing Authorization header")
+						}
+						return jsonResp(http.StatusOK, fmt.Sprintf(`{"accessToken":"fake_target_token","expireTime":%q}`, expireTime)), nil
+					default:
+						leakedCh <- fmt.Sprintf("unexpected request: %s %s", req.Method, req.URL.String())
+						return jsonResp(http.StatusNotFound, `{"error":"not found"}`), nil
+					}
+				}),
+			}
+
+			credJSON := marshalTestFile(t, &credsfile.ImpersonatedServiceAccountFile{
+				Type:                           string(ImpersonatedServiceAccount),
+				UniverseDomain:                 nonDefaultUD,
+				ServiceAccountImpersonationURL: targetImpURL,
+				CredSource:                     tt.credSource,
+			})
+
+			creds, err := DetectDefault(&DetectOptions{
+				CredentialsJSON: credJSON,
+				Scopes:          []string{cloudPlatformScope},
+				Client:          client,
+			})
+			if err != nil {
+				t.Fatalf("DetectDefault() = %v", err)
+			}
+			gotUD, err := creds.UniverseDomain(ctx)
+			if err != nil {
+				t.Fatalf("creds.UniverseDomain() = %v", err)
+			}
+			if gotUD != nonDefaultUD {
+				t.Fatalf("creds.UniverseDomain() = %q, want %q", gotUD, nonDefaultUD)
+			}
+
+			tok, err := creds.Token(ctx)
+			select {
+			case leak := <-leakedCh:
+				t.Fatalf("leaked request to default universe: %s", leak)
+			default:
+			}
+			if err != nil {
+				t.Fatalf("creds.Token() = %v", err)
+			}
+			if tok.Value != "fake_target_token" {
+				t.Fatalf("tok.Value = %q, want %q", tok.Value, "fake_target_token")
+			}
+
+			// Also verify attaching the outer token to a non-default API request
+			// does not trigger a background RAB lookup to googleapis.com.
+			apiReq, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://storage.example.com/v1/test", nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			headers.SetAuthHeader(tok, apiReq)
+			if got := apiReq.Header.Get("X-Allowed-Locations"); got != "" {
+				t.Errorf("X-Allowed-Locations header = %q, want empty", got)
+			}
+
+			select {
+			case leak := <-leakedCh:
+				t.Fatalf("leaked request to default universe: %s", leak)
+			case <-time.After(50 * time.Millisecond):
+			}
+		})
 	}
 }

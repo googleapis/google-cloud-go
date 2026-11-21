@@ -27,7 +27,6 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/transport/headers"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -124,7 +123,11 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	headers.SetAuthHeader(sourceToken, req)
+	typ := sourceToken.Type
+	if typ == "" {
+		typ = internal.TokenTypeBearer
+	}
+	req.Header.Set(authHeaderKey, typ+" "+sourceToken.Value)
 	logger.DebugContext(ctx, "impersonated token request", "request", internallog.HTTPRequest(req, b))
 	resp, body, err := internal.DoRequest(o.Client, req)
 	if err != nil {
