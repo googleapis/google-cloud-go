@@ -178,11 +178,13 @@ func (h *SessionHandle) GetLastActivity() time.Time {
 // innermost — pool.mu is never taken while holding sl.mu
 // (SESSION_COMPONENT_SPEC §B8).
 type sessionList struct {
-	mu            sync.Mutex
-	afeHandles    map[AfeID]*afeHandle
-	afesWithReady []*afeHandle // subset with len(sessions) > 0 (I3)
-	handleToAfe   map[*SessionHandle]*afeHandle
-	readyCount    int // registered handles in the pool's expected set (I2); gates scale-up
+	mu               sync.Mutex
+	afeHandles       map[AfeID]*afeHandle
+	afesWithReady    []*afeHandle // subset with len(sessions) > 0 (I3)
+	handleToAfe      map[*SessionHandle]*afeHandle
+	readyCount       int // registered handles in the pool's expected set (I2); gates scale-up
+	retiredOkRpcs    int64
+	retiredErrorRpcs int64
 }
 
 // newSessionList returns an empty sessionList ready for use.
@@ -338,6 +340,10 @@ func (sl *sessionList) OnSessionClosed(sh *SessionHandle) {
 	wasClosing := !sh.inExpectedCount
 	sl.dropMembershipLocked(sh) // I2 (idempotent — Closing may have fired)
 	delete(sl.handleToAfe, sh)
+	if sh.session != nil {
+		sl.retiredOkRpcs += sh.session.okRpcs.Load()
+		sl.retiredErrorRpcs += sh.session.errorRpcs.Load()
+	}
 	// refCount underflow here means an OnSessionClosed fired without a
 	// matching OnSessionStarted — plain double-close is already blocked
 	// by the delete above. Violates I4/I6: surface via debug-tag counter
@@ -406,6 +412,24 @@ func (sl *sessionList) AllHandles() []*SessionHandle {
 		out = append(out, sh)
 	}
 	return out
+}
+
+// AllHandlesWithRetiredCounts atomically snapshots both the active handles
+// and the cumulative ok/error RPC counts accumulated from sessions that have
+// already closed, preventing negative deltas in periodic rate calculations.
+func (sl *sessionList) AllHandlesWithRetiredCounts() (handles []*SessionHandle, retiredOk, retiredErr int64) {
+	sl.mu.Lock()
+	defer sl.mu.Unlock()
+	retiredOk = sl.retiredOkRpcs
+	retiredErr = sl.retiredErrorRpcs
+	if len(sl.handleToAfe) == 0 {
+		return nil, retiredOk, retiredErr
+	}
+	handles = make([]*SessionHandle, 0, len(sl.handleToAfe))
+	for sh := range sl.handleToAfe {
+		handles = append(handles, sh)
+	}
+	return handles, retiredOk, retiredErr
 }
 
 // ReadyCount returns the O(1) count that gates scale-up — handles
