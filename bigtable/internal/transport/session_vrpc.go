@@ -36,13 +36,15 @@ func (s *Session) activeVRPC() *vrpcImpl {
 	return rpc
 }
 
-// claimSlot assigns rpc to the empty slot. Returns false if the slot still
-// holds a prior vRPC — concurrent claims are rejected as UNCOMMITTED at
-// the call site.
+// claimSlot assigns rpc to the empty slot while verifying the session is
+// still StateReady under slotMu. Returns false if the session has left
+// StateReady (e.g. concurrent Close / GoAway / ForceClose) or if the slot
+// still holds a prior vRPC — concurrent claims are rejected as UNCOMMITTED
+// at the call site.
 func (s *Session) claimSlot(rpc *vrpcImpl) bool {
 	s.slotMu.Lock()
 	defer s.slotMu.Unlock()
-	if s.activeRPC != nil {
+	if State(s.state.Load()) != StateReady || s.activeRPC != nil {
 		return false
 	}
 	s.activeRPC = rpc
