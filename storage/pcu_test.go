@@ -862,10 +862,16 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				gen := nextGen
 				// If the destination isn't the final object, it's an intermediate.
 				if c.dst.object != "final-dest" {
+					if c.dst.conds == nil || !c.dst.conds.DoesNotExist {
+						t.Errorf("intermediate compose dst(%q) DoesNotExist = false, want true", c.dst.object)
+					}
 					intermediateCount++
 					interGenByName[c.dst.object] = gen
 				} else if tc.wantIntermediates > 0 {
 					for _, src := range c.srcs {
+						if src.conds != nil {
+							t.Errorf("final compose source %q has unexpected conds %+v", src.object, src.conds)
+						}
 						wantGen, ok := interGenByName[src.object]
 						if !ok {
 							t.Errorf("final compose source %q was not created as an intermediate", src.object)

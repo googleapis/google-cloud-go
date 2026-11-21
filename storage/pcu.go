@@ -556,7 +556,7 @@ func (s *pcuState) composeParts() error {
 				compName := path.Join(tmpObjectPrefix, fmt.Sprintf("int-%s-lv%d-%d", h, level, idx))
 
 				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
-				composer := interHandle.Key(s.w.o.encryptionKey).ComposerFrom(finalComps[start:end]...)
+				composer := interHandle.If(Conditions{DoesNotExist: true}).Key(s.w.o.encryptionKey).ComposerFrom(finalComps[start:end]...)
 				composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
 				composer.DeleteSourceObjects = true
 
