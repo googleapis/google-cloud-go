@@ -129,9 +129,21 @@ func (s *PoolSizer) UpdateConfig(config *spb.SessionClientConfiguration_SessionP
 	// min/max are atomic so hot-path readers (pool gate + snapshot) see
 	// the new bound the moment UpdateConfig returns; s.mu still brackets
 	// the write with headroom/qlen so a Decide walking the sizer sees a
-	// coherent config triple.
-	s.minSessions.Store(config.MinSessionCount)
-	s.maxSessions.Store(config.MaxSessionCount)
+	// coherent config triple. Omitted/non-positive bounds preserve the
+	// current values rather than collapsing MaxSessions to 0.
+	minCnt := s.minSessions.Load()
+	if config.MinSessionCount > 0 {
+		minCnt = config.MinSessionCount
+	}
+	maxCnt := s.maxSessions.Load()
+	if config.MaxSessionCount > 0 {
+		maxCnt = config.MaxSessionCount
+	}
+	if maxCnt < minCnt {
+		maxCnt = minCnt
+	}
+	s.minSessions.Store(minCnt)
+	s.maxSessions.Store(maxCnt)
 	// Mirror the constructor guard: a zero or negative headroom from
 	// the server would render as HeadroomPct=0 on the loadz trace and
 	// collapse IdleHeadroom to the MinIdleSessions floor — the pool

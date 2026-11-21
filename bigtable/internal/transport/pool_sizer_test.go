@@ -472,3 +472,39 @@ func TestPoolSizer_ConcurrentDecideAndUpdateConfig(t *testing.T) {
 		t.Error("fetcher never called; Decide loop may have short-circuited")
 	}
 }
+
+func TestPoolSizer_UpdateConfigPreservesBoundsOnOmittedFields(t *testing.T) {
+	s := NewPoolSizer(fixedFetcher(&PoolStats{InUseCount: 2}), 4, 40, 0.25)
+
+	s.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		Headroom: 0.50,
+	})
+
+	d := s.Decide()
+	if d.MinSessions != 4 {
+		t.Errorf("MinSessions = %d, want preserved 4", d.MinSessions)
+	}
+	if d.MaxSessions != 40 {
+		t.Errorf("MaxSessions = %d, want preserved 40", d.MaxSessions)
+	}
+	if d.HeadroomPct != 0.50 {
+		t.Errorf("HeadroomPct = %v, want 0.50", d.HeadroomPct)
+	}
+}
+
+func TestSessionPool_UpdateConfigPreservesPenaltyWhenOmitted(t *testing.T) {
+	p := newTestPool(t, 1, 10)
+	wantPenalty := defaultPoolConfig().GetNewSessionCreationPenalty().AsDuration()
+
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		NewSessionCreationBudget: 25,
+	})
+
+	snap := p.budget.Snapshot()
+	if snap.Capacity != 25 {
+		t.Errorf("budget Capacity = %d, want 25", snap.Capacity)
+	}
+	if snap.PenaltyDuration != wantPenalty {
+		t.Errorf("budget PenaltyDuration = %v, want preserved %v", snap.PenaltyDuration, wantPenalty)
+	}
+}
