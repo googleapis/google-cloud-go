@@ -72,6 +72,11 @@ func IsEnabled() (bool, error) {
 	return isEnabled()
 }
 
+// TestOnlyResetIsEnabled resets the cached IsEnabled state for testing.
+func TestOnlyResetIsEnabled() {
+	isEnabled = sync.OnceValues(isRegionalAccessBoundaryEnabled)
+}
+
 // isRegionalAccessBoundaryEnabled checks if the Regional Access Boundary feature
 // is enabled via the GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED environment variable.
 //

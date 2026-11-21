@@ -284,7 +284,12 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 		return nil, errors.New("missing 'source_credentials' field or 'service_account_impersonation_url' in credentials")
 	}
 
+	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	sourceOpts := *opts
+	// Propagate universe into the impersonated opts.
+	if sourceOpts.UniverseDomain == "" && ud != "" && ud != internalauth.DefaultUniverseDomain {
+		sourceOpts.UniverseDomain = ud
+	}
 
 	// Source credential needs IAM or Cloud Platform scope to call the
 	// iamcredentials endpoint. The scopes provided by the user are for the
@@ -294,7 +299,6 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 	if err != nil {
 		return nil, err
 	}
-	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	scopes := opts.scopes()
 	if len(scopes) == 0 {
 		scopes = f.Scopes
@@ -311,6 +315,9 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 	tp, err := impersonate.NewTokenProvider(impOpts)
 	if err != nil {
 		return nil, err
+	}
+	if ud != "" && ud != internalauth.DefaultUniverseDomain {
+		return tp, nil
 	}
 	regionalAccessBoundaryEnabled, err := regionalaccessboundary.IsEnabled()
 	if err != nil {
