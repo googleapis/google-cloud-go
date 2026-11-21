@@ -518,7 +518,7 @@ func (p *SessionPoolImpl) PoolSnapshot() PoolSnapshot {
 		if s.State == StateReady.String() {
 			snap.ReadyCount++
 		}
-		if s.Handle.Outstanding > 0 {
+		if s.Handle.Outstanding > 0 || (s.State == StateReady.String() && s.ActiveRpcs > 0) {
 			snap.InUseCount++
 		}
 		for k, v := range s.ClusterCounts {
