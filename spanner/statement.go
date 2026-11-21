@@ -22,8 +22,7 @@ import (
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc/codes"
-	proto3 "google.golang.org/protobuf/types/known/structpb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // A Statement is a SQL query with named parameters.
@@ -51,8 +50,8 @@ func NewStatement(sql string) Statement {
 // convertParams converts a statement's parameters into proto Param and
 // ParamTypes.
 func (s *Statement) convertParams() (*structpb.Struct, map[string]*sppb.Type, error) {
-	params := &proto3.Struct{
-		Fields: map[string]*proto3.Value{},
+	params := &structpb.Struct{
+		Fields: map[string]*structpb.Value{},
 	}
 	paramTypes := map[string]*sppb.Type{}
 	for k, v := range s.Params {
