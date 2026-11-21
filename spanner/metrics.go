@@ -22,6 +22,7 @@ import (
 	"hash/fnv"
 	"log"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -219,17 +220,24 @@ var (
 		return defaultClientLocation
 	}
 
-	// GCM exporter should use the same options as Spanner client
-	// createExporterOptions takes Spanner client options and returns exporter options
-	// Overwritten in tests
+	endpointOptionType = reflect.TypeOf(option.WithEndpoint(""))
+
+	// GCM exporter should use the same options as Spanner client, excluding any
+	// Spanner-specific Endpoint option so the monitoring client resolves its
+	// default endpoint template (monitoring.UNIVERSE_DOMAIN:443) using the
+	// configured universe domain unless SPANNER_MONITORING_HOST is explicitly set.
+	// Overwritten in tests.
 	createExporterOptions = func(spannerOpts ...option.ClientOption) []option.ClientOption {
-		defaultMonitoringEndpoint := "monitoring.googleapis.com:443"
-		if os.Getenv("SPANNER_MONITORING_HOST") != "" {
-			defaultMonitoringEndpoint = os.Getenv("SPANNER_MONITORING_HOST")
+		exporterOpts := make([]option.ClientOption, 0, len(spannerOpts)+1)
+		for _, opt := range spannerOpts {
+			if reflect.TypeOf(opt) != endpointOptionType {
+				exporterOpts = append(exporterOpts, opt)
+			}
 		}
-		// overwrite any Endpoint option
-		spannerOpts = append(spannerOpts, option.WithEndpoint(defaultMonitoringEndpoint))
-		return spannerOpts
+		if monitoringHost := os.Getenv("SPANNER_MONITORING_HOST"); monitoringHost != "" {
+			exporterOpts = append(exporterOpts, option.WithEndpoint(monitoringHost))
+		}
+		return exporterOpts
 	}
 
 	grpcMetricsToEnable = []string{

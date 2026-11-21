@@ -382,3 +382,80 @@ func TestSetDirectPathUsed(t *testing.T) {
 		})
 	}
 }
+
+func TestMonitoringExporterEndpoint(t *testing.T) {
+	tests := []struct {
+		name              string
+		envUniverseDomain string
+		envMonitoringHost string
+		spannerOpts       []option.ClientOption
+		wantTarget        string
+	}{
+		{
+			name:       "default GDU endpoint",
+			wantTarget: "monitoring.googleapis.com:443",
+		},
+		{
+			name:        "WithUniverseDomain routes to universe monitoring endpoint",
+			spannerOpts: []option.ClientOption{option.WithUniverseDomain("example-universe.test")},
+			wantTarget:  "monitoring.example-universe.test:443",
+		},
+		{
+			name:              "GOOGLE_CLOUD_UNIVERSE_DOMAIN env var routes to universe monitoring endpoint",
+			envUniverseDomain: "example-universe.test",
+			wantTarget:        "monitoring.example-universe.test:443",
+		},
+		{
+			name:              "WithUniverseDomain overrides GOOGLE_CLOUD_UNIVERSE_DOMAIN env var",
+			envUniverseDomain: "env-universe.test",
+			spannerOpts:       []option.ClientOption{option.WithUniverseDomain("opt-universe.test")},
+			wantTarget:        "monitoring.opt-universe.test:443",
+		},
+		{
+			name: "Spanner WithEndpoint is stripped while preserving WithUniverseDomain",
+			spannerOpts: []option.ClientOption{
+				option.WithUniverseDomain("example-universe.test"),
+				option.WithEndpoint("spanner.example-universe.test:443"),
+			},
+			wantTarget: "monitoring.example-universe.test:443",
+		},
+		{
+			name: "Spanner WithEndpoint is stripped in default GDU",
+			spannerOpts: []option.ClientOption{
+				option.WithEndpoint("spanner.custom.local:443"),
+			},
+			wantTarget: "monitoring.googleapis.com:443",
+		},
+		{
+			name:              "SPANNER_MONITORING_HOST explicitly overrides monitoring endpoint",
+			envMonitoringHost: "custom-monitoring.local:443",
+			spannerOpts: []option.ClientOption{
+				option.WithUniverseDomain("example-universe.test"),
+				option.WithEndpoint("spanner.example-universe.test:443"),
+			},
+			wantTarget: "custom-monitoring.local:443",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.envUniverseDomain)
+			t.Setenv("SPANNER_MONITORING_HOST", tc.envMonitoringHost)
+			// Keep GDU endpoint resolution hermetic on hosts with ambient mTLS client certificates.
+			t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+			t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "auto")
+
+			ctx := context.Background()
+			opts := append([]option.ClientOption{option.WithoutAuthentication()}, tc.spannerOpts...)
+			exporter, err := newMonitoringExporter(ctx, "test-project", "", nil, createExporterOptions(opts...)...)
+			if err != nil {
+				t.Fatalf("newMonitoringExporter() failed: %v", err)
+			}
+			defer exporter.Shutdown(ctx)
+
+			if got := exporter.client.Connection().Target(); got != tc.wantTarget {
+				t.Errorf("monitoring client target = %q, want %q", got, tc.wantTarget)
+			}
+		})
+	}
+}
