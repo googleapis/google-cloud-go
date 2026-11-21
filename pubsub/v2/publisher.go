@@ -117,6 +117,8 @@ type PublishSettings struct {
 	NumGoroutines int
 
 	// The maximum time that the client will attempt to publish a bundle of messages.
+	//
+	// Defaults to DefaultPublishSettings.Timeout when zero.
 	Timeout time.Duration
 
 	// FlowControlSettings defines publisher flow control settings.
@@ -360,6 +362,9 @@ func (t *Publisher) initBundler() {
 		return
 	}
 
+	if t.PublishSettings.Timeout == 0 {
+		t.PublishSettings.Timeout = DefaultPublishSettings.Timeout
+	}
 	timeout := t.PublishSettings.Timeout
 
 	workers := t.PublishSettings.NumGoroutines
