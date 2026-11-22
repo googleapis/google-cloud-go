@@ -237,6 +237,12 @@ func (v *Validator) validateES256(ctx context.Context, keyID string, hashedConte
 		X:     new(big.Int).SetBytes(dx),
 		Y:     new(big.Int).SetBytes(dy),
 	}
+	// An ES256 JWS signature is the fixed-width concatenation R || S, each
+	// es256KeySize bytes (RFC 7518, section 3.4). Reject anything else before
+	// slicing, since the signature comes from an untrusted token.
+	if len(sig) != 2*es256KeySize {
+		return fmt.Errorf("idtoken: invalid ES256 signature length: got %d bytes, want %d", len(sig), 2*es256KeySize)
+	}
 	r := big.NewInt(0).SetBytes(sig[:es256KeySize])
 	s := big.NewInt(0).SetBytes(sig[es256KeySize:])
 	if valid := ecdsa.Verify(pk, hashedContent, r, s); !valid {
@@ -274,7 +280,10 @@ func parseToken(idToken string) (*jwt.Header, *Payload, []byte, error) {
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("idtoken: unable to decode JWT header: %v", err)
 	}
-	var header *jwt.Header
+	// Unmarshal into values rather than nil pointers: a segment containing the
+	// JSON literal null leaves a pointer target nil without returning an error,
+	// which would cause a nil pointer dereference on untrusted input.
+	var header jwt.Header
 	err = json.Unmarshal(dh, &header)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("idtoken: unable to unmarshal JWT header: %v", err)
@@ -285,7 +294,7 @@ func parseToken(idToken string) (*jwt.Header, *Payload, []byte, error) {
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("idtoken: unable to decode JWT claims: %v", err)
 	}
-	var payload *Payload
+	var payload Payload
 	if err := json.Unmarshal(dp, &payload); err != nil {
 		return nil, nil, nil, fmt.Errorf("idtoken: unable to unmarshal JWT payload: %v", err)
 	}
@@ -298,7 +307,7 @@ func parseToken(idToken string) (*jwt.Header, *Payload, []byte, error) {
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("idtoken: unable to decode JWT signature: %v", err)
 	}
-	return header, payload, signature, nil
+	return &header, &payload, signature, nil
 }
 
 // hashHeaderPayload gets the SHA256 checksum for verification of the JWT.
