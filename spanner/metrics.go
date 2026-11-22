@@ -219,17 +219,21 @@ var (
 		return defaultClientLocation
 	}
 
-	// GCM exporter should use the same options as Spanner client
-	// createExporterOptions takes Spanner client options and returns exporter options
-	// Overwritten in tests
+	// GCM exporter should use the same options as Spanner client, resetting any
+	// Spanner-specific Endpoint option so the monitoring client resolves its
+	// default endpoint template (monitoring.UNIVERSE_DOMAIN:443) using the
+	// configured universe domain unless SPANNER_MONITORING_HOST is explicitly set.
+	// Also forward GOOGLE_CLOUD_UNIVERSE_DOMAIN explicitly because
+	// google.golang.org/api v0.288.0 does not apply that env var to gRPC
+	// transport endpoint resolution (fixed in later google.golang.org/api releases).
+	// Overwritten in tests.
 	createExporterOptions = func(spannerOpts ...option.ClientOption) []option.ClientOption {
-		defaultMonitoringEndpoint := "monitoring.googleapis.com:443"
-		if os.Getenv("SPANNER_MONITORING_HOST") != "" {
-			defaultMonitoringEndpoint = os.Getenv("SPANNER_MONITORING_HOST")
+		exporterOpts := make([]option.ClientOption, 0, len(spannerOpts)+2)
+		if envUD := os.Getenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN"); envUD != "" {
+			exporterOpts = append(exporterOpts, option.WithUniverseDomain(envUD))
 		}
-		// overwrite any Endpoint option
-		spannerOpts = append(spannerOpts, option.WithEndpoint(defaultMonitoringEndpoint))
-		return spannerOpts
+		exporterOpts = append(exporterOpts, spannerOpts...)
+		return append(exporterOpts, option.WithEndpoint(os.Getenv("SPANNER_MONITORING_HOST")))
 	}
 
 	grpcMetricsToEnable = []string{
