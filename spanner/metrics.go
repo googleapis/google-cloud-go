@@ -78,6 +78,8 @@ const (
 	metricLabelKeyToChannelName         = "to_channel_name"
 	metricLabelKeyChannelName           = "channel_name"
 	metricLabelKeyStatusCode            = "status_code"
+	metricLabelKeySuccess               = "success"
+	metricLabelKeyReason                = "reason"
 
 	// Metric names
 	metricNameOperationLatencies        = "operation_latencies"
@@ -90,6 +92,7 @@ const (
 	metricNameAFEConnectivityErrorCount = "afe_connectivity_error_count"
 	metricNameEEFFallbackCount          = "eef.fallback_count"
 	metricNameEEFCallStatus             = "eef.call_status"
+	metricNameEEFProbeResult            = "eef.probe_result"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -461,7 +464,10 @@ func builtInMeterProviderOptions(project, compression string, clientAttributes [
 		))
 	}
 	skippedEEFMetrics := []string{
-		"eef.probe_result",
+		// TODO: when moving metricNameEEFProbeResult to eefMetricsToEnable, also
+		// add metricLabelKeySuccess and metricLabelKeyReason to
+		// allowedEEFMetricLabels in metrics_monitoring_exporter.go.
+		metricNameEEFProbeResult,
 		"eef.error_ratio",
 		"eef.current_channel",
 		"eef.channel_downtime",
