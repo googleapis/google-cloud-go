@@ -21,3 +21,9 @@ branches:
     manifest: true
     manifestFile: .release-please-preview-manifest.json
     manifestConfig: release-please-preview-config.json
+  - branch: release-spanner-1.96.2
+    handleGHRelease: true
+    tagPullRequestNumber: true
+    manifest: true
+    manifestFile: .release-please-individual-manifest.json
+    manifestConfig: release-please-individual-config.json
