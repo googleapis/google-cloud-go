@@ -41,6 +41,10 @@ import (
 // request to the same client region.
 const xdsCdsURITemplate = "xdstp://traffic-director-c2p.xds.googleapis.com/envoy.config.cluster.v3.Cluster/%s-bigtable.googleapis.com/eds_cluster"
 
+// enableDirectAccessXdsProbe gates the xDS and ALTS diagnostic probes in
+// investigateDirectAccessFailure. Currently disabled.
+var enableDirectAccessXdsProbe = false
+
 // DirectAccessChecker decides whether the runtime environment is compatible
 // with Direct Access (DirectPath / DirectPathXds) and provides the dialer used
 // for direct-access connections once compatibility is confirmed.
@@ -280,6 +284,13 @@ func investigateDirectAccessFailure(
 	// check which will rely on kernel default routing.
 	if !v4Plumbed && !v6Plumbed {
 		btopt.Debugf(logger, "bigtable_direct_access: investigation: Metadata IPs not plumbed to local interfaces (likely containerized). Relying on kernel default routing.")
+	}
+
+	if !enableDirectAccessXdsProbe {
+		// xDS and ALTS diagnostic probes are currently disabled.
+		btopt.Debugf(logger, "bigtable_direct_access: investigation: Local preconditions passed but Direct Access originally failed. Original error: %v", originalErr)
+		reportFailure("unknown")
+		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
