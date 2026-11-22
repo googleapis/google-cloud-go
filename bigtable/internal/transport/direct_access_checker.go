@@ -41,8 +41,6 @@ import (
 // request to the same client region.
 const xdsCdsURITemplate = "xdstp://traffic-director-c2p.xds.googleapis.com/envoy.config.cluster.v3.Cluster/%s-bigtable.googleapis.com/eds_cluster"
 
-// enableDirectAccessXdsProbe gates the xDS and ALTS diagnostic probes in
-// investigateDirectAccessFailure. Currently disabled.
 var enableDirectAccessXdsProbe = false
 
 // DirectAccessChecker decides whether the runtime environment is compatible
