@@ -21,3 +21,9 @@ branches:
     manifest: true
     manifestFile: .release-please-preview-manifest.json
     manifestConfig: release-please-preview-config.json
+  - branch: release-bigtable-1.58.1
+    handleGHRelease: true
+    tagPullRequestNumber: true
+    manifest: true
+    manifestFile: .release-please-individual-manifest.json
+    manifestConfig: release-please-individual-config.json
