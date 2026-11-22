@@ -1,5 +1,12 @@
 # Changes
 
+## [1.96.2](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.96.1...spanner/v1.96.2) (2026-11-22)
+
+
+### Bug Fixes
+
+* **spanner:** Respect universe domain in built-in metrics exporter ([#20953](https://github.com/googleapis/google-cloud-go/issues/20953)) ([#20956](https://github.com/googleapis/google-cloud-go/issues/20956)) ([45a2d87](https://github.com/googleapis/google-cloud-go/commit/45a2d87ef2a7121c6f7bd631e05c06b0458d409a))
+
 ## [1.96.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.96.0...spanner/v1.96.1) (2026-10-08)
 
 
