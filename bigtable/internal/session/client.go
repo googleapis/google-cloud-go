@@ -455,9 +455,16 @@ func NewClient(
 		return btransport.NewBigtableConn(grpcConn), nil
 	}
 
-	directAccessChecker := newDirectAccessChecker(
-		featureFlagsProto, daDial, fullInstance, appProfile, configMD, factory.OtelMeterProvider,
-	)
+	// See b/588877681.
+	var directAccessChecker btransport.DirectAccessChecker
+	if featureFlagsProto.GetDirectAccessRequested() {
+		directAccessChecker = btransport.NewSessionClientDirectAccessChecker(
+			daDial, fullInstance, appProfile, configMD,
+			factory.OtelMeterProvider, nil,
+		)
+	} else {
+		directAccessChecker = btransport.NewDisabledDirectAccessChecker(factory.OtelMeterProvider, nil)
+	}
 
 	disableSessionAware := btopt.DisableSessionAwareChannelPool()
 	if disableSessionAware {
@@ -1071,19 +1078,4 @@ func (sc *sessionClient) registerScaleMonitor(pool *btransport.BigtableChannelPo
 		}
 	})
 	sam.Start(sc.cfg.BackgroundCtx)
-}
-
-// newDirectAccessChecker returns the Direct Access checker for the session
-// channel pool. See b/588877681.
-func newDirectAccessChecker(
-	featureFlags *btpb.FeatureFlags,
-	dial func() (*btransport.BigtableConn, error),
-	instanceName, appProfile string,
-	configMD metadata.MD,
-	meterProvider otelmetric.MeterProvider,
-) btransport.DirectAccessChecker {
-	if !featureFlags.GetDirectAccessRequested() {
-		return btransport.NewDisabledDirectAccessChecker(meterProvider, nil)
-	}
-	return btransport.NewSessionClientDirectAccessChecker(dial, instanceName, appProfile, configMD, meterProvider, nil)
 }
