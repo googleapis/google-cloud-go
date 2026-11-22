@@ -48,8 +48,9 @@ type Options struct {
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
 	Client *http.Client
-	// UniverseDomain is the default service domain for a given Cloud universe.
-	// The default value is "googleapis.com". Optional.
+	// UniverseDomain is the default service domain for a given Cloud universe,
+	// and is inherited from [Options.Credentials].  Specifying this explicitly
+	// serves as a validation that the credential universe matches. Optional.
 	UniverseDomain string
 	// Logger is used for debug logging. If provided, logging will be enabled
 	// at the loggers configured level. By default logging is disabled unless
@@ -65,13 +66,13 @@ func (o *Options) client() *http.Client {
 	return internal.DefaultClient()
 }
 
-// identityBindingEndpoint returns the identity binding endpoint with the
-// configured universe domain.
-func (o *Options) identityBindingEndpoint() string {
-	if o.UniverseDomain == "" {
-		return strings.Replace(identityBindingEndpointTemplate, universeDomainPlaceholder, internal.DefaultUniverseDomain, 1)
+// identityBindingEndpoint returns the identity binding endpoint for the
+// given universe domain.
+func identityBindingEndpoint(universeDomain string) string {
+	if universeDomain == "" {
+		universeDomain = internal.DefaultUniverseDomain
 	}
-	return strings.Replace(identityBindingEndpointTemplate, universeDomainPlaceholder, o.UniverseDomain, 1)
+	return strings.Replace(identityBindingEndpointTemplate, universeDomainPlaceholder, universeDomain, 1)
 }
 
 // An AccessBoundaryRule Sets the permissions (and optionally conditions) that
@@ -132,14 +133,14 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: &downscopedTokenProvider{
-			Options:                 opts,
-			Client:                  opts.client(),
-			identityBindingEndpoint: opts.identityBindingEndpoint(),
-			logger:                  internallog.New(opts.Logger),
+			Options:        opts,
+			Client:         opts.client(),
+			universeDomain: opts.UniverseDomain,
+			logger:         internallog.New(opts.Logger),
 		},
 		ProjectIDProvider:      auth.CredentialsPropertyFunc(opts.Credentials.ProjectID),
 		QuotaProjectIDProvider: auth.CredentialsPropertyFunc(opts.Credentials.QuotaProjectID),
-		UniverseDomainProvider: internal.StaticCredentialsProperty(opts.UniverseDomain),
+		UniverseDomainProvider: auth.CredentialsPropertyFunc(opts.Credentials.UniverseDomain),
 	}), nil
 }
 
@@ -147,10 +148,11 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 type downscopedTokenProvider struct {
 	Options *Options
 	Client  *http.Client
-	// identityBindingEndpoint is the identity binding endpoint with the
-	// configured universe domain.
-	identityBindingEndpoint string
-	logger                  *slog.Logger
+	// universeDomain is the optional expected universe domain configured in
+	// Options, verified against Options.Credentials.UniverseDomain before
+	// performing the token exchange.
+	universeDomain string
+	logger         *slog.Logger
 }
 
 type downscopedOptions struct {
@@ -169,6 +171,15 @@ type downscopedTokenResponse struct {
 }
 
 func (dts *downscopedTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	ud, err := dts.Options.Credentials.UniverseDomain(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("downscope: unable to determine universe domain: %w", err)
+	}
+	// Verify universe is consistent between creds and config when supplied.
+	if dts.universeDomain != "" && dts.universeDomain != ud {
+		return nil, fmt.Errorf("downscope: the configured universe domain (%q) does not match the universe domain found in the credentials (%q)", dts.universeDomain, ud)
+	}
+	endpoint := identityBindingEndpoint(ud)
 	downscopedOptions := downscopedOptions{
 		Boundary: accessBoundary{
 			AccessBoundaryRules: dts.Options.Rules,
@@ -191,7 +202,7 @@ func (dts *downscopedTokenProvider) Token(ctx context.Context) (*auth.Token, err
 	form.Add("subject_token", tok.Value)
 	form.Add("options", string(b))
 
-	req, err := http.NewRequestWithContext(ctx, "POST", dts.identityBindingEndpoint, strings.NewReader(form.Encode()))
+	req, err := http.NewRequestWithContext(ctx, "POST", endpoint, strings.NewReader(form.Encode()))
 	if err != nil {
 		return nil, err
 	}
