@@ -416,6 +416,12 @@ func newDisabledDirectAccessChecker(meterProvider metric.MeterProvider, logger *
 	}
 }
 
+// NewDisabledDirectAccessChecker constructs the always-disabled checker for
+// callers outside this package.
+func NewDisabledDirectAccessChecker(meterProvider metric.MeterProvider, logger *log.Logger) DirectAccessChecker {
+	return newDisabledDirectAccessChecker(meterProvider, logger)
+}
+
 // CheckCompatibility always returns (nil, false) and records the
 // manually_disabled metric exactly once — the pool calls it exactly once at
 // startup, with the pool ctx.

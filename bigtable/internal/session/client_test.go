@@ -886,3 +886,24 @@ func TestNewClient_DirectAccessProbeSendsRoutingHeaders(t *testing.T) {
 		t.Fatal("timed out waiting for initial GetClientConfiguration probe")
 	}
 }
+
+func TestNewDirectAccessChecker(t *testing.T) {
+	dial := func() (*btransport.BigtableConn, error) { return nil, errors.New("unused") }
+	tests := []struct {
+		desc       string
+		requested  bool
+		wantDialer bool
+	}{
+		{desc: "requested", requested: true, wantDialer: true},
+		{desc: "not requested", requested: false, wantDialer: false},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{EnableDirectAccess: test.requested})
+			checker := newDirectAccessChecker(ff, dial, "projects/p/instances/i", "", nil, nil)
+			if got := checker.Dialer() != nil; got != test.wantDialer {
+				t.Errorf("checker.Dialer() != nil = %v, want %v", got, test.wantDialer)
+			}
+		})
+	}
+}
