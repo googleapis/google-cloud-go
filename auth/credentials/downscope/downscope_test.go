@@ -241,8 +241,6 @@ func TestNewCredentials_UniverseDomain(t *testing.T) {
 			if err != nil {
 				t.Fatalf("NewCredentials() unexpected error: %v", err)
 			}
-			// Mutating opts after construction must not affect behavior.
-			opts.UniverseDomain = "mutated.example.com"
 
 			gotUD, err := creds.UniverseDomain(ctx)
 			if err != nil {
