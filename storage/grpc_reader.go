@@ -646,7 +646,7 @@ func (d *readObjectResponseDecoder) copyNextBytes(n int) []byte {
 	}
 	currBuf := d.currBuf
 	currOff := d.currOff
-	var buf []byte
+	buf := make([]byte, 0, remaining)
 	for remaining > 0 && currBuf < len(d.databufs) {
 		b := d.databufs[currBuf].ReadOnlyData()
 		remainingInCurr := len(b[currOff:])
