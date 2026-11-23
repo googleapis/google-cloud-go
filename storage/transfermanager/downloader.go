@@ -103,9 +103,14 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		return fmt.Errorf("transfermanager: DownloadDirectory query.SetAttrSelection: %w", err)
 	}
 
+	localDir := input.LocalDirectory
+	if localDir == "" {
+		localDir = "."
+	}
+
 	// Grab a snapshot of the local directory so we can return to it on error.
 	localDirSnapshot := make(map[string]bool) // stores all filepaths to directories in localdir
-	if err := filepath.WalkDir(input.LocalDirectory, func(path string, d os.DirEntry, err error) error {
+	if err := filepath.WalkDir(localDir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			if errors.Is(err, os.ErrNotExist) {
 				return nil
@@ -130,13 +135,19 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 
 		// Remove all created dirs.
 		var removePaths []string
-		if err := filepath.WalkDir(input.LocalDirectory, func(path string, d os.DirEntry, err error) error {
+		if err := filepath.WalkDir(localDir, func(path string, d os.DirEntry, err error) error {
+			if err != nil {
+				if errors.Is(err, os.ErrNotExist) {
+					return nil
+				}
+				return err
+			}
 			if d.IsDir() && !localDirSnapshot[path] {
 				removePaths = append(removePaths, path)
 				// We don't need to go into subdirectories, since this directory needs to be removed.
 				return filepath.SkipDir
 			}
-			return err
+			return nil
 		}); err != nil {
 			return fmt.Errorf("transfermanager: local directory walkthrough failed: %w", err)
 		}
@@ -149,7 +160,7 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		return nil
 	}
 
-	absLocalDir, err := filepath.Abs(input.LocalDirectory)
+	absLocalDir, err := filepath.Abs(localDir)
 	if err != nil {
 		return fmt.Errorf("transfermanager: DownloadDirectory failed to resolve local directory: %w", err)
 	}
@@ -190,7 +201,7 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		if len(input.StripPrefix) > 0 {
 			objectWithoutPrefix, _ = strings.CutPrefix(object, input.StripPrefix)
 		}
-		filePath := filepath.Join(input.LocalDirectory, objectWithoutPrefix)
+		filePath := filepath.Join(localDir, objectWithoutPrefix)
 
 		// Prevent lexical directory traversal before touching the filesystem.
 		relPath, isUnder, err := resolveSubPath(absLocalDir, filePath)
@@ -211,14 +222,14 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		}
 
 		if root == nil {
-			if err := os.MkdirAll(input.LocalDirectory, fs.ModeDir|fs.ModePerm); err != nil {
+			if err := os.MkdirAll(localDir, fs.ModeDir|fs.ModePerm); err != nil {
 				cleanupOnErr()
-				return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", input.LocalDirectory, err)
+				return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", localDir, err)
 			}
-			r, err := os.OpenRoot(input.LocalDirectory)
+			r, err := os.OpenRoot(localDir)
 			if err != nil {
 				cleanupOnErr()
-				return fmt.Errorf("transfermanager: DownloadDirectory failed to open directory(%q): %w", input.LocalDirectory, err)
+				return fmt.Errorf("transfermanager: DownloadDirectory failed to open directory(%q): %w", localDir, err)
 			}
 			root = r
 		}
@@ -1000,16 +1011,7 @@ func checksumObject(got, want uint32) error {
 	return nil
 }
 
-func isSubPath(localDirectory, filePath string) (bool, error) {
-	absLocalDirectory, err := filepath.Abs(localDirectory)
-	if err != nil {
-		return false, fmt.Errorf("cannot convert local directory to absolute path: %w", err)
-	}
-	_, isUnder, err := resolveSubPath(absLocalDirectory, filePath)
-	return isUnder, err
-}
-
-func resolveSubPath(absLocalDirectory, filePath string) (string, bool, error) {
+func resolveSubPath(absLocalDirectory, filePath string) (relPath string, isUnder bool, err error) {
 	absFilePath, err := filepath.Abs(filePath)
 	if err != nil {
 		return "", false, fmt.Errorf("cannot convert file path to absolute path: %w", err)
