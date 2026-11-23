@@ -124,6 +124,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // large datasets from tables, jobs or queries.
 // Currently out of pagination methods like PageInfo().Token and RowIterator.StartIndex
 // are not supported when the Storage API is enabled.
+//
+// ClientOptions used to configure the main BigQuery client are not propagated when setting
+// up the storage read client.
+//
 // Calling this method twice will return an error.
 func (c *Client) EnableStorageReadClient(ctx context.Context, opts ...option.ClientOption) error {
 	if c.isStorageReadAvailable() {
