@@ -132,7 +132,11 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		} else if googleCreds != nil {
 			project = googleCreds.ProjectID
 		}
-		clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
+		mOpts, exportOK := monitoringClientOptions(s.clientOption, creds, googleCreds)
+		if exportOK || config.meterProvider != nil || config.metricExporter != nil {
+			config.monitoringOpts = mOpts
+			clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
+		}
 	}
 	if metricsCleanup != nil {
 		defer func() {

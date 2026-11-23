@@ -50,15 +50,19 @@ type storageMonitoredResource struct {
 	resource      *resource.Resource
 }
 
-func (smr *storageMonitoredResource) exporter() (metric.Exporter, error) {
-	exporter, err := mexporter.New(
+func (smr *storageMonitoredResource) exporter(monitoringOpts ...option.ClientOption) (metric.Exporter, error) {
+	opts := []mexporter.Option{
 		mexporter.WithProjectID(smr.project),
 		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
 			return formatMetricWithPrefix(m, metricPrefix)
 		}),
 		mexporter.WithCreateServiceTimeSeries(),
 		mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
-	)
+	}
+	if len(monitoringOpts) > 0 {
+		opts = append(opts, mexporter.WithMonitoringClientOptions(monitoringOpts...))
+	}
+	exporter, err := mexporter.New(opts...)
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating metrics exporter: %w", err)
 	}
@@ -132,51 +136,54 @@ type metricsConfig struct {
 	manualReader    *metric.ManualReader // used by tests
 	disableExporter bool                 // used by tests disables exports
 	resourceOpts    []resource.Option    // used by tests
+	monitoringOpts  []option.ClientOption
 }
 
 func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsContext, error) {
-	var exporter metric.Exporter
-	meterOpts := []metric.Option{}
-	if cfg.customExporter == nil {
-		var ropts []resource.Option
-		if cfg.resourceOpts != nil {
-			ropts = cfg.resourceOpts
-		} else {
-			ropts = []resource.Option{resource.WithDetectors(gcp.NewDetector())}
-		}
-		smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc", ropts...)
-		if err != nil {
-			return nil, err
-		}
-		exporter, err = smr.exporter()
-		if err != nil {
-			return nil, err
-		}
-		meterOpts = append(meterOpts, metric.WithResource(smr.resource))
-	} else {
-		exporter = *cfg.customExporter
-	}
-	interval := time.Minute
-	if cfg.interval > 0 {
-		interval = cfg.interval
-	}
-	meterOpts = append(meterOpts,
-		// Metric views update histogram boundaries to be relevant to GCS
-		// otherwise default OTel histogram boundaries are used.
-		metric.WithView(
-			createHistogramView("grpc.client.attempt.duration", latencyHistogramBoundaries()),
-			createHistogramView("grpc.client.attempt.rcvd_total_compressed_message_size", sizeHistogramBoundaries()),
-			createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", sizeHistogramBoundaries())),
-	)
-	if cfg.manualReader != nil {
-		meterOpts = append(meterOpts, metric.WithReader(cfg.manualReader))
-	}
-	if !cfg.disableExporter {
-		meterOpts = append(meterOpts, metric.WithReader(
-			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
-	}
 	provider := cfg.meterProvider
 	if provider == nil {
+		var exporter metric.Exporter
+		meterOpts := []metric.Option{}
+		if cfg.customExporter == nil {
+			var ropts []resource.Option
+			if cfg.resourceOpts != nil {
+				ropts = cfg.resourceOpts
+			} else {
+				ropts = []resource.Option{resource.WithDetectors(gcp.NewDetector())}
+			}
+			smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc", ropts...)
+			if err != nil {
+				return nil, err
+			}
+			if !cfg.disableExporter {
+				exporter, err = smr.exporter(cfg.monitoringOpts...)
+				if err != nil {
+					return nil, err
+				}
+			}
+			meterOpts = append(meterOpts, metric.WithResource(smr.resource))
+		} else {
+			exporter = *cfg.customExporter
+		}
+		interval := time.Minute
+		if cfg.interval > 0 {
+			interval = cfg.interval
+		}
+		meterOpts = append(meterOpts,
+			// Metric views update histogram boundaries to be relevant to GCS
+			// otherwise default OTel histogram boundaries are used.
+			metric.WithView(
+				createHistogramView("grpc.client.attempt.duration", latencyHistogramBoundaries()),
+				createHistogramView("grpc.client.attempt.rcvd_total_compressed_message_size", sizeHistogramBoundaries()),
+				createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", sizeHistogramBoundaries())),
+		)
+		if cfg.manualReader != nil {
+			meterOpts = append(meterOpts, metric.WithReader(cfg.manualReader))
+		}
+		if !cfg.disableExporter {
+			meterOpts = append(meterOpts, metric.WithReader(
+				metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
+		}
 		provider = metric.NewMeterProvider(meterOpts...)
 	}
 	mo := opentelemetry.MetricsOptions{

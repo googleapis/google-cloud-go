@@ -47,9 +47,11 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric/exemplar"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"golang.org/x/oauth2/google"
 
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -152,9 +154,60 @@ func isOtelDebugMetricsEnabled(config *storageConfig) bool {
 	return config.enableOtelDebugMetrics
 }
 
+// resolveMetricsUniverseDomain returns the universe domain configured via
+// client options, GOOGLE_CLOUD_UNIVERSE_DOMAIN, or the default "googleapis.com".
+func resolveMetricsUniverseDomain(opts []option.ClientOption) string {
+	const prefix = "https://placeholder/"
+	resolveOpts := make([]option.ClientOption, 0, len(opts)+4)
+	resolveOpts = append(resolveOpts, opts...)
+	resolveOpts = append(resolveOpts,
+		option.WithEndpoint("placeholder"),
+		internaloption.WithDefaultEndpointTemplate(prefix+"UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint(""),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+	)
+	if res, err := internaloption.NewUnsafeResolver(resolveOpts...); err == nil {
+		if ep, err := res.ResolvedGRPCEndpoint(); err == nil {
+			if ud := strings.TrimPrefix(ep, prefix); ud != "" && ud != ep {
+				return ud
+			}
+		}
+	}
+	if ud := os.Getenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN"); ud != "" {
+		return ud
+	}
+	return "googleapis.com"
+}
+
+// monitoringClientOptions extracts safe Cloud Monitoring client options from
+// the parent Storage client's options. It returns ok=false when Cloud
+// Monitoring export should be skipped (emulator env vars, unauthenticated
+// clients, or custom HTTP/gRPC transports).
+func monitoringClientOptions(clientOpts []option.ClientOption, authCreds *auth.Credentials, googleCreds *google.Credentials) (opts []option.ClientOption, ok bool) {
+	if os.Getenv("STORAGE_EMULATOR_HOST") != "" || os.Getenv("STORAGE_EMULATOR_HOST_GRPC") != "" {
+		return nil, false
+	}
+	if res, err := internaloption.NewUnsafeResolver(clientOpts...); err == nil {
+		if res.ResolvedWithoutAuthentication() || res.ResolvedGRPCConnIsCustom() || res.ResolvedHTTPClientIsCustom() {
+			return nil, false
+		}
+	}
+
+	opts = append(opts, option.WithUniverseDomain(resolveMetricsUniverseDomain(clientOpts)))
+	if authCreds != nil {
+		// Clone the struct value so subsequent in-place wrapping on the parent
+		// client's credentials does not affect the Cloud Monitoring exporter.
+		credsCopy := *authCreds
+		opts = append(opts, option.WithAuthCredentials(&credsCopy))
+	} else if googleCreds != nil {
+		opts = append(opts, option.WithCredentials(googleCreds))
+	}
+	return opts, true
+}
+
 // newMetricsGCMExporter creates a Google Cloud Monitoring exporter.
-func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exporter, error) {
-	exporter, err := mexporter.New(
+func newMetricsGCMExporter(ctx context.Context, projectID string, monitoringOpts ...option.ClientOption) (sdkmetric.Exporter, error) {
+	opts := []mexporter.Option{
 		mexporter.WithProjectID(projectID),
 		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
 			return formatMetricWithPrefix(m, customMetricPrefix)
@@ -172,7 +225,11 @@ func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exp
 		mexporter.WithFilteredResourceAttributes(func(kv attribute.KeyValue) bool {
 			return keepFilteredResourceAttribute(string(kv.Key))
 		}),
-	)
+	}
+	if len(monitoringOpts) > 0 {
+		opts = append(opts, mexporter.WithMonitoringClientOptions(monitoringOpts...))
+	}
+	exporter, err := mexporter.New(opts...)
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating GCM exporter: %w", err)
 	}
@@ -213,12 +270,27 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	if config.meterProvider != nil {
 		provider = config.meterProvider
 	} else {
+		res, err := resource.New(ctx,
+			resource.WithDetectors(gcp.NewDetector()),
+			resource.WithAttributes(metricBaseLabels()...),
+		)
+		if err != nil {
+			return nil, nil, fmt.Errorf("storage: creating metrics resource: %w", err)
+		}
+
 		var exporter sdkmetric.Exporter
-		var err error
 		if config.metricExporter != nil {
 			exporter = *config.metricExporter
 		} else {
-			exporter, err = newMetricsGCMExporter(ctx, projectID)
+			if projectID == "" {
+				if p, ok := res.Set().Value("cloud.account.id"); ok {
+					projectID = p.AsString()
+				}
+			}
+			if projectID == "" {
+				return nil, nil, errors.New("storage: google cloud project is required to start client-side metrics")
+			}
+			exporter, err = newMetricsGCMExporter(ctx, projectID, config.monitoringOpts...)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -230,14 +302,6 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		}
 
 		reader := sdkmetric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, sdkmetric.WithInterval(interval))
-
-		res, err := resource.New(ctx,
-			resource.WithDetectors(gcp.NewDetector()),
-			resource.WithAttributes(metricBaseLabels()...),
-		)
-		if err != nil {
-			return nil, nil, fmt.Errorf("storage: creating metrics resource: %w", err)
-		}
 
 		provider = sdkmetric.NewMeterProvider(
 			sdkmetric.WithReader(reader),

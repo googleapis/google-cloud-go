@@ -33,6 +33,7 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2/google"
 
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -143,18 +144,17 @@ type grpcStorageClient struct {
 	configFeatureAttributes uint32
 }
 
-func enableClientMetrics(ctx context.Context, s *settings, config storageConfig) (*metricsContext, error) {
-	var project string
-	// TODO: use new auth client
-	c, err := transport.Creds(ctx, s.clientOption...)
-	if err == nil {
-		project = c.ProjectID
+func enableClientMetrics(ctx context.Context, project string, config storageConfig, mOpts []option.ClientOption, exportOK bool) (*metricsContext, error) {
+	if !exportOK && config.meterProvider == nil && config.manualReader == nil {
+		return nil, nil
 	}
 	metricsContext, err := newGRPCMetricContext(ctx, metricsConfig{
-		project:       project,
-		interval:      config.metricInterval,
-		manualReader:  config.manualReader,
-		meterProvider: config.meterProvider,
+		project:         project,
+		interval:        config.metricInterval,
+		manualReader:    config.manualReader,
+		meterProvider:   config.meterProvider,
+		disableExporter: !exportOK,
+		monitoringOpts:  mOpts,
 	},
 	)
 	if err != nil {
@@ -188,24 +188,36 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 			})))
 	}
 
+	metricsEnabled := isOtelMetricsEnabled(&config) || isOtelDebugMetricsEnabled(&config)
+	tracingEnabled := isOTelTracingDevEnabled()
+	var authCreds *auth.Credentials
+	var googleCreds *google.Credentials
+	var project string
+	var mOpts []option.ClientOption
+	var exportOK bool
+	if !config.disableClientMetrics || metricsEnabled || tracingEnabled {
+		authCreds, googleCreds, project = resolveGRPCAuthCredentials(ctx, s)
+		mOpts, exportOK = monitoringClientOptions(s.clientOption, authCreds, googleCreds)
+	}
+
 	if !config.disableClientMetrics {
 		// Do not fail client creation if enabling metrics fails.
-		if metricsContext, err := enableClientMetrics(ctx, s, config); err == nil {
+		if metricsContext, err := enableClientMetrics(ctx, project, config, mOpts, exportOK); err == nil && metricsContext != nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
-		} else {
+		} else if err != nil {
 			log.Printf("Failed to enable client metrics: %v", err)
 		}
 	}
 
 	var clientMetrics *clientMetrics
 	var metricsCleanup func()
-	metricsEnabled := isOtelMetricsEnabled(&config) || isOtelDebugMetricsEnabled(&config)
-	tracingEnabled := isOTelTracingDevEnabled()
 	if metricsEnabled || tracingEnabled {
-		authCreds, project := resolveGRPCAuthCredentials(ctx, s)
 		if metricsEnabled {
-			clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
+			if exportOK || config.meterProvider != nil || config.metricExporter != nil {
+				config.monitoringOpts = mOpts
+				clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
+			}
 			if clientMetrics != nil {
 				authCreds = wrapAuthCredentials(authCreds, clientMetrics)
 				unaryInt, streamInt := metricsInterceptors(clientMetrics)
@@ -289,21 +301,21 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	return c, nil
 }
 
-func resolveGRPCAuthCredentials(ctx context.Context, s *settings) (*auth.Credentials, string) {
+func resolveGRPCAuthCredentials(ctx context.Context, s *settings) (*auth.Credentials, *google.Credentials, string) {
 	if res, err := internaloption.NewUnsafeResolver(s.clientOption...); err == nil {
 		if res.ResolvedGRPCConnIsCustom() || res.ResolvedWithoutAuthentication() {
-			return nil, ""
+			return nil, nil, ""
 		}
 	}
 	credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
 	if c, err := internaloption.AuthCreds(ctx, credsOpts); err == nil && c != nil {
 		project, _ := c.ProjectID(ctx)
-		return c, project
+		return c, nil, project
 	}
 	if c, err := transport.Creds(ctx, credsOpts...); err == nil && c != nil {
-		return nil, c.ProjectID
+		return nil, c, c.ProjectID
 	}
-	return nil, ""
+	return nil, nil, ""
 }
 
 // configureStreamingTimeouts explicitly overrides default call timeouts to 0 (unbounded)
