@@ -1255,9 +1255,10 @@ type pcuFakeGRPCServer struct {
 	partWrites       []pcuRecordedPartWrite
 	composeReqs      []*storagepb.ComposeObjectRequest
 	deleteReqs       []*storagepb.DeleteObjectRequest
-	wantDeletes      int
-	deletesDone      chan struct{}
-	failFinalCompose bool
+	wantDeletes           int
+	deletesDone           chan struct{}
+	failFirstIntermediate bool
+	failFinalCompose      bool
 }
 
 func (s *pcuFakeGRPCServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
@@ -1315,6 +1316,10 @@ func (s *pcuFakeGRPCServer) ComposeObject(ctx context.Context, req *storagepb.Co
 	defer s.mu.Unlock()
 
 	s.composeReqs = append(s.composeReqs, req)
+	if s.failFirstIntermediate && strings.HasPrefix(req.GetDestination().GetName(), tmpObjectPrefix) {
+		s.failFirstIntermediate = false
+		return nil, status.Error(codes.Unavailable, "simulated transient intermediate compose failure")
+	}
 	if s.failFinalCompose && !strings.HasPrefix(req.GetDestination().GetName(), tmpObjectPrefix) {
 		return nil, status.Error(codes.Aborted, "simulated final compose failure")
 	}
@@ -1428,10 +1433,11 @@ func TestPCU_MultiLevelComposeEncryptionAndCleanupGenerations(t *testing.T) {
 	const wantDeletes = 35 // 33 parts + 2 intermediates
 
 	srv := &pcuFakeGRPCServer{
-		nextGen:          5000,
-		wantDeletes:      wantDeletes,
-		deletesDone:      make(chan struct{}),
-		failFinalCompose: true,
+		nextGen:               5000,
+		wantDeletes:           wantDeletes,
+		deletesDone:           make(chan struct{}),
+		failFirstIntermediate: true,
+		failFinalCompose:      true,
 	}
 	client := newBufconnGRPCClient(t, srv)
 
@@ -1463,15 +1469,18 @@ func TestPCU_MultiLevelComposeEncryptionAndCleanupGenerations(t *testing.T) {
 	srv.mu.Lock()
 	defer srv.mu.Unlock()
 
-	if len(srv.composeReqs) != 3 { // 2 intermediate + 1 failed final
-		t.Fatalf("composeReqs count = %d, want 3", len(srv.composeReqs))
+	if len(srv.composeReqs) != 4 { // 1 retried + 2 succeeded intermediates + 1 failed final
+		t.Fatalf("composeReqs count = %d, want 4", len(srv.composeReqs))
 	}
-	for i, inter := range srv.composeReqs[:2] {
+	for i, inter := range srv.composeReqs[:3] {
 		if got := inter.GetCommonObjectRequestParams().GetEncryptionKeyBytes(); !bytes.Equal(got, csek) {
 			t.Errorf("intermediate compose[%d] CSEK = %x, want %x", i, got, csek)
 		}
+		if inter.IfGenerationMatch == nil || inter.GetIfGenerationMatch() != 0 {
+			t.Errorf("intermediate compose[%d] IfGenerationMatch = %v, want 0", i, inter.IfGenerationMatch)
+		}
 	}
-	for i, src := range srv.composeReqs[2].GetSourceObjects() {
+	for i, src := range srv.composeReqs[3].GetSourceObjects() {
 		if src.GetGeneration() == 0 {
 			t.Errorf("final compose SourceObjects[%d] (%q) Generation = 0, want pinned intermediate generation", i, src.GetName())
 		}
