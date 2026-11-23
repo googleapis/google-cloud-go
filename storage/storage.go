@@ -121,6 +121,10 @@ type Client struct {
 	scheme string
 	// xmlHost is the default host used for XML requests.
 	xmlHost string
+	// universeDomain is the resolved universe domain configured for this client.
+	universeDomain string
+	// customHTTPClient reports whether the caller supplied option.WithHTTPClient.
+	customHTTPClient bool
 	// May be nil.
 	creds *auth.Credentials
 	retry *retryConfig
@@ -158,6 +162,11 @@ func (c Client) credsJSON() ([]byte, bool) {
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var creds *auth.Credentials
+	universeDomain := resolveUniverseDomain(ctx, opts)
+	var customHTTPClient bool
+	if ur, err := internaloption.NewUnsafeResolver(opts...); err == nil {
+		customHTTPClient = ur.ResolvedHTTPClientIsCustom()
+	}
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -246,13 +255,15 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 
 	c := &Client{
-		hc:        hc,
-		raw:       rawService,
-		scheme:    u.Scheme,
-		xmlHost:   u.Host,
-		creds:     creds,
-		tc:        tcWrapped,
-		rpcSystem: rpcSystemHTTP,
+		hc:               hc,
+		raw:              rawService,
+		scheme:           u.Scheme,
+		xmlHost:          u.Host,
+		universeDomain:   universeDomain,
+		customHTTPClient: customHTTPClient,
+		creds:            creds,
+		tc:               tcWrapped,
+		rpcSystem:        rpcSystemHTTP,
 	}
 	if isACOEnabled() {
 		c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)
@@ -403,6 +414,41 @@ type bucketBoundHostname struct {
 	hostname string
 }
 
+const (
+	defaultUniverseDomain = "googleapis.com"
+	universeDomainEnvVar  = "GOOGLE_CLOUD_UNIVERSE_DOMAIN"
+)
+
+func defaultUniverseDomainFromEnv() string {
+	if ud := os.Getenv(universeDomainEnvVar); ud != "" {
+		return ud
+	}
+	return defaultUniverseDomain
+}
+
+// resolveUniverseDomain determines the configured universe domain from client
+// options, falling back to GOOGLE_CLOUD_UNIVERSE_DOMAIN and then "googleapis.com".
+func resolveUniverseDomain(ctx context.Context, opts []option.ClientOption) string {
+	const placeholderPrefix = "https://placeholder/"
+	resolveOpts := make([]option.ClientOption, 0, len(opts)+6)
+	resolveOpts = append(resolveOpts, opts...)
+	resolveOpts = append(resolveOpts,
+		option.WithEndpoint("placeholder"),
+		option.WithHTTPClient(http.DefaultClient),
+		internaloption.WithDefaultEndpointTemplate(placeholderPrefix+"UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint(""),
+		internaloption.WithDefaultUniverseDomain(defaultUniverseDomain),
+		internaloption.SkipDialSettingsValidation(),
+	)
+	_, ep, err := htransport.NewClient(ctx, resolveOpts...)
+	if err == nil {
+		if ud := strings.TrimPrefix(ep, placeholderPrefix); ud != "" && ud != ep {
+			return ud
+		}
+	}
+	return defaultUniverseDomainFromEnv()
+}
+
 func (s pathStyle) host(hostname, bucket string) string {
 	if hostname != "" {
 		return stripScheme(hostname)
@@ -412,7 +458,7 @@ func (s pathStyle) host(hostname, bucket string) string {
 		return stripScheme(host)
 	}
 
-	return "storage.googleapis.com"
+	return "storage." + defaultUniverseDomainFromEnv()
 }
 
 func (s virtualHostedStyle) host(hostname, bucket string) string {
@@ -424,7 +470,7 @@ func (s virtualHostedStyle) host(hostname, bucket string) string {
 		return bucket + "." + stripScheme(host)
 	}
 
-	return bucket + ".storage.googleapis.com"
+	return bucket + ".storage." + defaultUniverseDomainFromEnv()
 }
 
 func (s bucketBoundHostname) host(_, bucket string) string {
