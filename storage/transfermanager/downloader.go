@@ -85,6 +85,8 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 // has completed.
 // DownloadDirectory will fail if any of the files it attempts to download
 // already exist in the local directory.
+// Downloads are confined to LocalDirectory; symlinks that escape
+// LocalDirectory or use absolute targets are rejected.
 func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirectoryInput) error {
 	if d.closed() {
 		return errors.New("transfermanager: Downloader used after WaitAndClose was called")
