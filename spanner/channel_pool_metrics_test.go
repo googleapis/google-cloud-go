@@ -404,7 +404,7 @@ func runSelect1(t *testing.T, client *Client) {
 	}
 }
 
-func exportedChannelCounts(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRequest) map[string]int64 {
+func exportedChannelCounts(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRequest, wantLane string) map[string]int64 {
 	t.Helper()
 	got := make(map[string]int64)
 	for _, req := range reqs {
@@ -436,7 +436,7 @@ func exportedChannelCounts(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRe
 			wantLabels := map[string]string{
 				metricLabelKeyPoolMode:   poolModeDynamic,
 				metricLabelKeyState:      state,
-				metricLabelKeyLane:       laneCloudPath,
+				metricLabelKeyLane:       wantLane,
 				metricLabelKeyClientUID:  labels[metricLabelKeyClientUID],
 				metricLabelKeyClientName: clientName,
 				metricLabelKeyDatabase:   "[DATABASE]",
@@ -450,7 +450,7 @@ func exportedChannelCounts(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRe
 	return got
 }
 
-func exportedChannelLoadCount(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRequest) int64 {
+func exportedChannelLoadCount(t *testing.T, reqs []*monitoringpb.CreateTimeSeriesRequest, wantLane string) int64 {
 	t.Helper()
 	var count int64
 	for _, req := range reqs {
@@ -473,7 +473,7 @@ func exportedChannelLoadCount(t *testing.T, reqs []*monitoringpb.CreateTimeSerie
 			}
 			wantLabels := map[string]string{
 				metricLabelKeyPoolMode:   poolModeDynamic,
-				metricLabelKeyLane:       laneCloudPath,
+				metricLabelKeyLane:       wantLane,
 				metricLabelKeyClientUID:  labels[metricLabelKeyClientUID],
 				metricLabelKeyClientName: clientName,
 				metricLabelKeyDatabase:   "[DATABASE]",
@@ -505,25 +505,30 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 	if isEmulatorEnvSet() {
 		t.Skip("built-in metrics are off with the emulator")
 	}
+	isolateChannelPoolEnv(t)
 	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
 	disableDCPDrainIdleFloor(t)
 	monitoringServer := installTestMonitoringExporter(t).server
 
 	tests := []struct {
-		name       string
-		dcp        bool
-		drainOne   bool
-		disableEnv string
-		wantCounts map[string]int64
+		name               string
+		dcp                bool
+		enableDirectAccess bool
+		drainOne           bool
+		disableEnv         string
+		wantCounts         map[string]int64
 	}{
 		{name: "dynamic pool", dcp: true, drainOne: true, wantCounts: map[string]int64{channelStateActive: 2, channelStateDraining: 1}},
+		{name: "dynamic pool with DirectPath", dcp: true, enableDirectAccess: true, drainOne: true, wantCounts: map[string]int64{channelStateActive: 2, channelStateDraining: 1}},
 		{name: "dynamic pool with off switch", dcp: true, disableEnv: "true"},
 		{name: "static pool", dcp: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv(disableChannelPoolBuiltinMetricsEnvVar, tt.disableEnv)
-			config := ClientConfig{}
+			config := ClientConfig{
+				EnableDirectAccess: tt.enableDirectAccess,
+			}
 			if tt.dcp {
 				cfg := testDCPConfig(3, 1, 4)
 				cfg.DCPScaleDownCheckInterval = time.Hour
@@ -549,8 +554,12 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 					t.Fatalf("existing built-in metric %q not exported", nativeMetricsPrefix+name)
 				}
 			}
-			got := exportedChannelCounts(t, reqs)
-			loadCount := exportedChannelLoadCount(t, reqs)
+			wantLane := laneCloudPath
+			if tt.enableDirectAccess {
+				wantLane = laneDirectPath
+			}
+			got := exportedChannelCounts(t, reqs, wantLane)
+			loadCount := exportedChannelLoadCount(t, reqs, wantLane)
 			if tt.wantCounts == nil {
 				if len(got) != 0 || loadCount != 0 {
 					t.Fatalf("channel pool points mismatch:\n Got: channel_count %v, channel_load count %d\nWant: none", got, loadCount)
@@ -569,6 +578,7 @@ func TestChannelPoolBuiltinMetricsNotSentToCustomerMeterProviders(t *testing.T) 
 	if isEmulatorEnvSet() {
 		t.Skip("built-in metrics are off with the emulator")
 	}
+	isolateChannelPoolEnv(t)
 	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
 	t.Setenv(disableChannelPoolBuiltinMetricsEnvVar, "")
 	enableOpenTelemetryMetricsForTest(t)
@@ -605,8 +615,8 @@ func TestChannelPoolBuiltinMetricsNotSentToCustomerMeterProviders(t *testing.T) 
 
 	client.Close()
 	reqs := monitoringServer.CreateServiceTimeSeriesRequests()
-	requireChannelCounts(t, exportedChannelCounts(t, reqs), 2, 0)
-	if exportedChannelLoadCount(t, reqs) == 0 {
+	requireChannelCounts(t, exportedChannelCounts(t, reqs, laneCloudPath), 2, 0)
+	if exportedChannelLoadCount(t, reqs, laneCloudPath) == 0 {
 		t.Fatal("channel_load not exported")
 	}
 }
