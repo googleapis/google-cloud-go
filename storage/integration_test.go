@@ -9588,7 +9588,7 @@ func TestIntegration_ParallelUpload_Encryption(t *testing.T) {
 					h.mustDeleteObject(obj)
 				})
 
-				w := obj.NewWriter(ctx)
+				w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
 				w.EnableParallelUpload = true
 				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: partSize, MaxConcurrency: 16}
 				w.KMSKeyName = tc.kmsKeyName
