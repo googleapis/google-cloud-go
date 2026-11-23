@@ -40,6 +40,7 @@ import (
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/mem"
@@ -81,14 +82,27 @@ const (
 	directPathEndpointPrefix              = "google-c2p:///"
 )
 
+func hasCustomGRPCEndpointOrConn(opts []option.ClientOption) bool {
+	res, err := internaloption.NewUnsafeResolver(opts...)
+	if err != nil {
+		return false
+	}
+	if res.ResolvedGRPCConnIsCustom() {
+		return true
+	}
+	ep, err := res.ResolvedGRPCEndpoint()
+	return err == nil && ep != ""
+}
+
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
-func defaultGRPCOptions() []option.ClientOption {
+func defaultGRPCOptions(userOpts []option.ClientOption) []option.ClientOption {
 	defaults := []option.ClientOption{
 		option.WithGRPCConnectionPool(defaultConnPoolSize),
 	}
 
-	// Set emulator options for gRPC if an emulator was specified. Note that in a
+	// Set emulator options for gRPC if an emulator was specified and the caller
+	// did not supply an explicit endpoint or gRPC connection. Note that in a
 	// hybrid client, STORAGE_EMULATOR_HOST will set the host to use for HTTP and
 	// STORAGE_EMULATOR_HOST_GRPC will set the host to use for gRPC (when using a
 	// local emulator, HTTP and gRPC must use different ports, so this is
@@ -97,17 +111,20 @@ func defaultGRPCOptions() []option.ClientOption {
 	// TODO: When the newHybridClient is not longer used, remove
 	// STORAGE_EMULATOR_HOST_GRPC and use STORAGE_EMULATOR_HOST for both the
 	// HTTP and gRPC based clients.
-	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" {
+	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" && !hasCustomGRPCEndpointOrConn(userOpts) {
+		useTLS := strings.HasPrefix(strings.ToLower(host), "https://")
 		// Strip the scheme from the emulator host. WithEndpoint does not take a
 		// scheme for gRPC.
 		host = stripScheme(host)
 
 		defaults = append(defaults,
 			option.WithEndpoint(host),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
 			option.WithoutAuthentication(),
 			WithDisabledClientMetrics(),
 		)
+		if !useTLS {
+			defaults = append(defaults, option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
+		}
 	} else {
 		// Only enable DirectPath when the emulator is not being targeted.
 		defaults = append(defaults,
@@ -167,7 +184,7 @@ func enableClientMetrics(ctx context.Context, s *settings, config storageConfig)
 // Storage API.
 func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *grpcStorageClient, err error) {
 	s := initSettings(opts...)
-	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
+	s.clientOption = append(defaultGRPCOptions(s.clientOption), s.clientOption...)
 	// Disable all gax-level retries in favor of retry logic in the veneer client.
 	s.gax = append(s.gax, gax.WithRetry(nil))
 
@@ -1548,11 +1565,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 	var chunkCRC uint32
 	var chunkCRCPresent bool
-	if ranges := msg.GetObjectDataRanges(); len(ranges) > 0 {
-		if cs := ranges[0].GetChecksummedData(); cs != nil && cs.Crc32C != nil && !params.disableCRCCheck {
-			chunkCRCPresent = true
-			chunkCRC = *cs.Crc32C
-		}
+	if !params.disableCRCCheck {
+		chunkCRC, chunkCRCPresent = chunkCRCForReadID(msg, defaultReadID)
 	}
 
 	metadata := obj.GetMetadata()
@@ -1854,13 +1868,12 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 			return 0, err
 		}
 		msg := r.currMsg.msg
-		if !r.disableCRCCheck &&
-			len(msg.GetObjectDataRanges()) > 0 &&
-			msg.GetObjectDataRanges()[0].GetChecksummedData() != nil &&
-			msg.GetObjectDataRanges()[0].GetChecksummedData().Crc32C != nil {
-			r.gotChunkCRC = 0
-			r.wantChunkCRC = *msg.GetObjectDataRanges()[0].GetChecksummedData().Crc32C
-			r.chunkCRCPresent = true
+		if !r.disableCRCCheck {
+			if crc, ok := chunkCRCForReadID(msg, defaultReadID); ok {
+				r.gotChunkCRC = 0
+				r.wantChunkCRC = crc
+				r.chunkCRCPresent = true
+			}
 		}
 		// The loop will now restart and try to read from the new r.currMsg.
 	}
@@ -1928,13 +1941,12 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 			return r.seen - alreadySeen, err
 		}
 		msg := r.currMsg.msg
-		if !r.disableCRCCheck &&
-			len(msg.GetObjectDataRanges()) > 0 &&
-			msg.GetObjectDataRanges()[0].GetChecksummedData() != nil &&
-			msg.GetObjectDataRanges()[0].GetChecksummedData().Crc32C != nil {
-			r.gotChunkCRC = 0
-			r.wantChunkCRC = *msg.GetObjectDataRanges()[0].GetChecksummedData().Crc32C
-			r.chunkCRCPresent = true
+		if !r.disableCRCCheck {
+			if crc, ok := chunkCRCForReadID(msg, defaultReadID); ok {
+				r.gotChunkCRC = 0
+				r.wantChunkCRC = crc
+				r.chunkCRCPresent = true
+			}
 		}
 		// Continue loop to process the new message.
 	}
@@ -2034,6 +2046,17 @@ type bufferSliceOffsets struct {
 	currOff          uint64 // offset of read in current buffer.
 }
 
+func chunkCRCForReadID(msg *storagepb.BidiReadObjectResponse, readID int64) (uint32, bool) {
+	for _, dr := range msg.GetObjectDataRanges() {
+		if dr.GetReadRange().GetReadId() == readID {
+			if cs := dr.GetChecksummedData(); cs != nil && cs.Crc32C != nil {
+				return *cs.Crc32C, true
+			}
+		}
+	}
+	return 0, false
+}
+
 // peek ahead 10 bytes from the current offset in the databufs. This will return a
 // slice of the current buffer if the bytes are all in one buffer, but will copy
 // the bytes into a new buffer if the distance is split across buffers. Use this
@@ -2042,6 +2065,9 @@ type bufferSliceOffsets struct {
 // https://protobuf.dev/programming-guides/encoding/#varints . Other int types
 // are shorter.
 func (d *readResponseDecoder) peek() []byte {
+	if d.currBuf >= len(d.databufs) {
+		return nil
+	}
 	b := d.databufs[d.currBuf].ReadOnlyData()
 	// Check if the tag will fit in the current buffer. If not, copy the next 10
 	// bytes into a new buffer to ensure that we can read the tag correctly
@@ -2059,6 +2085,9 @@ func (d *readResponseDecoder) peek() []byte {
 // Copies up to next n bytes into a new buffer, or fewer if fewer bytes remain in the
 // buffers overall. Does not advance offsets.
 func (d *readResponseDecoder) copyNextBytes(n int) []byte {
+	if n <= 0 || d.currBuf >= len(d.databufs) || d.off >= uint64(d.databufs.Len()) {
+		return nil
+	}
 	remaining := n
 	if r := d.databufs.Len() - int(d.off); r < remaining {
 		remaining = r
@@ -2066,7 +2095,7 @@ func (d *readResponseDecoder) copyNextBytes(n int) []byte {
 	currBuf := d.currBuf
 	currOff := d.currOff
 	var buf []byte
-	for remaining > 0 {
+	for remaining > 0 && currBuf < len(d.databufs) {
 		b := d.databufs[currBuf].ReadOnlyData()
 		remainingInCurr := len(b[currOff:])
 		if remainingInCurr < remaining {
@@ -2085,8 +2114,15 @@ func (d *readResponseDecoder) copyNextBytes(n int) []byte {
 // Advance current buffer & byte offset in the decoding by n bytes. Returns an error if we
 // go past the end of the data.
 func (d *readResponseDecoder) advanceOffset(n uint64) error {
+	totalLen := uint64(d.databufs.Len())
+	if d.off > totalLen || n > totalLen-d.off {
+		return errors.New("decoding: truncated message, cannot advance offset")
+	}
 	remaining := n
 	for remaining > 0 {
+		if d.currBuf >= len(d.databufs) {
+			return errors.New("decoding: truncated message, cannot advance offset")
+		}
 		remainingInCurr := uint64(d.databufs[d.currBuf].Len()) - d.currOff
 		if remainingInCurr <= remaining {
 			remaining -= remainingInCurr
@@ -2279,7 +2315,9 @@ func (d *readResponseDecoder) consumeVarint() (uint64, error) {
 	}
 
 	// Update the offsets and current buffer depending on the tag length.
-	d.advanceOffset(uint64(tagLength))
+	if err := d.advanceOffset(uint64(tagLength)); err != nil {
+		return 0, fmt.Errorf("consuming varint: %w", err)
+	}
 	return dataLength, nil
 }
 
@@ -2294,7 +2332,9 @@ func (d *readResponseDecoder) consumeFixed32() (uint32, error) {
 	}
 
 	// Update the offsets and current buffer depending on the tag length.
-	d.advanceOffset(uint64(tagLength))
+	if err := d.advanceOffset(uint64(tagLength)); err != nil {
+		return 0, fmt.Errorf("consuming fixed32: %w", err)
+	}
 	return value, nil
 }
 
@@ -2309,7 +2349,9 @@ func (d *readResponseDecoder) consumeFixed64() (uint64, error) {
 	}
 
 	// Update the offsets and current buffer depending on the tag length.
-	d.advanceOffset(uint64(tagLength))
+	if err := d.advanceOffset(uint64(tagLength)); err != nil {
+		return 0, fmt.Errorf("consuming fixed64: %w", err)
+	}
 	return value, nil
 }
 
@@ -2355,7 +2397,9 @@ func (d *readResponseDecoder) consumeBytes() (bufferSliceOffsets, error) {
 	}
 
 	// Advance offsets to lengths of bytes field and capture where we end.
-	d.advanceOffset(m)
+	if err := d.advanceOffset(m); err != nil {
+		return bufferSliceOffsets{}, fmt.Errorf("advancing bytes field: %w", err)
+	}
 	offsets.endBuf = d.currBuf
 	offsets.endOff = d.currOff
 	return offsets, nil
@@ -2371,7 +2415,11 @@ func (d *readResponseDecoder) consumeBytesCopy() ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("consuming varint: %w", err)
 	}
-	// Copy the data into a buffer and advance the offset
+	totalLen := uint64(d.databufs.Len())
+	if d.off > totalLen || m > totalLen-d.off {
+		return nil, errors.New("decoding: truncated message, bytes length exceeds remaining data")
+	}
+	// Copy the data into a buffer and advance the offset.
 	b := d.copyNextBytes(int(m))
 	if err := d.advanceOffset(m); err != nil {
 		return nil, fmt.Errorf("advancing offset: %w", err)
@@ -2390,6 +2438,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 	msg := &storagepb.BidiReadObjectResponse{}
 	// Initialize the new map.
 	d.dataOffsets = make(map[int64]bufferSliceOffsets)
+	seenReadIDs := make(map[int64]struct{})
 
 	// Loop over the entire message, extracting fields as we go. This does not
 	// handle field concatenation, in which the contents of a single field
@@ -2422,6 +2471,10 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			if err != nil {
 				return fmt.Errorf("consuming bytes: %w", err)
 			}
+			totalLen := uint64(d.databufs.Len())
+			if d.off > totalLen || bytesFieldLen > totalLen-d.off {
+				return errors.New("decoding: truncated message, ObjectRangeData length exceeds remaining data")
+			}
 			var contentEndOff = d.off + bytesFieldLen
 			for d.off < contentEndOff {
 				gotNum, gotTyp, err := d.consumeTag()
@@ -2434,6 +2487,9 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 					checksummedDataFieldLen, err := d.consumeVarint()
 					if err != nil {
 						return fmt.Errorf("consuming bytes: %w", err)
+					}
+					if d.off > contentEndOff || checksummedDataFieldLen > contentEndOff-d.off {
+						return errors.New("decoding: truncated message, ChecksummedData length exceeds ObjectRangeData")
 					}
 					var checksummedDataEndOff = d.off + checksummedDataFieldLen
 					for d.off < checksummedDataEndOff {
@@ -2463,6 +2519,9 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 							}
 						}
 					}
+					if d.off != checksummedDataEndOff {
+						return errors.New("decoding: ChecksummedData field exceeded submessage boundary")
+					}
 				case gotNum == readRangeField && gotTyp == protowire.BytesType:
 					buf, err := d.consumeBytesCopy()
 					if err != nil {
@@ -2478,12 +2537,24 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 						return fmt.Errorf("invalid ObjectDataRange.RangeEnd: %w", err)
 					}
 					currentRange.RangeEnd = protowire.DecodeBool(b)
+				default:
+					if err := d.consumeFieldValue(gotNum, gotTyp); err != nil {
+						return fmt.Errorf("invalid field in BidiReadObjectResponse.ObjectDataRange: %w", err)
+					}
 				}
 
 			}
+			if d.off != contentEndOff {
+				return errors.New("decoding: ObjectRangeData field exceeded submessage boundary")
+			}
+			readID := currentRange.ReadRange.GetReadId()
+			if _, exists := seenReadIDs[readID]; exists {
+				return fmt.Errorf("decoding: duplicate read_id %d in BidiReadObjectResponse", readID)
+			}
+			seenReadIDs[readID] = struct{}{}
 			if hasContent {
 				// Store the offsets in the map, keyed by the ReadId of the current range.
-				d.dataOffsets[currentRange.ReadRange.GetReadId()] = contentOffsets
+				d.dataOffsets[readID] = contentOffsets
 			}
 		case fieldNum == metadataField && fieldType == protowire.BytesType:
 			msg.Metadata = &storagepb.Object{}

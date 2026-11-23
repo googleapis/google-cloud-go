@@ -16,6 +16,7 @@ package storage
 
 import (
 	"reflect"
+	"sync"
 	"testing"
 	"time"
 
@@ -68,4 +69,69 @@ func TestPostPolicyV4OptionsClone(t *testing.T) {
 		cmp.AllowUnexported(PostPolicyV4Options{})); diff != "" {
 		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
 	}
+}
+
+func TestSignedURLAndPostPolicyV4_DoNotMutateOptions(t *testing.T) {
+	t.Parallel()
+
+	t.Run("SignedURL", func(t *testing.T) {
+		origHeaders := []string{"X-Goog-Meta-Foo:  bar"}
+		opts := &SignedURLOptions{
+			GoogleAccessID: "test@example.iam.gserviceaccount.com",
+			SignBytes:      func(b []byte) ([]byte, error) { return []byte("sig"), nil },
+			Method:         "get",
+			Expires:        time.Now().Add(time.Hour),
+			Headers:        origHeaders,
+			Scheme:         SigningSchemeV4,
+		}
+
+		var wg sync.WaitGroup
+		for i := 0; i < 8; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				if _, err := SignedURL("bucket", "object", opts); err != nil {
+					t.Errorf("SignedURL() failed: %v", err)
+				}
+			}()
+		}
+		wg.Wait()
+
+		if opts.Method != "get" {
+			t.Errorf("opts.Method mutated to %q, want %q", opts.Method, "get")
+		}
+		if opts.Style != nil {
+			t.Errorf("opts.Style mutated to %v, want nil", opts.Style)
+		}
+		if diff := cmp.Diff([]string{"X-Goog-Meta-Foo:  bar"}, opts.Headers); diff != "" {
+			t.Errorf("opts.Headers mutated (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("GenerateSignedPostPolicyV4", func(t *testing.T) {
+		opts := &PostPolicyV4Options{
+			GoogleAccessID: "test@example.iam.gserviceaccount.com",
+			SignBytes:      func(b []byte) ([]byte, error) { return []byte("sig"), nil },
+			Expires:        time.Now().Add(time.Hour),
+		}
+
+		var wg sync.WaitGroup
+		for i := 0; i < 8; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				if _, err := GenerateSignedPostPolicyV4("bucket", "object", opts); err != nil {
+					t.Errorf("GenerateSignedPostPolicyV4() failed: %v", err)
+				}
+			}()
+		}
+		wg.Wait()
+
+		if opts.Style != nil {
+			t.Errorf("opts.Style mutated to %v, want nil", opts.Style)
+		}
+		if opts.shouldHashSignBytes {
+			t.Error("opts.shouldHashSignBytes mutated to true, want false")
+		}
+	})
 }

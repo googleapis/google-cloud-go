@@ -617,6 +617,9 @@ type bufferSliceOffsetsReadObject struct {
 // https://protobuf.dev/programming-guides/encoding/#varints . Other int types
 // are shorter.
 func (d *readObjectResponseDecoder) peek() []byte {
+	if d.currBuf >= len(d.databufs) {
+		return nil
+	}
 	b := d.databufs[d.currBuf].ReadOnlyData()
 	// Check if the tag will fit in the current buffer. If not, copy the next 10
 	// bytes into a new buffer to ensure that we can read the tag correctly
@@ -634,6 +637,9 @@ func (d *readObjectResponseDecoder) peek() []byte {
 // Copies up to next n bytes into a new buffer, or fewer if fewer bytes remain in the
 // buffers overall. Does not advance offsets.
 func (d *readObjectResponseDecoder) copyNextBytes(n int) []byte {
+	if n <= 0 || d.currBuf >= len(d.databufs) || d.off >= uint64(d.databufs.Len()) {
+		return nil
+	}
 	remaining := n
 	if r := d.databufs.Len() - int(d.off); r < remaining {
 		remaining = r
@@ -641,7 +647,7 @@ func (d *readObjectResponseDecoder) copyNextBytes(n int) []byte {
 	currBuf := d.currBuf
 	currOff := d.currOff
 	var buf []byte
-	for remaining > 0 {
+	for remaining > 0 && currBuf < len(d.databufs) {
 		b := d.databufs[currBuf].ReadOnlyData()
 		remainingInCurr := len(b[currOff:])
 		if remainingInCurr < remaining {
@@ -660,8 +666,15 @@ func (d *readObjectResponseDecoder) copyNextBytes(n int) []byte {
 // Advance current buffer & byte offset in the decoding by n bytes. Returns an error if we
 // go past the end of the data.
 func (d *readObjectResponseDecoder) advanceOffset(n uint64) error {
+	totalLen := uint64(d.databufs.Len())
+	if d.off > totalLen || n > totalLen-d.off {
+		return errors.New("decoding: truncated message, cannot advance offset")
+	}
 	remaining := n
 	for remaining > 0 {
+		if d.currBuf >= len(d.databufs) {
+			return errors.New("decoding: truncated message, cannot advance offset")
+		}
 		remainingInCurr := uint64(d.databufs[d.currBuf].Len()) - d.currOff
 		if remainingInCurr <= remaining {
 			remaining -= remainingInCurr
@@ -780,7 +793,9 @@ func (d *readObjectResponseDecoder) consumeVarint() (uint64, error) {
 	}
 
 	// Update the offsets and current buffer depending on the tag length.
-	d.advanceOffset(uint64(tagLength))
+	if err := d.advanceOffset(uint64(tagLength)); err != nil {
+		return 0, fmt.Errorf("consuming varint: %w", err)
+	}
 	return dataLength, nil
 }
 
@@ -795,7 +810,9 @@ func (d *readObjectResponseDecoder) consumeFixed32() (uint32, error) {
 	}
 
 	// Update the offsets and current buffer depending on the tag length.
-	d.advanceOffset(uint64(tagLength))
+	if err := d.advanceOffset(uint64(tagLength)); err != nil {
+		return 0, fmt.Errorf("consuming fixed32: %w", err)
+	}
 	return value, nil
 }
 
@@ -810,7 +827,9 @@ func (d *readObjectResponseDecoder) consumeFixed64() (uint64, error) {
 	}
 
 	// Update the offsets and current buffer depending on the tag length.
-	d.advanceOffset(uint64(tagLength))
+	if err := d.advanceOffset(uint64(tagLength)); err != nil {
+		return 0, fmt.Errorf("consuming fixed64: %w", err)
+	}
 	return value, nil
 }
 
@@ -856,7 +875,9 @@ func (d *readObjectResponseDecoder) consumeBytes() (bufferSliceOffsetsReadObject
 	}
 
 	// Advance offsets to lengths of bytes field and capture where we end.
-	d.advanceOffset(m)
+	if err := d.advanceOffset(m); err != nil {
+		return bufferSliceOffsetsReadObject{}, fmt.Errorf("advancing bytes field: %w", err)
+	}
 	offsets.endBuf = d.currBuf
 	offsets.endOff = d.currOff
 	return offsets, nil
@@ -872,7 +893,11 @@ func (d *readObjectResponseDecoder) consumeBytesCopy() ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("consuming varint: %w", err)
 	}
-	// Copy the data into a buffer and advance the offset
+	totalLen := uint64(d.databufs.Len())
+	if d.off > totalLen || m > totalLen-d.off {
+		return nil, errors.New("decoding: truncated message, bytes length exceeds remaining data")
+	}
+	// Copy the data into a buffer and advance the offset.
 	b := d.copyNextBytes(int(m))
 	if err := d.advanceOffset(m); err != nil {
 		return nil, fmt.Errorf("advancing offset: %w", err)
@@ -910,6 +935,10 @@ func (d *readObjectResponseDecoder) readFullObjectResponse() error {
 			if err != nil {
 				return fmt.Errorf("consuming bytes: %w", err)
 			}
+			totalLen := uint64(d.databufs.Len())
+			if d.off > totalLen || bytesFieldLen > totalLen-d.off {
+				return errors.New("decoding: truncated message, ChecksummedData length exceeds remaining data")
+			}
 
 			var contentEndOff = d.off + bytesFieldLen
 			for d.off < contentEndOff {
@@ -937,6 +966,9 @@ func (d *readObjectResponseDecoder) readFullObjectResponse() error {
 						return fmt.Errorf("invalid field in ReadObjectResponse.ChecksummedData: %w", err)
 					}
 				}
+			}
+			if d.off != contentEndOff {
+				return errors.New("decoding: ChecksummedData field exceeded submessage boundary")
 			}
 		case fieldNum == objectChecksumsFieldReadObject && fieldType == protowire.BytesType:
 			// The field was found. Initialize the struct.
