@@ -766,12 +766,12 @@ func (*UserList_IngestedUserListInfo) isUserList_UserListInfo() {}
 // Estimated number of members in this user list in different target networks.
 type SizeInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Estimated number of members in this user list, on the Google
-	// Display Network.
+	// Output only. Estimated number of active members in this user list on the
+	// Google Display Network over the last 30 days.
 	DisplayNetworkMembersCount int64 `protobuf:"varint,1,opt,name=display_network_members_count,json=displayNetworkMembersCount,proto3" json:"display_network_members_count,omitempty"`
-	// Output only. Estimated number of members in this user list in the
-	// google.com domain. These are the members available for targeting in Search
-	// campaigns.
+	// Output only. Estimated number of active members in this user list in the
+	// google.com domain over the last 30 days. These are the members available
+	// for targeting in Search campaigns.
 	SearchNetworkMembersCount int64 `protobuf:"varint,2,opt,name=search_network_members_count,json=searchNetworkMembersCount,proto3" json:"search_network_members_count,omitempty"`
 	// Output only. Estimated number of members in this user list on YouTube.
 	YoutubeMembersCount int64 `protobuf:"varint,3,opt,name=youtube_members_count,json=youtubeMembersCount,proto3" json:"youtube_members_count,omitempty"`

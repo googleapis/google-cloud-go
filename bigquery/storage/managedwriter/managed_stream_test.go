@@ -739,3 +739,188 @@ func TestManagedStream_RaceFinder(t *testing.T) {
 	wg.Wait()
 	cancel()
 }
+
+// gatedAppendRowsClient is a fake bidi stream whose Recv is driven by the test.
+type gatedAppendRowsClient struct {
+	storagepb.BigQueryWrite_AppendRowsClient
+	ctx   context.Context
+	recvF func(ctx context.Context) (*storagepb.AppendRowsResponse, error)
+}
+
+func (g *gatedAppendRowsClient) Send(*storagepb.AppendRowsRequest) error { return nil }
+func (g *gatedAppendRowsClient) Recv() (*storagepb.AppendRowsResponse, error) {
+	return g.recvF(g.ctx)
+}
+func (g *gatedAppendRowsClient) CloseSend() error         { return nil }
+func (g *gatedAppendRowsClient) Context() context.Context { return g.ctx }
+
+func openGatedArc(recvF func(ctx context.Context) (*storagepb.AppendRowsResponse, error)) func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		return &gatedAppendRowsClient{ctx: ctx, recvF: recvF}, nil
+	}
+}
+
+func newRetryingTestWriter(t *testing.T, ctx context.Context, pool *connectionPool, id, table string) *ManagedStream {
+	t.Helper()
+	ms := &ManagedStream{
+		id:             id,
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		retry:          newStatelessRetryer(),
+	}
+	ms.streamSettings.streamID = "projects/p/datasets/d/tables/" + table + "/streams/_default"
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
+	if err := pool.addWriter(ms); err != nil {
+		t.Fatalf("addWriter: %v", err)
+	}
+	return ms
+}
+
+// An append that is in flight when its writer is closed must still complete
+// when retries are enabled. Closing the writer cancels its exclusive
+// connection, the in-flight append fails with a retryable error, and the
+// retry must observe that the writer is closed rather than re-enqueue forever.
+func TestManagedStream_CloseWithRetriesCompletesInflight(t *testing.T) {
+	ctx := context.Background()
+	pool := &connectionPool{
+		ctx: ctx,
+		open: openGatedArc(func(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
+			<-ctx.Done()
+			return nil, status.Error(codes.Canceled, "context canceled")
+		}),
+		baseFlowController: newFlowController(0, 0),
+	}
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Fatalf("activateRouter: %v", err)
+	}
+	ms := newRetryingTestWriter(t, ctx, pool, "writer", "t")
+
+	res, err := ms.AppendRows(ctx, [][]byte{[]byte("row")})
+	if err != nil {
+		t.Fatalf("AppendRows: %v", err)
+	}
+	ms.Close()
+
+	waitCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	if _, err := res.GetResult(waitCtx); err == nil || errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("GetResult after Close: got %v, want the append to fail promptly", err)
+	}
+}
+
+// A closed writer's failed append must not stall other writers multiplexed on
+// the same connection. Responses on a connection are processed in order, so a
+// retry that never ends blocks every append queued behind it.
+func TestManagedStream_CloseWithRetriesDoesNotStallMultiplexedWriters(t *testing.T) {
+	ctx := context.Background()
+	release := make(chan struct{})
+	var recvCount int
+	var mu sync.Mutex
+	pool := &connectionPool{
+		ctx: ctx,
+		open: openGatedArc(func(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
+			mu.Lock()
+			recvCount++
+			n := recvCount
+			mu.Unlock()
+			if n == 1 {
+				<-release
+				return &storagepb.AppendRowsResponse{
+					Response: &storagepb.AppendRowsResponse_Error{
+						Error: status.New(codes.Unavailable, "transient").Proto(),
+					},
+				}, nil
+			}
+			return &storagepb.AppendRowsResponse{
+				Response: &storagepb.AppendRowsResponse_AppendResult_{},
+			}, nil
+		}),
+		baseFlowController: newFlowController(0, 0),
+	}
+	if err := pool.activateRouter(newSharedRouter(true, 1)); err != nil {
+		t.Fatalf("activateRouter: %v", err)
+	}
+	closed := newRetryingTestWriter(t, ctx, pool, "closed", "a")
+	sibling := newRetryingTestWriter(t, ctx, pool, "sibling", "b")
+
+	closedRes, err := closed.AppendRows(ctx, [][]byte{[]byte("row")})
+	if err != nil {
+		t.Fatalf("AppendRows(closed): %v", err)
+	}
+	siblingRes, err := sibling.AppendRows(ctx, [][]byte{[]byte("row")})
+	if err != nil {
+		t.Fatalf("AppendRows(sibling): %v", err)
+	}
+	closed.Close()
+	close(release)
+
+	waitCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	if _, err := closedRes.GetResult(waitCtx); err == nil || errors.Is(err, context.DeadlineExceeded) {
+		t.Errorf("GetResult(closed): got %v, want the append to fail promptly", err)
+	}
+	if _, err := siblingRes.GetResult(waitCtx); err != nil {
+		t.Errorf("GetResult(sibling): got %v, want success", err)
+	}
+}
+
+// Closing the Client shuts down its connectionPool (detaching connections from
+// the router) without setting a terminal error on attached ManagedStream
+// writers. In-flight appends that fail and enter processRetry then fail
+// selectConn on re-enqueue and must be finalized once without panicking.
+// Related: https://github.com/googleapis/google-cloud-go/issues/20922
+func TestManagedStream_PoolCloseWithRetriesCompletesInflight(t *testing.T) {
+	tests := []struct {
+		name      string
+		multiplex bool
+	}{
+		{name: "exclusive"},
+		{name: "multiplex", multiplex: true},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := t.Context()
+			c := &Client{
+				ctx: ctx,
+				cfg: &writerClientConfig{
+					useMultiplex:         tc.multiplex,
+					maxMultiplexPoolSize: 1,
+				},
+			}
+			pool, err := c.createPool("", openGatedArc(func(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
+				<-ctx.Done()
+				return nil, status.Error(codes.Canceled, "context canceled")
+			}))
+			if err != nil {
+				t.Fatalf("createPool() failed: %v", err)
+			}
+
+			ms := newRetryingTestWriter(t, ctx, pool, "writer", "t")
+			ms.retry = &statelessRetryer{minBackoff: time.Millisecond, maxAttempts: defaultRetryAttempts}
+
+			// Enqueue two writes so that waiting on the second guarantees the
+			// receive processor has completely finished processRetry for the first.
+			var results []*AppendResult
+			for i := range 2 {
+				res, err := ms.AppendRows(ctx, [][]byte{[]byte("row")})
+				if err != nil {
+					t.Fatalf("ms.AppendRows(%d) failed: %v", i, err)
+				}
+				results = append(results, res)
+			}
+
+			if err := pool.Close(); err != nil {
+				t.Fatalf("pool.Close() = %v, want nil", err)
+			}
+
+			waitCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+			defer cancel()
+			for i, res := range results {
+				_, err := res.GetResult(waitCtx)
+				if err == nil || errors.Is(err, context.DeadlineExceeded) {
+					t.Errorf("results[%d].GetResult() = (_, %v), want non-timeout error", i, err)
+				}
+			}
+		})
+	}
+}

@@ -104,6 +104,7 @@ type CallOptions struct {
 	ListCompilationResults             []gax.CallOption
 	GetCompilationResult               []gax.CallOption
 	CreateCompilationResult            []gax.CallOption
+	CreateCompilationResultLongRunning []gax.CallOption
 	QueryCompilationResultActions      []gax.CallOption
 	ListWorkflowConfigs                []gax.CallOption
 	GetWorkflowConfig                  []gax.CallOption
@@ -202,6 +203,7 @@ func defaultCallOptions() *CallOptions {
 		ListCompilationResults:             []gax.CallOption{},
 		GetCompilationResult:               []gax.CallOption{},
 		CreateCompilationResult:            []gax.CallOption{},
+		CreateCompilationResultLongRunning: []gax.CallOption{},
 		QueryCompilationResultActions:      []gax.CallOption{},
 		ListWorkflowConfigs:                []gax.CallOption{},
 		GetWorkflowConfig:                  []gax.CallOption{},
@@ -286,6 +288,7 @@ func defaultRESTCallOptions() *CallOptions {
 		ListCompilationResults:             []gax.CallOption{},
 		GetCompilationResult:               []gax.CallOption{},
 		CreateCompilationResult:            []gax.CallOption{},
+		CreateCompilationResultLongRunning: []gax.CallOption{},
 		QueryCompilationResultActions:      []gax.CallOption{},
 		ListWorkflowConfigs:                []gax.CallOption{},
 		GetWorkflowConfig:                  []gax.CallOption{},
@@ -377,6 +380,8 @@ type internalClient interface {
 	ListCompilationResults(context.Context, *dataformpb.ListCompilationResultsRequest, ...gax.CallOption) *CompilationResultIterator
 	GetCompilationResult(context.Context, *dataformpb.GetCompilationResultRequest, ...gax.CallOption) (*dataformpb.CompilationResult, error)
 	CreateCompilationResult(context.Context, *dataformpb.CreateCompilationResultRequest, ...gax.CallOption) (*dataformpb.CompilationResult, error)
+	CreateCompilationResultLongRunning(context.Context, *dataformpb.CreateCompilationResultRequest, ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error)
+	CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation
 	QueryCompilationResultActions(context.Context, *dataformpb.QueryCompilationResultActionsRequest, ...gax.CallOption) *CompilationResultActionIterator
 	ListWorkflowConfigs(context.Context, *dataformpb.ListWorkflowConfigsRequest, ...gax.CallOption) *WorkflowConfigIterator
 	GetWorkflowConfig(context.Context, *dataformpb.GetWorkflowConfigRequest, ...gax.CallOption) (*dataformpb.WorkflowConfig, error)
@@ -770,6 +775,18 @@ func (c *Client) CreateCompilationResult(ctx context.Context, req *dataformpb.Cr
 	return c.internalClient.CreateCompilationResult(ctx, req, opts...)
 }
 
+// CreateCompilationResultLongRunning creates a new CompilationResult in a given project and location
+// asynchronously.
+func (c *Client) CreateCompilationResultLongRunning(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error) {
+	return c.internalClient.CreateCompilationResultLongRunning(ctx, req, opts...)
+}
+
+// CreateCompilationResultLongRunningOperation returns a new CreateCompilationResultLongRunningOperation from a given name.
+// The name must be that of a previously created CreateCompilationResultLongRunningOperation, possibly from a different process.
+func (c *Client) CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation {
+	return c.internalClient.CreateCompilationResultLongRunningOperation(name)
+}
+
 // QueryCompilationResultActions returns CompilationResultActions in a given CompilationResult.
 func (c *Client) QueryCompilationResultActions(ctx context.Context, req *dataformpb.QueryCompilationResultActionsRequest, opts ...gax.CallOption) *CompilationResultActionIterator {
 	return c.internalClient.QueryCompilationResultActions(ctx, req, opts...)
@@ -1057,6 +1074,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCompilationResultLongRunning = append(client.CallOptions.CreateCompilationResultLongRunning, gax.WithClientMetrics(metrics))
 		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientMetrics(metrics))
@@ -1148,6 +1166,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientTracing(tracing))
 		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCompilationResultLongRunning = append(client.CallOptions.CreateCompilationResultLongRunning, gax.WithClientTracing(tracing))
 		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientTracing(tracing))
 		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientTracing(tracing))
 		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientTracing(tracing))
@@ -1240,6 +1259,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientLogging(logging))
 		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientLogging(logging))
 		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCompilationResultLongRunning = append(client.CallOptions.CreateCompilationResultLongRunning, gax.WithClientLogging(logging))
 		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientLogging(logging))
 		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientLogging(logging))
 		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientLogging(logging))
@@ -1426,6 +1446,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientMetrics(metrics))
 		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientMetrics(metrics))
 		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		callOpts.CreateCompilationResultLongRunning = append(callOpts.CreateCompilationResultLongRunning, gax.WithClientMetrics(metrics))
 		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
 		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
 		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientMetrics(metrics))
@@ -1517,6 +1538,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientTracing(tracing))
 		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientTracing(tracing))
 		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientTracing(tracing))
+		callOpts.CreateCompilationResultLongRunning = append(callOpts.CreateCompilationResultLongRunning, gax.WithClientTracing(tracing))
 		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientTracing(tracing))
 		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientTracing(tracing))
 		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientTracing(tracing))
@@ -1609,6 +1631,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientLogging(logging))
 		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientLogging(logging))
 		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientLogging(logging))
+		callOpts.CreateCompilationResultLongRunning = append(callOpts.CreateCompilationResultLongRunning, gax.WithClientLogging(logging))
 		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientLogging(logging))
 		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientLogging(logging))
 		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientLogging(logging))
@@ -3198,6 +3221,33 @@ func (c *gRPCClient) CreateCompilationResult(ctx context.Context, req *dataformp
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) CreateCompilationResultLongRunning(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateCompilationResultLongRunning")
+	}
+	opts = append((*c.CallOptions).CreateCompilationResultLongRunning[0:len((*c.CallOptions).CreateCompilationResultLongRunning):len((*c.CallOptions).CreateCompilationResultLongRunning)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateCompilationResultLongRunning, req, settings.GRPC, c.logger, "CreateCompilationResultLongRunning")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.CreateCompilationResultLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateCompilationResultLongRunningOperation{
+		lro: lro,
+	}, nil
 }
 
 func (c *gRPCClient) QueryCompilationResultActions(ctx context.Context, req *dataformpb.QueryCompilationResultActionsRequest, opts ...gax.CallOption) *CompilationResultActionIterator {
@@ -7672,6 +7722,80 @@ func (c *restClient) CreateCompilationResult(ctx context.Context, req *dataformp
 	return resp, nil
 }
 
+// CreateCompilationResultLongRunning creates a new CompilationResult in a given project and location
+// asynchronously.
+func (c *restClient) CreateCompilationResultLongRunning(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCompilationResult()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/compilationResults:createLongRunning", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateCompilationResultLongRunning")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/compilationResults:createLongRunning")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCompilationResultLongRunning")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.CreateCompilationResultLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateCompilationResultLongRunningOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // QueryCompilationResultActions returns CompilationResultActions in a given CompilationResult.
 func (c *restClient) QueryCompilationResultActions(ctx context.Context, req *dataformpb.QueryCompilationResultActionsRequest, opts ...gax.CallOption) *CompilationResultActionIterator {
 	it := &CompilationResultActionIterator{}
@@ -9235,6 +9359,24 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CreateCompilationResultLongRunningOperation returns a new CreateCompilationResultLongRunningOperation from a given name.
+// The name must be that of a previously created CreateCompilationResultLongRunningOperation, possibly from a different process.
+func (c *gRPCClient) CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation {
+	return &CreateCompilationResultLongRunningOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.CreateCompilationResultLongRunningOperation"),
+	}
+}
+
+// CreateCompilationResultLongRunningOperation returns a new CreateCompilationResultLongRunningOperation from a given name.
+// The name must be that of a previously created CreateCompilationResultLongRunningOperation, possibly from a different process.
+func (c *restClient) CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateCompilationResultLongRunningOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.CreateCompilationResultLongRunningOperation"),
+		pollPath: override,
+	}
 }
 
 // DeleteFolderTreeOperation returns a new DeleteFolderTreeOperation from a given name.

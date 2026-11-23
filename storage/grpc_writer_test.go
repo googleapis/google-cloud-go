@@ -2031,7 +2031,7 @@ func TestGRPCWriter_ChunkTransferTimeout_Telemetry(t *testing.T) {
 		writesChan:           make(chan gRPCWriterCommand, 1),
 	}
 
-	err = w.writeLoop(ctx)
+	err = w.writeLoop(ctxWithMetrics)
 	var stallErr *stallTimeoutError
 	if !errors.As(err, &stallErr) {
 		t.Fatalf("expected stallTimeoutError, got: %v", err)
@@ -2058,14 +2058,20 @@ func TestGRPCWriter_ChunkTransferTimeout_Telemetry(t *testing.T) {
 				if dp.Sum != timeout.Seconds() {
 					t.Errorf("expected sum %v, got %v", timeout.Seconds(), dp.Sum)
 				}
-				if getHistAttr(dp, "rpc.method") != "StartResumableWrite" {
-					t.Errorf("expected rpc.method StartResumableWrite, got %v", getHistAttr(dp, "rpc.method"))
+				if getHistAttr(dp, "rpc.method") != "google.storage.v2.Storage/StartResumableWrite" {
+					t.Errorf("expected rpc.method google.storage.v2.Storage/StartResumableWrite, got %v", getHistAttr(dp, "rpc.method"))
+				}
+				if getHistAttr(dp, "gcp.storage.operation") != "WriteObject" {
+					t.Errorf("expected gcp.storage.operation WriteObject, got %v", getHistAttr(dp, "gcp.storage.operation"))
 				}
 				if getHistAttr(dp, "rpc.system.name") != "grpc" {
 					t.Errorf("expected rpc.system.name grpc, got %v", getHistAttr(dp, "rpc.system.name"))
 				}
 				if getHistAttr(dp, "server.address") != "storage.googleapis.com" {
 					t.Errorf("expected server.address storage.googleapis.com, got %v", getHistAttr(dp, "server.address"))
+				}
+				if getHistAttr(dp, "network.path") != "unknown" {
+					t.Errorf("expected network.path unknown, got %v", getHistAttr(dp, "network.path"))
 				}
 			}
 		}

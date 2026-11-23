@@ -1004,7 +1004,9 @@ func (c *workerPoolsRESTClient) CreateWorkerPool(ctx context.Context, req *runpb
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
 	}
-	params.Add("workerPoolId", fmt.Sprintf("%v", req.GetWorkerPoolId()))
+	if req.GetWorkerPoolId() != "" {
+		params.Add("workerPoolId", fmt.Sprintf("%v", req.GetWorkerPoolId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

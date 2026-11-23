@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,12 +45,13 @@ const (
 // [UserLicenseService.ListUserLicenses][google.cloud.discoveryengine.v1.UserLicenseService.ListUserLicenses].
 type ListUserLicensesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent [UserStore][] resource name, format:
+	// Required. The parent [UserStore][google.cloud.discoveryengine.v1.UserStore]
+	// resource name, format:
 	// `projects/{project}/locations/{location}/userStores/{user_store_id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Requested page size. Server may return fewer items than
-	// requested. If unspecified, defaults to 10. The maximum value is 50; values
-	// above 50 will be coerced to 50.
+	// requested. If unspecified, defaults to 100. The maximum value is 1000;
+	// values above 1000 will be coerced to 1000.
 	//
 	// If this field is negative, an INVALID_ARGUMENT error is returned.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -65,7 +66,8 @@ type ListUserLicensesRequest struct {
 	// Supported fields:
 	//
 	// * `license_assignment_state`
-	//
+	// * `user_principal`
+	// *
 	// Examples:
 	//
 	// * `license_assignment_state = ASSIGNED` to list assigned user licenses.
@@ -74,7 +76,26 @@ type ListUserLicensesRequest struct {
 	// who attempted login but no license assigned.
 	// * `license_assignment_state != NO_LICENSE_ATTEMPTED_LOGIN` to filter
 	// out users who attempted login but no license assigned.
-	Filter        string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// * `user_principal = user1@example.com` to list user license for
+	// `user1@example.com`.
+	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. The order in which the
+	// [UserLicense][google.cloud.discoveryengine.v1.UserLicense]s are listed. The
+	// value must be a comma-separated list of fields. Default sorting order is
+	// ascending. To specify descending order for a field, append a " desc"
+	// suffix. Redundant space characters in the syntax are insignificant.
+	//
+	// Supported fields (only `user_principal` is supported for now):
+	//
+	// * `user_principal`
+	//
+	// If not set, the default ordering is by `user_principal`.
+	//
+	// Examples:
+	//
+	// * `user_principal` to order by `user_principal` in ascending order.
+	// * `user_principal desc` to order by `user_principal` in descending order.
+	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -133,6 +154,13 @@ func (x *ListUserLicensesRequest) GetPageToken() string {
 func (x *ListUserLicensesRequest) GetFilter() string {
 	if x != nil {
 		return x.Filter
+	}
+	return ""
+}
+
+func (x *ListUserLicensesRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
 	}
 	return ""
 }
@@ -196,6 +224,104 @@ func (x *ListUserLicensesResponse) GetNextPageToken() string {
 }
 
 // Request message for
+// [UserLicenseService.ListLicenseConfigsUsageStats][google.cloud.discoveryengine.v1.UserLicenseService.ListLicenseConfigsUsageStats]
+// method.
+type ListLicenseConfigsUsageStatsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent branch resource name, such as
+	// `projects/{project}/locations/{location}/userStores/{user_store_id}`.
+	Parent        string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListLicenseConfigsUsageStatsRequest) Reset() {
+	*x = ListLicenseConfigsUsageStatsRequest{}
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListLicenseConfigsUsageStatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListLicenseConfigsUsageStatsRequest) ProtoMessage() {}
+
+func (x *ListLicenseConfigsUsageStatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListLicenseConfigsUsageStatsRequest.ProtoReflect.Descriptor instead.
+func (*ListLicenseConfigsUsageStatsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ListLicenseConfigsUsageStatsRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+// Response message for
+// [UserLicenseService.ListLicenseConfigsUsageStats][google.cloud.discoveryengine.v1.UserLicenseService.ListLicenseConfigsUsageStats]
+// method.
+type ListLicenseConfigsUsageStatsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// All the customer's
+	// [LicenseConfigUsageStats][google.cloud.discoveryengine.v1.LicenseConfigUsageStats].
+	LicenseConfigUsageStats []*LicenseConfigUsageStats `protobuf:"bytes,1,rep,name=license_config_usage_stats,json=licenseConfigUsageStats,proto3" json:"license_config_usage_stats,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *ListLicenseConfigsUsageStatsResponse) Reset() {
+	*x = ListLicenseConfigsUsageStatsResponse{}
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListLicenseConfigsUsageStatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListLicenseConfigsUsageStatsResponse) ProtoMessage() {}
+
+func (x *ListLicenseConfigsUsageStatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListLicenseConfigsUsageStatsResponse.ProtoReflect.Descriptor instead.
+func (*ListLicenseConfigsUsageStatsResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ListLicenseConfigsUsageStatsResponse) GetLicenseConfigUsageStats() []*LicenseConfigUsageStats {
+	if x != nil {
+		return x.LicenseConfigUsageStats
+	}
+	return nil
+}
+
+// Request message for
 // [UserLicenseService.BatchUpdateUserLicenses][google.cloud.discoveryengine.v1.UserLicenseService.BatchUpdateUserLicenses]
 // method.
 type BatchUpdateUserLicensesRequest struct {
@@ -206,7 +332,8 @@ type BatchUpdateUserLicensesRequest struct {
 	//
 	//	*BatchUpdateUserLicensesRequest_InlineSource_
 	Source isBatchUpdateUserLicensesRequest_Source `protobuf_oneof:"source"`
-	// Required. The parent [UserStore][] resource name, format:
+	// Required. The parent [UserStore][google.cloud.discoveryengine.v1.UserStore]
+	// resource name, format:
 	// `projects/{project}/locations/{location}/userStores/{user_store_id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. If true, if user licenses removed associated license config, the
@@ -219,7 +346,7 @@ type BatchUpdateUserLicensesRequest struct {
 
 func (x *BatchUpdateUserLicensesRequest) Reset() {
 	*x = BatchUpdateUserLicensesRequest{}
-	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -231,7 +358,7 @@ func (x *BatchUpdateUserLicensesRequest) String() string {
 func (*BatchUpdateUserLicensesRequest) ProtoMessage() {}
 
 func (x *BatchUpdateUserLicensesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -244,7 +371,7 @@ func (x *BatchUpdateUserLicensesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchUpdateUserLicensesRequest.ProtoReflect.Descriptor instead.
 func (*BatchUpdateUserLicensesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *BatchUpdateUserLicensesRequest) GetSource() isBatchUpdateUserLicensesRequest_Source {
@@ -282,7 +409,7 @@ type isBatchUpdateUserLicensesRequest_Source interface {
 }
 
 type BatchUpdateUserLicensesRequest_InlineSource_ struct {
-	// The inline source for the input content for document embeddings.
+	// The inline source for the input content for license assignment.
 	InlineSource *BatchUpdateUserLicensesRequest_InlineSource `protobuf:"bytes,2,opt,name=inline_source,json=inlineSource,proto3,oneof"`
 }
 
@@ -309,7 +436,7 @@ type BatchUpdateUserLicensesMetadata struct {
 
 func (x *BatchUpdateUserLicensesMetadata) Reset() {
 	*x = BatchUpdateUserLicensesMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[3]
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -321,7 +448,7 @@ func (x *BatchUpdateUserLicensesMetadata) String() string {
 func (*BatchUpdateUserLicensesMetadata) ProtoMessage() {}
 
 func (x *BatchUpdateUserLicensesMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[3]
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -334,7 +461,7 @@ func (x *BatchUpdateUserLicensesMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchUpdateUserLicensesMetadata.ProtoReflect.Descriptor instead.
 func (*BatchUpdateUserLicensesMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *BatchUpdateUserLicensesMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -380,7 +507,7 @@ type BatchUpdateUserLicensesResponse struct {
 
 func (x *BatchUpdateUserLicensesResponse) Reset() {
 	*x = BatchUpdateUserLicensesResponse{}
-	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[4]
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -392,7 +519,7 @@ func (x *BatchUpdateUserLicensesResponse) String() string {
 func (*BatchUpdateUserLicensesResponse) ProtoMessage() {}
 
 func (x *BatchUpdateUserLicensesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[4]
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -405,7 +532,7 @@ func (x *BatchUpdateUserLicensesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchUpdateUserLicensesResponse.ProtoReflect.Descriptor instead.
 func (*BatchUpdateUserLicensesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *BatchUpdateUserLicensesResponse) GetUserLicenses() []*UserLicense {
@@ -438,7 +565,7 @@ type BatchUpdateUserLicensesRequest_InlineSource struct {
 
 func (x *BatchUpdateUserLicensesRequest_InlineSource) Reset() {
 	*x = BatchUpdateUserLicensesRequest_InlineSource{}
-	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -450,7 +577,7 @@ func (x *BatchUpdateUserLicensesRequest_InlineSource) String() string {
 func (*BatchUpdateUserLicensesRequest_InlineSource) ProtoMessage() {}
 
 func (x *BatchUpdateUserLicensesRequest_InlineSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -463,7 +590,7 @@ func (x *BatchUpdateUserLicensesRequest_InlineSource) ProtoReflect() protoreflec
 
 // Deprecated: Use BatchUpdateUserLicensesRequest_InlineSource.ProtoReflect.Descriptor instead.
 func (*BatchUpdateUserLicensesRequest_InlineSource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{2, 0}
+	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP(), []int{4, 0}
 }
 
 func (x *BatchUpdateUserLicensesRequest_InlineSource) GetUserLicenses() []*UserLicense {
@@ -484,17 +611,23 @@ var File_google_cloud_discoveryengine_v1_user_license_service_proto protoreflect
 
 const file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/discoveryengine/v1/user_license_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/discoveryengine/v1/user_license.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xca\x01\n" +
+	":google/cloud/discoveryengine/v1/user_license_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/discoveryengine/v1/user_license.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xeb\x01\n" +
 	"\x17ListUserLicensesRequest\x12I\n" +
 	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/UserStoreR\x06parent\x12!\n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
-	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x95\x01\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x95\x01\n" +
 	"\x18ListUserLicensesResponse\x12Q\n" +
 	"\ruser_licenses\x18\x01 \x03(\v2,.google.cloud.discoveryengine.v1.UserLicenseR\fuserLicenses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe4\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"p\n" +
+	"#ListLicenseConfigsUsageStatsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/UserStoreR\x06parent\"\x9d\x01\n" +
+	"$ListLicenseConfigsUsageStatsResponse\x12u\n" +
+	"\x1alicense_config_usage_stats\x18\x01 \x03(\v28.google.cloud.discoveryengine.v1.LicenseConfigUsageStatsR\x17licenseConfigUsageStats\"\xe4\x03\n" +
 	"\x1eBatchUpdateUserLicensesRequest\x12s\n" +
 	"\rinline_source\x18\x02 \x01(\v2L.google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSourceH\x00R\finlineSource\x12I\n" +
 	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
@@ -514,11 +647,12 @@ const file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDesc = 
 	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\"\xad\x01\n" +
 	"\x1fBatchUpdateUserLicensesResponse\x12Q\n" +
 	"\ruser_licenses\x18\x01 \x03(\v2,.google.cloud.discoveryengine.v1.UserLicenseR\fuserLicenses\x127\n" +
-	"\rerror_samples\x18\x02 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples2\x9a\x05\n" +
+	"\rerror_samples\x18\x02 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples2\xa2\b\n" +
 	"\x12UserLicenseService\x12\xd7\x01\n" +
-	"\x10ListUserLicenses\x128.google.cloud.discoveryengine.v1.ListUserLicensesRequest\x1a9.google.cloud.discoveryengine.v1.ListUserLicensesResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*/userStores/*}/userLicenses\x12\xd5\x02\n" +
+	"\x10ListUserLicenses\x128.google.cloud.discoveryengine.v1.ListUserLicensesRequest\x1a9.google.cloud.discoveryengine.v1.ListUserLicensesResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*/userStores/*}/userLicenses\x12\x87\x02\n" +
+	"\x1cListLicenseConfigsUsageStats\x12D.google.cloud.discoveryengine.v1.ListLicenseConfigsUsageStatsRequest\x1aE.google.cloud.discoveryengine.v1.ListLicenseConfigsUsageStatsResponse\"Z\xdaA\x06parent\x82\xd3\xe4\x93\x02K\x12I/v1/{parent=projects/*/locations/*/userStores/*}/licenseConfigsUsageStats\x12\xd5\x02\n" +
 	"\x17BatchUpdateUserLicenses\x12?.google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest\x1a\x1d.google.longrunning.Operation\"\xd9\x01\xcaA\x82\x01\n" +
-	"?google.cloud.discoveryengine.v1.BatchUpdateUserLicensesResponse\x12?google.cloud.discoveryengine.v1.BatchUpdateUserLicensesMetadata\x82\xd3\xe4\x93\x02M:\x01*\"H/v1/{parent=projects/*/locations/*/userStores/*}:batchUpdateUserLicenses\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8a\x02\n" +
+	"?google.cloud.discoveryengine.v1.BatchUpdateUserLicensesResponse\x12?google.cloud.discoveryengine.v1.BatchUpdateUserLicensesMetadata\x82\xd3\xe4\x93\x02M:\x01*\"H/v1/{parent=projects/*/locations/*/userStores/*}:batchUpdateUserLicenses\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x8a\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x17UserLicenseServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (
@@ -533,38 +667,44 @@ func file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescGZIP
 	return file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_google_cloud_discoveryengine_v1_user_license_service_proto_goTypes = []any{
 	(*ListUserLicensesRequest)(nil),                     // 0: google.cloud.discoveryengine.v1.ListUserLicensesRequest
 	(*ListUserLicensesResponse)(nil),                    // 1: google.cloud.discoveryengine.v1.ListUserLicensesResponse
-	(*BatchUpdateUserLicensesRequest)(nil),              // 2: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest
-	(*BatchUpdateUserLicensesMetadata)(nil),             // 3: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesMetadata
-	(*BatchUpdateUserLicensesResponse)(nil),             // 4: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesResponse
-	(*BatchUpdateUserLicensesRequest_InlineSource)(nil), // 5: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSource
-	(*UserLicense)(nil),                                 // 6: google.cloud.discoveryengine.v1.UserLicense
-	(*timestamppb.Timestamp)(nil),                       // 7: google.protobuf.Timestamp
-	(*status.Status)(nil),                               // 8: google.rpc.Status
-	(*fieldmaskpb.FieldMask)(nil),                       // 9: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil),                     // 10: google.longrunning.Operation
+	(*ListLicenseConfigsUsageStatsRequest)(nil),         // 2: google.cloud.discoveryengine.v1.ListLicenseConfigsUsageStatsRequest
+	(*ListLicenseConfigsUsageStatsResponse)(nil),        // 3: google.cloud.discoveryengine.v1.ListLicenseConfigsUsageStatsResponse
+	(*BatchUpdateUserLicensesRequest)(nil),              // 4: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest
+	(*BatchUpdateUserLicensesMetadata)(nil),             // 5: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesMetadata
+	(*BatchUpdateUserLicensesResponse)(nil),             // 6: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesResponse
+	(*BatchUpdateUserLicensesRequest_InlineSource)(nil), // 7: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSource
+	(*UserLicense)(nil),                                 // 8: google.cloud.discoveryengine.v1.UserLicense
+	(*LicenseConfigUsageStats)(nil),                     // 9: google.cloud.discoveryengine.v1.LicenseConfigUsageStats
+	(*timestamppb.Timestamp)(nil),                       // 10: google.protobuf.Timestamp
+	(*status.Status)(nil),                               // 11: google.rpc.Status
+	(*fieldmaskpb.FieldMask)(nil),                       // 12: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil),                     // 13: google.longrunning.Operation
 }
 var file_google_cloud_discoveryengine_v1_user_license_service_proto_depIdxs = []int32{
-	6,  // 0: google.cloud.discoveryengine.v1.ListUserLicensesResponse.user_licenses:type_name -> google.cloud.discoveryengine.v1.UserLicense
-	5,  // 1: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.inline_source:type_name -> google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSource
-	7,  // 2: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesMetadata.create_time:type_name -> google.protobuf.Timestamp
-	7,  // 3: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesMetadata.update_time:type_name -> google.protobuf.Timestamp
-	6,  // 4: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesResponse.user_licenses:type_name -> google.cloud.discoveryengine.v1.UserLicense
-	8,  // 5: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesResponse.error_samples:type_name -> google.rpc.Status
-	6,  // 6: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSource.user_licenses:type_name -> google.cloud.discoveryengine.v1.UserLicense
-	9,  // 7: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSource.update_mask:type_name -> google.protobuf.FieldMask
-	0,  // 8: google.cloud.discoveryengine.v1.UserLicenseService.ListUserLicenses:input_type -> google.cloud.discoveryengine.v1.ListUserLicensesRequest
-	2,  // 9: google.cloud.discoveryengine.v1.UserLicenseService.BatchUpdateUserLicenses:input_type -> google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest
-	1,  // 10: google.cloud.discoveryengine.v1.UserLicenseService.ListUserLicenses:output_type -> google.cloud.discoveryengine.v1.ListUserLicensesResponse
-	10, // 11: google.cloud.discoveryengine.v1.UserLicenseService.BatchUpdateUserLicenses:output_type -> google.longrunning.Operation
-	10, // [10:12] is the sub-list for method output_type
-	8,  // [8:10] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	8,  // 0: google.cloud.discoveryengine.v1.ListUserLicensesResponse.user_licenses:type_name -> google.cloud.discoveryengine.v1.UserLicense
+	9,  // 1: google.cloud.discoveryengine.v1.ListLicenseConfigsUsageStatsResponse.license_config_usage_stats:type_name -> google.cloud.discoveryengine.v1.LicenseConfigUsageStats
+	7,  // 2: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.inline_source:type_name -> google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSource
+	10, // 3: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesMetadata.create_time:type_name -> google.protobuf.Timestamp
+	10, // 4: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesMetadata.update_time:type_name -> google.protobuf.Timestamp
+	8,  // 5: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesResponse.user_licenses:type_name -> google.cloud.discoveryengine.v1.UserLicense
+	11, // 6: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesResponse.error_samples:type_name -> google.rpc.Status
+	8,  // 7: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSource.user_licenses:type_name -> google.cloud.discoveryengine.v1.UserLicense
+	12, // 8: google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSource.update_mask:type_name -> google.protobuf.FieldMask
+	0,  // 9: google.cloud.discoveryengine.v1.UserLicenseService.ListUserLicenses:input_type -> google.cloud.discoveryengine.v1.ListUserLicensesRequest
+	2,  // 10: google.cloud.discoveryengine.v1.UserLicenseService.ListLicenseConfigsUsageStats:input_type -> google.cloud.discoveryengine.v1.ListLicenseConfigsUsageStatsRequest
+	4,  // 11: google.cloud.discoveryengine.v1.UserLicenseService.BatchUpdateUserLicenses:input_type -> google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest
+	1,  // 12: google.cloud.discoveryengine.v1.UserLicenseService.ListUserLicenses:output_type -> google.cloud.discoveryengine.v1.ListUserLicensesResponse
+	3,  // 13: google.cloud.discoveryengine.v1.UserLicenseService.ListLicenseConfigsUsageStats:output_type -> google.cloud.discoveryengine.v1.ListLicenseConfigsUsageStatsResponse
+	13, // 14: google.cloud.discoveryengine.v1.UserLicenseService.BatchUpdateUserLicenses:output_type -> google.longrunning.Operation
+	12, // [12:15] is the sub-list for method output_type
+	9,  // [9:12] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_user_license_service_proto_init() }
@@ -573,7 +713,7 @@ func file_google_cloud_discoveryengine_v1_user_license_service_proto_init() {
 		return
 	}
 	file_google_cloud_discoveryengine_v1_user_license_proto_init()
-	file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[2].OneofWrappers = []any{
+	file_google_cloud_discoveryengine_v1_user_license_service_proto_msgTypes[4].OneofWrappers = []any{
 		(*BatchUpdateUserLicensesRequest_InlineSource_)(nil),
 	}
 	type x struct{}
@@ -582,7 +722,7 @@ func file_google_cloud_discoveryengine_v1_user_license_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

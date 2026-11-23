@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -535,11 +535,11 @@ const file_google_cloud_discoveryengine_v1_search_tuning_service_proto_rawDesc =
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime2\x92\x05\n" +
+	"updateTime2\x90\x06\n" +
 	"\x13SearchTuningService\x12\xc3\x02\n" +
 	"\x10TrainCustomModel\x128.google.cloud.discoveryengine.v1.TrainCustomModelRequest\x1a\x1d.google.longrunning.Operation\"\xd5\x01\xcaAt\n" +
 	"8google.cloud.discoveryengine.v1.TrainCustomModelResponse\x128google.cloud.discoveryengine.v1.TrainCustomModelMetadata\x82\xd3\xe4\x93\x02X:\x01*\"S/v1/{data_store=projects/*/locations/*/collections/*/dataStores/*}:trainCustomModel\x12\xe0\x01\n" +
-	"\x10ListCustomModels\x128.google.cloud.discoveryengine.v1.ListCustomModelsRequest\x1a9.google.cloud.discoveryengine.v1.ListCustomModelsResponse\"W\x82\xd3\xe4\x93\x02Q\x12O/v1/{data_store=projects/*/locations/*/collections/*/dataStores/*}/customModels\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8b\x02\n" +
+	"\x10ListCustomModels\x128.google.cloud.discoveryengine.v1.ListCustomModelsRequest\x1a9.google.cloud.discoveryengine.v1.ListCustomModelsResponse\"W\x82\xd3\xe4\x93\x02Q\x12O/v1/{data_store=projects/*/locations/*/collections/*/dataStores/*}/customModels\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x8b\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x18SearchTuningServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (

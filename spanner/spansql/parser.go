@@ -276,6 +276,7 @@ type parser struct {
 	line, offset int // updated by places that shrink s
 
 	comments []comment // accumulated during parse
+	depth    int       // current expression nesting depth
 }
 
 type comment struct {
@@ -4325,8 +4326,16 @@ ascending order of precedence:
 	parseLit
 */
 
+const maxExprDepth = 1000
+
 func (p *parser) parseExpr() (Expr, *parseError) {
 	debugf("parseExpr: %v", p)
+
+	p.depth++
+	defer func() { p.depth-- }()
+	if p.depth > maxExprDepth {
+		return nil, p.errorf("expression too deeply nested")
+	}
 
 	return orParser.parse(p)
 }
@@ -5021,6 +5030,12 @@ func (p *parser) parseArrayOrArraySubquery() (Expr, *parseError) {
 }
 
 func (p *parser) parseArrayLit() (Array, *parseError) {
+	p.depth++
+	defer func() { p.depth-- }()
+	if p.depth > maxExprDepth {
+		return nil, p.errorf("expression too deeply nested")
+	}
+
 	// ARRAY keyword is optional.
 	// TODO: If it is present, consume any <T> after it.
 	p.eat("ARRAY")

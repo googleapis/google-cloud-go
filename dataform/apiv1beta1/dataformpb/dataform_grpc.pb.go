@@ -79,6 +79,7 @@ const (
 	Dataform_PushGitCommits_FullMethodName                     = "/google.cloud.dataform.v1beta1.Dataform/PushGitCommits"
 	Dataform_FetchFileGitStatuses_FullMethodName               = "/google.cloud.dataform.v1beta1.Dataform/FetchFileGitStatuses"
 	Dataform_FetchGitAheadBehind_FullMethodName                = "/google.cloud.dataform.v1beta1.Dataform/FetchGitAheadBehind"
+	Dataform_FetchWorkspaceHistory_FullMethodName              = "/google.cloud.dataform.v1beta1.Dataform/FetchWorkspaceHistory"
 	Dataform_CommitWorkspaceChanges_FullMethodName             = "/google.cloud.dataform.v1beta1.Dataform/CommitWorkspaceChanges"
 	Dataform_ResetWorkspaceChanges_FullMethodName              = "/google.cloud.dataform.v1beta1.Dataform/ResetWorkspaceChanges"
 	Dataform_FetchFileDiff_FullMethodName                      = "/google.cloud.dataform.v1beta1.Dataform/FetchFileDiff"
@@ -99,6 +100,7 @@ const (
 	Dataform_ListCompilationResults_FullMethodName             = "/google.cloud.dataform.v1beta1.Dataform/ListCompilationResults"
 	Dataform_GetCompilationResult_FullMethodName               = "/google.cloud.dataform.v1beta1.Dataform/GetCompilationResult"
 	Dataform_CreateCompilationResult_FullMethodName            = "/google.cloud.dataform.v1beta1.Dataform/CreateCompilationResult"
+	Dataform_CreateCompilationResultLongRunning_FullMethodName = "/google.cloud.dataform.v1beta1.Dataform/CreateCompilationResultLongRunning"
 	Dataform_QueryCompilationResultActions_FullMethodName      = "/google.cloud.dataform.v1beta1.Dataform/QueryCompilationResultActions"
 	Dataform_ListWorkflowConfigs_FullMethodName                = "/google.cloud.dataform.v1beta1.Dataform/ListWorkflowConfigs"
 	Dataform_GetWorkflowConfig_FullMethodName                  = "/google.cloud.dataform.v1beta1.Dataform/GetWorkflowConfig"
@@ -223,6 +225,8 @@ type DataformClient interface {
 	FetchFileGitStatuses(ctx context.Context, in *FetchFileGitStatusesRequest, opts ...grpc.CallOption) (*FetchFileGitStatusesResponse, error)
 	// Fetches Git ahead/behind against a remote branch.
 	FetchGitAheadBehind(ctx context.Context, in *FetchGitAheadBehindRequest, opts ...grpc.CallOption) (*FetchGitAheadBehindResponse, error)
+	// Fetches a Workspace's history of commits.
+	FetchWorkspaceHistory(ctx context.Context, in *FetchWorkspaceHistoryRequest, opts ...grpc.CallOption) (*FetchWorkspaceHistoryResponse, error)
 	// Applies a Git commit for uncommitted files in a Workspace.
 	CommitWorkspaceChanges(ctx context.Context, in *CommitWorkspaceChangesRequest, opts ...grpc.CallOption) (*CommitWorkspaceChangesResponse, error)
 	// Performs a Git reset for uncommitted files in a Workspace.
@@ -269,6 +273,9 @@ type DataformClient interface {
 	GetCompilationResult(ctx context.Context, in *GetCompilationResultRequest, opts ...grpc.CallOption) (*CompilationResult, error)
 	// Creates a new CompilationResult in a given project and location.
 	CreateCompilationResult(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*CompilationResult, error)
+	// Creates a new CompilationResult in a given project and location
+	// asynchronously.
+	CreateCompilationResultLongRunning(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns CompilationResultActions in a given CompilationResult.
 	QueryCompilationResultActions(ctx context.Context, in *QueryCompilationResultActionsRequest, opts ...grpc.CallOption) (*QueryCompilationResultActionsResponse, error)
 	// Lists WorkflowConfigs in a given Repository.
@@ -712,6 +719,15 @@ func (c *dataformClient) FetchGitAheadBehind(ctx context.Context, in *FetchGitAh
 	return out, nil
 }
 
+func (c *dataformClient) FetchWorkspaceHistory(ctx context.Context, in *FetchWorkspaceHistoryRequest, opts ...grpc.CallOption) (*FetchWorkspaceHistoryResponse, error) {
+	out := new(FetchWorkspaceHistoryResponse)
+	err := c.cc.Invoke(ctx, Dataform_FetchWorkspaceHistory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataformClient) CommitWorkspaceChanges(ctx context.Context, in *CommitWorkspaceChangesRequest, opts ...grpc.CallOption) (*CommitWorkspaceChangesResponse, error) {
 	out := new(CommitWorkspaceChangesResponse)
 	err := c.cc.Invoke(ctx, Dataform_CommitWorkspaceChanges_FullMethodName, in, out, opts...)
@@ -886,6 +902,15 @@ func (c *dataformClient) GetCompilationResult(ctx context.Context, in *GetCompil
 func (c *dataformClient) CreateCompilationResult(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*CompilationResult, error) {
 	out := new(CompilationResult)
 	err := c.cc.Invoke(ctx, Dataform_CreateCompilationResult_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) CreateCompilationResultLongRunning(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Dataform_CreateCompilationResultLongRunning_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1150,6 +1175,8 @@ type DataformServer interface {
 	FetchFileGitStatuses(context.Context, *FetchFileGitStatusesRequest) (*FetchFileGitStatusesResponse, error)
 	// Fetches Git ahead/behind against a remote branch.
 	FetchGitAheadBehind(context.Context, *FetchGitAheadBehindRequest) (*FetchGitAheadBehindResponse, error)
+	// Fetches a Workspace's history of commits.
+	FetchWorkspaceHistory(context.Context, *FetchWorkspaceHistoryRequest) (*FetchWorkspaceHistoryResponse, error)
 	// Applies a Git commit for uncommitted files in a Workspace.
 	CommitWorkspaceChanges(context.Context, *CommitWorkspaceChangesRequest) (*CommitWorkspaceChangesResponse, error)
 	// Performs a Git reset for uncommitted files in a Workspace.
@@ -1196,6 +1223,9 @@ type DataformServer interface {
 	GetCompilationResult(context.Context, *GetCompilationResultRequest) (*CompilationResult, error)
 	// Creates a new CompilationResult in a given project and location.
 	CreateCompilationResult(context.Context, *CreateCompilationResultRequest) (*CompilationResult, error)
+	// Creates a new CompilationResult in a given project and location
+	// asynchronously.
+	CreateCompilationResultLongRunning(context.Context, *CreateCompilationResultRequest) (*longrunningpb.Operation, error)
 	// Returns CompilationResultActions in a given CompilationResult.
 	QueryCompilationResultActions(context.Context, *QueryCompilationResultActionsRequest) (*QueryCompilationResultActionsResponse, error)
 	// Lists WorkflowConfigs in a given Repository.
@@ -1383,6 +1413,9 @@ func (UnimplementedDataformServer) FetchFileGitStatuses(context.Context, *FetchF
 func (UnimplementedDataformServer) FetchGitAheadBehind(context.Context, *FetchGitAheadBehindRequest) (*FetchGitAheadBehindResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchGitAheadBehind not implemented")
 }
+func (UnimplementedDataformServer) FetchWorkspaceHistory(context.Context, *FetchWorkspaceHistoryRequest) (*FetchWorkspaceHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchWorkspaceHistory not implemented")
+}
 func (UnimplementedDataformServer) CommitWorkspaceChanges(context.Context, *CommitWorkspaceChangesRequest) (*CommitWorkspaceChangesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommitWorkspaceChanges not implemented")
 }
@@ -1442,6 +1475,9 @@ func (UnimplementedDataformServer) GetCompilationResult(context.Context, *GetCom
 }
 func (UnimplementedDataformServer) CreateCompilationResult(context.Context, *CreateCompilationResultRequest) (*CompilationResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCompilationResult not implemented")
+}
+func (UnimplementedDataformServer) CreateCompilationResultLongRunning(context.Context, *CreateCompilationResultRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCompilationResultLongRunning not implemented")
 }
 func (UnimplementedDataformServer) QueryCompilationResultActions(context.Context, *QueryCompilationResultActionsRequest) (*QueryCompilationResultActionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryCompilationResultActions not implemented")
@@ -2262,6 +2298,24 @@ func _Dataform_FetchGitAheadBehind_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Dataform_FetchWorkspaceHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchWorkspaceHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).FetchWorkspaceHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_FetchWorkspaceHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).FetchWorkspaceHistory(ctx, req.(*FetchWorkspaceHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Dataform_CommitWorkspaceChanges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CommitWorkspaceChangesRequest)
 	if err := dec(in); err != nil {
@@ -2618,6 +2672,24 @@ func _Dataform_CreateCompilationResult_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataformServer).CreateCompilationResult(ctx, req.(*CreateCompilationResultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_CreateCompilationResultLongRunning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCompilationResultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).CreateCompilationResultLongRunning(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_CreateCompilationResultLongRunning_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).CreateCompilationResultLongRunning(ctx, req.(*CreateCompilationResultRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3104,6 +3176,10 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Dataform_FetchGitAheadBehind_Handler,
 		},
 		{
+			MethodName: "FetchWorkspaceHistory",
+			Handler:    _Dataform_FetchWorkspaceHistory_Handler,
+		},
+		{
 			MethodName: "CommitWorkspaceChanges",
 			Handler:    _Dataform_CommitWorkspaceChanges_Handler,
 		},
@@ -3182,6 +3258,10 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateCompilationResult",
 			Handler:    _Dataform_CreateCompilationResult_Handler,
+		},
+		{
+			MethodName: "CreateCompilationResultLongRunning",
+			Handler:    _Dataform_CreateCompilationResultLongRunning_Handler,
 		},
 		{
 			MethodName: "QueryCompilationResultActions",

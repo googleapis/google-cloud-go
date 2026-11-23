@@ -21,6 +21,7 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -131,7 +132,7 @@ func TestClientConfig_DisableSession_ClientCloseWorks(t *testing.T) {
 
 // TestClientConfig_DisableSession_OpenTableRoutesClassicOnly confirms
 // that on a DisableSession client, TableShim's session side is nil, so
-// useSession() reports false and every Apply / ReadRow routes to the
+// useSessionForMethod reports false and every Apply / ReadRow routes to the
 // classic path unconditionally — regardless of the Diverter's
 // SessionLoad. This is the load-bearing contract for callers that
 // opt out: they get classic behavior even if some future code path
@@ -170,7 +171,7 @@ func TestClientConfig_DisableSession_OpenTableRoutesClassicOnly(t *testing.T) {
 	t.Cleanup(func() { _ = c.Close() })
 
 	// Force the Diverter into session-preferring mode. If DisableSession
-	// works as advertised, useSession() still reports false because
+	// works as advertised, useSessionForMethod still reports false because
 	// TableShim.session is nil.
 	if c.diverter != nil {
 		c.diverter.SetSessionLoad(1.0)
@@ -184,7 +185,7 @@ func TestClientConfig_DisableSession_OpenTableRoutesClassicOnly(t *testing.T) {
 	if shim.session != nil {
 		t.Errorf("shim.session = %T, want nil (DisableSession clients must not wire a session TableAPI)", shim.session)
 	}
-	if shim.useSession() {
-		t.Error("shim.useSession() = true, want false (nil session side must gate to classic)")
+	if shim.useSessionForMethod(btransport.ScopeMethodReadRow) {
+		t.Error("shim.useSessionForMethod(ReadRow) = true, want false (nil session side must gate to classic)")
 	}
 }

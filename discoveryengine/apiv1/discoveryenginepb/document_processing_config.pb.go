@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -480,6 +480,8 @@ type DocumentProcessingConfig_ParsingConfig_LayoutParsingConfig struct {
 	// Optional. If true, the LLM based annotation is added to the image
 	// during parsing.
 	EnableImageAnnotation bool `protobuf:"varint,2,opt,name=enable_image_annotation,json=enableImageAnnotation,proto3" json:"enable_image_annotation,omitempty"`
+	// Optional. If true, the pdf layout will be refined using an LLM.
+	EnableLlmLayoutParsing bool `protobuf:"varint,5,opt,name=enable_llm_layout_parsing,json=enableLlmLayoutParsing,proto3" json:"enable_llm_layout_parsing,omitempty"`
 	// Optional. Contains the required structure types to extract from the
 	// document. Supported values:
 	//
@@ -491,8 +493,11 @@ type DocumentProcessingConfig_ParsingConfig_LayoutParsingConfig struct {
 	ExcludeHtmlClasses []string `protobuf:"bytes,11,rep,name=exclude_html_classes,json=excludeHtmlClasses,proto3" json:"exclude_html_classes,omitempty"`
 	// Optional. List of HTML ids to exclude from the parsed content.
 	ExcludeHtmlIds []string `protobuf:"bytes,12,rep,name=exclude_html_ids,json=excludeHtmlIds,proto3" json:"exclude_html_ids,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Optional. If true, the processed document will be made available for
+	// the GetProcessedDocument API.
+	EnableGetProcessedDocument bool `protobuf:"varint,14,opt,name=enable_get_processed_document,json=enableGetProcessedDocument,proto3" json:"enable_get_processed_document,omitempty"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *DocumentProcessingConfig_ParsingConfig_LayoutParsingConfig) Reset() {
@@ -539,6 +544,13 @@ func (x *DocumentProcessingConfig_ParsingConfig_LayoutParsingConfig) GetEnableIm
 	return false
 }
 
+func (x *DocumentProcessingConfig_ParsingConfig_LayoutParsingConfig) GetEnableLlmLayoutParsing() bool {
+	if x != nil {
+		return x.EnableLlmLayoutParsing
+	}
+	return false
+}
+
 func (x *DocumentProcessingConfig_ParsingConfig_LayoutParsingConfig) GetStructuredContentTypes() []string {
 	if x != nil {
 		return x.StructuredContentTypes
@@ -567,11 +579,18 @@ func (x *DocumentProcessingConfig_ParsingConfig_LayoutParsingConfig) GetExcludeH
 	return nil
 }
 
+func (x *DocumentProcessingConfig_ParsingConfig_LayoutParsingConfig) GetEnableGetProcessedDocument() bool {
+	if x != nil {
+		return x.EnableGetProcessedDocument
+	}
+	return false
+}
+
 var File_google_cloud_discoveryengine_v1_document_processing_config_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_document_processing_config_proto_rawDesc = "" +
 	"\n" +
-	"@google/cloud/discoveryengine/v1/document_processing_config.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x82\x11\n" +
+	"@google/cloud/discoveryengine/v1/document_processing_config.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x8c\x12\n" +
 	"\x18DocumentProcessingConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12q\n" +
 	"\x0fchunking_config\x18\x03 \x01(\v2H.google.cloud.discoveryengine.v1.DocumentProcessingConfig.ChunkingConfigR\x0echunkingConfig\x12}\n" +
@@ -584,7 +603,7 @@ const file_google_cloud_discoveryengine_v1_document_processing_config_proto_rawD
 	"chunk_size\x18\x01 \x01(\x05R\tchunkSize\x12:\n" +
 	"\x19include_ancestor_headings\x18\x02 \x01(\bR\x17includeAncestorHeadingsB\f\n" +
 	"\n" +
-	"chunk_mode\x1a\xea\a\n" +
+	"chunk_mode\x1a\xf4\b\n" +
 	"\rParsingConfig\x12\x94\x01\n" +
 	"\x16digital_parsing_config\x18\x01 \x01(\v2\\.google.cloud.discoveryengine.v1.DocumentProcessingConfig.ParsingConfig.DigitalParsingConfigH\x00R\x14digitalParsingConfig\x12\x88\x01\n" +
 	"\x12ocr_parsing_config\x18\x02 \x01(\v2X.google.cloud.discoveryengine.v1.DocumentProcessingConfig.ParsingConfig.OcrParsingConfigH\x00R\x10ocrParsingConfig\x12\x91\x01\n" +
@@ -592,15 +611,17 @@ const file_google_cloud_discoveryengine_v1_document_processing_config_proto_rawD
 	"\x14DigitalParsingConfig\x1a|\n" +
 	"\x10OcrParsingConfig\x12@\n" +
 	"\x1aenhanced_document_elements\x18\x01 \x03(\tB\x02\x18\x01R\x18enhancedDocumentElements\x12&\n" +
-	"\x0fuse_native_text\x18\x02 \x01(\bR\ruseNativeText\x1a\xf3\x02\n" +
+	"\x0fuse_native_text\x18\x02 \x01(\bR\ruseNativeText\x1a\xfd\x03\n" +
 	"\x13LayoutParsingConfig\x12<\n" +
 	"\x17enable_table_annotation\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x15enableTableAnnotation\x12<\n" +
-	"\x17enable_image_annotation\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x15enableImageAnnotation\x12>\n" +
+	"\x17enable_image_annotation\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x15enableImageAnnotation\x12?\n" +
+	"\x19enable_llm_layout_parsing\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x16enableLlmLayoutParsing\x12>\n" +
 	"\x18structured_content_types\x18\t \x03(\tB\x04\xe2A\x01\x01R\x16structuredContentTypes\x128\n" +
 	"\x15exclude_html_elements\x18\n" +
 	" \x03(\tB\x04\xe2A\x01\x01R\x13excludeHtmlElements\x126\n" +
 	"\x14exclude_html_classes\x18\v \x03(\tB\x04\xe2A\x01\x01R\x12excludeHtmlClasses\x12.\n" +
-	"\x10exclude_html_ids\x18\f \x03(\tB\x04\xe2A\x01\x01R\x0eexcludeHtmlIdsB\x17\n" +
+	"\x10exclude_html_ids\x18\f \x03(\tB\x04\xe2A\x01\x01R\x0eexcludeHtmlIds\x12G\n" +
+	"\x1denable_get_processed_document\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\x1aenableGetProcessedDocumentB\x17\n" +
 	"\x15type_dedicated_config\x1a\x92\x01\n" +
 	"\x1bParsingConfigOverridesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12]\n" +

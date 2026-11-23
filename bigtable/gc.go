@@ -26,6 +26,8 @@ import (
 )
 
 // PolicyType represents the type of GCPolicy
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule directly instead.
 type PolicyType int
 
 const (
@@ -42,12 +44,16 @@ const (
 )
 
 // A GCPolicy represents a rule that determines which cells are eligible for garbage collection.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule directly instead.
 type GCPolicy interface {
 	String() string
 	proto() *bttdpb.GcRule
 }
 
 // GetPolicyType takes a gc policy and return appropriate PolicyType
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule directly instead.
 func GetPolicyType(gc GCPolicy) PolicyType {
 	switch gc.proto().Rule.(type) {
 	case *bttdpb.GcRule_Intersection_:
@@ -64,9 +70,13 @@ func GetPolicyType(gc GCPolicy) PolicyType {
 }
 
 // IntersectionPolicy returns a GC policy that only applies when all its sub-policies apply.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule_Intersection instead.
 func IntersectionPolicy(sub ...GCPolicy) GCPolicy { return IntersectionGCPolicy{sub} }
 
 // IntersectionGCPolicy with list of children
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule_Intersection instead.
 type IntersectionGCPolicy struct {
 	// List of children policy in the intersection
 	Children []GCPolicy
@@ -91,9 +101,13 @@ func (ip IntersectionGCPolicy) proto() *bttdpb.GcRule {
 }
 
 // UnionPolicy returns a GC policy that applies when any of its sub-policies apply.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule_Union instead.
 func UnionPolicy(sub ...GCPolicy) GCPolicy { return UnionGCPolicy{sub} }
 
 // UnionGCPolicy with list of children
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule_Union instead.
 type UnionGCPolicy struct {
 	// List of children policy in the union
 	Children []GCPolicy
@@ -119,9 +133,13 @@ func (up UnionGCPolicy) proto() *bttdpb.GcRule {
 
 // MaxVersionsPolicy returns a GC policy that applies to all versions of a cell
 // except for the most recent n.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule_MaxNumVersions instead.
 func MaxVersionsPolicy(n int) GCPolicy { return MaxVersionsGCPolicy(n) }
 
 // MaxVersionsGCPolicy type alias
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule_MaxNumVersions instead.
 type MaxVersionsGCPolicy int
 
 func (mvp MaxVersionsGCPolicy) String() string {
@@ -134,9 +152,13 @@ func (mvp MaxVersionsGCPolicy) proto() *bttdpb.GcRule {
 
 // MaxAgePolicy returns a GC policy that applies to all cells
 // older than the given age.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule_MaxAge instead.
 func MaxAgePolicy(d time.Duration) GCPolicy { return MaxAgeGCPolicy(d) }
 
 // MaxAgeGCPolicy type alias
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule_MaxAge instead.
 type MaxAgeGCPolicy time.Duration
 
 var units = []struct {
@@ -153,6 +175,8 @@ func (ma MaxAgeGCPolicy) String() string {
 }
 
 // GetDurationString returns the duration string of the MaxAgeGCPolicy
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule_MaxAge instead.
 func (ma MaxAgeGCPolicy) GetDurationString() string {
 	d := time.Duration(ma)
 	for _, u := range units {
@@ -182,9 +206,13 @@ func (n noGCPolicy) String() string { return "" }
 func (n noGCPolicy) proto() *bttdpb.GcRule { return &bttdpb.GcRule{Rule: nil} }
 
 // NoGcPolicy applies to all cells setting maxage and maxversions to nil implies no gc policies
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule directly instead.
 func NoGcPolicy() GCPolicy { return noGCPolicy{} }
 
 // GCRuleToString converts the given GcRule proto to a user-visible string.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2/adminpb.GcRule directly instead.
 func GCRuleToString(rule *bttdpb.GcRule) string {
 	if rule == nil {
 		return "<never>"

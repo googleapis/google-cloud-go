@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -878,6 +878,12 @@ type AnswerQueryRequest struct {
 	// `projects/*/locations/global/collections/default_collection/engines/*/servingConfigs/default_serving_config`,
 	// or
 	// `projects/*/locations/global/collections/default_collection/dataStores/*/servingConfigs/default_serving_config`.
+	//
+	// Or the resource name of the agent engine serving config, such as:
+	// `projects/*/locations/global/collections/default_collection/engines/*/servingConfigs/default_agent_answer`.
+	// (use when `enable_agent_invocation` set to true, and you have custom
+	// `AI_MODE` agent engine configured)
+	//
 	// This field is used to identify the serving configuration name, set
 	// of models used to make the search.
 	ServingConfig string `protobuf:"bytes,1,opt,name=serving_config,json=servingConfig,proto3" json:"serving_config,omitempty"`
@@ -1203,7 +1209,14 @@ type CreateSessionRequest struct {
 	// `projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store_id}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The session to create.
-	Session       *Session `protobuf:"bytes,2,opt,name=session,proto3" json:"session,omitempty"`
+	Session *Session `protobuf:"bytes,2,opt,name=session,proto3" json:"session,omitempty"`
+	// Optional. The ID to use for the session, which will become the final
+	// component of the session's resource name.
+	//
+	// This value should be 1-63 characters, and valid characters
+	// are /[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/. If not specified, a unique ID will
+	// be generated.
+	SessionId     string `protobuf:"bytes,3,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1250,6 +1263,13 @@ func (x *CreateSessionRequest) GetSession() *Session {
 		return x.Session
 	}
 	return nil
+}
+
+func (x *CreateSessionRequest) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
 }
 
 // Request for UpdateSession method.
@@ -1430,7 +1450,9 @@ type ListSessionsRequest struct {
 	// Provide this to retrieve the subsequent page.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// A comma-separated list of fields to filter by, in EBNF grammar.
+	//
 	// The supported fields are:
+	//
 	// * `user_pseudo_id`
 	// * `state`
 	// * `display_name`
@@ -1439,28 +1461,35 @@ type ListSessionsRequest struct {
 	// * `labels`
 	// * `create_time`
 	// * `update_time`
+	// * `collaborative_project`
 	//
 	// Examples:
-	// "user_pseudo_id = some_id"
-	// "display_name = \"some_name\""
-	// "starred = true"
-	// "is_pinned=true AND (NOT labels:hidden)"
-	// "create_time > \"1970-01-01T12:00:00Z\""
+	//
+	//   - `user_pseudo_id = some_id`
+	//   - `display_name = "some_name"`
+	//   - `starred = true`
+	//   - `is_pinned=true AND (NOT labels:hidden)`
+	//   - `create_time > "1970-01-01T12:00:00Z"`
+	//   - `collaborative_project =
+	//     "projects/123/locations/global/collections/default_collection/engines/"
+	//     "default_engine/collaborative_projects/cp1"`
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// A comma-separated list of fields to order by, sorted in ascending order.
 	// Use "desc" after a field name for descending.
+	//
 	// Supported fields:
 	//
 	//   - `update_time`
 	//   - `create_time`
 	//   - `session_name`
 	//   - `is_pinned`
+	//   - `display_name`
 	//
 	// Example:
 	//
-	//   - "update_time desc"
-	//   - "create_time"
-	//   - "is_pinned desc,update_time desc": list sessions by is_pinned first, then
+	//   - `update_time desc`
+	//   - `create_time`
+	//   - `is_pinned desc,update_time desc`: list sessions by is_pinned first, then
 	//     by update_time.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -3430,11 +3459,13 @@ const file_google_cloud_discoveryengine_v1_conversational_search_service_proto_r
 	"\x12answer_query_token\x18\x03 \x01(\tR\x10answerQueryToken\"V\n" +
 	"\x10GetAnswerRequest\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/AnswerR\x04name\"\xab\x01\n" +
+	"%discoveryengine.googleapis.com/AnswerR\x04name\"\xd0\x01\n" +
 	"\x14CreateSessionRequest\x12I\n" +
 	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12H\n" +
-	"\asession\x18\x02 \x01(\v2(.google.cloud.discoveryengine.v1.SessionB\x04\xe2A\x01\x02R\asession\"\x9d\x01\n" +
+	"\asession\x18\x02 \x01(\v2(.google.cloud.discoveryengine.v1.SessionB\x04\xe2A\x01\x02R\asession\x12#\n" +
+	"\n" +
+	"session_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tsessionId\"\x9d\x01\n" +
 	"\x14UpdateSessionRequest\x12H\n" +
 	"\asession\x18\x01 \x01(\v2(.google.cloud.discoveryengine.v1.SessionB\x04\xe2A\x01\x02R\asession\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
@@ -3456,7 +3487,7 @@ const file_google_cloud_discoveryengine_v1_conversational_search_service_proto_r
 	"\border_by\x18\x05 \x01(\tR\aorderBy\"\x84\x01\n" +
 	"\x14ListSessionsResponse\x12D\n" +
 	"\bsessions\x18\x01 \x03(\v2(.google.cloud.discoveryengine.v1.SessionR\bsessions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\x96+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\x94,\n" +
 	"\x1bConversationalSearchService\x12\xab\x03\n" +
 	"\x14ConverseConversation\x12<.google.cloud.discoveryengine.v1.ConverseConversationRequest\x1a=.google.cloud.discoveryengine.v1.ConverseConversationResponse\"\x95\x02\xdaA\n" +
 	"name,query\x82\xd3\xe4\x93\x02\x81\x02:\x01*ZZ:\x01*\"U/v1/{name=projects/*/locations/*/collections/*/dataStores/*/conversations/*}:converseZW:\x01*\"R/v1/{name=projects/*/locations/*/collections/*/engines/*/conversations/*}:converse\"G/v1/{name=projects/*/locations/*/dataStores/*/conversations/*}:converse\x12\xa6\x03\n" +
@@ -3473,7 +3504,7 @@ const file_google_cloud_discoveryengine_v1_conversational_search_service_proto_r
 	"\rUpdateSession\x125.google.cloud.discoveryengine.v1.UpdateSessionRequest\x1a(.google.cloud.discoveryengine.v1.Session\"\x9e\x02\xdaA\x13session,update_mask\x82\xd3\xe4\x93\x02\x81\x02:\asessionZZ:\asession2O/v1/{session.name=projects/*/locations/*/collections/*/dataStores/*/sessions/*}ZW:\asession2L/v1/{session.name=projects/*/locations/*/collections/*/engines/*/sessions/*}2A/v1/{session.name=projects/*/locations/*/dataStores/*/sessions/*}\x12\xc9\x02\n" +
 	"\n" +
 	"GetSession\x122.google.cloud.discoveryengine.v1.GetSessionRequest\x1a(.google.cloud.discoveryengine.v1.Session\"\xdc\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xce\x01ZI\x12G/v1/{name=projects/*/locations/*/collections/*/dataStores/*/sessions/*}ZF\x12D/v1/{name=projects/*/locations/*/collections/*/engines/*/sessions/*}\x129/v1/{name=projects/*/locations/*/dataStores/*/sessions/*}\x12\xdc\x02\n" +
-	"\fListSessions\x124.google.cloud.discoveryengine.v1.ListSessionsRequest\x1a5.google.cloud.discoveryengine.v1.ListSessionsResponse\"\xde\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xce\x01ZI\x12G/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/sessionsZF\x12D/v1/{parent=projects/*/locations/*/collections/*/engines/*}/sessions\x129/v1/{parent=projects/*/locations/*/dataStores/*}/sessions\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x93\x02\n" +
+	"\fListSessions\x124.google.cloud.discoveryengine.v1.ListSessionsRequest\x1a5.google.cloud.discoveryengine.v1.ListSessionsResponse\"\xde\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xce\x01ZI\x12G/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/sessionsZF\x12D/v1/{parent=projects/*/locations/*/collections/*/engines/*}/sessions\x129/v1/{parent=projects/*/locations/*/dataStores/*}/sessions\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x93\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B ConversationalSearchServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (

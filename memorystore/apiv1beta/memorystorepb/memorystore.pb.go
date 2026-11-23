@@ -154,6 +154,59 @@ func (ConnectionType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_memorystore_v1beta_memorystore_proto_rawDescGZIP(), []int{1}
 }
 
+// IP version for PSC consumer endpoints.
+type IpVersion int32
+
+const (
+	// Not specified. Defaults to IPV4 on CreateInstance.
+	IpVersion_IP_VERSION_UNSPECIFIED IpVersion = 0
+	// IPv4 address family.
+	IpVersion_IPV4 IpVersion = 1
+	// IPv6 address family.
+	IpVersion_IPV6 IpVersion = 2
+)
+
+// Enum value maps for IpVersion.
+var (
+	IpVersion_name = map[int32]string{
+		0: "IP_VERSION_UNSPECIFIED",
+		1: "IPV4",
+		2: "IPV6",
+	}
+	IpVersion_value = map[string]int32{
+		"IP_VERSION_UNSPECIFIED": 0,
+		"IPV4":                   1,
+		"IPV6":                   2,
+	}
+)
+
+func (x IpVersion) Enum() *IpVersion {
+	p := new(IpVersion)
+	*p = x
+	return p
+}
+
+func (x IpVersion) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (IpVersion) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[2].Descriptor()
+}
+
+func (IpVersion) Type() protoreflect.EnumType {
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[2]
+}
+
+func (x IpVersion) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use IpVersion.Descriptor instead.
+func (IpVersion) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_rawDescGZIP(), []int{2}
+}
+
 // Possible states of the instance.
 type Instance_State int32
 
@@ -203,11 +256,11 @@ func (x Instance_State) String() string {
 }
 
 func (Instance_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[3].Descriptor()
 }
 
 func (Instance_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[2]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[3]
 }
 
 func (x Instance_State) Number() protoreflect.EnumNumber {
@@ -260,11 +313,11 @@ func (x Instance_AuthorizationMode) String() string {
 }
 
 func (Instance_AuthorizationMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[4].Descriptor()
 }
 
 func (Instance_AuthorizationMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[3]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[4]
 }
 
 func (x Instance_AuthorizationMode) Number() protoreflect.EnumNumber {
@@ -313,11 +366,11 @@ func (x Instance_TransitEncryptionMode) String() string {
 }
 
 func (Instance_TransitEncryptionMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[5].Descriptor()
 }
 
 func (Instance_TransitEncryptionMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[4]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[5]
 }
 
 func (x Instance_TransitEncryptionMode) Number() protoreflect.EnumNumber {
@@ -400,11 +453,11 @@ func (x Instance_NodeType) String() string {
 }
 
 func (Instance_NodeType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[6].Descriptor()
 }
 
 func (Instance_NodeType) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[5]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[6]
 }
 
 func (x Instance_NodeType) Number() protoreflect.EnumNumber {
@@ -459,11 +512,11 @@ func (x Instance_Mode) String() string {
 }
 
 func (Instance_Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[7].Descriptor()
 }
 
 func (Instance_Mode) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[6]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[7]
 }
 
 func (x Instance_Mode) Number() protoreflect.EnumNumber {
@@ -534,11 +587,11 @@ func (x Instance_ServerCaMode) String() string {
 }
 
 func (Instance_ServerCaMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[8].Descriptor()
 }
 
 func (Instance_ServerCaMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[7]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[8]
 }
 
 func (x Instance_ServerCaMode) Number() protoreflect.EnumNumber {
@@ -603,11 +656,11 @@ func (x MigrationConfig_State) String() string {
 }
 
 func (MigrationConfig_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[9].Descriptor()
 }
 
 func (MigrationConfig_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[8]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[9]
 }
 
 func (x MigrationConfig_State) Number() protoreflect.EnumNumber {
@@ -660,11 +713,11 @@ func (x AclPolicy_State) String() string {
 }
 
 func (AclPolicy_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[10].Descriptor()
 }
 
 func (AclPolicy_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[9]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[10]
 }
 
 func (x AclPolicy_State) Number() protoreflect.EnumNumber {
@@ -717,11 +770,11 @@ func (x AclPolicyRevisionStatus_State) String() string {
 }
 
 func (AclPolicyRevisionStatus_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[11].Descriptor()
 }
 
 func (AclPolicyRevisionStatus_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[10]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[11]
 }
 
 func (x AclPolicyRevisionStatus_State) Number() protoreflect.EnumNumber {
@@ -770,11 +823,11 @@ func (x AutomatedBackupConfig_AutomatedBackupMode) String() string {
 }
 
 func (AutomatedBackupConfig_AutomatedBackupMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[11].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[12].Descriptor()
 }
 
 func (AutomatedBackupConfig_AutomatedBackupMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[11]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[12]
 }
 
 func (x AutomatedBackupConfig_AutomatedBackupMode) Number() protoreflect.EnumNumber {
@@ -823,11 +876,11 @@ func (x Backup_BackupType) String() string {
 }
 
 func (Backup_BackupType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[13].Descriptor()
 }
 
 func (Backup_BackupType) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[12]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[13]
 }
 
 func (x Backup_BackupType) Number() protoreflect.EnumNumber {
@@ -885,11 +938,11 @@ func (x Backup_State) String() string {
 }
 
 func (Backup_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[14].Descriptor()
 }
 
 func (Backup_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[13]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[14]
 }
 
 func (x Backup_State) Number() protoreflect.EnumNumber {
@@ -947,11 +1000,11 @@ func (x CrossInstanceReplicationConfig_InstanceRole) String() string {
 }
 
 func (CrossInstanceReplicationConfig_InstanceRole) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[14].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[15].Descriptor()
 }
 
 func (CrossInstanceReplicationConfig_InstanceRole) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[14]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[15]
 }
 
 func (x CrossInstanceReplicationConfig_InstanceRole) Number() protoreflect.EnumNumber {
@@ -1009,11 +1062,11 @@ func (x TokenAuthUser_State) String() string {
 }
 
 func (TokenAuthUser_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[15].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[16].Descriptor()
 }
 
 func (TokenAuthUser_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[15]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[16]
 }
 
 func (x TokenAuthUser_State) Number() protoreflect.EnumNumber {
@@ -1067,11 +1120,11 @@ func (x AuthToken_State) String() string {
 }
 
 func (AuthToken_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[16].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[17].Descriptor()
 }
 
 func (AuthToken_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[16]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[17]
 }
 
 func (x AuthToken_State) Number() protoreflect.EnumNumber {
@@ -1124,11 +1177,11 @@ func (x PersistenceConfig_PersistenceMode) String() string {
 }
 
 func (PersistenceConfig_PersistenceMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[17].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[18].Descriptor()
 }
 
 func (PersistenceConfig_PersistenceMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[17]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[18]
 }
 
 func (x PersistenceConfig_PersistenceMode) Number() protoreflect.EnumNumber {
@@ -1185,11 +1238,11 @@ func (x PersistenceConfig_RDBConfig_SnapshotPeriod) String() string {
 }
 
 func (PersistenceConfig_RDBConfig_SnapshotPeriod) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[18].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[19].Descriptor()
 }
 
 func (PersistenceConfig_RDBConfig_SnapshotPeriod) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[18]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[19]
 }
 
 func (x PersistenceConfig_RDBConfig_SnapshotPeriod) Number() protoreflect.EnumNumber {
@@ -1245,11 +1298,11 @@ func (x PersistenceConfig_AOFConfig_AppendFsync) String() string {
 }
 
 func (PersistenceConfig_AOFConfig_AppendFsync) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[19].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[20].Descriptor()
 }
 
 func (PersistenceConfig_AOFConfig_AppendFsync) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[19]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[20]
 }
 
 func (x PersistenceConfig_AOFConfig_AppendFsync) Number() protoreflect.EnumNumber {
@@ -1299,11 +1352,11 @@ func (x ZoneDistributionConfig_ZoneDistributionMode) String() string {
 }
 
 func (ZoneDistributionConfig_ZoneDistributionMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[20].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[21].Descriptor()
 }
 
 func (ZoneDistributionConfig_ZoneDistributionMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[20]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[21]
 }
 
 func (x ZoneDistributionConfig_ZoneDistributionMode) Number() protoreflect.EnumNumber {
@@ -1352,11 +1405,11 @@ func (x RescheduleMaintenanceRequest_RescheduleType) String() string {
 }
 
 func (RescheduleMaintenanceRequest_RescheduleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[21].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[22].Descriptor()
 }
 
 func (RescheduleMaintenanceRequest_RescheduleType) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[21]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[22]
 }
 
 func (x RescheduleMaintenanceRequest_RescheduleType) Number() protoreflect.EnumNumber {
@@ -1407,11 +1460,11 @@ func (x EncryptionInfo_Type) String() string {
 }
 
 func (EncryptionInfo_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[22].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[23].Descriptor()
 }
 
 func (EncryptionInfo_Type) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[22]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[23]
 }
 
 func (x EncryptionInfo_Type) Number() protoreflect.EnumNumber {
@@ -1485,11 +1538,11 @@ func (x EncryptionInfo_KmsKeyState) String() string {
 }
 
 func (EncryptionInfo_KmsKeyState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[23].Descriptor()
+	return file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[24].Descriptor()
 }
 
 func (EncryptionInfo_KmsKeyState) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[23]
+	return &file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes[24]
 }
 
 func (x EncryptionInfo_KmsKeyState) Number() protoreflect.EnumNumber {
@@ -3745,8 +3798,11 @@ type PscAutoConnection struct {
 	PscConnectionStatus PscConnectionStatus `protobuf:"varint,7,opt,name=psc_connection_status,json=pscConnectionStatus,proto3,enum=google.cloud.memorystore.v1beta.PscConnectionStatus" json:"psc_connection_status,omitempty"`
 	// Output only. Type of the PSC connection.
 	ConnectionType ConnectionType `protobuf:"varint,8,opt,name=connection_type,json=connectionType,proto3,enum=google.cloud.memorystore.v1beta.ConnectionType" json:"connection_type,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Optional. Immutable. The IP version used for the PSC auto-created
+	// endpoint. If not specified, defaults to IPV4.
+	IpVersion     IpVersion `protobuf:"varint,10,opt,name=ip_version,json=ipVersion,proto3,enum=google.cloud.memorystore.v1beta.IpVersion" json:"ip_version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PscAutoConnection) Reset() {
@@ -3849,6 +3905,13 @@ func (x *PscAutoConnection) GetConnectionType() ConnectionType {
 		return x.ConnectionType
 	}
 	return ConnectionType_CONNECTION_TYPE_UNSPECIFIED
+}
+
+func (x *PscAutoConnection) GetIpVersion() IpVersion {
+	if x != nil {
+		return x.IpVersion
+	}
+	return IpVersion_IP_VERSION_UNSPECIFIED
 }
 
 type isPscAutoConnection_Ports interface {
@@ -8254,12 +8317,12 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\x13PscAttachmentDetail\x12`\n" +
 	"\x12service_attachment\x18\x01 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
 	"(compute.googleapis.com/ServiceAttachmentR\x11serviceAttachment\x12^\n" +
-	"\x0fconnection_type\x18\x04 \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x04\xe2A\x01\x03R\x0econnectionType\"\x8a\x05\n" +
+	"\x0fconnection_type\x18\x04 \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x04\xe2A\x01\x03R\x0econnectionType\"\xdc\x05\n" +
 	"\x11PscAutoConnection\x12\x1a\n" +
 	"\x04port\x18\t \x01(\x05B\x04\xe2A\x01\x01H\x00R\x04port\x120\n" +
 	"\x11psc_connection_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0fpscConnectionId\x12+\n" +
 	"\n" +
-	"ip_address\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12W\n" +
+	"ip_address\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12W\n" +
 	"\x0fforwarding_rule\x18\x03 \x01(\tB.\xe2A\x01\x03\xfaA'\n" +
 	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12#\n" +
 	"\n" +
@@ -8269,13 +8332,16 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\x12service_attachment\x18\x06 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
 	"(compute.googleapis.com/ServiceAttachmentR\x11serviceAttachment\x12n\n" +
 	"\x15psc_connection_status\x18\a \x01(\x0e24.google.cloud.memorystore.v1beta.PscConnectionStatusB\x04\xe2A\x01\x03R\x13pscConnectionStatus\x12^\n" +
-	"\x0fconnection_type\x18\b \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x04\xe2A\x01\x03R\x0econnectionTypeB\a\n" +
+	"\x0fconnection_type\x18\b \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x04\xe2A\x01\x03R\x0econnectionType\x12P\n" +
+	"\n" +
+	"ip_version\x18\n" +
+	" \x01(\x0e2*.google.cloud.memorystore.v1beta.IpVersionB\x05\xe2A\x02\x01\x05R\tipVersionB\a\n" +
 	"\x05ports\"\x86\x05\n" +
 	"\rPscConnection\x12\x1a\n" +
 	"\x04port\x18\t \x01(\x05B\x04\xe2A\x01\x01H\x00R\x04port\x120\n" +
 	"\x11psc_connection_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0fpscConnectionId\x12+\n" +
 	"\n" +
-	"ip_address\x18\x02 \x01(\tB\f\xe2A\x01\x02\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12W\n" +
+	"ip_address\x18\x02 \x01(\tB\f\xe2A\x01\x02\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12W\n" +
 	"\x0fforwarding_rule\x18\x03 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12#\n" +
 	"\n" +
@@ -8570,7 +8636,11 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\x1bCONNECTION_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19CONNECTION_TYPE_DISCOVERY\x10\x01\x12\x1b\n" +
 	"\x17CONNECTION_TYPE_PRIMARY\x10\x02\x12\x1a\n" +
-	"\x16CONNECTION_TYPE_READER\x10\x032\x9e:\n" +
+	"\x16CONNECTION_TYPE_READER\x10\x03*;\n" +
+	"\tIpVersion\x12\x1a\n" +
+	"\x16IP_VERSION_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04IPV4\x10\x01\x12\b\n" +
+	"\x04IPV6\x10\x022\x9e:\n" +
 	"\vMemorystore\x12\xca\x01\n" +
 	"\x0fListAclPolicies\x127.google.cloud.memorystore.v1beta.ListAclPoliciesRequest\x1a8.google.cloud.memorystore.v1beta.ListAclPoliciesResponse\"D\xdaA\x06parent\x82\xd3\xe4\x93\x025\x123/v1beta/{parent=projects/*/locations/*}/aclPolicies\x12\xc2\x01\n" +
 	"\rListInstances\x125.google.cloud.memorystore.v1beta.ListInstancesRequest\x1a6.google.cloud.memorystore.v1beta.ListInstancesResponse\"B\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1beta/{parent=projects/*/locations/*}/instances\x12\xb4\x01\n" +
@@ -8643,310 +8713,312 @@ func file_google_cloud_memorystore_v1beta_memorystore_proto_rawDescGZIP() []byte
 	return file_google_cloud_memorystore_v1beta_memorystore_proto_rawDescData
 }
 
-var file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes = make([]protoimpl.EnumInfo, 24)
+var file_google_cloud_memorystore_v1beta_memorystore_proto_enumTypes = make([]protoimpl.EnumInfo, 25)
 var file_google_cloud_memorystore_v1beta_memorystore_proto_msgTypes = make([]protoimpl.MessageInfo, 86)
 var file_google_cloud_memorystore_v1beta_memorystore_proto_goTypes = []any{
 	(PscConnectionStatus)(0),                                           // 0: google.cloud.memorystore.v1beta.PscConnectionStatus
 	(ConnectionType)(0),                                                // 1: google.cloud.memorystore.v1beta.ConnectionType
-	(Instance_State)(0),                                                // 2: google.cloud.memorystore.v1beta.Instance.State
-	(Instance_AuthorizationMode)(0),                                    // 3: google.cloud.memorystore.v1beta.Instance.AuthorizationMode
-	(Instance_TransitEncryptionMode)(0),                                // 4: google.cloud.memorystore.v1beta.Instance.TransitEncryptionMode
-	(Instance_NodeType)(0),                                             // 5: google.cloud.memorystore.v1beta.Instance.NodeType
-	(Instance_Mode)(0),                                                 // 6: google.cloud.memorystore.v1beta.Instance.Mode
-	(Instance_ServerCaMode)(0),                                         // 7: google.cloud.memorystore.v1beta.Instance.ServerCaMode
-	(MigrationConfig_State)(0),                                         // 8: google.cloud.memorystore.v1beta.MigrationConfig.State
-	(AclPolicy_State)(0),                                               // 9: google.cloud.memorystore.v1beta.AclPolicy.State
-	(AclPolicyRevisionStatus_State)(0),                                 // 10: google.cloud.memorystore.v1beta.AclPolicyRevisionStatus.State
-	(AutomatedBackupConfig_AutomatedBackupMode)(0),                     // 11: google.cloud.memorystore.v1beta.AutomatedBackupConfig.AutomatedBackupMode
-	(Backup_BackupType)(0),                                             // 12: google.cloud.memorystore.v1beta.Backup.BackupType
-	(Backup_State)(0),                                                  // 13: google.cloud.memorystore.v1beta.Backup.State
-	(CrossInstanceReplicationConfig_InstanceRole)(0),                   // 14: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.InstanceRole
-	(TokenAuthUser_State)(0),                                           // 15: google.cloud.memorystore.v1beta.TokenAuthUser.State
-	(AuthToken_State)(0),                                               // 16: google.cloud.memorystore.v1beta.AuthToken.State
-	(PersistenceConfig_PersistenceMode)(0),                             // 17: google.cloud.memorystore.v1beta.PersistenceConfig.PersistenceMode
-	(PersistenceConfig_RDBConfig_SnapshotPeriod)(0),                    // 18: google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.SnapshotPeriod
-	(PersistenceConfig_AOFConfig_AppendFsync)(0),                       // 19: google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig.AppendFsync
-	(ZoneDistributionConfig_ZoneDistributionMode)(0),                   // 20: google.cloud.memorystore.v1beta.ZoneDistributionConfig.ZoneDistributionMode
-	(RescheduleMaintenanceRequest_RescheduleType)(0),                   // 21: google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.RescheduleType
-	(EncryptionInfo_Type)(0),                                           // 22: google.cloud.memorystore.v1beta.EncryptionInfo.Type
-	(EncryptionInfo_KmsKeyState)(0),                                    // 23: google.cloud.memorystore.v1beta.EncryptionInfo.KmsKeyState
-	(*Instance)(nil),                                                   // 24: google.cloud.memorystore.v1beta.Instance
-	(*AclPolicyInfo)(nil),                                              // 25: google.cloud.memorystore.v1beta.AclPolicyInfo
-	(*StartMigrationRequest)(nil),                                      // 26: google.cloud.memorystore.v1beta.StartMigrationRequest
-	(*FinishMigrationRequest)(nil),                                     // 27: google.cloud.memorystore.v1beta.FinishMigrationRequest
-	(*SelfManagedSource)(nil),                                          // 28: google.cloud.memorystore.v1beta.SelfManagedSource
-	(*MigrationConfig)(nil),                                            // 29: google.cloud.memorystore.v1beta.MigrationConfig
-	(*AclPolicy)(nil),                                                  // 30: google.cloud.memorystore.v1beta.AclPolicy
-	(*AclPolicyRevision)(nil),                                          // 31: google.cloud.memorystore.v1beta.AclPolicyRevision
-	(*AclPolicyRevisionStatus)(nil),                                    // 32: google.cloud.memorystore.v1beta.AclPolicyRevisionStatus
-	(*InstanceAclPolicyAttachment)(nil),                                // 33: google.cloud.memorystore.v1beta.InstanceAclPolicyAttachment
-	(*AclRule)(nil),                                                    // 34: google.cloud.memorystore.v1beta.AclRule
-	(*AutomatedBackupConfig)(nil),                                      // 35: google.cloud.memorystore.v1beta.AutomatedBackupConfig
-	(*BackupCollection)(nil),                                           // 36: google.cloud.memorystore.v1beta.BackupCollection
-	(*Backup)(nil),                                                     // 37: google.cloud.memorystore.v1beta.Backup
-	(*BackupFile)(nil),                                                 // 38: google.cloud.memorystore.v1beta.BackupFile
-	(*CrossInstanceReplicationConfig)(nil),                             // 39: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig
-	(*TokenAuthUser)(nil),                                              // 40: google.cloud.memorystore.v1beta.TokenAuthUser
-	(*AuthToken)(nil),                                                  // 41: google.cloud.memorystore.v1beta.AuthToken
-	(*MaintenancePolicy)(nil),                                          // 42: google.cloud.memorystore.v1beta.MaintenancePolicy
-	(*WeeklyMaintenanceWindow)(nil),                                    // 43: google.cloud.memorystore.v1beta.WeeklyMaintenanceWindow
-	(*MaintenanceSchedule)(nil),                                        // 44: google.cloud.memorystore.v1beta.MaintenanceSchedule
-	(*PscAttachmentDetail)(nil),                                        // 45: google.cloud.memorystore.v1beta.PscAttachmentDetail
-	(*PscAutoConnection)(nil),                                          // 46: google.cloud.memorystore.v1beta.PscAutoConnection
-	(*PscConnection)(nil),                                              // 47: google.cloud.memorystore.v1beta.PscConnection
-	(*DiscoveryEndpoint)(nil),                                          // 48: google.cloud.memorystore.v1beta.DiscoveryEndpoint
-	(*PersistenceConfig)(nil),                                          // 49: google.cloud.memorystore.v1beta.PersistenceConfig
-	(*NodeConfig)(nil),                                                 // 50: google.cloud.memorystore.v1beta.NodeConfig
-	(*ZoneDistributionConfig)(nil),                                     // 51: google.cloud.memorystore.v1beta.ZoneDistributionConfig
-	(*RescheduleMaintenanceRequest)(nil),                               // 52: google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest
-	(*ListAclPoliciesRequest)(nil),                                     // 53: google.cloud.memorystore.v1beta.ListAclPoliciesRequest
-	(*ListAclPoliciesResponse)(nil),                                    // 54: google.cloud.memorystore.v1beta.ListAclPoliciesResponse
-	(*ListAclPolicyRevisionsRequest)(nil),                              // 55: google.cloud.memorystore.v1beta.ListAclPolicyRevisionsRequest
-	(*ListAclPolicyRevisionsResponse)(nil),                             // 56: google.cloud.memorystore.v1beta.ListAclPolicyRevisionsResponse
-	(*ListInstancesRequest)(nil),                                       // 57: google.cloud.memorystore.v1beta.ListInstancesRequest
-	(*ListInstancesResponse)(nil),                                      // 58: google.cloud.memorystore.v1beta.ListInstancesResponse
-	(*GetAclPolicyRequest)(nil),                                        // 59: google.cloud.memorystore.v1beta.GetAclPolicyRequest
-	(*GetAclPolicyRevisionRequest)(nil),                                // 60: google.cloud.memorystore.v1beta.GetAclPolicyRevisionRequest
-	(*GetInstanceRequest)(nil),                                         // 61: google.cloud.memorystore.v1beta.GetInstanceRequest
-	(*CreateAclPolicyRequest)(nil),                                     // 62: google.cloud.memorystore.v1beta.CreateAclPolicyRequest
-	(*CreateInstanceRequest)(nil),                                      // 63: google.cloud.memorystore.v1beta.CreateInstanceRequest
-	(*UpdateAclPolicyRequest)(nil),                                     // 64: google.cloud.memorystore.v1beta.UpdateAclPolicyRequest
-	(*UpdateInstanceRequest)(nil),                                      // 65: google.cloud.memorystore.v1beta.UpdateInstanceRequest
-	(*DeleteAclPolicyRequest)(nil),                                     // 66: google.cloud.memorystore.v1beta.DeleteAclPolicyRequest
-	(*DeleteInstanceRequest)(nil),                                      // 67: google.cloud.memorystore.v1beta.DeleteInstanceRequest
-	(*ListBackupCollectionsRequest)(nil),                               // 68: google.cloud.memorystore.v1beta.ListBackupCollectionsRequest
-	(*ListBackupCollectionsResponse)(nil),                              // 69: google.cloud.memorystore.v1beta.ListBackupCollectionsResponse
-	(*GetBackupCollectionRequest)(nil),                                 // 70: google.cloud.memorystore.v1beta.GetBackupCollectionRequest
-	(*ListBackupsRequest)(nil),                                         // 71: google.cloud.memorystore.v1beta.ListBackupsRequest
-	(*ListBackupsResponse)(nil),                                        // 72: google.cloud.memorystore.v1beta.ListBackupsResponse
-	(*GetBackupRequest)(nil),                                           // 73: google.cloud.memorystore.v1beta.GetBackupRequest
-	(*DeleteBackupRequest)(nil),                                        // 74: google.cloud.memorystore.v1beta.DeleteBackupRequest
-	(*ExportBackupRequest)(nil),                                        // 75: google.cloud.memorystore.v1beta.ExportBackupRequest
-	(*BackupInstanceRequest)(nil),                                      // 76: google.cloud.memorystore.v1beta.BackupInstanceRequest
-	(*GetCertificateAuthorityRequest)(nil),                             // 77: google.cloud.memorystore.v1beta.GetCertificateAuthorityRequest
-	(*ListTokenAuthUsersRequest)(nil),                                  // 78: google.cloud.memorystore.v1beta.ListTokenAuthUsersRequest
-	(*ListTokenAuthUsersResponse)(nil),                                 // 79: google.cloud.memorystore.v1beta.ListTokenAuthUsersResponse
-	(*GetTokenAuthUserRequest)(nil),                                    // 80: google.cloud.memorystore.v1beta.GetTokenAuthUserRequest
-	(*ListAuthTokensRequest)(nil),                                      // 81: google.cloud.memorystore.v1beta.ListAuthTokensRequest
-	(*ListAuthTokensResponse)(nil),                                     // 82: google.cloud.memorystore.v1beta.ListAuthTokensResponse
-	(*GetAuthTokenRequest)(nil),                                        // 83: google.cloud.memorystore.v1beta.GetAuthTokenRequest
-	(*AddTokenAuthUserRequest)(nil),                                    // 84: google.cloud.memorystore.v1beta.AddTokenAuthUserRequest
-	(*DeleteTokenAuthUserRequest)(nil),                                 // 85: google.cloud.memorystore.v1beta.DeleteTokenAuthUserRequest
-	(*AddAuthTokenRequest)(nil),                                        // 86: google.cloud.memorystore.v1beta.AddAuthTokenRequest
-	(*DeleteAuthTokenRequest)(nil),                                     // 87: google.cloud.memorystore.v1beta.DeleteAuthTokenRequest
-	(*CertificateAuthority)(nil),                                       // 88: google.cloud.memorystore.v1beta.CertificateAuthority
-	(*SharedRegionalCertificateAuthority)(nil),                         // 89: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority
-	(*GetSharedRegionalCertificateAuthorityRequest)(nil),               // 90: google.cloud.memorystore.v1beta.GetSharedRegionalCertificateAuthorityRequest
-	(*OperationMetadata)(nil),                                          // 91: google.cloud.memorystore.v1beta.OperationMetadata
-	(*EncryptionInfo)(nil),                                             // 92: google.cloud.memorystore.v1beta.EncryptionInfo
-	(*Instance_StateInfo)(nil),                                         // 93: google.cloud.memorystore.v1beta.Instance.StateInfo
-	(*Instance_GcsBackupSource)(nil),                                   // 94: google.cloud.memorystore.v1beta.Instance.GcsBackupSource
-	(*Instance_ManagedBackupSource)(nil),                               // 95: google.cloud.memorystore.v1beta.Instance.ManagedBackupSource
-	(*Instance_InstanceEndpoint)(nil),                                  // 96: google.cloud.memorystore.v1beta.Instance.InstanceEndpoint
-	(*Instance_ConnectionDetail)(nil),                                  // 97: google.cloud.memorystore.v1beta.Instance.ConnectionDetail
-	nil,                                                                // 98: google.cloud.memorystore.v1beta.Instance.LabelsEntry
-	nil,                                                                // 99: google.cloud.memorystore.v1beta.Instance.EngineConfigsEntry
-	(*Instance_StateInfo_UpdateInfo)(nil),                              // 100: google.cloud.memorystore.v1beta.Instance.StateInfo.UpdateInfo
-	(*AutomatedBackupConfig_FixedFrequencySchedule)(nil),               // 101: google.cloud.memorystore.v1beta.AutomatedBackupConfig.FixedFrequencySchedule
-	(*CrossInstanceReplicationConfig_RemoteInstance)(nil),              // 102: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
-	(*CrossInstanceReplicationConfig_Membership)(nil),                  // 103: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.Membership
-	(*PersistenceConfig_RDBConfig)(nil),                                // 104: google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig
-	(*PersistenceConfig_AOFConfig)(nil),                                // 105: google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig
-	(*CertificateAuthority_ManagedCertificateAuthority)(nil),           // 106: google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority
-	(*CertificateAuthority_ManagedCertificateAuthority_CertChain)(nil), // 107: google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority.CertChain
-	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)(nil),                   // 108: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
-	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain)(nil), // 109: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
-	(*timestamppb.Timestamp)(nil),   // 110: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),     // 111: google.protobuf.Duration
-	(dayofweek.DayOfWeek)(0),        // 112: google.type.DayOfWeek
-	(*timeofday.TimeOfDay)(nil),     // 113: google.type.TimeOfDay
-	(*fieldmaskpb.FieldMask)(nil),   // 114: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil), // 115: google.longrunning.Operation
+	(IpVersion)(0),                                                     // 2: google.cloud.memorystore.v1beta.IpVersion
+	(Instance_State)(0),                                                // 3: google.cloud.memorystore.v1beta.Instance.State
+	(Instance_AuthorizationMode)(0),                                    // 4: google.cloud.memorystore.v1beta.Instance.AuthorizationMode
+	(Instance_TransitEncryptionMode)(0),                                // 5: google.cloud.memorystore.v1beta.Instance.TransitEncryptionMode
+	(Instance_NodeType)(0),                                             // 6: google.cloud.memorystore.v1beta.Instance.NodeType
+	(Instance_Mode)(0),                                                 // 7: google.cloud.memorystore.v1beta.Instance.Mode
+	(Instance_ServerCaMode)(0),                                         // 8: google.cloud.memorystore.v1beta.Instance.ServerCaMode
+	(MigrationConfig_State)(0),                                         // 9: google.cloud.memorystore.v1beta.MigrationConfig.State
+	(AclPolicy_State)(0),                                               // 10: google.cloud.memorystore.v1beta.AclPolicy.State
+	(AclPolicyRevisionStatus_State)(0),                                 // 11: google.cloud.memorystore.v1beta.AclPolicyRevisionStatus.State
+	(AutomatedBackupConfig_AutomatedBackupMode)(0),                     // 12: google.cloud.memorystore.v1beta.AutomatedBackupConfig.AutomatedBackupMode
+	(Backup_BackupType)(0),                                             // 13: google.cloud.memorystore.v1beta.Backup.BackupType
+	(Backup_State)(0),                                                  // 14: google.cloud.memorystore.v1beta.Backup.State
+	(CrossInstanceReplicationConfig_InstanceRole)(0),                   // 15: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.InstanceRole
+	(TokenAuthUser_State)(0),                                           // 16: google.cloud.memorystore.v1beta.TokenAuthUser.State
+	(AuthToken_State)(0),                                               // 17: google.cloud.memorystore.v1beta.AuthToken.State
+	(PersistenceConfig_PersistenceMode)(0),                             // 18: google.cloud.memorystore.v1beta.PersistenceConfig.PersistenceMode
+	(PersistenceConfig_RDBConfig_SnapshotPeriod)(0),                    // 19: google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.SnapshotPeriod
+	(PersistenceConfig_AOFConfig_AppendFsync)(0),                       // 20: google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig.AppendFsync
+	(ZoneDistributionConfig_ZoneDistributionMode)(0),                   // 21: google.cloud.memorystore.v1beta.ZoneDistributionConfig.ZoneDistributionMode
+	(RescheduleMaintenanceRequest_RescheduleType)(0),                   // 22: google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.RescheduleType
+	(EncryptionInfo_Type)(0),                                           // 23: google.cloud.memorystore.v1beta.EncryptionInfo.Type
+	(EncryptionInfo_KmsKeyState)(0),                                    // 24: google.cloud.memorystore.v1beta.EncryptionInfo.KmsKeyState
+	(*Instance)(nil),                                                   // 25: google.cloud.memorystore.v1beta.Instance
+	(*AclPolicyInfo)(nil),                                              // 26: google.cloud.memorystore.v1beta.AclPolicyInfo
+	(*StartMigrationRequest)(nil),                                      // 27: google.cloud.memorystore.v1beta.StartMigrationRequest
+	(*FinishMigrationRequest)(nil),                                     // 28: google.cloud.memorystore.v1beta.FinishMigrationRequest
+	(*SelfManagedSource)(nil),                                          // 29: google.cloud.memorystore.v1beta.SelfManagedSource
+	(*MigrationConfig)(nil),                                            // 30: google.cloud.memorystore.v1beta.MigrationConfig
+	(*AclPolicy)(nil),                                                  // 31: google.cloud.memorystore.v1beta.AclPolicy
+	(*AclPolicyRevision)(nil),                                          // 32: google.cloud.memorystore.v1beta.AclPolicyRevision
+	(*AclPolicyRevisionStatus)(nil),                                    // 33: google.cloud.memorystore.v1beta.AclPolicyRevisionStatus
+	(*InstanceAclPolicyAttachment)(nil),                                // 34: google.cloud.memorystore.v1beta.InstanceAclPolicyAttachment
+	(*AclRule)(nil),                                                    // 35: google.cloud.memorystore.v1beta.AclRule
+	(*AutomatedBackupConfig)(nil),                                      // 36: google.cloud.memorystore.v1beta.AutomatedBackupConfig
+	(*BackupCollection)(nil),                                           // 37: google.cloud.memorystore.v1beta.BackupCollection
+	(*Backup)(nil),                                                     // 38: google.cloud.memorystore.v1beta.Backup
+	(*BackupFile)(nil),                                                 // 39: google.cloud.memorystore.v1beta.BackupFile
+	(*CrossInstanceReplicationConfig)(nil),                             // 40: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig
+	(*TokenAuthUser)(nil),                                              // 41: google.cloud.memorystore.v1beta.TokenAuthUser
+	(*AuthToken)(nil),                                                  // 42: google.cloud.memorystore.v1beta.AuthToken
+	(*MaintenancePolicy)(nil),                                          // 43: google.cloud.memorystore.v1beta.MaintenancePolicy
+	(*WeeklyMaintenanceWindow)(nil),                                    // 44: google.cloud.memorystore.v1beta.WeeklyMaintenanceWindow
+	(*MaintenanceSchedule)(nil),                                        // 45: google.cloud.memorystore.v1beta.MaintenanceSchedule
+	(*PscAttachmentDetail)(nil),                                        // 46: google.cloud.memorystore.v1beta.PscAttachmentDetail
+	(*PscAutoConnection)(nil),                                          // 47: google.cloud.memorystore.v1beta.PscAutoConnection
+	(*PscConnection)(nil),                                              // 48: google.cloud.memorystore.v1beta.PscConnection
+	(*DiscoveryEndpoint)(nil),                                          // 49: google.cloud.memorystore.v1beta.DiscoveryEndpoint
+	(*PersistenceConfig)(nil),                                          // 50: google.cloud.memorystore.v1beta.PersistenceConfig
+	(*NodeConfig)(nil),                                                 // 51: google.cloud.memorystore.v1beta.NodeConfig
+	(*ZoneDistributionConfig)(nil),                                     // 52: google.cloud.memorystore.v1beta.ZoneDistributionConfig
+	(*RescheduleMaintenanceRequest)(nil),                               // 53: google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest
+	(*ListAclPoliciesRequest)(nil),                                     // 54: google.cloud.memorystore.v1beta.ListAclPoliciesRequest
+	(*ListAclPoliciesResponse)(nil),                                    // 55: google.cloud.memorystore.v1beta.ListAclPoliciesResponse
+	(*ListAclPolicyRevisionsRequest)(nil),                              // 56: google.cloud.memorystore.v1beta.ListAclPolicyRevisionsRequest
+	(*ListAclPolicyRevisionsResponse)(nil),                             // 57: google.cloud.memorystore.v1beta.ListAclPolicyRevisionsResponse
+	(*ListInstancesRequest)(nil),                                       // 58: google.cloud.memorystore.v1beta.ListInstancesRequest
+	(*ListInstancesResponse)(nil),                                      // 59: google.cloud.memorystore.v1beta.ListInstancesResponse
+	(*GetAclPolicyRequest)(nil),                                        // 60: google.cloud.memorystore.v1beta.GetAclPolicyRequest
+	(*GetAclPolicyRevisionRequest)(nil),                                // 61: google.cloud.memorystore.v1beta.GetAclPolicyRevisionRequest
+	(*GetInstanceRequest)(nil),                                         // 62: google.cloud.memorystore.v1beta.GetInstanceRequest
+	(*CreateAclPolicyRequest)(nil),                                     // 63: google.cloud.memorystore.v1beta.CreateAclPolicyRequest
+	(*CreateInstanceRequest)(nil),                                      // 64: google.cloud.memorystore.v1beta.CreateInstanceRequest
+	(*UpdateAclPolicyRequest)(nil),                                     // 65: google.cloud.memorystore.v1beta.UpdateAclPolicyRequest
+	(*UpdateInstanceRequest)(nil),                                      // 66: google.cloud.memorystore.v1beta.UpdateInstanceRequest
+	(*DeleteAclPolicyRequest)(nil),                                     // 67: google.cloud.memorystore.v1beta.DeleteAclPolicyRequest
+	(*DeleteInstanceRequest)(nil),                                      // 68: google.cloud.memorystore.v1beta.DeleteInstanceRequest
+	(*ListBackupCollectionsRequest)(nil),                               // 69: google.cloud.memorystore.v1beta.ListBackupCollectionsRequest
+	(*ListBackupCollectionsResponse)(nil),                              // 70: google.cloud.memorystore.v1beta.ListBackupCollectionsResponse
+	(*GetBackupCollectionRequest)(nil),                                 // 71: google.cloud.memorystore.v1beta.GetBackupCollectionRequest
+	(*ListBackupsRequest)(nil),                                         // 72: google.cloud.memorystore.v1beta.ListBackupsRequest
+	(*ListBackupsResponse)(nil),                                        // 73: google.cloud.memorystore.v1beta.ListBackupsResponse
+	(*GetBackupRequest)(nil),                                           // 74: google.cloud.memorystore.v1beta.GetBackupRequest
+	(*DeleteBackupRequest)(nil),                                        // 75: google.cloud.memorystore.v1beta.DeleteBackupRequest
+	(*ExportBackupRequest)(nil),                                        // 76: google.cloud.memorystore.v1beta.ExportBackupRequest
+	(*BackupInstanceRequest)(nil),                                      // 77: google.cloud.memorystore.v1beta.BackupInstanceRequest
+	(*GetCertificateAuthorityRequest)(nil),                             // 78: google.cloud.memorystore.v1beta.GetCertificateAuthorityRequest
+	(*ListTokenAuthUsersRequest)(nil),                                  // 79: google.cloud.memorystore.v1beta.ListTokenAuthUsersRequest
+	(*ListTokenAuthUsersResponse)(nil),                                 // 80: google.cloud.memorystore.v1beta.ListTokenAuthUsersResponse
+	(*GetTokenAuthUserRequest)(nil),                                    // 81: google.cloud.memorystore.v1beta.GetTokenAuthUserRequest
+	(*ListAuthTokensRequest)(nil),                                      // 82: google.cloud.memorystore.v1beta.ListAuthTokensRequest
+	(*ListAuthTokensResponse)(nil),                                     // 83: google.cloud.memorystore.v1beta.ListAuthTokensResponse
+	(*GetAuthTokenRequest)(nil),                                        // 84: google.cloud.memorystore.v1beta.GetAuthTokenRequest
+	(*AddTokenAuthUserRequest)(nil),                                    // 85: google.cloud.memorystore.v1beta.AddTokenAuthUserRequest
+	(*DeleteTokenAuthUserRequest)(nil),                                 // 86: google.cloud.memorystore.v1beta.DeleteTokenAuthUserRequest
+	(*AddAuthTokenRequest)(nil),                                        // 87: google.cloud.memorystore.v1beta.AddAuthTokenRequest
+	(*DeleteAuthTokenRequest)(nil),                                     // 88: google.cloud.memorystore.v1beta.DeleteAuthTokenRequest
+	(*CertificateAuthority)(nil),                                       // 89: google.cloud.memorystore.v1beta.CertificateAuthority
+	(*SharedRegionalCertificateAuthority)(nil),                         // 90: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority
+	(*GetSharedRegionalCertificateAuthorityRequest)(nil),               // 91: google.cloud.memorystore.v1beta.GetSharedRegionalCertificateAuthorityRequest
+	(*OperationMetadata)(nil),                                          // 92: google.cloud.memorystore.v1beta.OperationMetadata
+	(*EncryptionInfo)(nil),                                             // 93: google.cloud.memorystore.v1beta.EncryptionInfo
+	(*Instance_StateInfo)(nil),                                         // 94: google.cloud.memorystore.v1beta.Instance.StateInfo
+	(*Instance_GcsBackupSource)(nil),                                   // 95: google.cloud.memorystore.v1beta.Instance.GcsBackupSource
+	(*Instance_ManagedBackupSource)(nil),                               // 96: google.cloud.memorystore.v1beta.Instance.ManagedBackupSource
+	(*Instance_InstanceEndpoint)(nil),                                  // 97: google.cloud.memorystore.v1beta.Instance.InstanceEndpoint
+	(*Instance_ConnectionDetail)(nil),                                  // 98: google.cloud.memorystore.v1beta.Instance.ConnectionDetail
+	nil,                                                                // 99: google.cloud.memorystore.v1beta.Instance.LabelsEntry
+	nil,                                                                // 100: google.cloud.memorystore.v1beta.Instance.EngineConfigsEntry
+	(*Instance_StateInfo_UpdateInfo)(nil),                              // 101: google.cloud.memorystore.v1beta.Instance.StateInfo.UpdateInfo
+	(*AutomatedBackupConfig_FixedFrequencySchedule)(nil),               // 102: google.cloud.memorystore.v1beta.AutomatedBackupConfig.FixedFrequencySchedule
+	(*CrossInstanceReplicationConfig_RemoteInstance)(nil),              // 103: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
+	(*CrossInstanceReplicationConfig_Membership)(nil),                  // 104: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.Membership
+	(*PersistenceConfig_RDBConfig)(nil),                                // 105: google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig
+	(*PersistenceConfig_AOFConfig)(nil),                                // 106: google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig
+	(*CertificateAuthority_ManagedCertificateAuthority)(nil),           // 107: google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority
+	(*CertificateAuthority_ManagedCertificateAuthority_CertChain)(nil), // 108: google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority.CertChain
+	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)(nil),                   // 109: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
+	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain)(nil), // 110: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
+	(*timestamppb.Timestamp)(nil),   // 111: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),     // 112: google.protobuf.Duration
+	(dayofweek.DayOfWeek)(0),        // 113: google.type.DayOfWeek
+	(*timeofday.TimeOfDay)(nil),     // 114: google.type.TimeOfDay
+	(*fieldmaskpb.FieldMask)(nil),   // 115: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil), // 116: google.longrunning.Operation
 }
 var file_google_cloud_memorystore_v1beta_memorystore_proto_depIdxs = []int32{
-	94,  // 0: google.cloud.memorystore.v1beta.Instance.gcs_source:type_name -> google.cloud.memorystore.v1beta.Instance.GcsBackupSource
-	95,  // 1: google.cloud.memorystore.v1beta.Instance.managed_backup_source:type_name -> google.cloud.memorystore.v1beta.Instance.ManagedBackupSource
-	110, // 2: google.cloud.memorystore.v1beta.Instance.create_time:type_name -> google.protobuf.Timestamp
-	110, // 3: google.cloud.memorystore.v1beta.Instance.update_time:type_name -> google.protobuf.Timestamp
-	98,  // 4: google.cloud.memorystore.v1beta.Instance.labels:type_name -> google.cloud.memorystore.v1beta.Instance.LabelsEntry
-	2,   // 5: google.cloud.memorystore.v1beta.Instance.state:type_name -> google.cloud.memorystore.v1beta.Instance.State
-	93,  // 6: google.cloud.memorystore.v1beta.Instance.state_info:type_name -> google.cloud.memorystore.v1beta.Instance.StateInfo
-	3,   // 7: google.cloud.memorystore.v1beta.Instance.authorization_mode:type_name -> google.cloud.memorystore.v1beta.Instance.AuthorizationMode
-	4,   // 8: google.cloud.memorystore.v1beta.Instance.transit_encryption_mode:type_name -> google.cloud.memorystore.v1beta.Instance.TransitEncryptionMode
-	48,  // 9: google.cloud.memorystore.v1beta.Instance.discovery_endpoints:type_name -> google.cloud.memorystore.v1beta.DiscoveryEndpoint
-	5,   // 10: google.cloud.memorystore.v1beta.Instance.node_type:type_name -> google.cloud.memorystore.v1beta.Instance.NodeType
-	49,  // 11: google.cloud.memorystore.v1beta.Instance.persistence_config:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig
-	99,  // 12: google.cloud.memorystore.v1beta.Instance.engine_configs:type_name -> google.cloud.memorystore.v1beta.Instance.EngineConfigsEntry
-	50,  // 13: google.cloud.memorystore.v1beta.Instance.node_config:type_name -> google.cloud.memorystore.v1beta.NodeConfig
-	51,  // 14: google.cloud.memorystore.v1beta.Instance.zone_distribution_config:type_name -> google.cloud.memorystore.v1beta.ZoneDistributionConfig
-	46,  // 15: google.cloud.memorystore.v1beta.Instance.psc_auto_connections:type_name -> google.cloud.memorystore.v1beta.PscAutoConnection
-	45,  // 16: google.cloud.memorystore.v1beta.Instance.psc_attachment_details:type_name -> google.cloud.memorystore.v1beta.PscAttachmentDetail
-	96,  // 17: google.cloud.memorystore.v1beta.Instance.endpoints:type_name -> google.cloud.memorystore.v1beta.Instance.InstanceEndpoint
-	6,   // 18: google.cloud.memorystore.v1beta.Instance.mode:type_name -> google.cloud.memorystore.v1beta.Instance.Mode
-	42,  // 19: google.cloud.memorystore.v1beta.Instance.maintenance_policy:type_name -> google.cloud.memorystore.v1beta.MaintenancePolicy
-	44,  // 20: google.cloud.memorystore.v1beta.Instance.maintenance_schedule:type_name -> google.cloud.memorystore.v1beta.MaintenanceSchedule
-	39,  // 21: google.cloud.memorystore.v1beta.Instance.cross_instance_replication_config:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig
-	92,  // 22: google.cloud.memorystore.v1beta.Instance.encryption_info:type_name -> google.cloud.memorystore.v1beta.EncryptionInfo
-	35,  // 23: google.cloud.memorystore.v1beta.Instance.automated_backup_config:type_name -> google.cloud.memorystore.v1beta.AutomatedBackupConfig
-	7,   // 24: google.cloud.memorystore.v1beta.Instance.server_ca_mode:type_name -> google.cloud.memorystore.v1beta.Instance.ServerCaMode
-	29,  // 25: google.cloud.memorystore.v1beta.Instance.migration_config:type_name -> google.cloud.memorystore.v1beta.MigrationConfig
-	25,  // 26: google.cloud.memorystore.v1beta.Instance.acl_policy_info:type_name -> google.cloud.memorystore.v1beta.AclPolicyInfo
-	32,  // 27: google.cloud.memorystore.v1beta.AclPolicyInfo.acl_policy_revision_statuses:type_name -> google.cloud.memorystore.v1beta.AclPolicyRevisionStatus
-	28,  // 28: google.cloud.memorystore.v1beta.StartMigrationRequest.self_managed_source:type_name -> google.cloud.memorystore.v1beta.SelfManagedSource
-	28,  // 29: google.cloud.memorystore.v1beta.MigrationConfig.self_managed_source:type_name -> google.cloud.memorystore.v1beta.SelfManagedSource
-	8,   // 30: google.cloud.memorystore.v1beta.MigrationConfig.state:type_name -> google.cloud.memorystore.v1beta.MigrationConfig.State
-	34,  // 31: google.cloud.memorystore.v1beta.AclPolicy.rules:type_name -> google.cloud.memorystore.v1beta.AclRule
-	9,   // 32: google.cloud.memorystore.v1beta.AclPolicy.state:type_name -> google.cloud.memorystore.v1beta.AclPolicy.State
-	33,  // 33: google.cloud.memorystore.v1beta.AclPolicy.instance_acl_policy_attachments:type_name -> google.cloud.memorystore.v1beta.InstanceAclPolicyAttachment
-	110, // 34: google.cloud.memorystore.v1beta.AclPolicy.create_time:type_name -> google.protobuf.Timestamp
-	110, // 35: google.cloud.memorystore.v1beta.AclPolicy.update_time:type_name -> google.protobuf.Timestamp
-	30,  // 36: google.cloud.memorystore.v1beta.AclPolicyRevision.snapshot:type_name -> google.cloud.memorystore.v1beta.AclPolicy
-	110, // 37: google.cloud.memorystore.v1beta.AclPolicyRevision.create_time:type_name -> google.protobuf.Timestamp
-	10,  // 38: google.cloud.memorystore.v1beta.AclPolicyRevisionStatus.state:type_name -> google.cloud.memorystore.v1beta.AclPolicyRevisionStatus.State
-	32,  // 39: google.cloud.memorystore.v1beta.InstanceAclPolicyAttachment.acl_policy_revision_statuses:type_name -> google.cloud.memorystore.v1beta.AclPolicyRevisionStatus
-	101, // 40: google.cloud.memorystore.v1beta.AutomatedBackupConfig.fixed_frequency_schedule:type_name -> google.cloud.memorystore.v1beta.AutomatedBackupConfig.FixedFrequencySchedule
-	11,  // 41: google.cloud.memorystore.v1beta.AutomatedBackupConfig.automated_backup_mode:type_name -> google.cloud.memorystore.v1beta.AutomatedBackupConfig.AutomatedBackupMode
-	111, // 42: google.cloud.memorystore.v1beta.AutomatedBackupConfig.retention:type_name -> google.protobuf.Duration
-	110, // 43: google.cloud.memorystore.v1beta.BackupCollection.create_time:type_name -> google.protobuf.Timestamp
-	110, // 44: google.cloud.memorystore.v1beta.BackupCollection.last_backup_time:type_name -> google.protobuf.Timestamp
-	110, // 45: google.cloud.memorystore.v1beta.Backup.create_time:type_name -> google.protobuf.Timestamp
-	110, // 46: google.cloud.memorystore.v1beta.Backup.expire_time:type_name -> google.protobuf.Timestamp
-	38,  // 47: google.cloud.memorystore.v1beta.Backup.backup_files:type_name -> google.cloud.memorystore.v1beta.BackupFile
-	5,   // 48: google.cloud.memorystore.v1beta.Backup.node_type:type_name -> google.cloud.memorystore.v1beta.Instance.NodeType
-	12,  // 49: google.cloud.memorystore.v1beta.Backup.backup_type:type_name -> google.cloud.memorystore.v1beta.Backup.BackupType
-	13,  // 50: google.cloud.memorystore.v1beta.Backup.state:type_name -> google.cloud.memorystore.v1beta.Backup.State
-	92,  // 51: google.cloud.memorystore.v1beta.Backup.encryption_info:type_name -> google.cloud.memorystore.v1beta.EncryptionInfo
-	110, // 52: google.cloud.memorystore.v1beta.BackupFile.create_time:type_name -> google.protobuf.Timestamp
-	14,  // 53: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.instance_role:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.InstanceRole
-	102, // 54: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.primary_instance:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
-	102, // 55: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.secondary_instances:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
-	110, // 56: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.update_time:type_name -> google.protobuf.Timestamp
-	103, // 57: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.membership:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.Membership
-	15,  // 58: google.cloud.memorystore.v1beta.TokenAuthUser.state:type_name -> google.cloud.memorystore.v1beta.TokenAuthUser.State
-	110, // 59: google.cloud.memorystore.v1beta.AuthToken.create_time:type_name -> google.protobuf.Timestamp
-	16,  // 60: google.cloud.memorystore.v1beta.AuthToken.state:type_name -> google.cloud.memorystore.v1beta.AuthToken.State
-	110, // 61: google.cloud.memorystore.v1beta.MaintenancePolicy.create_time:type_name -> google.protobuf.Timestamp
-	110, // 62: google.cloud.memorystore.v1beta.MaintenancePolicy.update_time:type_name -> google.protobuf.Timestamp
-	43,  // 63: google.cloud.memorystore.v1beta.MaintenancePolicy.weekly_maintenance_window:type_name -> google.cloud.memorystore.v1beta.WeeklyMaintenanceWindow
-	112, // 64: google.cloud.memorystore.v1beta.WeeklyMaintenanceWindow.day:type_name -> google.type.DayOfWeek
-	113, // 65: google.cloud.memorystore.v1beta.WeeklyMaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
-	110, // 66: google.cloud.memorystore.v1beta.MaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
-	110, // 67: google.cloud.memorystore.v1beta.MaintenanceSchedule.end_time:type_name -> google.protobuf.Timestamp
+	95,  // 0: google.cloud.memorystore.v1beta.Instance.gcs_source:type_name -> google.cloud.memorystore.v1beta.Instance.GcsBackupSource
+	96,  // 1: google.cloud.memorystore.v1beta.Instance.managed_backup_source:type_name -> google.cloud.memorystore.v1beta.Instance.ManagedBackupSource
+	111, // 2: google.cloud.memorystore.v1beta.Instance.create_time:type_name -> google.protobuf.Timestamp
+	111, // 3: google.cloud.memorystore.v1beta.Instance.update_time:type_name -> google.protobuf.Timestamp
+	99,  // 4: google.cloud.memorystore.v1beta.Instance.labels:type_name -> google.cloud.memorystore.v1beta.Instance.LabelsEntry
+	3,   // 5: google.cloud.memorystore.v1beta.Instance.state:type_name -> google.cloud.memorystore.v1beta.Instance.State
+	94,  // 6: google.cloud.memorystore.v1beta.Instance.state_info:type_name -> google.cloud.memorystore.v1beta.Instance.StateInfo
+	4,   // 7: google.cloud.memorystore.v1beta.Instance.authorization_mode:type_name -> google.cloud.memorystore.v1beta.Instance.AuthorizationMode
+	5,   // 8: google.cloud.memorystore.v1beta.Instance.transit_encryption_mode:type_name -> google.cloud.memorystore.v1beta.Instance.TransitEncryptionMode
+	49,  // 9: google.cloud.memorystore.v1beta.Instance.discovery_endpoints:type_name -> google.cloud.memorystore.v1beta.DiscoveryEndpoint
+	6,   // 10: google.cloud.memorystore.v1beta.Instance.node_type:type_name -> google.cloud.memorystore.v1beta.Instance.NodeType
+	50,  // 11: google.cloud.memorystore.v1beta.Instance.persistence_config:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig
+	100, // 12: google.cloud.memorystore.v1beta.Instance.engine_configs:type_name -> google.cloud.memorystore.v1beta.Instance.EngineConfigsEntry
+	51,  // 13: google.cloud.memorystore.v1beta.Instance.node_config:type_name -> google.cloud.memorystore.v1beta.NodeConfig
+	52,  // 14: google.cloud.memorystore.v1beta.Instance.zone_distribution_config:type_name -> google.cloud.memorystore.v1beta.ZoneDistributionConfig
+	47,  // 15: google.cloud.memorystore.v1beta.Instance.psc_auto_connections:type_name -> google.cloud.memorystore.v1beta.PscAutoConnection
+	46,  // 16: google.cloud.memorystore.v1beta.Instance.psc_attachment_details:type_name -> google.cloud.memorystore.v1beta.PscAttachmentDetail
+	97,  // 17: google.cloud.memorystore.v1beta.Instance.endpoints:type_name -> google.cloud.memorystore.v1beta.Instance.InstanceEndpoint
+	7,   // 18: google.cloud.memorystore.v1beta.Instance.mode:type_name -> google.cloud.memorystore.v1beta.Instance.Mode
+	43,  // 19: google.cloud.memorystore.v1beta.Instance.maintenance_policy:type_name -> google.cloud.memorystore.v1beta.MaintenancePolicy
+	45,  // 20: google.cloud.memorystore.v1beta.Instance.maintenance_schedule:type_name -> google.cloud.memorystore.v1beta.MaintenanceSchedule
+	40,  // 21: google.cloud.memorystore.v1beta.Instance.cross_instance_replication_config:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig
+	93,  // 22: google.cloud.memorystore.v1beta.Instance.encryption_info:type_name -> google.cloud.memorystore.v1beta.EncryptionInfo
+	36,  // 23: google.cloud.memorystore.v1beta.Instance.automated_backup_config:type_name -> google.cloud.memorystore.v1beta.AutomatedBackupConfig
+	8,   // 24: google.cloud.memorystore.v1beta.Instance.server_ca_mode:type_name -> google.cloud.memorystore.v1beta.Instance.ServerCaMode
+	30,  // 25: google.cloud.memorystore.v1beta.Instance.migration_config:type_name -> google.cloud.memorystore.v1beta.MigrationConfig
+	26,  // 26: google.cloud.memorystore.v1beta.Instance.acl_policy_info:type_name -> google.cloud.memorystore.v1beta.AclPolicyInfo
+	33,  // 27: google.cloud.memorystore.v1beta.AclPolicyInfo.acl_policy_revision_statuses:type_name -> google.cloud.memorystore.v1beta.AclPolicyRevisionStatus
+	29,  // 28: google.cloud.memorystore.v1beta.StartMigrationRequest.self_managed_source:type_name -> google.cloud.memorystore.v1beta.SelfManagedSource
+	29,  // 29: google.cloud.memorystore.v1beta.MigrationConfig.self_managed_source:type_name -> google.cloud.memorystore.v1beta.SelfManagedSource
+	9,   // 30: google.cloud.memorystore.v1beta.MigrationConfig.state:type_name -> google.cloud.memorystore.v1beta.MigrationConfig.State
+	35,  // 31: google.cloud.memorystore.v1beta.AclPolicy.rules:type_name -> google.cloud.memorystore.v1beta.AclRule
+	10,  // 32: google.cloud.memorystore.v1beta.AclPolicy.state:type_name -> google.cloud.memorystore.v1beta.AclPolicy.State
+	34,  // 33: google.cloud.memorystore.v1beta.AclPolicy.instance_acl_policy_attachments:type_name -> google.cloud.memorystore.v1beta.InstanceAclPolicyAttachment
+	111, // 34: google.cloud.memorystore.v1beta.AclPolicy.create_time:type_name -> google.protobuf.Timestamp
+	111, // 35: google.cloud.memorystore.v1beta.AclPolicy.update_time:type_name -> google.protobuf.Timestamp
+	31,  // 36: google.cloud.memorystore.v1beta.AclPolicyRevision.snapshot:type_name -> google.cloud.memorystore.v1beta.AclPolicy
+	111, // 37: google.cloud.memorystore.v1beta.AclPolicyRevision.create_time:type_name -> google.protobuf.Timestamp
+	11,  // 38: google.cloud.memorystore.v1beta.AclPolicyRevisionStatus.state:type_name -> google.cloud.memorystore.v1beta.AclPolicyRevisionStatus.State
+	33,  // 39: google.cloud.memorystore.v1beta.InstanceAclPolicyAttachment.acl_policy_revision_statuses:type_name -> google.cloud.memorystore.v1beta.AclPolicyRevisionStatus
+	102, // 40: google.cloud.memorystore.v1beta.AutomatedBackupConfig.fixed_frequency_schedule:type_name -> google.cloud.memorystore.v1beta.AutomatedBackupConfig.FixedFrequencySchedule
+	12,  // 41: google.cloud.memorystore.v1beta.AutomatedBackupConfig.automated_backup_mode:type_name -> google.cloud.memorystore.v1beta.AutomatedBackupConfig.AutomatedBackupMode
+	112, // 42: google.cloud.memorystore.v1beta.AutomatedBackupConfig.retention:type_name -> google.protobuf.Duration
+	111, // 43: google.cloud.memorystore.v1beta.BackupCollection.create_time:type_name -> google.protobuf.Timestamp
+	111, // 44: google.cloud.memorystore.v1beta.BackupCollection.last_backup_time:type_name -> google.protobuf.Timestamp
+	111, // 45: google.cloud.memorystore.v1beta.Backup.create_time:type_name -> google.protobuf.Timestamp
+	111, // 46: google.cloud.memorystore.v1beta.Backup.expire_time:type_name -> google.protobuf.Timestamp
+	39,  // 47: google.cloud.memorystore.v1beta.Backup.backup_files:type_name -> google.cloud.memorystore.v1beta.BackupFile
+	6,   // 48: google.cloud.memorystore.v1beta.Backup.node_type:type_name -> google.cloud.memorystore.v1beta.Instance.NodeType
+	13,  // 49: google.cloud.memorystore.v1beta.Backup.backup_type:type_name -> google.cloud.memorystore.v1beta.Backup.BackupType
+	14,  // 50: google.cloud.memorystore.v1beta.Backup.state:type_name -> google.cloud.memorystore.v1beta.Backup.State
+	93,  // 51: google.cloud.memorystore.v1beta.Backup.encryption_info:type_name -> google.cloud.memorystore.v1beta.EncryptionInfo
+	111, // 52: google.cloud.memorystore.v1beta.BackupFile.create_time:type_name -> google.protobuf.Timestamp
+	15,  // 53: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.instance_role:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.InstanceRole
+	103, // 54: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.primary_instance:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
+	103, // 55: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.secondary_instances:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
+	111, // 56: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.update_time:type_name -> google.protobuf.Timestamp
+	104, // 57: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.membership:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.Membership
+	16,  // 58: google.cloud.memorystore.v1beta.TokenAuthUser.state:type_name -> google.cloud.memorystore.v1beta.TokenAuthUser.State
+	111, // 59: google.cloud.memorystore.v1beta.AuthToken.create_time:type_name -> google.protobuf.Timestamp
+	17,  // 60: google.cloud.memorystore.v1beta.AuthToken.state:type_name -> google.cloud.memorystore.v1beta.AuthToken.State
+	111, // 61: google.cloud.memorystore.v1beta.MaintenancePolicy.create_time:type_name -> google.protobuf.Timestamp
+	111, // 62: google.cloud.memorystore.v1beta.MaintenancePolicy.update_time:type_name -> google.protobuf.Timestamp
+	44,  // 63: google.cloud.memorystore.v1beta.MaintenancePolicy.weekly_maintenance_window:type_name -> google.cloud.memorystore.v1beta.WeeklyMaintenanceWindow
+	113, // 64: google.cloud.memorystore.v1beta.WeeklyMaintenanceWindow.day:type_name -> google.type.DayOfWeek
+	114, // 65: google.cloud.memorystore.v1beta.WeeklyMaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
+	111, // 66: google.cloud.memorystore.v1beta.MaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
+	111, // 67: google.cloud.memorystore.v1beta.MaintenanceSchedule.end_time:type_name -> google.protobuf.Timestamp
 	1,   // 68: google.cloud.memorystore.v1beta.PscAttachmentDetail.connection_type:type_name -> google.cloud.memorystore.v1beta.ConnectionType
 	0,   // 69: google.cloud.memorystore.v1beta.PscAutoConnection.psc_connection_status:type_name -> google.cloud.memorystore.v1beta.PscConnectionStatus
 	1,   // 70: google.cloud.memorystore.v1beta.PscAutoConnection.connection_type:type_name -> google.cloud.memorystore.v1beta.ConnectionType
-	0,   // 71: google.cloud.memorystore.v1beta.PscConnection.psc_connection_status:type_name -> google.cloud.memorystore.v1beta.PscConnectionStatus
-	1,   // 72: google.cloud.memorystore.v1beta.PscConnection.connection_type:type_name -> google.cloud.memorystore.v1beta.ConnectionType
-	17,  // 73: google.cloud.memorystore.v1beta.PersistenceConfig.mode:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.PersistenceMode
-	104, // 74: google.cloud.memorystore.v1beta.PersistenceConfig.rdb_config:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig
-	105, // 75: google.cloud.memorystore.v1beta.PersistenceConfig.aof_config:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig
-	20,  // 76: google.cloud.memorystore.v1beta.ZoneDistributionConfig.mode:type_name -> google.cloud.memorystore.v1beta.ZoneDistributionConfig.ZoneDistributionMode
-	21,  // 77: google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.reschedule_type:type_name -> google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.RescheduleType
-	110, // 78: google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.schedule_time:type_name -> google.protobuf.Timestamp
-	30,  // 79: google.cloud.memorystore.v1beta.ListAclPoliciesResponse.acl_policies:type_name -> google.cloud.memorystore.v1beta.AclPolicy
-	31,  // 80: google.cloud.memorystore.v1beta.ListAclPolicyRevisionsResponse.acl_policy_revisions:type_name -> google.cloud.memorystore.v1beta.AclPolicyRevision
-	24,  // 81: google.cloud.memorystore.v1beta.ListInstancesResponse.instances:type_name -> google.cloud.memorystore.v1beta.Instance
-	30,  // 82: google.cloud.memorystore.v1beta.CreateAclPolicyRequest.acl_policy:type_name -> google.cloud.memorystore.v1beta.AclPolicy
-	24,  // 83: google.cloud.memorystore.v1beta.CreateInstanceRequest.instance:type_name -> google.cloud.memorystore.v1beta.Instance
-	30,  // 84: google.cloud.memorystore.v1beta.UpdateAclPolicyRequest.acl_policy:type_name -> google.cloud.memorystore.v1beta.AclPolicy
-	114, // 85: google.cloud.memorystore.v1beta.UpdateAclPolicyRequest.update_mask:type_name -> google.protobuf.FieldMask
-	114, // 86: google.cloud.memorystore.v1beta.UpdateInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	24,  // 87: google.cloud.memorystore.v1beta.UpdateInstanceRequest.instance:type_name -> google.cloud.memorystore.v1beta.Instance
-	36,  // 88: google.cloud.memorystore.v1beta.ListBackupCollectionsResponse.backup_collections:type_name -> google.cloud.memorystore.v1beta.BackupCollection
-	37,  // 89: google.cloud.memorystore.v1beta.ListBackupsResponse.backups:type_name -> google.cloud.memorystore.v1beta.Backup
-	111, // 90: google.cloud.memorystore.v1beta.BackupInstanceRequest.ttl:type_name -> google.protobuf.Duration
-	40,  // 91: google.cloud.memorystore.v1beta.ListTokenAuthUsersResponse.token_auth_users:type_name -> google.cloud.memorystore.v1beta.TokenAuthUser
-	41,  // 92: google.cloud.memorystore.v1beta.ListAuthTokensResponse.auth_tokens:type_name -> google.cloud.memorystore.v1beta.AuthToken
-	41,  // 93: google.cloud.memorystore.v1beta.AddAuthTokenRequest.auth_token:type_name -> google.cloud.memorystore.v1beta.AuthToken
-	106, // 94: google.cloud.memorystore.v1beta.CertificateAuthority.managed_server_ca:type_name -> google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority
-	108, // 95: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.managed_server_ca:type_name -> google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
-	110, // 96: google.cloud.memorystore.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	110, // 97: google.cloud.memorystore.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	22,  // 98: google.cloud.memorystore.v1beta.EncryptionInfo.encryption_type:type_name -> google.cloud.memorystore.v1beta.EncryptionInfo.Type
-	23,  // 99: google.cloud.memorystore.v1beta.EncryptionInfo.kms_key_primary_state:type_name -> google.cloud.memorystore.v1beta.EncryptionInfo.KmsKeyState
-	110, // 100: google.cloud.memorystore.v1beta.EncryptionInfo.last_update_time:type_name -> google.protobuf.Timestamp
-	100, // 101: google.cloud.memorystore.v1beta.Instance.StateInfo.update_info:type_name -> google.cloud.memorystore.v1beta.Instance.StateInfo.UpdateInfo
-	97,  // 102: google.cloud.memorystore.v1beta.Instance.InstanceEndpoint.connections:type_name -> google.cloud.memorystore.v1beta.Instance.ConnectionDetail
-	46,  // 103: google.cloud.memorystore.v1beta.Instance.ConnectionDetail.psc_auto_connection:type_name -> google.cloud.memorystore.v1beta.PscAutoConnection
-	47,  // 104: google.cloud.memorystore.v1beta.Instance.ConnectionDetail.psc_connection:type_name -> google.cloud.memorystore.v1beta.PscConnection
-	5,   // 105: google.cloud.memorystore.v1beta.Instance.StateInfo.UpdateInfo.target_node_type:type_name -> google.cloud.memorystore.v1beta.Instance.NodeType
-	113, // 106: google.cloud.memorystore.v1beta.AutomatedBackupConfig.FixedFrequencySchedule.start_time:type_name -> google.type.TimeOfDay
-	102, // 107: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.Membership.primary_instance:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
-	102, // 108: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.Membership.secondary_instances:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
-	18,  // 109: google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.rdb_snapshot_period:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.SnapshotPeriod
-	110, // 110: google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.rdb_snapshot_start_time:type_name -> google.protobuf.Timestamp
-	19,  // 111: google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig.append_fsync:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig.AppendFsync
-	107, // 112: google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority.ca_certs:type_name -> google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority.CertChain
-	109, // 113: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.ca_certs:type_name -> google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
-	53,  // 114: google.cloud.memorystore.v1beta.Memorystore.ListAclPolicies:input_type -> google.cloud.memorystore.v1beta.ListAclPoliciesRequest
-	57,  // 115: google.cloud.memorystore.v1beta.Memorystore.ListInstances:input_type -> google.cloud.memorystore.v1beta.ListInstancesRequest
-	59,  // 116: google.cloud.memorystore.v1beta.Memorystore.GetAclPolicy:input_type -> google.cloud.memorystore.v1beta.GetAclPolicyRequest
-	61,  // 117: google.cloud.memorystore.v1beta.Memorystore.GetInstance:input_type -> google.cloud.memorystore.v1beta.GetInstanceRequest
-	62,  // 118: google.cloud.memorystore.v1beta.Memorystore.CreateAclPolicy:input_type -> google.cloud.memorystore.v1beta.CreateAclPolicyRequest
-	63,  // 119: google.cloud.memorystore.v1beta.Memorystore.CreateInstance:input_type -> google.cloud.memorystore.v1beta.CreateInstanceRequest
-	64,  // 120: google.cloud.memorystore.v1beta.Memorystore.UpdateAclPolicy:input_type -> google.cloud.memorystore.v1beta.UpdateAclPolicyRequest
-	65,  // 121: google.cloud.memorystore.v1beta.Memorystore.UpdateInstance:input_type -> google.cloud.memorystore.v1beta.UpdateInstanceRequest
-	66,  // 122: google.cloud.memorystore.v1beta.Memorystore.DeleteAclPolicy:input_type -> google.cloud.memorystore.v1beta.DeleteAclPolicyRequest
-	60,  // 123: google.cloud.memorystore.v1beta.Memorystore.GetAclPolicyRevision:input_type -> google.cloud.memorystore.v1beta.GetAclPolicyRevisionRequest
-	55,  // 124: google.cloud.memorystore.v1beta.Memorystore.ListAclPolicyRevisions:input_type -> google.cloud.memorystore.v1beta.ListAclPolicyRevisionsRequest
-	67,  // 125: google.cloud.memorystore.v1beta.Memorystore.DeleteInstance:input_type -> google.cloud.memorystore.v1beta.DeleteInstanceRequest
-	77,  // 126: google.cloud.memorystore.v1beta.Memorystore.GetCertificateAuthority:input_type -> google.cloud.memorystore.v1beta.GetCertificateAuthorityRequest
-	90,  // 127: google.cloud.memorystore.v1beta.Memorystore.GetSharedRegionalCertificateAuthority:input_type -> google.cloud.memorystore.v1beta.GetSharedRegionalCertificateAuthorityRequest
-	52,  // 128: google.cloud.memorystore.v1beta.Memorystore.RescheduleMaintenance:input_type -> google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest
-	68,  // 129: google.cloud.memorystore.v1beta.Memorystore.ListBackupCollections:input_type -> google.cloud.memorystore.v1beta.ListBackupCollectionsRequest
-	70,  // 130: google.cloud.memorystore.v1beta.Memorystore.GetBackupCollection:input_type -> google.cloud.memorystore.v1beta.GetBackupCollectionRequest
-	71,  // 131: google.cloud.memorystore.v1beta.Memorystore.ListBackups:input_type -> google.cloud.memorystore.v1beta.ListBackupsRequest
-	73,  // 132: google.cloud.memorystore.v1beta.Memorystore.GetBackup:input_type -> google.cloud.memorystore.v1beta.GetBackupRequest
-	74,  // 133: google.cloud.memorystore.v1beta.Memorystore.DeleteBackup:input_type -> google.cloud.memorystore.v1beta.DeleteBackupRequest
-	75,  // 134: google.cloud.memorystore.v1beta.Memorystore.ExportBackup:input_type -> google.cloud.memorystore.v1beta.ExportBackupRequest
-	76,  // 135: google.cloud.memorystore.v1beta.Memorystore.BackupInstance:input_type -> google.cloud.memorystore.v1beta.BackupInstanceRequest
-	26,  // 136: google.cloud.memorystore.v1beta.Memorystore.StartMigration:input_type -> google.cloud.memorystore.v1beta.StartMigrationRequest
-	27,  // 137: google.cloud.memorystore.v1beta.Memorystore.FinishMigration:input_type -> google.cloud.memorystore.v1beta.FinishMigrationRequest
-	78,  // 138: google.cloud.memorystore.v1beta.Memorystore.ListTokenAuthUsers:input_type -> google.cloud.memorystore.v1beta.ListTokenAuthUsersRequest
-	80,  // 139: google.cloud.memorystore.v1beta.Memorystore.GetTokenAuthUser:input_type -> google.cloud.memorystore.v1beta.GetTokenAuthUserRequest
-	81,  // 140: google.cloud.memorystore.v1beta.Memorystore.ListAuthTokens:input_type -> google.cloud.memorystore.v1beta.ListAuthTokensRequest
-	83,  // 141: google.cloud.memorystore.v1beta.Memorystore.GetAuthToken:input_type -> google.cloud.memorystore.v1beta.GetAuthTokenRequest
-	84,  // 142: google.cloud.memorystore.v1beta.Memorystore.AddTokenAuthUser:input_type -> google.cloud.memorystore.v1beta.AddTokenAuthUserRequest
-	85,  // 143: google.cloud.memorystore.v1beta.Memorystore.DeleteTokenAuthUser:input_type -> google.cloud.memorystore.v1beta.DeleteTokenAuthUserRequest
-	86,  // 144: google.cloud.memorystore.v1beta.Memorystore.AddAuthToken:input_type -> google.cloud.memorystore.v1beta.AddAuthTokenRequest
-	87,  // 145: google.cloud.memorystore.v1beta.Memorystore.DeleteAuthToken:input_type -> google.cloud.memorystore.v1beta.DeleteAuthTokenRequest
-	54,  // 146: google.cloud.memorystore.v1beta.Memorystore.ListAclPolicies:output_type -> google.cloud.memorystore.v1beta.ListAclPoliciesResponse
-	58,  // 147: google.cloud.memorystore.v1beta.Memorystore.ListInstances:output_type -> google.cloud.memorystore.v1beta.ListInstancesResponse
-	30,  // 148: google.cloud.memorystore.v1beta.Memorystore.GetAclPolicy:output_type -> google.cloud.memorystore.v1beta.AclPolicy
-	24,  // 149: google.cloud.memorystore.v1beta.Memorystore.GetInstance:output_type -> google.cloud.memorystore.v1beta.Instance
-	30,  // 150: google.cloud.memorystore.v1beta.Memorystore.CreateAclPolicy:output_type -> google.cloud.memorystore.v1beta.AclPolicy
-	115, // 151: google.cloud.memorystore.v1beta.Memorystore.CreateInstance:output_type -> google.longrunning.Operation
-	115, // 152: google.cloud.memorystore.v1beta.Memorystore.UpdateAclPolicy:output_type -> google.longrunning.Operation
-	115, // 153: google.cloud.memorystore.v1beta.Memorystore.UpdateInstance:output_type -> google.longrunning.Operation
-	115, // 154: google.cloud.memorystore.v1beta.Memorystore.DeleteAclPolicy:output_type -> google.longrunning.Operation
-	31,  // 155: google.cloud.memorystore.v1beta.Memorystore.GetAclPolicyRevision:output_type -> google.cloud.memorystore.v1beta.AclPolicyRevision
-	56,  // 156: google.cloud.memorystore.v1beta.Memorystore.ListAclPolicyRevisions:output_type -> google.cloud.memorystore.v1beta.ListAclPolicyRevisionsResponse
-	115, // 157: google.cloud.memorystore.v1beta.Memorystore.DeleteInstance:output_type -> google.longrunning.Operation
-	88,  // 158: google.cloud.memorystore.v1beta.Memorystore.GetCertificateAuthority:output_type -> google.cloud.memorystore.v1beta.CertificateAuthority
-	89,  // 159: google.cloud.memorystore.v1beta.Memorystore.GetSharedRegionalCertificateAuthority:output_type -> google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority
-	115, // 160: google.cloud.memorystore.v1beta.Memorystore.RescheduleMaintenance:output_type -> google.longrunning.Operation
-	69,  // 161: google.cloud.memorystore.v1beta.Memorystore.ListBackupCollections:output_type -> google.cloud.memorystore.v1beta.ListBackupCollectionsResponse
-	36,  // 162: google.cloud.memorystore.v1beta.Memorystore.GetBackupCollection:output_type -> google.cloud.memorystore.v1beta.BackupCollection
-	72,  // 163: google.cloud.memorystore.v1beta.Memorystore.ListBackups:output_type -> google.cloud.memorystore.v1beta.ListBackupsResponse
-	37,  // 164: google.cloud.memorystore.v1beta.Memorystore.GetBackup:output_type -> google.cloud.memorystore.v1beta.Backup
-	115, // 165: google.cloud.memorystore.v1beta.Memorystore.DeleteBackup:output_type -> google.longrunning.Operation
-	115, // 166: google.cloud.memorystore.v1beta.Memorystore.ExportBackup:output_type -> google.longrunning.Operation
-	115, // 167: google.cloud.memorystore.v1beta.Memorystore.BackupInstance:output_type -> google.longrunning.Operation
-	115, // 168: google.cloud.memorystore.v1beta.Memorystore.StartMigration:output_type -> google.longrunning.Operation
-	115, // 169: google.cloud.memorystore.v1beta.Memorystore.FinishMigration:output_type -> google.longrunning.Operation
-	79,  // 170: google.cloud.memorystore.v1beta.Memorystore.ListTokenAuthUsers:output_type -> google.cloud.memorystore.v1beta.ListTokenAuthUsersResponse
-	40,  // 171: google.cloud.memorystore.v1beta.Memorystore.GetTokenAuthUser:output_type -> google.cloud.memorystore.v1beta.TokenAuthUser
-	82,  // 172: google.cloud.memorystore.v1beta.Memorystore.ListAuthTokens:output_type -> google.cloud.memorystore.v1beta.ListAuthTokensResponse
-	41,  // 173: google.cloud.memorystore.v1beta.Memorystore.GetAuthToken:output_type -> google.cloud.memorystore.v1beta.AuthToken
-	115, // 174: google.cloud.memorystore.v1beta.Memorystore.AddTokenAuthUser:output_type -> google.longrunning.Operation
-	115, // 175: google.cloud.memorystore.v1beta.Memorystore.DeleteTokenAuthUser:output_type -> google.longrunning.Operation
-	115, // 176: google.cloud.memorystore.v1beta.Memorystore.AddAuthToken:output_type -> google.longrunning.Operation
-	115, // 177: google.cloud.memorystore.v1beta.Memorystore.DeleteAuthToken:output_type -> google.longrunning.Operation
-	146, // [146:178] is the sub-list for method output_type
-	114, // [114:146] is the sub-list for method input_type
-	114, // [114:114] is the sub-list for extension type_name
-	114, // [114:114] is the sub-list for extension extendee
-	0,   // [0:114] is the sub-list for field type_name
+	2,   // 71: google.cloud.memorystore.v1beta.PscAutoConnection.ip_version:type_name -> google.cloud.memorystore.v1beta.IpVersion
+	0,   // 72: google.cloud.memorystore.v1beta.PscConnection.psc_connection_status:type_name -> google.cloud.memorystore.v1beta.PscConnectionStatus
+	1,   // 73: google.cloud.memorystore.v1beta.PscConnection.connection_type:type_name -> google.cloud.memorystore.v1beta.ConnectionType
+	18,  // 74: google.cloud.memorystore.v1beta.PersistenceConfig.mode:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.PersistenceMode
+	105, // 75: google.cloud.memorystore.v1beta.PersistenceConfig.rdb_config:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig
+	106, // 76: google.cloud.memorystore.v1beta.PersistenceConfig.aof_config:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig
+	21,  // 77: google.cloud.memorystore.v1beta.ZoneDistributionConfig.mode:type_name -> google.cloud.memorystore.v1beta.ZoneDistributionConfig.ZoneDistributionMode
+	22,  // 78: google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.reschedule_type:type_name -> google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.RescheduleType
+	111, // 79: google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.schedule_time:type_name -> google.protobuf.Timestamp
+	31,  // 80: google.cloud.memorystore.v1beta.ListAclPoliciesResponse.acl_policies:type_name -> google.cloud.memorystore.v1beta.AclPolicy
+	32,  // 81: google.cloud.memorystore.v1beta.ListAclPolicyRevisionsResponse.acl_policy_revisions:type_name -> google.cloud.memorystore.v1beta.AclPolicyRevision
+	25,  // 82: google.cloud.memorystore.v1beta.ListInstancesResponse.instances:type_name -> google.cloud.memorystore.v1beta.Instance
+	31,  // 83: google.cloud.memorystore.v1beta.CreateAclPolicyRequest.acl_policy:type_name -> google.cloud.memorystore.v1beta.AclPolicy
+	25,  // 84: google.cloud.memorystore.v1beta.CreateInstanceRequest.instance:type_name -> google.cloud.memorystore.v1beta.Instance
+	31,  // 85: google.cloud.memorystore.v1beta.UpdateAclPolicyRequest.acl_policy:type_name -> google.cloud.memorystore.v1beta.AclPolicy
+	115, // 86: google.cloud.memorystore.v1beta.UpdateAclPolicyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	115, // 87: google.cloud.memorystore.v1beta.UpdateInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	25,  // 88: google.cloud.memorystore.v1beta.UpdateInstanceRequest.instance:type_name -> google.cloud.memorystore.v1beta.Instance
+	37,  // 89: google.cloud.memorystore.v1beta.ListBackupCollectionsResponse.backup_collections:type_name -> google.cloud.memorystore.v1beta.BackupCollection
+	38,  // 90: google.cloud.memorystore.v1beta.ListBackupsResponse.backups:type_name -> google.cloud.memorystore.v1beta.Backup
+	112, // 91: google.cloud.memorystore.v1beta.BackupInstanceRequest.ttl:type_name -> google.protobuf.Duration
+	41,  // 92: google.cloud.memorystore.v1beta.ListTokenAuthUsersResponse.token_auth_users:type_name -> google.cloud.memorystore.v1beta.TokenAuthUser
+	42,  // 93: google.cloud.memorystore.v1beta.ListAuthTokensResponse.auth_tokens:type_name -> google.cloud.memorystore.v1beta.AuthToken
+	42,  // 94: google.cloud.memorystore.v1beta.AddAuthTokenRequest.auth_token:type_name -> google.cloud.memorystore.v1beta.AuthToken
+	107, // 95: google.cloud.memorystore.v1beta.CertificateAuthority.managed_server_ca:type_name -> google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority
+	109, // 96: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.managed_server_ca:type_name -> google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
+	111, // 97: google.cloud.memorystore.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	111, // 98: google.cloud.memorystore.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	23,  // 99: google.cloud.memorystore.v1beta.EncryptionInfo.encryption_type:type_name -> google.cloud.memorystore.v1beta.EncryptionInfo.Type
+	24,  // 100: google.cloud.memorystore.v1beta.EncryptionInfo.kms_key_primary_state:type_name -> google.cloud.memorystore.v1beta.EncryptionInfo.KmsKeyState
+	111, // 101: google.cloud.memorystore.v1beta.EncryptionInfo.last_update_time:type_name -> google.protobuf.Timestamp
+	101, // 102: google.cloud.memorystore.v1beta.Instance.StateInfo.update_info:type_name -> google.cloud.memorystore.v1beta.Instance.StateInfo.UpdateInfo
+	98,  // 103: google.cloud.memorystore.v1beta.Instance.InstanceEndpoint.connections:type_name -> google.cloud.memorystore.v1beta.Instance.ConnectionDetail
+	47,  // 104: google.cloud.memorystore.v1beta.Instance.ConnectionDetail.psc_auto_connection:type_name -> google.cloud.memorystore.v1beta.PscAutoConnection
+	48,  // 105: google.cloud.memorystore.v1beta.Instance.ConnectionDetail.psc_connection:type_name -> google.cloud.memorystore.v1beta.PscConnection
+	6,   // 106: google.cloud.memorystore.v1beta.Instance.StateInfo.UpdateInfo.target_node_type:type_name -> google.cloud.memorystore.v1beta.Instance.NodeType
+	114, // 107: google.cloud.memorystore.v1beta.AutomatedBackupConfig.FixedFrequencySchedule.start_time:type_name -> google.type.TimeOfDay
+	103, // 108: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.Membership.primary_instance:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
+	103, // 109: google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.Membership.secondary_instances:type_name -> google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstance
+	19,  // 110: google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.rdb_snapshot_period:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.SnapshotPeriod
+	111, // 111: google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.rdb_snapshot_start_time:type_name -> google.protobuf.Timestamp
+	20,  // 112: google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig.append_fsync:type_name -> google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig.AppendFsync
+	108, // 113: google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority.ca_certs:type_name -> google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority.CertChain
+	110, // 114: google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.ca_certs:type_name -> google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
+	54,  // 115: google.cloud.memorystore.v1beta.Memorystore.ListAclPolicies:input_type -> google.cloud.memorystore.v1beta.ListAclPoliciesRequest
+	58,  // 116: google.cloud.memorystore.v1beta.Memorystore.ListInstances:input_type -> google.cloud.memorystore.v1beta.ListInstancesRequest
+	60,  // 117: google.cloud.memorystore.v1beta.Memorystore.GetAclPolicy:input_type -> google.cloud.memorystore.v1beta.GetAclPolicyRequest
+	62,  // 118: google.cloud.memorystore.v1beta.Memorystore.GetInstance:input_type -> google.cloud.memorystore.v1beta.GetInstanceRequest
+	63,  // 119: google.cloud.memorystore.v1beta.Memorystore.CreateAclPolicy:input_type -> google.cloud.memorystore.v1beta.CreateAclPolicyRequest
+	64,  // 120: google.cloud.memorystore.v1beta.Memorystore.CreateInstance:input_type -> google.cloud.memorystore.v1beta.CreateInstanceRequest
+	65,  // 121: google.cloud.memorystore.v1beta.Memorystore.UpdateAclPolicy:input_type -> google.cloud.memorystore.v1beta.UpdateAclPolicyRequest
+	66,  // 122: google.cloud.memorystore.v1beta.Memorystore.UpdateInstance:input_type -> google.cloud.memorystore.v1beta.UpdateInstanceRequest
+	67,  // 123: google.cloud.memorystore.v1beta.Memorystore.DeleteAclPolicy:input_type -> google.cloud.memorystore.v1beta.DeleteAclPolicyRequest
+	61,  // 124: google.cloud.memorystore.v1beta.Memorystore.GetAclPolicyRevision:input_type -> google.cloud.memorystore.v1beta.GetAclPolicyRevisionRequest
+	56,  // 125: google.cloud.memorystore.v1beta.Memorystore.ListAclPolicyRevisions:input_type -> google.cloud.memorystore.v1beta.ListAclPolicyRevisionsRequest
+	68,  // 126: google.cloud.memorystore.v1beta.Memorystore.DeleteInstance:input_type -> google.cloud.memorystore.v1beta.DeleteInstanceRequest
+	78,  // 127: google.cloud.memorystore.v1beta.Memorystore.GetCertificateAuthority:input_type -> google.cloud.memorystore.v1beta.GetCertificateAuthorityRequest
+	91,  // 128: google.cloud.memorystore.v1beta.Memorystore.GetSharedRegionalCertificateAuthority:input_type -> google.cloud.memorystore.v1beta.GetSharedRegionalCertificateAuthorityRequest
+	53,  // 129: google.cloud.memorystore.v1beta.Memorystore.RescheduleMaintenance:input_type -> google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest
+	69,  // 130: google.cloud.memorystore.v1beta.Memorystore.ListBackupCollections:input_type -> google.cloud.memorystore.v1beta.ListBackupCollectionsRequest
+	71,  // 131: google.cloud.memorystore.v1beta.Memorystore.GetBackupCollection:input_type -> google.cloud.memorystore.v1beta.GetBackupCollectionRequest
+	72,  // 132: google.cloud.memorystore.v1beta.Memorystore.ListBackups:input_type -> google.cloud.memorystore.v1beta.ListBackupsRequest
+	74,  // 133: google.cloud.memorystore.v1beta.Memorystore.GetBackup:input_type -> google.cloud.memorystore.v1beta.GetBackupRequest
+	75,  // 134: google.cloud.memorystore.v1beta.Memorystore.DeleteBackup:input_type -> google.cloud.memorystore.v1beta.DeleteBackupRequest
+	76,  // 135: google.cloud.memorystore.v1beta.Memorystore.ExportBackup:input_type -> google.cloud.memorystore.v1beta.ExportBackupRequest
+	77,  // 136: google.cloud.memorystore.v1beta.Memorystore.BackupInstance:input_type -> google.cloud.memorystore.v1beta.BackupInstanceRequest
+	27,  // 137: google.cloud.memorystore.v1beta.Memorystore.StartMigration:input_type -> google.cloud.memorystore.v1beta.StartMigrationRequest
+	28,  // 138: google.cloud.memorystore.v1beta.Memorystore.FinishMigration:input_type -> google.cloud.memorystore.v1beta.FinishMigrationRequest
+	79,  // 139: google.cloud.memorystore.v1beta.Memorystore.ListTokenAuthUsers:input_type -> google.cloud.memorystore.v1beta.ListTokenAuthUsersRequest
+	81,  // 140: google.cloud.memorystore.v1beta.Memorystore.GetTokenAuthUser:input_type -> google.cloud.memorystore.v1beta.GetTokenAuthUserRequest
+	82,  // 141: google.cloud.memorystore.v1beta.Memorystore.ListAuthTokens:input_type -> google.cloud.memorystore.v1beta.ListAuthTokensRequest
+	84,  // 142: google.cloud.memorystore.v1beta.Memorystore.GetAuthToken:input_type -> google.cloud.memorystore.v1beta.GetAuthTokenRequest
+	85,  // 143: google.cloud.memorystore.v1beta.Memorystore.AddTokenAuthUser:input_type -> google.cloud.memorystore.v1beta.AddTokenAuthUserRequest
+	86,  // 144: google.cloud.memorystore.v1beta.Memorystore.DeleteTokenAuthUser:input_type -> google.cloud.memorystore.v1beta.DeleteTokenAuthUserRequest
+	87,  // 145: google.cloud.memorystore.v1beta.Memorystore.AddAuthToken:input_type -> google.cloud.memorystore.v1beta.AddAuthTokenRequest
+	88,  // 146: google.cloud.memorystore.v1beta.Memorystore.DeleteAuthToken:input_type -> google.cloud.memorystore.v1beta.DeleteAuthTokenRequest
+	55,  // 147: google.cloud.memorystore.v1beta.Memorystore.ListAclPolicies:output_type -> google.cloud.memorystore.v1beta.ListAclPoliciesResponse
+	59,  // 148: google.cloud.memorystore.v1beta.Memorystore.ListInstances:output_type -> google.cloud.memorystore.v1beta.ListInstancesResponse
+	31,  // 149: google.cloud.memorystore.v1beta.Memorystore.GetAclPolicy:output_type -> google.cloud.memorystore.v1beta.AclPolicy
+	25,  // 150: google.cloud.memorystore.v1beta.Memorystore.GetInstance:output_type -> google.cloud.memorystore.v1beta.Instance
+	31,  // 151: google.cloud.memorystore.v1beta.Memorystore.CreateAclPolicy:output_type -> google.cloud.memorystore.v1beta.AclPolicy
+	116, // 152: google.cloud.memorystore.v1beta.Memorystore.CreateInstance:output_type -> google.longrunning.Operation
+	116, // 153: google.cloud.memorystore.v1beta.Memorystore.UpdateAclPolicy:output_type -> google.longrunning.Operation
+	116, // 154: google.cloud.memorystore.v1beta.Memorystore.UpdateInstance:output_type -> google.longrunning.Operation
+	116, // 155: google.cloud.memorystore.v1beta.Memorystore.DeleteAclPolicy:output_type -> google.longrunning.Operation
+	32,  // 156: google.cloud.memorystore.v1beta.Memorystore.GetAclPolicyRevision:output_type -> google.cloud.memorystore.v1beta.AclPolicyRevision
+	57,  // 157: google.cloud.memorystore.v1beta.Memorystore.ListAclPolicyRevisions:output_type -> google.cloud.memorystore.v1beta.ListAclPolicyRevisionsResponse
+	116, // 158: google.cloud.memorystore.v1beta.Memorystore.DeleteInstance:output_type -> google.longrunning.Operation
+	89,  // 159: google.cloud.memorystore.v1beta.Memorystore.GetCertificateAuthority:output_type -> google.cloud.memorystore.v1beta.CertificateAuthority
+	90,  // 160: google.cloud.memorystore.v1beta.Memorystore.GetSharedRegionalCertificateAuthority:output_type -> google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority
+	116, // 161: google.cloud.memorystore.v1beta.Memorystore.RescheduleMaintenance:output_type -> google.longrunning.Operation
+	70,  // 162: google.cloud.memorystore.v1beta.Memorystore.ListBackupCollections:output_type -> google.cloud.memorystore.v1beta.ListBackupCollectionsResponse
+	37,  // 163: google.cloud.memorystore.v1beta.Memorystore.GetBackupCollection:output_type -> google.cloud.memorystore.v1beta.BackupCollection
+	73,  // 164: google.cloud.memorystore.v1beta.Memorystore.ListBackups:output_type -> google.cloud.memorystore.v1beta.ListBackupsResponse
+	38,  // 165: google.cloud.memorystore.v1beta.Memorystore.GetBackup:output_type -> google.cloud.memorystore.v1beta.Backup
+	116, // 166: google.cloud.memorystore.v1beta.Memorystore.DeleteBackup:output_type -> google.longrunning.Operation
+	116, // 167: google.cloud.memorystore.v1beta.Memorystore.ExportBackup:output_type -> google.longrunning.Operation
+	116, // 168: google.cloud.memorystore.v1beta.Memorystore.BackupInstance:output_type -> google.longrunning.Operation
+	116, // 169: google.cloud.memorystore.v1beta.Memorystore.StartMigration:output_type -> google.longrunning.Operation
+	116, // 170: google.cloud.memorystore.v1beta.Memorystore.FinishMigration:output_type -> google.longrunning.Operation
+	80,  // 171: google.cloud.memorystore.v1beta.Memorystore.ListTokenAuthUsers:output_type -> google.cloud.memorystore.v1beta.ListTokenAuthUsersResponse
+	41,  // 172: google.cloud.memorystore.v1beta.Memorystore.GetTokenAuthUser:output_type -> google.cloud.memorystore.v1beta.TokenAuthUser
+	83,  // 173: google.cloud.memorystore.v1beta.Memorystore.ListAuthTokens:output_type -> google.cloud.memorystore.v1beta.ListAuthTokensResponse
+	42,  // 174: google.cloud.memorystore.v1beta.Memorystore.GetAuthToken:output_type -> google.cloud.memorystore.v1beta.AuthToken
+	116, // 175: google.cloud.memorystore.v1beta.Memorystore.AddTokenAuthUser:output_type -> google.longrunning.Operation
+	116, // 176: google.cloud.memorystore.v1beta.Memorystore.DeleteTokenAuthUser:output_type -> google.longrunning.Operation
+	116, // 177: google.cloud.memorystore.v1beta.Memorystore.AddAuthToken:output_type -> google.longrunning.Operation
+	116, // 178: google.cloud.memorystore.v1beta.Memorystore.DeleteAuthToken:output_type -> google.longrunning.Operation
+	147, // [147:179] is the sub-list for method output_type
+	115, // [115:147] is the sub-list for method input_type
+	115, // [115:115] is the sub-list for extension type_name
+	115, // [115:115] is the sub-list for extension extendee
+	0,   // [0:115] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_memorystore_v1beta_memorystore_proto_init() }
@@ -8997,7 +9069,7 @@ func file_google_cloud_memorystore_v1beta_memorystore_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc), len(file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc)),
-			NumEnums:      24,
+			NumEnums:      25,
 			NumMessages:   86,
 			NumExtensions: 0,
 			NumServices:   1,

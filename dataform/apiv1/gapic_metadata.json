@@ -40,6 +40,11 @@
                 "CreateCompilationResult"
               ]
             },
+            "CreateCompilationResultLongRunning": {
+              "methods": [
+                "CreateCompilationResultLongRunning"
+              ]
+            },
             "CreateFolder": {
               "methods": [
                 "CreateFolder"
@@ -438,6 +443,11 @@
             "CreateCompilationResult": {
               "methods": [
                 "CreateCompilationResult"
+              ]
+            },
+            "CreateCompilationResultLongRunning": {
+              "methods": [
+                "CreateCompilationResultLongRunning"
               ]
             },
             "CreateFolder": {

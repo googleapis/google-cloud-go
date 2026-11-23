@@ -308,12 +308,12 @@ func (x *ListBindingMatchingResourcesResponse) GetNextPageToken() string {
 // criteria of a binding.
 type BindingMatchingResource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. The resource name of the `BindingMatchingResource`.
-	// Format:
+	// Output only. Identifier. The resource name of the
+	// `BindingMatchingResource`. Format:
 	// `projects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}/matchingResources/{matching_resource}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. Immutable. Resource name of the workload that matches the
-	// criteria of the binding.
+	// Output only. Resource name of the workload that matches the criteria of the
+	// binding.
 	//
 	// The format can be either a relative resource name (e.g.,
 	// `projects/my-project/zones/us-central1-a/instances/my-instance`) or a
@@ -485,9 +485,9 @@ const file_google_cloud_backupdr_v1beta_bindingmatchingresource_proto_rawDesc = 
 	"$ListBindingMatchingResourcesResponse\x12d\n" +
 	"\x12matching_resources\x18\x01 \x03(\v25.google.cloud.backupdr.v1beta.BindingMatchingResourceR\x11matchingResources\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9b\x04\n" +
-	"\x17BindingMatchingResource\x12\x18\n" +
-	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
-	"\bresource\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x02R\bresource\x12R\n" +
+	"\x17BindingMatchingResource\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12 \n" +
+	"\bresource\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\bresource\x12R\n" +
 	"\x14last_evaluation_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12lastEvaluationTime\x12q\n" +
 	"\x17auto_protection_details\x18\x04 \x01(\v23.google.cloud.backupdr.v1beta.AutoProtectionDetailsB\x04\xe2A\x01\x03R\x15autoProtectionDetails:\xfb\x01\xeaA\xf7\x01\n" +
 	"/backupdr.googleapis.com/BindingMatchingResource\x12\x90\x01projects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}/matchingResources/{matching_resource}*\x18bindingMatchingResources2\x17bindingMatchingResource\"\xcd\x03\n" +

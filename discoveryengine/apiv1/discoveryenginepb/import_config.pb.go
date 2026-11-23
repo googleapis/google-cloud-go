@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -182,6 +182,9 @@ const (
 	ImportDocumentsRequest_INCREMENTAL ImportDocumentsRequest_ReconciliationMode = 1
 	// Calculates diff and replaces the entire document dataset. Existing
 	// documents may be deleted if they are not present in the source location.
+	// When using this mode, there won't be any downtime on the dataset
+	// targeted. Any document that should remain unchanged or that should be
+	// updated will continue serving while the operation is running.
 	ImportDocumentsRequest_FULL ImportDocumentsRequest_ReconciliationMode = 2
 )
 
@@ -1330,8 +1333,8 @@ type ImportUserEventsMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Operation create time.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Operation last update time. If the operation is done, this is also the
-	// finish time.
+	// Output only. Operation last update time. If the operation is done, this is
+	// also the finish time.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Count of entries that were processed successfully.
 	SuccessCount int64 `protobuf:"varint,3,opt,name=success_count,json=successCount,proto3" json:"success_count,omitempty"`
@@ -1571,7 +1574,6 @@ type ImportDocumentsRequest struct {
 	// must be `custom` or `csv`. Otherwise, an INVALID_ARGUMENT error is thrown.
 	// * [SpannerSource][google.cloud.discoveryengine.v1.SpannerSource].
 	// * [CloudSqlSource][google.cloud.discoveryengine.v1.CloudSqlSource].
-	// * [FirestoreSource][google.cloud.discoveryengine.v1.FirestoreSource].
 	// * [BigtableSource][google.cloud.discoveryengine.v1.BigtableSource].
 	IdField string `protobuf:"bytes,9,opt,name=id_field,json=idField,proto3" json:"id_field,omitempty"`
 	// Optional. Whether to force refresh the unstructured content of the
@@ -2860,11 +2862,11 @@ const file_google_cloud_discoveryengine_v1_import_config_proto_rawDesc = "" +
 	"\rerror_samples\x18\x01 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x12U\n" +
 	"\ferror_config\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1.ImportErrorConfigR\verrorConfig\x12.\n" +
 	"\x13joined_events_count\x18\x03 \x01(\x03R\x11joinedEventsCount\x122\n" +
-	"\x15unjoined_events_count\x18\x04 \x01(\x03R\x13unjoinedEventsCount\"\xde\x01\n" +
+	"\x15unjoined_events_count\x18\x04 \x01(\x03R\x13unjoinedEventsCount\"\xe4\x01\n" +
 	"\x18ImportUserEventsMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\x12;\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12#\n" +
 	"\rsuccess_count\x18\x03 \x01(\x03R\fsuccessCount\x12#\n" +
 	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\"\xfe\x01\n" +

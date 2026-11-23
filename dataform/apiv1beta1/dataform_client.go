@@ -90,6 +90,7 @@ type CallOptions struct {
 	PushGitCommits                     []gax.CallOption
 	FetchFileGitStatuses               []gax.CallOption
 	FetchGitAheadBehind                []gax.CallOption
+	FetchWorkspaceHistory              []gax.CallOption
 	CommitWorkspaceChanges             []gax.CallOption
 	ResetWorkspaceChanges              []gax.CallOption
 	FetchFileDiff                      []gax.CallOption
@@ -110,6 +111,7 @@ type CallOptions struct {
 	ListCompilationResults             []gax.CallOption
 	GetCompilationResult               []gax.CallOption
 	CreateCompilationResult            []gax.CallOption
+	CreateCompilationResultLongRunning []gax.CallOption
 	QueryCompilationResultActions      []gax.CallOption
 	ListWorkflowConfigs                []gax.CallOption
 	GetWorkflowConfig                  []gax.CallOption
@@ -194,6 +196,7 @@ func defaultCallOptions() *CallOptions {
 		PushGitCommits:                     []gax.CallOption{},
 		FetchFileGitStatuses:               []gax.CallOption{},
 		FetchGitAheadBehind:                []gax.CallOption{},
+		FetchWorkspaceHistory:              []gax.CallOption{},
 		CommitWorkspaceChanges:             []gax.CallOption{},
 		ResetWorkspaceChanges:              []gax.CallOption{},
 		FetchFileDiff:                      []gax.CallOption{},
@@ -214,6 +217,7 @@ func defaultCallOptions() *CallOptions {
 		ListCompilationResults:             []gax.CallOption{},
 		GetCompilationResult:               []gax.CallOption{},
 		CreateCompilationResult:            []gax.CallOption{},
+		CreateCompilationResultLongRunning: []gax.CallOption{},
 		QueryCompilationResultActions:      []gax.CallOption{},
 		ListWorkflowConfigs:                []gax.CallOption{},
 		GetWorkflowConfig:                  []gax.CallOption{},
@@ -284,6 +288,7 @@ func defaultRESTCallOptions() *CallOptions {
 		PushGitCommits:                     []gax.CallOption{},
 		FetchFileGitStatuses:               []gax.CallOption{},
 		FetchGitAheadBehind:                []gax.CallOption{},
+		FetchWorkspaceHistory:              []gax.CallOption{},
 		CommitWorkspaceChanges:             []gax.CallOption{},
 		ResetWorkspaceChanges:              []gax.CallOption{},
 		FetchFileDiff:                      []gax.CallOption{},
@@ -304,6 +309,7 @@ func defaultRESTCallOptions() *CallOptions {
 		ListCompilationResults:             []gax.CallOption{},
 		GetCompilationResult:               []gax.CallOption{},
 		CreateCompilationResult:            []gax.CallOption{},
+		CreateCompilationResultLongRunning: []gax.CallOption{},
 		QueryCompilationResultActions:      []gax.CallOption{},
 		ListWorkflowConfigs:                []gax.CallOption{},
 		GetWorkflowConfig:                  []gax.CallOption{},
@@ -382,6 +388,7 @@ type internalClient interface {
 	PushGitCommits(context.Context, *dataformpb.PushGitCommitsRequest, ...gax.CallOption) (*dataformpb.PushGitCommitsResponse, error)
 	FetchFileGitStatuses(context.Context, *dataformpb.FetchFileGitStatusesRequest, ...gax.CallOption) (*dataformpb.FetchFileGitStatusesResponse, error)
 	FetchGitAheadBehind(context.Context, *dataformpb.FetchGitAheadBehindRequest, ...gax.CallOption) (*dataformpb.FetchGitAheadBehindResponse, error)
+	FetchWorkspaceHistory(context.Context, *dataformpb.FetchWorkspaceHistoryRequest, ...gax.CallOption) *CommitLogEntryIterator
 	CommitWorkspaceChanges(context.Context, *dataformpb.CommitWorkspaceChangesRequest, ...gax.CallOption) (*dataformpb.CommitWorkspaceChangesResponse, error)
 	ResetWorkspaceChanges(context.Context, *dataformpb.ResetWorkspaceChangesRequest, ...gax.CallOption) (*dataformpb.ResetWorkspaceChangesResponse, error)
 	FetchFileDiff(context.Context, *dataformpb.FetchFileDiffRequest, ...gax.CallOption) (*dataformpb.FetchFileDiffResponse, error)
@@ -402,6 +409,8 @@ type internalClient interface {
 	ListCompilationResults(context.Context, *dataformpb.ListCompilationResultsRequest, ...gax.CallOption) *CompilationResultIterator
 	GetCompilationResult(context.Context, *dataformpb.GetCompilationResultRequest, ...gax.CallOption) (*dataformpb.CompilationResult, error)
 	CreateCompilationResult(context.Context, *dataformpb.CreateCompilationResultRequest, ...gax.CallOption) (*dataformpb.CompilationResult, error)
+	CreateCompilationResultLongRunning(context.Context, *dataformpb.CreateCompilationResultRequest, ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error)
+	CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation
 	QueryCompilationResultActions(context.Context, *dataformpb.QueryCompilationResultActionsRequest, ...gax.CallOption) *CompilationResultActionIterator
 	ListWorkflowConfigs(context.Context, *dataformpb.ListWorkflowConfigsRequest, ...gax.CallOption) *WorkflowConfigIterator
 	GetWorkflowConfig(context.Context, *dataformpb.GetWorkflowConfigRequest, ...gax.CallOption) (*dataformpb.WorkflowConfig, error)
@@ -725,6 +734,11 @@ func (c *Client) FetchGitAheadBehind(ctx context.Context, req *dataformpb.FetchG
 	return c.internalClient.FetchGitAheadBehind(ctx, req, opts...)
 }
 
+// FetchWorkspaceHistory fetches a Workspace’s history of commits.
+func (c *Client) FetchWorkspaceHistory(ctx context.Context, req *dataformpb.FetchWorkspaceHistoryRequest, opts ...gax.CallOption) *CommitLogEntryIterator {
+	return c.internalClient.FetchWorkspaceHistory(ctx, req, opts...)
+}
+
 // CommitWorkspaceChanges applies a Git commit for uncommitted files in a Workspace.
 func (c *Client) CommitWorkspaceChanges(ctx context.Context, req *dataformpb.CommitWorkspaceChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitWorkspaceChangesResponse, error) {
 	return c.internalClient.CommitWorkspaceChanges(ctx, req, opts...)
@@ -829,6 +843,18 @@ func (c *Client) GetCompilationResult(ctx context.Context, req *dataformpb.GetCo
 // CreateCompilationResult creates a new CompilationResult in a given project and location.
 func (c *Client) CreateCompilationResult(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*dataformpb.CompilationResult, error) {
 	return c.internalClient.CreateCompilationResult(ctx, req, opts...)
+}
+
+// CreateCompilationResultLongRunning creates a new CompilationResult in a given project and location
+// asynchronously.
+func (c *Client) CreateCompilationResultLongRunning(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error) {
+	return c.internalClient.CreateCompilationResultLongRunning(ctx, req, opts...)
+}
+
+// CreateCompilationResultLongRunningOperation returns a new CreateCompilationResultLongRunningOperation from a given name.
+// The name must be that of a previously created CreateCompilationResultLongRunningOperation, possibly from a different process.
+func (c *Client) CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation {
+	return c.internalClient.CreateCompilationResultLongRunningOperation(name)
 }
 
 // QueryCompilationResultActions returns CompilationResultActions in a given CompilationResult.
@@ -1104,6 +1130,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PushGitCommits = append(client.CallOptions.PushGitCommits, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchFileGitStatuses = append(client.CallOptions.FetchFileGitStatuses, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchGitAheadBehind = append(client.CallOptions.FetchGitAheadBehind, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchWorkspaceHistory = append(client.CallOptions.FetchWorkspaceHistory, gax.WithClientMetrics(metrics))
 		client.CallOptions.CommitWorkspaceChanges = append(client.CallOptions.CommitWorkspaceChanges, gax.WithClientMetrics(metrics))
 		client.CallOptions.ResetWorkspaceChanges = append(client.CallOptions.ResetWorkspaceChanges, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchFileDiff = append(client.CallOptions.FetchFileDiff, gax.WithClientMetrics(metrics))
@@ -1124,6 +1151,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCompilationResultLongRunning = append(client.CallOptions.CreateCompilationResultLongRunning, gax.WithClientMetrics(metrics))
 		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientMetrics(metrics))
@@ -1201,6 +1229,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PushGitCommits = append(client.CallOptions.PushGitCommits, gax.WithClientTracing(tracing))
 		client.CallOptions.FetchFileGitStatuses = append(client.CallOptions.FetchFileGitStatuses, gax.WithClientTracing(tracing))
 		client.CallOptions.FetchGitAheadBehind = append(client.CallOptions.FetchGitAheadBehind, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchWorkspaceHistory = append(client.CallOptions.FetchWorkspaceHistory, gax.WithClientTracing(tracing))
 		client.CallOptions.CommitWorkspaceChanges = append(client.CallOptions.CommitWorkspaceChanges, gax.WithClientTracing(tracing))
 		client.CallOptions.ResetWorkspaceChanges = append(client.CallOptions.ResetWorkspaceChanges, gax.WithClientTracing(tracing))
 		client.CallOptions.FetchFileDiff = append(client.CallOptions.FetchFileDiff, gax.WithClientTracing(tracing))
@@ -1221,6 +1250,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientTracing(tracing))
 		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCompilationResultLongRunning = append(client.CallOptions.CreateCompilationResultLongRunning, gax.WithClientTracing(tracing))
 		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientTracing(tracing))
 		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientTracing(tracing))
 		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientTracing(tracing))
@@ -1299,6 +1329,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PushGitCommits = append(client.CallOptions.PushGitCommits, gax.WithClientLogging(logging))
 		client.CallOptions.FetchFileGitStatuses = append(client.CallOptions.FetchFileGitStatuses, gax.WithClientLogging(logging))
 		client.CallOptions.FetchGitAheadBehind = append(client.CallOptions.FetchGitAheadBehind, gax.WithClientLogging(logging))
+		client.CallOptions.FetchWorkspaceHistory = append(client.CallOptions.FetchWorkspaceHistory, gax.WithClientLogging(logging))
 		client.CallOptions.CommitWorkspaceChanges = append(client.CallOptions.CommitWorkspaceChanges, gax.WithClientLogging(logging))
 		client.CallOptions.ResetWorkspaceChanges = append(client.CallOptions.ResetWorkspaceChanges, gax.WithClientLogging(logging))
 		client.CallOptions.FetchFileDiff = append(client.CallOptions.FetchFileDiff, gax.WithClientLogging(logging))
@@ -1319,6 +1350,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientLogging(logging))
 		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientLogging(logging))
 		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCompilationResultLongRunning = append(client.CallOptions.CreateCompilationResultLongRunning, gax.WithClientLogging(logging))
 		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientLogging(logging))
 		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientLogging(logging))
 		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientLogging(logging))
@@ -1491,6 +1523,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PushGitCommits = append(callOpts.PushGitCommits, gax.WithClientMetrics(metrics))
 		callOpts.FetchFileGitStatuses = append(callOpts.FetchFileGitStatuses, gax.WithClientMetrics(metrics))
 		callOpts.FetchGitAheadBehind = append(callOpts.FetchGitAheadBehind, gax.WithClientMetrics(metrics))
+		callOpts.FetchWorkspaceHistory = append(callOpts.FetchWorkspaceHistory, gax.WithClientMetrics(metrics))
 		callOpts.CommitWorkspaceChanges = append(callOpts.CommitWorkspaceChanges, gax.WithClientMetrics(metrics))
 		callOpts.ResetWorkspaceChanges = append(callOpts.ResetWorkspaceChanges, gax.WithClientMetrics(metrics))
 		callOpts.FetchFileDiff = append(callOpts.FetchFileDiff, gax.WithClientMetrics(metrics))
@@ -1511,6 +1544,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientMetrics(metrics))
 		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientMetrics(metrics))
 		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		callOpts.CreateCompilationResultLongRunning = append(callOpts.CreateCompilationResultLongRunning, gax.WithClientMetrics(metrics))
 		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
 		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
 		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientMetrics(metrics))
@@ -1588,6 +1622,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PushGitCommits = append(callOpts.PushGitCommits, gax.WithClientTracing(tracing))
 		callOpts.FetchFileGitStatuses = append(callOpts.FetchFileGitStatuses, gax.WithClientTracing(tracing))
 		callOpts.FetchGitAheadBehind = append(callOpts.FetchGitAheadBehind, gax.WithClientTracing(tracing))
+		callOpts.FetchWorkspaceHistory = append(callOpts.FetchWorkspaceHistory, gax.WithClientTracing(tracing))
 		callOpts.CommitWorkspaceChanges = append(callOpts.CommitWorkspaceChanges, gax.WithClientTracing(tracing))
 		callOpts.ResetWorkspaceChanges = append(callOpts.ResetWorkspaceChanges, gax.WithClientTracing(tracing))
 		callOpts.FetchFileDiff = append(callOpts.FetchFileDiff, gax.WithClientTracing(tracing))
@@ -1608,6 +1643,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientTracing(tracing))
 		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientTracing(tracing))
 		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientTracing(tracing))
+		callOpts.CreateCompilationResultLongRunning = append(callOpts.CreateCompilationResultLongRunning, gax.WithClientTracing(tracing))
 		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientTracing(tracing))
 		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientTracing(tracing))
 		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientTracing(tracing))
@@ -1686,6 +1722,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PushGitCommits = append(callOpts.PushGitCommits, gax.WithClientLogging(logging))
 		callOpts.FetchFileGitStatuses = append(callOpts.FetchFileGitStatuses, gax.WithClientLogging(logging))
 		callOpts.FetchGitAheadBehind = append(callOpts.FetchGitAheadBehind, gax.WithClientLogging(logging))
+		callOpts.FetchWorkspaceHistory = append(callOpts.FetchWorkspaceHistory, gax.WithClientLogging(logging))
 		callOpts.CommitWorkspaceChanges = append(callOpts.CommitWorkspaceChanges, gax.WithClientLogging(logging))
 		callOpts.ResetWorkspaceChanges = append(callOpts.ResetWorkspaceChanges, gax.WithClientLogging(logging))
 		callOpts.FetchFileDiff = append(callOpts.FetchFileDiff, gax.WithClientLogging(logging))
@@ -1706,6 +1743,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientLogging(logging))
 		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientLogging(logging))
 		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientLogging(logging))
+		callOpts.CreateCompilationResultLongRunning = append(callOpts.CreateCompilationResultLongRunning, gax.WithClientLogging(logging))
 		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientLogging(logging))
 		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientLogging(logging))
 		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientLogging(logging))
@@ -2925,6 +2963,55 @@ func (c *gRPCClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 	return resp, nil
 }
 
+func (c *gRPCClient) FetchWorkspaceHistory(ctx context.Context, req *dataformpb.FetchWorkspaceHistoryRequest, opts ...gax.CallOption) *CommitLogEntryIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/FetchWorkspaceHistory")
+	}
+	opts = append((*c.CallOptions).FetchWorkspaceHistory[0:len((*c.CallOptions).FetchWorkspaceHistory):len((*c.CallOptions).FetchWorkspaceHistory)], opts...)
+	it := &CommitLogEntryIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CommitLogEntry, string, error) {
+		resp := &dataformpb.FetchWorkspaceHistoryResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchWorkspaceHistory, req, settings.GRPC, c.logger, "FetchWorkspaceHistory")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCommits(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb.CommitWorkspaceChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitWorkspaceChangesResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3451,6 +3538,33 @@ func (c *gRPCClient) CreateCompilationResult(ctx context.Context, req *dataformp
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) CreateCompilationResultLongRunning(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/CreateCompilationResultLongRunning")
+	}
+	opts = append((*c.CallOptions).CreateCompilationResultLongRunning[0:len((*c.CallOptions).CreateCompilationResultLongRunning):len((*c.CallOptions).CreateCompilationResultLongRunning)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateCompilationResultLongRunning, req, settings.GRPC, c.logger, "CreateCompilationResultLongRunning")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.CreateCompilationResultLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateCompilationResultLongRunningOperation{
+		lro: lro,
+	}, nil
 }
 
 func (c *gRPCClient) QueryCompilationResultActions(ctx context.Context, req *dataformpb.QueryCompilationResultActionsRequest, opts ...gax.CallOption) *CompilationResultActionIterator {
@@ -6964,6 +7078,89 @@ func (c *restClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 	return resp, nil
 }
 
+// FetchWorkspaceHistory fetches a Workspace’s history of commits.
+func (c *restClient) FetchWorkspaceHistory(ctx context.Context, req *dataformpb.FetchWorkspaceHistoryRequest, opts ...gax.CallOption) *CommitLogEntryIterator {
+	it := &CommitLogEntryIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CommitLogEntry, string, error) {
+		resp := &dataformpb.FetchWorkspaceHistoryResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:fetchHistory", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchWorkspaceHistory")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetCommits(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CommitWorkspaceChanges applies a Git commit for uncommitted files in a Workspace.
 func (c *restClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb.CommitWorkspaceChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitWorkspaceChangesResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -8326,6 +8523,80 @@ func (c *restClient) CreateCompilationResult(ctx context.Context, req *dataformp
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CreateCompilationResultLongRunning creates a new CompilationResult in a given project and location
+// asynchronously.
+func (c *restClient) CreateCompilationResultLongRunning(ctx context.Context, req *dataformpb.CreateCompilationResultRequest, opts ...gax.CallOption) (*CreateCompilationResultLongRunningOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCompilationResult()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/compilationResults:createLongRunning", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/CreateCompilationResultLongRunning")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/repositories/*}/compilationResults:createLongRunning")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCompilationResultLongRunning")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.CreateCompilationResultLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateCompilationResultLongRunningOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
 }
 
 // QueryCompilationResultActions returns CompilationResultActions in a given CompilationResult.
@@ -9891,6 +10162,24 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CreateCompilationResultLongRunningOperation returns a new CreateCompilationResultLongRunningOperation from a given name.
+// The name must be that of a previously created CreateCompilationResultLongRunningOperation, possibly from a different process.
+func (c *gRPCClient) CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation {
+	return &CreateCompilationResultLongRunningOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.CreateCompilationResultLongRunningOperation"),
+	}
+}
+
+// CreateCompilationResultLongRunningOperation returns a new CreateCompilationResultLongRunningOperation from a given name.
+// The name must be that of a previously created CreateCompilationResultLongRunningOperation, possibly from a different process.
+func (c *restClient) CreateCompilationResultLongRunningOperation(name string) *CreateCompilationResultLongRunningOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &CreateCompilationResultLongRunningOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.CreateCompilationResultLongRunningOperation"),
+		pollPath: override,
+	}
 }
 
 // DeleteFolderTreeOperation returns a new DeleteFolderTreeOperation from a given name.

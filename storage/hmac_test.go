@@ -473,7 +473,7 @@ func TestHMACKey_List_Options(t *testing.T) {
 	projectID := "hmackey-project-id"
 
 	// Our goal is just to examine the issued HTTP request's URL's
-	// Path and Query to ensure that we have the appropriate paramters.
+	// Path and Query to ensure that we have the appropriate parameters.
 	tests := []struct {
 		name      string
 		opts      []HMACKeyOption

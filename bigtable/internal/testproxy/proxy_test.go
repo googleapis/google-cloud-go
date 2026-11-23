@@ -269,6 +269,65 @@ func TestBulkMutateRows(t *testing.T) {
 	}
 }
 
+func TestBulkMutateRows_EntryErrorSetsTopLevelStatus(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.MutateRowsRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.MutateRowsRequest{
+			TableName: tableName,
+			Entries: []*btpb.MutateRowsRequest_Entry{
+				{
+					RowKey: []byte(rowKey),
+					Mutations: []*btpb.Mutation{
+						{
+							Mutation: &btpb.Mutation_SetCell_{
+								SetCell: &btpb.Mutation_SetCell{
+									ColumnQualifier: []byte("coll2"),
+									FamilyName:      "cf0",
+									Value:           []byte("valid mutation"),
+								},
+							},
+						},
+					},
+				},
+				{
+					RowKey: []byte(rowKey),
+					Mutations: []*btpb.Mutation{
+						{
+							Mutation: &btpb.Mutation_SetCell_{
+								SetCell: &btpb.Mutation_SetCell{
+									ColumnQualifier: []byte("coll2"),
+									FamilyName:      "nonexistent_cf",
+									Value:           []byte("invalid family mutation"),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := client.BulkMutateRows(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: BulkMutateRows returned error: %v", err)
+	}
+
+	if resp.GetStatus().GetCode() == int32(codes.OK) {
+		t.Errorf("testproxy test: BulkMutateRows() top-level status = OK; want non-OK when an entry fails")
+	}
+
+	if len(resp.Entries) != 1 {
+		t.Fatalf("testproxy test: BulkMutateRows() len(Entries) = %d; want 1", len(resp.Entries))
+	}
+	if resp.Entries[0].GetIndex() != 1 {
+		t.Errorf("testproxy test: BulkMutateRows() failed entry index = %d; want 1", resp.Entries[0].GetIndex())
+	}
+	if resp.Entries[0].GetStatus().GetCode() == int32(codes.OK) {
+		t.Errorf("testproxy test: BulkMutateRows() failed entry status = OK; want non-OK")
+	}
+}
+
 func TestMutateRow(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.MutateRowRequest{

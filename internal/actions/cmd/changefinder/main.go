@@ -19,9 +19,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"cloud.google.com/go/internal/actions/logg"
@@ -121,7 +123,7 @@ func output(s []string) error {
 func owner(file string, submoduleDirs []string) (string, bool) {
 	submod := ""
 	for _, mod := range submoduleDirs {
-		if strings.HasPrefix(file, mod) && len(mod) > len(submod) {
+		if (file == mod || strings.HasPrefix(file, mod+"/")) && len(mod) > len(submod) {
 			submod = mod
 		}
 	}
@@ -130,26 +132,33 @@ func owner(file string, submoduleDirs []string) (string, bool) {
 }
 
 func modDirs(dir string) (submodulesDirs []string, err error) {
-	c := exec.Command("go", "list", "-m", "-f", "{{.Dir}}")
-	c.Dir = dir
-	b, err := c.Output()
-	if err != nil {
-		return submodulesDirs, err
-	}
-	// Skip the root mod
-	list := strings.Split(strings.TrimSpace(string(b)), "\n")[1:]
-
-	submodulesDirs = []string{}
-	for _, modPath := range list {
-		if strings.Contains(modPath, "internal") && !*includeInternal {
-			continue
+	err = filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
 		}
-		logg.Printf("found module: %s", modPath)
-		modPath = strings.TrimPrefix(modPath, dir+"/")
-		submodulesDirs = append(submodulesDirs, modPath)
-	}
-
-	return submodulesDirs, nil
+		if d.IsDir() && d.Name() == ".git" {
+			return filepath.SkipDir
+		}
+		if d.Name() == "go.mod" {
+			modDir := filepath.Dir(p)
+			if modDir == dir {
+				// Skip the root mod
+				return nil
+			}
+			rel, err := filepath.Rel(dir, modDir)
+			if err != nil {
+				return err
+			}
+			rel = filepath.ToSlash(rel)
+			if strings.Contains(rel, "internal") && !*includeInternal {
+				return nil
+			}
+			logg.Printf("found module: %s", rel)
+			submodulesDirs = append(submodulesDirs, rel)
+		}
+		return nil
+	})
+	return submodulesDirs, err
 }
 
 func gitFilesChanges(dir string) ([]string, error) {
@@ -175,6 +184,9 @@ func gitFilesChanges(dir string) ([]string, error) {
 		return nil, err
 	}
 	b = bytes.TrimSpace(b)
+	if len(b) == 0 {
+		return nil, nil
+	}
 	logg.Printf("Files changed:\n%s", b)
 	return strings.Split(string(b), "\n"), nil
 }

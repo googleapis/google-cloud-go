@@ -37,6 +37,59 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The ambient networking scopes of the instance.
+type AmbientScope int32
+
+const (
+	// Unspecified.
+	AmbientScope_AMBIENT_SCOPE_UNSPECIFIED AmbientScope = 0
+	// Regional ambient networking.
+	AmbientScope_AMBIENT_SCOPE_REGIONAL AmbientScope = 1
+	// Global ambient networking.
+	AmbientScope_AMBIENT_SCOPE_GLOBAL AmbientScope = 2
+)
+
+// Enum value maps for AmbientScope.
+var (
+	AmbientScope_name = map[int32]string{
+		0: "AMBIENT_SCOPE_UNSPECIFIED",
+		1: "AMBIENT_SCOPE_REGIONAL",
+		2: "AMBIENT_SCOPE_GLOBAL",
+	}
+	AmbientScope_value = map[string]int32{
+		"AMBIENT_SCOPE_UNSPECIFIED": 0,
+		"AMBIENT_SCOPE_REGIONAL":    1,
+		"AMBIENT_SCOPE_GLOBAL":      2,
+	}
+)
+
+func (x AmbientScope) Enum() *AmbientScope {
+	p := new(AmbientScope)
+	*p = x
+	return p
+}
+
+func (x AmbientScope) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AmbientScope) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[0].Descriptor()
+}
+
+func (AmbientScope) Type() protoreflect.EnumType {
+	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[0]
+}
+
+func (x AmbientScope) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AmbientScope.Descriptor instead.
+func (AmbientScope) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{0}
+}
+
 // Allowed ingress traffic for the Container.
 type IngressTraffic int32
 
@@ -82,11 +135,11 @@ func (x IngressTraffic) String() string {
 }
 
 func (IngressTraffic) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[1].Descriptor()
 }
 
 func (IngressTraffic) Type() protoreflect.EnumType {
-	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[0]
+	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[1]
 }
 
 func (x IngressTraffic) Number() protoreflect.EnumNumber {
@@ -95,7 +148,7 @@ func (x IngressTraffic) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use IngressTraffic.Descriptor instead.
 func (IngressTraffic) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{0}
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{1}
 }
 
 // Alternatives for execution environments.
@@ -135,11 +188,11 @@ func (x ExecutionEnvironment) String() string {
 }
 
 func (ExecutionEnvironment) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[2].Descriptor()
 }
 
 func (ExecutionEnvironment) Type() protoreflect.EnumType {
-	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[1]
+	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[2]
 }
 
 func (x ExecutionEnvironment) Number() protoreflect.EnumNumber {
@@ -148,7 +201,7 @@ func (x ExecutionEnvironment) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ExecutionEnvironment.Descriptor instead.
 func (ExecutionEnvironment) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{2}
 }
 
 // Specifies behavior if an encryption key used by a resource is revoked.
@@ -188,11 +241,11 @@ func (x EncryptionKeyRevocationAction) String() string {
 }
 
 func (EncryptionKeyRevocationAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[3].Descriptor()
 }
 
 func (EncryptionKeyRevocationAction) Type() protoreflect.EnumType {
-	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[2]
+	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[3]
 }
 
 func (x EncryptionKeyRevocationAction) Number() protoreflect.EnumNumber {
@@ -201,7 +254,113 @@ func (x EncryptionKeyRevocationAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EncryptionKeyRevocationAction.Descriptor instead.
 func (EncryptionKeyRevocationAction) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{3}
+}
+
+// Identity type.
+type IdentityType int32
+
+const (
+	// Unspecified
+	IdentityType_IDENTITY_TYPE_UNSPECIFIED IdentityType = 0
+	// Service account identity.
+	IdentityType_IDENTITY_TYPE_SERVICE_ACCOUNT IdentityType = 1
+	// Agent identity.
+	IdentityType_IDENTITY_TYPE_AGENT_IDENTITY IdentityType = 3
+)
+
+// Enum value maps for IdentityType.
+var (
+	IdentityType_name = map[int32]string{
+		0: "IDENTITY_TYPE_UNSPECIFIED",
+		1: "IDENTITY_TYPE_SERVICE_ACCOUNT",
+		3: "IDENTITY_TYPE_AGENT_IDENTITY",
+	}
+	IdentityType_value = map[string]int32{
+		"IDENTITY_TYPE_UNSPECIFIED":     0,
+		"IDENTITY_TYPE_SERVICE_ACCOUNT": 1,
+		"IDENTITY_TYPE_AGENT_IDENTITY":  3,
+	}
+)
+
+func (x IdentityType) Enum() *IdentityType {
+	p := new(IdentityType)
+	*p = x
+	return p
+}
+
+func (x IdentityType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (IdentityType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[4].Descriptor()
+}
+
+func (IdentityType) Type() protoreflect.EnumType {
+	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[4]
+}
+
+func (x IdentityType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use IdentityType.Descriptor instead.
+func (IdentityType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{4}
+}
+
+// Represents the functional type.
+type FunctionalType int32
+
+const (
+	// Specifies that the functional type is unspecified.
+	FunctionalType_FUNCTIONAL_TYPE_UNSPECIFIED FunctionalType = 0
+	// Represents an AGENT functional type.
+	FunctionalType_FUNCTIONAL_TYPE_AGENT FunctionalType = 1
+	// Represents an MCP_SERVER functional type.
+	FunctionalType_FUNCTIONAL_TYPE_MCP_SERVER FunctionalType = 2
+)
+
+// Enum value maps for FunctionalType.
+var (
+	FunctionalType_name = map[int32]string{
+		0: "FUNCTIONAL_TYPE_UNSPECIFIED",
+		1: "FUNCTIONAL_TYPE_AGENT",
+		2: "FUNCTIONAL_TYPE_MCP_SERVER",
+	}
+	FunctionalType_value = map[string]int32{
+		"FUNCTIONAL_TYPE_UNSPECIFIED": 0,
+		"FUNCTIONAL_TYPE_AGENT":       1,
+		"FUNCTIONAL_TYPE_MCP_SERVER":  2,
+	}
+)
+
+func (x FunctionalType) Enum() *FunctionalType {
+	p := new(FunctionalType)
+	*p = x
+	return p
+}
+
+func (x FunctionalType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FunctionalType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[5].Descriptor()
+}
+
+func (FunctionalType) Type() protoreflect.EnumType {
+	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[5]
+}
+
+func (x FunctionalType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FunctionalType.Descriptor instead.
+func (FunctionalType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{5}
 }
 
 // Egress options for VPC access.
@@ -241,11 +400,11 @@ func (x VpcAccess_VpcEgress) String() string {
 }
 
 func (VpcAccess_VpcEgress) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[6].Descriptor()
 }
 
 func (VpcAccess_VpcEgress) Type() protoreflect.EnumType {
-	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[3]
+	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[6]
 }
 
 func (x VpcAccess_VpcEgress) Number() protoreflect.EnumNumber {
@@ -295,11 +454,11 @@ func (x ServiceScaling_ScalingMode) String() string {
 }
 
 func (ServiceScaling_ScalingMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_run_v2_vendor_settings_proto_enumTypes[7].Descriptor()
 }
 
 func (ServiceScaling_ScalingMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[4]
+	return &file_google_cloud_run_v2_vendor_settings_proto_enumTypes[7]
 }
 
 func (x ServiceScaling_ScalingMode) Number() protoreflect.EnumNumber {
@@ -308,7 +467,7 @@ func (x ServiceScaling_ScalingMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ServiceScaling_ScalingMode.Descriptor instead.
 func (ServiceScaling_ScalingMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{4, 0}
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{5, 0}
 }
 
 // VPC Access settings. For more information on sending traffic to a VPC
@@ -492,8 +651,18 @@ type RevisionScaling struct {
 	// 100. For more information see
 	// https://cloud.google.com/run/docs/configuring/max-instances
 	MaxInstanceCount int32 `protobuf:"varint,2,opt,name=max_instance_count,json=maxInstanceCount,proto3" json:"max_instance_count,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional. Determines a threshold for CPU utilization before scaling begins.
+	// Accepted values are between `0.1` and `0.90` (inclusive) or `0.0` to
+	// disable CPU utilization as threshold for scaling. CPU and concurrency
+	// scaling cannot both be disabled.
+	CpuUtilization *float32 `protobuf:"fixed32,4,opt,name=cpu_utilization,json=cpuUtilization,proto3,oneof" json:"cpu_utilization,omitempty"`
+	// Optional. Determines a threshold for concurrency utilization before scaling
+	// begins. Accepted values are between `0.1` and `0.95` (inclusive) or `0.0`
+	// to disable concurrency utilization as threshold for scaling. CPU and
+	// concurrency scaling cannot both be disabled.
+	ConcurrencyUtilization *float32 `protobuf:"fixed32,5,opt,name=concurrency_utilization,json=concurrencyUtilization,proto3,oneof" json:"concurrency_utilization,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *RevisionScaling) Reset() {
@@ -536,6 +705,20 @@ func (x *RevisionScaling) GetMinInstanceCount() int32 {
 func (x *RevisionScaling) GetMaxInstanceCount() int32 {
 	if x != nil {
 		return x.MaxInstanceCount
+	}
+	return 0
+}
+
+func (x *RevisionScaling) GetCpuUtilization() float32 {
+	if x != nil && x.CpuUtilization != nil {
+		return *x.CpuUtilization
+	}
+	return 0
+}
+
+func (x *RevisionScaling) GetConcurrencyUtilization() float32 {
+	if x != nil && x.ConcurrencyUtilization != nil {
+		return *x.ConcurrencyUtilization
 	}
 	return 0
 }
@@ -589,6 +772,61 @@ func (x *ServiceMesh) GetMesh() string {
 	return ""
 }
 
+// Configuration for Ambient Networking.
+type AmbientNetworking struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Whether ambient networking is enabled.
+	Enabled *bool `protobuf:"varint,1,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`
+	// The ambient networking scope of the instance.
+	AmbientScope  AmbientScope `protobuf:"varint,2,opt,name=ambient_scope,json=ambientScope,proto3,enum=google.cloud.run.v2.AmbientScope" json:"ambient_scope,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AmbientNetworking) Reset() {
+	*x = AmbientNetworking{}
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AmbientNetworking) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AmbientNetworking) ProtoMessage() {}
+
+func (x *AmbientNetworking) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AmbientNetworking.ProtoReflect.Descriptor instead.
+func (*AmbientNetworking) Descriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AmbientNetworking) GetEnabled() bool {
+	if x != nil && x.Enabled != nil {
+		return *x.Enabled
+	}
+	return false
+}
+
+func (x *AmbientNetworking) GetAmbientScope() AmbientScope {
+	if x != nil {
+		return x.AmbientScope
+	}
+	return AmbientScope_AMBIENT_SCOPE_UNSPECIFIED
+}
+
 // Scaling settings applied at the service level rather than
 // at the revision level.
 type ServiceScaling struct {
@@ -613,7 +851,7 @@ type ServiceScaling struct {
 
 func (x *ServiceScaling) Reset() {
 	*x = ServiceScaling{}
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[4]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -625,7 +863,7 @@ func (x *ServiceScaling) String() string {
 func (*ServiceScaling) ProtoMessage() {}
 
 func (x *ServiceScaling) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[4]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -638,7 +876,7 @@ func (x *ServiceScaling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServiceScaling.ProtoReflect.Descriptor instead.
 func (*ServiceScaling) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ServiceScaling) GetMinInstanceCount() int32 {
@@ -680,7 +918,7 @@ type WorkerPoolScaling struct {
 
 func (x *WorkerPoolScaling) Reset() {
 	*x = WorkerPoolScaling{}
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[5]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -692,7 +930,7 @@ func (x *WorkerPoolScaling) String() string {
 func (*WorkerPoolScaling) ProtoMessage() {}
 
 func (x *WorkerPoolScaling) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[5]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -705,7 +943,7 @@ func (x *WorkerPoolScaling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkerPoolScaling.ProtoReflect.Descriptor instead.
 func (*WorkerPoolScaling) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *WorkerPoolScaling) GetManualInstanceCount() int32 {
@@ -726,7 +964,7 @@ type NodeSelector struct {
 
 func (x *NodeSelector) Reset() {
 	*x = NodeSelector{}
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[6]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -738,7 +976,7 @@ func (x *NodeSelector) String() string {
 func (*NodeSelector) ProtoMessage() {}
 
 func (x *NodeSelector) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[6]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -751,7 +989,7 @@ func (x *NodeSelector) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeSelector.ProtoReflect.Descriptor instead.
 func (*NodeSelector) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *NodeSelector) GetAccelerator() string {
@@ -782,8 +1020,8 @@ type BuildConfig struct {
 	// Optional. Sets whether the function will receive automatic base image
 	// updates.
 	EnableAutomaticUpdates bool `protobuf:"varint,6,opt,name=enable_automatic_updates,json=enableAutomaticUpdates,proto3" json:"enable_automatic_updates,omitempty"`
-	// Optional. Name of the Cloud Build Custom Worker Pool that should be used to
-	// build the Cloud Run function. The format of this field is
+	// Optional. Name of the Cloud Build private pool that should be used to build
+	// the Cloud Run function. The format of this field is
 	// `projects/{project}/locations/{region}/workerPools/{workerPool}` where
 	// `{project}` and `{region}` are the project id and region respectively where
 	// the worker pool is defined and `{workerPool}` is the short name of the
@@ -801,7 +1039,7 @@ type BuildConfig struct {
 
 func (x *BuildConfig) Reset() {
 	*x = BuildConfig{}
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[7]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -813,7 +1051,7 @@ func (x *BuildConfig) String() string {
 func (*BuildConfig) ProtoMessage() {}
 
 func (x *BuildConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[7]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -826,7 +1064,7 @@ func (x *BuildConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildConfig.ProtoReflect.Descriptor instead.
 func (*BuildConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *BuildConfig) GetName() string {
@@ -892,6 +1130,73 @@ func (x *BuildConfig) GetServiceAccount() string {
 	return ""
 }
 
+// Workload identity settings.
+type WorkloadIdentityConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The Revision's SPIFFE workload identity. Enables provisioning of
+	// SPIFFE workload certificates.
+	Identity string `protobuf:"bytes,1,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Optional. The type of identity to use.
+	IdentityType IdentityType `protobuf:"varint,2,opt,name=identity_type,json=identityType,proto3,enum=google.cloud.run.v2.IdentityType" json:"identity_type,omitempty"`
+	// Optional. Controls whether an instance receives a MWLID certificate.
+	// Corresponds to the intention of the original --[no-]identity-certificate
+	// flag.
+	IdentityCertificateEnabled *bool `protobuf:"varint,3,opt,name=identity_certificate_enabled,json=identityCertificateEnabled,proto3,oneof" json:"identity_certificate_enabled,omitempty"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
+}
+
+func (x *WorkloadIdentityConfig) Reset() {
+	*x = WorkloadIdentityConfig{}
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkloadIdentityConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkloadIdentityConfig) ProtoMessage() {}
+
+func (x *WorkloadIdentityConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkloadIdentityConfig.ProtoReflect.Descriptor instead.
+func (*WorkloadIdentityConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *WorkloadIdentityConfig) GetIdentity() string {
+	if x != nil {
+		return x.Identity
+	}
+	return ""
+}
+
+func (x *WorkloadIdentityConfig) GetIdentityType() IdentityType {
+	if x != nil {
+		return x.IdentityType
+	}
+	return IdentityType_IDENTITY_TYPE_UNSPECIFIED
+}
+
+func (x *WorkloadIdentityConfig) GetIdentityCertificateEnabled() bool {
+	if x != nil && x.IdentityCertificateEnabled != nil {
+		return *x.IdentityCertificateEnabled
+	}
+	return false
+}
+
 // Direct VPC egress settings.
 type VpcAccess_NetworkInterface struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -915,7 +1220,7 @@ type VpcAccess_NetworkInterface struct {
 
 func (x *VpcAccess_NetworkInterface) Reset() {
 	*x = VpcAccess_NetworkInterface{}
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[8]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -927,7 +1232,7 @@ func (x *VpcAccess_NetworkInterface) String() string {
 func (*VpcAccess_NetworkInterface) ProtoMessage() {}
 
 func (x *VpcAccess_NetworkInterface) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[8]
+	mi := &file_google_cloud_run_v2_vendor_settings_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -990,13 +1295,22 @@ const file_google_cloud_run_v2_vendor_settings_proto_rawDesc = "" +
 	"\x06policy\x18\x03 \x01(\tB2\xe2A\x01\x01\xfaA+\n" +
 	")binaryauthorization.googleapis.com/PolicyH\x00R\x06policy\x12?\n" +
 	"\x18breakglass_justification\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x17breakglassJustificationB\x11\n" +
-	"\x0fbinauthz_method\"y\n" +
+	"\x0fbinauthz_method\"\xa1\x02\n" +
 	"\x0fRevisionScaling\x122\n" +
 	"\x12min_instance_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x10minInstanceCount\x122\n" +
-	"\x12max_instance_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x10maxInstanceCount\"K\n" +
+	"\x12max_instance_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x10maxInstanceCount\x122\n" +
+	"\x0fcpu_utilization\x18\x04 \x01(\x02B\x04\xe2A\x01\x01H\x00R\x0ecpuUtilization\x88\x01\x01\x12B\n" +
+	"\x17concurrency_utilization\x18\x05 \x01(\x02B\x04\xe2A\x01\x01H\x01R\x16concurrencyUtilization\x88\x01\x01B\x12\n" +
+	"\x10_cpu_utilizationB\x1a\n" +
+	"\x18_concurrency_utilization\"K\n" +
 	"\vServiceMesh\x12<\n" +
 	"\x04mesh\x18\x01 \x01(\tB(\xfaA%\n" +
-	"#networkservices.googleapis.com/MeshR\x04mesh\"\xf3\x02\n" +
+	"#networkservices.googleapis.com/MeshR\x04mesh\"\x8c\x01\n" +
+	"\x11AmbientNetworking\x12#\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\aenabled\x88\x01\x01\x12F\n" +
+	"\rambient_scope\x18\x02 \x01(\x0e2!.google.cloud.run.v2.AmbientScopeR\fambientScopeB\n" +
+	"\n" +
+	"\b_enabled\"\xf3\x02\n" +
 	"\x0eServiceScaling\x122\n" +
 	"\x12min_instance_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x10minInstanceCount\x12X\n" +
 	"\fscaling_mode\x18\x03 \x01(\x0e2/.google.cloud.run.v2.ServiceScaling.ScalingModeB\x04\xe2A\x01\x01R\vscalingMode\x122\n" +
@@ -1029,7 +1343,16 @@ const file_google_cloud_run_v2_vendor_settings_proto_rawDesc = "" +
 	"\x0fservice_account\x18\t \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x1aG\n" +
 	"\x19EnvironmentVariablesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\xb3\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf6\x01\n" +
+	"\x16WorkloadIdentityConfig\x12 \n" +
+	"\bidentity\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bidentity\x12L\n" +
+	"\ridentity_type\x18\x02 \x01(\x0e2!.google.cloud.run.v2.IdentityTypeB\x04\xe2A\x01\x01R\fidentityType\x12K\n" +
+	"\x1cidentity_certificate_enabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x00R\x1aidentityCertificateEnabled\x88\x01\x01B\x1f\n" +
+	"\x1d_identity_certificate_enabled*c\n" +
+	"\fAmbientScope\x12\x1d\n" +
+	"\x19AMBIENT_SCOPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16AMBIENT_SCOPE_REGIONAL\x10\x01\x12\x18\n" +
+	"\x14AMBIENT_SCOPE_GLOBAL\x10\x02*\xb3\x01\n" +
 	"\x0eIngressTraffic\x12\x1f\n" +
 	"\x1bINGRESS_TRAFFIC_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13INGRESS_TRAFFIC_ALL\x10\x01\x12!\n" +
@@ -1043,7 +1366,15 @@ const file_google_cloud_run_v2_vendor_settings_proto_rawDesc = "" +
 	"\x1dEncryptionKeyRevocationAction\x120\n" +
 	",ENCRYPTION_KEY_REVOCATION_ACTION_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vPREVENT_NEW\x10\x01\x12\f\n" +
-	"\bSHUTDOWN\x10\x02B\xfc\x02\xeaAc\n" +
+	"\bSHUTDOWN\x10\x02*r\n" +
+	"\fIdentityType\x12\x1d\n" +
+	"\x19IDENTITY_TYPE_UNSPECIFIED\x10\x00\x12!\n" +
+	"\x1dIDENTITY_TYPE_SERVICE_ACCOUNT\x10\x01\x12 \n" +
+	"\x1cIDENTITY_TYPE_AGENT_IDENTITY\x10\x03*l\n" +
+	"\x0eFunctionalType\x12\x1f\n" +
+	"\x1bFUNCTIONAL_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
+	"\x15FUNCTIONAL_TYPE_AGENT\x10\x01\x12\x1e\n" +
+	"\x1aFUNCTIONAL_TYPE_MCP_SERVER\x10\x02B\xfc\x02\xeaAc\n" +
 	")binaryauthorization.googleapis.com/Policy\x12\x19projects/{project}/policy\x12\x1blocations/{location}/policy\xeaA\\\n" +
 	"#networkservices.googleapis.com/Mesh\x125projects/{project}/locations/{location}/meshes/{mesh}\xeaAY\n" +
 	"\x1fcloudbuild.googleapis.com/Build\x126projects/{project}/locations/{location}/builds/{build}\n" +
@@ -1061,35 +1392,42 @@ func file_google_cloud_run_v2_vendor_settings_proto_rawDescGZIP() []byte {
 	return file_google_cloud_run_v2_vendor_settings_proto_rawDescData
 }
 
-var file_google_cloud_run_v2_vendor_settings_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_google_cloud_run_v2_vendor_settings_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_google_cloud_run_v2_vendor_settings_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_google_cloud_run_v2_vendor_settings_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_google_cloud_run_v2_vendor_settings_proto_goTypes = []any{
-	(IngressTraffic)(0),                // 0: google.cloud.run.v2.IngressTraffic
-	(ExecutionEnvironment)(0),          // 1: google.cloud.run.v2.ExecutionEnvironment
-	(EncryptionKeyRevocationAction)(0), // 2: google.cloud.run.v2.EncryptionKeyRevocationAction
-	(VpcAccess_VpcEgress)(0),           // 3: google.cloud.run.v2.VpcAccess.VpcEgress
-	(ServiceScaling_ScalingMode)(0),    // 4: google.cloud.run.v2.ServiceScaling.ScalingMode
-	(*VpcAccess)(nil),                  // 5: google.cloud.run.v2.VpcAccess
-	(*BinaryAuthorization)(nil),        // 6: google.cloud.run.v2.BinaryAuthorization
-	(*RevisionScaling)(nil),            // 7: google.cloud.run.v2.RevisionScaling
-	(*ServiceMesh)(nil),                // 8: google.cloud.run.v2.ServiceMesh
-	(*ServiceScaling)(nil),             // 9: google.cloud.run.v2.ServiceScaling
-	(*WorkerPoolScaling)(nil),          // 10: google.cloud.run.v2.WorkerPoolScaling
-	(*NodeSelector)(nil),               // 11: google.cloud.run.v2.NodeSelector
-	(*BuildConfig)(nil),                // 12: google.cloud.run.v2.BuildConfig
-	(*VpcAccess_NetworkInterface)(nil), // 13: google.cloud.run.v2.VpcAccess.NetworkInterface
-	nil,                                // 14: google.cloud.run.v2.BuildConfig.EnvironmentVariablesEntry
+	(AmbientScope)(0),                  // 0: google.cloud.run.v2.AmbientScope
+	(IngressTraffic)(0),                // 1: google.cloud.run.v2.IngressTraffic
+	(ExecutionEnvironment)(0),          // 2: google.cloud.run.v2.ExecutionEnvironment
+	(EncryptionKeyRevocationAction)(0), // 3: google.cloud.run.v2.EncryptionKeyRevocationAction
+	(IdentityType)(0),                  // 4: google.cloud.run.v2.IdentityType
+	(FunctionalType)(0),                // 5: google.cloud.run.v2.FunctionalType
+	(VpcAccess_VpcEgress)(0),           // 6: google.cloud.run.v2.VpcAccess.VpcEgress
+	(ServiceScaling_ScalingMode)(0),    // 7: google.cloud.run.v2.ServiceScaling.ScalingMode
+	(*VpcAccess)(nil),                  // 8: google.cloud.run.v2.VpcAccess
+	(*BinaryAuthorization)(nil),        // 9: google.cloud.run.v2.BinaryAuthorization
+	(*RevisionScaling)(nil),            // 10: google.cloud.run.v2.RevisionScaling
+	(*ServiceMesh)(nil),                // 11: google.cloud.run.v2.ServiceMesh
+	(*AmbientNetworking)(nil),          // 12: google.cloud.run.v2.AmbientNetworking
+	(*ServiceScaling)(nil),             // 13: google.cloud.run.v2.ServiceScaling
+	(*WorkerPoolScaling)(nil),          // 14: google.cloud.run.v2.WorkerPoolScaling
+	(*NodeSelector)(nil),               // 15: google.cloud.run.v2.NodeSelector
+	(*BuildConfig)(nil),                // 16: google.cloud.run.v2.BuildConfig
+	(*WorkloadIdentityConfig)(nil),     // 17: google.cloud.run.v2.WorkloadIdentityConfig
+	(*VpcAccess_NetworkInterface)(nil), // 18: google.cloud.run.v2.VpcAccess.NetworkInterface
+	nil,                                // 19: google.cloud.run.v2.BuildConfig.EnvironmentVariablesEntry
 }
 var file_google_cloud_run_v2_vendor_settings_proto_depIdxs = []int32{
-	3,  // 0: google.cloud.run.v2.VpcAccess.egress:type_name -> google.cloud.run.v2.VpcAccess.VpcEgress
-	13, // 1: google.cloud.run.v2.VpcAccess.network_interfaces:type_name -> google.cloud.run.v2.VpcAccess.NetworkInterface
-	4,  // 2: google.cloud.run.v2.ServiceScaling.scaling_mode:type_name -> google.cloud.run.v2.ServiceScaling.ScalingMode
-	14, // 3: google.cloud.run.v2.BuildConfig.environment_variables:type_name -> google.cloud.run.v2.BuildConfig.EnvironmentVariablesEntry
-	4,  // [4:4] is the sub-list for method output_type
-	4,  // [4:4] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	6,  // 0: google.cloud.run.v2.VpcAccess.egress:type_name -> google.cloud.run.v2.VpcAccess.VpcEgress
+	18, // 1: google.cloud.run.v2.VpcAccess.network_interfaces:type_name -> google.cloud.run.v2.VpcAccess.NetworkInterface
+	0,  // 2: google.cloud.run.v2.AmbientNetworking.ambient_scope:type_name -> google.cloud.run.v2.AmbientScope
+	7,  // 3: google.cloud.run.v2.ServiceScaling.scaling_mode:type_name -> google.cloud.run.v2.ServiceScaling.ScalingMode
+	19, // 4: google.cloud.run.v2.BuildConfig.environment_variables:type_name -> google.cloud.run.v2.BuildConfig.EnvironmentVariablesEntry
+	4,  // 5: google.cloud.run.v2.WorkloadIdentityConfig.identity_type:type_name -> google.cloud.run.v2.IdentityType
+	6,  // [6:6] is the sub-list for method output_type
+	6,  // [6:6] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_vendor_settings_proto_init() }
@@ -1101,15 +1439,18 @@ func file_google_cloud_run_v2_vendor_settings_proto_init() {
 		(*BinaryAuthorization_UseDefault)(nil),
 		(*BinaryAuthorization_Policy)(nil),
 	}
+	file_google_cloud_run_v2_vendor_settings_proto_msgTypes[2].OneofWrappers = []any{}
 	file_google_cloud_run_v2_vendor_settings_proto_msgTypes[4].OneofWrappers = []any{}
 	file_google_cloud_run_v2_vendor_settings_proto_msgTypes[5].OneofWrappers = []any{}
+	file_google_cloud_run_v2_vendor_settings_proto_msgTypes[6].OneofWrappers = []any{}
+	file_google_cloud_run_v2_vendor_settings_proto_msgTypes[9].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_run_v2_vendor_settings_proto_rawDesc), len(file_google_cloud_run_v2_vendor_settings_proto_rawDesc)),
-			NumEnums:      5,
-			NumMessages:   10,
+			NumEnums:      8,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

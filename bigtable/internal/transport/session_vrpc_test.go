@@ -27,6 +27,7 @@ import (
 	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -1033,4 +1034,357 @@ func TestInvoke_ForceCloseWhileSending_BoundedReturn(t *testing.T) {
 	case <-time.After(3 * time.Second):
 		t.Fatal("Invoke did not return within 3s after ForceClose + unblocked Send")
 	}
+}
+
+// TestInvoke_ResetsHeartbeatDeadlineBeforeClaimSlot is a regression test
+// for the false-positive MissedHeartbeat race on a session that has been
+// idle for longer than heartbeatIntervalNano: while activeVRPC() == nil,
+// heartbeatLoop leaves nextHeartbeatDeadlineNano in the past. Invoke must
+// refresh nextHeartbeatDeadlineNano BEFORE claimSlot publishes activeRPC,
+// so heartbeatLoop can never observe activeVRPC() != nil alongside the
+// expired idle deadline.
+func TestInvoke_ResetsHeartbeatDeadlineBeforeClaimSlot(t *testing.T) {
+	s, stream := makeActive(t, SessionHooks{})
+	s.heartbeatIntervalNano.Store(int64(20 * time.Millisecond))
+	// Simulate a session that sat idle past its prior heartbeat deadline.
+	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(-50 * time.Millisecond).UnixNano())
+
+	hbCtx, hbCancel := context.WithCancel(context.Background())
+	defer hbCancel()
+	hbDone := make(chan struct{})
+	go func() {
+		defer close(hbDone)
+		s.heartbeatLoop(hbCtx)
+	}()
+
+	stream.sendFn = func(req *spb.SessionRequest) error {
+		if vrpc := req.GetVirtualRpc(); vrpc != nil {
+			if rem := time.Until(time.Unix(0, s.nextHeartbeatDeadlineNano.Load())); rem <= 0 {
+				t.Errorf("inside Send (with activeVRPC claimed), nextHeartbeatDeadlineNano is expired (remaining=%v)", rem)
+			}
+			// Wake heartbeatLoop while activeVRPC is claimed to verify it
+			// sees the refreshed deadline rather than the stale idle one.
+			s.wakeHeartbeatLoop()
+			go s.handleVRPCResponse(&spb.VirtualRpcResponse{
+				RpcId:   vrpc.RpcId,
+				Payload: []byte("ok"),
+			})
+		}
+		return nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	for i := 0; i < 50; i++ {
+		// Wait until the previous vRPC slot is completely clear before
+		// seeding an expired idle deadline for the next iteration.
+		s.nextHeartbeatDeadlineNano.Store(time.Now().Add(-50 * time.Millisecond).UnixNano())
+		if _, err := s.Invoke(ctx, newRoundTripDesc(), "req"); err != nil {
+			t.Fatalf("iter %d: Invoke failed (false-positive MissedHeartbeat?): %v", i, err)
+		}
+	}
+	hbCancel()
+	<-hbDone
+}
+
+type spyEnvelopeDesc struct {
+	encodeEnv ResourceEnvelope
+	decodeEnv ResourceEnvelope
+}
+
+func (d *spyEnvelopeDesc) Method() string { return "Spy" }
+
+func (d *spyEnvelopeDesc) Encode(env ResourceEnvelope, _ interface{}) ([]byte, error) {
+	d.encodeEnv = env
+	return []byte("req"), nil
+}
+
+func (d *spyEnvelopeDesc) Decode(env ResourceEnvelope, _ []byte) (interface{}, error) {
+	d.decodeEnv = env
+	return "resp", nil
+}
+
+// TestSessionInvoke_SelectsEnvelopeBySessionType verifies that Session.Invoke
+// resolves s.sessionType.Envelope() for Table, AuthorizedView, and
+// MaterializedView sessions, propagates the resolved ResourceEnvelope into
+// Encode/Decode, rejects unsupported/unknown envelopes before sending with
+// StateUncommitted, and tags missing response payloads with StateServerResult.
+func TestSessionInvoke_SelectsEnvelopeBySessionType(t *testing.T) {
+	// 1. Spy descriptor proves the exact ResourceEnvelope singleton selected
+	// for each SessionType (distinguishing TableEnvelope vs AuthorizedViewEnvelope
+	// even for methods whose protobuf field numbers coincide).
+	for _, tc := range []struct {
+		name        string
+		sessionType SessionType
+		wantEnv     ResourceEnvelope
+	}{
+		{"table", SessionTypeTable, TableEnvelope},
+		{"authorized_view", SessionTypeAuthorizedView, AuthorizedViewEnvelope},
+		{"materialized_view", SessionTypeMaterializedView, MaterializedViewEnvelope},
+	} {
+		t.Run("dispatch_"+tc.name, func(t *testing.T) {
+			stream := newFakeStream()
+			s := NewSession("test-spy-"+tc.name, stream, SessionHooks{}, tc.sessionType)
+			s.state.Store(int32(StateReady))
+
+			stream.sendFn = func(req *spb.SessionRequest) error {
+				vrpc := req.GetVirtualRpc()
+				go s.handleVRPCResponse(&spb.VirtualRpcResponse{
+					RpcId:   vrpc.GetRpcId(),
+					Payload: []byte("ok"),
+				})
+				return nil
+			}
+
+			spy := &spyEnvelopeDesc{}
+			if _, err := s.Invoke(context.Background(), spy, "req"); err != nil {
+				t.Fatalf("Invoke: %v", err)
+			}
+			if spy.encodeEnv != tc.wantEnv {
+				t.Errorf("Encode env = %T, want %T", spy.encodeEnv, tc.wantEnv)
+			}
+			if spy.decodeEnv != tc.wantEnv {
+				t.Errorf("Decode env = %T, want %T", spy.decodeEnv, tc.wantEnv)
+			}
+		})
+	}
+
+	// 2. READ_ROW wire round-trip across all three SessionTypes.
+	readCases := []struct {
+		name           string
+		sessionType    SessionType
+		verifyAndReply func(t *testing.T, reqBytes []byte) []byte
+	}{
+		{
+			name:        "read_table",
+			sessionType: SessionTypeTable,
+			verifyAndReply: func(t *testing.T, reqBytes []byte) []byte {
+				var env spb.TableRequest
+				if err := proto.Unmarshal(reqBytes, &env); err != nil {
+					t.Fatalf("Unmarshal TableRequest: %v", err)
+				}
+				if got := string(env.GetReadRow().GetKey()); got != "rk" {
+					t.Fatalf("TableRequest ReadRow key = %q, want rk", got)
+				}
+				b, err := proto.Marshal(&spb.TableResponse{
+					Payload: &spb.TableResponse_ReadRow{
+						ReadRow: &spb.SessionReadRowResponse{Row: &spb.Row{Key: []byte("rk")}},
+					},
+				})
+				if err != nil {
+					t.Fatalf("Marshal TableResponse: %v", err)
+				}
+				return b
+			},
+		},
+		{
+			name:        "read_authorized_view",
+			sessionType: SessionTypeAuthorizedView,
+			verifyAndReply: func(t *testing.T, reqBytes []byte) []byte {
+				var env spb.AuthorizedViewRequest
+				if err := proto.Unmarshal(reqBytes, &env); err != nil {
+					t.Fatalf("Unmarshal AuthorizedViewRequest: %v", err)
+				}
+				if got := string(env.GetReadRow().GetKey()); got != "rk" {
+					t.Fatalf("AuthorizedViewRequest ReadRow key = %q, want rk", got)
+				}
+				b, err := proto.Marshal(&spb.AuthorizedViewResponse{
+					Payload: &spb.AuthorizedViewResponse_ReadRow{
+						ReadRow: &spb.SessionReadRowResponse{Row: &spb.Row{Key: []byte("rk")}},
+					},
+				})
+				if err != nil {
+					t.Fatalf("Marshal AuthorizedViewResponse: %v", err)
+				}
+				return b
+			},
+		},
+		{
+			name:        "read_materialized_view",
+			sessionType: SessionTypeMaterializedView,
+			verifyAndReply: func(t *testing.T, reqBytes []byte) []byte {
+				var env spb.MaterializedViewRequest
+				if err := proto.Unmarshal(reqBytes, &env); err != nil {
+					t.Fatalf("Unmarshal MaterializedViewRequest: %v", err)
+				}
+				if got := string(env.GetReadRow().GetKey()); got != "rk" {
+					t.Fatalf("MaterializedViewRequest ReadRow key = %q, want rk", got)
+				}
+				b, err := proto.Marshal(&spb.MaterializedViewResponse{
+					Payload: &spb.MaterializedViewResponse_ReadRow{
+						ReadRow: &spb.SessionReadRowResponse{Row: &spb.Row{Key: []byte("rk")}},
+					},
+				})
+				if err != nil {
+					t.Fatalf("Marshal MaterializedViewResponse: %v", err)
+				}
+				return b
+			},
+		},
+	}
+
+	for _, tc := range readCases {
+		t.Run(tc.name, func(t *testing.T) {
+			stream := newFakeStream()
+			s := NewSession("test-"+tc.name, stream, SessionHooks{}, tc.sessionType)
+			s.state.Store(int32(StateReady))
+
+			stream.sendFn = func(req *spb.SessionRequest) error {
+				vrpc := req.GetVirtualRpc()
+				replyBytes := tc.verifyAndReply(t, vrpc.GetPayload())
+				go s.handleVRPCResponse(&spb.VirtualRpcResponse{
+					RpcId:   vrpc.GetRpcId(),
+					Payload: replyBytes,
+				})
+				return nil
+			}
+
+			res, err := s.Invoke(context.Background(), READ_ROW, &spb.SessionReadRowRequest{Key: []byte("rk")})
+			if err != nil {
+				t.Fatalf("Invoke: %v", err)
+			}
+			rr, ok := res.Response.(*spb.SessionReadRowResponse)
+			if !ok || string(rr.GetRow().GetKey()) != "rk" {
+				t.Fatalf("Response = %#v, want SessionReadRowResponse(rk)", res.Response)
+			}
+		})
+	}
+
+	// 3. MUTATE_ROW succeeds for Table and AuthorizedView.
+	mutateCases := []struct {
+		name           string
+		sessionType    SessionType
+		verifyAndReply func(t *testing.T, reqBytes []byte) []byte
+	}{
+		{
+			name:        "mutate_table",
+			sessionType: SessionTypeTable,
+			verifyAndReply: func(t *testing.T, reqBytes []byte) []byte {
+				var env spb.TableRequest
+				if err := proto.Unmarshal(reqBytes, &env); err != nil {
+					t.Fatalf("Unmarshal TableRequest: %v", err)
+				}
+				if got := string(env.GetMutateRow().GetKey()); got != "mk" {
+					t.Fatalf("TableRequest MutateRow key = %q, want mk", got)
+				}
+				b, err := proto.Marshal(&spb.TableResponse{
+					Payload: &spb.TableResponse_MutateRow{
+						MutateRow: &spb.SessionMutateRowResponse{},
+					},
+				})
+				if err != nil {
+					t.Fatalf("Marshal TableResponse: %v", err)
+				}
+				return b
+			},
+		},
+		{
+			name:        "mutate_authorized_view",
+			sessionType: SessionTypeAuthorizedView,
+			verifyAndReply: func(t *testing.T, reqBytes []byte) []byte {
+				var env spb.AuthorizedViewRequest
+				if err := proto.Unmarshal(reqBytes, &env); err != nil {
+					t.Fatalf("Unmarshal AuthorizedViewRequest: %v", err)
+				}
+				if got := string(env.GetMutateRow().GetKey()); got != "mk" {
+					t.Fatalf("AuthorizedViewRequest MutateRow key = %q, want mk", got)
+				}
+				b, err := proto.Marshal(&spb.AuthorizedViewResponse{
+					Payload: &spb.AuthorizedViewResponse_MutateRow{
+						MutateRow: &spb.SessionMutateRowResponse{},
+					},
+				})
+				if err != nil {
+					t.Fatalf("Marshal AuthorizedViewResponse: %v", err)
+				}
+				return b
+			},
+		},
+	}
+
+	for _, tc := range mutateCases {
+		t.Run(tc.name, func(t *testing.T) {
+			stream := newFakeStream()
+			s := NewSession("test-"+tc.name, stream, SessionHooks{}, tc.sessionType)
+			s.state.Store(int32(StateReady))
+
+			stream.sendFn = func(req *spb.SessionRequest) error {
+				vrpc := req.GetVirtualRpc()
+				replyBytes := tc.verifyAndReply(t, vrpc.GetPayload())
+				go s.handleVRPCResponse(&spb.VirtualRpcResponse{
+					RpcId:   vrpc.GetRpcId(),
+					Payload: replyBytes,
+				})
+				return nil
+			}
+
+			res, err := s.Invoke(context.Background(), MUTATE_ROW, &spb.SessionMutateRowRequest{Key: []byte("mk")})
+			if err != nil {
+				t.Fatalf("Invoke(MUTATE_ROW): %v", err)
+			}
+			if _, ok := res.Response.(*spb.SessionMutateRowResponse); !ok {
+				t.Fatalf("Response = %#v, want *SessionMutateRowResponse", res.Response)
+			}
+		})
+	}
+
+	// 4. MUTATE_ROW on MaterializedView and unknown SessionType fail before
+	// sending with StateUncommitted.
+	for _, tc := range []struct {
+		name        string
+		sessionType SessionType
+		desc        VRpcDescriptor
+		req         interface{}
+	}{
+		{"mutate_materialized_view_rejected", SessionTypeMaterializedView, MUTATE_ROW, &spb.SessionMutateRowRequest{Key: []byte("mk")}},
+		{"unknown_session_type_rejected", SessionType(999), READ_ROW, &spb.SessionReadRowRequest{Key: []byte("rk")}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			stream := newFakeStream()
+			s := NewSession("test-"+tc.name, stream, SessionHooks{}, tc.sessionType)
+			s.state.Store(int32(StateReady))
+
+			sendCalled := false
+			stream.sendFn = func(*spb.SessionRequest) error {
+				sendCalled = true
+				return nil
+			}
+
+			_, err := s.Invoke(context.Background(), tc.desc, tc.req)
+			if err == nil {
+				t.Fatalf("Invoke succeeded, want StateUncommitted error")
+			}
+			if sendCalled {
+				t.Errorf("stream.Send was called despite pre-send envelope/encode failure")
+			}
+			if got := ClassifyErr(err).State; got != StateUncommitted {
+				t.Errorf("ClassifyErr(%v).State = %v, want StateUncommitted", err, got)
+			}
+		})
+	}
+
+	// 5. Empty response envelope payload fails decode with StateServerResult so
+	// SessionPoolImpl/metrics do not record OK.
+	t.Run("empty_response_envelope_returns_server_result", func(t *testing.T) {
+		stream := newFakeStream()
+		s := NewSession("test-empty-resp", stream, SessionHooks{}, SessionTypeTable)
+		s.state.Store(int32(StateReady))
+
+		stream.sendFn = func(req *spb.SessionRequest) error {
+			vrpc := req.GetVirtualRpc()
+			go s.handleVRPCResponse(&spb.VirtualRpcResponse{
+				RpcId:   vrpc.GetRpcId(),
+				Payload: nil,
+			})
+			return nil
+		}
+
+		_, err := s.Invoke(context.Background(), READ_ROW, &spb.SessionReadRowRequest{Key: []byte("rk")})
+		if err == nil {
+			t.Fatalf("Invoke with empty response envelope succeeded, want error")
+		}
+		if got := ClassifyErr(err).State; got != StateServerResult {
+			t.Errorf("ClassifyErr(%v).State = %v, want StateServerResult", err, got)
+		}
+	})
 }

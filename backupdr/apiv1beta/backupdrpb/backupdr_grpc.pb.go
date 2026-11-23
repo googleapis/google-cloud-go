@@ -39,6 +39,24 @@ const (
 	BackupDR_GetManagementServer_FullMethodName                        = "/google.cloud.backupdr.v1beta.BackupDR/GetManagementServer"
 	BackupDR_CreateManagementServer_FullMethodName                     = "/google.cloud.backupdr.v1beta.BackupDR/CreateManagementServer"
 	BackupDR_DeleteManagementServer_FullMethodName                     = "/google.cloud.backupdr.v1beta.BackupDR/DeleteManagementServer"
+	BackupDR_CreateRestoreTemplate_FullMethodName                      = "/google.cloud.backupdr.v1beta.BackupDR/CreateRestoreTemplate"
+	BackupDR_GetRestoreTemplate_FullMethodName                         = "/google.cloud.backupdr.v1beta.BackupDR/GetRestoreTemplate"
+	BackupDR_ListRestoreTemplates_FullMethodName                       = "/google.cloud.backupdr.v1beta.BackupDR/ListRestoreTemplates"
+	BackupDR_UpdateRestoreTemplate_FullMethodName                      = "/google.cloud.backupdr.v1beta.BackupDR/UpdateRestoreTemplate"
+	BackupDR_DeleteRestoreTemplate_FullMethodName                      = "/google.cloud.backupdr.v1beta.BackupDR/DeleteRestoreTemplate"
+	BackupDR_RunRestoreTemplate_FullMethodName                         = "/google.cloud.backupdr.v1beta.BackupDR/RunRestoreTemplate"
+	BackupDR_GetRestoreTemplateExecution_FullMethodName                = "/google.cloud.backupdr.v1beta.BackupDR/GetRestoreTemplateExecution"
+	BackupDR_ListRestoreTemplateExecutions_FullMethodName              = "/google.cloud.backupdr.v1beta.BackupDR/ListRestoreTemplateExecutions"
+	BackupDR_TriggerRestoreCleanup_FullMethodName                      = "/google.cloud.backupdr.v1beta.BackupDR/TriggerRestoreCleanup"
+	BackupDR_CreateRestoreVerificationPlan_FullMethodName              = "/google.cloud.backupdr.v1beta.BackupDR/CreateRestoreVerificationPlan"
+	BackupDR_CreateRestoreVerificationPlanAssociation_FullMethodName   = "/google.cloud.backupdr.v1beta.BackupDR/CreateRestoreVerificationPlanAssociation"
+	BackupDR_GetRestoreVerificationPlanAssociation_FullMethodName      = "/google.cloud.backupdr.v1beta.BackupDR/GetRestoreVerificationPlanAssociation"
+	BackupDR_ListRestoreVerificationPlanAssociations_FullMethodName    = "/google.cloud.backupdr.v1beta.BackupDR/ListRestoreVerificationPlanAssociations"
+	BackupDR_DeleteRestoreVerificationPlanAssociation_FullMethodName   = "/google.cloud.backupdr.v1beta.BackupDR/DeleteRestoreVerificationPlanAssociation"
+	BackupDR_TriggerRestoreVerification_FullMethodName                 = "/google.cloud.backupdr.v1beta.BackupDR/TriggerRestoreVerification"
+	BackupDR_GetRestoreVerificationPlan_FullMethodName                 = "/google.cloud.backupdr.v1beta.BackupDR/GetRestoreVerificationPlan"
+	BackupDR_ListRestoreVerificationPlans_FullMethodName               = "/google.cloud.backupdr.v1beta.BackupDR/ListRestoreVerificationPlans"
+	BackupDR_DeleteRestoreVerificationPlan_FullMethodName              = "/google.cloud.backupdr.v1beta.BackupDR/DeleteRestoreVerificationPlan"
 	BackupDR_CreateBackupVault_FullMethodName                          = "/google.cloud.backupdr.v1beta.BackupDR/CreateBackupVault"
 	BackupDR_ListBackupVaults_FullMethodName                           = "/google.cloud.backupdr.v1beta.BackupDR/ListBackupVaults"
 	BackupDR_FetchUsableBackupVaults_FullMethodName                    = "/google.cloud.backupdr.v1beta.BackupDR/FetchUsableBackupVaults"
@@ -98,6 +116,51 @@ type BackupDRClient interface {
 	CreateManagementServer(ctx context.Context, in *CreateManagementServerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single ManagementServer.
 	DeleteManagementServer(ctx context.Context, in *DeleteManagementServerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Creates a new RestoreTemplate in a given project and location.
+	CreateRestoreTemplate(ctx context.Context, in *CreateRestoreTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets details of a RestoreTemplate.
+	GetRestoreTemplate(ctx context.Context, in *GetRestoreTemplateRequest, opts ...grpc.CallOption) (*RestoreTemplate, error)
+	// Lists RestoreTemplates in a given project and location.
+	ListRestoreTemplates(ctx context.Context, in *ListRestoreTemplatesRequest, opts ...grpc.CallOption) (*ListRestoreTemplatesResponse, error)
+	// Updates the settings of a RestoreTemplate.
+	UpdateRestoreTemplate(ctx context.Context, in *UpdateRestoreTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a RestoreTemplate.
+	DeleteRestoreTemplate(ctx context.Context, in *DeleteRestoreTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Runs a RestoreTemplate.
+	RunRestoreTemplate(ctx context.Context, in *RunRestoreTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets details of a RestoreTemplateExecution.
+	GetRestoreTemplateExecution(ctx context.Context, in *GetRestoreTemplateExecutionRequest, opts ...grpc.CallOption) (*RestoreTemplateExecution, error)
+	// Lists RestoreTemplateExecutions in a given project, location and restore
+	// template.
+	ListRestoreTemplateExecutions(ctx context.Context, in *ListRestoreTemplateExecutionsRequest, opts ...grpc.CallOption) (*ListRestoreTemplateExecutionsResponse, error)
+	// Triggers cleanup of restored resources created during execution.
+	TriggerRestoreCleanup(ctx context.Context, in *TriggerRestoreCleanupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Creates a new RestoreVerificationPlan in a given project and location.
+	CreateRestoreVerificationPlan(ctx context.Context, in *CreateRestoreVerificationPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Creates a new RestoreVerificationPlanAssociation in a given
+	// RestoreVerificationPlan.
+	CreateRestoreVerificationPlanAssociation(ctx context.Context, in *CreateRestoreVerificationPlanAssociationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets details of a single RestoreVerificationPlanAssociation in a given
+	// RestoreVerificationPlan.
+	GetRestoreVerificationPlanAssociation(ctx context.Context, in *GetRestoreVerificationPlanAssociationRequest, opts ...grpc.CallOption) (*RestoreVerificationPlanAssociation, error)
+	// Lists RestoreVerificationPlanAssociations in a given
+	// RestoreVerificationPlan.
+	ListRestoreVerificationPlanAssociations(ctx context.Context, in *ListRestoreVerificationPlanAssociationsRequest, opts ...grpc.CallOption) (*ListRestoreVerificationPlanAssociationsResponse, error)
+	// Deletes a single RestoreVerificationPlanAssociation in a given
+	// RestoreVerificationPlan.
+	DeleteRestoreVerificationPlanAssociation(ctx context.Context, in *DeleteRestoreVerificationPlanAssociationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Triggers a new Restore Verification for the association in a given
+	// RestoreVerificationPlan.
+	TriggerRestoreVerification(ctx context.Context, in *TriggerRestoreVerificationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets details of a single RestoreVerificationPlan. Returns the requested
+	// RestoreVerificationPlan.
+	GetRestoreVerificationPlan(ctx context.Context, in *GetRestoreVerificationPlanRequest, opts ...grpc.CallOption) (*RestoreVerificationPlan, error)
+	// Lists RestoreVerificationPlans in a given project and location.
+	ListRestoreVerificationPlans(ctx context.Context, in *ListRestoreVerificationPlansRequest, opts ...grpc.CallOption) (*ListRestoreVerificationPlansResponse, error)
+	// Deletes a single RestoreVerificationPlan. If the `force` flag is set to
+	// `true`, any RestoreVerificationPlanAssociations linked to this
+	// RestoreVerificationPlan will also be deleted.
+	DeleteRestoreVerificationPlan(ctx context.Context, in *DeleteRestoreVerificationPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new BackupVault in a given project and location.
 	CreateBackupVault(ctx context.Context, in *CreateBackupVaultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists BackupVaults in a given project and location.
@@ -232,6 +295,168 @@ func (c *backupDRClient) CreateManagementServer(ctx context.Context, in *CreateM
 func (c *backupDRClient) DeleteManagementServer(ctx context.Context, in *DeleteManagementServerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, BackupDR_DeleteManagementServer_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) CreateRestoreTemplate(ctx context.Context, in *CreateRestoreTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_CreateRestoreTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) GetRestoreTemplate(ctx context.Context, in *GetRestoreTemplateRequest, opts ...grpc.CallOption) (*RestoreTemplate, error) {
+	out := new(RestoreTemplate)
+	err := c.cc.Invoke(ctx, BackupDR_GetRestoreTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) ListRestoreTemplates(ctx context.Context, in *ListRestoreTemplatesRequest, opts ...grpc.CallOption) (*ListRestoreTemplatesResponse, error) {
+	out := new(ListRestoreTemplatesResponse)
+	err := c.cc.Invoke(ctx, BackupDR_ListRestoreTemplates_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) UpdateRestoreTemplate(ctx context.Context, in *UpdateRestoreTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_UpdateRestoreTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) DeleteRestoreTemplate(ctx context.Context, in *DeleteRestoreTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_DeleteRestoreTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) RunRestoreTemplate(ctx context.Context, in *RunRestoreTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_RunRestoreTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) GetRestoreTemplateExecution(ctx context.Context, in *GetRestoreTemplateExecutionRequest, opts ...grpc.CallOption) (*RestoreTemplateExecution, error) {
+	out := new(RestoreTemplateExecution)
+	err := c.cc.Invoke(ctx, BackupDR_GetRestoreTemplateExecution_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) ListRestoreTemplateExecutions(ctx context.Context, in *ListRestoreTemplateExecutionsRequest, opts ...grpc.CallOption) (*ListRestoreTemplateExecutionsResponse, error) {
+	out := new(ListRestoreTemplateExecutionsResponse)
+	err := c.cc.Invoke(ctx, BackupDR_ListRestoreTemplateExecutions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) TriggerRestoreCleanup(ctx context.Context, in *TriggerRestoreCleanupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_TriggerRestoreCleanup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) CreateRestoreVerificationPlan(ctx context.Context, in *CreateRestoreVerificationPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_CreateRestoreVerificationPlan_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) CreateRestoreVerificationPlanAssociation(ctx context.Context, in *CreateRestoreVerificationPlanAssociationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_CreateRestoreVerificationPlanAssociation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) GetRestoreVerificationPlanAssociation(ctx context.Context, in *GetRestoreVerificationPlanAssociationRequest, opts ...grpc.CallOption) (*RestoreVerificationPlanAssociation, error) {
+	out := new(RestoreVerificationPlanAssociation)
+	err := c.cc.Invoke(ctx, BackupDR_GetRestoreVerificationPlanAssociation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) ListRestoreVerificationPlanAssociations(ctx context.Context, in *ListRestoreVerificationPlanAssociationsRequest, opts ...grpc.CallOption) (*ListRestoreVerificationPlanAssociationsResponse, error) {
+	out := new(ListRestoreVerificationPlanAssociationsResponse)
+	err := c.cc.Invoke(ctx, BackupDR_ListRestoreVerificationPlanAssociations_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) DeleteRestoreVerificationPlanAssociation(ctx context.Context, in *DeleteRestoreVerificationPlanAssociationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_DeleteRestoreVerificationPlanAssociation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) TriggerRestoreVerification(ctx context.Context, in *TriggerRestoreVerificationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_TriggerRestoreVerification_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) GetRestoreVerificationPlan(ctx context.Context, in *GetRestoreVerificationPlanRequest, opts ...grpc.CallOption) (*RestoreVerificationPlan, error) {
+	out := new(RestoreVerificationPlan)
+	err := c.cc.Invoke(ctx, BackupDR_GetRestoreVerificationPlan_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) ListRestoreVerificationPlans(ctx context.Context, in *ListRestoreVerificationPlansRequest, opts ...grpc.CallOption) (*ListRestoreVerificationPlansResponse, error) {
+	out := new(ListRestoreVerificationPlansResponse)
+	err := c.cc.Invoke(ctx, BackupDR_ListRestoreVerificationPlans_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *backupDRClient) DeleteRestoreVerificationPlan(ctx context.Context, in *DeleteRestoreVerificationPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, BackupDR_DeleteRestoreVerificationPlan_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -655,6 +880,51 @@ type BackupDRServer interface {
 	CreateManagementServer(context.Context, *CreateManagementServerRequest) (*longrunningpb.Operation, error)
 	// Deletes a single ManagementServer.
 	DeleteManagementServer(context.Context, *DeleteManagementServerRequest) (*longrunningpb.Operation, error)
+	// Creates a new RestoreTemplate in a given project and location.
+	CreateRestoreTemplate(context.Context, *CreateRestoreTemplateRequest) (*longrunningpb.Operation, error)
+	// Gets details of a RestoreTemplate.
+	GetRestoreTemplate(context.Context, *GetRestoreTemplateRequest) (*RestoreTemplate, error)
+	// Lists RestoreTemplates in a given project and location.
+	ListRestoreTemplates(context.Context, *ListRestoreTemplatesRequest) (*ListRestoreTemplatesResponse, error)
+	// Updates the settings of a RestoreTemplate.
+	UpdateRestoreTemplate(context.Context, *UpdateRestoreTemplateRequest) (*longrunningpb.Operation, error)
+	// Deletes a RestoreTemplate.
+	DeleteRestoreTemplate(context.Context, *DeleteRestoreTemplateRequest) (*longrunningpb.Operation, error)
+	// Runs a RestoreTemplate.
+	RunRestoreTemplate(context.Context, *RunRestoreTemplateRequest) (*longrunningpb.Operation, error)
+	// Gets details of a RestoreTemplateExecution.
+	GetRestoreTemplateExecution(context.Context, *GetRestoreTemplateExecutionRequest) (*RestoreTemplateExecution, error)
+	// Lists RestoreTemplateExecutions in a given project, location and restore
+	// template.
+	ListRestoreTemplateExecutions(context.Context, *ListRestoreTemplateExecutionsRequest) (*ListRestoreTemplateExecutionsResponse, error)
+	// Triggers cleanup of restored resources created during execution.
+	TriggerRestoreCleanup(context.Context, *TriggerRestoreCleanupRequest) (*longrunningpb.Operation, error)
+	// Creates a new RestoreVerificationPlan in a given project and location.
+	CreateRestoreVerificationPlan(context.Context, *CreateRestoreVerificationPlanRequest) (*longrunningpb.Operation, error)
+	// Creates a new RestoreVerificationPlanAssociation in a given
+	// RestoreVerificationPlan.
+	CreateRestoreVerificationPlanAssociation(context.Context, *CreateRestoreVerificationPlanAssociationRequest) (*longrunningpb.Operation, error)
+	// Gets details of a single RestoreVerificationPlanAssociation in a given
+	// RestoreVerificationPlan.
+	GetRestoreVerificationPlanAssociation(context.Context, *GetRestoreVerificationPlanAssociationRequest) (*RestoreVerificationPlanAssociation, error)
+	// Lists RestoreVerificationPlanAssociations in a given
+	// RestoreVerificationPlan.
+	ListRestoreVerificationPlanAssociations(context.Context, *ListRestoreVerificationPlanAssociationsRequest) (*ListRestoreVerificationPlanAssociationsResponse, error)
+	// Deletes a single RestoreVerificationPlanAssociation in a given
+	// RestoreVerificationPlan.
+	DeleteRestoreVerificationPlanAssociation(context.Context, *DeleteRestoreVerificationPlanAssociationRequest) (*longrunningpb.Operation, error)
+	// Triggers a new Restore Verification for the association in a given
+	// RestoreVerificationPlan.
+	TriggerRestoreVerification(context.Context, *TriggerRestoreVerificationRequest) (*longrunningpb.Operation, error)
+	// Gets details of a single RestoreVerificationPlan. Returns the requested
+	// RestoreVerificationPlan.
+	GetRestoreVerificationPlan(context.Context, *GetRestoreVerificationPlanRequest) (*RestoreVerificationPlan, error)
+	// Lists RestoreVerificationPlans in a given project and location.
+	ListRestoreVerificationPlans(context.Context, *ListRestoreVerificationPlansRequest) (*ListRestoreVerificationPlansResponse, error)
+	// Deletes a single RestoreVerificationPlan. If the `force` flag is set to
+	// `true`, any RestoreVerificationPlanAssociations linked to this
+	// RestoreVerificationPlan will also be deleted.
+	DeleteRestoreVerificationPlan(context.Context, *DeleteRestoreVerificationPlanRequest) (*longrunningpb.Operation, error)
 	// Creates a new BackupVault in a given project and location.
 	CreateBackupVault(context.Context, *CreateBackupVaultRequest) (*longrunningpb.Operation, error)
 	// Lists BackupVaults in a given project and location.
@@ -766,6 +1036,60 @@ func (UnimplementedBackupDRServer) CreateManagementServer(context.Context, *Crea
 }
 func (UnimplementedBackupDRServer) DeleteManagementServer(context.Context, *DeleteManagementServerRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteManagementServer not implemented")
+}
+func (UnimplementedBackupDRServer) CreateRestoreTemplate(context.Context, *CreateRestoreTemplateRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRestoreTemplate not implemented")
+}
+func (UnimplementedBackupDRServer) GetRestoreTemplate(context.Context, *GetRestoreTemplateRequest) (*RestoreTemplate, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRestoreTemplate not implemented")
+}
+func (UnimplementedBackupDRServer) ListRestoreTemplates(context.Context, *ListRestoreTemplatesRequest) (*ListRestoreTemplatesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRestoreTemplates not implemented")
+}
+func (UnimplementedBackupDRServer) UpdateRestoreTemplate(context.Context, *UpdateRestoreTemplateRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRestoreTemplate not implemented")
+}
+func (UnimplementedBackupDRServer) DeleteRestoreTemplate(context.Context, *DeleteRestoreTemplateRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRestoreTemplate not implemented")
+}
+func (UnimplementedBackupDRServer) RunRestoreTemplate(context.Context, *RunRestoreTemplateRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunRestoreTemplate not implemented")
+}
+func (UnimplementedBackupDRServer) GetRestoreTemplateExecution(context.Context, *GetRestoreTemplateExecutionRequest) (*RestoreTemplateExecution, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRestoreTemplateExecution not implemented")
+}
+func (UnimplementedBackupDRServer) ListRestoreTemplateExecutions(context.Context, *ListRestoreTemplateExecutionsRequest) (*ListRestoreTemplateExecutionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRestoreTemplateExecutions not implemented")
+}
+func (UnimplementedBackupDRServer) TriggerRestoreCleanup(context.Context, *TriggerRestoreCleanupRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TriggerRestoreCleanup not implemented")
+}
+func (UnimplementedBackupDRServer) CreateRestoreVerificationPlan(context.Context, *CreateRestoreVerificationPlanRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRestoreVerificationPlan not implemented")
+}
+func (UnimplementedBackupDRServer) CreateRestoreVerificationPlanAssociation(context.Context, *CreateRestoreVerificationPlanAssociationRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRestoreVerificationPlanAssociation not implemented")
+}
+func (UnimplementedBackupDRServer) GetRestoreVerificationPlanAssociation(context.Context, *GetRestoreVerificationPlanAssociationRequest) (*RestoreVerificationPlanAssociation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRestoreVerificationPlanAssociation not implemented")
+}
+func (UnimplementedBackupDRServer) ListRestoreVerificationPlanAssociations(context.Context, *ListRestoreVerificationPlanAssociationsRequest) (*ListRestoreVerificationPlanAssociationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRestoreVerificationPlanAssociations not implemented")
+}
+func (UnimplementedBackupDRServer) DeleteRestoreVerificationPlanAssociation(context.Context, *DeleteRestoreVerificationPlanAssociationRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRestoreVerificationPlanAssociation not implemented")
+}
+func (UnimplementedBackupDRServer) TriggerRestoreVerification(context.Context, *TriggerRestoreVerificationRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TriggerRestoreVerification not implemented")
+}
+func (UnimplementedBackupDRServer) GetRestoreVerificationPlan(context.Context, *GetRestoreVerificationPlanRequest) (*RestoreVerificationPlan, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRestoreVerificationPlan not implemented")
+}
+func (UnimplementedBackupDRServer) ListRestoreVerificationPlans(context.Context, *ListRestoreVerificationPlansRequest) (*ListRestoreVerificationPlansResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRestoreVerificationPlans not implemented")
+}
+func (UnimplementedBackupDRServer) DeleteRestoreVerificationPlan(context.Context, *DeleteRestoreVerificationPlanRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRestoreVerificationPlan not implemented")
 }
 func (UnimplementedBackupDRServer) CreateBackupVault(context.Context, *CreateBackupVaultRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBackupVault not implemented")
@@ -982,6 +1306,330 @@ func _BackupDR_DeleteManagementServer_Handler(srv interface{}, ctx context.Conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BackupDRServer).DeleteManagementServer(ctx, req.(*DeleteManagementServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_CreateRestoreTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRestoreTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).CreateRestoreTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_CreateRestoreTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).CreateRestoreTemplate(ctx, req.(*CreateRestoreTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_GetRestoreTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRestoreTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).GetRestoreTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_GetRestoreTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).GetRestoreTemplate(ctx, req.(*GetRestoreTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_ListRestoreTemplates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRestoreTemplatesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).ListRestoreTemplates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_ListRestoreTemplates_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).ListRestoreTemplates(ctx, req.(*ListRestoreTemplatesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_UpdateRestoreTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRestoreTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).UpdateRestoreTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_UpdateRestoreTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).UpdateRestoreTemplate(ctx, req.(*UpdateRestoreTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_DeleteRestoreTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRestoreTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).DeleteRestoreTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_DeleteRestoreTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).DeleteRestoreTemplate(ctx, req.(*DeleteRestoreTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_RunRestoreTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunRestoreTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).RunRestoreTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_RunRestoreTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).RunRestoreTemplate(ctx, req.(*RunRestoreTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_GetRestoreTemplateExecution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRestoreTemplateExecutionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).GetRestoreTemplateExecution(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_GetRestoreTemplateExecution_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).GetRestoreTemplateExecution(ctx, req.(*GetRestoreTemplateExecutionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_ListRestoreTemplateExecutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRestoreTemplateExecutionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).ListRestoreTemplateExecutions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_ListRestoreTemplateExecutions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).ListRestoreTemplateExecutions(ctx, req.(*ListRestoreTemplateExecutionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_TriggerRestoreCleanup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TriggerRestoreCleanupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).TriggerRestoreCleanup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_TriggerRestoreCleanup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).TriggerRestoreCleanup(ctx, req.(*TriggerRestoreCleanupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_CreateRestoreVerificationPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRestoreVerificationPlanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).CreateRestoreVerificationPlan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_CreateRestoreVerificationPlan_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).CreateRestoreVerificationPlan(ctx, req.(*CreateRestoreVerificationPlanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_CreateRestoreVerificationPlanAssociation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRestoreVerificationPlanAssociationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).CreateRestoreVerificationPlanAssociation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_CreateRestoreVerificationPlanAssociation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).CreateRestoreVerificationPlanAssociation(ctx, req.(*CreateRestoreVerificationPlanAssociationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_GetRestoreVerificationPlanAssociation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRestoreVerificationPlanAssociationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).GetRestoreVerificationPlanAssociation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_GetRestoreVerificationPlanAssociation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).GetRestoreVerificationPlanAssociation(ctx, req.(*GetRestoreVerificationPlanAssociationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_ListRestoreVerificationPlanAssociations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRestoreVerificationPlanAssociationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).ListRestoreVerificationPlanAssociations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_ListRestoreVerificationPlanAssociations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).ListRestoreVerificationPlanAssociations(ctx, req.(*ListRestoreVerificationPlanAssociationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_DeleteRestoreVerificationPlanAssociation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRestoreVerificationPlanAssociationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).DeleteRestoreVerificationPlanAssociation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_DeleteRestoreVerificationPlanAssociation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).DeleteRestoreVerificationPlanAssociation(ctx, req.(*DeleteRestoreVerificationPlanAssociationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_TriggerRestoreVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TriggerRestoreVerificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).TriggerRestoreVerification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_TriggerRestoreVerification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).TriggerRestoreVerification(ctx, req.(*TriggerRestoreVerificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_GetRestoreVerificationPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRestoreVerificationPlanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).GetRestoreVerificationPlan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_GetRestoreVerificationPlan_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).GetRestoreVerificationPlan(ctx, req.(*GetRestoreVerificationPlanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_ListRestoreVerificationPlans_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRestoreVerificationPlansRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).ListRestoreVerificationPlans(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_ListRestoreVerificationPlans_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).ListRestoreVerificationPlans(ctx, req.(*ListRestoreVerificationPlansRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BackupDR_DeleteRestoreVerificationPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRestoreVerificationPlanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BackupDRServer).DeleteRestoreVerificationPlan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BackupDR_DeleteRestoreVerificationPlan_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BackupDRServer).DeleteRestoreVerificationPlan(ctx, req.(*DeleteRestoreVerificationPlanRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1818,6 +2466,78 @@ var BackupDR_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteManagementServer",
 			Handler:    _BackupDR_DeleteManagementServer_Handler,
+		},
+		{
+			MethodName: "CreateRestoreTemplate",
+			Handler:    _BackupDR_CreateRestoreTemplate_Handler,
+		},
+		{
+			MethodName: "GetRestoreTemplate",
+			Handler:    _BackupDR_GetRestoreTemplate_Handler,
+		},
+		{
+			MethodName: "ListRestoreTemplates",
+			Handler:    _BackupDR_ListRestoreTemplates_Handler,
+		},
+		{
+			MethodName: "UpdateRestoreTemplate",
+			Handler:    _BackupDR_UpdateRestoreTemplate_Handler,
+		},
+		{
+			MethodName: "DeleteRestoreTemplate",
+			Handler:    _BackupDR_DeleteRestoreTemplate_Handler,
+		},
+		{
+			MethodName: "RunRestoreTemplate",
+			Handler:    _BackupDR_RunRestoreTemplate_Handler,
+		},
+		{
+			MethodName: "GetRestoreTemplateExecution",
+			Handler:    _BackupDR_GetRestoreTemplateExecution_Handler,
+		},
+		{
+			MethodName: "ListRestoreTemplateExecutions",
+			Handler:    _BackupDR_ListRestoreTemplateExecutions_Handler,
+		},
+		{
+			MethodName: "TriggerRestoreCleanup",
+			Handler:    _BackupDR_TriggerRestoreCleanup_Handler,
+		},
+		{
+			MethodName: "CreateRestoreVerificationPlan",
+			Handler:    _BackupDR_CreateRestoreVerificationPlan_Handler,
+		},
+		{
+			MethodName: "CreateRestoreVerificationPlanAssociation",
+			Handler:    _BackupDR_CreateRestoreVerificationPlanAssociation_Handler,
+		},
+		{
+			MethodName: "GetRestoreVerificationPlanAssociation",
+			Handler:    _BackupDR_GetRestoreVerificationPlanAssociation_Handler,
+		},
+		{
+			MethodName: "ListRestoreVerificationPlanAssociations",
+			Handler:    _BackupDR_ListRestoreVerificationPlanAssociations_Handler,
+		},
+		{
+			MethodName: "DeleteRestoreVerificationPlanAssociation",
+			Handler:    _BackupDR_DeleteRestoreVerificationPlanAssociation_Handler,
+		},
+		{
+			MethodName: "TriggerRestoreVerification",
+			Handler:    _BackupDR_TriggerRestoreVerification_Handler,
+		},
+		{
+			MethodName: "GetRestoreVerificationPlan",
+			Handler:    _BackupDR_GetRestoreVerificationPlan_Handler,
+		},
+		{
+			MethodName: "ListRestoreVerificationPlans",
+			Handler:    _BackupDR_ListRestoreVerificationPlans_Handler,
+		},
+		{
+			MethodName: "DeleteRestoreVerificationPlan",
+			Handler:    _BackupDR_DeleteRestoreVerificationPlan_Handler,
 		},
 		{
 			MethodName: "CreateBackupVault",

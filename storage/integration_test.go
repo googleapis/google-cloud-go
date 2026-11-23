@@ -1367,12 +1367,12 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 				expectedNetworkMetrics = append(expectedNetworkMetrics, "gcp.storage.client.network.dns.lookup.duration")
 			}
 
-			// gfe.duration might not be strictly populated locally, but check it if present.
-			if m, ok := metricsMap["gcp.storage.client.gfe.duration"]; ok {
+			// server.duration might not be strictly populated locally, but check it if present.
+			if m, ok := metricsMap["gcp.storage.client.server.duration"]; ok {
 				if hist, ok := m.Data.(metricdata.Histogram[float64]); !ok {
-					t.Errorf("expected Histogram data for gfe.duration, got %T", m.Data)
+					t.Errorf("expected Histogram data for server.duration, got %T", m.Data)
 				} else if len(hist.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for gcp.storage.client.gfe.duration")
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.server.duration")
 				}
 			}
 
@@ -6853,6 +6853,25 @@ func TestIntegration_KMS(t *testing.T) {
 		src.Delete(ctx)
 		dest.Delete(ctx)
 
+		// Compose two objects into a destination encrypted with a CMEK.
+		compSrc1 := bkt.Object("kms-compose-src1")
+		compSrc2 := bkt.Object("kms-compose-src2")
+		compDst := bkt.Object("kms-compose-dst")
+		write(compSrc1, true)
+		write(compSrc2, true)
+		comp := compDst.ComposerFrom(compSrc1, compSrc2)
+		comp.KMSKeyName = keyName1
+		compAttrs, err := comp.Run(ctx)
+		if err != nil {
+			t.Fatalf("Composer.Run: %v", err)
+		}
+		if !strings.HasPrefix(compAttrs.KMSKeyName, keyName1) {
+			t.Errorf("compAttrs.KMSKeyName = %q, want prefix %q", compAttrs.KMSKeyName, keyName1)
+		}
+		compSrc1.Delete(ctx)
+		compSrc2.Delete(ctx)
+		compDst.Delete(ctx)
+
 		// Create a bucket with a default key, then write and read an object.
 		bkt = client.Bucket(prefix + uidSpace.New())
 		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
@@ -9450,7 +9469,7 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 							return err
 						}
 						// Only count temporary chunks belonging to this specific test object to avoid test flakes.
-						if strings.Contains(attrsObj.Name, objName) {
+						if strings.Contains(attrsObj.Name, objectNameDigest(objName)) {
 							count++
 						}
 					}
@@ -9523,6 +9542,80 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 
 		for err := range errs {
 			t.Errorf("Concurrent upload error: %v", err)
+		}
+	})
+}
+
+// TestIntegration_ParallelUpload_Encryption verifies that parallel uploads with a
+// customer-supplied encryption key or a Cloud KMS key succeed and that the
+// final object is encrypted with the configured key.
+func TestIntegration_ParallelUpload_Encryption(t *testing.T) {
+	ctx := skipZonalBucket(skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no read API variants needed"), "ZB does not support CSEK or KMS")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+		if keyRingName == "" {
+			t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+		}
+		kmsKeyName := keyRingName + "/cryptoKeys/key1"
+		csek := []byte("my-secret-AES-256-encryption-key")
+		csekHash := sha256.Sum256(csek)
+		csekHashB64 := base64.StdEncoding.EncodeToString(csekHash[:])
+
+		const partSize = 8 << 20
+		testCases := []struct {
+			name       string
+			size       int
+			csek       []byte
+			kmsKeyName string
+		}{
+			{name: "csek_single_level", size: 18 << 20, csek: csek},
+			{name: "kms_single_level", size: 18 << 20, kmsKeyName: kmsKeyName},
+			// 33 parts exceed the compose limit and exercise intermediate composites.
+			{name: "csek_multi_level", size: 33 * partSize, csek: csek},
+			{name: "kms_multi_level", size: 33 * partSize, kmsKeyName: kmsKeyName},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				content := bytes.Repeat([]byte("e"), tc.size)
+				obj := client.Bucket(bucket).Object("pcu-enc-" + uidSpaceObjects.New())
+				if len(tc.csek) > 0 {
+					obj = obj.Key(tc.csek)
+				}
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: partSize, MaxConcurrency: 16}
+				w.KMSKeyName = tc.kmsKeyName
+				if _, err := w.Write(content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+
+				attrs := h.mustObjectAttrs(obj)
+				if attrs.Size != int64(tc.size) {
+					t.Errorf("attrs.Size = %d, want %d", attrs.Size, tc.size)
+				}
+				if len(tc.csek) > 0 && attrs.CustomerKeySHA256 != csekHashB64 {
+					t.Errorf("attrs.CustomerKeySHA256 = %q, want %q", attrs.CustomerKeySHA256, csekHashB64)
+				}
+				if tc.kmsKeyName != "" && !strings.HasPrefix(attrs.KMSKeyName, tc.kmsKeyName) {
+					t.Errorf("attrs.KMSKeyName = %q, want prefix %q", attrs.KMSKeyName, tc.kmsKeyName)
+				}
+				if tc.kmsKeyName == "" && attrs.KMSKeyName != "" {
+					t.Errorf("attrs.KMSKeyName = %q, want empty", attrs.KMSKeyName)
+				}
+				if got := h.mustRead(obj); !bytes.Equal(got, content) {
+					t.Errorf("read %d bytes that differ from the %d bytes written", len(got), len(content))
+				}
+			})
 		}
 	})
 }

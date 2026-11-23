@@ -144,6 +144,17 @@ const (
 	// External attribution data is missing. Sending events to a destination for
 	// an external attribution conversion action isn't supported.
 	ProcessingErrorReason_PROCESSING_ERROR_REASON_EXTERNAL_ATTRIBUTION_DATA_MISSING ProcessingErrorReason = 44
+	// The destination was created too recently. Try again in a few hours.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_DESTINATION_TOO_RECENTLY_CREATED ProcessingErrorReason = 45
+	// The matched click is older than the conversion action's configured
+	// click-through conversion lookback window (or the 90-day click TTL).
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_EXPIRED_CLICK ProcessingErrorReason = 46
+	// The call is still being processed.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_TOO_RECENT_CALL ProcessingErrorReason = 47
+	// The call is too old for this conversion to be imported.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_EXPIRED_CALL ProcessingErrorReason = 48
+	// The call was not found.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_INVALID_CALL ProcessingErrorReason = 49
 )
 
 // Enum value maps for ProcessingErrorReason.
@@ -194,6 +205,11 @@ var (
 		42: "PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK",
 		43: "PROCESSING_ERROR_REASON_CLICK_NOT_FOUND",
 		44: "PROCESSING_ERROR_REASON_EXTERNAL_ATTRIBUTION_DATA_MISSING",
+		45: "PROCESSING_ERROR_REASON_DESTINATION_TOO_RECENTLY_CREATED",
+		46: "PROCESSING_ERROR_REASON_EXPIRED_CLICK",
+		47: "PROCESSING_ERROR_REASON_TOO_RECENT_CALL",
+		48: "PROCESSING_ERROR_REASON_EXPIRED_CALL",
+		49: "PROCESSING_ERROR_REASON_INVALID_CALL",
 	}
 	ProcessingErrorReason_value = map[string]int32{
 		"PROCESSING_ERROR_REASON_UNSPECIFIED":                                               0,
@@ -241,6 +257,11 @@ var (
 		"PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK":                       42,
 		"PROCESSING_ERROR_REASON_CLICK_NOT_FOUND":                                           43,
 		"PROCESSING_ERROR_REASON_EXTERNAL_ATTRIBUTION_DATA_MISSING":                         44,
+		"PROCESSING_ERROR_REASON_DESTINATION_TOO_RECENTLY_CREATED":                          45,
+		"PROCESSING_ERROR_REASON_EXPIRED_CLICK":                                             46,
+		"PROCESSING_ERROR_REASON_TOO_RECENT_CALL":                                           47,
+		"PROCESSING_ERROR_REASON_EXPIRED_CALL":                                              48,
+		"PROCESSING_ERROR_REASON_INVALID_CALL":                                              49,
 	}
 )
 
@@ -299,21 +320,32 @@ const (
 	ProcessingWarningReason_PROCESSING_WARNING_REASON_INTERNAL_ERROR ProcessingWarningReason = 8
 	// The system failed to authenticate with AWS.
 	ProcessingWarningReason_PROCESSING_WARNING_REASON_AWS_AUTH_FAILED ProcessingWarningReason = 9
+	// A [CustomVariable][google.ads.datamanager.v1.CustomVariable] or
+	// [ItemCustomVariable][google.ads.datamanager.v1.ItemCustomVariable] is not
+	// enabled in the account.
+	ProcessingWarningReason_PROCESSING_WARNING_REASON_CUSTOM_VARIABLE_NOT_ENABLED ProcessingWarningReason = 10
+	// The value of a [CustomVariable][google.ads.datamanager.v1.CustomVariable]
+	// or [ItemCustomVariable][google.ads.datamanager.v1.ItemCustomVariable] is
+	// not among the predefined allowed values configured for the custom variable
+	// on the destination account and will be replaced by an uncategorized value.
+	ProcessingWarningReason_PROCESSING_WARNING_REASON_CUSTOM_VARIABLE_NOT_PREDEFINED ProcessingWarningReason = 11
 )
 
 // Enum value maps for ProcessingWarningReason.
 var (
 	ProcessingWarningReason_name = map[int32]string{
-		0: "PROCESSING_WARNING_REASON_UNSPECIFIED",
-		1: "PROCESSING_WARNING_REASON_KEK_PERMISSION_DENIED",
-		2: "PROCESSING_WARNING_REASON_DEK_DECRYPTION_ERROR",
-		3: "PROCESSING_WARNING_REASON_DECRYPTION_ERROR",
-		4: "PROCESSING_WARNING_REASON_WIP_AUTH_FAILED",
-		5: "PROCESSING_WARNING_REASON_INVALID_WIP",
-		6: "PROCESSING_WARNING_REASON_INVALID_KEK",
-		7: "PROCESSING_WARNING_REASON_USER_IDENTIFIER_DECRYPTION_ERROR",
-		8: "PROCESSING_WARNING_REASON_INTERNAL_ERROR",
-		9: "PROCESSING_WARNING_REASON_AWS_AUTH_FAILED",
+		0:  "PROCESSING_WARNING_REASON_UNSPECIFIED",
+		1:  "PROCESSING_WARNING_REASON_KEK_PERMISSION_DENIED",
+		2:  "PROCESSING_WARNING_REASON_DEK_DECRYPTION_ERROR",
+		3:  "PROCESSING_WARNING_REASON_DECRYPTION_ERROR",
+		4:  "PROCESSING_WARNING_REASON_WIP_AUTH_FAILED",
+		5:  "PROCESSING_WARNING_REASON_INVALID_WIP",
+		6:  "PROCESSING_WARNING_REASON_INVALID_KEK",
+		7:  "PROCESSING_WARNING_REASON_USER_IDENTIFIER_DECRYPTION_ERROR",
+		8:  "PROCESSING_WARNING_REASON_INTERNAL_ERROR",
+		9:  "PROCESSING_WARNING_REASON_AWS_AUTH_FAILED",
+		10: "PROCESSING_WARNING_REASON_CUSTOM_VARIABLE_NOT_ENABLED",
+		11: "PROCESSING_WARNING_REASON_CUSTOM_VARIABLE_NOT_PREDEFINED",
 	}
 	ProcessingWarningReason_value = map[string]int32{
 		"PROCESSING_WARNING_REASON_UNSPECIFIED":                      0,
@@ -326,6 +358,8 @@ var (
 		"PROCESSING_WARNING_REASON_USER_IDENTIFIER_DECRYPTION_ERROR": 7,
 		"PROCESSING_WARNING_REASON_INTERNAL_ERROR":                   8,
 		"PROCESSING_WARNING_REASON_AWS_AUTH_FAILED":                  9,
+		"PROCESSING_WARNING_REASON_CUSTOM_VARIABLE_NOT_ENABLED":      10,
+		"PROCESSING_WARNING_REASON_CUSTOM_VARIABLE_NOT_PREDEFINED":   11,
 	}
 )
 
@@ -413,6 +447,8 @@ const (
 	// The [`merchant_id`][google.ads.datamanager.v1.CartData.merchant_id] is
 	// invalid.
 	WarningReason_WARNING_REASON_INVALID_MERCHANT_ID WarningReason = 14
+	// The number format is invalid.
+	WarningReason_WARNING_REASON_INVALID_NUMBER_FORMAT WarningReason = 15
 )
 
 // Enum value maps for WarningReason.
@@ -433,6 +469,7 @@ var (
 		12: "WARNING_REASON_INVALID_DEVICE_CATEGORY",
 		13: "WARNING_REASON_INVALID_DEVICE_SCREEN_RESOLUTION",
 		14: "WARNING_REASON_INVALID_MERCHANT_ID",
+		15: "WARNING_REASON_INVALID_NUMBER_FORMAT",
 	}
 	WarningReason_value = map[string]int32{
 		"WARNING_REASON_UNSPECIFIED":                                   0,
@@ -450,6 +487,7 @@ var (
 		"WARNING_REASON_INVALID_DEVICE_CATEGORY":                       12,
 		"WARNING_REASON_INVALID_DEVICE_SCREEN_RESOLUTION":              13,
 		"WARNING_REASON_INVALID_MERCHANT_ID":                           14,
+		"WARNING_REASON_INVALID_NUMBER_FORMAT":                         15,
 	}
 )
 
@@ -533,7 +571,10 @@ type ErrorCount struct {
 	// The count of records that failed to upload for a given reason.
 	RecordCount int64 `protobuf:"varint,1,opt,name=record_count,json=recordCount,proto3" json:"record_count,omitempty"`
 	// The error reason of the failed records.
-	Reason        ProcessingErrorReason `protobuf:"varint,2,opt,name=reason,proto3,enum=google.ads.datamanager.v1.ProcessingErrorReason" json:"reason,omitempty"`
+	Reason ProcessingErrorReason `protobuf:"varint,2,opt,name=reason,proto3,enum=google.ads.datamanager.v1.ProcessingErrorReason" json:"reason,omitempty"`
+	// The 0-based indices of the records in the original request that failed
+	// with this error reason.
+	RecordIndices []int32 `protobuf:"varint,3,rep,packed,name=record_indices,json=recordIndices,proto3" json:"record_indices,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -580,6 +621,13 @@ func (x *ErrorCount) GetReason() ProcessingErrorReason {
 		return x.Reason
 	}
 	return ProcessingErrorReason_PROCESSING_ERROR_REASON_UNSPECIFIED
+}
+
+func (x *ErrorCount) GetRecordIndices() []int32 {
+	if x != nil {
+		return x.RecordIndices
+	}
+	return nil
 }
 
 // Warning counts for each type of warning.
@@ -634,7 +682,10 @@ type WarningCount struct {
 	// The count of records that have a warning.
 	RecordCount int64 `protobuf:"varint,1,opt,name=record_count,json=recordCount,proto3" json:"record_count,omitempty"`
 	// The warning reason.
-	Reason        ProcessingWarningReason `protobuf:"varint,2,opt,name=reason,proto3,enum=google.ads.datamanager.v1.ProcessingWarningReason" json:"reason,omitempty"`
+	Reason ProcessingWarningReason `protobuf:"varint,2,opt,name=reason,proto3,enum=google.ads.datamanager.v1.ProcessingWarningReason" json:"reason,omitempty"`
+	// The 0-based indices of the records in the original request that had this
+	// warning reason.
+	RecordIndices []int32 `protobuf:"varint,3,rep,packed,name=record_indices,json=recordIndices,proto3" json:"record_indices,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -681,6 +732,13 @@ func (x *WarningCount) GetReason() ProcessingWarningReason {
 		return x.Reason
 	}
 	return ProcessingWarningReason_PROCESSING_WARNING_REASON_UNSPECIFIED
+}
+
+func (x *WarningCount) GetRecordIndices() []int32 {
+	if x != nil {
+		return x.RecordIndices
+	}
+	return nil
 }
 
 // Detailed row-level warning with field paths.
@@ -754,20 +812,22 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"\n" +
 	"1google/ads/datamanager/v1/processing_errors.proto\x12\x19google.ads.datamanager.v1\"U\n" +
 	"\tErrorInfo\x12H\n" +
-	"\ferror_counts\x18\x01 \x03(\v2%.google.ads.datamanager.v1.ErrorCountR\verrorCounts\"y\n" +
+	"\ferror_counts\x18\x01 \x03(\v2%.google.ads.datamanager.v1.ErrorCountR\verrorCounts\"\xa0\x01\n" +
 	"\n" +
 	"ErrorCount\x12!\n" +
 	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x12H\n" +
-	"\x06reason\x18\x02 \x01(\x0e20.google.ads.datamanager.v1.ProcessingErrorReasonR\x06reason\"]\n" +
+	"\x06reason\x18\x02 \x01(\x0e20.google.ads.datamanager.v1.ProcessingErrorReasonR\x06reason\x12%\n" +
+	"\x0erecord_indices\x18\x03 \x03(\x05R\rrecordIndices\"]\n" +
 	"\vWarningInfo\x12N\n" +
-	"\x0ewarning_counts\x18\x01 \x03(\v2'.google.ads.datamanager.v1.WarningCountR\rwarningCounts\"}\n" +
+	"\x0ewarning_counts\x18\x01 \x03(\v2'.google.ads.datamanager.v1.WarningCountR\rwarningCounts\"\xa4\x01\n" +
 	"\fWarningCount\x12!\n" +
 	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x12J\n" +
-	"\x06reason\x18\x02 \x01(\x0e22.google.ads.datamanager.v1.ProcessingWarningReasonR\x06reason\"\x88\x01\n" +
+	"\x06reason\x18\x02 \x01(\x0e22.google.ads.datamanager.v1.ProcessingWarningReasonR\x06reason\x12%\n" +
+	"\x0erecord_indices\x18\x03 \x03(\x05R\rrecordIndices\"\x88\x01\n" +
 	"\fFieldWarning\x12@\n" +
 	"\x06reason\x18\x01 \x01(\x0e2(.google.ads.datamanager.v1.WarningReasonR\x06reason\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x14\n" +
-	"\x05field\x18\x03 \x01(\tR\x05field*\xbb\x12\n" +
+	"\x05field\x18\x03 \x01(\tR\x05field*\xa5\x14\n" +
 	"\x15ProcessingErrorReason\x12'\n" +
 	"#PROCESSING_ERROR_REASON_UNSPECIFIED\x10\x00\x123\n" +
 	"/PROCESSING_ERROR_REASON_INVALID_CUSTOM_VARIABLE\x10\x01\x127\n" +
@@ -814,7 +874,12 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"%PROCESSING_ERROR_REASON_INVALID_CLICK\x10)\x12?\n" +
 	";PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK\x10*\x12+\n" +
 	"'PROCESSING_ERROR_REASON_CLICK_NOT_FOUND\x10+\x12=\n" +
-	"9PROCESSING_ERROR_REASON_EXTERNAL_ATTRIBUTION_DATA_MISSING\x10,*\xff\x03\n" +
+	"9PROCESSING_ERROR_REASON_EXTERNAL_ATTRIBUTION_DATA_MISSING\x10,\x12<\n" +
+	"8PROCESSING_ERROR_REASON_DESTINATION_TOO_RECENTLY_CREATED\x10-\x12)\n" +
+	"%PROCESSING_ERROR_REASON_EXPIRED_CLICK\x10.\x12+\n" +
+	"'PROCESSING_ERROR_REASON_TOO_RECENT_CALL\x10/\x12(\n" +
+	"$PROCESSING_ERROR_REASON_EXPIRED_CALL\x100\x12(\n" +
+	"$PROCESSING_ERROR_REASON_INVALID_CALL\x101*\xf8\x04\n" +
 	"\x17ProcessingWarningReason\x12)\n" +
 	"%PROCESSING_WARNING_REASON_UNSPECIFIED\x10\x00\x123\n" +
 	"/PROCESSING_WARNING_REASON_KEK_PERMISSION_DENIED\x10\x01\x122\n" +
@@ -825,7 +890,10 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"%PROCESSING_WARNING_REASON_INVALID_KEK\x10\x06\x12>\n" +
 	":PROCESSING_WARNING_REASON_USER_IDENTIFIER_DECRYPTION_ERROR\x10\a\x12,\n" +
 	"(PROCESSING_WARNING_REASON_INTERNAL_ERROR\x10\b\x12-\n" +
-	")PROCESSING_WARNING_REASON_AWS_AUTH_FAILED\x10\t*\xc2\x05\n" +
+	")PROCESSING_WARNING_REASON_AWS_AUTH_FAILED\x10\t\x129\n" +
+	"5PROCESSING_WARNING_REASON_CUSTOM_VARIABLE_NOT_ENABLED\x10\n" +
+	"\x12<\n" +
+	"8PROCESSING_WARNING_REASON_CUSTOM_VARIABLE_NOT_PREDEFINED\x10\v*\xec\x05\n" +
 	"\rWarningReason\x12\x1e\n" +
 	"\x1aWARNING_REASON_UNSPECIFIED\x10\x00\x12.\n" +
 	"*WARNING_REASON_CUSTOM_VARIABLE_NOT_ENABLED\x10\x01\x121\n" +
@@ -842,7 +910,8 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"%WARNING_REASON_INVALID_CONTINENT_CODE\x10\v\x12*\n" +
 	"&WARNING_REASON_INVALID_DEVICE_CATEGORY\x10\f\x123\n" +
 	"/WARNING_REASON_INVALID_DEVICE_SCREEN_RESOLUTION\x10\r\x12&\n" +
-	"\"WARNING_REASON_INVALID_MERCHANT_ID\x10\x0eB\xd2\x01\n" +
+	"\"WARNING_REASON_INVALID_MERCHANT_ID\x10\x0e\x12(\n" +
+	"$WARNING_REASON_INVALID_NUMBER_FORMAT\x10\x0fB\xd2\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x15ProcessingErrorsProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

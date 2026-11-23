@@ -276,6 +276,8 @@ type Task struct {
 	// Holds the single container that defines the unit of execution for this
 	// task.
 	Containers []*Container `protobuf:"bytes,14,rep,name=containers,proto3" json:"containers,omitempty"`
+	// Configuration for sandboxes.
+	Sandboxes *SandboxConfiguration `protobuf:"bytes,40,opt,name=sandboxes,proto3" json:"sandboxes,omitempty"`
 	// A list of Volumes to make available to containers.
 	Volumes []*Volume `protobuf:"bytes,15,rep,name=volumes,proto3" json:"volumes,omitempty"`
 	// Number of retries allowed per Task, before marking this Task failed.
@@ -326,6 +328,8 @@ type Task struct {
 	// Optional. Output only. True if GPU zonal redundancy is disabled on this
 	// task.
 	GpuZonalRedundancyDisabled *bool `protobuf:"varint,37,opt,name=gpu_zonal_redundancy_disabled,json=gpuZonalRedundancyDisabled,proto3,oneof" json:"gpu_zonal_redundancy_disabled,omitempty"`
+	// Optional. The Task's workload identity settings.
+	WorkloadIdentityConfig *WorkloadIdentityConfig `protobuf:"bytes,38,opt,name=workload_identity_config,json=workloadIdentityConfig,proto3" json:"workload_identity_config,omitempty"`
 	// Output only. A system-generated fingerprint for this version of the
 	// resource. May be used to detect modification conflict during updates.
 	Etag          string `protobuf:"bytes,99,opt,name=etag,proto3" json:"etag,omitempty"`
@@ -468,6 +472,13 @@ func (x *Task) GetContainers() []*Container {
 	return nil
 }
 
+func (x *Task) GetSandboxes() *SandboxConfiguration {
+	if x != nil {
+		return x.Sandboxes
+	}
+	return nil
+}
+
 func (x *Task) GetVolumes() []*Volume {
 	if x != nil {
 		return x.Volumes
@@ -587,6 +598,13 @@ func (x *Task) GetGpuZonalRedundancyDisabled() bool {
 	return false
 }
 
+func (x *Task) GetWorkloadIdentityConfig() *WorkloadIdentityConfig {
+	if x != nil {
+		return x.WorkloadIdentityConfig
+	}
+	return nil
+}
+
 func (x *Task) GetEtag() string {
 	if x != nil {
 		return x.Etag
@@ -671,7 +689,7 @@ var File_google_cloud_run_v2_task_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_task_proto_rawDesc = "" +
 	"\n" +
-	"\x1egoogle/cloud/run/v2/task.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/run/v2/condition.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"F\n" +
+	"\x1egoogle/cloud/run/v2/task.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/run/v2/condition.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a!google/cloud/run/v2/sandbox.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"F\n" +
 	"\x0eGetTaskRequest\x124\n" +
 	"\x04name\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\n" +
 	"\x17run.googleapis.com/TaskR\x04name\"\xab\x01\n" +
@@ -683,7 +701,7 @@ const file_google_cloud_run_v2_task_proto_rawDesc = "" +
 	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"l\n" +
 	"\x11ListTasksResponse\x12/\n" +
 	"\x05tasks\x18\x01 \x03(\v2\x19.google.cloud.run.v2.TaskR\x05tasks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x94\x11\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xca\x12\n" +
 	"\x04Task\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
 	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12$\n" +
@@ -711,7 +729,8 @@ const file_google_cloud_run_v2_task_proto_rawDesc = "" +
 	"\x1crun.googleapis.com/ExecutionR\texecution\x12>\n" +
 	"\n" +
 	"containers\x18\x0e \x03(\v2\x1e.google.cloud.run.v2.ContainerR\n" +
-	"containers\x125\n" +
+	"containers\x12G\n" +
+	"\tsandboxes\x18( \x01(\v2).google.cloud.run.v2.SandboxConfigurationR\tsandboxes\x125\n" +
 	"\avolumes\x18\x0f \x03(\v2\x1b.google.cloud.run.v2.VolumeR\avolumes\x12\x1f\n" +
 	"\vmax_retries\x18\x10 \x01(\x05R\n" +
 	"maxRetries\x123\n" +
@@ -733,7 +752,8 @@ const file_google_cloud_run_v2_task_proto_rawDesc = "" +
 	"\alog_uri\x18  \x01(\tB\x04\xe2A\x01\x03R\x06logUri\x12)\n" +
 	"\rsatisfies_pzs\x18! \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12L\n" +
 	"\rnode_selector\x18$ \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x04\xe2A\x01\x03R\fnodeSelector\x12M\n" +
-	"\x1dgpu_zonal_redundancy_disabled\x18% \x01(\bB\x05\xe2A\x02\x01\x03H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x12\x18\n" +
+	"\x1dgpu_zonal_redundancy_disabled\x18% \x01(\bB\x05\xe2A\x02\x01\x03H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x12k\n" +
+	"\x18workload_identity_config\x18& \x01(\v2+.google.cloud.run.v2.WorkloadIdentityConfigB\x04\xe2A\x01\x01R\x16workloadIdentityConfig\x12\x18\n" +
 	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -747,10 +767,10 @@ const file_google_cloud_run_v2_task_proto_rawDesc = "" +
 	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x06status\x12!\n" +
 	"\texit_code\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\bexitCode\x12%\n" +
 	"\vterm_signal\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\n" +
-	"termSignal2\x96\x03\n" +
+	"termSignal2\xe8\x03\n" +
 	"\x05Tasks\x12\x97\x01\n" +
 	"\aGetTask\x12#.google.cloud.run.v2.GetTaskRequest\x1a\x19.google.cloud.run.v2.Task\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?\x12=/v2/{name=projects/*/locations/*/jobs/*/executions/*/tasks/*}\x12\xaa\x01\n" +
-	"\tListTasks\x12%.google.cloud.run.v2.ListTasksRequest\x1a&.google.cloud.run.v2.ListTasksResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v2/{parent=projects/*/locations/*/jobs/*/executions/*}/tasks\x1aF\xcaA\x12run.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBQ\n" +
+	"\tListTasks\x12%.google.cloud.run.v2.ListTasksRequest\x1a&.google.cloud.run.v2.ListTasksResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v2/{parent=projects/*/locations/*/jobs/*/executions/*}/tasks\x1a\x97\x01\xcaA\x12run.googleapis.com\xd2A\x7fhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/run,https://www.googleapis.com/auth/run.readonlyBQ\n" +
 	"\x17com.google.cloud.run.v2B\tTaskProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
 
 var (
@@ -767,22 +787,24 @@ func file_google_cloud_run_v2_task_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_run_v2_task_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_google_cloud_run_v2_task_proto_goTypes = []any{
-	(*GetTaskRequest)(nil),        // 0: google.cloud.run.v2.GetTaskRequest
-	(*ListTasksRequest)(nil),      // 1: google.cloud.run.v2.ListTasksRequest
-	(*ListTasksResponse)(nil),     // 2: google.cloud.run.v2.ListTasksResponse
-	(*Task)(nil),                  // 3: google.cloud.run.v2.Task
-	(*TaskAttemptResult)(nil),     // 4: google.cloud.run.v2.TaskAttemptResult
-	nil,                           // 5: google.cloud.run.v2.Task.LabelsEntry
-	nil,                           // 6: google.cloud.run.v2.Task.AnnotationsEntry
-	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
-	(*Container)(nil),             // 8: google.cloud.run.v2.Container
-	(*Volume)(nil),                // 9: google.cloud.run.v2.Volume
-	(*durationpb.Duration)(nil),   // 10: google.protobuf.Duration
-	(ExecutionEnvironment)(0),     // 11: google.cloud.run.v2.ExecutionEnvironment
-	(*Condition)(nil),             // 12: google.cloud.run.v2.Condition
-	(*VpcAccess)(nil),             // 13: google.cloud.run.v2.VpcAccess
-	(*NodeSelector)(nil),          // 14: google.cloud.run.v2.NodeSelector
-	(*status.Status)(nil),         // 15: google.rpc.Status
+	(*GetTaskRequest)(nil),         // 0: google.cloud.run.v2.GetTaskRequest
+	(*ListTasksRequest)(nil),       // 1: google.cloud.run.v2.ListTasksRequest
+	(*ListTasksResponse)(nil),      // 2: google.cloud.run.v2.ListTasksResponse
+	(*Task)(nil),                   // 3: google.cloud.run.v2.Task
+	(*TaskAttemptResult)(nil),      // 4: google.cloud.run.v2.TaskAttemptResult
+	nil,                            // 5: google.cloud.run.v2.Task.LabelsEntry
+	nil,                            // 6: google.cloud.run.v2.Task.AnnotationsEntry
+	(*timestamppb.Timestamp)(nil),  // 7: google.protobuf.Timestamp
+	(*Container)(nil),              // 8: google.cloud.run.v2.Container
+	(*SandboxConfiguration)(nil),   // 9: google.cloud.run.v2.SandboxConfiguration
+	(*Volume)(nil),                 // 10: google.cloud.run.v2.Volume
+	(*durationpb.Duration)(nil),    // 11: google.protobuf.Duration
+	(ExecutionEnvironment)(0),      // 12: google.cloud.run.v2.ExecutionEnvironment
+	(*Condition)(nil),              // 13: google.cloud.run.v2.Condition
+	(*VpcAccess)(nil),              // 14: google.cloud.run.v2.VpcAccess
+	(*NodeSelector)(nil),           // 15: google.cloud.run.v2.NodeSelector
+	(*WorkloadIdentityConfig)(nil), // 16: google.cloud.run.v2.WorkloadIdentityConfig
+	(*status.Status)(nil),          // 17: google.rpc.Status
 }
 var file_google_cloud_run_v2_task_proto_depIdxs = []int32{
 	3,  // 0: google.cloud.run.v2.ListTasksResponse.tasks:type_name -> google.cloud.run.v2.Task
@@ -796,23 +818,25 @@ var file_google_cloud_run_v2_task_proto_depIdxs = []int32{
 	7,  // 8: google.cloud.run.v2.Task.delete_time:type_name -> google.protobuf.Timestamp
 	7,  // 9: google.cloud.run.v2.Task.expire_time:type_name -> google.protobuf.Timestamp
 	8,  // 10: google.cloud.run.v2.Task.containers:type_name -> google.cloud.run.v2.Container
-	9,  // 11: google.cloud.run.v2.Task.volumes:type_name -> google.cloud.run.v2.Volume
-	10, // 12: google.cloud.run.v2.Task.timeout:type_name -> google.protobuf.Duration
-	11, // 13: google.cloud.run.v2.Task.execution_environment:type_name -> google.cloud.run.v2.ExecutionEnvironment
-	12, // 14: google.cloud.run.v2.Task.conditions:type_name -> google.cloud.run.v2.Condition
-	4,  // 15: google.cloud.run.v2.Task.last_attempt_result:type_name -> google.cloud.run.v2.TaskAttemptResult
-	13, // 16: google.cloud.run.v2.Task.vpc_access:type_name -> google.cloud.run.v2.VpcAccess
-	14, // 17: google.cloud.run.v2.Task.node_selector:type_name -> google.cloud.run.v2.NodeSelector
-	15, // 18: google.cloud.run.v2.TaskAttemptResult.status:type_name -> google.rpc.Status
-	0,  // 19: google.cloud.run.v2.Tasks.GetTask:input_type -> google.cloud.run.v2.GetTaskRequest
-	1,  // 20: google.cloud.run.v2.Tasks.ListTasks:input_type -> google.cloud.run.v2.ListTasksRequest
-	3,  // 21: google.cloud.run.v2.Tasks.GetTask:output_type -> google.cloud.run.v2.Task
-	2,  // 22: google.cloud.run.v2.Tasks.ListTasks:output_type -> google.cloud.run.v2.ListTasksResponse
-	21, // [21:23] is the sub-list for method output_type
-	19, // [19:21] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	9,  // 11: google.cloud.run.v2.Task.sandboxes:type_name -> google.cloud.run.v2.SandboxConfiguration
+	10, // 12: google.cloud.run.v2.Task.volumes:type_name -> google.cloud.run.v2.Volume
+	11, // 13: google.cloud.run.v2.Task.timeout:type_name -> google.protobuf.Duration
+	12, // 14: google.cloud.run.v2.Task.execution_environment:type_name -> google.cloud.run.v2.ExecutionEnvironment
+	13, // 15: google.cloud.run.v2.Task.conditions:type_name -> google.cloud.run.v2.Condition
+	4,  // 16: google.cloud.run.v2.Task.last_attempt_result:type_name -> google.cloud.run.v2.TaskAttemptResult
+	14, // 17: google.cloud.run.v2.Task.vpc_access:type_name -> google.cloud.run.v2.VpcAccess
+	15, // 18: google.cloud.run.v2.Task.node_selector:type_name -> google.cloud.run.v2.NodeSelector
+	16, // 19: google.cloud.run.v2.Task.workload_identity_config:type_name -> google.cloud.run.v2.WorkloadIdentityConfig
+	17, // 20: google.cloud.run.v2.TaskAttemptResult.status:type_name -> google.rpc.Status
+	0,  // 21: google.cloud.run.v2.Tasks.GetTask:input_type -> google.cloud.run.v2.GetTaskRequest
+	1,  // 22: google.cloud.run.v2.Tasks.ListTasks:input_type -> google.cloud.run.v2.ListTasksRequest
+	3,  // 23: google.cloud.run.v2.Tasks.GetTask:output_type -> google.cloud.run.v2.Task
+	2,  // 24: google.cloud.run.v2.Tasks.ListTasks:output_type -> google.cloud.run.v2.ListTasksResponse
+	23, // [23:25] is the sub-list for method output_type
+	21, // [21:23] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_task_proto_init() }
@@ -822,6 +846,7 @@ func file_google_cloud_run_v2_task_proto_init() {
 	}
 	file_google_cloud_run_v2_condition_proto_init()
 	file_google_cloud_run_v2_k8s_min_proto_init()
+	file_google_cloud_run_v2_sandbox_proto_init()
 	file_google_cloud_run_v2_vendor_settings_proto_init()
 	file_google_cloud_run_v2_task_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}

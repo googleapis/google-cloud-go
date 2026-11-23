@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"sync"
 	"time"
@@ -184,6 +185,7 @@ func (sr *sharedRouter) poolDetach() error {
 		co.close()
 	}
 	sr.multiMap = make(map[string]*connection)
+	sr.invertedMultiMap = make(map[string][]*ManagedStream)
 	sr.multiConns = nil
 	close(sr.close) // trigger watchdog shutdown
 	sr.multiMu.Unlock()
@@ -328,12 +330,23 @@ func (sr *sharedRouter) writerDetach(writer *ManagedStream) error {
 func (sr *sharedRouter) writerDetachMulti(writer *ManagedStream) error {
 	sr.multiMu.Lock()
 	defer sr.multiMu.Unlock()
+	if conn, ok := sr.multiMap[writer.id]; ok {
+		remaining := slices.DeleteFunc(sr.invertedMultiMap[conn.id], func(w *ManagedStream) bool {
+			return w.id == writer.id
+		})
+		if len(remaining) == 0 {
+			delete(sr.invertedMultiMap, conn.id)
+		} else {
+			sr.invertedMultiMap[conn.id] = remaining
+		}
+	}
 	delete(sr.multiMap, writer.id)
 	// If the number of writers drops to zero, close all open connections.
 	if len(sr.multiMap) == 0 {
 		for _, co := range sr.multiConns {
 			co.close()
 		}
+		sr.invertedMultiMap = make(map[string][]*ManagedStream)
 		sr.multiConns = nil
 	}
 	return nil

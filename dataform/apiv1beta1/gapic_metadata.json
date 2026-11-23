@@ -45,6 +45,11 @@
                 "CreateCompilationResult"
               ]
             },
+            "CreateCompilationResultLongRunning": {
+              "methods": [
+                "CreateCompilationResultLongRunning"
+              ]
+            },
             "CreateFolder": {
               "methods": [
                 "CreateFolder"
@@ -173,6 +178,11 @@
             "FetchWorkspaceBranches": {
               "methods": [
                 "FetchWorkspaceBranches"
+              ]
+            },
+            "FetchWorkspaceHistory": {
+              "methods": [
+                "FetchWorkspaceHistory"
               ]
             },
             "GetCompilationResult": {
@@ -475,6 +485,11 @@
                 "CreateCompilationResult"
               ]
             },
+            "CreateCompilationResultLongRunning": {
+              "methods": [
+                "CreateCompilationResultLongRunning"
+              ]
+            },
             "CreateFolder": {
               "methods": [
                 "CreateFolder"
@@ -603,6 +618,11 @@
             "FetchWorkspaceBranches": {
               "methods": [
                 "FetchWorkspaceBranches"
+              ]
+            },
+            "FetchWorkspaceHistory": {
+              "methods": [
+                "FetchWorkspaceHistory"
               ]
             },
             "GetCompilationResult": {

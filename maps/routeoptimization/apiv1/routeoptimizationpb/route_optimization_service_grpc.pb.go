@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -99,10 +99,6 @@ type RouteOptimizationClient interface {
 	// The [response][google.longrunning.Operation.response] field type is
 	// [OptimizeToursResponse][google.maps.routeoptimization.v1.OptimizeToursResponse],
 	// if successful.
-	//
-	// Experimental: See
-	// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request
-	// for more details.
 	OptimizeToursLongRunning(ctx context.Context, in *OptimizeToursRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// This is a variant of the
 	// [OptimizeToursLongRunning][google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning]
@@ -123,14 +119,10 @@ type RouteOptimizationClient interface {
 	// `<parent>/operations/<operation_id>` and can be used to track
 	// progress of the computation. The
 	// [metadata][google.longrunning.Operation.metadata] field type is
-	// [OptimizeToursLongRunningMetadata][google.maps.routeoptimization.v1.OptimizeToursUriMetadata].
+	// [OptimizeToursUriMetadata][google.maps.routeoptimization.v1.OptimizeToursUriMetadata].
 	// The [response][google.longrunning.Operation.response] field type is
 	// [OptimizeToursUriResponse][google.maps.routeoptimization.v1.OptimizeToursUriResponse],
 	// if successful.
-	//
-	// Experimental: See
-	// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request
-	// for more details.
 	OptimizeToursUri(ctx context.Context, in *OptimizeToursUriRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -236,10 +228,6 @@ type RouteOptimizationServer interface {
 	// The [response][google.longrunning.Operation.response] field type is
 	// [OptimizeToursResponse][google.maps.routeoptimization.v1.OptimizeToursResponse],
 	// if successful.
-	//
-	// Experimental: See
-	// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request
-	// for more details.
 	OptimizeToursLongRunning(context.Context, *OptimizeToursRequest) (*longrunningpb.Operation, error)
 	// This is a variant of the
 	// [OptimizeToursLongRunning][google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning]
@@ -260,14 +248,10 @@ type RouteOptimizationServer interface {
 	// `<parent>/operations/<operation_id>` and can be used to track
 	// progress of the computation. The
 	// [metadata][google.longrunning.Operation.metadata] field type is
-	// [OptimizeToursLongRunningMetadata][google.maps.routeoptimization.v1.OptimizeToursUriMetadata].
+	// [OptimizeToursUriMetadata][google.maps.routeoptimization.v1.OptimizeToursUriMetadata].
 	// The [response][google.longrunning.Operation.response] field type is
 	// [OptimizeToursUriResponse][google.maps.routeoptimization.v1.OptimizeToursUriResponse],
 	// if successful.
-	//
-	// Experimental: See
-	// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request
-	// for more details.
 	OptimizeToursUri(context.Context, *OptimizeToursUriRequest) (*longrunningpb.Operation, error)
 }
 

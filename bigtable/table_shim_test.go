@@ -41,6 +41,7 @@ type mockClassicTable struct {
 	readRowCalls  int
 	readRowsCalls int
 	applyCalls    int
+	rmwCalls      int
 }
 
 func (m *mockClassicTable) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
@@ -77,6 +78,7 @@ func (m *mockClassicTable) ApplyBulk(ctx context.Context, rowKeys []string, muts
 	return nil, nil
 }
 func (m *mockClassicTable) ApplyReadModifyWrite(ctx context.Context, row string, mut *ReadModifyWrite) (Row, error) {
+	m.rmwCalls++
 	if m.rmwFn != nil {
 		return m.rmwFn(ctx, row, mut)
 	}
@@ -86,11 +88,15 @@ func (m *mockClassicTable) ApplyReadModifyWrite(ctx context.Context, row string,
 // mockSessionTable is the proto-native session-side mock. Records
 // which method fired and returns programmable responses.
 type mockSessionTable struct {
-	readRowFn   func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error)
-	mutateRowFn func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
+	readRowFn            func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error)
+	mutateRowFn          func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
+	checkAndMutateRowFn  func(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error)
+	readModifyWriteRowFn func(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error)
 
-	readRowCalls   int
-	mutateRowCalls int
+	readRowCalls            int
+	mutateRowCalls          int
+	checkAndMutateRowCalls  int
+	readModifyWriteRowCalls int
 }
 
 func (m *mockSessionTable) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
@@ -119,7 +125,36 @@ func (m *mockSessionTable) MutateRow(ctx context.Context, req *btpb.SessionMutat
 	}
 	return &btpb.SessionMutateRowResponse{}, nil
 }
+func (m *mockSessionTable) CheckAndMutateRow(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+	m.checkAndMutateRowCalls++
+	if m.checkAndMutateRowFn != nil {
+		return m.checkAndMutateRowFn(ctx, req)
+	}
+	return &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true}, nil
+}
+func (m *mockSessionTable) ReadModifyWriteRow(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error) {
+	m.readModifyWriteRowCalls++
+	if m.readModifyWriteRowFn != nil {
+		return m.readModifyWriteRowFn(ctx, req)
+	}
+	return &btpb.SessionReadModifyWriteRowResponse{Row: &btpb.Row{
+		Key: req.GetKey(),
+		Families: []*btpb.Family{{
+			Name: "fam",
+			Columns: []*btpb.Column{{
+				Qualifier: []byte("q"),
+				Cells:     []*btpb.Cell{{Value: []byte("v")}},
+			}},
+		}},
+	}}, nil
+}
 func (m *mockSessionTable) Close() error { return nil }
+
+func newTestDiverter(load float64) *btransport.Diverter {
+	d := btransport.NewDiverter()
+	d.SetSessionLoad(load)
+	return d
+}
 
 // TestTableShim_ReadRow_RoutesByDiverter verifies the diverter gates
 // classic vs session routing on ReadRow.
@@ -127,7 +162,7 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 	t.Run("classic when SessionLoad=0.0", func(t *testing.T) {
 		classic := &mockClassicTable{}
 		sess := &mockSessionTable{}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(0.0))
+		shim := NewTableShim(classic, sess, btransport.NewDiverter())
 
 		row, err := shim.ReadRow(context.Background(), "r1")
 		if err != nil {
@@ -147,7 +182,7 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 	t.Run("session when SessionLoad=1.0", func(t *testing.T) {
 		classic := &mockClassicTable{}
 		sess := &mockSessionTable{}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 
 		row, err := shim.ReadRow(context.Background(), "r2")
 		if err != nil {
@@ -166,7 +201,7 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 
 	t.Run("classic fallback when session is nil", func(t *testing.T) {
 		classic := &mockClassicTable{}
-		shim := NewTableShim(classic, nil, btransport.NewDiverter(1.0))
+		shim := NewTableShim(classic, nil, newTestDiverter(1.0))
 
 		_, err := shim.ReadRow(context.Background(), "r3")
 		if err != nil {
@@ -184,7 +219,7 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 				return nil, wantErr
 			},
 		}
-		shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+		shim := NewTableShim(&mockClassicTable{}, sess, newTestDiverter(1.0))
 		_, err := shim.ReadRow(context.Background(), "r4")
 		if !errors.Is(err, wantErr) {
 			t.Errorf("err = %v, want unwrap to %v", err, wantErr)
@@ -192,24 +227,99 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 	})
 }
 
-// TestTableShim_Apply_ConditionalAlwaysClassic verifies that conditional
-// mutations bypass the session path regardless of diverter setting —
-// CheckAndMutateRow has no session equivalent.
-func TestTableShim_Apply_ConditionalAlwaysClassic(t *testing.T) {
-	classic := &mockClassicTable{}
-	sess := &mockSessionTable{}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)) // diverter says session
+// TestTableShim_Apply_ConditionalRoutesByDiverter verifies that conditional
+// mutations route to session CheckAndMutateRow when SessionLoad=1.0 and
+// classic when SessionLoad=0.0, propagate GetCondMutationResult, reject
+// nested conditional mutations, and fall back to classic on Unimplemented.
+func TestTableShim_Apply_ConditionalRoutesByDiverter(t *testing.T) {
+	t.Run("session when SessionLoad=1.0", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{
+			checkAndMutateRowFn: func(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+				if string(req.GetKey()) != "r" {
+					t.Errorf("req.Key = %q, want r", req.GetKey())
+				}
+				if !req.GetPredicateFilter().GetPassAllFilter() {
+					t.Errorf("PredicateFilter = %v, want PassAllFilter", req.GetPredicateFilter())
+				}
+				return &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true}, nil
+			},
+		}
+		shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 
-	cond := NewCondMutation(PassAllFilter(), NewMutation(), nil)
-	if err := shim.Apply(context.Background(), "r", cond); err != nil {
-		t.Fatalf("unexpected err: %v", err)
-	}
-	if classic.applyCalls != 1 {
-		t.Errorf("classic.applyCalls = %d, want 1 (conditional must go classic)", classic.applyCalls)
-	}
-	if sess.mutateRowCalls != 0 {
-		t.Errorf("sess.mutateRowCalls = %d, want 0 (conditional must NOT go session)", sess.mutateRowCalls)
-	}
+		mtrue := NewMutation()
+		mtrue.DeleteRow()
+		cond := NewCondMutation(PassAllFilter(), mtrue, nil)
+		var matched bool
+		if err := shim.Apply(context.Background(), "r", cond, GetCondMutationResult(&matched)); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if !matched {
+			t.Errorf("GetCondMutationResult matched = false, want true")
+		}
+		if classic.applyCalls != 0 {
+			t.Errorf("classic.applyCalls = %d, want 0", classic.applyCalls)
+		}
+		if sess.checkAndMutateRowCalls != 1 {
+			t.Errorf("sess.checkAndMutateRowCalls = %d, want 1", sess.checkAndMutateRowCalls)
+		}
+	})
+
+	t.Run("classic when SessionLoad=0.0", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter())
+
+		cond := NewCondMutation(PassAllFilter(), NewMutation(), nil)
+		if err := shim.Apply(context.Background(), "r", cond); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if classic.applyCalls != 1 || sess.checkAndMutateRowCalls != 0 {
+			t.Errorf("classic=%d session=%d, want classic=1 session=0", classic.applyCalls, sess.checkAndMutateRowCalls)
+		}
+	})
+
+	t.Run("nested conditional mutation rejected", func(t *testing.T) {
+		shim := NewTableShim(&mockClassicTable{}, &mockSessionTable{}, newTestDiverter(1.0))
+		for _, tc := range []struct {
+			name  string
+			outer *Mutation
+		}{
+			{
+				name:  "non-nil filter in mtrue",
+				outer: NewCondMutation(PassAllFilter(), NewCondMutation(PassAllFilter(), NewMutation(), nil), nil),
+			},
+			{
+				name:  "nil filter in mtrue",
+				outer: NewCondMutation(PassAllFilter(), NewCondMutation(nil, NewMutation(), nil), nil),
+			},
+			{
+				name:  "nil filter in mfalse",
+				outer: NewCondMutation(PassAllFilter(), nil, NewCondMutation(nil, NewMutation(), nil)),
+			},
+		} {
+			if err := shim.Apply(context.Background(), "r", tc.outer); err == nil {
+				t.Fatalf("%s: expected error for nested conditional mutation, got nil", tc.name)
+			}
+		}
+	})
+
+	t.Run("Unimplemented falls back to classic", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{
+			checkAndMutateRowFn: func(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+				return nil, status.Error(codes.Unimplemented, "not implemented")
+			},
+		}
+		shim := NewTableShim(classic, sess, newTestDiverter(1.0))
+		cond := NewCondMutation(PassAllFilter(), NewMutation(), nil)
+		if err := shim.Apply(context.Background(), "r", cond); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if sess.checkAndMutateRowCalls != 1 || classic.applyCalls != 1 {
+			t.Errorf("sess=%d classic=%d, want 1 and 1", sess.checkAndMutateRowCalls, classic.applyCalls)
+		}
+	})
 }
 
 // TestTableShim_Apply_NonConditionalRoutesByDiverter verifies that
@@ -218,7 +328,7 @@ func TestTableShim_Apply_NonConditionalRoutesByDiverter(t *testing.T) {
 	t.Run("session when SessionLoad=1.0", func(t *testing.T) {
 		classic := &mockClassicTable{}
 		sess := &mockSessionTable{}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 
 		mut := NewMutation()
 		mut.Set("fam", "col", 1_000_000, []byte("v"))
@@ -233,7 +343,7 @@ func TestTableShim_Apply_NonConditionalRoutesByDiverter(t *testing.T) {
 	t.Run("classic when SessionLoad=0.0", func(t *testing.T) {
 		classic := &mockClassicTable{}
 		sess := &mockSessionTable{}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(0.0))
+		shim := NewTableShim(classic, sess, btransport.NewDiverter())
 
 		mut := NewMutation()
 		mut.Set("fam", "col", 1_000_000, []byte("v"))
@@ -285,7 +395,7 @@ func TestTableShim_ReadRows_MultiRowStaysClassic(t *testing.T) {
 				},
 			}
 			sess := &mockSessionTable{}
-			shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+			shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 			if err := shim.ReadRows(context.Background(), tc.arg, func(Row) bool { return true }); err != nil {
 				t.Fatalf("unexpected err: %v", err)
 			}
@@ -322,7 +432,7 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 			},
 		}
 		classic := &mockClassicTable{}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 
 		var got Row
 		err := shim.ReadRows(context.Background(), SingleRow("r1"), func(r Row) bool {
@@ -360,7 +470,7 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 			},
 		}
 		sess := &mockSessionTable{}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(0.0))
+		shim := NewTableShim(classic, sess, btransport.NewDiverter())
 
 		var got Row
 		if err := shim.ReadRows(context.Background(), SingleRow("r"), func(r Row) bool {
@@ -395,7 +505,7 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 				return wantErr
 			},
 		}
-		shim := NewTableShim(classic, &mockSessionTable{}, btransport.NewDiverter(0.0))
+		shim := NewTableShim(classic, &mockSessionTable{}, btransport.NewDiverter())
 
 		delivered := 0
 		err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool {
@@ -416,7 +526,7 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 				return &btpb.SessionReadRowResponse{}, nil // no Row
 			},
 		}
-		shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+		shim := NewTableShim(&mockClassicTable{}, sess, newTestDiverter(1.0))
 
 		called := 0
 		err := shim.ReadRows(context.Background(), SingleRow("missing"), func(Row) bool {
@@ -439,7 +549,7 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 				return &btpb.SessionReadRowResponse{}, nil
 			},
 		}
-		shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+		shim := NewTableShim(&mockClassicTable{}, sess, newTestDiverter(1.0))
 		err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true }, RowFilter(PassAllFilter()))
 		if err != nil {
 			t.Fatalf("unexpected err: %v", err)
@@ -458,7 +568,8 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 			},
 		}
 		sess := &mockSessionTable{}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		diverter := newTestDiverter(1.0)
+		shim := NewTableShim(classic, sess, diverter)
 		if err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true }, LimitRows(0)); err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
@@ -468,11 +579,15 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 		if sess.readRowCalls != 0 {
 			t.Errorf("sess.readRowCalls = %d, want 0 (LimitRows(0) must NOT dial session)", sess.readRowCalls)
 		}
+		snap := diverter.Snapshot()
+		if snap.SessionPicks != 0 || snap.ClassicPicks != 0 {
+			t.Errorf("diverter picks = (session=%d, classic=%d), want (0, 0) when LimitRows(0) defers to classic before diverter check", snap.SessionPicks, snap.ClassicPicks)
+		}
 	})
 
 	t.Run("LimitRows(N>=1) still routes session", func(t *testing.T) {
 		sess := &mockSessionTable{}
-		shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+		shim := NewTableShim(&mockClassicTable{}, sess, newTestDiverter(1.0))
 		if err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true }, LimitRows(1)); err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
@@ -489,7 +604,7 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 				return nil, wantErr
 			},
 		}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 		err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true })
 		if !errors.Is(err, wantErr) {
 			t.Errorf("err = %v, want unwrap to %v", err, wantErr)
@@ -514,7 +629,7 @@ func TestTableShim_ReadRows_EmptyKeyStillRoutesToSession(t *testing.T) {
 			return &btpb.SessionReadRowResponse{}, nil
 		},
 	}
-	shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+	shim := NewTableShim(&mockClassicTable{}, sess, newTestDiverter(1.0))
 	if err := shim.ReadRows(context.Background(), SingleRow(""), func(Row) bool { return true }); err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
@@ -544,7 +659,7 @@ func TestTableShim_ReadRows_SingleRowUnimplementedFallsBackToClassic(t *testing.
 			return nil, status.Error(codes.Unimplemented, "session backend not implemented on this AFE")
 		},
 	}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 
 	var got Row
 	err := shim.ReadRows(context.Background(), SingleRow("r1"), func(r Row) bool {
@@ -577,7 +692,7 @@ func TestTableShim_SampleRowKeys_AlwaysClassic(t *testing.T) {
 			return []string{"a", "b"}, nil
 		},
 	}
-	shim := NewTableShim(classic, &mockSessionTable{}, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, &mockSessionTable{}, newTestDiverter(1.0))
 	if _, err := shim.SampleRowKeys(context.Background()); err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
@@ -595,7 +710,7 @@ func TestTableShim_ApplyBulk_AlwaysClassic(t *testing.T) {
 			return nil, nil
 		},
 	}
-	shim := NewTableShim(classic, &mockSessionTable{}, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, &mockSessionTable{}, newTestDiverter(1.0))
 	if _, err := shim.ApplyBulk(context.Background(), []string{"r1"}, []*Mutation{NewMutation()}); err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
@@ -604,22 +719,77 @@ func TestTableShim_ApplyBulk_AlwaysClassic(t *testing.T) {
 	}
 }
 
-// TestTableShim_ApplyReadModifyWrite_AlwaysClassic — spec #14: no vRPC equivalent.
-func TestTableShim_ApplyReadModifyWrite_AlwaysClassic(t *testing.T) {
-	classicCalled := 0
-	classic := &mockClassicTable{
-		rmwFn: func(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
-			classicCalled++
-			return Row{"fam": []ReadItem{{Row: row}}}, nil
-		},
-	}
-	shim := NewTableShim(classic, &mockSessionTable{}, btransport.NewDiverter(1.0))
-	if _, err := shim.ApplyReadModifyWrite(context.Background(), "r1", NewReadModifyWrite()); err != nil {
-		t.Fatalf("unexpected err: %v", err)
-	}
-	if classicCalled != 1 {
-		t.Errorf("classic.ApplyReadModifyWrite calls = %d, want 1 (no vRPC equivalent)", classicCalled)
-	}
+// TestTableShim_ApplyReadModifyWrite_RoutesByDiverter verifies
+// ApplyReadModifyWrite routing over session ReadModifyWriteRow vs classic,
+// row decoding, nil Row handling, and Unimplemented fallback.
+func TestTableShim_ApplyReadModifyWrite_RoutesByDiverter(t *testing.T) {
+	t.Run("session when SessionLoad=1.0", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, newTestDiverter(1.0))
+
+		rmw := NewReadModifyWrite()
+		rmw.Increment("fam", "q", 1)
+		row, err := shim.ApplyReadModifyWrite(context.Background(), "r1", rmw)
+		if err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if row.Key() != "r1" {
+			t.Errorf("row.Key() = %q, want r1", row.Key())
+		}
+		if sess.readModifyWriteRowCalls != 1 || classic.rmwCalls != 0 {
+			t.Errorf("sess=%d classic=%d, want 1 and 0", sess.readModifyWriteRowCalls, classic.rmwCalls)
+		}
+	})
+
+	t.Run("classic when SessionLoad=0.0", func(t *testing.T) {
+		classic := &mockClassicTable{
+			rmwFn: func(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
+				return Row{"fam": []ReadItem{{Row: row}}}, nil
+			},
+		}
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter())
+
+		if _, err := shim.ApplyReadModifyWrite(context.Background(), "r1", NewReadModifyWrite()); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if classic.rmwCalls != 1 || sess.readModifyWriteRowCalls != 0 {
+			t.Errorf("classic=%d sess=%d, want 1 and 0", classic.rmwCalls, sess.readModifyWriteRowCalls)
+		}
+	})
+
+	t.Run("nil Row in response returns error", func(t *testing.T) {
+		sess := &mockSessionTable{
+			readModifyWriteRowFn: func(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error) {
+				return &btpb.SessionReadModifyWriteRowResponse{Row: nil}, nil
+			},
+		}
+		shim := NewTableShim(&mockClassicTable{}, sess, newTestDiverter(1.0))
+		if _, err := shim.ApplyReadModifyWrite(context.Background(), "r1", NewReadModifyWrite()); err == nil {
+			t.Fatal("expected error for nil Row in ReadModifyWriteRowResponse")
+		}
+	})
+
+	t.Run("Unimplemented falls back to classic", func(t *testing.T) {
+		classic := &mockClassicTable{
+			rmwFn: func(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
+				return Row{"fam": []ReadItem{{Row: row}}}, nil
+			},
+		}
+		sess := &mockSessionTable{
+			readModifyWriteRowFn: func(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error) {
+				return nil, status.Error(codes.Unimplemented, "not implemented")
+			},
+		}
+		shim := NewTableShim(classic, sess, newTestDiverter(1.0))
+		if _, err := shim.ApplyReadModifyWrite(context.Background(), "r1", NewReadModifyWrite()); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if sess.readModifyWriteRowCalls != 1 || classic.rmwCalls != 1 {
+			t.Errorf("sess=%d classic=%d, want 1 and 1", sess.readModifyWriteRowCalls, classic.rmwCalls)
+		}
+	})
 }
 
 // TestTableShim_NilSession_AllMethodsFallBackToClassic verifies
@@ -631,7 +801,7 @@ func TestTableShim_ApplyReadModifyWrite_AlwaysClassic(t *testing.T) {
 func TestTableShim_NilSession_AllMethodsFallBackToClassic(t *testing.T) {
 	classic := &mockClassicTable{}
 	// session=nil, diverter says session (1.0) — nil-safety MUST win.
-	shim := NewTableShim(classic, nil, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, nil, newTestDiverter(1.0))
 
 	if _, err := shim.ReadRow(context.Background(), "r1"); err != nil {
 		t.Fatalf("ReadRow: %v", err)
@@ -682,7 +852,7 @@ func TestTableShim_SessionErrorNotRetriedOnClassic(t *testing.T) {
 			return nil, wantErr
 		},
 	}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 
 	mut := NewMutation()
 	mut.Set("fam", "col", 1_000_000, []byte("v"))
@@ -830,7 +1000,7 @@ func TestTableShim_ReadRow_UnimplementedFallsBackToClassic(t *testing.T) {
 			return nil, status.Error(codes.Unimplemented, "session backend not implemented on this AFE")
 		},
 	}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 
 	got, err := shim.ReadRow(context.Background(), "r1")
 	if err != nil {
@@ -857,7 +1027,7 @@ func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
 			return nil, status.Error(codes.Unimplemented, "session backend not implemented on this AFE")
 		},
 	}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 
 	mut := NewMutation()
 	mut.Set("fam", "col", 1_000_000, []byte("v"))
@@ -874,7 +1044,7 @@ func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
 
 // TestTableShim_BreakerTrippedSkipsSession: once the counter hits
 // the breaker's configured threshold, subsequent ReadRow /
-// Apply skip the session path outright at useSession(). Threshold
+// Apply skip the session path outright at useSessionForMethod. Threshold
 // overridden to 1 so one Unimplemented trips.
 func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
 	classic := &mockClassicTable{}
@@ -883,7 +1053,7 @@ func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
 			return nil, status.Error(codes.Unimplemented, "not implemented")
 		},
 	}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 	withThreshold(t, shim, 1)
 
 	// First ReadRow trips the breaker + falls back to classic.
@@ -930,7 +1100,7 @@ func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
 			return nil, status.Error(codes.Unimplemented, "not implemented")
 		},
 	}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
+	shim := NewTableShim(classic, sess, newTestDiverter(1.0)).(*TableShim)
 	withThreshold(t, shim, 3)
 
 	// Calls 1 and 2 hit session (still under threshold), fall back to
@@ -988,7 +1158,7 @@ func TestTableShim_UnimplementedCounterResetsOnSuccess(t *testing.T) {
 			return &btpb.SessionReadRowResponse{Row: &btpb.Row{Key: req.GetKey()}}, nil
 		},
 	}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
+	shim := NewTableShim(classic, sess, newTestDiverter(1.0)).(*TableShim)
 	withThreshold(t, shim, 3)
 
 	for i := 0; i < 5; i++ {
@@ -1025,7 +1195,7 @@ func TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError(t *testing.
 			}
 		},
 	}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
+	shim := NewTableShim(classic, sess, newTestDiverter(1.0)).(*TableShim)
 	withThreshold(t, shim, 3)
 
 	// Calls 1 and 2 fall back to classic transparently.
@@ -1080,7 +1250,7 @@ func TestTableShim_NonUnimplementedError_DoesNotFallBack(t *testing.T) {
 					return nil, sessErr
 				},
 			}
-			shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
+			shim := NewTableShim(classic, sess, newTestDiverter(1.0)).(*TableShim)
 
 			// ReadRow: session err must propagate, no classic fallback.
 			_, gotRead := shim.ReadRow(context.Background(), "r")
@@ -1143,7 +1313,7 @@ func TestTableShim_ReadRows_SingleRowRangeRoutesToSession(t *testing.T) {
 				},
 			}
 			classic := &mockClassicTable{}
-			shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+			shim := NewTableShim(classic, sess, newTestDiverter(1.0))
 
 			var got Row
 			if err := shim.ReadRows(context.Background(), tc.arg, func(r Row) bool {
@@ -1165,5 +1335,175 @@ func TestTableShim_ReadRows_SingleRowRangeRoutesToSession(t *testing.T) {
 				t.Errorf("classic.readRowCalls = %d, want 0 (single-row range must go session)", classic.readRowCalls)
 			}
 		})
+	}
+}
+
+func TestApply_NestedCondMutationWithNilFilterRejected(t *testing.T) {
+	leaf := NewMutation()
+	leaf.Set("fam", "col", 1000, []byte("v"))
+	innerNilCond := NewCondMutation(nil, leaf, nil)
+
+	tests := []struct {
+		name  string
+		outer *Mutation
+	}{
+		{
+			name:  "nested_in_mtrue",
+			outer: NewCondMutation(PassAllFilter(), innerNilCond, nil),
+		},
+		{
+			name:  "nested_in_mfalse",
+			outer: NewCondMutation(PassAllFilter(), nil, innerNilCond),
+		},
+	}
+
+	c := newBareClientForOpenTests(t, 0.0)
+	tbl := c.Open("mytable")
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := tbl.apply(context.Background(), "r1", tc.outer); err == nil {
+				t.Fatalf("apply(%s) = nil, want nested conditional mutation error", tc.name)
+			}
+		})
+	}
+}
+
+func TestTableShim_Apply_ErrWriteNotSupportedPreservesBreakerCount(t *testing.T) {
+	classic := &mockClassicTable{}
+	sess := &mockSessionTable{
+		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+			return nil, status.Error(codes.Unimplemented, "unimpl")
+		},
+		mutateRowFn: func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
+			return nil, session.ErrWriteNotSupported
+		},
+	}
+	shim := NewTableShim(classic, sess, newTestDiverter(1.0)).(*TableShim)
+	withThreshold(t, shim, 3)
+
+	for i := 0; i < 2; i++ {
+		if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
+			t.Fatalf("ReadRow #%d unexpected error: %v", i+1, err)
+		}
+	}
+	if got := shim.breaker.Count(); got != 2 {
+		t.Fatalf("breaker.Count() = %d, want 2", got)
+	}
+
+	mut := NewMutation()
+	mut.Set("fam", "col", 1000, []byte("v"))
+	err := shim.Apply(context.Background(), "r", mut)
+	if !errors.Is(err, session.ErrWriteNotSupported) {
+		t.Fatalf("Apply err = %v, want errors.Is(_, ErrWriteNotSupported)", err)
+	}
+	if classic.applyCalls != 0 {
+		t.Errorf("classic.applyCalls = %d, want 0", classic.applyCalls)
+	}
+	if got := shim.breaker.Count(); got != 2 {
+		t.Errorf("breaker.Count() after ErrWriteNotSupported = %d, want 2", got)
+	}
+
+	if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
+		t.Fatalf("ReadRow #3 unexpected error: %v", err)
+	}
+	if !shim.breaker.Bypass() {
+		t.Errorf("breaker.Bypass() = false, want true after 3 Unimplemented reads")
+	}
+}
+
+func TestMaterializedView_ClassicWriteMethodsRejectLocally(t *testing.T) {
+	c := newBareClientForOpenTests(t, 0.0)
+	mv := c.OpenMaterializedView("myview")
+
+	mut := NewMutation()
+	mut.Set("fam", "col", 1000, []byte("v"))
+
+	if err := mv.Apply(context.Background(), "r1", mut); !errors.Is(err, session.ErrWriteNotSupported) {
+		t.Errorf("Apply err = %v, want errors.Is(_, ErrWriteNotSupported)", err)
+	}
+	if _, err := mv.ApplyBulk(context.Background(), []string{"r1"}, []*Mutation{mut}); !errors.Is(err, session.ErrWriteNotSupported) {
+		t.Errorf("ApplyBulk err = %v, want errors.Is(_, ErrWriteNotSupported)", err)
+	}
+	rmw := NewReadModifyWrite()
+	rmw.Increment("fam", "col", 1)
+	if _, err := mv.ApplyReadModifyWrite(context.Background(), "r1", rmw); !errors.Is(err, session.ErrWriteNotSupported) {
+		t.Errorf("ApplyReadModifyWrite err = %v, want errors.Is(_, ErrWriteNotSupported)", err)
+	}
+}
+
+// TestTableShim_PerScopeDiversion verifies that TableShim consults the
+// Diverter's per-scope ("method:Bigtable.<Method>") session load for each
+// RPC method independently.
+func TestTableShim_PerScopeDiversion(t *testing.T) {
+	diverter := btransport.NewDiverter()
+	diverter.ApplySessionClientConfiguration(&btpb.SessionClientConfiguration{
+		SessionDiversionConfiguration: &btpb.SessionDiversionConfiguration{
+			DiversionStrategy: &btpb.SessionDiversionConfiguration_PerScopeDiversion_{
+				PerScopeDiversion: &btpb.SessionDiversionConfiguration_PerScopeDiversion{
+					ScopeDiversions: map[string]*btpb.SessionScopeDiversionConfiguration{
+						btransport.ScopeMethodReadRow:           {SessionLoad: 1.0},
+						btransport.ScopeMethodMutateRow:         {SessionLoad: 0.0},
+						btransport.ScopeMethodCheckAndMutateRow: {SessionLoad: 1.0},
+						// ReadModifyWriteRow omitted -> defaults to 0.0 (classic)
+					},
+				},
+			},
+		},
+	})
+
+	sess := &mockSessionTable{
+		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+			return &btpb.SessionReadRowResponse{}, nil
+		},
+		checkAndMutateRowFn: func(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+			return &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true}, nil
+		},
+	}
+	classic := &mockClassicTable{
+		rmwFn: func(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
+			return Row{"f": []ReadItem{{Row: row, Column: "f:q", Value: []byte("classic")}}}, nil
+		},
+	}
+	shim := NewTableShim(classic, sess, diverter)
+	ctx := context.Background()
+
+	// 1. ReadRow & single-row ReadRows have method:Bigtable.ReadRow = 1.0 -> session
+	if _, err := shim.ReadRow(ctx, "rk1"); err != nil {
+		t.Fatalf("ReadRow err = %v", err)
+	}
+	if err := shim.ReadRows(ctx, SingleRow("rk2"), func(Row) bool { return true }); err != nil {
+		t.Fatalf("ReadRows(SingleRow) err = %v", err)
+	}
+	if sess.readRowCalls != 2 || classic.readRowCalls != 0 {
+		t.Errorf("ReadRow/SingleRow ReadRows: sess.readRowCalls=%d classic.readRowCalls=%d, want 2 / 0", sess.readRowCalls, classic.readRowCalls)
+	}
+
+	// 2. Non-conditional Apply has method:Bigtable.MutateRow = 0.0 -> classic
+	mut := NewMutation()
+	mut.Set("f", "q", 1000, []byte("v"))
+	if err := shim.Apply(ctx, "rk1", mut); err != nil {
+		t.Fatalf("Apply(non-conditional) err = %v", err)
+	}
+	if sess.mutateRowCalls != 0 || classic.applyCalls != 1 {
+		t.Errorf("Apply(non-conditional): sess.mutateRowCalls=%d classic.applyCalls=%d, want 0 / 1", sess.mutateRowCalls, classic.applyCalls)
+	}
+
+	// 3. Conditional Apply has method:Bigtable.CheckAndMutateRow = 1.0 -> session
+	condMut := NewCondMutation(PassAllFilter(), mut, nil)
+	if err := shim.Apply(ctx, "rk1", condMut); err != nil {
+		t.Fatalf("Apply(conditional) err = %v", err)
+	}
+	if sess.checkAndMutateRowCalls != 1 || classic.applyCalls != 1 {
+		t.Errorf("Apply(conditional): sess.checkAndMutateRowCalls=%d classic.applyCalls=%d, want 1 / 1", sess.checkAndMutateRowCalls, classic.applyCalls)
+	}
+
+	// 4. ApplyReadModifyWrite is omitted from ScopeDiversions (0.0) -> classic
+	rmw := NewReadModifyWrite()
+	rmw.AppendValue("f", "q", []byte("x"))
+	if _, err := shim.ApplyReadModifyWrite(ctx, "rk1", rmw); err != nil {
+		t.Fatalf("ApplyReadModifyWrite err = %v", err)
+	}
+	if sess.readModifyWriteRowCalls != 0 || classic.rmwCalls != 1 {
+		t.Errorf("ApplyReadModifyWrite: sess.readModifyWriteRowCalls=%d classic.rmwCalls=%d, want 0 / 1", sess.readModifyWriteRowCalls, classic.rmwCalls)
 	}
 }

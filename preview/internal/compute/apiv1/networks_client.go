@@ -54,6 +54,7 @@ type NetworksCallOptions struct {
 	RemovePeering              []gax.CallOption
 	RequestRemovePeering       []gax.CallOption
 	SwitchToCustomMode         []gax.CallOption
+	UpdateNetworkProfile       []gax.CallOption
 	UpdatePeering              []gax.CallOption
 }
 
@@ -131,6 +132,9 @@ func defaultNetworksRESTCallOptions() *NetworksCallOptions {
 		SwitchToCustomMode: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		UpdateNetworkProfile: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		UpdatePeering: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -154,6 +158,7 @@ type internalNetworksClient interface {
 	RemovePeering(context.Context, *computepb.RemovePeeringNetworkRequest, ...gax.CallOption) (*Operation, error)
 	RequestRemovePeering(context.Context, *computepb.RequestRemovePeeringNetworkRequest, ...gax.CallOption) (*Operation, error)
 	SwitchToCustomMode(context.Context, *computepb.SwitchToCustomModeNetworkRequest, ...gax.CallOption) (*Operation, error)
+	UpdateNetworkProfile(context.Context, *computepb.UpdateNetworkProfileNetworkRequest, ...gax.CallOption) (*Operation, error)
 	UpdatePeering(context.Context, *computepb.UpdatePeeringNetworkRequest, ...gax.CallOption) (*Operation, error)
 }
 
@@ -259,6 +264,14 @@ func (c *NetworksClient) SwitchToCustomMode(ctx context.Context, req *computepb.
 	return c.internalClient.SwitchToCustomMode(ctx, req, opts...)
 }
 
+// UpdateNetworkProfile updates the network profile of the specified network.
+// Currently only the following operations are supported:
+//
+//	Removing a Regionally Bound Network Profile
+func (c *NetworksClient) UpdateNetworkProfile(ctx context.Context, req *computepb.UpdateNetworkProfileNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.UpdateNetworkProfile(ctx, req, opts...)
+}
+
 // UpdatePeering updates the specified network peering with the data included in the
 // request. You can only modify the NetworkPeering.export_custom_routes field
 // and the NetworkPeering.import_custom_routes field.
@@ -339,6 +352,7 @@ func NewNetworksRESTClient(ctx context.Context, opts ...option.ClientOption) (*N
 		callOpts.RemovePeering = append(callOpts.RemovePeering, gax.WithClientMetrics(metrics))
 		callOpts.RequestRemovePeering = append(callOpts.RequestRemovePeering, gax.WithClientMetrics(metrics))
 		callOpts.SwitchToCustomMode = append(callOpts.SwitchToCustomMode, gax.WithClientMetrics(metrics))
+		callOpts.UpdateNetworkProfile = append(callOpts.UpdateNetworkProfile, gax.WithClientMetrics(metrics))
 		callOpts.UpdatePeering = append(callOpts.UpdatePeering, gax.WithClientMetrics(metrics))
 	}
 	if gax.IsFeatureEnabled("TRACING") {
@@ -364,6 +378,7 @@ func NewNetworksRESTClient(ctx context.Context, opts ...option.ClientOption) (*N
 		callOpts.RemovePeering = append(callOpts.RemovePeering, gax.WithClientTracing(tracing))
 		callOpts.RequestRemovePeering = append(callOpts.RequestRemovePeering, gax.WithClientTracing(tracing))
 		callOpts.SwitchToCustomMode = append(callOpts.SwitchToCustomMode, gax.WithClientTracing(tracing))
+		callOpts.UpdateNetworkProfile = append(callOpts.UpdateNetworkProfile, gax.WithClientTracing(tracing))
 		callOpts.UpdatePeering = append(callOpts.UpdatePeering, gax.WithClientTracing(tracing))
 	}
 	if gax.IsFeatureEnabled("LOGGING") {
@@ -390,6 +405,7 @@ func NewNetworksRESTClient(ctx context.Context, opts ...option.ClientOption) (*N
 		callOpts.RemovePeering = append(callOpts.RemovePeering, gax.WithClientLogging(logging))
 		callOpts.RequestRemovePeering = append(callOpts.RequestRemovePeering, gax.WithClientLogging(logging))
 		callOpts.SwitchToCustomMode = append(callOpts.SwitchToCustomMode, gax.WithClientLogging(logging))
+		callOpts.UpdateNetworkProfile = append(callOpts.UpdateNetworkProfile, gax.WithClientLogging(logging))
 		callOpts.UpdatePeering = append(callOpts.UpdatePeering, gax.WithClientLogging(logging))
 	}
 
@@ -1319,6 +1335,85 @@ func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *comput
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SwitchToCustomMode")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// UpdateNetworkProfile updates the network profile of the specified network.
+// Currently only the following operations are supported:
+//
+//	Removing a Regionally Bound Network Profile
+func (c *networksRESTClient) UpdateNetworkProfile(ctx context.Context, req *computepb.UpdateNetworkProfileNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetNetworksUpdateNetworkProfileRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetwork(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/updateNetworkProfile", req.GetProject(), req.GetNetwork())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/UpdateNetworkProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}/updateNetworkProfile")
+	}
+	opts = append((*c.CallOptions).UpdateNetworkProfile[0:len((*c.CallOptions).UpdateNetworkProfile):len((*c.CallOptions).UpdateNetworkProfile)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNetworkProfile")
 		if err != nil {
 			return err
 		}

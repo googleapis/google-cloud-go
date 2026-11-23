@@ -35,12 +35,13 @@ type PickCandidate struct {
 }
 
 // PickDecision captures what candidates a picker sampled, which one won,
-// and why. Populated on every PickAfe call so operators can trace picker
-// reasoning through the debug surface without re-running the pick.
+// and why. Populated on every pickLocked call so operators can trace
+// picker reasoning through the debug surface without re-running the pick.
 type PickDecision struct {
 	// Candidates is the K sampled AFEs (K == 1 for SimplePicker,
 	// otherwise K == min(RandomSubsetSize, len(ready)) via partial
-	// Fisher-Yates). Empty when no ready AFE existed.
+	// Fisher-Yates). Empty when no ready AFE existed or recordCandidates
+	// is false.
 	Candidates []PickCandidate
 	// Winner is the AFE the picker returned. Zero when ready was empty.
 	Winner AfeID
@@ -50,20 +51,28 @@ type PickDecision struct {
 	Reason string
 }
 
-// AfePicker picks one AFE from a snapshot of ready buckets AND returns
-// the decision metadata for the debug surface. The winner travels back
-// into the producer's Checkout by id — no producer-owned pointer ever
-// leaves the producer's lock. The PickDecision is passed to the pool's
-// pick-decision recorder.
+// AfePicker selects one AFE bucket from sessionList.afesWithReady while
+// sessionList.mu is held, returning the chosen bucket and decision trace.
+// Running selection and dequeue under the same sessionList.mu critical
+// section eliminates lock-split checkout races and avoids per-RPC slice
+// allocations or O(N) EWMA reads across unsampled AFEs.
 //
-// picked == false means "no AFE eligible" — the pool treats that the
-// same as len(ready) == 0 (park the caller, kick scale-up).
-//
-// Implementations MAY mutate ready in place; callers must pass a
-// throwaway slice.
+// Implementations MAY reorder ready in place ONLY via swapReadyAfesLocked
+// so each afeHandle.readyIdx stays consistent with its slice position (I3).
 type AfePicker interface {
-	PickAfe(ready []AfeSnapshot) (winner AfeID, picked bool, decision PickDecision)
+	pickLocked(ready []*afeHandle) (winner *afeHandle, decision PickDecision)
 	Name() string
+}
+
+// swapReadyAfesLocked swaps ready[i] and ready[j] while keeping each
+// bucket's readyIdx invariant intact (I3). Caller must hold sessionList.mu.
+func swapReadyAfesLocked(ready []*afeHandle, i, j int) {
+	if i == j {
+		return
+	}
+	ready[i], ready[j] = ready[j], ready[i]
+	ready[i].readyIdx = i
+	ready[j].readyIdx = j
 }
 
 // SimpleAfePicker chooses an AFE uniformly at random from the ready set.
@@ -84,28 +93,24 @@ func NewSimpleAfePicker(recordCandidates bool) *SimpleAfePicker {
 // Name returns "simple".
 func (SimpleAfePicker) Name() string { return "simple" }
 
-// PickAfe uniformly-at-random picks one bucket from ready.
-func (p SimpleAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
+func (p SimpleAfePicker) pickLocked(ready []*afeHandle) (*afeHandle, PickDecision) {
 	if len(ready) == 0 {
-		return 0, false, PickDecision{Reason: "no-candidates"}
+		return nil, PickDecision{Reason: "no-candidates"}
 	}
 	winner := ready[rand.IntN(len(ready))]
-	d := PickDecision{Winner: winner.ID, Reason: "uniform-random"}
+	d := PickDecision{Winner: winner.id, Reason: "uniform-random"}
 	if p.recordCandidates {
-		d.Candidates = []PickCandidate{{AfeID: winner.ID, Cost: 0}}
+		d.Candidates = []PickCandidate{{AfeID: winner.id, Cost: 0}}
 	}
-	return winner.ID, true, d
+	return winner, d
 }
 
-// LeastInFlightAfePicker picks the AFE with the smallest in-flight count.
-// Draws K distinct candidates via partial Fisher-Yates over the ready
-// snapshot and returns the min-cost one. RandomSubsetSize caps K; when
-// it's <=0 or >= len(ready) every candidate is considered.
+// LeastInFlightAfePicker picks the AFE with the smallest active in-flight
+// count (excluding Closing handles), breaking ties toward higher idle
+// session count. Draws K distinct candidates via partial Fisher-Yates over
+// ready. RandomSubsetSize caps K; <=0 or >= len(ready) scans all.
 type LeastInFlightAfePicker struct {
-	// RandomSubsetSize caps the K-choice draw. 0 or negative means
-	// "consider all candidates".
 	RandomSubsetSize int
-	// recordCandidates: see SimpleAfePicker.recordCandidates.
 	recordCandidates bool
 }
 
@@ -117,21 +122,22 @@ func NewLeastInFlightAfePicker(randomSubsetSize int, recordCandidates bool) *Lea
 // Name returns "least-inflight".
 func (LeastInFlightAfePicker) Name() string { return "least-inflight" }
 
-// PickAfe returns the AFE with the fewest NumOutstanding among K
-// randomly-drawn ready candidates.
-func (p LeastInFlightAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
-	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, p.recordCandidates, func(s AfeSnapshot) float64 {
-		return float64(s.NumOutstanding)
-	})
-	return decisionFor(winner, picked, cands, "min-inflight")
+func (p LeastInFlightAfePicker) pickLocked(ready []*afeHandle) (*afeHandle, PickDecision) {
+	winner, cands := kChoiceMinCostLocked(
+		ready,
+		p.RandomSubsetSize,
+		p.recordCandidates,
+		func(a *afeHandle) float64 { return float64(a.inFlightLocked()) },
+		func(cand, best *afeHandle) bool { return len(cand.sessions) > len(best.sessions) },
+	)
+	return decisionFor(winner, cands, "min-inflight")
 }
 
-// LeastLatencyAfePicker picks the AFE with the lowest per-AFE e2e
-// PeakEwma cost. Same K-choice partial Fisher-Yates as
-// LeastInFlightAfePicker.
+// LeastLatencyAfePicker picks the AFE with the lowest per-AFE e2e PeakEwma
+// cost among K randomly-drawn ready candidates. Evaluates e2eEwma.Value()
+// only on the K sampled candidates rather than the full ready set.
 type LeastLatencyAfePicker struct {
 	RandomSubsetSize int
-	// recordCandidates: see SimpleAfePicker.recordCandidates.
 	recordCandidates bool
 }
 
@@ -143,75 +149,64 @@ func NewLeastLatencyAfePicker(randomSubsetSize int, recordCandidates bool) *Leas
 // Name returns "least-latency".
 func (LeastLatencyAfePicker) Name() string { return "least-latency" }
 
-// PickAfe returns the AFE with the smallest E2eCost among K randomly-
-// drawn ready candidates.
-func (p LeastLatencyAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
-	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, p.recordCandidates, func(s AfeSnapshot) float64 {
-		return s.E2eCost
-	})
-	return decisionFor(winner, picked, cands, "min-latency")
+func (p LeastLatencyAfePicker) pickLocked(ready []*afeHandle) (*afeHandle, PickDecision) {
+	winner, cands := kChoiceMinCostLocked(
+		ready,
+		p.RandomSubsetSize,
+		p.recordCandidates,
+		func(a *afeHandle) float64 { return a.e2eEwma.Value() },
+		nil,
+	)
+	return decisionFor(winner, cands, "min-latency")
 }
 
-// decisionFor packages kChoiceMinCost's return into a PickDecision.
-func decisionFor(winner AfeID, picked bool, cands []PickCandidate, reason string) (AfeID, bool, PickDecision) {
-	if !picked {
-		return 0, false, PickDecision{Reason: "no-candidates"}
+func decisionFor(winner *afeHandle, cands []PickCandidate, reason string) (*afeHandle, PickDecision) {
+	if winner == nil {
+		return nil, PickDecision{Reason: "no-candidates"}
 	}
-	return winner, true, PickDecision{
+	return winner, PickDecision{
 		Candidates: cands,
-		Winner:     winner,
+		Winner:     winner.id,
 		Reason:     reason,
 	}
 }
 
-// kChoiceMinCost implements partial-Fisher-Yates + min-cost selection
-// over a snapshot slice. K is clamped to len(ready); K<=0 means scan
-// every candidate.
-//
-// The algorithm mutates ready in place (swap-to-front). Callers must
-// pass a throwaway slice — every production call site produces one via
-// the producer's snapshot method, which allocates a fresh copy per call.
-// cost is invoked at most K times. Returns the winner plus the list of
-// sampled candidates (with their costs) so callers can build a
-// PickDecision for the debug surface.
-//
-// The previous implementation allocated a defensive copy of ready per
-// call; profiling showed it costing ~4µs at the workload's steady-state
-// QPS since the picker runs on every CheckoutSession. Removed because
-// the caller doesn't need ready preserved.
-func kChoiceMinCost(ready []AfeSnapshot, k int, recordCandidates bool, cost func(AfeSnapshot) float64) (AfeID, bool, []PickCandidate) {
+// kChoiceMinCostLocked implements in-place partial Fisher-Yates + min-cost
+// selection over sessionList.afesWithReady under sessionList.mu, updating
+// readyIdx via swapReadyAfesLocked so O(1) removal stays valid.
+func kChoiceMinCostLocked(
+	ready []*afeHandle,
+	k int,
+	recordCandidates bool,
+	cost func(*afeHandle) float64,
+	tieBreak func(cand, best *afeHandle) bool,
+) (*afeHandle, []PickCandidate) {
 	n := len(ready)
 	if n == 0 {
-		return 0, false, nil
+		return nil, nil
 	}
 	if k <= 0 || k > n {
 		k = n
 	}
 
-	// Only allocate the sampled slice when the caller (via
-	// recordCandidates) will actually keep it. When debug is off this
-	// per-pick allocation is the biggest single win — pickAfe runs on
-	// every CheckoutSession.
 	var sampled []PickCandidate
 	if recordCandidates {
 		sampled = make([]PickCandidate, 0, k)
 	}
-	var best AfeID
-	haveBest := false
+	var best *afeHandle
 	bestCost := -1.0
 	for i := 0; i < k; i++ {
 		j := i + rand.IntN(n-i)
-		s := ready[j]
-		c := cost(s)
+		a := ready[j]
+		c := cost(a)
 		if recordCandidates {
-			sampled = append(sampled, PickCandidate{AfeID: s.ID, Cost: c})
+			sampled = append(sampled, PickCandidate{AfeID: a.id, Cost: c})
 		}
-		if !haveBest || c < bestCost {
+		if best == nil || c < bestCost || (c == bestCost && tieBreak != nil && tieBreak(a, best)) {
 			bestCost = c
-			best = s.ID
-			haveBest = true
+			best = a
 		}
-		ready[i], ready[j] = ready[j], ready[i]
+		swapReadyAfesLocked(ready, i, j)
 	}
-	return best, haveBest, sampled
+	return best, sampled
 }

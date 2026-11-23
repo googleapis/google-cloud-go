@@ -55,12 +55,13 @@ const (
 // exceeds Writer.ChunkTransferTimeout without server acknowledgement.
 var errStallTimeout = errors.New("storage: chunk transfer timeout")
 
-// RPCs a gRPC write stall can occur in. They name the stage in
+// RPCs a gRPC read or write stall can occur in. They name the stage in
 // stallTimeoutError and the rpc.method attribute of the stall metric.
 const (
 	rpcStartResumableWrite = "StartResumableWrite"
 	rpcQueryWriteStatus    = "QueryWriteStatus"
 	rpcBidiWriteObject     = "BidiWriteObject"
+	rpcBidiReadObject      = "BidiReadObject"
 )
 
 type stallTimeoutError struct {
@@ -619,8 +620,8 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
 	requestAcks := make(chan struct{}, 1)
 	chcs := gRPCWriterCommandHandleChans{requests, requestAcks, completions}
 	bscs := gRPCBufSenderChans{requests, requestAcks, completions}
-	attemptCtx, attemptCancel := context.WithCancel(ctx)
-	defer attemptCancel()
+	attemptCtx, attemptCancel := context.WithCancelCause(ctx)
+	defer attemptCancel(nil)
 
 	// Oneshot uploads are excluded: there is no upload session, so a commit
 	// abandoned by a stall-cancelled attempt could still land after the retry.
@@ -630,20 +631,21 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
 			stage = s.connectStage()
 		}
 		watchdog := newWriteStallWatchdog(w.chunkTransferTimeout, stage, func(stage string) {
-			if w.c != nil && w.c.metrics != nil {
-				target := stripPort(metricsStateFromContext(w.preRunCtx).getTarget())
-				w.c.metrics.recordStallDuration(attemptCtx, w.chunkTransferTimeout, stage, "grpc", target)
-			}
-			attemptCancel()
+			attemptCancel(errStallTimeout)
 		})
 		w.watchdog = watchdog
 		defer func() {
 			watchdog.stop()
 			// Report a stall only if it is what ended a failed attempt.
 			if retErr != nil && ctx.Err() == nil && watchdog.isStalled() {
+				stalledStage := watchdog.currentStage()
+				if w.c != nil && w.c.metrics != nil {
+					target := stripPort(metricsStateFromContext(w.preRunCtx).getTarget())
+					w.c.metrics.recordStallDuration(attemptCtx, w.chunkTransferTimeout, stalledStage, "grpc", target)
+				}
 				retErr = &stallTimeoutError{
 					timeout: w.chunkTransferTimeout,
-					stage:   watchdog.currentStage(),
+					stage:   stalledStage,
 				}
 			}
 			w.watchdog = nil
@@ -759,7 +761,7 @@ Loop:
 		}
 	} else {
 		// Unclean shutdown. Cancel the context so we clean up expeditiously.
-		attemptCancel()
+		attemptCancel(nil)
 	}
 
 	close(requests)

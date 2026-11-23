@@ -117,6 +117,8 @@ type internalSqlUsersClient interface {
 
 // SqlUsersClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Cloud SQL users service.
 type SqlUsersClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlUsersClient
@@ -194,6 +196,8 @@ type sqlUsersGRPCClient struct {
 
 // NewSqlUsersClient creates a new sql users service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Cloud SQL users service.
 func NewSqlUsersClient(ctx context.Context, opts ...option.ClientOption) (*SqlUsersClient, error) {
 	clientOpts := defaultSqlUsersGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -329,6 +333,8 @@ type sqlUsersRESTClient struct {
 }
 
 // NewSqlUsersRESTClient creates a new sql users service rest client.
+//
+// Cloud SQL users service.
 func NewSqlUsersRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlUsersClient, error) {
 	clientOpts := append(defaultSqlUsersRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {

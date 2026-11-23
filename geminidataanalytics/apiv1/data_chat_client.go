@@ -1725,6 +1725,9 @@ func (c *dataChatRESTClient) ListMessages(ctx context.Context, req *geminidataan
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetPendingWriteWaitSkipped() {
+			params.Add("pendingWriteWaitSkipped", fmt.Sprintf("%v", req.GetPendingWriteWaitSkipped()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 

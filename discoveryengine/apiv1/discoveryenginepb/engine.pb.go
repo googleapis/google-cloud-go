@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,279 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The app of the engine.
+type Engine_AppType int32
+
+const (
+	// All non specified apps.
+	Engine_APP_TYPE_UNSPECIFIED Engine_AppType = 0
+	// App type for intranet search and Agentspace.
+	Engine_APP_TYPE_INTRANET Engine_AppType = 1
+)
+
+// Enum value maps for Engine_AppType.
+var (
+	Engine_AppType_name = map[int32]string{
+		0: "APP_TYPE_UNSPECIFIED",
+		1: "APP_TYPE_INTRANET",
+	}
+	Engine_AppType_value = map[string]int32{
+		"APP_TYPE_UNSPECIFIED": 0,
+		"APP_TYPE_INTRANET":    1,
+	}
+)
+
+func (x Engine_AppType) Enum() *Engine_AppType {
+	p := new(Engine_AppType)
+	*p = x
+	return p
+}
+
+func (x Engine_AppType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Engine_AppType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[0].Descriptor()
+}
+
+func (Engine_AppType) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[0]
+}
+
+func (x Engine_AppType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Engine_AppType.Descriptor instead.
+func (Engine_AppType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP(), []int{0, 0}
+}
+
+// The state of the feature for the engine.
+type Engine_FeatureState int32
+
+const (
+	// The feature state is unspecified.
+	Engine_FEATURE_STATE_UNSPECIFIED Engine_FeatureState = 0
+	// The feature is turned on to be accessible.
+	Engine_FEATURE_STATE_ON Engine_FeatureState = 1
+	// The feature is turned off to be inaccessible.
+	Engine_FEATURE_STATE_OFF Engine_FeatureState = 2
+)
+
+// Enum value maps for Engine_FeatureState.
+var (
+	Engine_FeatureState_name = map[int32]string{
+		0: "FEATURE_STATE_UNSPECIFIED",
+		1: "FEATURE_STATE_ON",
+		2: "FEATURE_STATE_OFF",
+	}
+	Engine_FeatureState_value = map[string]int32{
+		"FEATURE_STATE_UNSPECIFIED": 0,
+		"FEATURE_STATE_ON":          1,
+		"FEATURE_STATE_OFF":         2,
+	}
+)
+
+func (x Engine_FeatureState) Enum() *Engine_FeatureState {
+	p := new(Engine_FeatureState)
+	*p = x
+	return p
+}
+
+func (x Engine_FeatureState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Engine_FeatureState) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[1].Descriptor()
+}
+
+func (Engine_FeatureState) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[1]
+}
+
+func (x Engine_FeatureState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Engine_FeatureState.Descriptor instead.
+func (Engine_FeatureState) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP(), []int{0, 1}
+}
+
+// Configuration for configurable billing approach.
+type Engine_ConfigurableBillingApproach int32
+
+const (
+	// Default value. For Spark and non-Spark non-configurable billing approach.
+	// General pricing model.
+	Engine_CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED Engine_ConfigurableBillingApproach = 0
+	// The billing approach follows configurations specified by customer.
+	Engine_CONFIGURABLE_BILLING_APPROACH_ENABLED Engine_ConfigurableBillingApproach = 1
+)
+
+// Enum value maps for Engine_ConfigurableBillingApproach.
+var (
+	Engine_ConfigurableBillingApproach_name = map[int32]string{
+		0: "CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED",
+		1: "CONFIGURABLE_BILLING_APPROACH_ENABLED",
+	}
+	Engine_ConfigurableBillingApproach_value = map[string]int32{
+		"CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED": 0,
+		"CONFIGURABLE_BILLING_APPROACH_ENABLED":     1,
+	}
+)
+
+func (x Engine_ConfigurableBillingApproach) Enum() *Engine_ConfigurableBillingApproach {
+	p := new(Engine_ConfigurableBillingApproach)
+	*p = x
+	return p
+}
+
+func (x Engine_ConfigurableBillingApproach) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Engine_ConfigurableBillingApproach) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[2].Descriptor()
+}
+
+func (Engine_ConfigurableBillingApproach) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[2]
+}
+
+func (x Engine_ConfigurableBillingApproach) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Engine_ConfigurableBillingApproach.Descriptor instead.
+func (Engine_ConfigurableBillingApproach) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP(), []int{0, 2}
+}
+
+// The status of the model for the engine.
+type Engine_ModelState int32
+
+const (
+	// The model state is unspecified.
+	Engine_MODEL_STATE_UNSPECIFIED Engine_ModelState = 0
+	// The model is enabled by admin.
+	Engine_MODEL_ENABLED Engine_ModelState = 1
+	// The model is disabled by admin.
+	Engine_MODEL_DISABLED Engine_ModelState = 2
+)
+
+// Enum value maps for Engine_ModelState.
+var (
+	Engine_ModelState_name = map[int32]string{
+		0: "MODEL_STATE_UNSPECIFIED",
+		1: "MODEL_ENABLED",
+		2: "MODEL_DISABLED",
+	}
+	Engine_ModelState_value = map[string]int32{
+		"MODEL_STATE_UNSPECIFIED": 0,
+		"MODEL_ENABLED":           1,
+		"MODEL_DISABLED":          2,
+	}
+)
+
+func (x Engine_ModelState) Enum() *Engine_ModelState {
+	p := new(Engine_ModelState)
+	*p = x
+	return p
+}
+
+func (x Engine_ModelState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Engine_ModelState) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[3].Descriptor()
+}
+
+func (Engine_ModelState) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[3]
+}
+
+func (x Engine_ModelState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Engine_ModelState.Descriptor instead.
+func (Engine_ModelState) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP(), []int{0, 3}
+}
+
+// Represents which marketplace agents are visible to any users in agent
+// gallery.
+type Engine_MarketplaceAgentVisibility int32
+
+const (
+	// Defaults to `MARKETPLACE_AGENT_VISIBILITY_UNSPECIFIED`.
+	Engine_MARKETPLACE_AGENT_VISIBILITY_UNSPECIFIED Engine_MarketplaceAgentVisibility = 0
+	// Only agents that are currently available for use by the user are visible.
+	Engine_SHOW_AVAILABLE_AGENTS_ONLY Engine_MarketplaceAgentVisibility = 1
+	// Show marketplace agents that the user does not yet have access to but
+	// are integrated into the engine. This level also includes all agents
+	// visible with `SHOW_AVAILABLE_AGENTS_ONLY`.
+	Engine_SHOW_AGENTS_ALREADY_INTEGRATED Engine_MarketplaceAgentVisibility = 2
+	// Show all agents visible with `SHOW_AGENTS_ALREADY_INTEGRATED`, plus
+	// agents that have already been purchased by the project/organization, even
+	// if they are not currently integrated into the engine.
+	Engine_SHOW_AGENTS_ALREADY_PURCHASED Engine_MarketplaceAgentVisibility = 3
+	// All agents in the marketplace are visible, regardless of access or
+	// purchase status. This level encompasses all agents shown in the previous
+	// levels.
+	Engine_SHOW_ALL_AGENTS Engine_MarketplaceAgentVisibility = 4
+)
+
+// Enum value maps for Engine_MarketplaceAgentVisibility.
+var (
+	Engine_MarketplaceAgentVisibility_name = map[int32]string{
+		0: "MARKETPLACE_AGENT_VISIBILITY_UNSPECIFIED",
+		1: "SHOW_AVAILABLE_AGENTS_ONLY",
+		2: "SHOW_AGENTS_ALREADY_INTEGRATED",
+		3: "SHOW_AGENTS_ALREADY_PURCHASED",
+		4: "SHOW_ALL_AGENTS",
+	}
+	Engine_MarketplaceAgentVisibility_value = map[string]int32{
+		"MARKETPLACE_AGENT_VISIBILITY_UNSPECIFIED": 0,
+		"SHOW_AVAILABLE_AGENTS_ONLY":               1,
+		"SHOW_AGENTS_ALREADY_INTEGRATED":           2,
+		"SHOW_AGENTS_ALREADY_PURCHASED":            3,
+		"SHOW_ALL_AGENTS":                          4,
+	}
+)
+
+func (x Engine_MarketplaceAgentVisibility) Enum() *Engine_MarketplaceAgentVisibility {
+	p := new(Engine_MarketplaceAgentVisibility)
+	*p = x
+	return p
+}
+
+func (x Engine_MarketplaceAgentVisibility) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Engine_MarketplaceAgentVisibility) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[4].Descriptor()
+}
+
+func (Engine_MarketplaceAgentVisibility) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[4]
+}
+
+func (x Engine_MarketplaceAgentVisibility) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Engine_MarketplaceAgentVisibility.Descriptor instead.
+func (Engine_MarketplaceAgentVisibility) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP(), []int{0, 4}
+}
+
 // The training state of the engine.
 type Engine_MediaRecommendationEngineConfig_TrainingState int32
 
@@ -75,11 +348,11 @@ func (x Engine_MediaRecommendationEngineConfig_TrainingState) String() string {
 }
 
 func (Engine_MediaRecommendationEngineConfig_TrainingState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[5].Descriptor()
 }
 
 func (Engine_MediaRecommendationEngineConfig_TrainingState) Type() protoreflect.EnumType {
-	return &file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[0]
+	return &file_google_cloud_discoveryengine_v1_engine_proto_enumTypes[5]
 }
 
 func (x Engine_MediaRecommendationEngineConfig_TrainingState) Number() protoreflect.EnumNumber {
@@ -154,11 +427,92 @@ type Engine struct {
 	IndustryVertical IndustryVertical `protobuf:"varint,16,opt,name=industry_vertical,json=industryVertical,proto3,enum=google.cloud.discoveryengine.v1.IndustryVertical" json:"industry_vertical,omitempty"`
 	// Common config spec that specifies the metadata of the engine.
 	CommonConfig *Engine_CommonConfig `protobuf:"bytes,15,opt,name=common_config,json=commonConfig,proto3" json:"common_config,omitempty"`
+	// Optional. Configurations for the Knowledge Graph. Only applicable if
+	// [solution_type][google.cloud.discoveryengine.v1.Engine.solution_type] is
+	// [SOLUTION_TYPE_SEARCH][google.cloud.discoveryengine.v1.SolutionType.SOLUTION_TYPE_SEARCH].
+	KnowledgeGraphConfig *Engine_KnowledgeGraphConfig `protobuf:"bytes,23,opt,name=knowledge_graph_config,json=knowledgeGraphConfig,proto3" json:"knowledge_graph_config,omitempty"`
+	// Optional. Immutable. This the application type which this engine resource
+	// represents. NOTE: this is a new concept independ of existing industry
+	// vertical or solution type.
+	AppType Engine_AppType `protobuf:"varint,24,opt,name=app_type,json=appType,proto3,enum=google.cloud.discoveryengine.v1.Engine_AppType" json:"app_type,omitempty"`
 	// Optional. Whether to disable analytics for searches performed on this
 	// engine.
 	DisableAnalytics bool `protobuf:"varint,26,opt,name=disable_analytics,json=disableAnalytics,proto3" json:"disable_analytics,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional. Non-empty default. Session config for the engine.
+	SessionConfig *SessionConfig `protobuf:"bytes,29,opt,name=session_config,json=sessionConfig,proto3" json:"session_config,omitempty"`
+	// Optional. Feature config for the engine to opt in or opt out of features.
+	// Supported keys:
+	//
+	//   - `*`: all features, if it's present, all other feature state settings are
+	//     ignored.
+	//   - `agent-gallery`
+	//   - `no-code-agent-builder`
+	//   - `prompt-gallery`
+	//   - `model-selector`
+	//   - `notebook-lm`
+	//   - `people-search`
+	//   - `people-search-org-chart`
+	//   - `bi-directional-audio`
+	//   - `speech-to-text`
+	//   - `feedback`
+	//   - `session-sharing`
+	//   - `personalization-memory`
+	//   - `personalization-suggested-highlights`
+	//   - `mobile-app-access`
+	//   - `disable-agent-sharing`
+	//   - `disable-image-generation`
+	//   - `disable-video-generation`
+	//   - `disable-onedrive-upload`
+	//   - `disable-talk-to-content`
+	//   - `disable-google-drive-upload`
+	//   - `disable-welcome-emails`
+	//   - `disable-canvas`
+	//   - `canvas-workspace`
+	//   - `canvas-app-builder`
+	//   - `skills`
+	//   - `skill-sharing`
+	//   - `skill-sharing-without-admin-approval`
+	//   - `disable-projects`
+	//   - `sobi`
+	//   - `enable-end-user-sharing-with-groups`
+	//   - `single-agent-orchestration`
+	//   - `multi-agent-orchestration`
+	//   - `cross-product-intelligence`
+	//   - `workflow-agents`
+	//   - `in-app-notifications`
+	//   - `code-extraction`
+	Features map[string]Engine_FeatureState `protobuf:"bytes,30,rep,name=features,proto3" json:"features,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=google.cloud.discoveryengine.v1.Engine_FeatureState"`
+	// Output only. CMEK-related information for the Engine.
+	CmekConfig *CmekConfig `protobuf:"bytes,32,opt,name=cmek_config,json=cmekConfig,proto3" json:"cmek_config,omitempty"`
+	// Optional. Configuration for configurable billing approach.
+	ConfigurableBillingApproach Engine_ConfigurableBillingApproach `protobuf:"varint,36,opt,name=configurable_billing_approach,json=configurableBillingApproach,proto3,enum=google.cloud.discoveryengine.v1.Engine_ConfigurableBillingApproach" json:"configurable_billing_approach,omitempty"`
+	// Optional. Maps a model name to its specific configuration for this engine.
+	// This allows admin users to turn on/off individual models. This only stores
+	// models whose states are overridden by the admin.
+	//
+	// When the state is unspecified, or model_configs is empty for this
+	// model, the system will decide if this model should be available or not
+	// based on the default configuration. For example, a preview model
+	// should be disabled by default if the admin has not chosen to enable it.
+	ModelConfigs map[string]Engine_ModelState `protobuf:"bytes,37,rep,name=model_configs,json=modelConfigs,proto3" json:"model_configs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=google.cloud.discoveryengine.v1.Engine_ModelState"`
+	// Optional. Observability config for the engine.
+	ObservabilityConfig *ObservabilityConfig `protobuf:"bytes,39,opt,name=observability_config,json=observabilityConfig,proto3" json:"observability_config,omitempty"`
+	// Optional. Maps a connector ID (e.g., "hybrid-github", "shopify") to
+	// tenant-specific information required for that connector. The structure of
+	// the tenant information string is connector-dependent.
+	ConnectorTenantInfo map[string]string `protobuf:"bytes,42,rep,name=connector_tenant_info,json=connectorTenantInfo,proto3" json:"connector_tenant_info,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. The agent gateway setting for the engine.
+	AgentGatewaySetting *AgentGatewaySetting `protobuf:"bytes,43,opt,name=agent_gateway_setting,json=agentGatewaySetting,proto3" json:"agent_gateway_setting,omitempty"`
+	// Optional. The visibility of marketplace agents in the agent gallery.
+	MarketplaceAgentVisibility Engine_MarketplaceAgentVisibility `protobuf:"varint,44,opt,name=marketplace_agent_visibility,json=marketplaceAgentVisibility,proto3,enum=google.cloud.discoveryengine.v1.Engine_MarketplaceAgentVisibility" json:"marketplace_agent_visibility,omitempty"`
+	// Optional. The emails of the procurement contacts.
+	ProcurementContactEmails []string `protobuf:"bytes,45,rep,name=procurement_contact_emails,json=procurementContactEmails,proto3" json:"procurement_contact_emails,omitempty"`
+	// Output only. The Agent registry containing the agents, MCP servers and
+	// tools associated with this engine. Derived server-side from the linked
+	// Agent Gateway's registry.
+	AssociatedAgentRegistry string `protobuf:"bytes,50,opt,name=associated_agent_registry,json=associatedAgentRegistry,proto3" json:"associated_agent_registry,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *Engine) Reset() {
@@ -297,11 +651,102 @@ func (x *Engine) GetCommonConfig() *Engine_CommonConfig {
 	return nil
 }
 
+func (x *Engine) GetKnowledgeGraphConfig() *Engine_KnowledgeGraphConfig {
+	if x != nil {
+		return x.KnowledgeGraphConfig
+	}
+	return nil
+}
+
+func (x *Engine) GetAppType() Engine_AppType {
+	if x != nil {
+		return x.AppType
+	}
+	return Engine_APP_TYPE_UNSPECIFIED
+}
+
 func (x *Engine) GetDisableAnalytics() bool {
 	if x != nil {
 		return x.DisableAnalytics
 	}
 	return false
+}
+
+func (x *Engine) GetSessionConfig() *SessionConfig {
+	if x != nil {
+		return x.SessionConfig
+	}
+	return nil
+}
+
+func (x *Engine) GetFeatures() map[string]Engine_FeatureState {
+	if x != nil {
+		return x.Features
+	}
+	return nil
+}
+
+func (x *Engine) GetCmekConfig() *CmekConfig {
+	if x != nil {
+		return x.CmekConfig
+	}
+	return nil
+}
+
+func (x *Engine) GetConfigurableBillingApproach() Engine_ConfigurableBillingApproach {
+	if x != nil {
+		return x.ConfigurableBillingApproach
+	}
+	return Engine_CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED
+}
+
+func (x *Engine) GetModelConfigs() map[string]Engine_ModelState {
+	if x != nil {
+		return x.ModelConfigs
+	}
+	return nil
+}
+
+func (x *Engine) GetObservabilityConfig() *ObservabilityConfig {
+	if x != nil {
+		return x.ObservabilityConfig
+	}
+	return nil
+}
+
+func (x *Engine) GetConnectorTenantInfo() map[string]string {
+	if x != nil {
+		return x.ConnectorTenantInfo
+	}
+	return nil
+}
+
+func (x *Engine) GetAgentGatewaySetting() *AgentGatewaySetting {
+	if x != nil {
+		return x.AgentGatewaySetting
+	}
+	return nil
+}
+
+func (x *Engine) GetMarketplaceAgentVisibility() Engine_MarketplaceAgentVisibility {
+	if x != nil {
+		return x.MarketplaceAgentVisibility
+	}
+	return Engine_MARKETPLACE_AGENT_VISIBILITY_UNSPECIFIED
+}
+
+func (x *Engine) GetProcurementContactEmails() []string {
+	if x != nil {
+		return x.ProcurementContactEmails
+	}
+	return nil
+}
+
+func (x *Engine) GetAssociatedAgentRegistry() string {
+	if x != nil {
+		return x.AssociatedAgentRegistry
+	}
+	return ""
 }
 
 type isEngine_EngineConfig interface {
@@ -365,6 +810,15 @@ type Engine_SearchEngineConfig struct {
 	// [SearchTier.SEARCH_TIER_STANDARD][google.cloud.discoveryengine.v1.SearchTier.SEARCH_TIER_STANDARD]
 	// if not specified.
 	SearchTier SearchTier `protobuf:"varint,1,opt,name=search_tier,json=searchTier,proto3,enum=google.cloud.discoveryengine.v1.SearchTier" json:"search_tier,omitempty"`
+	// Optional. The required subscription tier of this engine.
+	//
+	// If the required subscription tier is search, user with higher license
+	// tier like assist can still access the standalone app associated with this
+	// engine.
+	//
+	// Web grounding feature is only available on the app if it is set as
+	// [SubscriptionTier.SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT][google.cloud.discoveryengine.v1.SubscriptionTier.SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT].
+	RequiredSubscriptionTier SubscriptionTier `protobuf:"varint,3,opt,name=required_subscription_tier,json=requiredSubscriptionTier,proto3,enum=google.cloud.discoveryengine.v1.SubscriptionTier" json:"required_subscription_tier,omitempty"`
 	// The add-on that this search engine enables.
 	SearchAddOns  []SearchAddOn `protobuf:"varint,2,rep,packed,name=search_add_ons,json=searchAddOns,proto3,enum=google.cloud.discoveryengine.v1.SearchAddOn" json:"search_add_ons,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -406,6 +860,13 @@ func (x *Engine_SearchEngineConfig) GetSearchTier() SearchTier {
 		return x.SearchTier
 	}
 	return SearchTier_SEARCH_TIER_UNSPECIFIED
+}
+
+func (x *Engine_SearchEngineConfig) GetRequiredSubscriptionTier() SubscriptionTier {
+	if x != nil {
+		return x.RequiredSubscriptionTier
+	}
+	return SubscriptionTier_SUBSCRIPTION_TIER_UNSPECIFIED
 }
 
 func (x *Engine_SearchEngineConfig) GetSearchAddOns() []SearchAddOn {
@@ -676,6 +1137,92 @@ func (x *Engine_CommonConfig) GetCompanyName() string {
 	return ""
 }
 
+// Configuration message for the Knowledge Graph.
+type Engine_KnowledgeGraphConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Whether to enable the Cloud Knowledge Graph for the engine.
+	//
+	// Defaults to false if not specified.
+	EnableCloudKnowledgeGraph bool `protobuf:"varint,1,opt,name=enable_cloud_knowledge_graph,json=enableCloudKnowledgeGraph,proto3" json:"enable_cloud_knowledge_graph,omitempty"`
+	// Specify entity types to support.
+	CloudKnowledgeGraphTypes []string `protobuf:"bytes,2,rep,name=cloud_knowledge_graph_types,json=cloudKnowledgeGraphTypes,proto3" json:"cloud_knowledge_graph_types,omitempty"`
+	// Whether to enable the Private Knowledge Graph for the engine.
+	//
+	// Defaults to false if not specified.
+	EnablePrivateKnowledgeGraph bool `protobuf:"varint,3,opt,name=enable_private_knowledge_graph,json=enablePrivateKnowledgeGraph,proto3" json:"enable_private_knowledge_graph,omitempty"`
+	// Specify entity types to support.
+	PrivateKnowledgeGraphTypes []string `protobuf:"bytes,4,rep,name=private_knowledge_graph_types,json=privateKnowledgeGraphTypes,proto3" json:"private_knowledge_graph_types,omitempty"`
+	// Optional. Feature config for the Knowledge Graph.
+	FeatureConfig *Engine_KnowledgeGraphConfig_FeatureConfig `protobuf:"bytes,5,opt,name=feature_config,json=featureConfig,proto3" json:"feature_config,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Engine_KnowledgeGraphConfig) Reset() {
+	*x = Engine_KnowledgeGraphConfig{}
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Engine_KnowledgeGraphConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Engine_KnowledgeGraphConfig) ProtoMessage() {}
+
+func (x *Engine_KnowledgeGraphConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Engine_KnowledgeGraphConfig.ProtoReflect.Descriptor instead.
+func (*Engine_KnowledgeGraphConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP(), []int{0, 4}
+}
+
+func (x *Engine_KnowledgeGraphConfig) GetEnableCloudKnowledgeGraph() bool {
+	if x != nil {
+		return x.EnableCloudKnowledgeGraph
+	}
+	return false
+}
+
+func (x *Engine_KnowledgeGraphConfig) GetCloudKnowledgeGraphTypes() []string {
+	if x != nil {
+		return x.CloudKnowledgeGraphTypes
+	}
+	return nil
+}
+
+func (x *Engine_KnowledgeGraphConfig) GetEnablePrivateKnowledgeGraph() bool {
+	if x != nil {
+		return x.EnablePrivateKnowledgeGraph
+	}
+	return false
+}
+
+func (x *Engine_KnowledgeGraphConfig) GetPrivateKnowledgeGraphTypes() []string {
+	if x != nil {
+		return x.PrivateKnowledgeGraphTypes
+	}
+	return nil
+}
+
+func (x *Engine_KnowledgeGraphConfig) GetFeatureConfig() *Engine_KnowledgeGraphConfig_FeatureConfig {
+	if x != nil {
+		return x.FeatureConfig
+	}
+	return nil
+}
+
 // Additional information of a Chat Engine.
 // Fields in this message are output only.
 type Engine_ChatEngineMetadata struct {
@@ -692,7 +1239,7 @@ type Engine_ChatEngineMetadata struct {
 
 func (x *Engine_ChatEngineMetadata) Reset() {
 	*x = Engine_ChatEngineMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -704,7 +1251,7 @@ func (x *Engine_ChatEngineMetadata) String() string {
 func (*Engine_ChatEngineMetadata) ProtoMessage() {}
 
 func (x *Engine_ChatEngineMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -717,7 +1264,7 @@ func (x *Engine_ChatEngineMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Engine_ChatEngineMetadata.ProtoReflect.Descriptor instead.
 func (*Engine_ChatEngineMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP(), []int{0, 4}
+	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP(), []int{0, 5}
 }
 
 func (x *Engine_ChatEngineMetadata) GetDialogflowAgent() string {
@@ -741,7 +1288,7 @@ type Engine_MediaRecommendationEngineConfig_OptimizationObjectiveConfig struct {
 
 func (x *Engine_MediaRecommendationEngineConfig_OptimizationObjectiveConfig) Reset() {
 	*x = Engine_MediaRecommendationEngineConfig_OptimizationObjectiveConfig{}
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[6]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -753,7 +1300,7 @@ func (x *Engine_MediaRecommendationEngineConfig_OptimizationObjectiveConfig) Str
 func (*Engine_MediaRecommendationEngineConfig_OptimizationObjectiveConfig) ProtoMessage() {}
 
 func (x *Engine_MediaRecommendationEngineConfig_OptimizationObjectiveConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[6]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -786,7 +1333,7 @@ func (x *Engine_MediaRecommendationEngineConfig_OptimizationObjectiveConfig) Get
 // More feature configs of the selected engine type.
 type Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Feature related configurations applied to a specific type of meida
+	// Feature related configurations applied to a specific type of media
 	// recommendation engines.
 	//
 	// Types that are valid to be assigned to TypeDedicatedConfig:
@@ -800,7 +1347,7 @@ type Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig struct {
 
 func (x *Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig) Reset() {
 	*x = Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig{}
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[7]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -812,7 +1359,7 @@ func (x *Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig) String() s
 func (*Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig) ProtoMessage() {}
 
 func (x *Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[7]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -891,7 +1438,7 @@ type Engine_MediaRecommendationEngineConfig_RecommendedForYouFeatureConfig struc
 
 func (x *Engine_MediaRecommendationEngineConfig_RecommendedForYouFeatureConfig) Reset() {
 	*x = Engine_MediaRecommendationEngineConfig_RecommendedForYouFeatureConfig{}
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[8]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -903,7 +1450,7 @@ func (x *Engine_MediaRecommendationEngineConfig_RecommendedForYouFeatureConfig) 
 func (*Engine_MediaRecommendationEngineConfig_RecommendedForYouFeatureConfig) ProtoMessage() {}
 
 func (x *Engine_MediaRecommendationEngineConfig_RecommendedForYouFeatureConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[8]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -941,7 +1488,7 @@ type Engine_MediaRecommendationEngineConfig_MostPopularFeatureConfig struct {
 
 func (x *Engine_MediaRecommendationEngineConfig_MostPopularFeatureConfig) Reset() {
 	*x = Engine_MediaRecommendationEngineConfig_MostPopularFeatureConfig{}
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[9]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -953,7 +1500,7 @@ func (x *Engine_MediaRecommendationEngineConfig_MostPopularFeatureConfig) String
 func (*Engine_MediaRecommendationEngineConfig_MostPopularFeatureConfig) ProtoMessage() {}
 
 func (x *Engine_MediaRecommendationEngineConfig_MostPopularFeatureConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[9]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1009,7 +1556,7 @@ type Engine_ChatEngineConfig_AgentCreationConfig struct {
 
 func (x *Engine_ChatEngineConfig_AgentCreationConfig) Reset() {
 	*x = Engine_ChatEngineConfig_AgentCreationConfig{}
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[10]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1021,7 +1568,7 @@ func (x *Engine_ChatEngineConfig_AgentCreationConfig) String() string {
 func (*Engine_ChatEngineConfig_AgentCreationConfig) ProtoMessage() {}
 
 func (x *Engine_ChatEngineConfig_AgentCreationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[10]
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1065,11 +1612,92 @@ func (x *Engine_ChatEngineConfig_AgentCreationConfig) GetLocation() string {
 	return ""
 }
 
+// Feature config for the Knowledge Graph.
+type Engine_KnowledgeGraphConfig_FeatureConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Whether to disable the private KG query understanding for the engine.
+	//
+	// Defaults to false if not specified.
+	DisablePrivateKgQueryUnderstanding bool `protobuf:"varint,1,opt,name=disable_private_kg_query_understanding,json=disablePrivateKgQueryUnderstanding,proto3" json:"disable_private_kg_query_understanding,omitempty"`
+	// Whether to disable the private KG enrichment for the engine.
+	//
+	// Defaults to false if not specified.
+	DisablePrivateKgEnrichment bool `protobuf:"varint,2,opt,name=disable_private_kg_enrichment,json=disablePrivateKgEnrichment,proto3" json:"disable_private_kg_enrichment,omitempty"`
+	// Whether to disable the private KG auto complete for the engine.
+	//
+	// Defaults to false if not specified.
+	DisablePrivateKgAutoComplete bool `protobuf:"varint,3,opt,name=disable_private_kg_auto_complete,json=disablePrivateKgAutoComplete,proto3" json:"disable_private_kg_auto_complete,omitempty"`
+	// Whether to disable the private KG for query UI chips.
+	//
+	// Defaults to false if not specified.
+	DisablePrivateKgQueryUiChips bool `protobuf:"varint,4,opt,name=disable_private_kg_query_ui_chips,json=disablePrivateKgQueryUiChips,proto3" json:"disable_private_kg_query_ui_chips,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
+}
+
+func (x *Engine_KnowledgeGraphConfig_FeatureConfig) Reset() {
+	*x = Engine_KnowledgeGraphConfig_FeatureConfig{}
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Engine_KnowledgeGraphConfig_FeatureConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Engine_KnowledgeGraphConfig_FeatureConfig) ProtoMessage() {}
+
+func (x *Engine_KnowledgeGraphConfig_FeatureConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Engine_KnowledgeGraphConfig_FeatureConfig.ProtoReflect.Descriptor instead.
+func (*Engine_KnowledgeGraphConfig_FeatureConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP(), []int{0, 4, 0}
+}
+
+func (x *Engine_KnowledgeGraphConfig_FeatureConfig) GetDisablePrivateKgQueryUnderstanding() bool {
+	if x != nil {
+		return x.DisablePrivateKgQueryUnderstanding
+	}
+	return false
+}
+
+func (x *Engine_KnowledgeGraphConfig_FeatureConfig) GetDisablePrivateKgEnrichment() bool {
+	if x != nil {
+		return x.DisablePrivateKgEnrichment
+	}
+	return false
+}
+
+func (x *Engine_KnowledgeGraphConfig_FeatureConfig) GetDisablePrivateKgAutoComplete() bool {
+	if x != nil {
+		return x.DisablePrivateKgAutoComplete
+	}
+	return false
+}
+
+func (x *Engine_KnowledgeGraphConfig_FeatureConfig) GetDisablePrivateKgQueryUiChips() bool {
+	if x != nil {
+		return x.DisablePrivateKgQueryUiChips
+	}
+	return false
+}
+
 var File_google_cloud_discoveryengine_v1_engine_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_engine_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/discoveryengine/v1/engine.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc1\x19\n" +
+	",google/cloud/discoveryengine/v1/engine.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a;google/cloud/discoveryengine/v1/agent_gateway_setting.proto\x1a9google/cloud/discoveryengine/v1/cmek_config_service.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a-google/cloud/discoveryengine/v1/logging.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa41\n" +
 	"\x06Engine\x12h\n" +
 	"\x12chat_engine_config\x18\v \x01(\v28.google.cloud.discoveryengine.v1.Engine.ChatEngineConfigH\x00R\x10chatEngineConfig\x12n\n" +
 	"\x14search_engine_config\x18\r \x01(\v2:.google.cloud.discoveryengine.v1.Engine.SearchEngineConfigH\x00R\x12searchEngineConfig\x12\x96\x01\n" +
@@ -1084,11 +1712,26 @@ const file_google_cloud_discoveryengine_v1_engine_proto_rawDesc = "" +
 	"\x0edata_store_ids\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\fdataStoreIds\x12X\n" +
 	"\rsolution_type\x18\x06 \x01(\x0e2-.google.cloud.discoveryengine.v1.SolutionTypeB\x04\xe2A\x01\x02R\fsolutionType\x12d\n" +
 	"\x11industry_vertical\x18\x10 \x01(\x0e21.google.cloud.discoveryengine.v1.IndustryVerticalB\x04\xe2A\x01\x01R\x10industryVertical\x12Y\n" +
-	"\rcommon_config\x18\x0f \x01(\v24.google.cloud.discoveryengine.v1.Engine.CommonConfigR\fcommonConfig\x121\n" +
-	"\x11disable_analytics\x18\x1a \x01(\bB\x04\xe2A\x01\x01R\x10disableAnalytics\x1a\xb6\x01\n" +
+	"\rcommon_config\x18\x0f \x01(\v24.google.cloud.discoveryengine.v1.Engine.CommonConfigR\fcommonConfig\x12x\n" +
+	"\x16knowledge_graph_config\x18\x17 \x01(\v2<.google.cloud.discoveryengine.v1.Engine.KnowledgeGraphConfigB\x04\xe2A\x01\x01R\x14knowledgeGraphConfig\x12Q\n" +
+	"\bapp_type\x18\x18 \x01(\x0e2/.google.cloud.discoveryengine.v1.Engine.AppTypeB\x05\xe2A\x02\x01\x05R\aappType\x121\n" +
+	"\x11disable_analytics\x18\x1a \x01(\bB\x04\xe2A\x01\x01R\x10disableAnalytics\x12\\\n" +
+	"\x0esession_config\x18\x1d \x01(\v2..google.cloud.discoveryengine.v1.SessionConfigB\x05\xe2A\x02\x01\aR\rsessionConfig\x12W\n" +
+	"\bfeatures\x18\x1e \x03(\v25.google.cloud.discoveryengine.v1.Engine.FeaturesEntryB\x04\xe2A\x01\x01R\bfeatures\x12R\n" +
+	"\vcmek_config\x18  \x01(\v2+.google.cloud.discoveryengine.v1.CmekConfigB\x04\xe2A\x01\x03R\n" +
+	"cmekConfig\x12\x8d\x01\n" +
+	"\x1dconfigurable_billing_approach\x18$ \x01(\x0e2C.google.cloud.discoveryengine.v1.Engine.ConfigurableBillingApproachB\x04\xe2A\x01\x01R\x1bconfigurableBillingApproach\x12d\n" +
+	"\rmodel_configs\x18% \x03(\v29.google.cloud.discoveryengine.v1.Engine.ModelConfigsEntryB\x04\xe2A\x01\x01R\fmodelConfigs\x12m\n" +
+	"\x14observability_config\x18' \x01(\v24.google.cloud.discoveryengine.v1.ObservabilityConfigB\x04\xe2A\x01\x01R\x13observabilityConfig\x12z\n" +
+	"\x15connector_tenant_info\x18* \x03(\v2@.google.cloud.discoveryengine.v1.Engine.ConnectorTenantInfoEntryB\x04\xe2A\x01\x01R\x13connectorTenantInfo\x12n\n" +
+	"\x15agent_gateway_setting\x18+ \x01(\v24.google.cloud.discoveryengine.v1.AgentGatewaySettingB\x04\xe2A\x01\x01R\x13agentGatewaySetting\x12\x8a\x01\n" +
+	"\x1cmarketplace_agent_visibility\x18, \x01(\x0e2B.google.cloud.discoveryengine.v1.Engine.MarketplaceAgentVisibilityB\x04\xe2A\x01\x01R\x1amarketplaceAgentVisibility\x12B\n" +
+	"\x1aprocurement_contact_emails\x18- \x03(\tB\x04\xe2A\x01\x01R\x18procurementContactEmails\x12@\n" +
+	"\x19associated_agent_registry\x182 \x01(\tB\x04\xe2A\x01\x03R\x17associatedAgentRegistry\x1a\xad\x02\n" +
 	"\x12SearchEngineConfig\x12L\n" +
 	"\vsearch_tier\x18\x01 \x01(\x0e2+.google.cloud.discoveryengine.v1.SearchTierR\n" +
-	"searchTier\x12R\n" +
+	"searchTier\x12u\n" +
+	"\x1arequired_subscription_tier\x18\x03 \x01(\x0e21.google.cloud.discoveryengine.v1.SubscriptionTierB\x04\xe2A\x01\x01R\x18requiredSubscriptionTier\x12R\n" +
 	"\x0esearch_add_ons\x18\x02 \x03(\x0e2,.google.cloud.discoveryengine.v1.SearchAddOnR\fsearchAddOns\x1a\x8d\n" +
 	"\n" +
 	"\x1fMediaRecommendationEngineConfig\x12\x18\n" +
@@ -1123,9 +1766,50 @@ const file_google_cloud_discoveryengine_v1_engine_proto_rawDesc = "" +
 	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\btimeZone\x12\x1a\n" +
 	"\blocation\x18\x04 \x01(\tR\blocation\x1a1\n" +
 	"\fCommonConfig\x12!\n" +
-	"\fcompany_name\x18\x01 \x01(\tR\vcompanyName\x1a?\n" +
+	"\fcompany_name\x18\x01 \x01(\tR\vcompanyName\x1a\xd1\x05\n" +
+	"\x14KnowledgeGraphConfig\x12?\n" +
+	"\x1cenable_cloud_knowledge_graph\x18\x01 \x01(\bR\x19enableCloudKnowledgeGraph\x12=\n" +
+	"\x1bcloud_knowledge_graph_types\x18\x02 \x03(\tR\x18cloudKnowledgeGraphTypes\x12C\n" +
+	"\x1eenable_private_knowledge_graph\x18\x03 \x01(\bR\x1benablePrivateKnowledgeGraph\x12A\n" +
+	"\x1dprivate_knowledge_graph_types\x18\x04 \x03(\tR\x1aprivateKnowledgeGraphTypes\x12w\n" +
+	"\x0efeature_config\x18\x05 \x01(\v2J.google.cloud.discoveryengine.v1.Engine.KnowledgeGraphConfig.FeatureConfigB\x04\xe2A\x01\x01R\rfeatureConfig\x1a\xb7\x02\n" +
+	"\rFeatureConfig\x12R\n" +
+	"&disable_private_kg_query_understanding\x18\x01 \x01(\bR\"disablePrivateKgQueryUnderstanding\x12A\n" +
+	"\x1ddisable_private_kg_enrichment\x18\x02 \x01(\bR\x1adisablePrivateKgEnrichment\x12F\n" +
+	" disable_private_kg_auto_complete\x18\x03 \x01(\bR\x1cdisablePrivateKgAutoComplete\x12G\n" +
+	"!disable_private_kg_query_ui_chips\x18\x04 \x01(\bR\x1cdisablePrivateKgQueryUiChips\x1a?\n" +
 	"\x12ChatEngineMetadata\x12)\n" +
-	"\x10dialogflow_agent\x18\x01 \x01(\tR\x0fdialogflowAgent:}\xeaAz\n" +
+	"\x10dialogflow_agent\x18\x01 \x01(\tR\x0fdialogflowAgent\x1aq\n" +
+	"\rFeaturesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12J\n" +
+	"\x05value\x18\x02 \x01(\x0e24.google.cloud.discoveryengine.v1.Engine.FeatureStateR\x05value:\x028\x01\x1as\n" +
+	"\x11ModelConfigsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12H\n" +
+	"\x05value\x18\x02 \x01(\x0e22.google.cloud.discoveryengine.v1.Engine.ModelStateR\x05value:\x028\x01\x1aF\n" +
+	"\x18ConnectorTenantInfoEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\":\n" +
+	"\aAppType\x12\x18\n" +
+	"\x14APP_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
+	"\x11APP_TYPE_INTRANET\x10\x01\"Z\n" +
+	"\fFeatureState\x12\x1d\n" +
+	"\x19FEATURE_STATE_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10FEATURE_STATE_ON\x10\x01\x12\x15\n" +
+	"\x11FEATURE_STATE_OFF\x10\x02\"w\n" +
+	"\x1bConfigurableBillingApproach\x12-\n" +
+	")CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED\x10\x00\x12)\n" +
+	"%CONFIGURABLE_BILLING_APPROACH_ENABLED\x10\x01\"P\n" +
+	"\n" +
+	"ModelState\x12\x1b\n" +
+	"\x17MODEL_STATE_UNSPECIFIED\x10\x00\x12\x11\n" +
+	"\rMODEL_ENABLED\x10\x01\x12\x12\n" +
+	"\x0eMODEL_DISABLED\x10\x02\"\xc6\x01\n" +
+	"\x1aMarketplaceAgentVisibility\x12,\n" +
+	"(MARKETPLACE_AGENT_VISIBILITY_UNSPECIFIED\x10\x00\x12\x1e\n" +
+	"\x1aSHOW_AVAILABLE_AGENTS_ONLY\x10\x01\x12\"\n" +
+	"\x1eSHOW_AGENTS_ALREADY_INTEGRATED\x10\x02\x12!\n" +
+	"\x1dSHOW_AGENTS_ALREADY_PURCHASED\x10\x03\x12\x13\n" +
+	"\x0fSHOW_ALL_AGENTS\x10\x04:}\xeaAz\n" +
 	"%discoveryengine.googleapis.com/Engine\x12Qprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}B\x0f\n" +
 	"\rengine_configB\x11\n" +
 	"\x0fengine_metadataB\xfe\x01\n" +
@@ -1143,50 +1827,80 @@ func file_google_cloud_discoveryengine_v1_engine_proto_rawDescGZIP() []byte {
 	return file_google_cloud_discoveryengine_v1_engine_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_engine_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_discoveryengine_v1_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_google_cloud_discoveryengine_v1_engine_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_google_cloud_discoveryengine_v1_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_google_cloud_discoveryengine_v1_engine_proto_goTypes = []any{
-	(Engine_MediaRecommendationEngineConfig_TrainingState)(0), // 0: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.TrainingState
-	(*Engine)(nil),                                 // 1: google.cloud.discoveryengine.v1.Engine
-	(*Engine_SearchEngineConfig)(nil),              // 2: google.cloud.discoveryengine.v1.Engine.SearchEngineConfig
-	(*Engine_MediaRecommendationEngineConfig)(nil), // 3: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig
-	(*Engine_ChatEngineConfig)(nil),                // 4: google.cloud.discoveryengine.v1.Engine.ChatEngineConfig
-	(*Engine_CommonConfig)(nil),                    // 5: google.cloud.discoveryengine.v1.Engine.CommonConfig
-	(*Engine_ChatEngineMetadata)(nil),              // 6: google.cloud.discoveryengine.v1.Engine.ChatEngineMetadata
-	(*Engine_MediaRecommendationEngineConfig_OptimizationObjectiveConfig)(nil),    // 7: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.OptimizationObjectiveConfig
-	(*Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig)(nil),           // 8: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfig
-	(*Engine_MediaRecommendationEngineConfig_RecommendedForYouFeatureConfig)(nil), // 9: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.RecommendedForYouFeatureConfig
-	(*Engine_MediaRecommendationEngineConfig_MostPopularFeatureConfig)(nil),       // 10: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.MostPopularFeatureConfig
-	(*Engine_ChatEngineConfig_AgentCreationConfig)(nil),                           // 11: google.cloud.discoveryengine.v1.Engine.ChatEngineConfig.AgentCreationConfig
-	(*timestamppb.Timestamp)(nil),                                                 // 12: google.protobuf.Timestamp
-	(SolutionType)(0),                                                             // 13: google.cloud.discoveryengine.v1.SolutionType
-	(IndustryVertical)(0),                                                         // 14: google.cloud.discoveryengine.v1.IndustryVertical
-	(SearchTier)(0),                                                               // 15: google.cloud.discoveryengine.v1.SearchTier
-	(SearchAddOn)(0),                                                              // 16: google.cloud.discoveryengine.v1.SearchAddOn
+	(Engine_AppType)(0),                                       // 0: google.cloud.discoveryengine.v1.Engine.AppType
+	(Engine_FeatureState)(0),                                  // 1: google.cloud.discoveryengine.v1.Engine.FeatureState
+	(Engine_ConfigurableBillingApproach)(0),                   // 2: google.cloud.discoveryengine.v1.Engine.ConfigurableBillingApproach
+	(Engine_ModelState)(0),                                    // 3: google.cloud.discoveryengine.v1.Engine.ModelState
+	(Engine_MarketplaceAgentVisibility)(0),                    // 4: google.cloud.discoveryengine.v1.Engine.MarketplaceAgentVisibility
+	(Engine_MediaRecommendationEngineConfig_TrainingState)(0), // 5: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.TrainingState
+	(*Engine)(nil),                                            // 6: google.cloud.discoveryengine.v1.Engine
+	(*Engine_SearchEngineConfig)(nil),                         // 7: google.cloud.discoveryengine.v1.Engine.SearchEngineConfig
+	(*Engine_MediaRecommendationEngineConfig)(nil),            // 8: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig
+	(*Engine_ChatEngineConfig)(nil),                           // 9: google.cloud.discoveryengine.v1.Engine.ChatEngineConfig
+	(*Engine_CommonConfig)(nil),                               // 10: google.cloud.discoveryengine.v1.Engine.CommonConfig
+	(*Engine_KnowledgeGraphConfig)(nil),                       // 11: google.cloud.discoveryengine.v1.Engine.KnowledgeGraphConfig
+	(*Engine_ChatEngineMetadata)(nil),                         // 12: google.cloud.discoveryengine.v1.Engine.ChatEngineMetadata
+	nil,                                                       // 13: google.cloud.discoveryengine.v1.Engine.FeaturesEntry
+	nil,                                                       // 14: google.cloud.discoveryengine.v1.Engine.ModelConfigsEntry
+	nil,                                                       // 15: google.cloud.discoveryengine.v1.Engine.ConnectorTenantInfoEntry
+	(*Engine_MediaRecommendationEngineConfig_OptimizationObjectiveConfig)(nil),    // 16: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.OptimizationObjectiveConfig
+	(*Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig)(nil),           // 17: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfig
+	(*Engine_MediaRecommendationEngineConfig_RecommendedForYouFeatureConfig)(nil), // 18: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.RecommendedForYouFeatureConfig
+	(*Engine_MediaRecommendationEngineConfig_MostPopularFeatureConfig)(nil),       // 19: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.MostPopularFeatureConfig
+	(*Engine_ChatEngineConfig_AgentCreationConfig)(nil),                           // 20: google.cloud.discoveryengine.v1.Engine.ChatEngineConfig.AgentCreationConfig
+	(*Engine_KnowledgeGraphConfig_FeatureConfig)(nil),                             // 21: google.cloud.discoveryengine.v1.Engine.KnowledgeGraphConfig.FeatureConfig
+	(*timestamppb.Timestamp)(nil),                                                 // 22: google.protobuf.Timestamp
+	(SolutionType)(0),                                                             // 23: google.cloud.discoveryengine.v1.SolutionType
+	(IndustryVertical)(0),                                                         // 24: google.cloud.discoveryengine.v1.IndustryVertical
+	(*SessionConfig)(nil),                                                         // 25: google.cloud.discoveryengine.v1.SessionConfig
+	(*CmekConfig)(nil),                                                            // 26: google.cloud.discoveryengine.v1.CmekConfig
+	(*ObservabilityConfig)(nil),                                                   // 27: google.cloud.discoveryengine.v1.ObservabilityConfig
+	(*AgentGatewaySetting)(nil),                                                   // 28: google.cloud.discoveryengine.v1.AgentGatewaySetting
+	(SearchTier)(0),                                                               // 29: google.cloud.discoveryengine.v1.SearchTier
+	(SubscriptionTier)(0),                                                         // 30: google.cloud.discoveryengine.v1.SubscriptionTier
+	(SearchAddOn)(0),                                                              // 31: google.cloud.discoveryengine.v1.SearchAddOn
 }
 var file_google_cloud_discoveryengine_v1_engine_proto_depIdxs = []int32{
-	4,  // 0: google.cloud.discoveryengine.v1.Engine.chat_engine_config:type_name -> google.cloud.discoveryengine.v1.Engine.ChatEngineConfig
-	2,  // 1: google.cloud.discoveryengine.v1.Engine.search_engine_config:type_name -> google.cloud.discoveryengine.v1.Engine.SearchEngineConfig
-	3,  // 2: google.cloud.discoveryengine.v1.Engine.media_recommendation_engine_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig
-	6,  // 3: google.cloud.discoveryengine.v1.Engine.chat_engine_metadata:type_name -> google.cloud.discoveryengine.v1.Engine.ChatEngineMetadata
-	12, // 4: google.cloud.discoveryengine.v1.Engine.create_time:type_name -> google.protobuf.Timestamp
-	12, // 5: google.cloud.discoveryengine.v1.Engine.update_time:type_name -> google.protobuf.Timestamp
-	13, // 6: google.cloud.discoveryengine.v1.Engine.solution_type:type_name -> google.cloud.discoveryengine.v1.SolutionType
-	14, // 7: google.cloud.discoveryengine.v1.Engine.industry_vertical:type_name -> google.cloud.discoveryengine.v1.IndustryVertical
-	5,  // 8: google.cloud.discoveryengine.v1.Engine.common_config:type_name -> google.cloud.discoveryengine.v1.Engine.CommonConfig
-	15, // 9: google.cloud.discoveryengine.v1.Engine.SearchEngineConfig.search_tier:type_name -> google.cloud.discoveryengine.v1.SearchTier
-	16, // 10: google.cloud.discoveryengine.v1.Engine.SearchEngineConfig.search_add_ons:type_name -> google.cloud.discoveryengine.v1.SearchAddOn
-	7,  // 11: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.optimization_objective_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.OptimizationObjectiveConfig
-	0,  // 12: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.training_state:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.TrainingState
-	8,  // 13: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.engine_features_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfig
-	11, // 14: google.cloud.discoveryengine.v1.Engine.ChatEngineConfig.agent_creation_config:type_name -> google.cloud.discoveryengine.v1.Engine.ChatEngineConfig.AgentCreationConfig
-	9,  // 15: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfig.recommended_for_you_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.RecommendedForYouFeatureConfig
-	10, // 16: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfig.most_popular_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.MostPopularFeatureConfig
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	9,  // 0: google.cloud.discoveryengine.v1.Engine.chat_engine_config:type_name -> google.cloud.discoveryengine.v1.Engine.ChatEngineConfig
+	7,  // 1: google.cloud.discoveryengine.v1.Engine.search_engine_config:type_name -> google.cloud.discoveryengine.v1.Engine.SearchEngineConfig
+	8,  // 2: google.cloud.discoveryengine.v1.Engine.media_recommendation_engine_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig
+	12, // 3: google.cloud.discoveryengine.v1.Engine.chat_engine_metadata:type_name -> google.cloud.discoveryengine.v1.Engine.ChatEngineMetadata
+	22, // 4: google.cloud.discoveryengine.v1.Engine.create_time:type_name -> google.protobuf.Timestamp
+	22, // 5: google.cloud.discoveryengine.v1.Engine.update_time:type_name -> google.protobuf.Timestamp
+	23, // 6: google.cloud.discoveryengine.v1.Engine.solution_type:type_name -> google.cloud.discoveryengine.v1.SolutionType
+	24, // 7: google.cloud.discoveryengine.v1.Engine.industry_vertical:type_name -> google.cloud.discoveryengine.v1.IndustryVertical
+	10, // 8: google.cloud.discoveryengine.v1.Engine.common_config:type_name -> google.cloud.discoveryengine.v1.Engine.CommonConfig
+	11, // 9: google.cloud.discoveryengine.v1.Engine.knowledge_graph_config:type_name -> google.cloud.discoveryengine.v1.Engine.KnowledgeGraphConfig
+	0,  // 10: google.cloud.discoveryengine.v1.Engine.app_type:type_name -> google.cloud.discoveryengine.v1.Engine.AppType
+	25, // 11: google.cloud.discoveryengine.v1.Engine.session_config:type_name -> google.cloud.discoveryengine.v1.SessionConfig
+	13, // 12: google.cloud.discoveryengine.v1.Engine.features:type_name -> google.cloud.discoveryengine.v1.Engine.FeaturesEntry
+	26, // 13: google.cloud.discoveryengine.v1.Engine.cmek_config:type_name -> google.cloud.discoveryengine.v1.CmekConfig
+	2,  // 14: google.cloud.discoveryengine.v1.Engine.configurable_billing_approach:type_name -> google.cloud.discoveryengine.v1.Engine.ConfigurableBillingApproach
+	14, // 15: google.cloud.discoveryengine.v1.Engine.model_configs:type_name -> google.cloud.discoveryengine.v1.Engine.ModelConfigsEntry
+	27, // 16: google.cloud.discoveryengine.v1.Engine.observability_config:type_name -> google.cloud.discoveryengine.v1.ObservabilityConfig
+	15, // 17: google.cloud.discoveryengine.v1.Engine.connector_tenant_info:type_name -> google.cloud.discoveryengine.v1.Engine.ConnectorTenantInfoEntry
+	28, // 18: google.cloud.discoveryengine.v1.Engine.agent_gateway_setting:type_name -> google.cloud.discoveryengine.v1.AgentGatewaySetting
+	4,  // 19: google.cloud.discoveryengine.v1.Engine.marketplace_agent_visibility:type_name -> google.cloud.discoveryengine.v1.Engine.MarketplaceAgentVisibility
+	29, // 20: google.cloud.discoveryengine.v1.Engine.SearchEngineConfig.search_tier:type_name -> google.cloud.discoveryengine.v1.SearchTier
+	30, // 21: google.cloud.discoveryengine.v1.Engine.SearchEngineConfig.required_subscription_tier:type_name -> google.cloud.discoveryengine.v1.SubscriptionTier
+	31, // 22: google.cloud.discoveryengine.v1.Engine.SearchEngineConfig.search_add_ons:type_name -> google.cloud.discoveryengine.v1.SearchAddOn
+	16, // 23: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.optimization_objective_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.OptimizationObjectiveConfig
+	5,  // 24: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.training_state:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.TrainingState
+	17, // 25: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.engine_features_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfig
+	20, // 26: google.cloud.discoveryengine.v1.Engine.ChatEngineConfig.agent_creation_config:type_name -> google.cloud.discoveryengine.v1.Engine.ChatEngineConfig.AgentCreationConfig
+	21, // 27: google.cloud.discoveryengine.v1.Engine.KnowledgeGraphConfig.feature_config:type_name -> google.cloud.discoveryengine.v1.Engine.KnowledgeGraphConfig.FeatureConfig
+	1,  // 28: google.cloud.discoveryengine.v1.Engine.FeaturesEntry.value:type_name -> google.cloud.discoveryengine.v1.Engine.FeatureState
+	3,  // 29: google.cloud.discoveryengine.v1.Engine.ModelConfigsEntry.value:type_name -> google.cloud.discoveryengine.v1.Engine.ModelState
+	18, // 30: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfig.recommended_for_you_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.RecommendedForYouFeatureConfig
+	19, // 31: google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfig.most_popular_config:type_name -> google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.MostPopularFeatureConfig
+	32, // [32:32] is the sub-list for method output_type
+	32, // [32:32] is the sub-list for method input_type
+	32, // [32:32] is the sub-list for extension type_name
+	32, // [32:32] is the sub-list for extension extendee
+	0,  // [0:32] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_engine_proto_init() }
@@ -1194,14 +1908,17 @@ func file_google_cloud_discoveryengine_v1_engine_proto_init() {
 	if File_google_cloud_discoveryengine_v1_engine_proto != nil {
 		return
 	}
+	file_google_cloud_discoveryengine_v1_agent_gateway_setting_proto_init()
+	file_google_cloud_discoveryengine_v1_cmek_config_service_proto_init()
 	file_google_cloud_discoveryengine_v1_common_proto_init()
+	file_google_cloud_discoveryengine_v1_logging_proto_init()
 	file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[0].OneofWrappers = []any{
 		(*Engine_ChatEngineConfig_)(nil),
 		(*Engine_SearchEngineConfig_)(nil),
 		(*Engine_MediaRecommendationEngineConfig_)(nil),
 		(*Engine_ChatEngineMetadata_)(nil),
 	}
-	file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[7].OneofWrappers = []any{
+	file_google_cloud_discoveryengine_v1_engine_proto_msgTypes[11].OneofWrappers = []any{
 		(*Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig_RecommendedForYouConfig)(nil),
 		(*Engine_MediaRecommendationEngineConfig_EngineFeaturesConfig_MostPopularConfig)(nil),
 	}
@@ -1210,8 +1927,8 @@ func file_google_cloud_discoveryengine_v1_engine_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_engine_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_engine_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   11,
+			NumEnums:      6,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

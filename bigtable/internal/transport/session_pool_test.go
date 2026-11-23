@@ -396,6 +396,12 @@ func TestCheckoutSession_ParkedWaiter_DeadlineExceeded(t *testing.T) {
 	if !errors.Is(err, context.DeadlineExceeded) {
 		t.Errorf("err = %v (type %T), want unwrappable to context.DeadlineExceeded (was the ctx cause dropped?)", err, err)
 	}
+	if got := status.Code(err); got != codes.DeadlineExceeded {
+		t.Errorf("status.Code(err) = %v, want codes.DeadlineExceeded", got)
+	}
+	if got := ClassifyErr(err).State; got != StateUncommitted {
+		t.Errorf("ClassifyErr(err).State = %v, want StateUncommitted", got)
+	}
 	// Positive proof we parked (independent of timing).
 	select {
 	case <-parked:
@@ -930,5 +936,111 @@ func TestPickerFromLoadBalancing_NilFallback(t *testing.T) {
 	}
 	if li.RandomSubsetSize != defaultAfeRandomSubsetSize {
 		t.Errorf("K = %d, want %d", li.RandomSubsetSize, defaultAfeRandomSubsetSize)
+	}
+}
+
+// TestTickOnce_RerunsWhenKickedDuringActiveTick verifies that a kick
+// arriving while a Tick pass is already in flight (after Stats() was
+// sampled) marks tickPending=2 and forces a trailing Tick pass instead
+// of dropping the kick.
+func TestTickOnce_RerunsWhenKickedDuringActiveTick(t *testing.T) {
+	p := newTestPool(t, 2, 2)
+	t.Cleanup(func() { _ = p.Close() })
+
+	// Inject two ready sessions so an initial Tick would see ReadyCount=2
+	// (Delta=0). Hold p.mu to pause a background tickOnce inside Tick's
+	// entry lock while we simulate a concurrent kick + session death.
+	sh1 := injectActiveSession(t, p, "s1", time.Now())
+	sh2 := injectActiveSession(t, p, "s2", time.Now())
+
+	// Simulate an active Tick runner holding tickPending=1 that already
+	// sampled Stats() before s1/s2 closed: a concurrent tickOnce must
+	// flip tickPending from 1 -> 2 rather than dropping the kick.
+	p.tickPending.Store(1)
+	p.tickOnce(p.poolCtx)
+	if got := p.tickPending.Load(); got != 2 {
+		t.Fatalf("tickPending after concurrent kick = %d, want 2 (rerun requested)", got)
+	}
+
+	// Reset to 0 and verify a real end-to-end tickOnce scales back up
+	// when a kick arrives while Tick is blocked on p.mu.
+	p.tickPending.Store(0)
+	p.mu.Lock()
+	tickDone := make(chan struct{})
+	go func() {
+		defer close(tickDone)
+		p.tickOnce(p.poolCtx)
+	}()
+
+	// Wait until the goroutine has acquired tickPending=1.
+	deadline := time.Now().Add(time.Second)
+	for time.Now().Before(deadline) && p.tickPending.Load() == 0 {
+		time.Sleep(time.Millisecond)
+	}
+	// Fire a concurrent kick while Tick #1 is in flight, and drop both
+	// sessions so the trailing Tick sees ReadyCount=0, Delta=2.
+	p.tickOnce(p.poolCtx)
+	p.sl.OnSessionClosing(sh1)
+	p.sl.OnSessionClosed(sh1)
+	p.sl.OnSessionClosing(sh2)
+	p.sl.OnSessionClosed(sh2)
+	p.mu.Unlock()
+
+	select {
+	case <-tickDone:
+	case <-time.After(2 * time.Second):
+		t.Fatal("tickOnce did not complete within 2s")
+	}
+
+	// Wait briefly for the spawned createSession goroutines to enter
+	// startingSessions (or pendingStarts).
+	deadline = time.Now().Add(time.Second)
+	for time.Now().Before(deadline) {
+		if p.Stats().StartingCount >= 2 {
+			break
+		}
+		time.Sleep(2 * time.Millisecond)
+	}
+	if got := p.Stats().StartingCount; got < 2 {
+		t.Errorf("StartingCount after trailing Tick = %d, want >= 2", got)
+	}
+}
+
+// TestCheckoutSession_NoLostWakeupOnConcurrentSessionReady verifies that
+// CheckoutSession never parks indefinitely when a session enters ReadyAfes
+// concurrently with slow-path waiter registration.
+func TestCheckoutSession_NoLostWakeupOnConcurrentSessionReady(t *testing.T) {
+	p := newTestPool(t, 0, 1)
+	t.Cleanup(func() { _ = p.Close() })
+
+	for i := 0; i < 100; i++ {
+		ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+		done := make(chan error, 1)
+		go func() {
+			sh, err := p.CheckoutSession(ctx)
+			if err == nil && sh != nil {
+				sh.DecOutstanding()
+				p.sl.OnSessionClosing(sh)
+				p.sl.OnSessionClosed(sh)
+			}
+			done <- err
+		}()
+
+		// Concurrently register an active session and fire signalFree,
+		// racing CheckoutSession's ReadyAfes check and waiter PushBack.
+		sh := injectActiveSession(t, p, "race-s", time.Now())
+		_ = sh
+		p.signalFree()
+
+		select {
+		case err := <-done:
+			cancel()
+			if err != nil {
+				t.Fatalf("iter %d: CheckoutSession returned err=%v; want nil", i, err)
+			}
+		case <-time.After(time.Second):
+			cancel()
+			t.Fatalf("iter %d: CheckoutSession hung (lost wakeup)", i)
+		}
 	}
 }

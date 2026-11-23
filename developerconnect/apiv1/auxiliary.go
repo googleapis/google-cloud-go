@@ -1222,6 +1222,112 @@ func (it *OperationIterator) takeBuf() interface{} {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *PullRequestIterator) All() iter.Seq2[*developerconnectpb.PullRequest, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// PullRequestIterator manages a stream of *developerconnectpb.PullRequest.
+type PullRequestIterator struct {
+	items    []*developerconnectpb.PullRequest
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*developerconnectpb.PullRequest, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *PullRequestIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *PullRequestIterator) Next() (*developerconnectpb.PullRequest, error) {
+	var item *developerconnectpb.PullRequest
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *PullRequestIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *PullRequestIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SCMCommitIterator) All() iter.Seq2[*developerconnectpb.SCMCommit, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// SCMCommitIterator manages a stream of *developerconnectpb.SCMCommit.
+type SCMCommitIterator struct {
+	items    []*developerconnectpb.SCMCommit
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*developerconnectpb.SCMCommit, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *SCMCommitIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SCMCommitIterator) Next() (*developerconnectpb.SCMCommit, error) {
+	var item *developerconnectpb.SCMCommit
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SCMCommitIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SCMCommitIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *StringIterator) All() iter.Seq2[string, error] {
 	return gaxiter.RangeAdapter(it.Next)
 }

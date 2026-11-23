@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -546,7 +547,7 @@ var File_google_cloud_discoveryengine_v1_engine_service_proto protoreflect.FileD
 
 const file_google_cloud_discoveryengine_v1_engine_service_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/discoveryengine/v1/engine_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/engine.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x01\n" +
+	"4google/cloud/discoveryengine/v1/engine_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/engine.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x01\n" +
 	"\x13CreateEngineRequest\x12J\n" +
 	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")discoveryengine.googleapis.com/CollectionR\x06parent\x12E\n" +
@@ -581,7 +582,7 @@ const file_google_cloud_discoveryengine_v1_engine_service_proto_rawDesc = "" +
 	"\x13UpdateEngineRequest\x12E\n" +
 	"\x06engine\x18\x01 \x01(\v2'.google.cloud.discoveryengine.v1.EngineB\x04\xe2A\x01\x02R\x06engine\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask2\xe3\t\n" +
+	"updateMask2\xc1\r\n" +
 	"\rEngineService\x12\xaa\x02\n" +
 	"\fCreateEngine\x124.google.cloud.discoveryengine.v1.CreateEngineRequest\x1a\x1d.google.longrunning.Operation\"\xc4\x01\xcaA^\n" +
 	"&google.cloud.discoveryengine.v1.Engine\x124google.cloud.discoveryengine.v1.CreateEngineMetadata\xdaA\x17parent,engine,engine_id\x82\xd3\xe4\x93\x02C:\x06engine\"9/v1/{parent=projects/*/locations/*/collections/*}/engines\x12\xfe\x01\n" +
@@ -589,7 +590,9 @@ const file_google_cloud_discoveryengine_v1_engine_service_proto_rawDesc = "" +
 	"\x15google.protobuf.Empty\x124google.cloud.discoveryengine.v1.DeleteEngineMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02;*9/v1/{name=projects/*/locations/*/collections/*/engines/*}\x12\xd4\x01\n" +
 	"\fUpdateEngine\x124.google.cloud.discoveryengine.v1.UpdateEngineRequest\x1a'.google.cloud.discoveryengine.v1.Engine\"e\xdaA\x12engine,update_mask\x82\xd3\xe4\x93\x02J:\x06engine2@/v1/{engine.name=projects/*/locations/*/collections/*/engines/*}\x12\xb1\x01\n" +
 	"\tGetEngine\x121.google.cloud.discoveryengine.v1.GetEngineRequest\x1a'.google.cloud.discoveryengine.v1.Engine\"H\xdaA\x04name\x82\xd3\xe4\x93\x02;\x129/v1/{name=projects/*/locations/*/collections/*/engines/*}\x12\xc4\x01\n" +
-	"\vListEngines\x123.google.cloud.discoveryengine.v1.ListEnginesRequest\x1a4.google.cloud.discoveryengine.v1.ListEnginesResponse\"J\xdaA\x06parent\x82\xd3\xe4\x93\x02;\x129/v1/{parent=projects/*/locations/*/collections/*}/engines\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x85\x02\n" +
+	"\vListEngines\x123.google.cloud.discoveryengine.v1.ListEnginesRequest\x1a4.google.cloud.discoveryengine.v1.ListEnginesResponse\"J\xdaA\x06parent\x82\xd3\xe4\x93\x02;\x129/v1/{parent=projects/*/locations/*/collections/*}/engines\x12\xa8\x01\n" +
+	"\fGetIamPolicy\x12\".google.iam.v1.GetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"]\xdaA\bresource\x82\xd3\xe4\x93\x02L\x12J/v1/{resource=projects/*/locations/*/collections/*/engines/*}:getIamPolicy\x12\xb2\x01\n" +
+	"\fSetIamPolicy\x12\".google.iam.v1.SetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"g\xdaA\x0fresource,policy\x82\xd3\xe4\x93\x02O:\x01*\"J/v1/{resource=projects/*/locations/*/collections/*/engines/*}:setIamPolicy\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x85\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x12EngineServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (
@@ -606,18 +609,21 @@ func file_google_cloud_discoveryengine_v1_engine_service_proto_rawDescGZIP() []b
 
 var file_google_cloud_discoveryengine_v1_engine_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_google_cloud_discoveryengine_v1_engine_service_proto_goTypes = []any{
-	(*CreateEngineRequest)(nil),     // 0: google.cloud.discoveryengine.v1.CreateEngineRequest
-	(*CreateEngineMetadata)(nil),    // 1: google.cloud.discoveryengine.v1.CreateEngineMetadata
-	(*DeleteEngineRequest)(nil),     // 2: google.cloud.discoveryengine.v1.DeleteEngineRequest
-	(*DeleteEngineMetadata)(nil),    // 3: google.cloud.discoveryengine.v1.DeleteEngineMetadata
-	(*GetEngineRequest)(nil),        // 4: google.cloud.discoveryengine.v1.GetEngineRequest
-	(*ListEnginesRequest)(nil),      // 5: google.cloud.discoveryengine.v1.ListEnginesRequest
-	(*ListEnginesResponse)(nil),     // 6: google.cloud.discoveryengine.v1.ListEnginesResponse
-	(*UpdateEngineRequest)(nil),     // 7: google.cloud.discoveryengine.v1.UpdateEngineRequest
-	(*Engine)(nil),                  // 8: google.cloud.discoveryengine.v1.Engine
-	(*timestamppb.Timestamp)(nil),   // 9: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),   // 10: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil), // 11: google.longrunning.Operation
+	(*CreateEngineRequest)(nil),       // 0: google.cloud.discoveryengine.v1.CreateEngineRequest
+	(*CreateEngineMetadata)(nil),      // 1: google.cloud.discoveryengine.v1.CreateEngineMetadata
+	(*DeleteEngineRequest)(nil),       // 2: google.cloud.discoveryengine.v1.DeleteEngineRequest
+	(*DeleteEngineMetadata)(nil),      // 3: google.cloud.discoveryengine.v1.DeleteEngineMetadata
+	(*GetEngineRequest)(nil),          // 4: google.cloud.discoveryengine.v1.GetEngineRequest
+	(*ListEnginesRequest)(nil),        // 5: google.cloud.discoveryengine.v1.ListEnginesRequest
+	(*ListEnginesResponse)(nil),       // 6: google.cloud.discoveryengine.v1.ListEnginesResponse
+	(*UpdateEngineRequest)(nil),       // 7: google.cloud.discoveryengine.v1.UpdateEngineRequest
+	(*Engine)(nil),                    // 8: google.cloud.discoveryengine.v1.Engine
+	(*timestamppb.Timestamp)(nil),     // 9: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),     // 10: google.protobuf.FieldMask
+	(*iampb.GetIamPolicyRequest)(nil), // 11: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil), // 12: google.iam.v1.SetIamPolicyRequest
+	(*longrunningpb.Operation)(nil),   // 13: google.longrunning.Operation
+	(*iampb.Policy)(nil),              // 14: google.iam.v1.Policy
 }
 var file_google_cloud_discoveryengine_v1_engine_service_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.discoveryengine.v1.CreateEngineRequest.engine:type_name -> google.cloud.discoveryengine.v1.Engine
@@ -633,13 +639,17 @@ var file_google_cloud_discoveryengine_v1_engine_service_proto_depIdxs = []int32{
 	7,  // 10: google.cloud.discoveryengine.v1.EngineService.UpdateEngine:input_type -> google.cloud.discoveryengine.v1.UpdateEngineRequest
 	4,  // 11: google.cloud.discoveryengine.v1.EngineService.GetEngine:input_type -> google.cloud.discoveryengine.v1.GetEngineRequest
 	5,  // 12: google.cloud.discoveryengine.v1.EngineService.ListEngines:input_type -> google.cloud.discoveryengine.v1.ListEnginesRequest
-	11, // 13: google.cloud.discoveryengine.v1.EngineService.CreateEngine:output_type -> google.longrunning.Operation
-	11, // 14: google.cloud.discoveryengine.v1.EngineService.DeleteEngine:output_type -> google.longrunning.Operation
-	8,  // 15: google.cloud.discoveryengine.v1.EngineService.UpdateEngine:output_type -> google.cloud.discoveryengine.v1.Engine
-	8,  // 16: google.cloud.discoveryengine.v1.EngineService.GetEngine:output_type -> google.cloud.discoveryengine.v1.Engine
-	6,  // 17: google.cloud.discoveryengine.v1.EngineService.ListEngines:output_type -> google.cloud.discoveryengine.v1.ListEnginesResponse
-	13, // [13:18] is the sub-list for method output_type
-	8,  // [8:13] is the sub-list for method input_type
+	11, // 13: google.cloud.discoveryengine.v1.EngineService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	12, // 14: google.cloud.discoveryengine.v1.EngineService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	13, // 15: google.cloud.discoveryengine.v1.EngineService.CreateEngine:output_type -> google.longrunning.Operation
+	13, // 16: google.cloud.discoveryengine.v1.EngineService.DeleteEngine:output_type -> google.longrunning.Operation
+	8,  // 17: google.cloud.discoveryengine.v1.EngineService.UpdateEngine:output_type -> google.cloud.discoveryengine.v1.Engine
+	8,  // 18: google.cloud.discoveryengine.v1.EngineService.GetEngine:output_type -> google.cloud.discoveryengine.v1.Engine
+	6,  // 19: google.cloud.discoveryengine.v1.EngineService.ListEngines:output_type -> google.cloud.discoveryengine.v1.ListEnginesResponse
+	14, // 20: google.cloud.discoveryengine.v1.EngineService.GetIamPolicy:output_type -> google.iam.v1.Policy
+	14, // 21: google.cloud.discoveryengine.v1.EngineService.SetIamPolicy:output_type -> google.iam.v1.Policy
+	15, // [15:22] is the sub-list for method output_type
+	8,  // [8:15] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
 	8,  // [8:8] is the sub-list for extension extendee
 	0,  // [0:8] is the sub-list for field type_name

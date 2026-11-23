@@ -111,6 +111,8 @@ type internalSqlBackupRunsClient interface {
 
 // SqlBackupRunsClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing database backups.
 type SqlBackupRunsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlBackupRunsClient
@@ -185,6 +187,8 @@ type sqlBackupRunsGRPCClient struct {
 
 // NewSqlBackupRunsClient creates a new sql backup runs service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service for managing database backups.
 func NewSqlBackupRunsClient(ctx context.Context, opts ...option.ClientOption) (*SqlBackupRunsClient, error) {
 	clientOpts := defaultSqlBackupRunsGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -317,6 +321,8 @@ type sqlBackupRunsRESTClient struct {
 }
 
 // NewSqlBackupRunsRESTClient creates a new sql backup runs service rest client.
+//
+// Service for managing database backups.
 func NewSqlBackupRunsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlBackupRunsClient, error) {
 	clientOpts := append(defaultSqlBackupRunsRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {

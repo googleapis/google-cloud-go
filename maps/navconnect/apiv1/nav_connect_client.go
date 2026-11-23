@@ -542,6 +542,9 @@ func (c *restClient) GetTrip(ctx context.Context, req *navconnectpb.GetTripReque
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRoutePolylineFormat() != 0 {
+		params.Add("routePolylineFormat", fmt.Sprintf("%v", req.GetRoutePolylineFormat()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

@@ -1059,7 +1059,9 @@ func (c *jobsRESTClient) CreateJob(ctx context.Context, req *runpb.CreateJobRequ
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("jobId", fmt.Sprintf("%v", req.GetJobId()))
+	if req.GetJobId() != "" {
+		params.Add("jobId", fmt.Sprintf("%v", req.GetJobId()))
+	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
 	}

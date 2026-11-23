@@ -29,6 +29,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/genproto/googleapis/type/date"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -170,6 +172,11 @@ func TestNewResultRowMetadata(t *testing.T) {
 			),
 			wantErr: true,
 		},
+		{
+			name:    "empty columns",
+			pbMeta:  createMetadata(),
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -184,6 +191,9 @@ func TestNewResultRowMetadata(t *testing.T) {
 				return
 			}
 			if err != nil {
+				if status.Code(err) != codes.Internal {
+					t.Errorf("newResultRowMetadata() status.Code(err) = %v, want %v (err: %v)", status.Code(err), codes.Internal, err)
+				}
 				return
 			}
 			if diff := cmp.Diff(tt.wantMd, gotMd, cmpSQLOpts...); diff != "" {
@@ -509,7 +519,7 @@ func TestAssignValue(t *testing.T) {
 		{"map ptr val to map val ok", map[string]*int64{"a": int64Ptr1}, func() any { var v map[string]int64; return &v }, false, map[string]int64{"a": 1}},
 		{"map ptr val to map val fail nil", map[string]*int64{"a": nil}, func() any { var v map[string]int64; return &v }, true, nil},
 		{"map val to map ptr val", map[string]int64{"a": 1}, func() any { var v map[string]*int64; return &v }, false, map[string]*int64{"a": int64Ptr1}},
-		{"map to map string any", map[string]*int64{"a": int64Ptr1, "b": nil}, func() any { var v map[string]any; return &v }, false, map[string]any{"a": int64Ptr1, "b": (*int64)(nil)}},
+		{"map to map string any", map[string]*int64{"a": int64Ptr1, "b": nil}, func() any { var v map[string]any; return &v }, false, map[string]any{"a": int64(1), "b": nil}},
 
 		// struct
 		{
@@ -717,4 +727,617 @@ func TestStruct_GetByName(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestResultRow_GetByIndex_StructWithUnnamedFields(t *testing.T) {
+	typeUnnamedStruct := &btpb.Type{
+		Kind: &btpb.Type_StructType{
+			StructType: &btpb.Type_Struct{
+				Fields: []*btpb.Type_Struct_Field{
+					{FieldName: "", Type: typeString},
+					{FieldName: "", Type: typeInt64},
+				},
+			},
+		},
+	}
+	pbMeta := createMetadata(colMeta("struct", typeUnnamedStruct))
+	pbValues := []*btpb.Value{
+		pbArray(pbString("foo"), pbInt64(100)),
+	}
+	rrMeta, err := newResultRowMetadata(pbMeta)
+	if err != nil {
+		t.Fatalf("newResultRowMetadata: %v", err)
+	}
+	row, err := newResultRow(pbValues, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow: %v", err)
+	}
+
+	var got Struct
+	if err := row.GetByIndex(0, &got); err != nil {
+		t.Fatalf("GetByIndex(0) error: %v", err)
+	}
+	var f0 string
+	if err := got.GetByIndex(0, &f0); err != nil || f0 != "foo" {
+		t.Fatalf("Struct.GetByIndex(0) = %q, %v; want %q, nil", f0, err, "foo")
+	}
+	var f1 int64
+	if err := got.GetByIndex(1, &f1); err != nil || f1 != 100 {
+		t.Fatalf("Struct.GetByIndex(1) = %d, %v; want %d, nil", f1, err, 100)
+	}
+}
+
+func TestResultRow_GetByIndex_MapWithNullKey(t *testing.T) {
+	typeMapBytesString := &btpb.Type{
+		Kind: &btpb.Type_MapType{
+			MapType: &btpb.Type_Map{
+				KeyType:   typeBytes,
+				ValueType: typeString,
+			},
+		},
+	}
+	pbMeta := createMetadata(colMeta("mapCol", typeMapBytesString))
+	pbValues := []*btpb.Value{
+		pbArray(
+			pbMapEntry(pbNull(), pbString("foo")),
+			pbMapEntry(pbBytes([]byte("bar")), pbNull()),
+		),
+	}
+	rrMeta, err := newResultRowMetadata(pbMeta)
+	if err != nil {
+		t.Fatalf("newResultRowMetadata: %v", err)
+	}
+	row, err := newResultRow(pbValues, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow: %v", err)
+	}
+
+	barBase64 := base64.StdEncoding.EncodeToString([]byte("bar"))
+	wantMap := map[any]*string{
+		nil:       ptr("foo"),
+		barBase64: nil,
+	}
+
+	var gotAny any
+	if err := row.GetByIndex(0, &gotAny); err != nil {
+		t.Fatalf("GetByIndex(0, &gotAny) error: %v", err)
+	}
+	if diff := testutil.Diff(wantMap, gotAny); diff != "" {
+		t.Errorf("GetByIndex(0, &gotAny) mismatch (-want +got):\n%s", diff)
+	}
+
+	var gotMapAny map[any]*string
+	if err := row.GetByIndex(0, &gotMapAny); err != nil {
+		t.Fatalf("GetByIndex(0, &gotMapAny) error: %v", err)
+	}
+	if diff := testutil.Diff(wantMap, gotMapAny); diff != "" {
+		t.Errorf("GetByIndex(0, &gotMapAny) mismatch (-want +got):\n%s", diff)
+	}
+
+	var gotMapString map[string]*string
+	if err := row.GetByIndex(0, &gotMapString); err == nil {
+		t.Fatalf("GetByIndex(0, &gotMapString) succeeded, want error for nil map key")
+	}
+}
+
+func TestResultRow_GetByIndex_ValidationErrorsReturnInternal(t *testing.T) {
+	pbMeta := createMetadata(
+		colMeta("strCol", typeString),
+		colMeta("mapCol", typeMapStringInt64),
+		colMeta("arrCol", typeArrayString),
+		colMeta("structCol", typeStructSimple),
+		colMeta("shortStructCol", typeStructSimple),
+	)
+	pbValues := []*btpb.Value{
+		pbInt64(42), // type mismatch: int for string
+		pbArray(pbMapEntry(pbString("k"), pbString("wrong"))), // type mismatch within map value
+		pbArray(pbString("ok"), pbInt64(1)),                   // type mismatch within array
+		pbArray(pbString("ok"), pbString("wrong")),            // type mismatch within struct
+		pbArray(pbString("only_one_field")),                   // struct missing field
+	}
+	rrMeta, err := newResultRowMetadata(pbMeta)
+	if err != nil {
+		t.Fatalf("newResultRowMetadata: %v", err)
+	}
+	row, err := newResultRow(pbValues, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow: %v", err)
+	}
+
+	for _, tc := range []struct {
+		name    string
+		index   int
+		wantSub string
+	}{
+		{"scalar type mismatch", 0, "type mismatch: expected StringValue for StringType"},
+		{"map value type mismatch", 1, "type mismatch: expected IntValue for Int64Type"},
+		{"array element type mismatch", 2, "type mismatch: expected StringValue for StringType"},
+		{"struct field type mismatch", 3, "type mismatch: expected IntValue for Int64Type"},
+		{"struct missing field", 4, "struct data/schema mismatch"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var v any
+			err := row.GetByIndex(tc.index, &v)
+			if err == nil {
+				t.Fatalf("GetByIndex(%d) succeeded, want error", tc.index)
+			}
+			if status.Code(err) != codes.Internal {
+				t.Errorf("GetByIndex(%d) status.Code(err) = %v, want %v (err: %v)", tc.index, status.Code(err), codes.Internal, err)
+			}
+			if !strings.Contains(err.Error(), tc.wantSub) {
+				t.Errorf("GetByIndex(%d) err = %q, want substring %q", tc.index, err.Error(), tc.wantSub)
+			}
+		})
+	}
+}
+
+func TestResultRow_MapDestinationReuseAndPointerUnwrapping(t *testing.T) {
+	pbMeta := createMetadata(colMeta("m", typeMapStringInt64))
+	rrMeta, err := newResultRowMetadata(pbMeta)
+	if err != nil {
+		t.Fatalf("newResultRowMetadata: %v", err)
+	}
+
+	row1, err := newResultRow([]*btpb.Value{
+		pbArray(pbMapEntry(pbString("row1_only"), pbInt64(10)), pbMapEntry(pbString("shared"), pbInt64(20))),
+	}, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow(row1): %v", err)
+	}
+	row2, err := newResultRow([]*btpb.Value{
+		pbArray(pbMapEntry(pbString("shared"), pbInt64(30)), pbMapEntry(pbString("row2_only"), pbInt64(40))),
+	}, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow(row2): %v", err)
+	}
+	rowWithNull, err := newResultRow([]*btpb.Value{
+		pbArray(pbMapEntry(pbString("ok"), pbInt64(50)), pbMapEntry(pbString("nullVal"), pbNull())),
+	}, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow(rowWithNull): %v", err)
+	}
+
+	t.Run("reused non-nil map[string]int64 drops stale keys and does not alias prior rows", func(t *testing.T) {
+		dest := map[string]int64{"stale": 999}
+		if err := row1.GetByIndex(0, &dest); err != nil {
+			t.Fatalf("row1.GetByIndex: %v", err)
+		}
+		row1Snapshot := dest
+		wantRow1 := map[string]int64{"row1_only": 10, "shared": 20}
+		if diff := cmp.Diff(wantRow1, dest); diff != "" {
+			t.Fatalf("row1 mismatch (-want +got):\n%s", diff)
+		}
+
+		if err := row2.GetByIndex(0, &dest); err != nil {
+			t.Fatalf("row2.GetByIndex: %v", err)
+		}
+		wantRow2 := map[string]int64{"shared": 30, "row2_only": 40}
+		if diff := cmp.Diff(wantRow2, dest); diff != "" {
+			t.Fatalf("row2 mismatch (-want +got):\n%s", diff)
+		}
+		if diff := cmp.Diff(wantRow1, row1Snapshot); diff != "" {
+			t.Fatalf("row1 snapshot mutated by row2 scan (-want +got):\n%s", diff)
+		}
+
+		if err := rowWithNull.GetByIndex(0, &dest); err == nil {
+			t.Fatal("rowWithNull.GetByIndex into map[string]int64 succeeded, want error")
+		}
+		if diff := cmp.Diff(wantRow2, dest); diff != "" {
+			t.Fatalf("failed scan mutated dest (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("map[string]any unwraps pointers and uses untyped nil without stale keys", func(t *testing.T) {
+		dest := map[string]any{"stale": "old"}
+		if err := row1.GetByIndex(0, &dest); err != nil {
+			t.Fatalf("row1.GetByIndex: %v", err)
+		}
+		if diff := cmp.Diff(map[string]any{"row1_only": int64(10), "shared": int64(20)}, dest); diff != "" {
+			t.Fatalf("row1 map[string]any mismatch (-want +got):\n%s", diff)
+		}
+
+		if err := rowWithNull.GetByIndex(0, &dest); err != nil {
+			t.Fatalf("rowWithNull.GetByIndex: %v", err)
+		}
+		if _, hasStale := dest["row1_only"]; hasStale {
+			t.Fatalf("dest retained stale key row1_only: %#v", dest)
+		}
+		if gotOk, exists := dest["ok"]; !exists || gotOk != int64(50) {
+			t.Fatalf("dest[\"ok\"] = %#v (%T), want int64(50)", gotOk, gotOk)
+		}
+		gotNull, exists := dest["nullVal"]
+		if !exists || gotNull != nil {
+			t.Fatalf("dest[\"nullVal\"] = %#v (%T, exists=%v), want untyped nil", gotNull, gotNull, exists)
+		}
+	})
+
+	t.Run("incompatible empty map returns error", func(t *testing.T) {
+		var dest map[string]int64
+		if err := assignValue(reflect.ValueOf(&dest).Elem(), map[string]string{}); err == nil {
+			t.Fatal("assignValue(empty map[string]string -> map[string]int64) succeeded, want error")
+		}
+	})
+}
+
+func TestResultRow_NestedBytesMapKeysAndInvalidMapKeys(t *testing.T) {
+	typeMapBytesBytes := &btpb.Type{
+		Kind: &btpb.Type_MapType{
+			MapType: &btpb.Type_Map{
+				KeyType:   typeBytes,
+				ValueType: typeBytes,
+			},
+		},
+	}
+	typeArrayMapBytesBytes := &btpb.Type{
+		Kind: &btpb.Type_ArrayType{
+			ArrayType: &btpb.Type_Array{ElementType: typeMapBytesBytes},
+		},
+	}
+	typeMapStringMapBytesInt := &btpb.Type{
+		Kind: &btpb.Type_MapType{
+			MapType: &btpb.Type_Map{
+				KeyType: typeString,
+				ValueType: &btpb.Type{
+					Kind: &btpb.Type_MapType{
+						MapType: &btpb.Type_Map{
+							KeyType:   typeBytes,
+							ValueType: typeInt64,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	pbMeta := createMetadata(
+		colMeta("arrOfMaps", typeArrayMapBytesBytes),
+		colMeta("mapOfMaps", typeMapStringMapBytesInt),
+	)
+	rrMeta, err := newResultRowMetadata(pbMeta)
+	if err != nil {
+		t.Fatalf("newResultRowMetadata: %v", err)
+	}
+
+	k1 := base64.StdEncoding.EncodeToString([]byte("qual1"))
+	k2 := base64.StdEncoding.EncodeToString([]byte{0xff, 0x00})
+	row, err := newResultRow([]*btpb.Value{
+		pbArray(
+			pbArray(pbMapEntry(pbBytes([]byte("qual1")), pbBytes([]byte("val1")))),
+			pbNull(),
+		),
+		pbArray(
+			pbMapEntry(pbString("fam"), pbArray(pbMapEntry(pbBytes([]byte{0xff, 0x00}), pbInt64(7)))),
+		),
+	}, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow: %v", err)
+	}
+
+	var gotArr []map[string][]byte
+	if err := row.GetByIndex(0, &gotArr); err != nil {
+		t.Fatalf("GetByIndex(0, &gotArr): %v", err)
+	}
+	wantArr := []map[string][]byte{{k1: []byte("val1")}, nil}
+	if diff := cmp.Diff(wantArr, gotArr); diff != "" {
+		t.Errorf("GetByIndex(0) mismatch (-want +got):\n%s", diff)
+	}
+
+	var gotNested map[string]map[string]int64
+	if err := row.GetByIndex(1, &gotNested); err != nil {
+		t.Fatalf("GetByIndex(1, &gotNested): %v", err)
+	}
+	wantNested := map[string]map[string]int64{"fam": {k2: 7}}
+	if diff := cmp.Diff(wantNested, gotNested); diff != "" {
+		t.Errorf("GetByIndex(1) mismatch (-want +got):\n%s", diff)
+	}
+
+	t.Run("non-comparable map key returns codes.Internal instead of panicking", func(t *testing.T) {
+		typeMapNonComparableKey := &btpb.Type{
+			Kind: &btpb.Type_MapType{
+				MapType: &btpb.Type_Map{
+					KeyType:   typeArrayString,
+					ValueType: typeInt64,
+				},
+			},
+		}
+		badMeta := createMetadata(colMeta("badMap", typeMapNonComparableKey))
+		badRRMeta, err := newResultRowMetadata(badMeta)
+		if err != nil {
+			t.Fatalf("newResultRowMetadata(badMeta): %v", err)
+		}
+		badRow, err := newResultRow([]*btpb.Value{pbArray()}, badMeta, badRRMeta)
+		if err != nil {
+			t.Fatalf("newResultRow(badRow): %v", err)
+		}
+		var got any
+		err = badRow.GetByIndex(0, &got)
+		if status.Code(err) != codes.Internal {
+			t.Fatalf("GetByIndex(badMap) status.Code(err) = %v (%v), want codes.Internal", status.Code(err), err)
+		}
+	})
+}
+
+func TestResultRow_NullStructDecoding(t *testing.T) {
+	typeArrayStruct := &btpb.Type{
+		Kind: &btpb.Type_ArrayType{
+			ArrayType: &btpb.Type_Array{ElementType: typeStructSimple},
+		},
+	}
+	typeMapStringStruct := &btpb.Type{
+		Kind: &btpb.Type_MapType{
+			MapType: &btpb.Type_Map{
+				KeyType:   typeString,
+				ValueType: typeStructSimple,
+			},
+		},
+	}
+
+	pbMeta := createMetadata(
+		colMeta("nullStruct", typeStructSimple),
+		colMeta("nonNullStruct", typeStructSimple),
+		colMeta("arrStructWithNull", typeArrayStruct),
+		colMeta("arrStructNoNull", typeArrayStruct),
+		colMeta("mapStructWithNull", typeMapStringStruct),
+	)
+	rrMeta, err := newResultRowMetadata(pbMeta)
+	if err != nil {
+		t.Fatalf("newResultRowMetadata: %v", err)
+	}
+
+	wantSt := newStruct([]structFieldWithValue{
+		{Name: "name", Value: "hello"},
+		{Name: "count", Value: int64(42)},
+	})
+	pbSt := pbArray(pbString("hello"), pbInt64(42))
+
+	row, err := newResultRow([]*btpb.Value{
+		pbNull(),
+		pbSt,
+		pbArray(pbSt, pbNull()),
+		pbArray(pbSt),
+		pbArray(pbMapEntry(pbString("present"), pbSt), pbMapEntry(pbString("missing"), pbNull())),
+	}, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow: %v", err)
+	}
+
+	// 0: NULL top-level STRUCT
+	stPtr := &wantSt
+	if err := row.GetByIndex(0, &stPtr); err != nil {
+		t.Fatalf("GetByIndex(0, **Struct) unexpected error: %v", err)
+	}
+	if stPtr != nil {
+		t.Fatalf("GetByIndex(0, **Struct) = %#v, want nil", stPtr)
+	}
+	var nullAny any = "non-nil"
+	if err := row.GetByIndex(0, &nullAny); err != nil || nullAny != nil {
+		t.Fatalf("GetByIndex(0, *any) = (%#v, %v), want (nil, nil)", nullAny, err)
+	}
+	var nonPtrSt Struct
+	if err := row.GetByIndex(0, &nonPtrSt); err == nil {
+		t.Fatal("GetByIndex(0, *Struct) for NULL STRUCT succeeded, want error")
+	}
+
+	// 1: Non-NULL top-level STRUCT into **Struct
+	var gotStPtr *Struct
+	if err := row.GetByIndex(1, &gotStPtr); err != nil {
+		t.Fatalf("GetByIndex(1, **Struct) unexpected error: %v", err)
+	}
+	if gotStPtr == nil {
+		t.Fatal("GetByIndex(1, **Struct) = nil, want non-nil")
+	}
+	if diff := testutil.Diff(wantSt, *gotStPtr, cmpSQLOpts...); diff != "" {
+		t.Errorf("GetByIndex(1, **Struct) mismatch (-want +got):\n%s", diff)
+	}
+
+	// 2: ARRAY<STRUCT> containing NULL
+	var gotArrPtr []*Struct
+	if err := row.GetByIndex(2, &gotArrPtr); err != nil {
+		t.Fatalf("GetByIndex(2, *[]*Struct) unexpected error: %v", err)
+	}
+	if diff := testutil.Diff([]*Struct{&wantSt, nil}, gotArrPtr, cmpSQLOpts...); diff != "" {
+		t.Errorf("GetByIndex(2, *[]*Struct) mismatch (-want +got):\n%s", diff)
+	}
+	var gotArrAny []any
+	if err := row.GetByIndex(2, &gotArrAny); err != nil {
+		t.Fatalf("GetByIndex(2, *[]any) unexpected error: %v", err)
+	}
+	if diff := testutil.Diff([]any{wantSt, nil}, gotArrAny, cmpSQLOpts...); diff != "" {
+		t.Errorf("GetByIndex(2, *[]any) mismatch (-want +got):\n%s", diff)
+	}
+	var gotArrVal []Struct
+	if err := row.GetByIndex(2, &gotArrVal); err == nil {
+		t.Fatal("GetByIndex(2, *[]Struct) with NULL element succeeded, want error")
+	}
+
+	// 3: ARRAY<STRUCT> without NULL into []Struct
+	if err := row.GetByIndex(3, &gotArrVal); err != nil {
+		t.Fatalf("GetByIndex(3, *[]Struct) unexpected error: %v", err)
+	}
+	if diff := testutil.Diff([]Struct{wantSt}, gotArrVal, cmpSQLOpts...); diff != "" {
+		t.Errorf("GetByIndex(3, *[]Struct) mismatch (-want +got):\n%s", diff)
+	}
+
+	// 4: MAP<STRING, STRUCT> containing NULL
+	var gotMapPtr map[string]*Struct
+	if err := row.GetByIndex(4, &gotMapPtr); err != nil {
+		t.Fatalf("GetByIndex(4, *map[string]*Struct) unexpected error: %v", err)
+	}
+	if diff := testutil.Diff(map[string]*Struct{"present": &wantSt, "missing": nil}, gotMapPtr, cmpSQLOpts...); diff != "" {
+		t.Errorf("GetByIndex(4, *map[string]*Struct) mismatch (-want +got):\n%s", diff)
+	}
+	var gotMapAny map[string]any
+	if err := row.GetByIndex(4, &gotMapAny); err != nil {
+		t.Fatalf("GetByIndex(4, *map[string]any) unexpected error: %v", err)
+	}
+	if diff := testutil.Diff(map[string]any{"present": wantSt, "missing": nil}, gotMapAny, cmpSQLOpts...); diff != "" {
+		t.Errorf("GetByIndex(4, *map[string]any) mismatch (-want +got):\n%s", diff)
+	}
+	var gotMapVal map[string]Struct
+	if err := row.GetByIndex(4, &gotMapVal); err == nil {
+		t.Fatal("GetByIndex(4, *map[string]Struct) with NULL value succeeded, want error")
+	}
+
+	// Invalid pointer depth (***Struct) and custom struct destination (*customStruct) on STRUCT column
+	type customStruct struct {
+		Name  string
+		Count int64
+	}
+	var triplePtr **Struct
+	if err := row.GetByIndex(1, &triplePtr); err == nil {
+		t.Fatal("GetByIndex(1, ***Struct) succeeded, want error")
+	}
+	var custom customStruct
+	if err := row.GetByIndex(1, &custom); err == nil {
+		t.Fatal("GetByIndex(1, *customStruct) succeeded, want error")
+	}
+
+	// Rejecting ARRAY<STRUCT> into []map[string]any or []customStruct
+	var gotSliceOfMaps []map[string]any
+	if err := row.GetByIndex(3, &gotSliceOfMaps); err == nil {
+		t.Fatal("GetByIndex(3, *[]map[string]any) succeeded, want error")
+	}
+	var gotSliceOfCustom []customStruct
+	if err := row.GetByIndex(3, &gotSliceOfCustom); err == nil {
+		t.Fatal("GetByIndex(3, *[]customStruct) succeeded, want error")
+	}
+}
+
+func TestResultRow_AdditionalConversionBranches(t *testing.T) {
+	t.Run("typed nil slices and maps reset pre-populated destinations to nil", func(t *testing.T) {
+		destSlice := []int64{1, 2, 3}
+		if err := assignValue(reflect.ValueOf(&destSlice).Elem(), ([]*int64)(nil)); err != nil {
+			t.Fatalf("assignValue(([]*int64)(nil) -> []int64): %v", err)
+		}
+		if destSlice != nil {
+			t.Fatalf("destSlice = %#v, want nil", destSlice)
+		}
+
+		destPtrSlice := []*int64{new(int64)}
+		if err := assignValue(reflect.ValueOf(&destPtrSlice).Elem(), ([]*int64)(nil)); err != nil {
+			t.Fatalf("assignValue(([]*int64)(nil) -> []*int64): %v", err)
+		}
+		if destPtrSlice != nil {
+			t.Fatalf("destPtrSlice = %#v, want nil", destPtrSlice)
+		}
+
+		destMap := map[string]int64{"stale": 99}
+		if err := assignValue(reflect.ValueOf(&destMap).Elem(), (map[string]*int64)(nil)); err != nil {
+			t.Fatalf("assignValue((map[string]*int64)(nil) -> map[string]int64): %v", err)
+		}
+		if destMap != nil {
+			t.Fatalf("destMap = %#v, want nil", destMap)
+		}
+
+		destSameMap := map[string]int64{"stale": 99}
+		if err := assignValue(reflect.ValueOf(&destSameMap).Elem(), (map[string]int64)(nil)); err != nil {
+			t.Fatalf("assignValue((map[string]int64)(nil) -> map[string]int64): %v", err)
+		}
+		if destSameMap != nil {
+			t.Fatalf("destSameMap = %#v, want nil", destSameMap)
+		}
+	})
+
+	t.Run("incompatible empty slices and Struct containers return errors", func(t *testing.T) {
+		type customStruct struct {
+			Name string
+		}
+		st := newStruct([]structFieldWithValue{{Name: "Name", Value: "v"}})
+
+		var gotInts []int64
+		if err := assignValue(reflect.ValueOf(&gotInts).Elem(), []string{}); err == nil {
+			t.Fatal("assignValue([]string{} -> []int64) succeeded, want error")
+		}
+
+		for _, src := range []any{[]Struct{}, []Struct{st}, []*Struct{}, []*Struct{&st}} {
+			var gotMaps []map[string]any
+			if err := assignValue(reflect.ValueOf(&gotMaps).Elem(), src); err == nil {
+				t.Fatalf("assignValue(%T -> []map[string]any) succeeded, want error", src)
+			}
+			var gotCustom []customStruct
+			if err := assignValue(reflect.ValueOf(&gotCustom).Elem(), src); err == nil {
+				t.Fatalf("assignValue(%T -> []customStruct) succeeded, want error", src)
+			}
+		}
+	})
+
+	t.Run("custom string map keys and incompatible map key types", func(t *testing.T) {
+		type myKey string
+
+		pbMeta := createMetadata(colMeta("mStr", typeMapStringInt64))
+		rrMeta, err := newResultRowMetadata(pbMeta)
+		if err != nil {
+			t.Fatalf("newResultRowMetadata: %v", err)
+		}
+		row, err := newResultRow([]*btpb.Value{
+			pbArray(pbMapEntry(pbString("k1"), pbInt64(11)), pbMapEntry(pbString("k2"), pbInt64(22))),
+		}, pbMeta, rrMeta)
+		if err != nil {
+			t.Fatalf("newResultRow: %v", err)
+		}
+
+		gotCustom := map[myKey]int64{"stale": 1}
+		if err := row.GetByIndex(0, &gotCustom); err != nil {
+			t.Fatalf("GetByIndex(map[myKey]int64): %v", err)
+		}
+		wantCustom := map[myKey]int64{"k1": 11, "k2": 22}
+		if diff := cmp.Diff(wantCustom, gotCustom); diff != "" {
+			t.Fatalf("GetByIndex(map[myKey]int64) mismatch (-want +got):\n%s", diff)
+		}
+
+		for _, src := range []any{map[int64]int64{}, map[int64]int64{1: 2}} {
+			var gotStringKeyMap map[string]any
+			if err := assignValue(reflect.ValueOf(&gotStringKeyMap).Elem(), src); err == nil {
+				t.Fatalf("assignValue(%#v -> map[string]any) succeeded, want error", src)
+			}
+		}
+	})
+
+	t.Run("maps with NULL keys unwrap pointer values into map[any]V and map[any]any", func(t *testing.T) {
+		pbMeta := createMetadata(
+			colMeta("nonNullVals", typeMapStringInt64),
+			colMeta("mixedVals", typeMapStringInt64),
+		)
+		rrMeta, err := newResultRowMetadata(pbMeta)
+		if err != nil {
+			t.Fatalf("newResultRowMetadata: %v", err)
+		}
+		row, err := newResultRow([]*btpb.Value{
+			pbArray(pbMapEntry(pbNull(), pbInt64(10)), pbMapEntry(pbString("k"), pbInt64(20))),
+			pbArray(
+				pbMapEntry(pbNull(), pbInt64(10)),
+				pbMapEntry(pbString("k"), pbInt64(20)),
+				pbMapEntry(pbString("nullVal"), pbNull()),
+			),
+		}, pbMeta, rrMeta)
+		if err != nil {
+			t.Fatalf("newResultRow: %v", err)
+		}
+
+		var gotAnyInt map[any]int64
+		if err := row.GetByIndex(0, &gotAnyInt); err != nil {
+			t.Fatalf("GetByIndex(0, *map[any]int64): %v", err)
+		}
+		wantAnyInt := map[any]int64{nil: 10, "k": 20}
+		if diff := cmp.Diff(wantAnyInt, gotAnyInt); diff != "" {
+			t.Fatalf("GetByIndex(0, *map[any]int64) mismatch (-want +got):\n%s", diff)
+		}
+
+		var gotAnyAny map[any]any
+		if err := row.GetByIndex(1, &gotAnyAny); err != nil {
+			t.Fatalf("GetByIndex(1, *map[any]any): %v", err)
+		}
+		wantAnyAny := map[any]any{nil: int64(10), "k": int64(20), "nullVal": nil}
+		if diff := cmp.Diff(wantAnyAny, gotAnyAny); diff != "" {
+			t.Fatalf("GetByIndex(1, *map[any]any) mismatch (-want +got):\n%s", diff)
+		}
+		if gotNullVal, exists := gotAnyAny["nullVal"]; !exists || gotNullVal != nil {
+			t.Fatalf("gotAnyAny[\"nullVal\"] = %#v (%T, exists=%v), want untyped nil", gotNullVal, gotNullVal, exists)
+		}
+
+		var gotStringInt map[string]int64
+		if err := row.GetByIndex(0, &gotStringInt); err == nil {
+			t.Fatal("GetByIndex(0, *map[string]int64) with NULL key succeeded, want error")
+		}
+	})
 }

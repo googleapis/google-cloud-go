@@ -256,10 +256,6 @@ func (c *Client) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOpe
 // The response field type is
 // OptimizeToursResponse,
 // if successful.
-//
-// Experimental: See
-// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
-// for more details.
 func (c *Client) OptimizeToursLongRunning(ctx context.Context, req *routeoptimizationpb.OptimizeToursRequest, opts ...gax.CallOption) (*OptimizeToursLongRunningOperation, error) {
 	return c.internalClient.OptimizeToursLongRunning(ctx, req, opts...)
 }
@@ -289,14 +285,10 @@ func (c *Client) OptimizeToursLongRunningOperation(name string) *OptimizeToursLo
 // <parent>/operations/<operation_id> and can be used to track
 // progress of the computation. The
 // metadata field type is
-// OptimizeToursLongRunningMetadata.
+// OptimizeToursUriMetadata.
 // The response field type is
 // OptimizeToursUriResponse,
 // if successful.
-//
-// Experimental: See
-// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
-// for more details.
 func (c *Client) OptimizeToursUri(ctx context.Context, req *routeoptimizationpb.OptimizeToursUriRequest, opts ...gax.CallOption) (*OptimizeToursUriOperation, error) {
 	return c.internalClient.OptimizeToursUri(ctx, req, opts...)
 }
@@ -988,10 +980,6 @@ func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 // The response field type is
 // OptimizeToursResponse,
 // if successful.
-//
-// Experimental: See
-// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
-// for more details.
 func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeoptimizationpb.OptimizeToursRequest, opts ...gax.CallOption) (*OptimizeToursLongRunningOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1082,14 +1070,10 @@ func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 // <parent>/operations/<operation_id> and can be used to track
 // progress of the computation. The
 // metadata field type is
-// OptimizeToursLongRunningMetadata.
+// OptimizeToursUriMetadata.
 // The response field type is
 // OptimizeToursUriResponse,
 // if successful.
-//
-// Experimental: See
-// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
-// for more details.
 func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizationpb.OptimizeToursUriRequest, opts ...gax.CallOption) (*OptimizeToursUriOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

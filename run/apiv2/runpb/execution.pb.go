@@ -415,7 +415,7 @@ type Execution struct {
 	//
 	// Note that this value might not be what was used
 	// as input. For example, if ALPHA was provided as input in the parent
-	// resource, but only BETA and GA-level features are were, this field will be
+	// resource, but only BETA and GA-level features are used, this field will be
 	// BETA.
 	LaunchStage api.LaunchStage `protobuf:"varint,11,opt,name=launch_stage,json=launchStage,proto3,enum=google.api.LaunchStage" json:"launch_stage,omitempty"`
 	// Output only. The name of the parent Job.
@@ -459,6 +459,10 @@ type Execution struct {
 	LogUri string `protobuf:"bytes,26,opt,name=log_uri,json=logUri,proto3" json:"log_uri,omitempty"`
 	// Output only. Reserved for future use.
 	SatisfiesPzs bool `protobuf:"varint,27,opt,name=satisfies_pzs,json=satisfiesPzs,proto3" json:"satisfies_pzs,omitempty"`
+	// Output only. Arbitrary identifier for the API client.
+	Client string `protobuf:"bytes,33,opt,name=client,proto3" json:"client,omitempty"`
+	// Output only. Arbitrary version identifier for the API client.
+	ClientVersion string `protobuf:"bytes,34,opt,name=client_version,json=clientVersion,proto3" json:"client_version,omitempty"`
 	// Output only. A system-generated fingerprint for this version of the
 	// resource. May be used to detect modification conflict during updates.
 	Etag          string `protobuf:"bytes,99,opt,name=etag,proto3" json:"etag,omitempty"`
@@ -685,6 +689,20 @@ func (x *Execution) GetSatisfiesPzs() bool {
 	return false
 }
 
+func (x *Execution) GetClient() string {
+	if x != nil {
+		return x.Client
+	}
+	return ""
+}
+
+func (x *Execution) GetClientVersion() string {
+	if x != nil {
+		return x.ClientVersion
+	}
+	return ""
+}
+
 func (x *Execution) GetEtag() string {
 	if x != nil {
 		return x.Etag
@@ -720,7 +738,7 @@ const file_google_cloud_run_v2_execution_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1crun.googleapis.com/ExecutionR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x91\r\n" +
+	"\x04etag\x18\x03 \x01(\tR\x04etag\"\xdc\r\n" +
 	"\tExecution\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
 	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12\x1e\n" +
@@ -760,7 +778,9 @@ const file_google_cloud_run_v2_execution_proto_rawDesc = "" +
 	"\x0fcancelled_count\x18\x18 \x01(\x05B\x04\xe2A\x01\x03R\x0ecancelledCount\x12)\n" +
 	"\rretried_count\x18\x19 \x01(\x05B\x04\xe2A\x01\x03R\fretriedCount\x12\x1d\n" +
 	"\alog_uri\x18\x1a \x01(\tB\x04\xe2A\x01\x03R\x06logUri\x12)\n" +
-	"\rsatisfies_pzs\x18\x1b \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12\x18\n" +
+	"\rsatisfies_pzs\x18\x1b \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12\x1c\n" +
+	"\x06client\x18! \x01(\tB\x04\xe2A\x01\x03R\x06client\x12+\n" +
+	"\x0eclient_version\x18\" \x01(\tB\x04\xe2A\x01\x03R\rclientVersion\x12\x18\n" +
 	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -768,7 +788,7 @@ const file_google_cloud_run_v2_execution_proto_rawDesc = "" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:o\xeaAl\n" +
-	"\x1crun.googleapis.com/Execution\x12Iprojects/{project}/locations/{location}/jobs/{job}/executions/{execution}R\x01\x012\xb1\x06\n" +
+	"\x1crun.googleapis.com/Execution\x12Iprojects/{project}/locations/{location}/jobs/{job}/executions/{execution}R\x01\x012\x83\a\n" +
 	"\n" +
 	"Executions\x12\x9e\x01\n" +
 	"\fGetExecution\x12(.google.cloud.run.v2.GetExecutionRequest\x1a\x1e.google.cloud.run.v2.Execution\"D\xdaA\x04name\x82\xd3\xe4\x93\x027\x125/v2/{name=projects/*/locations/*/jobs/*/executions/*}\x12\xb1\x01\n" +
@@ -776,7 +796,7 @@ const file_google_cloud_run_v2_execution_proto_rawDesc = "" +
 	"\x0fDeleteExecution\x12+.google.cloud.run.v2.DeleteExecutionRequest\x1a\x1d.google.longrunning.Operation\"]\xcaA\x16\n" +
 	"\tExecution\x12\tExecution\xdaA\x04name\x82\xd3\xe4\x93\x027*5/v2/{name=projects/*/locations/*/jobs/*/executions/*}\x12\xc6\x01\n" +
 	"\x0fCancelExecution\x12+.google.cloud.run.v2.CancelExecutionRequest\x1a\x1d.google.longrunning.Operation\"g\xcaA\x16\n" +
-	"\tExecution\x12\tExecution\xdaA\x04name\x82\xd3\xe4\x93\x02A:\x01*\"</v2/{name=projects/*/locations/*/jobs/*/executions/*}:cancel\x1aF\xcaA\x12run.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBV\n" +
+	"\tExecution\x12\tExecution\xdaA\x04name\x82\xd3\xe4\x93\x02A:\x01*\"</v2/{name=projects/*/locations/*/jobs/*/executions/*}:cancel\x1a\x97\x01\xcaA\x12run.googleapis.com\xd2A\x7fhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/run,https://www.googleapis.com/auth/run.readonlyBV\n" +
 	"\x17com.google.cloud.run.v2B\x0eExecutionProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
 
 var (

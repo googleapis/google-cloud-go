@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/backupdr/apiv1beta",
-    "version": "1.19.1"
+    "version": "1.20.0"
   },
   "snippets": [
     {
@@ -338,6 +338,144 @@
           "fullName": "google.cloud.backupdr.v1beta.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.backupdr.v1beta.Client.CreateRestoreTemplate",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.CreateRestoreTemplate",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "CreateRestoreTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.CreateRestoreTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateRestoreTemplateOperation",
+        "shortName": "CreateRestoreTemplate"
+      },
+      "description": "CreateRestoreTemplate creates a new RestoreTemplate in a given project and location.",
+      "file": "Client/CreateRestoreTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_CreateRestoreTemplate_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr CreateRestoreTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.CreateRestoreVerificationPlan",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.CreateRestoreVerificationPlan",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "CreateRestoreVerificationPlan"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.CreateRestoreVerificationPlanRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateRestoreVerificationPlanOperation",
+        "shortName": "CreateRestoreVerificationPlan"
+      },
+      "description": "CreateRestoreVerificationPlan creates a new RestoreVerificationPlan in a given project and location.",
+      "file": "Client/CreateRestoreVerificationPlan/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_CreateRestoreVerificationPlan_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr CreateRestoreVerificationPlan Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.CreateRestoreVerificationPlanAssociation",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.CreateRestoreVerificationPlanAssociation",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "CreateRestoreVerificationPlanAssociation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.CreateRestoreVerificationPlanAssociationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateRestoreVerificationPlanAssociationOperation",
+        "shortName": "CreateRestoreVerificationPlanAssociation"
+      },
+      "description": "CreateRestoreVerificationPlanAssociation creates a new RestoreVerificationPlanAssociation in a given\nRestoreVerificationPlan.",
+      "file": "Client/CreateRestoreVerificationPlanAssociation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_CreateRestoreVerificationPlanAssociation_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr CreateRestoreVerificationPlanAssociation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1beta.Client.DeleteAutoProtectionPolicy",
         "method": {
           "fullName": "google.cloud.backupdr.v1beta.BackupDR.DeleteAutoProtectionPolicy",
@@ -652,6 +790,144 @@
         }
       ],
       "title": "backupdr DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.DeleteRestoreTemplate",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.DeleteRestoreTemplate",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "DeleteRestoreTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.DeleteRestoreTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteRestoreTemplateOperation",
+        "shortName": "DeleteRestoreTemplate"
+      },
+      "description": "DeleteRestoreTemplate deletes a RestoreTemplate.",
+      "file": "Client/DeleteRestoreTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_DeleteRestoreTemplate_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr DeleteRestoreTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.DeleteRestoreVerificationPlan",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.DeleteRestoreVerificationPlan",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "DeleteRestoreVerificationPlan"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.DeleteRestoreVerificationPlanRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteRestoreVerificationPlanOperation",
+        "shortName": "DeleteRestoreVerificationPlan"
+      },
+      "description": "DeleteRestoreVerificationPlan deletes a single RestoreVerificationPlan. If the `force` flag is set to\n`true`, any RestoreVerificationPlanAssociations linked to this\nRestoreVerificationPlan will also be deleted.",
+      "file": "Client/DeleteRestoreVerificationPlan/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_DeleteRestoreVerificationPlan_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr DeleteRestoreVerificationPlan Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.DeleteRestoreVerificationPlanAssociation",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.DeleteRestoreVerificationPlanAssociation",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "DeleteRestoreVerificationPlanAssociation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.DeleteRestoreVerificationPlanAssociationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteRestoreVerificationPlanAssociationOperation",
+        "shortName": "DeleteRestoreVerificationPlanAssociation"
+      },
+      "description": "DeleteRestoreVerificationPlanAssociation deletes a single RestoreVerificationPlanAssociation in a given\nRestoreVerificationPlan.",
+      "file": "Client/DeleteRestoreVerificationPlanAssociation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_DeleteRestoreVerificationPlanAssociation_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr DeleteRestoreVerificationPlanAssociation Sample"
     },
     {
       "clientMethod": {
@@ -1487,6 +1763,190 @@
           "fullName": "google.cloud.backupdr.v1beta.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.backupdr.v1beta.Client.GetRestoreTemplate",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.GetRestoreTemplate",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetRestoreTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.GetRestoreTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*backupdrpb.RestoreTemplate",
+        "shortName": "GetRestoreTemplate"
+      },
+      "description": "GetRestoreTemplate gets details of a RestoreTemplate.",
+      "file": "Client/GetRestoreTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_GetRestoreTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr GetRestoreTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.GetRestoreTemplateExecution",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.GetRestoreTemplateExecution",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetRestoreTemplateExecution"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.GetRestoreTemplateExecutionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*backupdrpb.RestoreTemplateExecution",
+        "shortName": "GetRestoreTemplateExecution"
+      },
+      "description": "GetRestoreTemplateExecution gets details of a RestoreTemplateExecution.",
+      "file": "Client/GetRestoreTemplateExecution/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_GetRestoreTemplateExecution_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr GetRestoreTemplateExecution Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.GetRestoreVerificationPlan",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.GetRestoreVerificationPlan",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetRestoreVerificationPlan"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.GetRestoreVerificationPlanRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*backupdrpb.RestoreVerificationPlan",
+        "shortName": "GetRestoreVerificationPlan"
+      },
+      "description": "GetRestoreVerificationPlan gets details of a single RestoreVerificationPlan. Returns the requested\nRestoreVerificationPlan.",
+      "file": "Client/GetRestoreVerificationPlan/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_GetRestoreVerificationPlan_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr GetRestoreVerificationPlan Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.GetRestoreVerificationPlanAssociation",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.GetRestoreVerificationPlanAssociation",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetRestoreVerificationPlanAssociation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.GetRestoreVerificationPlanAssociationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*backupdrpb.RestoreVerificationPlanAssociation",
+        "shortName": "GetRestoreVerificationPlanAssociation"
+      },
+      "description": "GetRestoreVerificationPlanAssociation gets details of a single RestoreVerificationPlanAssociation in a given\nRestoreVerificationPlan.",
+      "file": "Client/GetRestoreVerificationPlanAssociation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_GetRestoreVerificationPlanAssociation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr GetRestoreVerificationPlanAssociation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1beta.Client.InitializeService",
         "method": {
           "fullName": "google.cloud.backupdr.v1beta.BackupDR.InitializeService",
@@ -2223,6 +2683,190 @@
           "fullName": "google.cloud.backupdr.v1beta.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.backupdr.v1beta.Client.ListRestoreTemplateExecutions",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.ListRestoreTemplateExecutions",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListRestoreTemplateExecutions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.ListRestoreTemplateExecutionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RestoreTemplateExecutionIterator",
+        "shortName": "ListRestoreTemplateExecutions"
+      },
+      "description": "ListRestoreTemplateExecutions lists RestoreTemplateExecutions in a given project, location and restore\ntemplate.",
+      "file": "Client/ListRestoreTemplateExecutions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_ListRestoreTemplateExecutions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr ListRestoreTemplateExecutions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.ListRestoreTemplates",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.ListRestoreTemplates",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListRestoreTemplates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.ListRestoreTemplatesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RestoreTemplateIterator",
+        "shortName": "ListRestoreTemplates"
+      },
+      "description": "ListRestoreTemplates lists RestoreTemplates in a given project and location.",
+      "file": "Client/ListRestoreTemplates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_ListRestoreTemplates_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr ListRestoreTemplates Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.ListRestoreVerificationPlanAssociations",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.ListRestoreVerificationPlanAssociations",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListRestoreVerificationPlanAssociations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.ListRestoreVerificationPlanAssociationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RestoreVerificationPlanAssociationIterator",
+        "shortName": "ListRestoreVerificationPlanAssociations"
+      },
+      "description": "ListRestoreVerificationPlanAssociations lists RestoreVerificationPlanAssociations in a given\nRestoreVerificationPlan.",
+      "file": "Client/ListRestoreVerificationPlanAssociations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_ListRestoreVerificationPlanAssociations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr ListRestoreVerificationPlanAssociations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.ListRestoreVerificationPlans",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.ListRestoreVerificationPlans",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListRestoreVerificationPlans"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.ListRestoreVerificationPlansRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RestoreVerificationPlanIterator",
+        "shortName": "ListRestoreVerificationPlans"
+      },
+      "description": "ListRestoreVerificationPlans lists RestoreVerificationPlans in a given project and location.",
+      "file": "Client/ListRestoreVerificationPlans/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_ListRestoreVerificationPlans_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr ListRestoreVerificationPlans Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1beta.Client.RestoreBackup",
         "method": {
           "fullName": "google.cloud.backupdr.v1beta.BackupDR.RestoreBackup",
@@ -2262,6 +2906,52 @@
         }
       ],
       "title": "backupdr RestoreBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.RunRestoreTemplate",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.RunRestoreTemplate",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "RunRestoreTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.RunRestoreTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RunRestoreTemplateOperation",
+        "shortName": "RunRestoreTemplate"
+      },
+      "description": "RunRestoreTemplate runs a RestoreTemplate.",
+      "file": "Client/RunRestoreTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_RunRestoreTemplate_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr RunRestoreTemplate Sample"
     },
     {
       "clientMethod": {
@@ -2400,6 +3090,98 @@
         }
       ],
       "title": "backupdr TriggerBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.TriggerRestoreCleanup",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.TriggerRestoreCleanup",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "TriggerRestoreCleanup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.TriggerRestoreCleanupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TriggerRestoreCleanupOperation",
+        "shortName": "TriggerRestoreCleanup"
+      },
+      "description": "TriggerRestoreCleanup triggers cleanup of restored resources created during execution.",
+      "file": "Client/TriggerRestoreCleanup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_TriggerRestoreCleanup_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr TriggerRestoreCleanup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.TriggerRestoreVerification",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.TriggerRestoreVerification",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "TriggerRestoreVerification"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.TriggerRestoreVerificationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TriggerRestoreVerificationOperation",
+        "shortName": "TriggerRestoreVerification"
+      },
+      "description": "TriggerRestoreVerification triggers a new Restore Verification for the association in a given\nRestoreVerificationPlan.",
+      "file": "Client/TriggerRestoreVerification/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_TriggerRestoreVerification_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr TriggerRestoreVerification Sample"
     },
     {
       "clientMethod": {
@@ -2676,6 +3458,52 @@
         }
       ],
       "title": "backupdr UpdateDataSource Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1beta.Client.UpdateRestoreTemplate",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1beta.BackupDR.UpdateRestoreTemplate",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1beta.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "UpdateRestoreTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.UpdateRestoreTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateRestoreTemplateOperation",
+        "shortName": "UpdateRestoreTemplate"
+      },
+      "description": "UpdateRestoreTemplate updates the settings of a RestoreTemplate.",
+      "file": "Client/UpdateRestoreTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1beta_generated_BackupDR_UpdateRestoreTemplate_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "backupdr UpdateRestoreTemplate Sample"
     },
     {
       "clientMethod": {

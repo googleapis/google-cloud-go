@@ -136,9 +136,9 @@ type fakeDesc struct {
 	dec    func(buf []byte) (interface{}, error)
 }
 
-func (f *fakeDesc) Method() string                         { return f.method }
-func (f *fakeDesc) Encode(req interface{}) ([]byte, error) { return f.enc(req) }
-func (f *fakeDesc) Decode(buf []byte) (interface{}, error) { return f.dec(buf) }
+func (f *fakeDesc) Method() string                                             { return f.method }
+func (f *fakeDesc) Encode(_ ResourceEnvelope, req interface{}) ([]byte, error) { return f.enc(req) }
+func (f *fakeDesc) Decode(_ ResourceEnvelope, buf []byte) (interface{}, error) { return f.dec(buf) }
 
 // newRoundTripDesc returns a trivial descriptor that round-trips string
 // payloads through the encode/decode pair.

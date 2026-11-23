@@ -172,7 +172,7 @@ func (RuleConfigInfo_LastBackupState) EnumDescriptor() ([]byte, []int) {
 type BackupPlanAssociation struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Output only. Identifier. The resource name of BackupPlanAssociation in
-	// below format Format :
+	// below format Format:
 	// projects/{project}/locations/{location}/backupPlanAssociations/{backupPlanAssociationId}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Immutable. Resource type of workload on which backupplan is
@@ -218,8 +218,12 @@ type BackupPlanAssociation struct {
 	// Format:
 	// `projects/{project}/locations/{location}/backupPlans/{backup_plan}/revisions/{revision_id}`
 	BackupPlanRevisionName string `protobuf:"bytes,12,opt,name=backup_plan_revision_name,json=backupPlanRevisionName,proto3" json:"backup_plan_revision_name,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Output only. The resource name of the `AutoProtectionPolicyBinding` that
+	// manages this association, if any. Format:
+	// `projects/{project}/locations/{location}/autoProtectionPolicies/{policy}/bindings/{binding}`.
+	AutoProtectionPolicyBinding string `protobuf:"bytes,16,opt,name=auto_protection_policy_binding,json=autoProtectionPolicyBinding,proto3" json:"auto_protection_policy_binding,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *BackupPlanAssociation) Reset() {
@@ -350,6 +354,13 @@ func (x *BackupPlanAssociation) GetBackupPlanRevisionId() string {
 func (x *BackupPlanAssociation) GetBackupPlanRevisionName() string {
 	if x != nil {
 		return x.BackupPlanRevisionName
+	}
+	return ""
+}
+
+func (x *BackupPlanAssociation) GetAutoProtectionPolicyBinding() string {
+	if x != nil {
+		return x.AutoProtectionPolicyBinding
 	}
 	return ""
 }
@@ -922,9 +933,15 @@ type DeleteBackupPlanAssociationRequest struct {
 	//
 	// The request ID must be a valid UUID with the exception that zero UUID is
 	// not supported (00000000-0000-0000-0000-000000000000).
-	RequestId     string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Optional. This field is exclusively used by Backup and DR's auto-protection
+	// feature. The resource name of the `AutoProtectionPolicyBinding` that
+	// triggered the deletion of this association.
+	// Format:
+	// `projects/{project}/locations/{location}/autoProtectionPolicies/{policy}/bindings/{binding}`.
+	AutoProtectionPolicyBinding string `protobuf:"bytes,3,opt,name=auto_protection_policy_binding,json=autoProtectionPolicyBinding,proto3" json:"auto_protection_policy_binding,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *DeleteBackupPlanAssociationRequest) Reset() {
@@ -967,6 +984,13 @@ func (x *DeleteBackupPlanAssociationRequest) GetName() string {
 func (x *DeleteBackupPlanAssociationRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
+	}
+	return ""
+}
+
+func (x *DeleteBackupPlanAssociationRequest) GetAutoProtectionPolicyBinding() string {
+	if x != nil {
+		return x.AutoProtectionPolicyBinding
 	}
 	return ""
 }
@@ -1134,8 +1158,7 @@ var File_google_cloud_backupdr_v1_backupplanassociation_proto protoreflect.FileD
 
 const file_google_cloud_backupdr_v1_backupplanassociation_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/backupdr/v1/backupplanassociation.proto\x12\x18google.cloud.backupdr.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/backupdr/v1/backupvault_alloydb.proto\x1a3google/cloud/backupdr/v1/backupvault_cloudsql.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe4\n" +
-	"\n" +
+	"4google/cloud/backupdr/v1/backupplanassociation.proto\x12\x18google.cloud.backupdr.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/backupdr/v1/backupvault_alloydb.proto\x1a3google/cloud/backupdr/v1/backupvault_cloudsql.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe8\v\n" +
 	"\x15BackupPlanAssociation\x12\x19\n" +
 	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12*\n" +
 	"\rresource_type\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x02R\fresourceType\x12!\n" +
@@ -1155,7 +1178,9 @@ const file_google_cloud_backupdr_v1_backupplanassociation_proto_rawDesc = "" +
 	" \x01(\v2I.google.cloud.backupdr.v1.CloudSqlInstanceBackupPlanAssociationPropertiesB\x04\xe2A\x01\x03H\x00R/cloudSqlInstanceBackupPlanAssociationProperties\x12\xba\x01\n" +
 	"2alloydb_cluster_backup_plan_association_properties\x18\x0f \x01(\v2G.google.cloud.backupdr.v1.AlloyDBClusterBackupPlanAssociationPropertiesB\x04\xe2A\x01\x03H\x00R-alloydbClusterBackupPlanAssociationProperties\x12;\n" +
 	"\x17backup_plan_revision_id\x18\v \x01(\tB\x04\xe2A\x01\x03R\x14backupPlanRevisionId\x12?\n" +
-	"\x19backup_plan_revision_name\x18\f \x01(\tB\x04\xe2A\x01\x03R\x16backupPlanRevisionName\"b\n" +
+	"\x19backup_plan_revision_name\x18\f \x01(\tB\x04\xe2A\x01\x03R\x16backupPlanRevisionName\x12\x81\x01\n" +
+	"\x1eauto_protection_policy_binding\x18\x10 \x01(\tB<\xe2A\x01\x03\xfaA5\n" +
+	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x1bautoProtectionPolicyBinding\"b\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -1207,12 +1232,14 @@ const file_google_cloud_backupdr_v1_backupplanassociation_proto_rawDesc = "" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"m\n" +
 	"\x1fGetBackupPlanAssociationRequest\x12J\n" +
 	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
-	"-backupdr.googleapis.com/BackupPlanAssociationR\x04name\"\x9d\x01\n" +
+	"-backupdr.googleapis.com/BackupPlanAssociationR\x04name\"\xa1\x02\n" +
 	"\"DeleteBackupPlanAssociationRequest\x12J\n" +
 	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-backupdr.googleapis.com/BackupPlanAssociationR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x83\x02\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x81\x01\n" +
+	"\x1eauto_protection_policy_binding\x18\x03 \x01(\tB<\xe2A\x01\x01\xfaA5\n" +
+	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x1bautoProtectionPolicyBinding\"\x83\x02\n" +
 	"\"UpdateBackupPlanAssociationRequest\x12m\n" +
 	"\x17backup_plan_association\x18\x01 \x01(\v2/.google.cloud.backupdr.v1.BackupPlanAssociationB\x04\xe2A\x01\x02R\x15backupPlanAssociation\x12A\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +

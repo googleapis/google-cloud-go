@@ -94,12 +94,6 @@ type Config struct {
 	// server rejects OpenSession with INVALID_ARGUMENT on mismatch).
 	FeatureFlagsProto *btpb.FeatureFlags
 
-	// SessionLoadListener is invoked whenever the server-driven
-	// ClientConfigurationManager reports a new session-load ratio. The
-	// bigtable Client wires this to Diverter.SetSessionLoad so the
-	// classic/session traffic split follows the server's directive.
-	SessionLoadListener func(load float64)
-
 	// BackgroundCtx is the parent context for the Client's own
 	// process-lifetime loops (today: ClientConfigurationManager polling).
 	// Cancelled by Client teardown.
@@ -131,6 +125,19 @@ type Config struct {
 	// off. The debug surface is otherwise unchanged; flipping the
 	// flag on or off requires rebuilding the client.
 	EnableDebug bool
+
+	// DisableSessionAwareChannelPool reverts to the classic RPC-load-
+	// driven DynamicScaleMonitor for channel-pool sizing. Default
+	// (false) is the recommended production behavior: session-count-
+	// driven sizing keeps per-channel session load under the server-
+	// specified soft cap (ChannelPoolConfiguration.PerServerSessionCount).
+	//
+	// Because session.Config is internal, production deployments flip this
+	// escape hatch via the CBT_DISABLE_SESSION_AWARE_CHANNEL_POOL=true
+	// environment variable (read in NewClient via
+	// btopt.DisableSessionAwareChannelPool), while unit tests set this
+	// field directly on newSessionClientFromParts.
+	DisableSessionAwareChannelPool bool
 }
 
 // managedSessionPool bundles a pool with its config-listener unregister
@@ -203,6 +210,7 @@ type permission int
 const (
 	permissionRead permission = iota
 	permissionWrite
+	permissionReadWrite
 )
 
 // display returns the label used in pool display names (e.g. "READ").
@@ -212,6 +220,8 @@ func (p permission) display() string {
 		return "READ"
 	case permissionWrite:
 		return "WRITE"
+	case permissionReadWrite:
+		return "READ_WRITE"
 	}
 	return ""
 }
@@ -295,7 +305,7 @@ type sessionClient struct {
 	metricsFactory *metrics.Factory
 	// configManager runs the server-driven GetClientConfiguration poll
 	// loop for the lifetime of this Client. Production runtime state
-	// (not debug/test) — its output drives Diverter.SetSessionLoad,
+	// (not debug/test) — its output drives Diverter.ApplySessionClientConfiguration,
 	// per-pool UpdateConfig reshapes (bounds, picker, load-balancing
 	// strategy), and future eager-scale directives. Also surfaced on
 	// /debug/configz for operator visibility.
@@ -307,6 +317,15 @@ type sessionClient struct {
 	// the test factory (newSessionClientFromParts with a fake pool):
 	// managed.Pool == nil, so Close falls back to sc.channelPool.Close().
 	managedChannelPool btransport.ManagedChannelPool
+
+	// scaleMonitor sizes the shared channel pool from live session count
+	// instead of RPC load. Populated when Config.DisableSessionAwareChannelPool
+	// is false (default). Nil on the test-only newSessionClientFromParts
+	// path and when the opt-out flag falls back to DynamicScaleMonitor.
+	// Close() stops it before managed.Close so no scale tick races
+	// against pool teardown.
+	scaleMonitor      *btransport.SessionAwareScaleMonitor
+	scaleMonitorUnreg func()
 
 	// enableDebug mirrors Config.EnableDebug. When false, pools this
 	// client mints short-circuit every allocating debug recorder and
@@ -333,6 +352,10 @@ type sessionClient struct {
 	nextPoolID     atomic.Uint64
 }
 
+// newMetricsFactory is a package-level seam so unit tests can observe
+// Factory lifecycle (context binding and Shutdown on init failure).
+var newMetricsFactory = metrics.NewFactory
+
 // NewClient constructs a standalone session.Client. It owns the
 // underlying channel pool, gRPC stub, metrics factory, and background
 // goroutines end-to-end — Close() unwinds all four.
@@ -348,7 +371,7 @@ type sessionClient struct {
 // polls, which reshape live pools via SessionPoolImpl.UpdateConfig.
 //
 // The load-balancing hook for a mixed-mode setup lives at
-// AddSessionLoadListener — call it after construction if you're
+// AddSessionDiversionListener — call it after construction if you're
 // composing this Client with a bigtable.Client Diverter.
 //
 // clientName sets the client_name attribute on exported client-side metrics.
@@ -362,9 +385,29 @@ func NewClient(
 	featureFlagsProto *btpb.FeatureFlags,
 	opts ...option.ClientOption,
 ) (Client, error) {
-	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, clientName, metricsProvider)
+	if ctx != nil {
+		if err := ctx.Err(); err != nil {
+			return nil, fmt.Errorf("session.NewClient: %w", err)
+		}
+	}
+
+	backgroundCtx, cancel := context.WithCancel(context.Background())
+	var stopPropagation func() bool
+	if ctx != nil && ctx.Done() != nil {
+		stopPropagation = context.AfterFunc(ctx, cancel)
+		defer stopPropagation()
+	}
+
+	factory, err := newMetricsFactory(backgroundCtx, project, instance, appProfile, clientName, metricsProvider)
 	if err != nil {
+		cancel()
 		return nil, fmt.Errorf("session.NewClient: metrics.NewFactory: %w", err)
+	}
+	cleanupOnErr := func() {
+		if factory.Shutdown != nil {
+			factory.Shutdown()
+		}
+		cancel()
 	}
 
 	// featureFlagsProto comes pre-built from the classic client so
@@ -390,7 +433,7 @@ func NewClient(
 	// mix a session pool serves.
 	poolSize := defaultSessionChannelPoolSize
 	dial := func() (*btransport.BigtableConn, error) {
-		grpcConn, dialErr := gtransport.Dial(ctx, opts...)
+		grpcConn, dialErr := gtransport.Dial(backgroundCtx, opts...)
 		if dialErr != nil {
 			return nil, dialErr
 		}
@@ -405,18 +448,33 @@ func NewClient(
 	// newer cloud.google.com/go/auth ADC path).
 	daDialOpts := append(append([]option.ClientOption{}, opts...), btopt.DirectAccessOptions()...)
 	daDial := func() (*btransport.BigtableConn, error) {
-		grpcConn, dialErr := gtransport.Dial(ctx, daDialOpts...)
+		grpcConn, dialErr := gtransport.Dial(backgroundCtx, daDialOpts...)
 		if dialErr != nil {
 			return nil, dialErr
 		}
 		return btransport.NewBigtableConn(grpcConn), nil
 	}
 
-	if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), poolSize); err != nil {
-		return nil, fmt.Errorf("session.NewClient: invalid DynamicChannelPoolConfig: %w", err)
+	// See b/588877681.
+	var directAccessChecker btransport.DirectAccessChecker
+	if featureFlagsProto.GetDirectAccessRequested() {
+		directAccessChecker = btransport.NewSessionClientDirectAccessChecker(
+			daDial, fullInstance, appProfile, configMD,
+			factory.OtelMeterProvider, nil,
+		)
+	} else {
+		directAccessChecker = btransport.NewDisabledDirectAccessChecker(factory.OtelMeterProvider, nil)
+	}
+
+	disableSessionAware := btopt.DisableSessionAwareChannelPool()
+	if disableSessionAware {
+		if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), poolSize); err != nil {
+			cleanupOnErr()
+			return nil, fmt.Errorf("session.NewClient: invalid DynamicChannelPoolConfig: %w", err)
+		}
 	}
 	pool, err := btransport.NewBigtableChannelPool(
-		ctx,
+		backgroundCtx,
 		poolSize,
 		btopt.BigtableLoadBalancingStrategy(),
 		dial,
@@ -424,32 +482,40 @@ func NewClient(
 		btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
 		btransport.WithMeterProvider(factory.OtelMeterProvider),
 		btransport.WithChannelPrimer(btransport.NoOpChannelPrimer{}),
-		btransport.WithDirectAccessChecker(btransport.NewSessionClientDirectAccessChecker(
-			daDial, fullInstance, appProfile, directAccessMD,
-			factory.OtelMeterProvider, nil,
-		)),
+		btransport.WithDirectAccessChecker(directAccessChecker),
 	)
 	if err != nil {
+		cleanupOnErr()
 		return nil, fmt.Errorf("session.NewClient: NewBigtableChannelPool: %w", err)
 	}
-	dsm := btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
-	dsm.Start(ctx)
+	if stopPropagation != nil && !stopPropagation() {
+		_ = pool.Close()
+		cleanupOnErr()
+		return nil, fmt.Errorf("session.NewClient: %w", ctx.Err())
+	}
+	// Only construct and start DynamicScaleMonitor when session-aware channel
+	// pool sizing is explicitly disabled — avoids spawning and immediately
+	// tearing down a throwaway DSM goroutine on the default path.
+	var dsm *btransport.DynamicScaleMonitor
+	if disableSessionAware {
+		dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
+		dsm.Start(backgroundCtx)
+	}
 	connRecycler := btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), pool)
-	connRecycler.Start(ctx)
+	connRecycler.Start(backgroundCtx)
 	managed := btransport.NewManagedChannelPool(pool, dsm, connRecycler)
 	stub := btpb.NewBigtableClient(pool)
 
-	backgroundCtx, cancel := context.WithCancel(context.Background())
-
 	sc := newSessionClientFromParts(pool, stub, factory, Config{
-		Project:           project,
-		Instance:          instance,
-		AppProfile:        appProfile,
-		FeatureFlagsMD:    directAccessMD,
-		FeatureFlagsProto: featureFlagsProto,
-		ConfigMD:          configMD,
-		MetricsEnabled:    factory.Enabled,
-		BackgroundCtx:     backgroundCtx,
+		Project:                        project,
+		Instance:                       instance,
+		AppProfile:                     appProfile,
+		FeatureFlagsMD:                 directAccessMD,
+		FeatureFlagsProto:              featureFlagsProto,
+		ConfigMD:                       configMD,
+		MetricsEnabled:                 factory.Enabled,
+		BackgroundCtx:                  backgroundCtx,
+		DisableSessionAwareChannelPool: disableSessionAware,
 		// EnableDebug intentionally left at zero (false): NewClient has
 		// no external caller upstream today, so exposing a positional
 		// bool on the constructor would ship a dead knob. When the
@@ -458,6 +524,10 @@ func NewClient(
 	})
 	sc.backgroundCancel = cancel
 	sc.managedChannelPool = managed
+	// SessionAwareScaleMonitor is only meaningful once sc.configManager
+	// exists — newSessionClientFromParts constructs it inline. Register
+	// after that call so the config listener has something to hook.
+	sc.registerScaleMonitor(pool)
 	return sc, nil
 }
 
@@ -482,17 +552,13 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 	// path (unit tests wiring a fake ChannelPool without a real gRPC stub).
 	// In that mode we do NOT construct a ClientConfigurationManager, do
 	// NOT poll GetClientConfiguration, and do NOT fall back to any
-	// default config — pools open with whatever seed the test supplies,
-	// and SessionLoadListener never fires. Production NewClient always
-	// supplies a stub.
+	// default config — pools open with whatever seed the test supplies.
+	// Production NewClient always supplies a stub.
 	if stub != nil {
 		sc.configManager = btransport.NewClientConfigurationManager(
 			stub, sc.fullInstanceName(), cfg.AppProfile, cfg.ConfigMD, nil,
 		)
 		sc.configManager.Start(cfg.BackgroundCtx)
-		if cfg.SessionLoadListener != nil {
-			sc.configManager.AddSessionLoadListener(cfg.SessionLoadListener)
-		}
 	}
 	return sc
 }
@@ -504,14 +570,14 @@ func (sc *sessionClient) MeterProvider() otelmetric.MeterProvider {
 	return sc.metricsFactory.OtelMeterProvider
 }
 
-// AddSessionLoadListener forwards to the internal
+// AddSessionDiversionListener forwards to the internal
 // ClientConfigurationManager. Returns a no-op unregister when no
 // manager is wired (stub == nil at construction).
-func (sc *sessionClient) AddSessionLoadListener(fn func(load float64)) func() {
+func (sc *sessionClient) AddSessionDiversionListener(fn func(cfg *btpb.SessionClientConfiguration)) func() {
 	if sc.configManager == nil {
 		return func() {}
 	}
-	return sc.configManager.AddSessionLoadListener(fn)
+	return sc.configManager.AddSessionDiversionListener(fn)
 }
 
 // MetricsFactory returns the *metrics.Factory the Client was
@@ -528,13 +594,17 @@ func (sc *sessionClient) OpenTable(tableID string) TableAPI {
 	resource := "table:" + tableID
 	readOwner := &poolCloser{}
 	writeOwner := &poolCloser{}
+	readWriteOwner := &poolCloser{}
 	openRead := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_READ},
 		poolKey{resource, permissionRead}, readOwner)
 	openWrite := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_WRITE},
 		poolKey{resource, permissionWrite}, writeOwner)
-	return newSessionTable(tableID, openRead, openWrite, readOwner.Close, writeOwner.Close, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
+	openReadWrite := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
+		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_READ_WRITE},
+		poolKey{resource, permissionReadWrite}, readWriteOwner)
+	return newSessionTable(tableID, openRead, openWrite, openReadWrite, readOwner.Close, writeOwner.Close, readWriteOwner.Close, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
 }
 
 // OpenAuthorizedView returns a TableAPI for an authorized view.
@@ -544,18 +614,22 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 	resource := fmt.Sprintf("av:%s:%s", table, view)
 	readOwner := &poolCloser{}
 	writeOwner := &poolCloser{}
+	readWriteOwner := &poolCloser{}
 	openRead := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_READ},
 		poolKey{resource, permissionRead}, readOwner)
 	openWrite := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_WRITE},
 		poolKey{resource, permissionWrite}, writeOwner)
-	return newSessionTable(table, openRead, openWrite, readOwner.Close, writeOwner.Close, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
+	openReadWrite := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
+		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_READ_WRITE},
+		poolKey{resource, permissionReadWrite}, readWriteOwner)
+	return newSessionTable(table, openRead, openWrite, openReadWrite, readOwner.Close, writeOwner.Close, readWriteOwner.Close, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
 }
 
 // OpenMaterializedView returns a read-only TableAPI for a
-// materialized view. Only a read pool is opened; MutateRow errors
-// cleanly via the nil openWrite passed to newSessionTable.
+// materialized view. Only a read pool is opened; MutateRow, CheckAndMutateRow,
+// and ReadModifyWriteRow error cleanly via the nil openWrite/openReadWrite passed to newSessionTable.
 func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 	fullName := sc.fullMaterializedViewName(view)
 	readOwner := &poolCloser{}
@@ -567,21 +641,22 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 			Permission:           btpb.OpenMaterializedViewRequest_PERMISSION_READ,
 		},
 		poolKey{"mv:" + view, permissionRead}, readOwner)
-	return newSessionTable("", openRead, nil, readOwner.Close, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
+	return newSessionTable("", openRead, nil, nil, readOwner.Close, nil, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
 }
 
 // Close tears down in a phased order that keeps late callbacks from
 // firing against half-dead pools:
 //  1. Stop config polling — no more UpdateConfig can fire after.
 //  2. Close every session pool (per-pool listeners already detached).
-//  3. Cancel the background ctx we constructed (unwinds the
-//     client-scoped loops parented on it).
-//  4. managed.Close() stops the DynamicScaleMonitor + ConnectionRecycler
+//  3. managed.Close() stops the DynamicScaleMonitor + ConnectionRecycler
 //     wired by btransport.CreateAndStartManagedChannelPool, then closes
 //     the underlying pool — in that order, so no scale-up / recycle tick
 //     races against pool teardown. Test-fake path (managed.Pool == nil)
 //     falls back to sc.channelPool.Close().
-//  5. Shut down the metrics factory (final flush).
+//  4. Shut down the metrics factory (final flush while backgroundCtx is
+//     still active).
+//  5. Cancel the background ctx we constructed (unwinds any remaining
+//     client-scoped loops parented on it).
 func (sc *sessionClient) Close() error {
 	// Snapshot everything owned under the lock, then release before
 	// running the actual Close/Shutdown/Cancel calls. Any of those can
@@ -597,8 +672,21 @@ func (sc *sessionClient) Close() error {
 	managed := sc.managedChannelPool
 	factory := sc.metricsFactory
 	cancel := sc.backgroundCancel
+	sam := sc.scaleMonitor
+	samUnreg := sc.scaleMonitorUnreg
+	sc.scaleMonitor = nil
+	sc.scaleMonitorUnreg = nil
 	sc.sessionPoolsMu.Unlock()
 
+	// Stop the scale monitor BEFORE mgr.Close and managed.Close so a
+	// mid-tick reconcile cannot call addConnections/removeConnections
+	// into a channel pool that is about to be torn down.
+	if samUnreg != nil {
+		samUnreg()
+	}
+	if sam != nil {
+		sam.Stop()
+	}
 	if mgr != nil {
 		mgr.Close()
 	}
@@ -607,9 +695,6 @@ func (sc *sessionClient) Close() error {
 			mp.unregister()
 		}
 		mp.pool.Close()
-	}
-	if cancel != nil {
-		cancel()
 	}
 	// Prefer managed.Close (stops DSM + Recycler in order then closes
 	// the pool). Test fakes bypass CreateAndStartManagedChannelPool so
@@ -622,6 +707,9 @@ func (sc *sessionClient) Close() error {
 	}
 	if factory != nil && factory.Shutdown != nil {
 		factory.Shutdown()
+	}
+	if cancel != nil {
+		cancel()
 	}
 	return err
 }
@@ -944,4 +1032,50 @@ func (sc *sessionClient) ChannelPool() *btransport.BigtableChannelPool {
 	}
 	bp, _ := sc.channelPool.(*btransport.BigtableChannelPool)
 	return bp
+}
+
+// registerScaleMonitor wires SessionAwareScaleMonitor to the shared
+// channel pool, hooking its OnConfig into ClientConfigurationManager
+// so the sizer reacts to server-driven min/max/perServerSessionCount
+// updates, and stops/detaches any default DynamicScaleMonitor on
+// sc.managedChannelPool so the two policies never fight over the same
+// pool. When Config.DisableSessionAwareChannelPool is set, leaves (or
+// starts) DynamicScaleMonitor as the fallback. Skipped when pool or
+// configManager is nil (test-fake path).
+//
+// The session-aware monitor reads its session-count signal directly
+// from BigtableChannelPool.TotalStreamCount — sessions are bidi streams
+// (one streamingLoad increment on the picked connEntry when they open),
+// so the pool already tracks the number without any cross-package
+// plumbing.
+func (sc *sessionClient) registerScaleMonitor(pool *btransport.BigtableChannelPool) {
+	if pool == nil {
+		return
+	}
+	if sc.cfg.DisableSessionAwareChannelPool {
+		if sc.managedChannelPool.Dsm == nil {
+			dsm := btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
+			dsm.Start(sc.cfg.BackgroundCtx)
+			sc.managedChannelPool.Dsm = dsm
+			if sc.managedChannelPool.Pool == nil {
+				sc.managedChannelPool.Pool = pool
+			}
+		}
+		return
+	}
+	if sc.configManager == nil {
+		return
+	}
+	if sc.managedChannelPool.Dsm != nil {
+		sc.managedChannelPool.Dsm.Stop()
+		sc.managedChannelPool.Dsm = nil
+	}
+	sam := btransport.NewSessionAwareScaleMonitor(pool)
+	sc.scaleMonitor = sam
+	sc.scaleMonitorUnreg = sc.configManager.AddChannelPoolConfigListener(func(cfg *btpb.SessionClientConfiguration_ChannelPoolConfiguration) {
+		if err := sam.OnConfig(cfg); err != nil {
+			btopt.Debugf(nil, "bigtable_session: ignoring invalid ChannelPoolConfiguration update: %v", err)
+		}
+	})
+	sam.Start(sc.cfg.BackgroundCtx)
 }

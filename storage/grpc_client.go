@@ -29,6 +29,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/storage/experimental"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -132,6 +133,11 @@ type grpcStorageClient struct {
 	metrics        *clientMetrics
 	metricsCleanup func()
 
+	// bufferPool allocates memory for parallel uploads. It is the pool set
+	// through experimental.WithBufferPool or, if none was set, the SDK's
+	// defaultBufferPool, which is closed when the client is closed.
+	bufferPool experimental.BufferPool
+
 	// configFeatureAttributes tracks client-level features that are enabled for this
 	// client instance.
 	configFeatureAttributes uint32
@@ -194,7 +200,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 
 	var clientMetrics *clientMetrics
 	var metricsCleanup func()
-	metricsEnabled := isOtelMetricsEnabled(&config)
+	metricsEnabled := isOtelMetricsEnabled(&config) || isOtelDebugMetricsEnabled(&config)
 	tracingEnabled := isOTelTracingDevEnabled()
 	if metricsEnabled || tracingEnabled {
 		authCreds, project := resolveGRPCAuthCredentials(ctx, s)
@@ -207,7 +213,13 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 					option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
 					option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
 				)
-				s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions("storage.googleapis.com", clientMetrics)...)
+				endpoint := "storage.googleapis.com"
+				if res, err := internaloption.NewUnsafeResolver(s.clientOption...); err == nil {
+					if ep, err := res.ResolvedGRPCEndpoint(); err == nil && ep != "" {
+						endpoint = ep
+					}
+				}
+				s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions(endpoint, clientMetrics)...)
 			}
 		}
 		if tracingEnabled {
@@ -240,12 +252,17 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		}
 	}
 
+	bufferPool := config.bufferPool
+	if bufferPool == nil {
+		bufferPool = newDefaultBufferPool()
+	}
 	c := &grpcStorageClient{
 		settings:       s,
 		config:         &config,
 		metrics:        clientMetrics,
 		metricsCleanup: metricsCleanup,
 		readStallMgr:   bd,
+		bufferPool:     bufferPool,
 	}
 	// Add routing interceptors to inject headers.
 	ui, si := c.routingInterceptors()
@@ -382,6 +399,10 @@ func (c *grpcStorageClient) Close() error {
 	}
 	if c.metricsCleanup != nil {
 		c.metricsCleanup()
+	}
+	// Only close the SDK-owned defaultBufferPool; custom pools are managed by the caller.
+	if pool, ok := c.bufferPool.(*defaultBufferPool); ok {
+		pool.close()
 	}
 	return c.raw.Close()
 }
@@ -1167,6 +1188,7 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	rawReq := &storagepb.ComposeObjectRequest{
 		Destination:   dstObjPb,
 		SourceObjects: srcs,
+		KmsKey:        req.dstObject.attrs.KMSKeyName,
 	}
 	if req.deleteSourceObjects {
 		rawReq.DeleteSourceObjects = proto.Bool(true)
@@ -1451,7 +1473,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			decoder = nil
 			return executeWithReadStallTimeout(ctx, c.readStallMgr, params.bucket, openStream, func(stallTimeout time.Duration) {
 				target := stripPort(metricsStateFromContext(ctx).getTarget())
-				c.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "grpc", target)
+				c.metrics.recordStallDuration(ctx, stallTimeout, rpcBidiReadObject, "grpc", target)
 				if decoder != nil && decoder.databufs != nil {
 					decoder.databufs.Free()
 					decoder = nil
@@ -1545,6 +1567,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			Metageneration:  obj.GetMetageneration(),
 			Generation:      obj.GetGeneration(),
 			CRC32C:          wantCRC,
+			Unfinalized:     !finalized,
 		},
 		objectMetadata: &metadata,
 		reader: &gRPCReader{
@@ -1564,12 +1587,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			finalized:       finalized,
 			negativeOffset:  negativeOffset,
 		},
-		checkCRC:    checkCRC,
-		handle:      &handle,
-		remain:      remain,
-		unfinalized: !finalized,
-		bucket:      params.bucket,
-		object:      params.object,
+		checkCRC: checkCRC,
+		handle:   &handle,
+		remain:   remain,
+		bucket:   params.bucket,
+		object:   params.object,
 	}
 
 	// For a zero-length request, explicitly close the stream and set remaining

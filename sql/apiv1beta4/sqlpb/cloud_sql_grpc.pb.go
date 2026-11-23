@@ -655,6 +655,8 @@ const (
 	SqlInstancesService_Switchover_FullMethodName                  = "/google.cloud.sql.v1beta4.SqlInstancesService/Switchover"
 	SqlInstancesService_ResetSslConfig_FullMethodName              = "/google.cloud.sql.v1beta4.SqlInstancesService/ResetSslConfig"
 	SqlInstancesService_Restart_FullMethodName                     = "/google.cloud.sql.v1beta4.SqlInstancesService/Restart"
+	SqlInstancesService_Start_FullMethodName                       = "/google.cloud.sql.v1beta4.SqlInstancesService/Start"
+	SqlInstancesService_Stop_FullMethodName                        = "/google.cloud.sql.v1beta4.SqlInstancesService/Stop"
 	SqlInstancesService_RestoreBackup_FullMethodName               = "/google.cloud.sql.v1beta4.SqlInstancesService/RestoreBackup"
 	SqlInstancesService_RotateServerCa_FullMethodName              = "/google.cloud.sql.v1beta4.SqlInstancesService/RotateServerCa"
 	SqlInstancesService_RotateServerCertificate_FullMethodName     = "/google.cloud.sql.v1beta4.SqlInstancesService/RotateServerCertificate"
@@ -671,11 +673,13 @@ const (
 	SqlInstancesService_GetDiskShrinkConfig_FullMethodName         = "/google.cloud.sql.v1beta4.SqlInstancesService/GetDiskShrinkConfig"
 	SqlInstancesService_ResetReplicaSize_FullMethodName            = "/google.cloud.sql.v1beta4.SqlInstancesService/ResetReplicaSize"
 	SqlInstancesService_GetLatestRecoveryTime_FullMethodName       = "/google.cloud.sql.v1beta4.SqlInstancesService/GetLatestRecoveryTime"
+	SqlInstancesService_ExecuteSqlReadOnly_FullMethodName          = "/google.cloud.sql.v1beta4.SqlInstancesService/ExecuteSqlReadOnly"
 	SqlInstancesService_ExecuteSql_FullMethodName                  = "/google.cloud.sql.v1beta4.SqlInstancesService/ExecuteSql"
 	SqlInstancesService_AcquireSsrsLease_FullMethodName            = "/google.cloud.sql.v1beta4.SqlInstancesService/AcquireSsrsLease"
 	SqlInstancesService_ReleaseSsrsLease_FullMethodName            = "/google.cloud.sql.v1beta4.SqlInstancesService/ReleaseSsrsLease"
 	SqlInstancesService_PreCheckMajorVersionUpgrade_FullMethodName = "/google.cloud.sql.v1beta4.SqlInstancesService/PreCheckMajorVersionUpgrade"
 	SqlInstancesService_PointInTimeRestore_FullMethodName          = "/google.cloud.sql.v1beta4.SqlInstancesService/PointInTimeRestore"
+	SqlInstancesService_ReconcileNetworking_FullMethodName         = "/google.cloud.sql.v1beta4.SqlInstancesService/ReconcileNetworking"
 )
 
 // SqlInstancesServiceClient is the client API for SqlInstancesService service.
@@ -769,6 +773,10 @@ type SqlInstancesServiceClient interface {
 	ResetSslConfig(ctx context.Context, in *SqlInstancesResetSslConfigRequest, opts ...grpc.CallOption) (*Operation, error)
 	// Restarts a Cloud SQL instance.
 	Restart(ctx context.Context, in *SqlInstancesRestartRequest, opts ...grpc.CallOption) (*Operation, error)
+	// Starts a Cloud SQL instance.
+	Start(ctx context.Context, in *SqlInstancesStartRequest, opts ...grpc.CallOption) (*Operation, error)
+	// Stops a Cloud SQL instance.
+	Stop(ctx context.Context, in *SqlInstancesStopRequest, opts ...grpc.CallOption) (*Operation, error)
 	// Restores a backup of a Cloud SQL instance. Using this operation might cause
 	// your instance to restart.
 	RestoreBackup(ctx context.Context, in *SqlInstancesRestoreBackupRequest, opts ...grpc.CallOption) (*Operation, error)
@@ -813,6 +821,8 @@ type SqlInstancesServiceClient interface {
 	ResetReplicaSize(ctx context.Context, in *SqlInstancesResetReplicaSizeRequest, opts ...grpc.CallOption) (*Operation, error)
 	// Get Latest Recovery Time for a given instance.
 	GetLatestRecoveryTime(ctx context.Context, in *SqlInstancesGetLatestRecoveryTimeRequest, opts ...grpc.CallOption) (*SqlInstancesGetLatestRecoveryTimeResponse, error)
+	// Execute SQL statements in read-only mode.
+	ExecuteSqlReadOnly(ctx context.Context, in *SqlInstancesExecuteSqlReadOnlyRequest, opts ...grpc.CallOption) (*SqlInstancesExecuteSqlReadOnlyResponse, error)
 	// Execute SQL statements.
 	ExecuteSql(ctx context.Context, in *SqlInstancesExecuteSqlRequest, opts ...grpc.CallOption) (*SqlInstancesExecuteSqlResponse, error)
 	// Acquire a lease for the setup of SQL Server Reporting Services (SSRS).
@@ -824,6 +834,11 @@ type SqlInstancesServiceClient interface {
 	// Point in time restore for an instance managed by Google Cloud Backup and
 	// Disaster Recovery.
 	PointInTimeRestore(ctx context.Context, in *SqlInstancesPointInTimeRestoreRequest, opts ...grpc.CallOption) (*Operation, error)
+	// Repairs and recreates networking resources for a Cloud SQL instance. For
+	// Private Service Connect (PSC), this operation recreates PSC DNS write
+	// endpoints on specified VPC networks and reconciles Private Service Connect
+	// connectivity infrastructure for the instance.
+	ReconcileNetworking(ctx context.Context, in *SqlInstancesReconcileNetworkingRequest, opts ...grpc.CallOption) (*Operation, error)
 }
 
 type sqlInstancesServiceClient struct {
@@ -1032,6 +1047,24 @@ func (c *sqlInstancesServiceClient) Restart(ctx context.Context, in *SqlInstance
 	return out, nil
 }
 
+func (c *sqlInstancesServiceClient) Start(ctx context.Context, in *SqlInstancesStartRequest, opts ...grpc.CallOption) (*Operation, error) {
+	out := new(Operation)
+	err := c.cc.Invoke(ctx, SqlInstancesService_Start_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sqlInstancesServiceClient) Stop(ctx context.Context, in *SqlInstancesStopRequest, opts ...grpc.CallOption) (*Operation, error) {
+	out := new(Operation)
+	err := c.cc.Invoke(ctx, SqlInstancesService_Stop_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *sqlInstancesServiceClient) RestoreBackup(ctx context.Context, in *SqlInstancesRestoreBackupRequest, opts ...grpc.CallOption) (*Operation, error) {
 	out := new(Operation)
 	err := c.cc.Invoke(ctx, SqlInstancesService_RestoreBackup_FullMethodName, in, out, opts...)
@@ -1176,6 +1209,15 @@ func (c *sqlInstancesServiceClient) GetLatestRecoveryTime(ctx context.Context, i
 	return out, nil
 }
 
+func (c *sqlInstancesServiceClient) ExecuteSqlReadOnly(ctx context.Context, in *SqlInstancesExecuteSqlReadOnlyRequest, opts ...grpc.CallOption) (*SqlInstancesExecuteSqlReadOnlyResponse, error) {
+	out := new(SqlInstancesExecuteSqlReadOnlyResponse)
+	err := c.cc.Invoke(ctx, SqlInstancesService_ExecuteSqlReadOnly_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *sqlInstancesServiceClient) ExecuteSql(ctx context.Context, in *SqlInstancesExecuteSqlRequest, opts ...grpc.CallOption) (*SqlInstancesExecuteSqlResponse, error) {
 	out := new(SqlInstancesExecuteSqlResponse)
 	err := c.cc.Invoke(ctx, SqlInstancesService_ExecuteSql_FullMethodName, in, out, opts...)
@@ -1215,6 +1257,15 @@ func (c *sqlInstancesServiceClient) PreCheckMajorVersionUpgrade(ctx context.Cont
 func (c *sqlInstancesServiceClient) PointInTimeRestore(ctx context.Context, in *SqlInstancesPointInTimeRestoreRequest, opts ...grpc.CallOption) (*Operation, error) {
 	out := new(Operation)
 	err := c.cc.Invoke(ctx, SqlInstancesService_PointInTimeRestore_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sqlInstancesServiceClient) ReconcileNetworking(ctx context.Context, in *SqlInstancesReconcileNetworkingRequest, opts ...grpc.CallOption) (*Operation, error) {
+	out := new(Operation)
+	err := c.cc.Invoke(ctx, SqlInstancesService_ReconcileNetworking_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1312,6 +1363,10 @@ type SqlInstancesServiceServer interface {
 	ResetSslConfig(context.Context, *SqlInstancesResetSslConfigRequest) (*Operation, error)
 	// Restarts a Cloud SQL instance.
 	Restart(context.Context, *SqlInstancesRestartRequest) (*Operation, error)
+	// Starts a Cloud SQL instance.
+	Start(context.Context, *SqlInstancesStartRequest) (*Operation, error)
+	// Stops a Cloud SQL instance.
+	Stop(context.Context, *SqlInstancesStopRequest) (*Operation, error)
 	// Restores a backup of a Cloud SQL instance. Using this operation might cause
 	// your instance to restart.
 	RestoreBackup(context.Context, *SqlInstancesRestoreBackupRequest) (*Operation, error)
@@ -1356,6 +1411,8 @@ type SqlInstancesServiceServer interface {
 	ResetReplicaSize(context.Context, *SqlInstancesResetReplicaSizeRequest) (*Operation, error)
 	// Get Latest Recovery Time for a given instance.
 	GetLatestRecoveryTime(context.Context, *SqlInstancesGetLatestRecoveryTimeRequest) (*SqlInstancesGetLatestRecoveryTimeResponse, error)
+	// Execute SQL statements in read-only mode.
+	ExecuteSqlReadOnly(context.Context, *SqlInstancesExecuteSqlReadOnlyRequest) (*SqlInstancesExecuteSqlReadOnlyResponse, error)
 	// Execute SQL statements.
 	ExecuteSql(context.Context, *SqlInstancesExecuteSqlRequest) (*SqlInstancesExecuteSqlResponse, error)
 	// Acquire a lease for the setup of SQL Server Reporting Services (SSRS).
@@ -1367,6 +1424,11 @@ type SqlInstancesServiceServer interface {
 	// Point in time restore for an instance managed by Google Cloud Backup and
 	// Disaster Recovery.
 	PointInTimeRestore(context.Context, *SqlInstancesPointInTimeRestoreRequest) (*Operation, error)
+	// Repairs and recreates networking resources for a Cloud SQL instance. For
+	// Private Service Connect (PSC), this operation recreates PSC DNS write
+	// endpoints on specified VPC networks and reconciles Private Service Connect
+	// connectivity infrastructure for the instance.
+	ReconcileNetworking(context.Context, *SqlInstancesReconcileNetworkingRequest) (*Operation, error)
 }
 
 // UnimplementedSqlInstancesServiceServer should be embedded to have forward compatible implementations.
@@ -1439,6 +1501,12 @@ func (UnimplementedSqlInstancesServiceServer) ResetSslConfig(context.Context, *S
 func (UnimplementedSqlInstancesServiceServer) Restart(context.Context, *SqlInstancesRestartRequest) (*Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Restart not implemented")
 }
+func (UnimplementedSqlInstancesServiceServer) Start(context.Context, *SqlInstancesStartRequest) (*Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Start not implemented")
+}
+func (UnimplementedSqlInstancesServiceServer) Stop(context.Context, *SqlInstancesStopRequest) (*Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Stop not implemented")
+}
 func (UnimplementedSqlInstancesServiceServer) RestoreBackup(context.Context, *SqlInstancesRestoreBackupRequest) (*Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestoreBackup not implemented")
 }
@@ -1487,6 +1555,9 @@ func (UnimplementedSqlInstancesServiceServer) ResetReplicaSize(context.Context, 
 func (UnimplementedSqlInstancesServiceServer) GetLatestRecoveryTime(context.Context, *SqlInstancesGetLatestRecoveryTimeRequest) (*SqlInstancesGetLatestRecoveryTimeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLatestRecoveryTime not implemented")
 }
+func (UnimplementedSqlInstancesServiceServer) ExecuteSqlReadOnly(context.Context, *SqlInstancesExecuteSqlReadOnlyRequest) (*SqlInstancesExecuteSqlReadOnlyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecuteSqlReadOnly not implemented")
+}
 func (UnimplementedSqlInstancesServiceServer) ExecuteSql(context.Context, *SqlInstancesExecuteSqlRequest) (*SqlInstancesExecuteSqlResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecuteSql not implemented")
 }
@@ -1501,6 +1572,9 @@ func (UnimplementedSqlInstancesServiceServer) PreCheckMajorVersionUpgrade(contex
 }
 func (UnimplementedSqlInstancesServiceServer) PointInTimeRestore(context.Context, *SqlInstancesPointInTimeRestoreRequest) (*Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PointInTimeRestore not implemented")
+}
+func (UnimplementedSqlInstancesServiceServer) ReconcileNetworking(context.Context, *SqlInstancesReconcileNetworkingRequest) (*Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReconcileNetworking not implemented")
 }
 
 // UnsafeSqlInstancesServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -1910,6 +1984,42 @@ func _SqlInstancesService_Restart_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SqlInstancesService_Start_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SqlInstancesStartRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlInstancesServiceServer).Start(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlInstancesService_Start_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlInstancesServiceServer).Start(ctx, req.(*SqlInstancesStartRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SqlInstancesService_Stop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SqlInstancesStopRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlInstancesServiceServer).Stop(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlInstancesService_Stop_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlInstancesServiceServer).Stop(ctx, req.(*SqlInstancesStopRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SqlInstancesService_RestoreBackup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SqlInstancesRestoreBackupRequest)
 	if err := dec(in); err != nil {
@@ -2198,6 +2308,24 @@ func _SqlInstancesService_GetLatestRecoveryTime_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SqlInstancesService_ExecuteSqlReadOnly_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SqlInstancesExecuteSqlReadOnlyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlInstancesServiceServer).ExecuteSqlReadOnly(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlInstancesService_ExecuteSqlReadOnly_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlInstancesServiceServer).ExecuteSqlReadOnly(ctx, req.(*SqlInstancesExecuteSqlReadOnlyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SqlInstancesService_ExecuteSql_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SqlInstancesExecuteSqlRequest)
 	if err := dec(in); err != nil {
@@ -2284,6 +2412,24 @@ func _SqlInstancesService_PointInTimeRestore_Handler(srv interface{}, ctx contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SqlInstancesServiceServer).PointInTimeRestore(ctx, req.(*SqlInstancesPointInTimeRestoreRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SqlInstancesService_ReconcileNetworking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SqlInstancesReconcileNetworkingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlInstancesServiceServer).ReconcileNetworking(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlInstancesService_ReconcileNetworking_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlInstancesServiceServer).ReconcileNetworking(ctx, req.(*SqlInstancesReconcileNetworkingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2384,6 +2530,14 @@ var SqlInstancesService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SqlInstancesService_Restart_Handler,
 		},
 		{
+			MethodName: "Start",
+			Handler:    _SqlInstancesService_Start_Handler,
+		},
+		{
+			MethodName: "Stop",
+			Handler:    _SqlInstancesService_Stop_Handler,
+		},
+		{
 			MethodName: "RestoreBackup",
 			Handler:    _SqlInstancesService_RestoreBackup_Handler,
 		},
@@ -2448,6 +2602,10 @@ var SqlInstancesService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SqlInstancesService_GetLatestRecoveryTime_Handler,
 		},
 		{
+			MethodName: "ExecuteSqlReadOnly",
+			Handler:    _SqlInstancesService_ExecuteSqlReadOnly_Handler,
+		},
+		{
 			MethodName: "ExecuteSql",
 			Handler:    _SqlInstancesService_ExecuteSql_Handler,
 		},
@@ -2466,6 +2624,10 @@ var SqlInstancesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PointInTimeRestore",
 			Handler:    _SqlInstancesService_PointInTimeRestore_Handler,
+		},
+		{
+			MethodName: "ReconcileNetworking",
+			Handler:    _SqlInstancesService_ReconcileNetworking_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -2645,10 +2807,13 @@ var SqlOperationsService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	SqlSslCertsService_Delete_FullMethodName = "/google.cloud.sql.v1beta4.SqlSslCertsService/Delete"
-	SqlSslCertsService_Get_FullMethodName    = "/google.cloud.sql.v1beta4.SqlSslCertsService/Get"
-	SqlSslCertsService_Insert_FullMethodName = "/google.cloud.sql.v1beta4.SqlSslCertsService/Insert"
-	SqlSslCertsService_List_FullMethodName   = "/google.cloud.sql.v1beta4.SqlSslCertsService/List"
+	SqlSslCertsService_Delete_FullMethodName                           = "/google.cloud.sql.v1beta4.SqlSslCertsService/Delete"
+	SqlSslCertsService_Get_FullMethodName                              = "/google.cloud.sql.v1beta4.SqlSslCertsService/Get"
+	SqlSslCertsService_Insert_FullMethodName                           = "/google.cloud.sql.v1beta4.SqlSslCertsService/Insert"
+	SqlSslCertsService_List_FullMethodName                             = "/google.cloud.sql.v1beta4.SqlSslCertsService/List"
+	SqlSslCertsService_UpdateCustomerManagedCertificate_FullMethodName = "/google.cloud.sql.v1beta4.SqlSslCertsService/UpdateCustomerManagedCertificate"
+	SqlSslCertsService_DeleteCustomerManagedCertificate_FullMethodName = "/google.cloud.sql.v1beta4.SqlSslCertsService/DeleteCustomerManagedCertificate"
+	SqlSslCertsService_ListCustomerManagedCertificates_FullMethodName  = "/google.cloud.sql.v1beta4.SqlSslCertsService/ListCustomerManagedCertificates"
 )
 
 // SqlSslCertsServiceClient is the client API for SqlSslCertsService service.
@@ -2668,6 +2833,15 @@ type SqlSslCertsServiceClient interface {
 	Insert(ctx context.Context, in *SqlSslCertsInsertRequest, opts ...grpc.CallOption) (*SslCertsInsertResponse, error)
 	// Lists all of the current SSL certificates for the instance.
 	List(ctx context.Context, in *SqlSslCertsListRequest, opts ...grpc.CallOption) (*SslCertsListResponse, error)
+	// Upload and update customer managed certificate bundle for an existing
+	// Cloud SQL instance.
+	UpdateCustomerManagedCertificate(ctx context.Context, in *UpdateCustomerManagedCertificateRequest, opts ...grpc.CallOption) (*Operation, error)
+	// Delete customer managed certificate bundle for an existing Cloud SQL
+	// instance.
+	DeleteCustomerManagedCertificate(ctx context.Context, in *DeleteCustomerManagedCertificateRequest, opts ...grpc.CallOption) (*Operation, error)
+	// List all customer managed certificate bundles for an existing Cloud SQL
+	// instance.
+	ListCustomerManagedCertificates(ctx context.Context, in *ListCustomerManagedCertificatesRequest, opts ...grpc.CallOption) (*ListCustomerManagedCertificatesResponse, error)
 }
 
 type sqlSslCertsServiceClient struct {
@@ -2714,6 +2888,33 @@ func (c *sqlSslCertsServiceClient) List(ctx context.Context, in *SqlSslCertsList
 	return out, nil
 }
 
+func (c *sqlSslCertsServiceClient) UpdateCustomerManagedCertificate(ctx context.Context, in *UpdateCustomerManagedCertificateRequest, opts ...grpc.CallOption) (*Operation, error) {
+	out := new(Operation)
+	err := c.cc.Invoke(ctx, SqlSslCertsService_UpdateCustomerManagedCertificate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sqlSslCertsServiceClient) DeleteCustomerManagedCertificate(ctx context.Context, in *DeleteCustomerManagedCertificateRequest, opts ...grpc.CallOption) (*Operation, error) {
+	out := new(Operation)
+	err := c.cc.Invoke(ctx, SqlSslCertsService_DeleteCustomerManagedCertificate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sqlSslCertsServiceClient) ListCustomerManagedCertificates(ctx context.Context, in *ListCustomerManagedCertificatesRequest, opts ...grpc.CallOption) (*ListCustomerManagedCertificatesResponse, error) {
+	out := new(ListCustomerManagedCertificatesResponse)
+	err := c.cc.Invoke(ctx, SqlSslCertsService_ListCustomerManagedCertificates_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SqlSslCertsServiceServer is the server API for SqlSslCertsService service.
 // All implementations should embed UnimplementedSqlSslCertsServiceServer
 // for forward compatibility
@@ -2731,6 +2932,15 @@ type SqlSslCertsServiceServer interface {
 	Insert(context.Context, *SqlSslCertsInsertRequest) (*SslCertsInsertResponse, error)
 	// Lists all of the current SSL certificates for the instance.
 	List(context.Context, *SqlSslCertsListRequest) (*SslCertsListResponse, error)
+	// Upload and update customer managed certificate bundle for an existing
+	// Cloud SQL instance.
+	UpdateCustomerManagedCertificate(context.Context, *UpdateCustomerManagedCertificateRequest) (*Operation, error)
+	// Delete customer managed certificate bundle for an existing Cloud SQL
+	// instance.
+	DeleteCustomerManagedCertificate(context.Context, *DeleteCustomerManagedCertificateRequest) (*Operation, error)
+	// List all customer managed certificate bundles for an existing Cloud SQL
+	// instance.
+	ListCustomerManagedCertificates(context.Context, *ListCustomerManagedCertificatesRequest) (*ListCustomerManagedCertificatesResponse, error)
 }
 
 // UnimplementedSqlSslCertsServiceServer should be embedded to have forward compatible implementations.
@@ -2748,6 +2958,15 @@ func (UnimplementedSqlSslCertsServiceServer) Insert(context.Context, *SqlSslCert
 }
 func (UnimplementedSqlSslCertsServiceServer) List(context.Context, *SqlSslCertsListRequest) (*SslCertsListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedSqlSslCertsServiceServer) UpdateCustomerManagedCertificate(context.Context, *UpdateCustomerManagedCertificateRequest) (*Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCustomerManagedCertificate not implemented")
+}
+func (UnimplementedSqlSslCertsServiceServer) DeleteCustomerManagedCertificate(context.Context, *DeleteCustomerManagedCertificateRequest) (*Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCustomerManagedCertificate not implemented")
+}
+func (UnimplementedSqlSslCertsServiceServer) ListCustomerManagedCertificates(context.Context, *ListCustomerManagedCertificatesRequest) (*ListCustomerManagedCertificatesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListCustomerManagedCertificates not implemented")
 }
 
 // UnsafeSqlSslCertsServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -2833,6 +3052,60 @@ func _SqlSslCertsService_List_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SqlSslCertsService_UpdateCustomerManagedCertificate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCustomerManagedCertificateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlSslCertsServiceServer).UpdateCustomerManagedCertificate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlSslCertsService_UpdateCustomerManagedCertificate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlSslCertsServiceServer).UpdateCustomerManagedCertificate(ctx, req.(*UpdateCustomerManagedCertificateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SqlSslCertsService_DeleteCustomerManagedCertificate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCustomerManagedCertificateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlSslCertsServiceServer).DeleteCustomerManagedCertificate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlSslCertsService_DeleteCustomerManagedCertificate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlSslCertsServiceServer).DeleteCustomerManagedCertificate(ctx, req.(*DeleteCustomerManagedCertificateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SqlSslCertsService_ListCustomerManagedCertificates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListCustomerManagedCertificatesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SqlSslCertsServiceServer).ListCustomerManagedCertificates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SqlSslCertsService_ListCustomerManagedCertificates_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SqlSslCertsServiceServer).ListCustomerManagedCertificates(ctx, req.(*ListCustomerManagedCertificatesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SqlSslCertsService_ServiceDesc is the grpc.ServiceDesc for SqlSslCertsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2855,6 +3128,18 @@ var SqlSslCertsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _SqlSslCertsService_List_Handler,
+		},
+		{
+			MethodName: "UpdateCustomerManagedCertificate",
+			Handler:    _SqlSslCertsService_UpdateCustomerManagedCertificate_Handler,
+		},
+		{
+			MethodName: "DeleteCustomerManagedCertificate",
+			Handler:    _SqlSslCertsService_DeleteCustomerManagedCertificate_Handler,
+		},
+		{
+			MethodName: "ListCustomerManagedCertificates",
+			Handler:    _SqlSslCertsService_ListCustomerManagedCertificates_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

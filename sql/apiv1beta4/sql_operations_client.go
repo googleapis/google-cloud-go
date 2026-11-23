@@ -102,6 +102,8 @@ type internalSqlOperationsClient interface {
 
 // SqlOperationsClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to fetch operations for database instances.
 type SqlOperationsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlOperationsClient
@@ -171,6 +173,8 @@ type sqlOperationsGRPCClient struct {
 
 // NewSqlOperationsClient creates a new sql operations service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service to fetch operations for database instances.
 func NewSqlOperationsClient(ctx context.Context, opts ...option.ClientOption) (*SqlOperationsClient, error) {
 	clientOpts := defaultSqlOperationsGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -300,6 +304,8 @@ type sqlOperationsRESTClient struct {
 }
 
 // NewSqlOperationsRESTClient creates a new sql operations service rest client.
+//
+// Service to fetch operations for database instances.
 func NewSqlOperationsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlOperationsClient, error) {
 	clientOpts := append(defaultSqlOperationsRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {

@@ -17,26 +17,37 @@ package storage
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/storage/internal"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"github.com/google/uuid"
 
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/connectivity"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
@@ -339,14 +350,14 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				}
 			}
 
-			if m.Name == "gcp.storage.client.gfe.duration" {
+			if m.Name == "gcp.storage.client.server.duration" {
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
 					if hist.DataPoints[0].Sum != 0.15 {
-						t.Errorf("expected gfe.duration 0.15s, got %v", hist.DataPoints[0].Sum)
+						t.Errorf("expected server.duration 0.15s, got %v", hist.DataPoints[0].Sum)
 					}
 				} else {
-					t.Errorf("expected gfe.duration datapoints")
+					t.Errorf("expected server.duration datapoints")
 				}
 			}
 		}
@@ -376,6 +387,10 @@ func (m *mockClientStream) Header() (metadata.MD, error) {
 
 func (m *mockClientStream) Trailer() metadata.MD {
 	return nil
+}
+
+func (m *mockClientStream) Context() context.Context {
+	return context.Background()
 }
 
 func TestGRPCMetricsRecording(t *testing.T) {
@@ -497,20 +512,20 @@ func TestGRPCMetricsRecording(t *testing.T) {
 				}
 			}
 
-			if m.Name == "gcp.storage.client.gfe.duration" {
+			if m.Name == "gcp.storage.client.server.duration" {
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
-					foundGfeDuration := false
+					foundServerDuration := false
 					for _, dp := range hist.DataPoints {
 						if dp.Sum == 0.12 {
-							foundGfeDuration = true
+							foundServerDuration = true
 						}
 					}
-					if !foundGfeDuration {
-						t.Errorf("expected gfe.duration 0.12s from stream")
+					if !foundServerDuration {
+						t.Errorf("expected server.duration 0.12s from stream")
 					}
 				} else {
-					t.Errorf("expected gfe.duration datapoints")
+					t.Errorf("expected server.duration datapoints")
 				}
 			}
 		}
@@ -875,41 +890,208 @@ func TestRecordTTFB_MetadataOnly(t *testing.T) {
 }
 
 func TestComputeErrorType(t *testing.T) {
+	dnsErr := &net.DNSError{Err: "no such host", Name: "storage.googleapis.com", IsTimeout: true}
+
 	tests := []struct {
+		name       string
 		err        error
 		isHTTP     bool
 		statusCode int64
 		want       string
 	}{
-		{err: errors.New("dial tcp: no such host"), want: "DNS_FAILURE"},
-		{err: errors.New("connection refused"), want: "CONNECTION_ERROR"},
-		{err: errors.New("connection reset by peer"), want: "CONNECTION_ERROR"},
-		{err: errors.New("tls: bad certificate"), want: "TLS_FAILURE"},
-		{err: errors.New("unexpected eof"), want: "CONNECTION_ERROR"},
-		{err: context.DeadlineExceeded, want: "TIMEOUT"},
-		{err: context.Canceled, want: "CANCELLED"},
-		{err: status.Error(codes.NotFound, "not found"), want: "NOT_FOUND"},
-		{err: ErrObjectNotExist, isHTTP: true, want: "NOT_FOUND"},
-		{err: ErrBucketNotExist, want: "NOT_FOUND"},
-		{err: status.Error(codes.NotFound, "No such object: bucket/my-key"), want: "NOT_FOUND"},
-		{err: &googleapi.Error{Code: 404, Message: "No such object: bucket/author.txt"}, isHTTP: true, want: "NOT_FOUND"},
-		{err: status.Error(codes.InvalidArgument, "Invalid page token."), want: "INVALID_ARGUMENT"},
-		{err: status.Error(codes.Unavailable, "connection error: connection reset by peer"), want: "CONNECTION_ERROR"},
-		{err: status.Error(codes.Unavailable, "unavailable"), want: "UNAVAILABLE"},
-		{err: status.Error(codes.InvalidArgument, "Object crc32c mismatch: server computed 1234, client provided 5678."), want: "CHECKSUM_MISMATCH"},
-		{err: &googleapi.Error{Code: 400, Message: `Provided CRC32C "AAAAAA==" doesn't match calculated CRC32C "BBBBBB==".`}, isHTTP: true, want: "CHECKSUM_MISMATCH"},
-		{err: fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, 1, 2), want: "CHECKSUM_MISMATCH"},
-		{err: &googleapi.Error{Code: 412, Message: "At least one of the pre-conditions you specified did not hold."}, isHTTP: true, want: "FAILED_PRECONDITION"},
-		{err: &googleapi.Error{Code: 408}, isHTTP: true, want: "DEADLINE_EXCEEDED"},
-		{err: status.Error(codes.DeadlineExceeded, "Deadline exceeded."), want: "DEADLINE_EXCEEDED"},
-		{err: fmt.Errorf("read: %w", io.EOF), want: "OK"},
+		{name: "dns no such host", err: errors.New("dial tcp: no such host"), want: "DNS_FAILURE"},
+		{name: "connection refused", err: errors.New("connection refused"), want: "CONNECTION_ERROR"},
+		{name: "connection reset", err: errors.New("connection reset by peer"), want: "CONNECTION_ERROR"},
+		{name: "tls bad certificate", err: errors.New("tls: bad certificate"), want: "TLS_FAILURE"},
+		{name: "unexpected eof", err: errors.New("unexpected eof"), want: "CONNECTION_ERROR"},
+		{name: "context deadline exceeded", err: context.DeadlineExceeded, want: "TIMEOUT"},
+		{name: "context canceled", err: context.Canceled, want: "CANCELLED"},
+		{name: "grpc not found", err: status.Error(codes.NotFound, "not found"), want: "NOT_FOUND"},
+		{name: "ErrObjectNotExist", err: ErrObjectNotExist, isHTTP: true, want: "NOT_FOUND"},
+		{name: "ErrBucketNotExist", err: ErrBucketNotExist, want: "NOT_FOUND"},
+		{name: "grpc not found with key in object name", err: status.Error(codes.NotFound, "No such object: bucket/my-key"), want: "NOT_FOUND"},
+		{name: "http 404 with author in object name", err: &googleapi.Error{Code: 404, Message: "No such object: bucket/author.txt"}, isHTTP: true, want: "NOT_FOUND"},
+		{name: "grpc invalid page token", err: status.Error(codes.InvalidArgument, "Invalid page token."), want: "INVALID_ARGUMENT"},
+		{name: "grpc unavailable connection reset", err: status.Error(codes.Unavailable, "connection error: connection reset by peer"), want: "CONNECTION_ERROR"},
+		{name: "grpc unavailable", err: status.Error(codes.Unavailable, "unavailable"), want: "UNAVAILABLE"},
+		{name: "grpc crc32c mismatch", err: status.Error(codes.InvalidArgument, "Object crc32c mismatch: server computed 1234, client provided 5678."), want: "CHECKSUM_MISMATCH"},
+		{name: "http 400 crc32c mismatch", err: &googleapi.Error{Code: 400, Message: `Provided CRC32C "AAAAAA==" doesn't match calculated CRC32C "BBBBBB==".`}, isHTTP: true, want: "CHECKSUM_MISMATCH"},
+		{name: "client checksum mismatch sentinel", err: fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, 1, 2), want: "CHECKSUM_MISMATCH"},
+		{name: "http 412 failed precondition", err: &googleapi.Error{Code: 412, Message: "At least one of the pre-conditions you specified did not hold."}, isHTTP: true, want: "FAILED_PRECONDITION"},
+		{name: "http 408 deadline exceeded", err: &googleapi.Error{Code: 408}, isHTTP: true, want: "DEADLINE_EXCEEDED"},
+		{name: "grpc server deadline exceeded", err: status.Error(codes.DeadlineExceeded, "Deadline exceeded."), want: "DEADLINE_EXCEEDED"},
+		{name: "wrapped io.EOF on grpc read", err: fmt.Errorf("read: %w", io.EOF), want: "OK"},
+
+		// HTTP status, url.Error & EOF edge cases.
+		{name: "http 502 bad gateway", err: &googleapi.Error{Code: 502}, isHTTP: true, want: "UNAVAILABLE"},
+		{name: "http body io.EOF with 200", err: io.EOF, isHTTP: true, statusCode: 200, want: "OK"},
+		{name: "http body io.EOF with 404", err: io.EOF, isHTTP: true, statusCode: 404, want: "NOT_FOUND"},
+		{name: "http round-trip io.EOF before headers", err: fmt.Errorf("Get \"https://storage.googleapis.com\": %w", io.EOF), isHTTP: true, statusCode: 0, want: "CONNECTION_ERROR"},
+		{name: "http ErrUnexpectedEOF", err: io.ErrUnexpectedEOF, isHTTP: true, want: "CONNECTION_ERROR"},
+		{name: "url.Error with author bucket and deadline", err: &url.Error{Op: "Get", URL: "https://storage.googleapis.com/b/author-bkt/o/tls-certs", Err: context.DeadlineExceeded}, isHTTP: true, want: "TIMEOUT"},
+		{name: "url.Error with author bucket and unknown error", err: &url.Error{Op: "Get", URL: "https://storage.googleapis.com/b/author-bkt/o/tls-certs", Err: errors.New("unexpected failure")}, isHTTP: true, want: "UNKNOWN"},
+
+		// Timeouts & stall watchdogs.
+		{name: "grpc client context deadline exceeded", err: status.Error(codes.DeadlineExceeded, "context deadline exceeded"), want: "TIMEOUT"},
+		{name: "write stall timeout error", err: &stallTimeoutError{timeout: time.Second, stage: "BidiWriteObject"}, want: "TIMEOUT"},
+		// wrappedCallErr.Is matches both context.Canceled and errStallTimeout when the
+		// caller cancels ctx during retry backoff after a stall; user cancel wins.
+		{name: "user cancel after write stall attempt", err: wrappedCallErr{ctxErr: context.Canceled, wrappedErr: &stallTimeoutError{timeout: time.Second, stage: "BidiWriteObject"}}, want: "CANCELLED"},
+
+		// Authentication failures.
+		{name: "credentialError wrapping dial timeout", err: &credentialError{err: errors.New("dial tcp 169.254.169.254:80: i/o timeout")}, isHTTP: true, want: "AUTHENTICATION_ERROR"},
+		{name: "grpc per-RPC creds timeout", err: status.Error(codes.Unavailable, "transport: per-RPC creds failed due to error: context deadline exceeded"), want: "AUTHENTICATION_ERROR"},
+
+		// Structured DNS, TCP, and TLS transport errors.
+		{name: "dial OpError wrapping DNSError", err: &net.OpError{Op: "dial", Net: "tcp", Err: dnsErr}, isHTTP: true, want: "DNS_FAILURE"},
+		{name: "dial OpError wrapping os.ErrDeadlineExceeded", err: &net.OpError{Op: "dial", Net: "tcp", Err: os.ErrDeadlineExceeded}, isHTTP: true, want: "CONNECTION_ERROR"},
+		{name: "net.ErrClosed", err: net.ErrClosed, isHTTP: true, want: "CONNECTION_ERROR"},
+		{name: "tls unknown authority", err: errors.New("tls: failed to verify certificate: x509: certificate signed by unknown authority"), isHTTP: true, want: "TLS_FAILURE"},
+		{name: "grpc authentication handshake failed without tls keyword", err: status.Error(codes.Unavailable, `connection error: desc = "transport: authentication handshake failed: remote error: bad MAC"`), want: "TLS_FAILURE"},
 	}
 
 	for _, tc := range tests {
-		got := computeErrorType(tc.err, tc.isHTTP, tc.statusCode)
-		if got != tc.want {
-			t.Errorf("computeErrorType(%v, %v, %v) = %v, want %v", tc.err, tc.isHTTP, tc.statusCode, got, tc.want)
+		t.Run(tc.name, func(t *testing.T) {
+			got := computeErrorType(tc.err, tc.isHTTP, tc.statusCode)
+			if got != tc.want {
+				t.Errorf("computeErrorType(%v, %v, %v) = %v, want %v", tc.err, tc.isHTTP, tc.statusCode, got, tc.want)
+			}
+		})
+	}
+
+	uerr := &url.Error{Op: "Get", URL: "https://storage.googleapis.com", Err: &credentialError{err: os.ErrDeadlineExceeded}}
+	if !uerr.Timeout() || !uerr.Temporary() {
+		t.Errorf("url.Error wrapping credentialError(os.ErrDeadlineExceeded): Timeout()=%v, Temporary()=%v; want both true", uerr.Timeout(), uerr.Temporary())
+	}
+}
+
+func TestExecuteWithReadStallTimeout_RecordsTimeoutMetric(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+		enableOtelMetrics: true,
+		meterProvider:     provider,
+	})
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	unblock := make(chan struct{})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		<-unblock
+	}))
+	defer func() {
+		close(unblock)
+		server.Close()
+	}()
+
+	dm, err := newBucketDelayManager(0.99, 15, 0, time.Millisecond, time.Second)
+	if err != nil {
+		t.Fatalf("newBucketDelayManager: %v", err)
+	}
+	client := &http.Client{
+		Transport: &metricsRoundTripper{base: http.DefaultTransport, metrics: cm},
+	}
+
+	err = executeWithReadStallTimeout(ctx, dm, "my-bucket", func(reqCtx context.Context) error {
+		req, err := http.NewRequestWithContext(reqCtx, http.MethodGet, server.URL+"/storage/v1/b/my-bucket/o/my-object?alt=media", nil)
+		if err != nil {
+			return err
 		}
+		resp, err := client.Do(req)
+		if resp != nil {
+			resp.Body.Close()
+		}
+		return err
+	}, nil)
+	if !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("executeWithReadStallTimeout err = %v, want context.DeadlineExceeded", err)
+	}
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	seen := make(map[string]bool)
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			switch m.Name {
+			case "gcp.storage.client.attempts", "gcp.storage.client.errors":
+				seen[m.Name] = true
+				dps := m.Data.(metricdata.Sum[int64]).DataPoints
+				if len(dps) != 1 {
+					t.Fatalf("%s: got %d data points, want 1", m.Name, len(dps))
+				}
+				if got := getAttr(dps[0], "error.type"); got != "TIMEOUT" {
+					t.Errorf("%s error.type = %q, want TIMEOUT", m.Name, got)
+				}
+			case "http.client.request.duration":
+				seen[m.Name] = true
+				dps := m.Data.(metricdata.Histogram[float64]).DataPoints
+				if len(dps) != 1 {
+					t.Fatalf("%s: got %d data points, want 1", m.Name, len(dps))
+				}
+				if got := getHistAttr(dps[0], "error.type"); got != "TIMEOUT" {
+					t.Errorf("%s error.type = %q, want TIMEOUT", m.Name, got)
+				}
+			}
+		}
+	}
+	for _, name := range []string{"gcp.storage.client.attempts", "gcp.storage.client.errors", "http.client.request.duration"} {
+		if !seen[name] {
+			t.Errorf("metric %s not recorded", name)
+		}
+	}
+}
+
+func TestRefineCancelled(t *testing.T) {
+	readCtx, readCancel := context.WithCancelCause(context.Background())
+	readCancel(errReadStallTimeout)
+
+	writeCtx, writeCancel := context.WithCancelCause(context.Background())
+	writeCancel(errStallTimeout)
+
+	userCtx, userCancel := context.WithCancel(context.Background())
+	userCancel()
+
+	for _, tc := range []struct {
+		name      string
+		ctx       context.Context
+		errorType string
+		want      string
+	}{
+		{name: "read stall timeout cause", ctx: readCtx, errorType: "CANCELLED", want: "TIMEOUT"},
+		{name: "write stall timeout cause", ctx: writeCtx, errorType: "CANCELLED", want: "TIMEOUT"},
+		{name: "user context cancel", ctx: userCtx, errorType: "CANCELLED", want: "CANCELLED"},
+		{name: "non-cancelled error type", ctx: readCtx, errorType: "CONNECTION_ERROR", want: "CONNECTION_ERROR"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := refineCancelled(tc.ctx, tc.errorType); got != tc.want {
+				t.Errorf("refineCancelled(ctx, %q) = %q, want %q", tc.errorType, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestStripPort(t *testing.T) {
+	for _, tc := range []struct {
+		in, want string
+	}{
+		{"storage.googleapis.com:443", "storage.googleapis.com"},
+		{"dns:///storage.googleapis.com:443", "storage.googleapis.com"},
+		{"google-c2p:///storage.googleapis.com", "storage.googleapis.com"},
+		{"dns://authority/storage.googleapis.com:443", "storage.googleapis.com"},
+		{"[::1]:8080", "::1"},
+		{"[::1]", "::1"},
+	} {
+		t.Run(tc.in, func(t *testing.T) {
+			if got := stripPort(tc.in); got != tc.want {
+				t.Errorf("stripPort(%q) = %q, want %q", tc.in, got, tc.want)
+			}
+		})
 	}
 }
 
@@ -1009,7 +1191,32 @@ func TestRecordCredentialRefreshDuration(t *testing.T) {
 		t.Fatalf("initMetrics: %v", err)
 	}
 
-	cm.recordCredentialRefreshDuration(ctx, 500*time.Millisecond, nil)
+	tok1 := &auth.Token{Value: "tok-1", Expiry: time.Unix(1000, 0)}
+	tok2 := &auth.Token{Value: "tok-2", Expiry: time.Unix(2000, 0)}
+	seq := 0
+	creds := wrapAuthCredentials(&auth.Credentials{
+		TokenProvider: &mockTokenProvider{
+			tokenFn: func() (*auth.Token, error) {
+				seq++
+				switch seq {
+				case 1, 2:
+					return tok1, nil // 2nd call is a cache hit and should not be recorded
+				case 3:
+					return tok2, nil // rotated token should be recorded
+				case 4:
+					return nil, errors.New("refresh failed")
+				case 5:
+					return nil, context.DeadlineExceeded
+				default:
+					return nil, context.Canceled
+				}
+			},
+		},
+	}, cm)
+
+	for i := 0; i < 6; i++ {
+		_, _ = creds.TokenProvider.Token(ctx)
+	}
 
 	var rm metricdata.ResourceMetrics
 	if err := mr.Collect(ctx, &rm); err != nil {
@@ -1022,12 +1229,17 @@ func TestRecordCredentialRefreshDuration(t *testing.T) {
 			if m.Name == "gcp.storage.client.auth.credential_refresh.duration" {
 				found = true
 				hist := m.Data.(metricdata.Histogram[float64])
-				dp := hist.DataPoints[0]
-				if dp.Sum != 0.5 {
-					t.Errorf("expected sum 0.5, got %v", dp.Sum)
+				byType := make(map[string]metricdata.HistogramDataPoint[float64])
+				for _, dp := range hist.DataPoints {
+					byType[getHistAttr(dp, "error.type")] = dp
 				}
-				if getHistAttr(dp, "error.type") != "OK" {
-					t.Errorf("expected error.type OK, got %v", getHistAttr(dp, "error.type"))
+				if dp, ok := byType["OK"]; !ok || dp.Count != 2 {
+					t.Errorf("expected 2 OK datapoints (initial + rotated token, excluding cache hit), got %+v", dp)
+				}
+				for _, wantType := range []string{"AUTHENTICATION_ERROR", "TIMEOUT", "CANCELLED"} {
+					if dp, ok := byType[wantType]; !ok || dp.Count != 1 {
+						t.Errorf("missing or unexpected %s datapoint: %+v", wantType, dp)
+					}
 				}
 			}
 		}
@@ -1058,61 +1270,684 @@ func TestWrapAuthCredentials(t *testing.T) {
 	if wrapped2 != wrapped {
 		t.Errorf("expected original wrapped credentials on double wrap")
 	}
+
+	rootErr := &net.OpError{Op: "dial", Net: "tcp", Err: context.DeadlineExceeded}
+	errCreds := wrapAuthCredentials(&auth.Credentials{
+		TokenProvider: &mockTokenProvider{err: rootErr},
+	}, m)
+	_, err := errCreds.TokenProvider.Token(context.Background())
+	if !errors.Is(err, rootErr) {
+		t.Errorf("expected errors.Is(err, rootErr) to be true, got %v", err)
+	}
+	if got := computeErrorType(err, true, 0); got != "AUTHENTICATION_ERROR" {
+		t.Errorf("computeErrorType(err, true, 0) = %q, want AUTHENTICATION_ERROR", got)
+	}
 }
 
-type mockTokenProvider struct{}
+type debugOnlyGRPCServer struct {
+	storagepb.UnimplementedStorageServer
+}
+
+func (s *debugOnlyGRPCServer) GetObject(ctx context.Context, req *storagepb.GetObjectRequest) (*storagepb.Object, error) {
+	_ = grpc.SetHeader(ctx, metadata.Pairs("x-goog-gfe-service-time", "12"))
+	return &storagepb.Object{Name: req.GetObject(), Bucket: req.GetBucket()}, nil
+}
+
+func TestNewClient_DebugMetricsOnly(t *testing.T) {
+	standard := map[string]bool{
+		"rpc.client.call.duration":              true,
+		"http.client.request.duration":          true,
+		"gcp.client.request.duration":           true,
+		"gcp.storage.client.operations":         true,
+		"gcp.storage.client.attempts":           true,
+		"gcp.storage.client.errors":             true,
+		"gcp.storage.client.ttfb":               true,
+		"gcp.storage.client.request.body.size":  true,
+		"gcp.storage.client.response.body.size": true,
+		"gcp.storage.client.server.unreached":   true,
+	}
+
+	for _, tc := range []struct {
+		name      string
+		newClient func(t *testing.T, ctx context.Context, provider *sdkmetric.MeterProvider) *Client
+		wantDebug []string
+	}{
+		{
+			name: "HTTP",
+			newClient: func(t *testing.T, ctx context.Context, provider *sdkmetric.MeterProvider) *Client {
+				srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("X-Goog-Gfe-Service-Time", "15")
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write([]byte(`{"name":"my-object"}`))
+				}))
+				t.Cleanup(srv.Close)
+				c, err := NewClient(ctx,
+					option.WithEndpoint(srv.URL+"/storage/v1/"),
+					option.WithAuthCredentials(auth.NewCredentials(&auth.CredentialsOptions{
+						TokenProvider: &mockTokenProvider{},
+					})),
+					withMeterProvider(provider),
+				)
+				if err != nil {
+					t.Fatalf("NewClient: %v", err)
+				}
+				return c
+			},
+			wantDebug: []string{
+				"gcp.storage.client.auth.credential_refresh.duration",
+				"gcp.storage.client.network.tcp.connect.duration",
+				"gcp.storage.client.server.duration",
+			},
+		},
+		{
+			name: "gRPC",
+			newClient: func(t *testing.T, ctx context.Context, provider *sdkmetric.MeterProvider) *Client {
+				lis, err := net.Listen("tcp", "127.0.0.1:0")
+				if err != nil {
+					t.Fatalf("net.Listen: %v", err)
+				}
+				srv := grpc.NewServer()
+				storagepb.RegisterStorageServer(srv, &debugOnlyGRPCServer{})
+				go func() { _ = srv.Serve(lis) }()
+				t.Cleanup(srv.Stop)
+				c, err := NewGRPCClient(ctx,
+					option.WithEndpoint(lis.Addr().String()),
+					option.WithoutAuthentication(),
+					option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+					internaloption.EnableDirectPath(false),
+					withMeterProvider(provider),
+				)
+				if err != nil {
+					t.Fatalf("NewGRPCClient: %v", err)
+				}
+				return c
+			},
+			wantDebug: []string{
+				"gcp.storage.client.network.tcp.connect.duration",
+				"gcp.storage.client.server.duration",
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			mr := sdkmetric.NewManualReader()
+			provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+			defer provider.Shutdown(ctx)
+
+			t.Setenv(envOtelDebugMetrics, "true")
+			t.Setenv(envOtelMetrics, "false")
+			client := tc.newClient(t, ctx, provider)
+			defer client.Close()
+
+			if _, err := client.Bucket("my-bucket").Object("my-object").Attrs(ctx); err != nil {
+				t.Fatalf("Attrs: %v", err)
+			}
+
+			var rm metricdata.ResourceMetrics
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("Collect: %v", err)
+			}
+			seen := make(map[string]uint64)
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if standard[m.Name] {
+						t.Errorf("standard metric %s emitted with only debug metrics enabled", m.Name)
+					}
+					if hist, ok := m.Data.(metricdata.Histogram[float64]); ok && len(hist.DataPoints) > 0 {
+						seen[m.Name] = hist.DataPoints[0].Count
+					}
+				}
+			}
+			for _, name := range tc.wantDebug {
+				if seen[name] == 0 {
+					t.Errorf("expected debug metric %s to record at least 1 sample, seen=%v", name, seen)
+				}
+			}
+		})
+	}
+}
+
+type mockTokenProvider struct {
+	err     error
+	tokenFn func() (*auth.Token, error)
+}
 
 func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	return &auth.Token{}, nil
+	if m.tokenFn != nil {
+		return m.tokenFn()
+	}
+	if m.err != nil {
+		return nil, m.err
+	}
+	return &auth.Token{Value: "test-token", Expiry: time.Now().Add(time.Hour)}, nil
 }
 
 func TestRecordStallDuration_BidiWriteObject(t *testing.T) {
+	dpAddr, _ := net.ResolveTCPAddr("tcp", "34.126.0.1:443")
+	cpAddr, _ := net.ResolveTCPAddr("tcp", "142.250.80.10:443")
+
+	for _, tc := range []struct {
+		name          string
+		run           func(ctx context.Context, cm *clientMetrics)
+		wantSystem    string
+		wantOperation string
+		wantMethod    string
+		wantPath      string
+		wantSum       float64
+	}{
+		{
+			name: "gRPC BidiWriteObject without peer defaults to unknown",
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordStallDuration(ctx, 2*time.Second, rpcBidiWriteObject, "grpc", "storage.googleapis.com")
+			},
+			wantSystem: "grpc", wantOperation: "WriteObject", wantMethod: "google.storage.v2.Storage/BidiWriteObject", wantPath: "unknown", wantSum: 2.0,
+		},
+		{
+			name: "gRPC BidiWriteObject with DirectPath OutHeader",
+			run: func(ctx context.Context, cm *clientMetrics) {
+				dpCtx, _ := cm.startOperation(ctx, "WriteObject", false)
+				(&grpcMetricsStatsHandler{metrics: cm, host: "storage.googleapis.com"}).HandleRPC(dpCtx, &stats.OutHeader{RemoteAddr: dpAddr})
+				cm.recordStallDuration(dpCtx, 2*time.Second, rpcBidiWriteObject, "grpc", "storage.googleapis.com")
+			},
+			wantSystem: "grpc", wantOperation: "WriteObject", wantMethod: "google.storage.v2.Storage/BidiWriteObject", wantPath: "directpath", wantSum: 2.0,
+		},
+		{
+			name: "gRPC StartResumableWrite with CloudPath OutHeader",
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cpCtx, _ := cm.startOperation(ctx, "WriteObject", false)
+				(&grpcMetricsStatsHandler{metrics: cm, host: "storage.googleapis.com"}).HandleRPC(cpCtx, &stats.OutHeader{RemoteAddr: cpAddr})
+				cm.recordStallDuration(cpCtx, 1500*time.Millisecond, rpcStartResumableWrite, "grpc", "storage.googleapis.com")
+			},
+			wantSystem: "grpc", wantOperation: "WriteObject", wantMethod: "google.storage.v2.Storage/StartResumableWrite", wantPath: "cloudpath", wantSum: 1.5,
+		},
+		{
+			name: "gRPC BidiReadObject with DirectPath peer",
+			run: func(ctx context.Context, cm *clientMetrics) {
+				dpCtx, _ := cm.startOperation(ctx, "ReadObject", false)
+				metricsStateFromContext(dpCtx).setNetworkPath(networkPathOfPeer(&peer.Peer{Addr: dpAddr}))
+				cm.recordStallDuration(dpCtx, time.Second, rpcBidiReadObject, "grpc", "storage.googleapis.com")
+			},
+			wantSystem: "grpc", wantOperation: "ReadObject", wantMethod: "google.storage.v2.Storage/BidiReadObject", wantPath: "directpath", wantSum: 1.0,
+		},
+		{
+			name: "HTTP ReadObject defaults to cloudpath",
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordStallDuration(ctx, 3*time.Second, "ReadObject", "http", "storage.googleapis.com")
+			},
+			wantSystem: "http", wantOperation: "ReadObject", wantMethod: "google.storage.v2.Storage/ReadObject", wantPath: "cloudpath", wantSum: 3.0,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			mr := sdkmetric.NewManualReader()
+			provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+			defer provider.Shutdown(ctx)
+
+			cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+				enableOtelMetrics:      true,
+				enableOtelDebugMetrics: true,
+				meterProvider:          provider,
+			})
+			if err != nil {
+				t.Fatalf("initMetrics: %v", err)
+			}
+			tc.run(ctx, cm)
+
+			var rm metricdata.ResourceMetrics
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("Collect: %v", err)
+			}
+			var found bool
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if m.Name != "gcp.storage.client.stall.duration" {
+						continue
+					}
+					found = true
+					dps := m.Data.(metricdata.Histogram[float64]).DataPoints
+					if len(dps) != 1 {
+						t.Fatalf("got %d data points, want 1", len(dps))
+					}
+					dp := dps[0]
+					if dp.Sum != tc.wantSum {
+						t.Errorf("sum = %v, want %v", dp.Sum, tc.wantSum)
+					}
+					for k, want := range map[string]string{
+						"rpc.system.name":       tc.wantSystem,
+						"gcp.storage.operation": tc.wantOperation,
+						"rpc.method":            tc.wantMethod,
+						"network.path":          tc.wantPath,
+						"server.address":        "storage.googleapis.com",
+					} {
+						if got := getHistAttr(dp, k); got != want {
+							t.Errorf("%s = %q, want %q", k, got, want)
+						}
+					}
+				}
+			}
+			if !found {
+				t.Errorf("metric gcp.storage.client.stall.duration not found")
+			}
+		})
+	}
+}
+
+func TestGRPCNetworkMetricsDialOptions_DNSLookup(t *testing.T) {
 	ctx := context.Background()
 	mr := sdkmetric.NewManualReader()
 	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
 	defer provider.Shutdown(ctx)
 
-	cfg := storageConfig{
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
 		enableOtelMetrics:      true,
 		enableOtelDebugMetrics: true,
 		meterProvider:          provider,
-	}
-
-	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	})
 	if err != nil {
 		t.Fatalf("initMetrics: %v", err)
 	}
 
-	cm.recordStallDuration(ctx, 2*time.Second, "BidiWriteObject", "grpc", "storage.googleapis.com")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("Listen: %v", err)
+	}
+	defer lis.Close()
+	srv := grpc.NewServer()
+	defer srv.Stop()
+	go srv.Serve(lis)
+
+	origDefault := isDefaultDNSLookupHost
+	origLookup := dnsLookupHost
+	origNow := dnsNow
+	t.Cleanup(func() {
+		isDefaultDNSLookupHost = origDefault
+		dnsLookupHost = origLookup
+		dnsNow = origNow
+	})
+
+	isDefaultDNSLookupHost = false
+	dnsLookupHost = func(ctx context.Context, host string) ([]string, error) {
+		return []string{"127.0.0.1"}, nil
+	}
+	currentTime := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	dnsNow = func() time.Time { return currentTime }
+
+	dialOpts := append(grpcNetworkMetricsRawDialOptions("storage.us-central1.rep.googleapis.com:443", cm), grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	dialOnce := func() {
+		conn, err := grpc.NewClient("passthrough:///"+lis.Addr().String(), dialOpts...)
+		if err != nil {
+			t.Fatalf("NewClient: %v", err)
+		}
+		defer conn.Close()
+		conn.Connect()
+		waitCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
+		defer cancel()
+		for st := conn.GetState(); st != connectivity.Ready; st = conn.GetState() {
+			if !conn.WaitForStateChange(waitCtx, st) {
+				t.Fatalf("timed out waiting for connection Ready; state=%v", st)
+			}
+		}
+	}
+
+	waitDNSCount := func(want uint64) metricdata.HistogramDataPoint[float64] {
+		deadline := time.Now().Add(2 * time.Second)
+		for {
+			var rm metricdata.ResourceMetrics
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("Collect: %v", err)
+			}
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if m.Name == "gcp.storage.client.network.dns.lookup.duration" {
+						dps := m.Data.(metricdata.Histogram[float64]).DataPoints
+						if len(dps) == 1 && dps[0].Count == want {
+							return dps[0]
+						}
+					}
+				}
+			}
+			if time.Now().After(deadline) {
+				t.Fatalf("timed out waiting for DNS lookup count == %d", want)
+			}
+			time.Sleep(5 * time.Millisecond)
+		}
+	}
+
+	// 1st dial triggers async DNS probe; 2nd immediate dial hits the 60s cooldown.
+	dialOnce()
+	waitDNSCount(1)
+	dialOnce()
+
+	// Advance clock past the 60s cooldown; 3rd dial triggers a second DNS probe.
+	currentTime = currentTime.Add(61 * time.Second)
+	dialOnce()
+	dp := waitDNSCount(2)
+
+	for k, want := range map[string]string{
+		"rpc.system.name": "grpc",
+		"server.address":  "storage.us-central1.rep.googleapis.com",
+		"network.path":    "",
+	} {
+		if got := getHistAttr(dp, k); got != want {
+			t.Errorf("%s = %q, want %q", k, got, want)
+		}
+	}
+}
+
+func TestKeepFilteredResourceAttribute(t *testing.T) {
+	for _, tc := range []struct {
+		key  string
+		want bool
+	}{
+		{"cloud.platform", true},
+		{"cloud.region", true},
+		{"host.id", true},
+		{"gcp.client.instance_id", true},
+		{"gcp.client.version", true},
+		{"cloud.availability_zone", false},
+		{"service.name", false},
+		{"", false},
+		{"gcp.clientX", false},
+	} {
+		if got := keepFilteredResourceAttribute(tc.key); got != tc.want {
+			t.Errorf("keepFilteredResourceAttribute(%q) = %v, want %v", tc.key, got, tc.want)
+		}
+	}
+}
+
+func TestMetricBaseLabels(t *testing.T) {
+	toMap := func(kvs []attribute.KeyValue) map[string]string {
+		m := make(map[string]string, len(kvs))
+		for _, kv := range kvs {
+			m[string(kv.Key)] = kv.Value.AsString()
+		}
+		return m
+	}
+	first := toMap(metricBaseLabels())
+	second := toMap(metricBaseLabels())
+
+	if len(first) != 4 {
+		t.Fatalf("expected 4 base labels, got %d", len(first))
+	}
+	if first["gcp.client.version"] != internal.Version {
+		t.Errorf("got version %q, want %q", first["gcp.client.version"], internal.Version)
+	}
+	if first["gcp.client.service"] != "storage" {
+		t.Errorf("got service %q, want storage", first["gcp.client.service"])
+	}
+	if first["gcp.client.artifact"] != "cloud.google.com/go/storage" {
+		t.Errorf("got artifact %q, want cloud.google.com/go/storage", first["gcp.client.artifact"])
+	}
+	if _, err := uuid.Parse(first["gcp.client.instance_id"]); err != nil {
+		t.Errorf("expected valid UUID for gcp.client.instance_id, got %q: %v", first["gcp.client.instance_id"], err)
+	}
+	if first["gcp.client.instance_id"] == second["gcp.client.instance_id"] {
+		t.Errorf("expected distinct instance_id values across calls, got %q", first["gcp.client.instance_id"])
+	}
+}
+
+func TestInitMetrics_StandardTier(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: false,
+		meterProvider:          provider,
+	})
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+	if cm.serverUnreached == nil {
+		t.Fatalf("expected server.unreached instrument to be initialized under standard metrics")
+	}
+	if cm.serverDuration != nil {
+		t.Errorf("expected server.duration to remain disabled when debug metrics are off")
+	}
+
+	cmDebug, _, err := initMetrics(ctx, "project-id", &storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	})
+	if err != nil {
+		t.Fatalf("initMetrics(debug): %v", err)
+	}
+	if cmDebug.serverUnreached == nil || cmDebug.serverDuration == nil {
+		t.Fatalf("expected both server.unreached and server.duration to be initialized when debug metrics are on")
+	}
+}
+
+func TestRecordServerMetrics(t *testing.T) {
+	var statsBuf [10]byte
+	binary.LittleEndian.PutUint64(statsBuf[2:], uint64(42*time.Millisecond))
+	trailerWithStats := metadata.Pairs("grpc-server-stats-bin", string(statsBuf[:]))
+	dpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("34.126.0.10"), Port: 443}}
+	cpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("142.250.1.1"), Port: 443}}
+	rpcAttrs := metric.WithAttributes(
+		attribute.String("rpc.method", "GetObject"),
+		attribute.String("rpc.system.name", "grpc"),
+		attribute.String("server.address", "storage.googleapis.com"),
+	)
+
+	httpRespWithUploadID := &http.Response{Header: make(http.Header)}
+	httpRespWithUploadID.Header.Set(uploadIDHeader, "upload-123")
+	httpRespWithUploadID.Header.Set("X-Goog-Gfe-Service-Time", "bad-float")
+
+	for _, tc := range []struct {
+		name          string
+		debug         bool
+		run           func(ctx context.Context, cm *clientMetrics)
+		wantUnreached int64
+		wantDuration  float64
+	}{
+		{
+			name:  "DirectPath with grpc-server-stats-bin",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, trailerWithStats, nil, "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 0,
+			wantDuration:  0.042,
+		},
+		{
+			name:  "DirectPath success without headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, nil, "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "DirectPath pre-response connection error",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, errors.New("connection refused"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "DirectPath ambiguous client timeout",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "DirectPath unavailable without metadata skipped as ambiguous",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.Unavailable, "transport is closing"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "CloudPath ambiguous client timeout",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "CloudPath service deadline exceeded",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "Deadline exceeded."), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "CloudPath with upload ID and malformed GFE/stats headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, metadata.Pairs(uploadIDHeader, "abc", "x-goog-gfe-service-time", "not-a-number"), metadata.Pairs("grpc-server-stats-bin", "short"), nil, "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "CloudPath failure without headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, errors.New("connection refused"), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "HTTP with upload ID and malformed GFE header",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, httpRespWithUploadID, "GetObject", "storage.googleapis.com", "OK", rpcAttrs)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "HTTP response without headers and debug off",
+			debug: false,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, &http.Response{Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "UNAVAILABLE", nil)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "HTTP 504 response without GFE headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, &http.Response{StatusCode: http.StatusGatewayTimeout, Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "DEADLINE_EXCEEDED", rpcAttrs)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "HTTP nil response connection error",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, nil, "GetObject", "storage.googleapis.com", "CONNECTION_ERROR", rpcAttrs)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "HTTP nil response ambiguous client cancel",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, nil, "GetObject", "storage.googleapis.com", "CANCELLED", rpcAttrs)
+			},
+			wantUnreached: 0,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			mr := sdkmetric.NewManualReader()
+			provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+			defer provider.Shutdown(ctx)
+
+			cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+				enableOtelMetrics:      true,
+				enableOtelDebugMetrics: tc.debug,
+				meterProvider:          provider,
+			})
+			if err != nil {
+				t.Fatalf("initMetrics: %v", err)
+			}
+			tc.run(ctx, cm)
+
+			var rm metricdata.ResourceMetrics
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("Collect: %v", err)
+			}
+			var gotUnreached int64
+			var gotDuration float64
+			var gotDurationCount uint64
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if m.Name == "gcp.storage.client.server.unreached" {
+						for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+							gotUnreached += dp.Value
+						}
+					}
+					if m.Name == "gcp.storage.client.server.duration" {
+						for _, dp := range m.Data.(metricdata.Histogram[float64]).DataPoints {
+							gotDurationCount += dp.Count
+							gotDuration += dp.Sum
+						}
+					}
+				}
+			}
+			if gotUnreached != tc.wantUnreached {
+				t.Errorf("server.unreached = %d, want %d", gotUnreached, tc.wantUnreached)
+			}
+			if tc.wantDuration == 0 && gotDurationCount != 0 {
+				t.Errorf("server.duration count = %d, want 0", gotDurationCount)
+			}
+			if tc.wantDuration > 0 && (gotDurationCount != 1 || gotDuration < tc.wantDuration-0.001 || gotDuration > tc.wantDuration+0.001) {
+				t.Errorf("server.duration = %v (count=%d), want %v", gotDuration, gotDurationCount, tc.wantDuration)
+			}
+		})
+	}
+}
+
+func TestMetricUnits(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	})
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+	cm.operations.Add(ctx, 1)
+	cm.attempts.Add(ctx, 1)
+	cm.errors.Add(ctx, 1)
+	cm.serverUnreached.Add(ctx, 1)
+	cm.activeRequests.Add(ctx, 1)
 
 	var rm metricdata.ResourceMetrics
 	if err := mr.Collect(ctx, &rm); err != nil {
 		t.Fatalf("Collect: %v", err)
 	}
-
-	found := false
+	units := make(map[string]string)
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
-			if m.Name == "gcp.storage.client.stall.duration" {
-				found = true
-				hist := m.Data.(metricdata.Histogram[float64])
-				dp := hist.DataPoints[0]
-				if dp.Sum != 2.0 {
-					t.Errorf("expected sum 2.0, got %v", dp.Sum)
-				}
-				if getHistAttr(dp, "rpc.method") != "BidiWriteObject" {
-					t.Errorf("expected rpc.method BidiWriteObject, got %v", getHistAttr(dp, "rpc.method"))
-				}
-				if getHistAttr(dp, "rpc.system.name") != "grpc" {
-					t.Errorf("expected rpc.system.name grpc, got %v", getHistAttr(dp, "rpc.system.name"))
-				}
-				if getHistAttr(dp, "server.address") != "storage.googleapis.com" {
-					t.Errorf("expected server.address storage.googleapis.com, got %v", getHistAttr(dp, "server.address"))
-				}
-			}
+			units[m.Name] = m.Unit
 		}
 	}
-	if !found {
-		t.Errorf("metric not found")
+	for name, wantUnit := range map[string]string{
+		"gcp.storage.client.operations":       "{operation}",
+		"gcp.storage.client.attempts":         "{attempt}",
+		"gcp.storage.client.errors":           "{error}",
+		"gcp.storage.client.server.unreached": "{request}",
+		"gcp.storage.client.request.active":   "{request}",
+	} {
+		if units[name] != wantUnit {
+			t.Errorf("metric %s unit = %q, want %q", name, units[name], wantUnit)
+		}
 	}
 }

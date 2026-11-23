@@ -17,13 +17,17 @@ package impersonate
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
 	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
+	"cloud.google.com/go/auth/internal/jwt"
 )
 
 func TestNewIDTokenCredentials(t *testing.T) {
@@ -86,10 +90,23 @@ func TestNewIDTokenCredentials(t *testing.T) {
 		},
 	}
 
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const wantExp = 1893456000
+	idTok, err := jwt.EncodeJWS(
+		&jwt.Header{Algorithm: jwt.HeaderAlgRSA256, Type: jwt.HeaderType},
+		&jwt.Claims{Iss: "example.com", Aud: "http://example.com/", Iat: wantExp - 3600, Exp: wantExp},
+		privateKey,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	for _, tt := range tests {
 		name := tt.name
 		t.Run(name, func(t *testing.T) {
-			idTok := "id-token"
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
 					defer req.Body.Close()
@@ -142,10 +159,13 @@ func TestNewIDTokenCredentials(t *testing.T) {
 			if tt.config.Credentials == nil {
 				tok, err := creds.Token(ctx)
 				if err != nil {
-					t.Error(err)
+					t.Fatal(err)
 				}
 				if tok.Value != idTok {
 					t.Errorf("got %q, want %q", tok.Value, idTok)
+				}
+				if want := time.Unix(wantExp, 0); !tok.Expiry.Equal(want) {
+					t.Errorf("tok.Expiry = %v, want %v", tok.Expiry, want)
 				}
 			}
 			if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {

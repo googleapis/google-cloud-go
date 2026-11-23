@@ -48,11 +48,12 @@ var newUserLicenseClientHook clientHook
 
 // UserLicenseCallOptions contains the retry settings for each method of UserLicenseClient.
 type UserLicenseCallOptions struct {
-	ListUserLicenses        []gax.CallOption
-	BatchUpdateUserLicenses []gax.CallOption
-	CancelOperation         []gax.CallOption
-	GetOperation            []gax.CallOption
-	ListOperations          []gax.CallOption
+	ListUserLicenses             []gax.CallOption
+	ListLicenseConfigsUsageStats []gax.CallOption
+	BatchUpdateUserLicenses      []gax.CallOption
+	CancelOperation              []gax.CallOption
+	GetOperation                 []gax.CallOption
+	ListOperations               []gax.CallOption
 }
 
 func defaultUserLicenseGRPCClientOptions() []option.ClientOption {
@@ -72,8 +73,9 @@ func defaultUserLicenseGRPCClientOptions() []option.ClientOption {
 
 func defaultUserLicenseCallOptions() *UserLicenseCallOptions {
 	return &UserLicenseCallOptions{
-		ListUserLicenses:        []gax.CallOption{},
-		BatchUpdateUserLicenses: []gax.CallOption{},
+		ListUserLicenses:             []gax.CallOption{},
+		ListLicenseConfigsUsageStats: []gax.CallOption{},
+		BatchUpdateUserLicenses:      []gax.CallOption{},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -115,8 +117,9 @@ func defaultUserLicenseCallOptions() *UserLicenseCallOptions {
 
 func defaultUserLicenseRESTCallOptions() *UserLicenseCallOptions {
 	return &UserLicenseCallOptions{
-		ListUserLicenses:        []gax.CallOption{},
-		BatchUpdateUserLicenses: []gax.CallOption{},
+		ListUserLicenses:             []gax.CallOption{},
+		ListLicenseConfigsUsageStats: []gax.CallOption{},
+		BatchUpdateUserLicenses:      []gax.CallOption{},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -159,6 +162,7 @@ type internalUserLicenseClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	ListUserLicenses(context.Context, *discoveryenginepb.ListUserLicensesRequest, ...gax.CallOption) *UserLicenseIterator
+	ListLicenseConfigsUsageStats(context.Context, *discoveryenginepb.ListLicenseConfigsUsageStatsRequest, ...gax.CallOption) (*discoveryenginepb.ListLicenseConfigsUsageStatsResponse, error)
 	BatchUpdateUserLicenses(context.Context, *discoveryenginepb.BatchUpdateUserLicensesRequest, ...gax.CallOption) (*BatchUpdateUserLicensesOperation, error)
 	BatchUpdateUserLicensesOperation(name string) *BatchUpdateUserLicensesOperation
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -209,6 +213,13 @@ func (c *UserLicenseClient) Connection() *grpc.ClientConn {
 // ListUserLicenses lists the User Licenses.
 func (c *UserLicenseClient) ListUserLicenses(ctx context.Context, req *discoveryenginepb.ListUserLicensesRequest, opts ...gax.CallOption) *UserLicenseIterator {
 	return c.internalClient.ListUserLicenses(ctx, req, opts...)
+}
+
+// ListLicenseConfigsUsageStats lists all the
+// LicenseConfigUsageStatss
+// associated with the project.
+func (c *UserLicenseClient) ListLicenseConfigsUsageStats(ctx context.Context, req *discoveryenginepb.ListLicenseConfigsUsageStatsRequest, opts ...gax.CallOption) (*discoveryenginepb.ListLicenseConfigsUsageStatsResponse, error) {
+	return c.internalClient.ListLicenseConfigsUsageStats(ctx, req, opts...)
 }
 
 // BatchUpdateUserLicenses updates the User License.
@@ -315,6 +326,7 @@ func NewUserLicenseClient(ctx context.Context, opts ...option.ClientOption) (*Us
 		)
 
 		client.CallOptions.ListUserLicenses = append(client.CallOptions.ListUserLicenses, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLicenseConfigsUsageStats = append(client.CallOptions.ListLicenseConfigsUsageStats, gax.WithClientMetrics(metrics))
 		client.CallOptions.BatchUpdateUserLicenses = append(client.CallOptions.BatchUpdateUserLicenses, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
@@ -332,6 +344,7 @@ func NewUserLicenseClient(ctx context.Context, opts ...option.ClientOption) (*Us
 		)
 
 		client.CallOptions.ListUserLicenses = append(client.CallOptions.ListUserLicenses, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLicenseConfigsUsageStats = append(client.CallOptions.ListLicenseConfigsUsageStats, gax.WithClientTracing(tracing))
 		client.CallOptions.BatchUpdateUserLicenses = append(client.CallOptions.BatchUpdateUserLicenses, gax.WithClientTracing(tracing))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
@@ -350,6 +363,7 @@ func NewUserLicenseClient(ctx context.Context, opts ...option.ClientOption) (*Us
 		)
 
 		client.CallOptions.ListUserLicenses = append(client.CallOptions.ListUserLicenses, gax.WithClientLogging(logging))
+		client.CallOptions.ListLicenseConfigsUsageStats = append(client.CallOptions.ListLicenseConfigsUsageStats, gax.WithClientLogging(logging))
 		client.CallOptions.BatchUpdateUserLicenses = append(client.CallOptions.BatchUpdateUserLicenses, gax.WithClientLogging(logging))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
@@ -461,6 +475,7 @@ func NewUserLicenseRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		)
 
 		callOpts.ListUserLicenses = append(callOpts.ListUserLicenses, gax.WithClientMetrics(metrics))
+		callOpts.ListLicenseConfigsUsageStats = append(callOpts.ListLicenseConfigsUsageStats, gax.WithClientMetrics(metrics))
 		callOpts.BatchUpdateUserLicenses = append(callOpts.BatchUpdateUserLicenses, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
@@ -478,6 +493,7 @@ func NewUserLicenseRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		)
 
 		callOpts.ListUserLicenses = append(callOpts.ListUserLicenses, gax.WithClientTracing(tracing))
+		callOpts.ListLicenseConfigsUsageStats = append(callOpts.ListLicenseConfigsUsageStats, gax.WithClientTracing(tracing))
 		callOpts.BatchUpdateUserLicenses = append(callOpts.BatchUpdateUserLicenses, gax.WithClientTracing(tracing))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
@@ -496,6 +512,7 @@ func NewUserLicenseRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		)
 
 		callOpts.ListUserLicenses = append(callOpts.ListUserLicenses, gax.WithClientLogging(logging))
+		callOpts.ListLicenseConfigsUsageStats = append(callOpts.ListLicenseConfigsUsageStats, gax.WithClientLogging(logging))
 		callOpts.BatchUpdateUserLicenses = append(callOpts.BatchUpdateUserLicenses, gax.WithClientLogging(logging))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
@@ -599,6 +616,27 @@ func (c *userLicenseGRPCClient) ListUserLicenses(ctx context.Context, req *disco
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *userLicenseGRPCClient) ListLicenseConfigsUsageStats(ctx context.Context, req *discoveryenginepb.ListLicenseConfigsUsageStatsRequest, opts ...gax.CallOption) (*discoveryenginepb.ListLicenseConfigsUsageStatsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.UserLicenseService/ListLicenseConfigsUsageStats")
+	}
+	opts = append((*c.CallOptions).ListLicenseConfigsUsageStats[0:len((*c.CallOptions).ListLicenseConfigsUsageStats):len((*c.CallOptions).ListLicenseConfigsUsageStats)], opts...)
+	var resp *discoveryenginepb.ListLicenseConfigsUsageStatsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.userLicenseClient.ListLicenseConfigsUsageStats, req, settings.GRPC, c.logger, "ListLicenseConfigsUsageStats")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *userLicenseGRPCClient) BatchUpdateUserLicenses(ctx context.Context, req *discoveryenginepb.BatchUpdateUserLicensesRequest, opts ...gax.CallOption) (*BatchUpdateUserLicensesOperation, error) {
@@ -746,6 +784,9 @@ func (c *userLicenseRESTClient) ListUserLicenses(ctx context.Context, req *disco
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -799,6 +840,67 @@ func (c *userLicenseRESTClient) ListUserLicenses(ctx context.Context, req *disco
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// ListLicenseConfigsUsageStats lists all the
+// LicenseConfigUsageStatss
+// associated with the project.
+func (c *userLicenseRESTClient) ListLicenseConfigsUsageStats(ctx context.Context, req *discoveryenginepb.ListLicenseConfigsUsageStatsRequest, opts ...gax.CallOption) (*discoveryenginepb.ListLicenseConfigsUsageStatsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/licenseConfigsUsageStats", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.UserLicenseService/ListLicenseConfigsUsageStats")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/userStores/*}/licenseConfigsUsageStats")
+	}
+	opts = append((*c.CallOptions).ListLicenseConfigsUsageStats[0:len((*c.CallOptions).ListLicenseConfigsUsageStats):len((*c.CallOptions).ListLicenseConfigsUsageStats)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.ListLicenseConfigsUsageStatsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLicenseConfigsUsageStats")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // BatchUpdateUserLicenses updates the User License.

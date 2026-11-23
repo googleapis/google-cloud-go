@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -37,6 +38,75 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// Request for CreateServingConfig method.
+type CreateServingConfigRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Full resource name of parent. Format:
+	// `projects/{project}/locations/{location}/collections/{collection}/engines/{engine}`
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The ServingConfig to create.
+	ServingConfig *ServingConfig `protobuf:"bytes,2,opt,name=serving_config,json=servingConfig,proto3" json:"serving_config,omitempty"`
+	// Required. The ID to use for the ServingConfig, which will become the final
+	// component of the ServingConfig's resource name.
+	//
+	// This value should be 4-63 characters, and valid characters
+	// are /[a-zA-Z0-9][a-zA-Z0-9_-]+/.
+	ServingConfigId string `protobuf:"bytes,3,opt,name=serving_config_id,json=servingConfigId,proto3" json:"serving_config_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateServingConfigRequest) Reset() {
+	*x = CreateServingConfigRequest{}
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateServingConfigRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateServingConfigRequest) ProtoMessage() {}
+
+func (x *CreateServingConfigRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateServingConfigRequest.ProtoReflect.Descriptor instead.
+func (*CreateServingConfigRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *CreateServingConfigRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *CreateServingConfigRequest) GetServingConfig() *ServingConfig {
+	if x != nil {
+		return x.ServingConfig
+	}
+	return nil
+}
+
+func (x *CreateServingConfigRequest) GetServingConfigId() string {
+	if x != nil {
+		return x.ServingConfigId
+	}
+	return ""
+}
 
 // Request for UpdateServingConfig method.
 type UpdateServingConfigRequest struct {
@@ -57,7 +127,7 @@ type UpdateServingConfigRequest struct {
 
 func (x *UpdateServingConfigRequest) Reset() {
 	*x = UpdateServingConfigRequest{}
-	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[0]
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -69,7 +139,7 @@ func (x *UpdateServingConfigRequest) String() string {
 func (*UpdateServingConfigRequest) ProtoMessage() {}
 
 func (x *UpdateServingConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[0]
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -82,7 +152,7 @@ func (x *UpdateServingConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateServingConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateServingConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDescGZIP(), []int{0}
+	return file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *UpdateServingConfigRequest) GetServingConfig() *ServingConfig {
@@ -99,17 +169,256 @@ func (x *UpdateServingConfigRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+// Request for DeleteServingConfig method.
+type DeleteServingConfigRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the ServingConfig to delete. Format:
+	// `projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/servingConfigs/{serving_config_id}`
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteServingConfigRequest) Reset() {
+	*x = DeleteServingConfigRequest{}
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteServingConfigRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteServingConfigRequest) ProtoMessage() {}
+
+func (x *DeleteServingConfigRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteServingConfigRequest.ProtoReflect.Descriptor instead.
+func (*DeleteServingConfigRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *DeleteServingConfigRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request for GetServingConfig method.
+type GetServingConfigRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the ServingConfig to get. Format:
+	// `projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/servingConfigs/{serving_config_id}`
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServingConfigRequest) Reset() {
+	*x = GetServingConfigRequest{}
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServingConfigRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServingConfigRequest) ProtoMessage() {}
+
+func (x *GetServingConfigRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServingConfigRequest.ProtoReflect.Descriptor instead.
+func (*GetServingConfigRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetServingConfigRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request for ListServingConfigs method.
+type ListServingConfigsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Full resource name of the parent resource. Format:
+	// `projects/{project}/locations/{location}/collections/{collection}/engines/{engine}`
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. Maximum number of results to return. If unspecified, defaults
+	// to 100. If a value greater than 100 is provided, at most 100 results are
+	// returned.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token, received from a previous `ListServingConfigs` call.
+	// Provide this to retrieve the subsequent page.
+	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListServingConfigsRequest) Reset() {
+	*x = ListServingConfigsRequest{}
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListServingConfigsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListServingConfigsRequest) ProtoMessage() {}
+
+func (x *ListServingConfigsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListServingConfigsRequest.ProtoReflect.Descriptor instead.
+func (*ListServingConfigsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ListServingConfigsRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListServingConfigsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListServingConfigsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// Response for ListServingConfigs method.
+type ListServingConfigsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// All the ServingConfigs for a given dataStore.
+	ServingConfigs []*ServingConfig `protobuf:"bytes,1,rep,name=serving_configs,json=servingConfigs,proto3" json:"serving_configs,omitempty"`
+	// Pagination token, if not returned indicates the last page.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListServingConfigsResponse) Reset() {
+	*x = ListServingConfigsResponse{}
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListServingConfigsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListServingConfigsResponse) ProtoMessage() {}
+
+func (x *ListServingConfigsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListServingConfigsResponse.ProtoReflect.Descriptor instead.
+func (*ListServingConfigsResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ListServingConfigsResponse) GetServingConfigs() []*ServingConfig {
+	if x != nil {
+		return x.ServingConfigs
+	}
+	return nil
+}
+
+func (x *ListServingConfigsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
 var File_google_cloud_discoveryengine_v1_serving_config_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1/serving_config_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1/serving_config.proto\x1a google/protobuf/field_mask.proto\"\xb6\x01\n" +
+	"<google/cloud/discoveryengine/v1/serving_config_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1/serving_config.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xfa\x01\n" +
+	"\x1aCreateServingConfigRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,discoveryengine.googleapis.com/ServingConfigR\x06parent\x12[\n" +
+	"\x0eserving_config\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1.ServingConfigB\x04\xe2A\x01\x02R\rservingConfig\x120\n" +
+	"\x11serving_config_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fservingConfigId\"\xb6\x01\n" +
 	"\x1aUpdateServingConfigRequest\x12[\n" +
 	"\x0eserving_config\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1.ServingConfigB\x04\xe2A\x01\x02R\rservingConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask2\xd3\x04\n" +
-	"\x14ServingConfigService\x12\xe6\x03\n" +
-	"\x13UpdateServingConfig\x12;.google.cloud.discoveryengine.v1.UpdateServingConfigRequest\x1a..google.cloud.discoveryengine.v1.ServingConfig\"\xe1\x02\xdaA\x1aserving_config,update_mask\x82\xd3\xe4\x93\x02\xbd\x02:\x0eserving_configZn:\x0eserving_config2\\/v1/{serving_config.name=projects/*/locations/*/collections/*/dataStores/*/servingConfigs/*}Zk:\x0eserving_config2Y/v1/{serving_config.name=projects/*/locations/*/collections/*/engines/*/servingConfigs/*}2N/v1/{serving_config.name=projects/*/locations/*/dataStores/*/servingConfigs/*}\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8c\x02\n" +
+	"updateMask\"g\n" +
+	"\x1aDeleteServingConfigRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/ServingConfigR\x04name\"d\n" +
+	"\x17GetServingConfigRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/ServingConfigR\x04name\"\xb2\x01\n" +
+	"\x19ListServingConfigsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,discoveryengine.googleapis.com/ServingConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9d\x01\n" +
+	"\x1aListServingConfigsResponse\x12W\n" +
+	"\x0fserving_configs\x18\x01 \x03(\v2..google.cloud.discoveryengine.v1.ServingConfigR\x0eservingConfigs\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xeb\x11\n" +
+	"\x14ServingConfigService\x12\xc6\x03\n" +
+	"\x13CreateServingConfig\x12;.google.cloud.discoveryengine.v1.CreateServingConfigRequest\x1a..google.cloud.discoveryengine.v1.ServingConfig\"\xc1\x02\xdaA'parent,serving_config,serving_config_id\x82\xd3\xe4\x93\x02\x90\x02:\x0eserving_configZ_:\x0eserving_config\"M/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/servingConfigsZ\\:\x0eserving_config\"J/v1/{parent=projects/*/locations/*/collections/*/engines/*}/servingConfigs\"?/v1/{parent=projects/*/locations/*/dataStores/*}/servingConfigs\x12\xdb\x02\n" +
+	"\x13DeleteServingConfig\x12;.google.cloud.discoveryengine.v1.DeleteServingConfigRequest\x1a\x16.google.protobuf.Empty\"\xee\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xe0\x01ZO*M/v1/{name=projects/*/locations/*/collections/*/dataStores/*/servingConfigs/*}ZL*J/v1/{name=projects/*/locations/*/collections/*/engines/*/servingConfigs/*}*?/v1/{name=projects/*/locations/*/dataStores/*/servingConfigs/*}\x12\xe6\x03\n" +
+	"\x13UpdateServingConfig\x12;.google.cloud.discoveryengine.v1.UpdateServingConfigRequest\x1a..google.cloud.discoveryengine.v1.ServingConfig\"\xe1\x02\xdaA\x1aserving_config,update_mask\x82\xd3\xe4\x93\x02\xbd\x02:\x0eserving_configZn:\x0eserving_config2\\/v1/{serving_config.name=projects/*/locations/*/collections/*/dataStores/*/servingConfigs/*}Zk:\x0eserving_config2Y/v1/{serving_config.name=projects/*/locations/*/collections/*/engines/*/servingConfigs/*}2N/v1/{serving_config.name=projects/*/locations/*/dataStores/*/servingConfigs/*}\x12\xed\x02\n" +
+	"\x10GetServingConfig\x128.google.cloud.discoveryengine.v1.GetServingConfigRequest\x1a..google.cloud.discoveryengine.v1.ServingConfig\"\xee\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xe0\x01ZO\x12M/v1/{name=projects/*/locations/*/collections/*/dataStores/*/servingConfigs/*}ZL\x12J/v1/{name=projects/*/locations/*/collections/*/engines/*/servingConfigs/*}\x12?/v1/{name=projects/*/locations/*/dataStores/*/servingConfigs/*}\x12\x80\x03\n" +
+	"\x12ListServingConfigs\x12:.google.cloud.discoveryengine.v1.ListServingConfigsRequest\x1a;.google.cloud.discoveryengine.v1.ListServingConfigsResponse\"\xf0\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xe0\x01ZO\x12M/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/servingConfigsZL\x12J/v1/{parent=projects/*/locations/*/collections/*/engines/*}/servingConfigs\x12?/v1/{parent=projects/*/locations/*/dataStores/*}/servingConfigs\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x8c\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x19ServingConfigServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (
@@ -124,22 +433,38 @@ func file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDescGZ
 	return file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_google_cloud_discoveryengine_v1_serving_config_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_google_cloud_discoveryengine_v1_serving_config_service_proto_goTypes = []any{
-	(*UpdateServingConfigRequest)(nil), // 0: google.cloud.discoveryengine.v1.UpdateServingConfigRequest
-	(*ServingConfig)(nil),              // 1: google.cloud.discoveryengine.v1.ServingConfig
-	(*fieldmaskpb.FieldMask)(nil),      // 2: google.protobuf.FieldMask
+	(*CreateServingConfigRequest)(nil), // 0: google.cloud.discoveryengine.v1.CreateServingConfigRequest
+	(*UpdateServingConfigRequest)(nil), // 1: google.cloud.discoveryengine.v1.UpdateServingConfigRequest
+	(*DeleteServingConfigRequest)(nil), // 2: google.cloud.discoveryengine.v1.DeleteServingConfigRequest
+	(*GetServingConfigRequest)(nil),    // 3: google.cloud.discoveryengine.v1.GetServingConfigRequest
+	(*ListServingConfigsRequest)(nil),  // 4: google.cloud.discoveryengine.v1.ListServingConfigsRequest
+	(*ListServingConfigsResponse)(nil), // 5: google.cloud.discoveryengine.v1.ListServingConfigsResponse
+	(*ServingConfig)(nil),              // 6: google.cloud.discoveryengine.v1.ServingConfig
+	(*fieldmaskpb.FieldMask)(nil),      // 7: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),              // 8: google.protobuf.Empty
 }
 var file_google_cloud_discoveryengine_v1_serving_config_service_proto_depIdxs = []int32{
-	1, // 0: google.cloud.discoveryengine.v1.UpdateServingConfigRequest.serving_config:type_name -> google.cloud.discoveryengine.v1.ServingConfig
-	2, // 1: google.cloud.discoveryengine.v1.UpdateServingConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	0, // 2: google.cloud.discoveryengine.v1.ServingConfigService.UpdateServingConfig:input_type -> google.cloud.discoveryengine.v1.UpdateServingConfigRequest
-	1, // 3: google.cloud.discoveryengine.v1.ServingConfigService.UpdateServingConfig:output_type -> google.cloud.discoveryengine.v1.ServingConfig
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	6, // 0: google.cloud.discoveryengine.v1.CreateServingConfigRequest.serving_config:type_name -> google.cloud.discoveryengine.v1.ServingConfig
+	6, // 1: google.cloud.discoveryengine.v1.UpdateServingConfigRequest.serving_config:type_name -> google.cloud.discoveryengine.v1.ServingConfig
+	7, // 2: google.cloud.discoveryengine.v1.UpdateServingConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	6, // 3: google.cloud.discoveryengine.v1.ListServingConfigsResponse.serving_configs:type_name -> google.cloud.discoveryengine.v1.ServingConfig
+	0, // 4: google.cloud.discoveryengine.v1.ServingConfigService.CreateServingConfig:input_type -> google.cloud.discoveryengine.v1.CreateServingConfigRequest
+	2, // 5: google.cloud.discoveryengine.v1.ServingConfigService.DeleteServingConfig:input_type -> google.cloud.discoveryengine.v1.DeleteServingConfigRequest
+	1, // 6: google.cloud.discoveryengine.v1.ServingConfigService.UpdateServingConfig:input_type -> google.cloud.discoveryengine.v1.UpdateServingConfigRequest
+	3, // 7: google.cloud.discoveryengine.v1.ServingConfigService.GetServingConfig:input_type -> google.cloud.discoveryengine.v1.GetServingConfigRequest
+	4, // 8: google.cloud.discoveryengine.v1.ServingConfigService.ListServingConfigs:input_type -> google.cloud.discoveryengine.v1.ListServingConfigsRequest
+	6, // 9: google.cloud.discoveryengine.v1.ServingConfigService.CreateServingConfig:output_type -> google.cloud.discoveryengine.v1.ServingConfig
+	8, // 10: google.cloud.discoveryengine.v1.ServingConfigService.DeleteServingConfig:output_type -> google.protobuf.Empty
+	6, // 11: google.cloud.discoveryengine.v1.ServingConfigService.UpdateServingConfig:output_type -> google.cloud.discoveryengine.v1.ServingConfig
+	6, // 12: google.cloud.discoveryengine.v1.ServingConfigService.GetServingConfig:output_type -> google.cloud.discoveryengine.v1.ServingConfig
+	5, // 13: google.cloud.discoveryengine.v1.ServingConfigService.ListServingConfigs:output_type -> google.cloud.discoveryengine.v1.ListServingConfigsResponse
+	9, // [9:14] is the sub-list for method output_type
+	4, // [4:9] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_serving_config_service_proto_init() }
@@ -154,7 +479,7 @@ func file_google_cloud_discoveryengine_v1_serving_config_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

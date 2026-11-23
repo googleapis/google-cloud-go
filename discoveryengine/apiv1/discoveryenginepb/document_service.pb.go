@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1050,7 +1050,7 @@ const file_google_cloud_discoveryengine_v1_document_service_proto_rawDesc = "" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aINDEXED\x10\x01\x12\x16\n" +
 	"\x12NOT_IN_TARGET_SITE\x10\x02\x12\x10\n" +
-	"\fNOT_IN_INDEX\x10\x032\x9d\x16\n" +
+	"\fNOT_IN_INDEX\x10\x032\x9b\x17\n" +
 	"\x0fDocumentService\x12\x9c\x02\n" +
 	"\vGetDocument\x123.google.cloud.discoveryengine.v1.GetDocumentRequest\x1a).google.cloud.discoveryengine.v1.Document\"\xac\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\x9e\x01ZU\x12S/v1/{name=projects/*/locations/*/collections/*/dataStores/*/branches/*/documents/*}\x12E/v1/{name=projects/*/locations/*/dataStores/*/branches/*/documents/*}\x12\xaf\x02\n" +
 	"\rListDocuments\x125.google.cloud.discoveryengine.v1.ListDocumentsRequest\x1a6.google.cloud.discoveryengine.v1.ListDocumentsResponse\"\xae\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\x9e\x01ZU\x12S/v1/{parent=projects/*/locations/*/collections/*/dataStores/*/branches/*}/documents\x12E/v1/{parent=projects/*/locations/*/dataStores/*/branches/*}/documents\x12\xcd\x02\n" +
@@ -1061,7 +1061,7 @@ const file_google_cloud_discoveryengine_v1_document_service_proto_rawDesc = "" +
 	"7google.cloud.discoveryengine.v1.ImportDocumentsResponse\x127google.cloud.discoveryengine.v1.ImportDocumentsMetadata\x82\xd3\xe4\x93\x02\xb2\x01:\x01*Z_:\x01*\"Z/v1/{parent=projects/*/locations/*/collections/*/dataStores/*/branches/*}/documents:import\"L/v1/{parent=projects/*/locations/*/dataStores/*/branches/*}/documents:import\x12\x94\x03\n" +
 	"\x0ePurgeDocuments\x126.google.cloud.discoveryengine.v1.PurgeDocumentsRequest\x1a\x1d.google.longrunning.Operation\"\xaa\x02\xcaAp\n" +
 	"6google.cloud.discoveryengine.v1.PurgeDocumentsResponse\x126google.cloud.discoveryengine.v1.PurgeDocumentsMetadata\x82\xd3\xe4\x93\x02\xb0\x01:\x01*Z^:\x01*\"Y/v1/{parent=projects/*/locations/*/collections/*/dataStores/*/branches/*}/documents:purge\"K/v1/{parent=projects/*/locations/*/dataStores/*/branches/*}/documents:purge\x12\xf3\x02\n" +
-	"\x19BatchGetDocumentsMetadata\x12A.google.cloud.discoveryengine.v1.BatchGetDocumentsMetadataRequest\x1aB.google.cloud.discoveryengine.v1.BatchGetDocumentsMetadataResponse\"\xce\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xbe\x01Ze\x12c/v1/{parent=projects/*/locations/*/collections/*/dataStores/*/branches/*}/batchGetDocumentsMetadata\x12U/v1/{parent=projects/*/locations/*/dataStores/*/branches/*}/batchGetDocumentsMetadata\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x87\x02\n" +
+	"\x19BatchGetDocumentsMetadata\x12A.google.cloud.discoveryengine.v1.BatchGetDocumentsMetadataRequest\x1aB.google.cloud.discoveryengine.v1.BatchGetDocumentsMetadataResponse\"\xce\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xbe\x01Ze\x12c/v1/{parent=projects/*/locations/*/collections/*/dataStores/*/branches/*}/batchGetDocumentsMetadata\x12U/v1/{parent=projects/*/locations/*/dataStores/*/branches/*}/batchGetDocumentsMetadata\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x87\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x14DocumentServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (

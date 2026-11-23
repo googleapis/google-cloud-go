@@ -2711,7 +2711,7 @@ const file_google_cloud_vectorsearch_v1_vectorsearch_service_proto_rawDesc = "" 
 	"\x0fFeatureNormType\x12!\n" +
 	"\x1dFEATURE_NORM_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\x10\n" +
-	"\fUNIT_L2_NORM\x10\x022\x8d\x15\n" +
+	"\fUNIT_L2_NORM\x10\x022\xf2\x15\n" +
 	"\x13VectorSearchService\x12\xc0\x01\n" +
 	"\x0fListCollections\x124.google.cloud.vectorsearch.v1.ListCollectionsRequest\x1a5.google.cloud.vectorsearch.v1.ListCollectionsResponse\"@\xdaA\x06parent\x82\xd3\xe4\x93\x021\x12//v1/{parent=projects/*/locations/*}/collections\x12\xad\x01\n" +
 	"\rGetCollection\x122.google.cloud.vectorsearch.v1.GetCollectionRequest\x1a(.google.cloud.vectorsearch.v1.Collection\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//v1/{name=projects/*/locations/*/collections/*}\x12\xf2\x01\n" +
@@ -2736,7 +2736,7 @@ const file_google_cloud_vectorsearch_v1_vectorsearch_service_proto_rawDesc = "" 
 	"\x11ImportDataObjects\x126.google.cloud.vectorsearch.v1.ImportDataObjectsRequest\x1a\x1d.google.longrunning.Operation\"\x85\x01\xcaA6\n" +
 	"\x19ImportDataObjectsResponse\x12\x19ImportDataObjectsMetadata\x82\xd3\xe4\x93\x02F:\x01*\"A/v1/{name=projects/*/locations/*/collections/*}:importDataObjects\x12\xf2\x01\n" +
 	"\x11ExportDataObjects\x126.google.cloud.vectorsearch.v1.ExportDataObjectsRequest\x1a\x1d.google.longrunning.Operation\"\x85\x01\xcaA6\n" +
-	"\x19ExportDataObjectsResponse\x12\x19ExportDataObjectsMetadata\x82\xd3\xe4\x93\x02F:\x01*\"A/v1/{name=projects/*/locations/*/collections/*}:exportDataObjects\x1aO\xcaA\x1bvectorsearch.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xe4\x01\n" +
+	"\x19ExportDataObjectsResponse\x12\x19ExportDataObjectsMetadata\x82\xd3\xe4\x93\x02F:\x01*\"A/v1/{name=projects/*/locations/*/collections/*}:exportDataObjects\x1a\xb3\x01\xcaA\x1bvectorsearch.googleapis.com\xd2A\x91\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/vectorsearch,https://www.googleapis.com/auth/vectorsearch.readonlyB\xe4\x01\n" +
 	" com.google.cloud.vectorsearch.v1B\x18VectorSearchServiceProtoP\x01ZDcloud.google.com/go/vectorsearch/apiv1/vectorsearchpb;vectorsearchpb\xaa\x02\x1cGoogle.Cloud.VectorSearch.V1\xca\x02\x1cGoogle\\Cloud\\VectorSearch\\V1\xea\x02\x1fGoogle::Cloud::VectorSearch::V1b\x06proto3"
 
 var (

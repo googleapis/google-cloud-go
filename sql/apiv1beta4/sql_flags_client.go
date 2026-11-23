@@ -84,6 +84,8 @@ type internalSqlFlagsClient interface {
 
 // SqlFlagsClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to manage database flags for Cloud SQL instances.
 type SqlFlagsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlFlagsClient
@@ -141,6 +143,8 @@ type sqlFlagsGRPCClient struct {
 
 // NewSqlFlagsClient creates a new sql flags service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service to manage database flags for Cloud SQL instances.
 func NewSqlFlagsClient(ctx context.Context, opts ...option.ClientOption) (*SqlFlagsClient, error) {
 	clientOpts := defaultSqlFlagsGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -264,6 +268,8 @@ type sqlFlagsRESTClient struct {
 }
 
 // NewSqlFlagsRESTClient creates a new sql flags service rest client.
+//
+// Service to manage database flags for Cloud SQL instances.
 func NewSqlFlagsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlFlagsClient, error) {
 	clientOpts := append(defaultSqlFlagsRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {

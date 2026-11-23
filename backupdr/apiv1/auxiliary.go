@@ -30,6 +30,134 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
+// CreateAutoProtectionPolicyBindingOperation manages a long-running operation from CreateAutoProtectionPolicyBinding.
+type CreateAutoProtectionPolicyBindingOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateAutoProtectionPolicyBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.AutoProtectionPolicyBinding, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.AutoProtectionPolicyBinding
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateAutoProtectionPolicyBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.AutoProtectionPolicyBinding, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.AutoProtectionPolicyBinding
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateAutoProtectionPolicyBindingOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateAutoProtectionPolicyBindingOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateAutoProtectionPolicyBindingOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateAutoProtectionPolicyOperation manages a long-running operation from CreateAutoProtectionPolicy.
+type CreateAutoProtectionPolicyOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateAutoProtectionPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.AutoProtectionPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.AutoProtectionPolicy
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateAutoProtectionPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.AutoProtectionPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.AutoProtectionPolicy
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateAutoProtectionPolicyOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateAutoProtectionPolicyOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateAutoProtectionPolicyOperation) Name() string {
+	return op.lro.Name()
+}
+
 // CreateBackupPlanAssociationOperation manages a long-running operation from CreateBackupPlanAssociation.
 type CreateBackupPlanAssociationOperation struct {
 	lro      *longrunning.Operation
@@ -283,6 +411,251 @@ func (op *CreateManagementServerOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateManagementServerOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateRestoreTemplateOperation manages a long-running operation from CreateRestoreTemplate.
+type CreateRestoreTemplateOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateRestoreTemplateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreTemplate, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreTemplate
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateRestoreTemplateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreTemplate, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreTemplate
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateRestoreTemplateOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateRestoreTemplateOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateRestoreTemplateOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateRestoreVerificationPlanAssociationOperation manages a long-running operation from CreateRestoreVerificationPlanAssociation.
+type CreateRestoreVerificationPlanAssociationOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateRestoreVerificationPlanAssociationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreVerificationPlanAssociation, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreVerificationPlanAssociation
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateRestoreVerificationPlanAssociationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreVerificationPlanAssociation, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreVerificationPlanAssociation
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateRestoreVerificationPlanAssociationOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateRestoreVerificationPlanAssociationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateRestoreVerificationPlanAssociationOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateRestoreVerificationPlanOperation manages a long-running operation from CreateRestoreVerificationPlan.
+type CreateRestoreVerificationPlanOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateRestoreVerificationPlanOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreVerificationPlan, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreVerificationPlan
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateRestoreVerificationPlanOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreVerificationPlan, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreVerificationPlan
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateRestoreVerificationPlanOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateRestoreVerificationPlanOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateRestoreVerificationPlanOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteAutoProtectionPolicyOperation manages a long-running operation from DeleteAutoProtectionPolicy.
+type DeleteAutoProtectionPolicyOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteAutoProtectionPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteAutoProtectionPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteAutoProtectionPolicyOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteAutoProtectionPolicyOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteAutoProtectionPolicyOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -562,6 +935,165 @@ func (op *DeleteManagementServerOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteRestoreTemplateOperation manages a long-running operation from DeleteRestoreTemplate.
+type DeleteRestoreTemplateOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteRestoreTemplateOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteRestoreTemplateOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteRestoreTemplateOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteRestoreTemplateOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteRestoreTemplateOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteRestoreVerificationPlanAssociationOperation manages a long-running operation from DeleteRestoreVerificationPlanAssociation.
+type DeleteRestoreVerificationPlanAssociationOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteRestoreVerificationPlanAssociationOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteRestoreVerificationPlanAssociationOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteRestoreVerificationPlanAssociationOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteRestoreVerificationPlanAssociationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteRestoreVerificationPlanAssociationOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteRestoreVerificationPlanOperation manages a long-running operation from DeleteRestoreVerificationPlan.
+type DeleteRestoreVerificationPlanOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteRestoreVerificationPlanOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteRestoreVerificationPlanOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteRestoreVerificationPlanOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteRestoreVerificationPlanOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteRestoreVerificationPlanOperation) Name() string {
+	return op.lro.Name()
+}
+
 // InitializeServiceOperation manages a long-running operation from InitializeService.
 type InitializeServiceOperation struct {
 	lro      *longrunning.Operation
@@ -623,6 +1155,70 @@ func (op *InitializeServiceOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *InitializeServiceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// InitiateDeleteAutoProtectionPolicyBindingOperation manages a long-running operation from InitiateDeleteAutoProtectionPolicyBinding.
+type InitiateDeleteAutoProtectionPolicyBindingOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *InitiateDeleteAutoProtectionPolicyBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.AutoProtectionPolicyBinding, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.AutoProtectionPolicyBinding
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *InitiateDeleteAutoProtectionPolicyBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.AutoProtectionPolicyBinding, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.AutoProtectionPolicyBinding
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *InitiateDeleteAutoProtectionPolicyBindingOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *InitiateDeleteAutoProtectionPolicyBindingOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *InitiateDeleteAutoProtectionPolicyBindingOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -690,6 +1286,70 @@ func (op *RestoreBackupOperation) Name() string {
 	return op.lro.Name()
 }
 
+// RunRestoreTemplateOperation manages a long-running operation from RunRestoreTemplate.
+type RunRestoreTemplateOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RunRestoreTemplateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RunRestoreTemplateResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RunRestoreTemplateResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RunRestoreTemplateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RunRestoreTemplateResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RunRestoreTemplateResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RunRestoreTemplateOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RunRestoreTemplateOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RunRestoreTemplateOperation) Name() string {
+	return op.lro.Name()
+}
+
 // TriggerBackupOperation manages a long-running operation from TriggerBackup.
 type TriggerBackupOperation struct {
 	lro      *longrunning.Operation
@@ -751,6 +1411,198 @@ func (op *TriggerBackupOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *TriggerBackupOperation) Name() string {
+	return op.lro.Name()
+}
+
+// TriggerRestoreCleanupOperation manages a long-running operation from TriggerRestoreCleanup.
+type TriggerRestoreCleanupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *TriggerRestoreCleanupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreTemplateExecution, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreTemplateExecution
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *TriggerRestoreCleanupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreTemplateExecution, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreTemplateExecution
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *TriggerRestoreCleanupOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *TriggerRestoreCleanupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *TriggerRestoreCleanupOperation) Name() string {
+	return op.lro.Name()
+}
+
+// TriggerRestoreVerificationOperation manages a long-running operation from TriggerRestoreVerification.
+type TriggerRestoreVerificationOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *TriggerRestoreVerificationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.TriggerRestoreVerificationResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.TriggerRestoreVerificationResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *TriggerRestoreVerificationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.TriggerRestoreVerificationResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.TriggerRestoreVerificationResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *TriggerRestoreVerificationOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *TriggerRestoreVerificationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *TriggerRestoreVerificationOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateAutoProtectionPolicyOperation manages a long-running operation from UpdateAutoProtectionPolicy.
+type UpdateAutoProtectionPolicyOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateAutoProtectionPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.AutoProtectionPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.AutoProtectionPolicy
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateAutoProtectionPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.AutoProtectionPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.AutoProtectionPolicy
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateAutoProtectionPolicyOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateAutoProtectionPolicyOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateAutoProtectionPolicyOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1074,6 +1926,229 @@ func (op *UpdateDataSourceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateRestoreTemplateOperation manages a long-running operation from UpdateRestoreTemplate.
+type UpdateRestoreTemplateOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateRestoreTemplateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreTemplate, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreTemplate
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateRestoreTemplateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*backupdrpb.RestoreTemplate, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp backupdrpb.RestoreTemplate
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateRestoreTemplateOperation) Metadata() (*backupdrpb.OperationMetadata, error) {
+	var meta backupdrpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateRestoreTemplateOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateRestoreTemplateOperation) Name() string {
+	return op.lro.Name()
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AppliedAutoProtectionPolicyIterator) All() iter.Seq2[*backupdrpb.AppliedAutoProtectionPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// AppliedAutoProtectionPolicyIterator manages a stream of *backupdrpb.AppliedAutoProtectionPolicy.
+type AppliedAutoProtectionPolicyIterator struct {
+	items    []*backupdrpb.AppliedAutoProtectionPolicy
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*backupdrpb.AppliedAutoProtectionPolicy, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AppliedAutoProtectionPolicyIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AppliedAutoProtectionPolicyIterator) Next() (*backupdrpb.AppliedAutoProtectionPolicy, error) {
+	var item *backupdrpb.AppliedAutoProtectionPolicy
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AppliedAutoProtectionPolicyIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AppliedAutoProtectionPolicyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AutoProtectionPolicyBindingIterator) All() iter.Seq2[*backupdrpb.AutoProtectionPolicyBinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// AutoProtectionPolicyBindingIterator manages a stream of *backupdrpb.AutoProtectionPolicyBinding.
+type AutoProtectionPolicyBindingIterator struct {
+	items    []*backupdrpb.AutoProtectionPolicyBinding
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*backupdrpb.AutoProtectionPolicyBinding, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AutoProtectionPolicyBindingIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AutoProtectionPolicyBindingIterator) Next() (*backupdrpb.AutoProtectionPolicyBinding, error) {
+	var item *backupdrpb.AutoProtectionPolicyBinding
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AutoProtectionPolicyBindingIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AutoProtectionPolicyBindingIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AutoProtectionPolicyIterator) All() iter.Seq2[*backupdrpb.AutoProtectionPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// AutoProtectionPolicyIterator manages a stream of *backupdrpb.AutoProtectionPolicy.
+type AutoProtectionPolicyIterator struct {
+	items    []*backupdrpb.AutoProtectionPolicy
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*backupdrpb.AutoProtectionPolicy, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AutoProtectionPolicyIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AutoProtectionPolicyIterator) Next() (*backupdrpb.AutoProtectionPolicy, error) {
+	var item *backupdrpb.AutoProtectionPolicy
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AutoProtectionPolicyIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AutoProtectionPolicyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *BackupIterator) All() iter.Seq2[*backupdrpb.Backup, error] {
@@ -1334,6 +2409,59 @@ func (it *BackupVaultIterator) bufLen() int {
 }
 
 func (it *BackupVaultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BindingMatchingResourceIterator) All() iter.Seq2[*backupdrpb.BindingMatchingResource, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// BindingMatchingResourceIterator manages a stream of *backupdrpb.BindingMatchingResource.
+type BindingMatchingResourceIterator struct {
+	items    []*backupdrpb.BindingMatchingResource
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*backupdrpb.BindingMatchingResource, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *BindingMatchingResourceIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BindingMatchingResourceIterator) Next() (*backupdrpb.BindingMatchingResource, error) {
+	var item *backupdrpb.BindingMatchingResource
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BindingMatchingResourceIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BindingMatchingResourceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
@@ -1652,6 +2780,218 @@ func (it *ResourceBackupConfigIterator) bufLen() int {
 }
 
 func (it *ResourceBackupConfigIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RestoreTemplateExecutionIterator) All() iter.Seq2[*backupdrpb.RestoreTemplateExecution, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// RestoreTemplateExecutionIterator manages a stream of *backupdrpb.RestoreTemplateExecution.
+type RestoreTemplateExecutionIterator struct {
+	items    []*backupdrpb.RestoreTemplateExecution
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*backupdrpb.RestoreTemplateExecution, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *RestoreTemplateExecutionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RestoreTemplateExecutionIterator) Next() (*backupdrpb.RestoreTemplateExecution, error) {
+	var item *backupdrpb.RestoreTemplateExecution
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RestoreTemplateExecutionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RestoreTemplateExecutionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RestoreTemplateIterator) All() iter.Seq2[*backupdrpb.RestoreTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// RestoreTemplateIterator manages a stream of *backupdrpb.RestoreTemplate.
+type RestoreTemplateIterator struct {
+	items    []*backupdrpb.RestoreTemplate
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*backupdrpb.RestoreTemplate, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *RestoreTemplateIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RestoreTemplateIterator) Next() (*backupdrpb.RestoreTemplate, error) {
+	var item *backupdrpb.RestoreTemplate
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RestoreTemplateIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RestoreTemplateIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RestoreVerificationPlanAssociationIterator) All() iter.Seq2[*backupdrpb.RestoreVerificationPlanAssociation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// RestoreVerificationPlanAssociationIterator manages a stream of *backupdrpb.RestoreVerificationPlanAssociation.
+type RestoreVerificationPlanAssociationIterator struct {
+	items    []*backupdrpb.RestoreVerificationPlanAssociation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*backupdrpb.RestoreVerificationPlanAssociation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *RestoreVerificationPlanAssociationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RestoreVerificationPlanAssociationIterator) Next() (*backupdrpb.RestoreVerificationPlanAssociation, error) {
+	var item *backupdrpb.RestoreVerificationPlanAssociation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RestoreVerificationPlanAssociationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RestoreVerificationPlanAssociationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RestoreVerificationPlanIterator) All() iter.Seq2[*backupdrpb.RestoreVerificationPlan, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// RestoreVerificationPlanIterator manages a stream of *backupdrpb.RestoreVerificationPlan.
+type RestoreVerificationPlanIterator struct {
+	items    []*backupdrpb.RestoreVerificationPlan
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*backupdrpb.RestoreVerificationPlan, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *RestoreVerificationPlanIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RestoreVerificationPlanIterator) Next() (*backupdrpb.RestoreVerificationPlan, error) {
+	var item *backupdrpb.RestoreVerificationPlan
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RestoreVerificationPlanIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RestoreVerificationPlanIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

@@ -53,6 +53,58 @@ func ExampleClient_FetchGitRefs_all() {
 	}
 }
 
+func ExampleClient_FetchGitRepositoryLinkCommitList_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := developerconnect.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &developerconnectpb.FetchGitRepositoryLinkCommitListRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/developerconnect/apiv1/developerconnectpb#FetchGitRepositoryLinkCommitListRequest.
+	}
+	for resp, err := range c.FetchGitRepositoryLinkCommitList(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_FetchGitRepositoryLinkPullRequestList_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := developerconnect.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &developerconnectpb.FetchGitRepositoryLinkPullRequestListRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/developerconnect/apiv1/developerconnectpb#FetchGitRepositoryLinkPullRequestListRequest.
+	}
+	for resp, err := range c.FetchGitRepositoryLinkPullRequestList(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_FetchLinkableGitRepositories_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

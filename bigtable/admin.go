@@ -101,6 +101,8 @@ func (e ErrPartiallyUnavailable) Error() string {
 }
 
 // AdminClient is a client type for performing admin operations within a specific instance.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2.BigtableTableAdminClient instead.
 type AdminClient struct {
 	connPool         gtransport.ConnPool
 	tClient          btapb.BigtableTableAdminClient
@@ -114,6 +116,8 @@ type AdminClient struct {
 }
 
 // NewAdminClient creates a new AdminClient for a given project and instance.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2.NewBigtableTableAdminClient instead.
 func NewAdminClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*AdminClient, error) {
 	o, err := btopt.DefaultClientOptions(adminAddr, mtlsAdminAddr, AdminScope, clientUserAgent)
 	if err != nil {
@@ -1414,6 +1418,8 @@ const mtlsInstanceAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
 // InstanceAdminClient is a client type for performing admin operations on instances.
 // These operations can be substantially more dangerous than those provided by AdminClient.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2.BigtableInstanceAdminClient instead.
 type InstanceAdminClient struct {
 	connPool            gtransport.ConnPool
 	iClient             btapb.BigtableInstanceAdminClient
@@ -1427,6 +1433,8 @@ type InstanceAdminClient struct {
 }
 
 // NewInstanceAdminClient creates a new InstanceAdminClient for a given project.
+//
+// Deprecated: Use cloud.google.com/go/bigtable/admin/apiv2.NewBigtableInstanceAdminClient instead.
 func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.ClientOption) (*InstanceAdminClient, error) {
 	o, err := btopt.DefaultClientOptions(instanceAdminAddr, mtlsInstanceAdminAddr, InstanceAdminScope, clientUserAgent)
 	if err != nil {
@@ -2690,6 +2698,8 @@ func max(x, y int) int {
 // but a cluster update fails. If an error is returned, InstanceInfo and Clusters may be called to
 // determine the current state. The return UpdateInstanceResults will describe the work done by the
 // method, whether partial or complete.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().PartialUpdateInstance and Cluster methods instead.
 func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient, conf *InstanceWithClustersConfig) (*UpdateInstanceResults, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 

@@ -642,6 +642,59 @@ func (Backup_BackupType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{10, 1}
 }
 
+// LastVerificationState represents the state of the verification.
+type VerificationSummary_LastVerificationState int32
+
+const (
+	// Verification state is unspecified.
+	VerificationSummary_STATE_UNSPECIFIED VerificationSummary_LastVerificationState = 0
+	// Verification succeeded.
+	VerificationSummary_SUCCEEDED VerificationSummary_LastVerificationState = 1
+	// Verification failed.
+	VerificationSummary_FAILED VerificationSummary_LastVerificationState = 2
+)
+
+// Enum value maps for VerificationSummary_LastVerificationState.
+var (
+	VerificationSummary_LastVerificationState_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "SUCCEEDED",
+		2: "FAILED",
+	}
+	VerificationSummary_LastVerificationState_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"SUCCEEDED":         1,
+		"FAILED":            2,
+	}
+)
+
+func (x VerificationSummary_LastVerificationState) Enum() *VerificationSummary_LastVerificationState {
+	p := new(VerificationSummary_LastVerificationState)
+	*p = x
+	return p
+}
+
+func (x VerificationSummary_LastVerificationState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (VerificationSummary_LastVerificationState) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_backupdr_v1_backupvault_proto_enumTypes[10].Descriptor()
+}
+
+func (VerificationSummary_LastVerificationState) Type() protoreflect.EnumType {
+	return &file_google_cloud_backupdr_v1_backupvault_proto_enumTypes[10]
+}
+
+func (x VerificationSummary_LastVerificationState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use VerificationSummary_LastVerificationState.Descriptor instead.
+func (VerificationSummary_LastVerificationState) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{11, 0}
+}
+
 // Message describing a BackupVault object.
 type BackupVault struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1189,8 +1242,13 @@ type GcpBackupConfig struct {
 	// The user friendly id of the backup plan revision.
 	// E.g. v0, v1 etc.
 	BackupPlanRevisionId string `protobuf:"bytes,6,opt,name=backup_plan_revision_id,json=backupPlanRevisionId,proto3" json:"backup_plan_revision_id,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// Output only. The resource name of the `AutoProtectionPolicyBinding` that
+	// manages this datasource, if any.
+	// Format:
+	// `projects/{project}/locations/{location}/autoProtectionPolicies/{policy}/bindings/{binding}`.
+	AutoProtectionPolicyBinding string `protobuf:"bytes,7,opt,name=auto_protection_policy_binding,json=autoProtectionPolicyBinding,proto3" json:"auto_protection_policy_binding,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *GcpBackupConfig) Reset() {
@@ -1261,6 +1319,13 @@ func (x *GcpBackupConfig) GetBackupPlanRevisionName() string {
 func (x *GcpBackupConfig) GetBackupPlanRevisionId() string {
 	if x != nil {
 		return x.BackupPlanRevisionId
+	}
+	return ""
+}
+
+func (x *GcpBackupConfig) GetAutoProtectionPolicyBinding() string {
+	if x != nil {
+		return x.AutoProtectionPolicyBinding
 	}
 	return ""
 }
@@ -1980,8 +2045,10 @@ type Backup struct {
 	// Optional. Output only. The list of KMS key versions used to encrypt the
 	// backup.
 	KmsKeyVersions []string `protobuf:"bytes,33,rep,name=kms_key_versions,json=kmsKeyVersions,proto3" json:"kms_key_versions,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Output only. The restore verification status of the backup.
+	VerificationSummary *VerificationSummary `protobuf:"bytes,37,opt,name=verification_summary,json=verificationSummary,proto3" json:"verification_summary,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *Backup) Reset() {
@@ -2224,6 +2291,13 @@ func (x *Backup) GetKmsKeyVersions() []string {
 	return nil
 }
 
+func (x *Backup) GetVerificationSummary() *VerificationSummary {
+	if x != nil {
+		return x.VerificationSummary
+	}
+	return nil
+}
+
 type isBackup_BackupProperties interface {
 	isBackup_BackupProperties()
 }
@@ -2286,6 +2360,71 @@ type Backup_GcpResource struct {
 
 func (*Backup_GcpResource) isBackup_SourceResource() {}
 
+// VerificationSummary contains the status and timestamp of the
+// latest Automated Verification test.
+type VerificationSummary struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The time when the backup was last verified.
+	LastVerificationTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=last_verification_time,json=lastVerificationTime,proto3" json:"last_verification_time,omitempty"`
+	// Output only. The state of the last verification.
+	LastVerificationState VerificationSummary_LastVerificationState `protobuf:"varint,2,opt,name=last_verification_state,json=lastVerificationState,proto3,enum=google.cloud.backupdr.v1.VerificationSummary_LastVerificationState" json:"last_verification_state,omitempty"`
+	// Output only. The last verification execution.
+	LastVerificationExecution string `protobuf:"bytes,3,opt,name=last_verification_execution,json=lastVerificationExecution,proto3" json:"last_verification_execution,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *VerificationSummary) Reset() {
+	*x = VerificationSummary{}
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VerificationSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VerificationSummary) ProtoMessage() {}
+
+func (x *VerificationSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VerificationSummary.ProtoReflect.Descriptor instead.
+func (*VerificationSummary) Descriptor() ([]byte, []int) {
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *VerificationSummary) GetLastVerificationTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastVerificationTime
+	}
+	return nil
+}
+
+func (x *VerificationSummary) GetLastVerificationState() VerificationSummary_LastVerificationState {
+	if x != nil {
+		return x.LastVerificationState
+	}
+	return VerificationSummary_STATE_UNSPECIFIED
+}
+
+func (x *VerificationSummary) GetLastVerificationExecution() string {
+	if x != nil {
+		return x.LastVerificationExecution
+	}
+	return ""
+}
+
 // Message for creating a BackupVault.
 type CreateBackupVaultRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2320,7 +2459,7 @@ type CreateBackupVaultRequest struct {
 
 func (x *CreateBackupVaultRequest) Reset() {
 	*x = CreateBackupVaultRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[11]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2332,7 +2471,7 @@ func (x *CreateBackupVaultRequest) String() string {
 func (*CreateBackupVaultRequest) ProtoMessage() {}
 
 func (x *CreateBackupVaultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[11]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2345,7 +2484,7 @@ func (x *CreateBackupVaultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateBackupVaultRequest.ProtoReflect.Descriptor instead.
 func (*CreateBackupVaultRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CreateBackupVaultRequest) GetParent() string {
@@ -2411,7 +2550,7 @@ type ListBackupVaultsRequest struct {
 
 func (x *ListBackupVaultsRequest) Reset() {
 	*x = ListBackupVaultsRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[12]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2423,7 +2562,7 @@ func (x *ListBackupVaultsRequest) String() string {
 func (*ListBackupVaultsRequest) ProtoMessage() {}
 
 func (x *ListBackupVaultsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[12]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2436,7 +2575,7 @@ func (x *ListBackupVaultsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupVaultsRequest.ProtoReflect.Descriptor instead.
 func (*ListBackupVaultsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListBackupVaultsRequest) GetParent() string {
@@ -2503,7 +2642,7 @@ type ListBackupVaultsResponse struct {
 
 func (x *ListBackupVaultsResponse) Reset() {
 	*x = ListBackupVaultsResponse{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[13]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2515,7 +2654,7 @@ func (x *ListBackupVaultsResponse) String() string {
 func (*ListBackupVaultsResponse) ProtoMessage() {}
 
 func (x *ListBackupVaultsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[13]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2528,7 +2667,7 @@ func (x *ListBackupVaultsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupVaultsResponse.ProtoReflect.Descriptor instead.
 func (*ListBackupVaultsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListBackupVaultsResponse) GetBackupVaults() []*BackupVault {
@@ -2577,7 +2716,7 @@ type FetchUsableBackupVaultsRequest struct {
 
 func (x *FetchUsableBackupVaultsRequest) Reset() {
 	*x = FetchUsableBackupVaultsRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[14]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2589,7 +2728,7 @@ func (x *FetchUsableBackupVaultsRequest) String() string {
 func (*FetchUsableBackupVaultsRequest) ProtoMessage() {}
 
 func (x *FetchUsableBackupVaultsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[14]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2602,7 +2741,7 @@ func (x *FetchUsableBackupVaultsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchUsableBackupVaultsRequest.ProtoReflect.Descriptor instead.
 func (*FetchUsableBackupVaultsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *FetchUsableBackupVaultsRequest) GetParent() string {
@@ -2662,7 +2801,7 @@ type FetchUsableBackupVaultsResponse struct {
 
 func (x *FetchUsableBackupVaultsResponse) Reset() {
 	*x = FetchUsableBackupVaultsResponse{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[15]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2674,7 +2813,7 @@ func (x *FetchUsableBackupVaultsResponse) String() string {
 func (*FetchUsableBackupVaultsResponse) ProtoMessage() {}
 
 func (x *FetchUsableBackupVaultsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[15]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2687,7 +2826,7 @@ func (x *FetchUsableBackupVaultsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchUsableBackupVaultsResponse.ProtoReflect.Descriptor instead.
 func (*FetchUsableBackupVaultsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *FetchUsableBackupVaultsResponse) GetBackupVaults() []*BackupVault {
@@ -2751,7 +2890,7 @@ type FetchBackupsForResourceTypeRequest struct {
 
 func (x *FetchBackupsForResourceTypeRequest) Reset() {
 	*x = FetchBackupsForResourceTypeRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[16]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2763,7 +2902,7 @@ func (x *FetchBackupsForResourceTypeRequest) String() string {
 func (*FetchBackupsForResourceTypeRequest) ProtoMessage() {}
 
 func (x *FetchBackupsForResourceTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[16]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2776,7 +2915,7 @@ func (x *FetchBackupsForResourceTypeRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use FetchBackupsForResourceTypeRequest.ProtoReflect.Descriptor instead.
 func (*FetchBackupsForResourceTypeRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *FetchBackupsForResourceTypeRequest) GetParent() string {
@@ -2842,7 +2981,7 @@ type FetchBackupsForResourceTypeResponse struct {
 
 func (x *FetchBackupsForResourceTypeResponse) Reset() {
 	*x = FetchBackupsForResourceTypeResponse{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[17]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2854,7 +2993,7 @@ func (x *FetchBackupsForResourceTypeResponse) String() string {
 func (*FetchBackupsForResourceTypeResponse) ProtoMessage() {}
 
 func (x *FetchBackupsForResourceTypeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[17]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2867,7 +3006,7 @@ func (x *FetchBackupsForResourceTypeResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use FetchBackupsForResourceTypeResponse.ProtoReflect.Descriptor instead.
 func (*FetchBackupsForResourceTypeResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *FetchBackupsForResourceTypeResponse) GetBackups() []*Backup {
@@ -2899,7 +3038,7 @@ type GetBackupVaultRequest struct {
 
 func (x *GetBackupVaultRequest) Reset() {
 	*x = GetBackupVaultRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[18]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2911,7 +3050,7 @@ func (x *GetBackupVaultRequest) String() string {
 func (*GetBackupVaultRequest) ProtoMessage() {}
 
 func (x *GetBackupVaultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[18]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2924,7 +3063,7 @@ func (x *GetBackupVaultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBackupVaultRequest.ProtoReflect.Descriptor instead.
 func (*GetBackupVaultRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *GetBackupVaultRequest) GetName() string {
@@ -2981,7 +3120,7 @@ type UpdateBackupVaultRequest struct {
 
 func (x *UpdateBackupVaultRequest) Reset() {
 	*x = UpdateBackupVaultRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[19]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2993,7 +3132,7 @@ func (x *UpdateBackupVaultRequest) String() string {
 func (*UpdateBackupVaultRequest) ProtoMessage() {}
 
 func (x *UpdateBackupVaultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[19]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3006,7 +3145,7 @@ func (x *UpdateBackupVaultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateBackupVaultRequest.ProtoReflect.Descriptor instead.
 func (*UpdateBackupVaultRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *UpdateBackupVaultRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -3092,7 +3231,7 @@ type DeleteBackupVaultRequest struct {
 
 func (x *DeleteBackupVaultRequest) Reset() {
 	*x = DeleteBackupVaultRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[20]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3104,7 +3243,7 @@ func (x *DeleteBackupVaultRequest) String() string {
 func (*DeleteBackupVaultRequest) ProtoMessage() {}
 
 func (x *DeleteBackupVaultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[20]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3117,7 +3256,7 @@ func (x *DeleteBackupVaultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBackupVaultRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBackupVaultRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *DeleteBackupVaultRequest) GetName() string {
@@ -3194,7 +3333,7 @@ type ListDataSourcesRequest struct {
 
 func (x *ListDataSourcesRequest) Reset() {
 	*x = ListDataSourcesRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[21]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3206,7 +3345,7 @@ func (x *ListDataSourcesRequest) String() string {
 func (*ListDataSourcesRequest) ProtoMessage() {}
 
 func (x *ListDataSourcesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[21]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3219,7 +3358,7 @@ func (x *ListDataSourcesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDataSourcesRequest.ProtoReflect.Descriptor instead.
 func (*ListDataSourcesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListDataSourcesRequest) GetParent() string {
@@ -3279,7 +3418,7 @@ type ListDataSourcesResponse struct {
 
 func (x *ListDataSourcesResponse) Reset() {
 	*x = ListDataSourcesResponse{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[22]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3291,7 +3430,7 @@ func (x *ListDataSourcesResponse) String() string {
 func (*ListDataSourcesResponse) ProtoMessage() {}
 
 func (x *ListDataSourcesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[22]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3304,7 +3443,7 @@ func (x *ListDataSourcesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDataSourcesResponse.ProtoReflect.Descriptor instead.
 func (*ListDataSourcesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListDataSourcesResponse) GetDataSources() []*DataSource {
@@ -3340,7 +3479,7 @@ type GetDataSourceRequest struct {
 
 func (x *GetDataSourceRequest) Reset() {
 	*x = GetDataSourceRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[23]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3352,7 +3491,7 @@ func (x *GetDataSourceRequest) String() string {
 func (*GetDataSourceRequest) ProtoMessage() {}
 
 func (x *GetDataSourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[23]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3365,7 +3504,7 @@ func (x *GetDataSourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDataSourceRequest.ProtoReflect.Descriptor instead.
 func (*GetDataSourceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GetDataSourceRequest) GetName() string {
@@ -3408,7 +3547,7 @@ type UpdateDataSourceRequest struct {
 
 func (x *UpdateDataSourceRequest) Reset() {
 	*x = UpdateDataSourceRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[24]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3420,7 +3559,7 @@ func (x *UpdateDataSourceRequest) String() string {
 func (*UpdateDataSourceRequest) ProtoMessage() {}
 
 func (x *UpdateDataSourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[24]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3433,7 +3572,7 @@ func (x *UpdateDataSourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDataSourceRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDataSourceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *UpdateDataSourceRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -3492,7 +3631,7 @@ type ListBackupsRequest struct {
 
 func (x *ListBackupsRequest) Reset() {
 	*x = ListBackupsRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[25]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3504,7 +3643,7 @@ func (x *ListBackupsRequest) String() string {
 func (*ListBackupsRequest) ProtoMessage() {}
 
 func (x *ListBackupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[25]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3517,7 +3656,7 @@ func (x *ListBackupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupsRequest.ProtoReflect.Descriptor instead.
 func (*ListBackupsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ListBackupsRequest) GetParent() string {
@@ -3584,7 +3723,7 @@ type ListBackupsResponse struct {
 
 func (x *ListBackupsResponse) Reset() {
 	*x = ListBackupsResponse{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[26]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3596,7 +3735,7 @@ func (x *ListBackupsResponse) String() string {
 func (*ListBackupsResponse) ProtoMessage() {}
 
 func (x *ListBackupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[26]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3609,7 +3748,7 @@ func (x *ListBackupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupsResponse.ProtoReflect.Descriptor instead.
 func (*ListBackupsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ListBackupsResponse) GetBackups() []*Backup {
@@ -3648,7 +3787,7 @@ type GetBackupRequest struct {
 
 func (x *GetBackupRequest) Reset() {
 	*x = GetBackupRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[27]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3660,7 +3799,7 @@ func (x *GetBackupRequest) String() string {
 func (*GetBackupRequest) ProtoMessage() {}
 
 func (x *GetBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[27]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3673,7 +3812,7 @@ func (x *GetBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBackupRequest.ProtoReflect.Descriptor instead.
 func (*GetBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *GetBackupRequest) GetName() string {
@@ -3721,7 +3860,7 @@ type UpdateBackupRequest struct {
 
 func (x *UpdateBackupRequest) Reset() {
 	*x = UpdateBackupRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[28]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3733,7 +3872,7 @@ func (x *UpdateBackupRequest) String() string {
 func (*UpdateBackupRequest) ProtoMessage() {}
 
 func (x *UpdateBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[28]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3746,7 +3885,7 @@ func (x *UpdateBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateBackupRequest.ProtoReflect.Descriptor instead.
 func (*UpdateBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *UpdateBackupRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -3795,7 +3934,7 @@ type DeleteBackupRequest struct {
 
 func (x *DeleteBackupRequest) Reset() {
 	*x = DeleteBackupRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[29]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3807,7 +3946,7 @@ func (x *DeleteBackupRequest) String() string {
 func (*DeleteBackupRequest) ProtoMessage() {}
 
 func (x *DeleteBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[29]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3820,7 +3959,7 @@ func (x *DeleteBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBackupRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *DeleteBackupRequest) GetName() string {
@@ -3891,7 +4030,7 @@ type RestoreBackupRequest struct {
 
 func (x *RestoreBackupRequest) Reset() {
 	*x = RestoreBackupRequest{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[30]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3903,7 +4042,7 @@ func (x *RestoreBackupRequest) String() string {
 func (*RestoreBackupRequest) ProtoMessage() {}
 
 func (x *RestoreBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[30]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3916,7 +4055,7 @@ func (x *RestoreBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestoreBackupRequest.ProtoReflect.Descriptor instead.
 func (*RestoreBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *RestoreBackupRequest) GetName() string {
@@ -4055,7 +4194,7 @@ type RestoreBackupResponse struct {
 
 func (x *RestoreBackupResponse) Reset() {
 	*x = RestoreBackupResponse{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[31]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4067,7 +4206,7 @@ func (x *RestoreBackupResponse) String() string {
 func (*RestoreBackupResponse) ProtoMessage() {}
 
 func (x *RestoreBackupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[31]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4080,7 +4219,7 @@ func (x *RestoreBackupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestoreBackupResponse.ProtoReflect.Descriptor instead.
 func (*RestoreBackupResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *RestoreBackupResponse) GetTargetResource() *TargetResource {
@@ -4105,7 +4244,7 @@ type TargetResource struct {
 
 func (x *TargetResource) Reset() {
 	*x = TargetResource{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[32]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4117,7 +4256,7 @@ func (x *TargetResource) String() string {
 func (*TargetResource) ProtoMessage() {}
 
 func (x *TargetResource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[32]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4130,7 +4269,7 @@ func (x *TargetResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TargetResource.ProtoReflect.Descriptor instead.
 func (*TargetResource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *TargetResource) GetTargetResourceInfo() isTargetResource_TargetResourceInfo {
@@ -4176,7 +4315,7 @@ type GcpResource struct {
 
 func (x *GcpResource) Reset() {
 	*x = GcpResource{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[33]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4188,7 +4327,7 @@ func (x *GcpResource) String() string {
 func (*GcpResource) ProtoMessage() {}
 
 func (x *GcpResource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[33]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4201,7 +4340,7 @@ func (x *GcpResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcpResource.ProtoReflect.Descriptor instead.
 func (*GcpResource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *GcpResource) GetGcpResourcename() string {
@@ -4241,7 +4380,7 @@ type BackupGcpResource struct {
 
 func (x *BackupGcpResource) Reset() {
 	*x = BackupGcpResource{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[34]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4253,7 +4392,7 @@ func (x *BackupGcpResource) String() string {
 func (*BackupGcpResource) ProtoMessage() {}
 
 func (x *BackupGcpResource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[34]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4266,7 +4405,7 @@ func (x *BackupGcpResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BackupGcpResource.ProtoReflect.Descriptor instead.
 func (*BackupGcpResource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *BackupGcpResource) GetGcpResourcename() string {
@@ -4305,7 +4444,7 @@ type BackupVault_EncryptionConfig struct {
 
 func (x *BackupVault_EncryptionConfig) Reset() {
 	*x = BackupVault_EncryptionConfig{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[35]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4317,7 +4456,7 @@ func (x *BackupVault_EncryptionConfig) String() string {
 func (*BackupVault_EncryptionConfig) ProtoMessage() {}
 
 func (x *BackupVault_EncryptionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[35]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4366,7 +4505,7 @@ type Backup_GCPBackupPlanInfo struct {
 
 func (x *Backup_GCPBackupPlanInfo) Reset() {
 	*x = Backup_GCPBackupPlanInfo{}
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[39]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4378,7 +4517,7 @@ func (x *Backup_GCPBackupPlanInfo) String() string {
 func (*Backup_GCPBackupPlanInfo) ProtoMessage() {}
 
 func (x *Backup_GCPBackupPlanInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[39]
+	mi := &file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4538,7 +4677,7 @@ const file_google_cloud_backupdr_v1_backupvault_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x03\x12\x15\n" +
 	"\x11PERMISSION_DENIED\x10\x04B\x0f\n" +
-	"\rbackup_config\"\x9d\x03\n" +
+	"\rbackup_config\"\xa1\x04\n" +
 	"\x0fGcpBackupConfig\x12H\n" +
 	"\vbackup_plan\x18\x01 \x01(\tB'\xfaA$\n" +
 	"\"backupdr.googleapis.com/BackupPlanR\n" +
@@ -4548,7 +4687,9 @@ const file_google_cloud_backupdr_v1_backupvault_proto_rawDesc = "" +
 	"-backupdr.googleapis.com/BackupPlanAssociationR\x15backupPlanAssociation\x12*\n" +
 	"\x11backup_plan_rules\x18\x04 \x03(\tR\x0fbackupPlanRules\x129\n" +
 	"\x19backup_plan_revision_name\x18\x05 \x01(\tR\x16backupPlanRevisionName\x125\n" +
-	"\x17backup_plan_revision_id\x18\x06 \x01(\tR\x14backupPlanRevisionId\"\x96\x02\n" +
+	"\x17backup_plan_revision_id\x18\x06 \x01(\tR\x14backupPlanRevisionId\x12\x81\x01\n" +
+	"\x1eauto_protection_policy_binding\x18\a \x01(\tB<\xe2A\x01\x03\xfaA5\n" +
+	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x1bautoProtectionPolicyBinding\"\x96\x02\n" +
 	"\x1bBackupApplianceBackupConfig\x122\n" +
 	"\x15backup_appliance_name\x18\x01 \x01(\tR\x13backupApplianceName\x12.\n" +
 	"\x13backup_appliance_id\x18\x02 \x01(\x03R\x11backupApplianceId\x12\x15\n" +
@@ -4590,7 +4731,7 @@ const file_google_cloud_backupdr_v1_backupvault_proto_rawDesc = "" +
 	"\x0flock_until_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\rlockUntilTime\x12p\n" +
 	"\x1abackup_appliance_lock_info\x18\x03 \x01(\v21.google.cloud.backupdr.v1.BackupApplianceLockInfoH\x00R\x17backupApplianceLockInfo\x12]\n" +
 	"\x11service_lock_info\x18\x04 \x01(\v2).google.cloud.backupdr.v1.ServiceLockInfoB\x04\xe2A\x01\x03H\x00R\x0fserviceLockInfoB\x10\n" +
-	"\x0eClientLockInfo\"\xa4\x18\n" +
+	"\x0eClientLockInfo\"\x8c\x19\n" +
 	"\x06Backup\x12\x19\n" +
 	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12+\n" +
 	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03H\x03R\vdescription\x88\x01\x01\x12F\n" +
@@ -4622,7 +4763,8 @@ const file_google_cloud_backupdr_v1_backupvault_proto_rawDesc = "" +
 	"\rsatisfies_pzi\x18\x19 \x01(\bB\x05\xe2A\x02\x03\x01H\fR\fsatisfiesPzi\x88\x01\x01\x12V\n" +
 	"\fgcp_resource\x18\x1f \x01(\v2+.google.cloud.backupdr.v1.BackupGcpResourceB\x04\xe2A\x01\x03H\x02R\vgcpResource\x12[\n" +
 	"\x10kms_key_versions\x18! \x03(\tB1\xe2A\x01\x03\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x0ekmsKeyVersions\x1a\xfe\x01\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x0ekmsKeyVersions\x12f\n" +
+	"\x14verification_summary\x18% \x01(\v2-.google.cloud.backupdr.v1.VerificationSummaryB\x04\xe2A\x01\x03R\x13verificationSummary\x1a\xfe\x01\n" +
 	"\x11GCPBackupPlanInfo\x12H\n" +
 	"\vbackup_plan\x18\x01 \x01(\tB'\xfaA$\n" +
 	"\"backupdr.googleapis.com/BackupPlanR\n" +
@@ -4660,7 +4802,17 @@ const file_google_cloud_backupdr_v1_backupvault_proto_rawDesc = "" +
 	"\x11_consistency_timeB\a\n" +
 	"\x05_etagB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"\xb6\x02\n" +
+	"\x0e_satisfies_pzi\"\xb7\x03\n" +
+	"\x13VerificationSummary\x12V\n" +
+	"\x16last_verification_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14lastVerificationTime\x12\x81\x01\n" +
+	"\x17last_verification_state\x18\x02 \x01(\x0e2C.google.cloud.backupdr.v1.VerificationSummary.LastVerificationStateB\x04\xe2A\x01\x03R\x15lastVerificationState\x12y\n" +
+	"\x1blast_verification_execution\x18\x03 \x01(\tB9\xe2A\x01\x03\xfaA2\n" +
+	"0backupdr.googleapis.com/RestoreTemplateExecutionR\x19lastVerificationExecution\"I\n" +
+	"\x15LastVerificationState\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tSUCCEEDED\x10\x01\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x02\"\xb6\x02\n" +
 	"\x18CreateBackupVaultRequest\x12D\n" +
 	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#backupdr.googleapis.com/BackupVaultR\x06parent\x12,\n" +
 	"\x0fbackup_vault_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rbackupVaultId\x12N\n" +
@@ -4832,158 +4984,163 @@ func file_google_cloud_backupdr_v1_backupvault_proto_rawDescGZIP() []byte {
 	return file_google_cloud_backupdr_v1_backupvault_proto_rawDescData
 }
 
-var file_google_cloud_backupdr_v1_backupvault_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
-var file_google_cloud_backupdr_v1_backupvault_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
+var file_google_cloud_backupdr_v1_backupvault_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
+var file_google_cloud_backupdr_v1_backupvault_proto_msgTypes = make([]protoimpl.MessageInfo, 42)
 var file_google_cloud_backupdr_v1_backupvault_proto_goTypes = []any{
-	(BackupConfigState)(0),                       // 0: google.cloud.backupdr.v1.BackupConfigState
-	(BackupView)(0),                              // 1: google.cloud.backupdr.v1.BackupView
-	(BackupVaultView)(0),                         // 2: google.cloud.backupdr.v1.BackupVaultView
-	(BackupVault_BackupRetentionInheritance)(0),  // 3: google.cloud.backupdr.v1.BackupVault.BackupRetentionInheritance
-	(BackupVault_State)(0),                       // 4: google.cloud.backupdr.v1.BackupVault.State
-	(BackupVault_AccessRestriction)(0),           // 5: google.cloud.backupdr.v1.BackupVault.AccessRestriction
-	(DataSource_State)(0),                        // 6: google.cloud.backupdr.v1.DataSource.State
-	(BackupConfigInfo_LastBackupState)(0),        // 7: google.cloud.backupdr.v1.BackupConfigInfo.LastBackupState
-	(Backup_State)(0),                            // 8: google.cloud.backupdr.v1.Backup.State
-	(Backup_BackupType)(0),                       // 9: google.cloud.backupdr.v1.Backup.BackupType
-	(*BackupVault)(nil),                          // 10: google.cloud.backupdr.v1.BackupVault
-	(*DataSource)(nil),                           // 11: google.cloud.backupdr.v1.DataSource
-	(*BackupConfigInfo)(nil),                     // 12: google.cloud.backupdr.v1.BackupConfigInfo
-	(*GcpBackupConfig)(nil),                      // 13: google.cloud.backupdr.v1.GcpBackupConfig
-	(*BackupApplianceBackupConfig)(nil),          // 14: google.cloud.backupdr.v1.BackupApplianceBackupConfig
-	(*DataSourceGcpResource)(nil),                // 15: google.cloud.backupdr.v1.DataSourceGcpResource
-	(*DataSourceBackupApplianceApplication)(nil), // 16: google.cloud.backupdr.v1.DataSourceBackupApplianceApplication
-	(*ServiceLockInfo)(nil),                      // 17: google.cloud.backupdr.v1.ServiceLockInfo
-	(*BackupApplianceLockInfo)(nil),              // 18: google.cloud.backupdr.v1.BackupApplianceLockInfo
-	(*BackupLock)(nil),                           // 19: google.cloud.backupdr.v1.BackupLock
-	(*Backup)(nil),                               // 20: google.cloud.backupdr.v1.Backup
-	(*CreateBackupVaultRequest)(nil),             // 21: google.cloud.backupdr.v1.CreateBackupVaultRequest
-	(*ListBackupVaultsRequest)(nil),              // 22: google.cloud.backupdr.v1.ListBackupVaultsRequest
-	(*ListBackupVaultsResponse)(nil),             // 23: google.cloud.backupdr.v1.ListBackupVaultsResponse
-	(*FetchUsableBackupVaultsRequest)(nil),       // 24: google.cloud.backupdr.v1.FetchUsableBackupVaultsRequest
-	(*FetchUsableBackupVaultsResponse)(nil),      // 25: google.cloud.backupdr.v1.FetchUsableBackupVaultsResponse
-	(*FetchBackupsForResourceTypeRequest)(nil),   // 26: google.cloud.backupdr.v1.FetchBackupsForResourceTypeRequest
-	(*FetchBackupsForResourceTypeResponse)(nil),  // 27: google.cloud.backupdr.v1.FetchBackupsForResourceTypeResponse
-	(*GetBackupVaultRequest)(nil),                // 28: google.cloud.backupdr.v1.GetBackupVaultRequest
-	(*UpdateBackupVaultRequest)(nil),             // 29: google.cloud.backupdr.v1.UpdateBackupVaultRequest
-	(*DeleteBackupVaultRequest)(nil),             // 30: google.cloud.backupdr.v1.DeleteBackupVaultRequest
-	(*ListDataSourcesRequest)(nil),               // 31: google.cloud.backupdr.v1.ListDataSourcesRequest
-	(*ListDataSourcesResponse)(nil),              // 32: google.cloud.backupdr.v1.ListDataSourcesResponse
-	(*GetDataSourceRequest)(nil),                 // 33: google.cloud.backupdr.v1.GetDataSourceRequest
-	(*UpdateDataSourceRequest)(nil),              // 34: google.cloud.backupdr.v1.UpdateDataSourceRequest
-	(*ListBackupsRequest)(nil),                   // 35: google.cloud.backupdr.v1.ListBackupsRequest
-	(*ListBackupsResponse)(nil),                  // 36: google.cloud.backupdr.v1.ListBackupsResponse
-	(*GetBackupRequest)(nil),                     // 37: google.cloud.backupdr.v1.GetBackupRequest
-	(*UpdateBackupRequest)(nil),                  // 38: google.cloud.backupdr.v1.UpdateBackupRequest
-	(*DeleteBackupRequest)(nil),                  // 39: google.cloud.backupdr.v1.DeleteBackupRequest
-	(*RestoreBackupRequest)(nil),                 // 40: google.cloud.backupdr.v1.RestoreBackupRequest
-	(*RestoreBackupResponse)(nil),                // 41: google.cloud.backupdr.v1.RestoreBackupResponse
-	(*TargetResource)(nil),                       // 42: google.cloud.backupdr.v1.TargetResource
-	(*GcpResource)(nil),                          // 43: google.cloud.backupdr.v1.GcpResource
-	(*BackupGcpResource)(nil),                    // 44: google.cloud.backupdr.v1.BackupGcpResource
-	(*BackupVault_EncryptionConfig)(nil),         // 45: google.cloud.backupdr.v1.BackupVault.EncryptionConfig
-	nil,                                          // 46: google.cloud.backupdr.v1.BackupVault.LabelsEntry
-	nil,                                          // 47: google.cloud.backupdr.v1.BackupVault.AnnotationsEntry
-	nil,                                          // 48: google.cloud.backupdr.v1.DataSource.LabelsEntry
-	(*Backup_GCPBackupPlanInfo)(nil),             // 49: google.cloud.backupdr.v1.Backup.GCPBackupPlanInfo
-	nil,                                          // 50: google.cloud.backupdr.v1.Backup.LabelsEntry
-	(*timestamppb.Timestamp)(nil),                // 51: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                  // 52: google.protobuf.Duration
-	(*status.Status)(nil),                        // 53: google.rpc.Status
-	(*ComputeInstanceDataSourceProperties)(nil),  // 54: google.cloud.backupdr.v1.ComputeInstanceDataSourceProperties
-	(*CloudSqlInstanceDataSourceProperties)(nil), // 55: google.cloud.backupdr.v1.CloudSqlInstanceDataSourceProperties
-	(*AlloyDBClusterDataSourceProperties)(nil),   // 56: google.cloud.backupdr.v1.AlloyDBClusterDataSourceProperties
-	(*DiskDataSourceProperties)(nil),             // 57: google.cloud.backupdr.v1.DiskDataSourceProperties
-	(*ComputeInstanceBackupProperties)(nil),      // 58: google.cloud.backupdr.v1.ComputeInstanceBackupProperties
-	(*CloudSqlInstanceBackupProperties)(nil),     // 59: google.cloud.backupdr.v1.CloudSqlInstanceBackupProperties
-	(*BackupApplianceBackupProperties)(nil),      // 60: google.cloud.backupdr.v1.BackupApplianceBackupProperties
-	(*AlloyDbClusterBackupProperties)(nil),       // 61: google.cloud.backupdr.v1.AlloyDbClusterBackupProperties
-	(*DiskBackupProperties)(nil),                 // 62: google.cloud.backupdr.v1.DiskBackupProperties
-	(*fieldmaskpb.FieldMask)(nil),                // 63: google.protobuf.FieldMask
-	(*ComputeInstanceTargetEnvironment)(nil),     // 64: google.cloud.backupdr.v1.ComputeInstanceTargetEnvironment
-	(*DiskTargetEnvironment)(nil),                // 65: google.cloud.backupdr.v1.DiskTargetEnvironment
-	(*RegionDiskTargetEnvironment)(nil),          // 66: google.cloud.backupdr.v1.RegionDiskTargetEnvironment
-	(*ComputeInstanceRestoreProperties)(nil),     // 67: google.cloud.backupdr.v1.ComputeInstanceRestoreProperties
-	(*DiskRestoreProperties)(nil),                // 68: google.cloud.backupdr.v1.DiskRestoreProperties
+	(BackupConfigState)(0),                         // 0: google.cloud.backupdr.v1.BackupConfigState
+	(BackupView)(0),                                // 1: google.cloud.backupdr.v1.BackupView
+	(BackupVaultView)(0),                           // 2: google.cloud.backupdr.v1.BackupVaultView
+	(BackupVault_BackupRetentionInheritance)(0),    // 3: google.cloud.backupdr.v1.BackupVault.BackupRetentionInheritance
+	(BackupVault_State)(0),                         // 4: google.cloud.backupdr.v1.BackupVault.State
+	(BackupVault_AccessRestriction)(0),             // 5: google.cloud.backupdr.v1.BackupVault.AccessRestriction
+	(DataSource_State)(0),                          // 6: google.cloud.backupdr.v1.DataSource.State
+	(BackupConfigInfo_LastBackupState)(0),          // 7: google.cloud.backupdr.v1.BackupConfigInfo.LastBackupState
+	(Backup_State)(0),                              // 8: google.cloud.backupdr.v1.Backup.State
+	(Backup_BackupType)(0),                         // 9: google.cloud.backupdr.v1.Backup.BackupType
+	(VerificationSummary_LastVerificationState)(0), // 10: google.cloud.backupdr.v1.VerificationSummary.LastVerificationState
+	(*BackupVault)(nil),                            // 11: google.cloud.backupdr.v1.BackupVault
+	(*DataSource)(nil),                             // 12: google.cloud.backupdr.v1.DataSource
+	(*BackupConfigInfo)(nil),                       // 13: google.cloud.backupdr.v1.BackupConfigInfo
+	(*GcpBackupConfig)(nil),                        // 14: google.cloud.backupdr.v1.GcpBackupConfig
+	(*BackupApplianceBackupConfig)(nil),            // 15: google.cloud.backupdr.v1.BackupApplianceBackupConfig
+	(*DataSourceGcpResource)(nil),                  // 16: google.cloud.backupdr.v1.DataSourceGcpResource
+	(*DataSourceBackupApplianceApplication)(nil),   // 17: google.cloud.backupdr.v1.DataSourceBackupApplianceApplication
+	(*ServiceLockInfo)(nil),                        // 18: google.cloud.backupdr.v1.ServiceLockInfo
+	(*BackupApplianceLockInfo)(nil),                // 19: google.cloud.backupdr.v1.BackupApplianceLockInfo
+	(*BackupLock)(nil),                             // 20: google.cloud.backupdr.v1.BackupLock
+	(*Backup)(nil),                                 // 21: google.cloud.backupdr.v1.Backup
+	(*VerificationSummary)(nil),                    // 22: google.cloud.backupdr.v1.VerificationSummary
+	(*CreateBackupVaultRequest)(nil),               // 23: google.cloud.backupdr.v1.CreateBackupVaultRequest
+	(*ListBackupVaultsRequest)(nil),                // 24: google.cloud.backupdr.v1.ListBackupVaultsRequest
+	(*ListBackupVaultsResponse)(nil),               // 25: google.cloud.backupdr.v1.ListBackupVaultsResponse
+	(*FetchUsableBackupVaultsRequest)(nil),         // 26: google.cloud.backupdr.v1.FetchUsableBackupVaultsRequest
+	(*FetchUsableBackupVaultsResponse)(nil),        // 27: google.cloud.backupdr.v1.FetchUsableBackupVaultsResponse
+	(*FetchBackupsForResourceTypeRequest)(nil),     // 28: google.cloud.backupdr.v1.FetchBackupsForResourceTypeRequest
+	(*FetchBackupsForResourceTypeResponse)(nil),    // 29: google.cloud.backupdr.v1.FetchBackupsForResourceTypeResponse
+	(*GetBackupVaultRequest)(nil),                  // 30: google.cloud.backupdr.v1.GetBackupVaultRequest
+	(*UpdateBackupVaultRequest)(nil),               // 31: google.cloud.backupdr.v1.UpdateBackupVaultRequest
+	(*DeleteBackupVaultRequest)(nil),               // 32: google.cloud.backupdr.v1.DeleteBackupVaultRequest
+	(*ListDataSourcesRequest)(nil),                 // 33: google.cloud.backupdr.v1.ListDataSourcesRequest
+	(*ListDataSourcesResponse)(nil),                // 34: google.cloud.backupdr.v1.ListDataSourcesResponse
+	(*GetDataSourceRequest)(nil),                   // 35: google.cloud.backupdr.v1.GetDataSourceRequest
+	(*UpdateDataSourceRequest)(nil),                // 36: google.cloud.backupdr.v1.UpdateDataSourceRequest
+	(*ListBackupsRequest)(nil),                     // 37: google.cloud.backupdr.v1.ListBackupsRequest
+	(*ListBackupsResponse)(nil),                    // 38: google.cloud.backupdr.v1.ListBackupsResponse
+	(*GetBackupRequest)(nil),                       // 39: google.cloud.backupdr.v1.GetBackupRequest
+	(*UpdateBackupRequest)(nil),                    // 40: google.cloud.backupdr.v1.UpdateBackupRequest
+	(*DeleteBackupRequest)(nil),                    // 41: google.cloud.backupdr.v1.DeleteBackupRequest
+	(*RestoreBackupRequest)(nil),                   // 42: google.cloud.backupdr.v1.RestoreBackupRequest
+	(*RestoreBackupResponse)(nil),                  // 43: google.cloud.backupdr.v1.RestoreBackupResponse
+	(*TargetResource)(nil),                         // 44: google.cloud.backupdr.v1.TargetResource
+	(*GcpResource)(nil),                            // 45: google.cloud.backupdr.v1.GcpResource
+	(*BackupGcpResource)(nil),                      // 46: google.cloud.backupdr.v1.BackupGcpResource
+	(*BackupVault_EncryptionConfig)(nil),           // 47: google.cloud.backupdr.v1.BackupVault.EncryptionConfig
+	nil,                                            // 48: google.cloud.backupdr.v1.BackupVault.LabelsEntry
+	nil,                                            // 49: google.cloud.backupdr.v1.BackupVault.AnnotationsEntry
+	nil,                                            // 50: google.cloud.backupdr.v1.DataSource.LabelsEntry
+	(*Backup_GCPBackupPlanInfo)(nil),               // 51: google.cloud.backupdr.v1.Backup.GCPBackupPlanInfo
+	nil,                                            // 52: google.cloud.backupdr.v1.Backup.LabelsEntry
+	(*timestamppb.Timestamp)(nil),                  // 53: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                    // 54: google.protobuf.Duration
+	(*status.Status)(nil),                          // 55: google.rpc.Status
+	(*ComputeInstanceDataSourceProperties)(nil),    // 56: google.cloud.backupdr.v1.ComputeInstanceDataSourceProperties
+	(*CloudSqlInstanceDataSourceProperties)(nil),   // 57: google.cloud.backupdr.v1.CloudSqlInstanceDataSourceProperties
+	(*AlloyDBClusterDataSourceProperties)(nil),     // 58: google.cloud.backupdr.v1.AlloyDBClusterDataSourceProperties
+	(*DiskDataSourceProperties)(nil),               // 59: google.cloud.backupdr.v1.DiskDataSourceProperties
+	(*ComputeInstanceBackupProperties)(nil),        // 60: google.cloud.backupdr.v1.ComputeInstanceBackupProperties
+	(*CloudSqlInstanceBackupProperties)(nil),       // 61: google.cloud.backupdr.v1.CloudSqlInstanceBackupProperties
+	(*BackupApplianceBackupProperties)(nil),        // 62: google.cloud.backupdr.v1.BackupApplianceBackupProperties
+	(*AlloyDbClusterBackupProperties)(nil),         // 63: google.cloud.backupdr.v1.AlloyDbClusterBackupProperties
+	(*DiskBackupProperties)(nil),                   // 64: google.cloud.backupdr.v1.DiskBackupProperties
+	(*fieldmaskpb.FieldMask)(nil),                  // 65: google.protobuf.FieldMask
+	(*ComputeInstanceTargetEnvironment)(nil),       // 66: google.cloud.backupdr.v1.ComputeInstanceTargetEnvironment
+	(*DiskTargetEnvironment)(nil),                  // 67: google.cloud.backupdr.v1.DiskTargetEnvironment
+	(*RegionDiskTargetEnvironment)(nil),            // 68: google.cloud.backupdr.v1.RegionDiskTargetEnvironment
+	(*ComputeInstanceRestoreProperties)(nil),       // 69: google.cloud.backupdr.v1.ComputeInstanceRestoreProperties
+	(*DiskRestoreProperties)(nil),                  // 70: google.cloud.backupdr.v1.DiskRestoreProperties
 }
 var file_google_cloud_backupdr_v1_backupvault_proto_depIdxs = []int32{
-	46, // 0: google.cloud.backupdr.v1.BackupVault.labels:type_name -> google.cloud.backupdr.v1.BackupVault.LabelsEntry
-	51, // 1: google.cloud.backupdr.v1.BackupVault.create_time:type_name -> google.protobuf.Timestamp
-	51, // 2: google.cloud.backupdr.v1.BackupVault.update_time:type_name -> google.protobuf.Timestamp
-	52, // 3: google.cloud.backupdr.v1.BackupVault.backup_minimum_enforced_retention_duration:type_name -> google.protobuf.Duration
+	48, // 0: google.cloud.backupdr.v1.BackupVault.labels:type_name -> google.cloud.backupdr.v1.BackupVault.LabelsEntry
+	53, // 1: google.cloud.backupdr.v1.BackupVault.create_time:type_name -> google.protobuf.Timestamp
+	53, // 2: google.cloud.backupdr.v1.BackupVault.update_time:type_name -> google.protobuf.Timestamp
+	54, // 3: google.cloud.backupdr.v1.BackupVault.backup_minimum_enforced_retention_duration:type_name -> google.protobuf.Duration
 	3,  // 4: google.cloud.backupdr.v1.BackupVault.backup_retention_inheritance:type_name -> google.cloud.backupdr.v1.BackupVault.BackupRetentionInheritance
 	4,  // 5: google.cloud.backupdr.v1.BackupVault.state:type_name -> google.cloud.backupdr.v1.BackupVault.State
-	51, // 6: google.cloud.backupdr.v1.BackupVault.effective_time:type_name -> google.protobuf.Timestamp
-	47, // 7: google.cloud.backupdr.v1.BackupVault.annotations:type_name -> google.cloud.backupdr.v1.BackupVault.AnnotationsEntry
+	53, // 6: google.cloud.backupdr.v1.BackupVault.effective_time:type_name -> google.protobuf.Timestamp
+	49, // 7: google.cloud.backupdr.v1.BackupVault.annotations:type_name -> google.cloud.backupdr.v1.BackupVault.AnnotationsEntry
 	5,  // 8: google.cloud.backupdr.v1.BackupVault.access_restriction:type_name -> google.cloud.backupdr.v1.BackupVault.AccessRestriction
-	45, // 9: google.cloud.backupdr.v1.BackupVault.encryption_config:type_name -> google.cloud.backupdr.v1.BackupVault.EncryptionConfig
+	47, // 9: google.cloud.backupdr.v1.BackupVault.encryption_config:type_name -> google.cloud.backupdr.v1.BackupVault.EncryptionConfig
 	6,  // 10: google.cloud.backupdr.v1.DataSource.state:type_name -> google.cloud.backupdr.v1.DataSource.State
-	48, // 11: google.cloud.backupdr.v1.DataSource.labels:type_name -> google.cloud.backupdr.v1.DataSource.LabelsEntry
-	51, // 12: google.cloud.backupdr.v1.DataSource.create_time:type_name -> google.protobuf.Timestamp
-	51, // 13: google.cloud.backupdr.v1.DataSource.update_time:type_name -> google.protobuf.Timestamp
+	50, // 11: google.cloud.backupdr.v1.DataSource.labels:type_name -> google.cloud.backupdr.v1.DataSource.LabelsEntry
+	53, // 12: google.cloud.backupdr.v1.DataSource.create_time:type_name -> google.protobuf.Timestamp
+	53, // 13: google.cloud.backupdr.v1.DataSource.update_time:type_name -> google.protobuf.Timestamp
 	0,  // 14: google.cloud.backupdr.v1.DataSource.config_state:type_name -> google.cloud.backupdr.v1.BackupConfigState
-	12, // 15: google.cloud.backupdr.v1.DataSource.backup_config_info:type_name -> google.cloud.backupdr.v1.BackupConfigInfo
-	15, // 16: google.cloud.backupdr.v1.DataSource.data_source_gcp_resource:type_name -> google.cloud.backupdr.v1.DataSourceGcpResource
-	16, // 17: google.cloud.backupdr.v1.DataSource.data_source_backup_appliance_application:type_name -> google.cloud.backupdr.v1.DataSourceBackupApplianceApplication
+	13, // 15: google.cloud.backupdr.v1.DataSource.backup_config_info:type_name -> google.cloud.backupdr.v1.BackupConfigInfo
+	16, // 16: google.cloud.backupdr.v1.DataSource.data_source_gcp_resource:type_name -> google.cloud.backupdr.v1.DataSourceGcpResource
+	17, // 17: google.cloud.backupdr.v1.DataSource.data_source_backup_appliance_application:type_name -> google.cloud.backupdr.v1.DataSourceBackupApplianceApplication
 	7,  // 18: google.cloud.backupdr.v1.BackupConfigInfo.last_backup_state:type_name -> google.cloud.backupdr.v1.BackupConfigInfo.LastBackupState
-	51, // 19: google.cloud.backupdr.v1.BackupConfigInfo.last_successful_backup_consistency_time:type_name -> google.protobuf.Timestamp
-	53, // 20: google.cloud.backupdr.v1.BackupConfigInfo.last_backup_error:type_name -> google.rpc.Status
-	13, // 21: google.cloud.backupdr.v1.BackupConfigInfo.gcp_backup_config:type_name -> google.cloud.backupdr.v1.GcpBackupConfig
-	14, // 22: google.cloud.backupdr.v1.BackupConfigInfo.backup_appliance_backup_config:type_name -> google.cloud.backupdr.v1.BackupApplianceBackupConfig
-	54, // 23: google.cloud.backupdr.v1.DataSourceGcpResource.compute_instance_datasource_properties:type_name -> google.cloud.backupdr.v1.ComputeInstanceDataSourceProperties
-	55, // 24: google.cloud.backupdr.v1.DataSourceGcpResource.cloud_sql_instance_datasource_properties:type_name -> google.cloud.backupdr.v1.CloudSqlInstanceDataSourceProperties
-	56, // 25: google.cloud.backupdr.v1.DataSourceGcpResource.alloy_db_cluster_datasource_properties:type_name -> google.cloud.backupdr.v1.AlloyDBClusterDataSourceProperties
-	57, // 26: google.cloud.backupdr.v1.DataSourceGcpResource.disk_datasource_properties:type_name -> google.cloud.backupdr.v1.DiskDataSourceProperties
-	51, // 27: google.cloud.backupdr.v1.BackupLock.lock_until_time:type_name -> google.protobuf.Timestamp
-	18, // 28: google.cloud.backupdr.v1.BackupLock.backup_appliance_lock_info:type_name -> google.cloud.backupdr.v1.BackupApplianceLockInfo
-	17, // 29: google.cloud.backupdr.v1.BackupLock.service_lock_info:type_name -> google.cloud.backupdr.v1.ServiceLockInfo
-	51, // 30: google.cloud.backupdr.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
-	51, // 31: google.cloud.backupdr.v1.Backup.update_time:type_name -> google.protobuf.Timestamp
-	50, // 32: google.cloud.backupdr.v1.Backup.labels:type_name -> google.cloud.backupdr.v1.Backup.LabelsEntry
-	51, // 33: google.cloud.backupdr.v1.Backup.enforced_retention_end_time:type_name -> google.protobuf.Timestamp
+	53, // 19: google.cloud.backupdr.v1.BackupConfigInfo.last_successful_backup_consistency_time:type_name -> google.protobuf.Timestamp
+	55, // 20: google.cloud.backupdr.v1.BackupConfigInfo.last_backup_error:type_name -> google.rpc.Status
+	14, // 21: google.cloud.backupdr.v1.BackupConfigInfo.gcp_backup_config:type_name -> google.cloud.backupdr.v1.GcpBackupConfig
+	15, // 22: google.cloud.backupdr.v1.BackupConfigInfo.backup_appliance_backup_config:type_name -> google.cloud.backupdr.v1.BackupApplianceBackupConfig
+	56, // 23: google.cloud.backupdr.v1.DataSourceGcpResource.compute_instance_datasource_properties:type_name -> google.cloud.backupdr.v1.ComputeInstanceDataSourceProperties
+	57, // 24: google.cloud.backupdr.v1.DataSourceGcpResource.cloud_sql_instance_datasource_properties:type_name -> google.cloud.backupdr.v1.CloudSqlInstanceDataSourceProperties
+	58, // 25: google.cloud.backupdr.v1.DataSourceGcpResource.alloy_db_cluster_datasource_properties:type_name -> google.cloud.backupdr.v1.AlloyDBClusterDataSourceProperties
+	59, // 26: google.cloud.backupdr.v1.DataSourceGcpResource.disk_datasource_properties:type_name -> google.cloud.backupdr.v1.DiskDataSourceProperties
+	53, // 27: google.cloud.backupdr.v1.BackupLock.lock_until_time:type_name -> google.protobuf.Timestamp
+	19, // 28: google.cloud.backupdr.v1.BackupLock.backup_appliance_lock_info:type_name -> google.cloud.backupdr.v1.BackupApplianceLockInfo
+	18, // 29: google.cloud.backupdr.v1.BackupLock.service_lock_info:type_name -> google.cloud.backupdr.v1.ServiceLockInfo
+	53, // 30: google.cloud.backupdr.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
+	53, // 31: google.cloud.backupdr.v1.Backup.update_time:type_name -> google.protobuf.Timestamp
+	52, // 32: google.cloud.backupdr.v1.Backup.labels:type_name -> google.cloud.backupdr.v1.Backup.LabelsEntry
+	53, // 33: google.cloud.backupdr.v1.Backup.enforced_retention_end_time:type_name -> google.protobuf.Timestamp
 	3,  // 34: google.cloud.backupdr.v1.Backup.backup_retention_inheritance:type_name -> google.cloud.backupdr.v1.BackupVault.BackupRetentionInheritance
-	51, // 35: google.cloud.backupdr.v1.Backup.expire_time:type_name -> google.protobuf.Timestamp
-	51, // 36: google.cloud.backupdr.v1.Backup.consistency_time:type_name -> google.protobuf.Timestamp
+	53, // 35: google.cloud.backupdr.v1.Backup.expire_time:type_name -> google.protobuf.Timestamp
+	53, // 36: google.cloud.backupdr.v1.Backup.consistency_time:type_name -> google.protobuf.Timestamp
 	8,  // 37: google.cloud.backupdr.v1.Backup.state:type_name -> google.cloud.backupdr.v1.Backup.State
-	19, // 38: google.cloud.backupdr.v1.Backup.service_locks:type_name -> google.cloud.backupdr.v1.BackupLock
-	19, // 39: google.cloud.backupdr.v1.Backup.backup_appliance_locks:type_name -> google.cloud.backupdr.v1.BackupLock
-	58, // 40: google.cloud.backupdr.v1.Backup.compute_instance_backup_properties:type_name -> google.cloud.backupdr.v1.ComputeInstanceBackupProperties
-	59, // 41: google.cloud.backupdr.v1.Backup.cloud_sql_instance_backup_properties:type_name -> google.cloud.backupdr.v1.CloudSqlInstanceBackupProperties
-	60, // 42: google.cloud.backupdr.v1.Backup.backup_appliance_backup_properties:type_name -> google.cloud.backupdr.v1.BackupApplianceBackupProperties
-	61, // 43: google.cloud.backupdr.v1.Backup.alloy_db_backup_properties:type_name -> google.cloud.backupdr.v1.AlloyDbClusterBackupProperties
-	62, // 44: google.cloud.backupdr.v1.Backup.disk_backup_properties:type_name -> google.cloud.backupdr.v1.DiskBackupProperties
+	20, // 38: google.cloud.backupdr.v1.Backup.service_locks:type_name -> google.cloud.backupdr.v1.BackupLock
+	20, // 39: google.cloud.backupdr.v1.Backup.backup_appliance_locks:type_name -> google.cloud.backupdr.v1.BackupLock
+	60, // 40: google.cloud.backupdr.v1.Backup.compute_instance_backup_properties:type_name -> google.cloud.backupdr.v1.ComputeInstanceBackupProperties
+	61, // 41: google.cloud.backupdr.v1.Backup.cloud_sql_instance_backup_properties:type_name -> google.cloud.backupdr.v1.CloudSqlInstanceBackupProperties
+	62, // 42: google.cloud.backupdr.v1.Backup.backup_appliance_backup_properties:type_name -> google.cloud.backupdr.v1.BackupApplianceBackupProperties
+	63, // 43: google.cloud.backupdr.v1.Backup.alloy_db_backup_properties:type_name -> google.cloud.backupdr.v1.AlloyDbClusterBackupProperties
+	64, // 44: google.cloud.backupdr.v1.Backup.disk_backup_properties:type_name -> google.cloud.backupdr.v1.DiskBackupProperties
 	9,  // 45: google.cloud.backupdr.v1.Backup.backup_type:type_name -> google.cloud.backupdr.v1.Backup.BackupType
-	49, // 46: google.cloud.backupdr.v1.Backup.gcp_backup_plan_info:type_name -> google.cloud.backupdr.v1.Backup.GCPBackupPlanInfo
-	44, // 47: google.cloud.backupdr.v1.Backup.gcp_resource:type_name -> google.cloud.backupdr.v1.BackupGcpResource
-	10, // 48: google.cloud.backupdr.v1.CreateBackupVaultRequest.backup_vault:type_name -> google.cloud.backupdr.v1.BackupVault
-	2,  // 49: google.cloud.backupdr.v1.ListBackupVaultsRequest.view:type_name -> google.cloud.backupdr.v1.BackupVaultView
-	10, // 50: google.cloud.backupdr.v1.ListBackupVaultsResponse.backup_vaults:type_name -> google.cloud.backupdr.v1.BackupVault
-	10, // 51: google.cloud.backupdr.v1.FetchUsableBackupVaultsResponse.backup_vaults:type_name -> google.cloud.backupdr.v1.BackupVault
-	1,  // 52: google.cloud.backupdr.v1.FetchBackupsForResourceTypeRequest.view:type_name -> google.cloud.backupdr.v1.BackupView
-	20, // 53: google.cloud.backupdr.v1.FetchBackupsForResourceTypeResponse.backups:type_name -> google.cloud.backupdr.v1.Backup
-	2,  // 54: google.cloud.backupdr.v1.GetBackupVaultRequest.view:type_name -> google.cloud.backupdr.v1.BackupVaultView
-	63, // 55: google.cloud.backupdr.v1.UpdateBackupVaultRequest.update_mask:type_name -> google.protobuf.FieldMask
-	10, // 56: google.cloud.backupdr.v1.UpdateBackupVaultRequest.backup_vault:type_name -> google.cloud.backupdr.v1.BackupVault
-	11, // 57: google.cloud.backupdr.v1.ListDataSourcesResponse.data_sources:type_name -> google.cloud.backupdr.v1.DataSource
-	63, // 58: google.cloud.backupdr.v1.UpdateDataSourceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11, // 59: google.cloud.backupdr.v1.UpdateDataSourceRequest.data_source:type_name -> google.cloud.backupdr.v1.DataSource
-	1,  // 60: google.cloud.backupdr.v1.ListBackupsRequest.view:type_name -> google.cloud.backupdr.v1.BackupView
-	20, // 61: google.cloud.backupdr.v1.ListBackupsResponse.backups:type_name -> google.cloud.backupdr.v1.Backup
-	1,  // 62: google.cloud.backupdr.v1.GetBackupRequest.view:type_name -> google.cloud.backupdr.v1.BackupView
-	63, // 63: google.cloud.backupdr.v1.UpdateBackupRequest.update_mask:type_name -> google.protobuf.FieldMask
-	20, // 64: google.cloud.backupdr.v1.UpdateBackupRequest.backup:type_name -> google.cloud.backupdr.v1.Backup
-	64, // 65: google.cloud.backupdr.v1.RestoreBackupRequest.compute_instance_target_environment:type_name -> google.cloud.backupdr.v1.ComputeInstanceTargetEnvironment
-	65, // 66: google.cloud.backupdr.v1.RestoreBackupRequest.disk_target_environment:type_name -> google.cloud.backupdr.v1.DiskTargetEnvironment
-	66, // 67: google.cloud.backupdr.v1.RestoreBackupRequest.region_disk_target_environment:type_name -> google.cloud.backupdr.v1.RegionDiskTargetEnvironment
-	67, // 68: google.cloud.backupdr.v1.RestoreBackupRequest.compute_instance_restore_properties:type_name -> google.cloud.backupdr.v1.ComputeInstanceRestoreProperties
-	68, // 69: google.cloud.backupdr.v1.RestoreBackupRequest.disk_restore_properties:type_name -> google.cloud.backupdr.v1.DiskRestoreProperties
-	63, // 70: google.cloud.backupdr.v1.RestoreBackupRequest.clear_overrides_field_mask:type_name -> google.protobuf.FieldMask
-	42, // 71: google.cloud.backupdr.v1.RestoreBackupResponse.target_resource:type_name -> google.cloud.backupdr.v1.TargetResource
-	43, // 72: google.cloud.backupdr.v1.TargetResource.gcp_resource:type_name -> google.cloud.backupdr.v1.GcpResource
-	73, // [73:73] is the sub-list for method output_type
-	73, // [73:73] is the sub-list for method input_type
-	73, // [73:73] is the sub-list for extension type_name
-	73, // [73:73] is the sub-list for extension extendee
-	0,  // [0:73] is the sub-list for field type_name
+	51, // 46: google.cloud.backupdr.v1.Backup.gcp_backup_plan_info:type_name -> google.cloud.backupdr.v1.Backup.GCPBackupPlanInfo
+	46, // 47: google.cloud.backupdr.v1.Backup.gcp_resource:type_name -> google.cloud.backupdr.v1.BackupGcpResource
+	22, // 48: google.cloud.backupdr.v1.Backup.verification_summary:type_name -> google.cloud.backupdr.v1.VerificationSummary
+	53, // 49: google.cloud.backupdr.v1.VerificationSummary.last_verification_time:type_name -> google.protobuf.Timestamp
+	10, // 50: google.cloud.backupdr.v1.VerificationSummary.last_verification_state:type_name -> google.cloud.backupdr.v1.VerificationSummary.LastVerificationState
+	11, // 51: google.cloud.backupdr.v1.CreateBackupVaultRequest.backup_vault:type_name -> google.cloud.backupdr.v1.BackupVault
+	2,  // 52: google.cloud.backupdr.v1.ListBackupVaultsRequest.view:type_name -> google.cloud.backupdr.v1.BackupVaultView
+	11, // 53: google.cloud.backupdr.v1.ListBackupVaultsResponse.backup_vaults:type_name -> google.cloud.backupdr.v1.BackupVault
+	11, // 54: google.cloud.backupdr.v1.FetchUsableBackupVaultsResponse.backup_vaults:type_name -> google.cloud.backupdr.v1.BackupVault
+	1,  // 55: google.cloud.backupdr.v1.FetchBackupsForResourceTypeRequest.view:type_name -> google.cloud.backupdr.v1.BackupView
+	21, // 56: google.cloud.backupdr.v1.FetchBackupsForResourceTypeResponse.backups:type_name -> google.cloud.backupdr.v1.Backup
+	2,  // 57: google.cloud.backupdr.v1.GetBackupVaultRequest.view:type_name -> google.cloud.backupdr.v1.BackupVaultView
+	65, // 58: google.cloud.backupdr.v1.UpdateBackupVaultRequest.update_mask:type_name -> google.protobuf.FieldMask
+	11, // 59: google.cloud.backupdr.v1.UpdateBackupVaultRequest.backup_vault:type_name -> google.cloud.backupdr.v1.BackupVault
+	12, // 60: google.cloud.backupdr.v1.ListDataSourcesResponse.data_sources:type_name -> google.cloud.backupdr.v1.DataSource
+	65, // 61: google.cloud.backupdr.v1.UpdateDataSourceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	12, // 62: google.cloud.backupdr.v1.UpdateDataSourceRequest.data_source:type_name -> google.cloud.backupdr.v1.DataSource
+	1,  // 63: google.cloud.backupdr.v1.ListBackupsRequest.view:type_name -> google.cloud.backupdr.v1.BackupView
+	21, // 64: google.cloud.backupdr.v1.ListBackupsResponse.backups:type_name -> google.cloud.backupdr.v1.Backup
+	1,  // 65: google.cloud.backupdr.v1.GetBackupRequest.view:type_name -> google.cloud.backupdr.v1.BackupView
+	65, // 66: google.cloud.backupdr.v1.UpdateBackupRequest.update_mask:type_name -> google.protobuf.FieldMask
+	21, // 67: google.cloud.backupdr.v1.UpdateBackupRequest.backup:type_name -> google.cloud.backupdr.v1.Backup
+	66, // 68: google.cloud.backupdr.v1.RestoreBackupRequest.compute_instance_target_environment:type_name -> google.cloud.backupdr.v1.ComputeInstanceTargetEnvironment
+	67, // 69: google.cloud.backupdr.v1.RestoreBackupRequest.disk_target_environment:type_name -> google.cloud.backupdr.v1.DiskTargetEnvironment
+	68, // 70: google.cloud.backupdr.v1.RestoreBackupRequest.region_disk_target_environment:type_name -> google.cloud.backupdr.v1.RegionDiskTargetEnvironment
+	69, // 71: google.cloud.backupdr.v1.RestoreBackupRequest.compute_instance_restore_properties:type_name -> google.cloud.backupdr.v1.ComputeInstanceRestoreProperties
+	70, // 72: google.cloud.backupdr.v1.RestoreBackupRequest.disk_restore_properties:type_name -> google.cloud.backupdr.v1.DiskRestoreProperties
+	65, // 73: google.cloud.backupdr.v1.RestoreBackupRequest.clear_overrides_field_mask:type_name -> google.protobuf.FieldMask
+	44, // 74: google.cloud.backupdr.v1.RestoreBackupResponse.target_resource:type_name -> google.cloud.backupdr.v1.TargetResource
+	45, // 75: google.cloud.backupdr.v1.TargetResource.gcp_resource:type_name -> google.cloud.backupdr.v1.GcpResource
+	76, // [76:76] is the sub-list for method output_type
+	76, // [76:76] is the sub-list for method input_type
+	76, // [76:76] is the sub-list for extension type_name
+	76, // [76:76] is the sub-list for extension extendee
+	0,  // [0:76] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_backupdr_v1_backupvault_proto_init() }
@@ -5029,24 +5186,24 @@ func file_google_cloud_backupdr_v1_backupvault_proto_init() {
 		(*Backup_GcpBackupPlanInfo)(nil),
 		(*Backup_GcpResource)(nil),
 	}
-	file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[30].OneofWrappers = []any{
+	file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[31].OneofWrappers = []any{
 		(*RestoreBackupRequest_ComputeInstanceTargetEnvironment)(nil),
 		(*RestoreBackupRequest_DiskTargetEnvironment)(nil),
 		(*RestoreBackupRequest_RegionDiskTargetEnvironment)(nil),
 		(*RestoreBackupRequest_ComputeInstanceRestoreProperties)(nil),
 		(*RestoreBackupRequest_DiskRestoreProperties)(nil),
 	}
-	file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[32].OneofWrappers = []any{
+	file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[33].OneofWrappers = []any{
 		(*TargetResource_GcpResource)(nil),
 	}
-	file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[35].OneofWrappers = []any{}
+	file_google_cloud_backupdr_v1_backupvault_proto_msgTypes[36].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_backupdr_v1_backupvault_proto_rawDesc), len(file_google_cloud_backupdr_v1_backupvault_proto_rawDesc)),
-			NumEnums:      10,
-			NumMessages:   41,
+			NumEnums:      11,
+			NumMessages:   42,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

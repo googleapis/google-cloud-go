@@ -106,12 +106,110 @@ func TestManagerPoll_SessionConfigurationDebugTags(t *testing.T) {
 			wantZeroTag: 1,
 		},
 		{
-			name: "session_load_nonzero",
+			name: "deprecated_session_load_ignored_when_diversion_absent",
 			resp: &bigtablepb.ClientConfiguration{
 				SessionConfiguration: &bigtablepb.SessionClientConfiguration{SessionLoad: 0.5},
 			},
 			wantNullTag: 0,
+			wantZeroTag: 1,
+		},
+		{
+			name: "global_diversion_nonzero",
+			resp: &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+						DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_GlobalDiversion{
+							GlobalDiversion: &bigtablepb.SessionScopeDiversionConfiguration{SessionLoad: 0.5},
+						},
+					},
+				},
+			},
+			wantNullTag: 0,
 			wantZeroTag: 0,
+		},
+		{
+			name: "per_scope_diversion_nonzero",
+			resp: &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+						DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+							PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+								ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+									"method:Bigtable.ReadRow": {SessionLoad: 0.5},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantNullTag: 0,
+			wantZeroTag: 0,
+		},
+		{
+			name: "per_scope_diversion_all_zero",
+			resp: &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+						DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+							PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+								ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+									"method:Bigtable.ReadRow": {SessionLoad: 0.0},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantNullTag: 0,
+			wantZeroTag: 1,
+		},
+		{
+			name: "diversion_config_ignores_deprecated_session_load",
+			resp: &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionLoad: 0.5,
+					SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+						DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+							PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+								ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+									"method:Bigtable.ReadRow": {SessionLoad: 0.0},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantNullTag: 0,
+			wantZeroTag: 1,
+		},
+		{
+			name: "empty_diversion_config_ignores_deprecated_session_load",
+			resp: &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionLoad:                   0.5,
+					SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{},
+				},
+			},
+			wantNullTag: 0,
+			wantZeroTag: 1,
+		},
+		{
+			name: "unserved_scope_counts_as_zero_load",
+			resp: &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+						DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+							PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+								ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+									"method:Bigtable.SampleRowKeys": {SessionLoad: 1.0},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantNullTag: 0,
+			wantZeroTag: 1,
 		},
 	}
 	for _, tc := range tests {
@@ -436,72 +534,13 @@ func TestClose_WaitsForInFlightPolls(t *testing.T) {
 	}
 }
 
-func TestAddSessionLoadListener_SkipsImmediateDefaultFire(t *testing.T) {
-	// AddSessionLoadListener intentionally suppresses the seq=0 registration-
-	// time fire so the Diverter's bootstrap value (e.g. NewDiverter(1.0)) is
-	// not silently overwritten by the default config's SessionLoad=0.
-	client := &mockBigtableClient{}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
-
-	got := make(chan float64, 1)
-	unregister := manager.AddSessionLoadListener(func(load float64) {
-		select {
-		case got <- load:
-		default:
-		}
-	})
-	defer unregister()
-
-	select {
-	case load := <-got:
-		t.Fatalf("listener fired with load=%v at registration time; want no fire (seq=0 suppression)", load)
-	case <-time.After(100 * time.Millisecond):
-		// Expected: no fire.
-	}
-}
-
-func TestAddSessionLoadListener_FiresOnFirstPoll(t *testing.T) {
-	// After the first successful poll, AddSessionLoadListener fires with the
-	// server-reported SessionLoad.
-	client := &mockBigtableClient{
-		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
-			return &bigtablepb.ClientConfiguration{
-				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
-					SessionLoad: 0.75,
-				},
-			}, nil
-		},
-	}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
-
-	got := make(chan float64, 1)
-	unregister := manager.AddSessionLoadListener(func(load float64) {
-		select {
-		case got <- load:
-		default:
-		}
-	})
-	defer unregister()
-
-	manager.poll(context.Background())
-
-	select {
-	case load := <-got:
-		if load != 0.75 {
-			t.Errorf("post-poll SessionLoad fire = %v, want 0.75", load)
-		}
-	case <-time.After(time.Second):
-		t.Fatal("AddSessionLoadListener did not fire after first poll")
-	}
-}
-
-func TestAddSessionLoadListener_UnregisterStopsCallbacks(t *testing.T) {
+func TestAddSessionDiversionListener_UnregisterStopsCallbacks(t *testing.T) {
 	client := &mockBigtableClient{}
 	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
 	var mu sync.Mutex
 	var totalCalls int
-	unregister := manager.AddSessionLoadListener(func(load float64) {
+	unregister := manager.AddSessionDiversionListener(func(*bigtablepb.SessionClientConfiguration) {
 		mu.Lock()
 		defer mu.Unlock()
 		totalCalls++
@@ -523,7 +562,13 @@ func TestAddSessionLoadListener_UnregisterStopsCallbacks(t *testing.T) {
 	client.getConfigFunc = func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
 		return &bigtablepb.ClientConfiguration{
 			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
-				SessionLoad: 0.75,
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_GlobalDiversion{
+						GlobalDiversion: &bigtablepb.SessionScopeDiversionConfiguration{
+							SessionLoad: 0.75,
+						},
+					},
+				},
 			},
 		}, nil
 	}
@@ -614,11 +659,23 @@ func TestAddSessionPoolListener_SkipsOnUnchangedSlice(t *testing.T) {
 	}
 }
 
-func TestAddSessionLoadListener_SkipsOnUnchangedLoad(t *testing.T) {
-	// Same shape as the SessionPool test: two polls whose only difference
-	// is the PollingInterval. SessionLoad is held constant, so the per-
-	// listener load diff must suppress the second fire even though the
-	// whole-config diff doesn't.
+func TestManagerPoll_StopPollingFlagsCurrentConfig(t *testing.T) {
+	client := &mockBigtableClient{
+		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			return &bigtablepb.ClientConfiguration{
+				Polling: &bigtablepb.ClientConfiguration_StopPolling{StopPolling: true},
+			}, nil
+		},
+	}
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+	manager.poll(context.Background())
+
+	if !manager.getConfig().GetStopPolling() {
+		t.Fatalf("expected currentConfig StopPolling=true after StopPolling response, got false")
+	}
+}
+
+func TestAddSessionDiversionListener(t *testing.T) {
 	configs := []*bigtablepb.ClientConfiguration{
 		{
 			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
@@ -626,7 +683,18 @@ func TestAddSessionLoadListener_SkipsOnUnchangedLoad(t *testing.T) {
 					PollingInterval: durationpb.New(600 * time.Second),
 				},
 			},
-			SessionConfiguration: &bigtablepb.SessionClientConfiguration{SessionLoad: 0.5},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+						PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+							ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+								"method:Bigtable.ReadRow":   {SessionLoad: 1.0},
+								"method:Bigtable.MutateRow": {SessionLoad: 0.5},
+							},
+						},
+					},
+				},
+			},
 		},
 		{
 			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
@@ -634,7 +702,235 @@ func TestAddSessionLoadListener_SkipsOnUnchangedLoad(t *testing.T) {
 					PollingInterval: durationpb.New(900 * time.Second),
 				},
 			},
-			SessionConfiguration: &bigtablepb.SessionClientConfiguration{SessionLoad: 0.5},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				// Deprecated session_load and unserved scopes are ignored when
+				// SessionDiversionConfiguration is present, so changing them
+				// must not re-fire the diversion listener.
+				SessionLoad: 0.9,
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+						PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+							ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+								"method:Bigtable.ReadRow":   {SessionLoad: 1.0},
+								"method:Bigtable.MutateRow": {SessionLoad: 0.5},
+								"method:Bigtable.ReadRows":  {SessionLoad: 1.0},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(1200 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+						PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+							ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+								"method:Bigtable.ReadRow":   {SessionLoad: 1.0},
+								"method:Bigtable.MutateRow": {SessionLoad: 1.0},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(1500 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+						PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+							ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+								"method:Bigtable.ReadRow":   {SessionLoad: 1.0},
+								"method:Bigtable.MutateRow": {SessionLoad: 1.0},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	var idx int
+	var idxMu sync.Mutex
+	client := &mockBigtableClient{
+		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			idxMu.Lock()
+			defer idxMu.Unlock()
+			cfg := configs[idx]
+			if idx+1 < len(configs) {
+				idx++
+			}
+			return cfg, nil
+		},
+	}
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+
+	var mu sync.Mutex
+	var deliveries []*bigtablepb.SessionClientConfiguration
+	unregister := manager.AddSessionDiversionListener(func(sc *bigtablepb.SessionClientConfiguration) {
+		mu.Lock()
+		deliveries = append(deliveries, sc)
+		mu.Unlock()
+	})
+	defer unregister()
+
+	// Must not fire at registration (seq=0 suppression).
+	mu.Lock()
+	if len(deliveries) != 0 {
+		mu.Unlock()
+		t.Fatalf("AddSessionDiversionListener fired at registration time; want 0")
+	}
+	mu.Unlock()
+
+	manager.poll(context.Background()) // fires (#1: MutateRow=0.5)
+	manager.poll(context.Background()) // unchanged served scopes -> skipped
+	manager.poll(context.Background()) // MutateRow 0.5 -> 1.0 -> fires (#2)
+	manager.poll(context.Background()) // unchanged after update -> skipped
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(deliveries) != 2 {
+		t.Fatalf("AddSessionDiversionListener deliveries = %d, want 2", len(deliveries))
+	}
+	psd0 := deliveries[0].GetSessionDiversionConfiguration().GetPerScopeDiversion()
+	if psd0 == nil {
+		t.Fatal("expected PerScopeDiversion in first delivered SessionClientConfiguration")
+	}
+	if got := psd0.GetScopeDiversions()["method:Bigtable.ReadRow"].GetSessionLoad(); got != 1.0 {
+		t.Errorf("first delivery ReadRow SessionLoad = %v, want 1.0", got)
+	}
+	if got := psd0.GetScopeDiversions()["method:Bigtable.MutateRow"].GetSessionLoad(); got != 0.5 {
+		t.Errorf("first delivery MutateRow SessionLoad = %v, want 0.5", got)
+	}
+	psd1 := deliveries[1].GetSessionDiversionConfiguration().GetPerScopeDiversion()
+	if psd1 == nil {
+		t.Fatal("expected PerScopeDiversion in second delivered SessionClientConfiguration")
+	}
+	if got := psd1.GetScopeDiversions()["method:Bigtable.MutateRow"].GetSessionLoad(); got != 1.0 {
+		t.Errorf("second delivery MutateRow SessionLoad = %v, want 1.0", got)
+	}
+}
+
+func TestAddSessionDiversionListener_DropsOutOfOrderSeq(t *testing.T) {
+	manager := NewClientConfigurationManager(&mockBigtableClient{}, "instance", "profile", nil, nil)
+
+	var mu sync.Mutex
+	var deliveries []*bigtablepb.SessionClientConfiguration
+	unregister := manager.AddSessionDiversionListener(func(sc *bigtablepb.SessionClientConfiguration) {
+		mu.Lock()
+		deliveries = append(deliveries, sc)
+		mu.Unlock()
+	})
+	defer unregister()
+
+	// Snapshot the internal raw listener registered by AddSessionDiversionListener
+	// so we can simulate overlapping poll() invocations arriving out of seq order.
+	manager.mu.RLock()
+	if len(manager.listeners) != 1 {
+		manager.mu.RUnlock()
+		t.Fatalf("len(manager.listeners) = %d, want 1", len(manager.listeners))
+	}
+	var rawListener func(*bigtablepb.ClientConfiguration, int64)
+	for _, fn := range manager.listeners {
+		rawListener = fn
+	}
+	manager.mu.RUnlock()
+
+	cfgSeq2 := &bigtablepb.ClientConfiguration{
+		SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+				DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_GlobalDiversion{
+					GlobalDiversion: &bigtablepb.SessionScopeDiversionConfiguration{SessionLoad: 1.0},
+				},
+			},
+		},
+	}
+	cfgSeq1Stale := &bigtablepb.ClientConfiguration{
+		SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+				DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_GlobalDiversion{
+					GlobalDiversion: &bigtablepb.SessionScopeDiversionConfiguration{SessionLoad: 0.25},
+				},
+			},
+		},
+	}
+
+	// Deliver newer seq=2 first, then stale seq=1; seq=1 must be dropped without
+	// overwriting prevLoads or invoking listener.
+	rawListener(cfgSeq2, 2)
+	rawListener(cfgSeq1Stale, 1)
+	// A subsequent seq=3 with the same 1.0 load must also be suppressed, proving
+	// stale seq=1 did not overwrite prevLoads.
+	rawListener(cfgSeq2, 3)
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(deliveries) != 1 {
+		t.Fatalf("deliveries = %d, want 1 (stale seq=1 and unchanged seq=3 must be dropped)", len(deliveries))
+	}
+	if got := deliveries[0].GetSessionDiversionConfiguration().GetGlobalDiversion().GetSessionLoad(); got != 1.0 {
+		t.Errorf("delivered GlobalDiversion SessionLoad = %v, want 1.0", got)
+	}
+}
+
+// TestManagerNotifyListeners_Race was removed when addListener moved to
+// holding m.mu across the registration-time fire. The race it guarded
+// against — poll() fan-out interleaving with addListener's deferred fire
+// and delivering seq=N+1 before seq=N — is structurally impossible now:
+// poll() cannot snapshot the listener map while addListener holds the
+// write lock, so the registration fire always lands before any poll
+// fire and listeners observe seq monotonically by construction.
+
+// TestAddChannelPoolConfigListener_FiresOnUpdate exercises the
+// bootstrap-fire + poll-driven-fire path for the channel-pool config
+// listener. Mirrors TestAddSessionPoolListener_SkipsOnUnchangedSlice's
+// shape: two polls whose ChannelPoolConfiguration is byte-identical must
+// only produce one poll-driven delivery, because the per-listener proto
+// diff suppresses the no-op second update.
+func TestAddChannelPoolConfigListener_FiresOnUpdate(t *testing.T) {
+	const (
+		minServers = 4
+		maxServers = 40
+		perServer  = 8
+	)
+	configs := []*bigtablepb.ClientConfiguration{
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(600 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				ChannelConfiguration: &bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration{
+					MinServerCount:        minServers,
+					MaxServerCount:        maxServers,
+					PerServerSessionCount: perServer,
+				},
+			},
+		},
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(900 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				ChannelConfiguration: &bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration{
+					MinServerCount:        minServers,
+					MaxServerCount:        maxServers,
+					PerServerSessionCount: perServer, // unchanged — must not fire
+				},
+			},
 		},
 	}
 	var idx int
@@ -653,46 +949,31 @@ func TestAddSessionLoadListener_SkipsOnUnchangedLoad(t *testing.T) {
 	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
 	var mu sync.Mutex
-	var loads []float64
-	manager.AddSessionLoadListener(func(load float64) {
+	var deliveries []*bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration
+	manager.AddChannelPoolConfigListener(func(cp *bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration) {
 		mu.Lock()
-		loads = append(loads, load)
+		deliveries = append(deliveries, cp)
 		mu.Unlock()
 	})
 
-	manager.poll(context.Background()) // default load 0 -> 0.5: fires (seq>0)
-	manager.poll(context.Background()) // 0.5 -> 0.5: must skip
+	manager.poll(context.Background()) // default -> {4, 40, 8}: fires
+	manager.poll(context.Background()) // {4, 40, 8} -> {4, 40, 8}: must skip
 
 	mu.Lock()
 	defer mu.Unlock()
-	// Expect 1 delivery: bootstrap is suppressed by AddSessionLoadListener's
-	// seq=0 guard, the first poll fires with 0.5, and the second poll's
-	// per-listener diff suppresses the redundant 0.5 delivery.
-	if len(loads) != 1 || loads[0] != 0.5 {
-		t.Fatalf("AddSessionLoadListener deliveries = %v, want [0.5]", loads)
+	// Expect 2 deliveries: bootstrap (default) + first poll (default ->
+	// {4, 40, 8}). The second poll changes the whole config but not the
+	// channel-pool tuple, so the per-listener diff must suppress that fire.
+	if len(deliveries) != 2 {
+		t.Fatalf("AddChannelPoolConfigListener fired %d times, want 2 (bootstrap + first poll only)", len(deliveries))
+	}
+	if got := deliveries[1].GetMinServerCount(); got != minServers {
+		t.Errorf("post-first-poll MinServerCount = %d, want %d", got, minServers)
+	}
+	if got := deliveries[1].GetMaxServerCount(); got != maxServers {
+		t.Errorf("post-first-poll MaxServerCount = %d, want %d", got, maxServers)
+	}
+	if got := deliveries[1].GetPerServerSessionCount(); got != perServer {
+		t.Errorf("post-first-poll PerServerSessionCount = %d, want %d", got, perServer)
 	}
 }
-
-func TestManagerPoll_StopPollingFlagsCurrentConfig(t *testing.T) {
-	client := &mockBigtableClient{
-		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
-			return &bigtablepb.ClientConfiguration{
-				Polling: &bigtablepb.ClientConfiguration_StopPolling{StopPolling: true},
-			}, nil
-		},
-	}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
-	manager.poll(context.Background())
-
-	if !manager.getConfig().GetStopPolling() {
-		t.Fatalf("expected currentConfig StopPolling=true after StopPolling response, got false")
-	}
-}
-
-// TestManagerNotifyListeners_Race was removed when addListener moved to
-// holding m.mu across the registration-time fire. The race it guarded
-// against — poll() fan-out interleaving with addListener's deferred fire
-// and delivering seq=N+1 before seq=N — is structurally impossible now:
-// poll() cannot snapshot the listener map while addListener holds the
-// write lock, so the registration fire always lands before any poll
-// fire and listeners observe seq monotonically by construction.

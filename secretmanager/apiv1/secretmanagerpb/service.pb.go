@@ -335,13 +335,13 @@ type EnableManagedRotationRequest struct {
 	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] in the format
 	// `projects/*/secrets/*` or `projects/*/locations/*/secrets/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The credentials required for Managed Rotation.
+	// The credential required for Managed Rotation.
 	// Right now, only Cloud SQL Single User credentials are supported.
 	//
-	// Types that are valid to be assigned to Credentials:
+	// Types that are valid to be assigned to Credential:
 	//
 	//	*EnableManagedRotationRequest_CloudSqlSingleUserCredentials
-	Credentials   isEnableManagedRotationRequest_Credentials `protobuf_oneof:"credentials"`
+	Credential    isEnableManagedRotationRequest_Credential `protobuf_oneof:"credential"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -383,32 +383,32 @@ func (x *EnableManagedRotationRequest) GetParent() string {
 	return ""
 }
 
-func (x *EnableManagedRotationRequest) GetCredentials() isEnableManagedRotationRequest_Credentials {
+func (x *EnableManagedRotationRequest) GetCredential() isEnableManagedRotationRequest_Credential {
 	if x != nil {
-		return x.Credentials
+		return x.Credential
 	}
 	return nil
 }
 
-func (x *EnableManagedRotationRequest) GetCloudSqlSingleUserCredentials() *EnableManagedRotationRequest_CloudSQLSingleUserCredentials {
+func (x *EnableManagedRotationRequest) GetCloudSqlSingleUserCredentials() *CloudSqlSingleUserCredentials {
 	if x != nil {
-		if x, ok := x.Credentials.(*EnableManagedRotationRequest_CloudSqlSingleUserCredentials); ok {
+		if x, ok := x.Credential.(*EnableManagedRotationRequest_CloudSqlSingleUserCredentials); ok {
 			return x.CloudSqlSingleUserCredentials
 		}
 	}
 	return nil
 }
 
-type isEnableManagedRotationRequest_Credentials interface {
-	isEnableManagedRotationRequest_Credentials()
+type isEnableManagedRotationRequest_Credential interface {
+	isEnableManagedRotationRequest_Credential()
 }
 
 type EnableManagedRotationRequest_CloudSqlSingleUserCredentials struct {
 	// Credentials required for Cloud SQL DB for Single user Managed Rotation.
-	CloudSqlSingleUserCredentials *EnableManagedRotationRequest_CloudSQLSingleUserCredentials `protobuf:"bytes,2,opt,name=cloud_sql_single_user_credentials,json=cloudSqlSingleUserCredentials,proto3,oneof"`
+	CloudSqlSingleUserCredentials *CloudSqlSingleUserCredentials `protobuf:"bytes,2,opt,name=cloud_sql_single_user_credentials,json=cloudSqlSingleUserCredentials,proto3,oneof"`
 }
 
-func (*EnableManagedRotationRequest_CloudSqlSingleUserCredentials) isEnableManagedRotationRequest_Credentials() {
+func (*EnableManagedRotationRequest_CloudSqlSingleUserCredentials) isEnableManagedRotationRequest_Credential() {
 }
 
 // Request message for
@@ -1138,72 +1138,6 @@ func (x *DestroySecretVersionRequest) GetEtag() string {
 	return ""
 }
 
-// These are the credentials required for Cloud SQL DB for Single user
-// Managed Rotation.
-type EnableManagedRotationRequest_CloudSQLSingleUserCredentials struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Instance ID of the Cloud SQL instance.
-	InstanceId string `protobuf:"bytes,1,opt,name=instance_id,json=instanceId,proto3" json:"instance_id,omitempty"`
-	// Required. Username of the Cloud SQL instance.
-	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
-	// Optional. Password of the Cloud SQL instance. If this is not provided,
-	// a random password will be generated.
-	Password      string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *EnableManagedRotationRequest_CloudSQLSingleUserCredentials) Reset() {
-	*x = EnableManagedRotationRequest_CloudSQLSingleUserCredentials{}
-	mi := &file_google_cloud_secretmanager_v1_service_proto_msgTypes[17]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *EnableManagedRotationRequest_CloudSQLSingleUserCredentials) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EnableManagedRotationRequest_CloudSQLSingleUserCredentials) ProtoMessage() {}
-
-func (x *EnableManagedRotationRequest_CloudSQLSingleUserCredentials) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_secretmanager_v1_service_proto_msgTypes[17]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use EnableManagedRotationRequest_CloudSQLSingleUserCredentials.ProtoReflect.Descriptor instead.
-func (*EnableManagedRotationRequest_CloudSQLSingleUserCredentials) Descriptor() ([]byte, []int) {
-	return file_google_cloud_secretmanager_v1_service_proto_rawDescGZIP(), []int{4, 0}
-}
-
-func (x *EnableManagedRotationRequest_CloudSQLSingleUserCredentials) GetInstanceId() string {
-	if x != nil {
-		return x.InstanceId
-	}
-	return ""
-}
-
-func (x *EnableManagedRotationRequest_CloudSQLSingleUserCredentials) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *EnableManagedRotationRequest_CloudSQLSingleUserCredentials) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
 var File_google_cloud_secretmanager_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_secretmanager_v1_service_proto_rawDesc = "" +
@@ -1227,17 +1161,13 @@ const file_google_cloud_secretmanager_v1_service_proto_rawDesc = "" +
 	"\x17AddSecretVersionRequest\x12D\n" +
 	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#secretmanager.googleapis.com/SecretR\x06parent\x12L\n" +
-	"\apayload\x18\x02 \x01(\v2,.google.cloud.secretmanager.v1.SecretPayloadB\x04\xe2A\x01\x02R\apayload\"\xa8\x03\n" +
+	"\apayload\x18\x02 \x01(\v2,.google.cloud.secretmanager.v1.SecretPayloadB\x04\xe2A\x01\x02R\apayload\"\xfd\x01\n" +
 	"\x1cEnableManagedRotationRequest\x12D\n" +
 	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
-	"#secretmanager.googleapis.com/SecretR\x06parent\x12\xa5\x01\n" +
-	"!cloud_sql_single_user_credentials\x18\x02 \x01(\v2Y.google.cloud.secretmanager.v1.EnableManagedRotationRequest.CloudSQLSingleUserCredentialsH\x00R\x1dcloudSqlSingleUserCredentials\x1a\x8a\x01\n" +
-	"\x1dCloudSQLSingleUserCredentials\x12%\n" +
-	"\vinstance_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
-	"instanceId\x12 \n" +
-	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
-	"\bpassword\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bpasswordB\r\n" +
-	"\vcredentials\"[\n" +
+	"#secretmanager.googleapis.com/SecretR\x06parent\x12\x88\x01\n" +
+	"!cloud_sql_single_user_credentials\x18\x02 \x01(\v2<.google.cloud.secretmanager.v1.CloudSqlSingleUserCredentialsH\x00R\x1dcloudSqlSingleUserCredentialsB\f\n" +
+	"\n" +
+	"credential\"[\n" +
 	"\x13RotateSecretRequest\x12D\n" +
 	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#secretmanager.googleapis.com/SecretR\x06parent\"T\n" +
@@ -1318,46 +1248,46 @@ func file_google_cloud_secretmanager_v1_service_proto_rawDescGZIP() []byte {
 	return file_google_cloud_secretmanager_v1_service_proto_rawDescData
 }
 
-var file_google_cloud_secretmanager_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_google_cloud_secretmanager_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_google_cloud_secretmanager_v1_service_proto_goTypes = []any{
-	(*ListSecretsRequest)(nil),                                         // 0: google.cloud.secretmanager.v1.ListSecretsRequest
-	(*ListSecretsResponse)(nil),                                        // 1: google.cloud.secretmanager.v1.ListSecretsResponse
-	(*CreateSecretRequest)(nil),                                        // 2: google.cloud.secretmanager.v1.CreateSecretRequest
-	(*AddSecretVersionRequest)(nil),                                    // 3: google.cloud.secretmanager.v1.AddSecretVersionRequest
-	(*EnableManagedRotationRequest)(nil),                               // 4: google.cloud.secretmanager.v1.EnableManagedRotationRequest
-	(*RotateSecretRequest)(nil),                                        // 5: google.cloud.secretmanager.v1.RotateSecretRequest
-	(*GetSecretRequest)(nil),                                           // 6: google.cloud.secretmanager.v1.GetSecretRequest
-	(*ListSecretVersionsRequest)(nil),                                  // 7: google.cloud.secretmanager.v1.ListSecretVersionsRequest
-	(*ListSecretVersionsResponse)(nil),                                 // 8: google.cloud.secretmanager.v1.ListSecretVersionsResponse
-	(*GetSecretVersionRequest)(nil),                                    // 9: google.cloud.secretmanager.v1.GetSecretVersionRequest
-	(*UpdateSecretRequest)(nil),                                        // 10: google.cloud.secretmanager.v1.UpdateSecretRequest
-	(*AccessSecretVersionRequest)(nil),                                 // 11: google.cloud.secretmanager.v1.AccessSecretVersionRequest
-	(*AccessSecretVersionResponse)(nil),                                // 12: google.cloud.secretmanager.v1.AccessSecretVersionResponse
-	(*DeleteSecretRequest)(nil),                                        // 13: google.cloud.secretmanager.v1.DeleteSecretRequest
-	(*DisableSecretVersionRequest)(nil),                                // 14: google.cloud.secretmanager.v1.DisableSecretVersionRequest
-	(*EnableSecretVersionRequest)(nil),                                 // 15: google.cloud.secretmanager.v1.EnableSecretVersionRequest
-	(*DestroySecretVersionRequest)(nil),                                // 16: google.cloud.secretmanager.v1.DestroySecretVersionRequest
-	(*EnableManagedRotationRequest_CloudSQLSingleUserCredentials)(nil), // 17: google.cloud.secretmanager.v1.EnableManagedRotationRequest.CloudSQLSingleUserCredentials
-	(*Secret)(nil),                                                     // 18: google.cloud.secretmanager.v1.Secret
-	(*SecretPayload)(nil),                                              // 19: google.cloud.secretmanager.v1.SecretPayload
-	(*SecretVersion)(nil),                                              // 20: google.cloud.secretmanager.v1.SecretVersion
-	(*fieldmaskpb.FieldMask)(nil),                                      // 21: google.protobuf.FieldMask
-	(*iampb.SetIamPolicyRequest)(nil),                                  // 22: google.iam.v1.SetIamPolicyRequest
-	(*iampb.GetIamPolicyRequest)(nil),                                  // 23: google.iam.v1.GetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),                            // 24: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                                              // 25: google.protobuf.Empty
-	(*iampb.Policy)(nil),                                               // 26: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil),                           // 27: google.iam.v1.TestIamPermissionsResponse
+	(*ListSecretsRequest)(nil),               // 0: google.cloud.secretmanager.v1.ListSecretsRequest
+	(*ListSecretsResponse)(nil),              // 1: google.cloud.secretmanager.v1.ListSecretsResponse
+	(*CreateSecretRequest)(nil),              // 2: google.cloud.secretmanager.v1.CreateSecretRequest
+	(*AddSecretVersionRequest)(nil),          // 3: google.cloud.secretmanager.v1.AddSecretVersionRequest
+	(*EnableManagedRotationRequest)(nil),     // 4: google.cloud.secretmanager.v1.EnableManagedRotationRequest
+	(*RotateSecretRequest)(nil),              // 5: google.cloud.secretmanager.v1.RotateSecretRequest
+	(*GetSecretRequest)(nil),                 // 6: google.cloud.secretmanager.v1.GetSecretRequest
+	(*ListSecretVersionsRequest)(nil),        // 7: google.cloud.secretmanager.v1.ListSecretVersionsRequest
+	(*ListSecretVersionsResponse)(nil),       // 8: google.cloud.secretmanager.v1.ListSecretVersionsResponse
+	(*GetSecretVersionRequest)(nil),          // 9: google.cloud.secretmanager.v1.GetSecretVersionRequest
+	(*UpdateSecretRequest)(nil),              // 10: google.cloud.secretmanager.v1.UpdateSecretRequest
+	(*AccessSecretVersionRequest)(nil),       // 11: google.cloud.secretmanager.v1.AccessSecretVersionRequest
+	(*AccessSecretVersionResponse)(nil),      // 12: google.cloud.secretmanager.v1.AccessSecretVersionResponse
+	(*DeleteSecretRequest)(nil),              // 13: google.cloud.secretmanager.v1.DeleteSecretRequest
+	(*DisableSecretVersionRequest)(nil),      // 14: google.cloud.secretmanager.v1.DisableSecretVersionRequest
+	(*EnableSecretVersionRequest)(nil),       // 15: google.cloud.secretmanager.v1.EnableSecretVersionRequest
+	(*DestroySecretVersionRequest)(nil),      // 16: google.cloud.secretmanager.v1.DestroySecretVersionRequest
+	(*Secret)(nil),                           // 17: google.cloud.secretmanager.v1.Secret
+	(*SecretPayload)(nil),                    // 18: google.cloud.secretmanager.v1.SecretPayload
+	(*CloudSqlSingleUserCredentials)(nil),    // 19: google.cloud.secretmanager.v1.CloudSqlSingleUserCredentials
+	(*SecretVersion)(nil),                    // 20: google.cloud.secretmanager.v1.SecretVersion
+	(*fieldmaskpb.FieldMask)(nil),            // 21: google.protobuf.FieldMask
+	(*iampb.SetIamPolicyRequest)(nil),        // 22: google.iam.v1.SetIamPolicyRequest
+	(*iampb.GetIamPolicyRequest)(nil),        // 23: google.iam.v1.GetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 24: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                    // 25: google.protobuf.Empty
+	(*iampb.Policy)(nil),                     // 26: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 27: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_secretmanager_v1_service_proto_depIdxs = []int32{
-	18, // 0: google.cloud.secretmanager.v1.ListSecretsResponse.secrets:type_name -> google.cloud.secretmanager.v1.Secret
-	18, // 1: google.cloud.secretmanager.v1.CreateSecretRequest.secret:type_name -> google.cloud.secretmanager.v1.Secret
-	19, // 2: google.cloud.secretmanager.v1.AddSecretVersionRequest.payload:type_name -> google.cloud.secretmanager.v1.SecretPayload
-	17, // 3: google.cloud.secretmanager.v1.EnableManagedRotationRequest.cloud_sql_single_user_credentials:type_name -> google.cloud.secretmanager.v1.EnableManagedRotationRequest.CloudSQLSingleUserCredentials
+	17, // 0: google.cloud.secretmanager.v1.ListSecretsResponse.secrets:type_name -> google.cloud.secretmanager.v1.Secret
+	17, // 1: google.cloud.secretmanager.v1.CreateSecretRequest.secret:type_name -> google.cloud.secretmanager.v1.Secret
+	18, // 2: google.cloud.secretmanager.v1.AddSecretVersionRequest.payload:type_name -> google.cloud.secretmanager.v1.SecretPayload
+	19, // 3: google.cloud.secretmanager.v1.EnableManagedRotationRequest.cloud_sql_single_user_credentials:type_name -> google.cloud.secretmanager.v1.CloudSqlSingleUserCredentials
 	20, // 4: google.cloud.secretmanager.v1.ListSecretVersionsResponse.versions:type_name -> google.cloud.secretmanager.v1.SecretVersion
-	18, // 5: google.cloud.secretmanager.v1.UpdateSecretRequest.secret:type_name -> google.cloud.secretmanager.v1.Secret
+	17, // 5: google.cloud.secretmanager.v1.UpdateSecretRequest.secret:type_name -> google.cloud.secretmanager.v1.Secret
 	21, // 6: google.cloud.secretmanager.v1.UpdateSecretRequest.update_mask:type_name -> google.protobuf.FieldMask
-	19, // 7: google.cloud.secretmanager.v1.AccessSecretVersionResponse.payload:type_name -> google.cloud.secretmanager.v1.SecretPayload
+	18, // 7: google.cloud.secretmanager.v1.AccessSecretVersionResponse.payload:type_name -> google.cloud.secretmanager.v1.SecretPayload
 	0,  // 8: google.cloud.secretmanager.v1.SecretManagerService.ListSecrets:input_type -> google.cloud.secretmanager.v1.ListSecretsRequest
 	2,  // 9: google.cloud.secretmanager.v1.SecretManagerService.CreateSecret:input_type -> google.cloud.secretmanager.v1.CreateSecretRequest
 	3,  // 10: google.cloud.secretmanager.v1.SecretManagerService.AddSecretVersion:input_type -> google.cloud.secretmanager.v1.AddSecretVersionRequest
@@ -1376,10 +1306,10 @@ var file_google_cloud_secretmanager_v1_service_proto_depIdxs = []int32{
 	4,  // 23: google.cloud.secretmanager.v1.SecretManagerService.EnableManagedRotation:input_type -> google.cloud.secretmanager.v1.EnableManagedRotationRequest
 	5,  // 24: google.cloud.secretmanager.v1.SecretManagerService.RotateSecret:input_type -> google.cloud.secretmanager.v1.RotateSecretRequest
 	1,  // 25: google.cloud.secretmanager.v1.SecretManagerService.ListSecrets:output_type -> google.cloud.secretmanager.v1.ListSecretsResponse
-	18, // 26: google.cloud.secretmanager.v1.SecretManagerService.CreateSecret:output_type -> google.cloud.secretmanager.v1.Secret
+	17, // 26: google.cloud.secretmanager.v1.SecretManagerService.CreateSecret:output_type -> google.cloud.secretmanager.v1.Secret
 	20, // 27: google.cloud.secretmanager.v1.SecretManagerService.AddSecretVersion:output_type -> google.cloud.secretmanager.v1.SecretVersion
-	18, // 28: google.cloud.secretmanager.v1.SecretManagerService.GetSecret:output_type -> google.cloud.secretmanager.v1.Secret
-	18, // 29: google.cloud.secretmanager.v1.SecretManagerService.UpdateSecret:output_type -> google.cloud.secretmanager.v1.Secret
+	17, // 28: google.cloud.secretmanager.v1.SecretManagerService.GetSecret:output_type -> google.cloud.secretmanager.v1.Secret
+	17, // 29: google.cloud.secretmanager.v1.SecretManagerService.UpdateSecret:output_type -> google.cloud.secretmanager.v1.Secret
 	25, // 30: google.cloud.secretmanager.v1.SecretManagerService.DeleteSecret:output_type -> google.protobuf.Empty
 	8,  // 31: google.cloud.secretmanager.v1.SecretManagerService.ListSecretVersions:output_type -> google.cloud.secretmanager.v1.ListSecretVersionsResponse
 	20, // 32: google.cloud.secretmanager.v1.SecretManagerService.GetSecretVersion:output_type -> google.cloud.secretmanager.v1.SecretVersion
@@ -1414,7 +1344,7 @@ func file_google_cloud_secretmanager_v1_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_secretmanager_v1_service_proto_rawDesc), len(file_google_cloud_secretmanager_v1_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -49,38 +49,48 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListConnections              []gax.CallOption
-	GetConnection                []gax.CallOption
-	CreateConnection             []gax.CallOption
-	UpdateConnection             []gax.CallOption
-	DeleteConnection             []gax.CallOption
-	CreateGitRepositoryLink      []gax.CallOption
-	DeleteGitRepositoryLink      []gax.CallOption
-	ListGitRepositoryLinks       []gax.CallOption
-	GetGitRepositoryLink         []gax.CallOption
-	FetchReadWriteToken          []gax.CallOption
-	FetchReadToken               []gax.CallOption
-	FetchLinkableGitRepositories []gax.CallOption
-	FetchGitHubInstallations     []gax.CallOption
-	FetchGitRefs                 []gax.CallOption
-	ListAccountConnectors        []gax.CallOption
-	GetAccountConnector          []gax.CallOption
-	CreateAccountConnector       []gax.CallOption
-	UpdateAccountConnector       []gax.CallOption
-	DeleteAccountConnector       []gax.CallOption
-	FetchAccessToken             []gax.CallOption
-	ListUsers                    []gax.CallOption
-	DeleteUser                   []gax.CallOption
-	FetchSelf                    []gax.CallOption
-	DeleteSelf                   []gax.CallOption
-	StartOAuth                   []gax.CallOption
-	FinishOAuth                  []gax.CallOption
-	GetLocation                  []gax.CallOption
-	ListLocations                []gax.CallOption
-	CancelOperation              []gax.CallOption
-	DeleteOperation              []gax.CallOption
-	GetOperation                 []gax.CallOption
-	ListOperations               []gax.CallOption
+	ListConnections                              []gax.CallOption
+	GetConnection                                []gax.CallOption
+	CreateConnection                             []gax.CallOption
+	UpdateConnection                             []gax.CallOption
+	DeleteConnection                             []gax.CallOption
+	CreateGitRepositoryLink                      []gax.CallOption
+	DeleteGitRepositoryLink                      []gax.CallOption
+	ListGitRepositoryLinks                       []gax.CallOption
+	GetGitRepositoryLink                         []gax.CallOption
+	FetchReadWriteToken                          []gax.CallOption
+	FetchReadToken                               []gax.CallOption
+	OpenGitRepositoryLinkPullRequest             []gax.CallOption
+	FetchLinkableGitRepositories                 []gax.CallOption
+	FetchGitHubInstallations                     []gax.CallOption
+	FetchGitRefs                                 []gax.CallOption
+	DiffGitRepositoryLinkCommit                  []gax.CallOption
+	FetchGitRepositoryLinkCommit                 []gax.CallOption
+	FetchGitRepositoryLinkCommitList             []gax.CallOption
+	FetchGitRepositoryLinkFileBlame              []gax.CallOption
+	FetchGitRepositoryLinkPullRequest            []gax.CallOption
+	AddGitRepositoryLinkPullRequestComment       []gax.CallOption
+	AddGitRepositoryLinkPullRequestReviewComment []gax.CallOption
+	ModifyGitRepositoryLinkPullRequest           []gax.CallOption
+	FetchGitRepositoryLinkPullRequestList        []gax.CallOption
+	ListAccountConnectors                        []gax.CallOption
+	GetAccountConnector                          []gax.CallOption
+	CreateAccountConnector                       []gax.CallOption
+	UpdateAccountConnector                       []gax.CallOption
+	DeleteAccountConnector                       []gax.CallOption
+	FetchAccessToken                             []gax.CallOption
+	ListUsers                                    []gax.CallOption
+	DeleteUser                                   []gax.CallOption
+	FetchSelf                                    []gax.CallOption
+	DeleteSelf                                   []gax.CallOption
+	StartOAuth                                   []gax.CallOption
+	FinishOAuth                                  []gax.CallOption
+	GetLocation                                  []gax.CallOption
+	ListLocations                                []gax.CallOption
+	CancelOperation                              []gax.CallOption
+	DeleteOperation                              []gax.CallOption
+	GetOperation                                 []gax.CallOption
+	ListOperations                               []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -221,6 +231,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		OpenGitRepositoryLinkPullRequest: []gax.CallOption{},
 		FetchLinkableGitRepositories: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -245,25 +256,34 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		FetchGitRefs:           []gax.CallOption{},
-		ListAccountConnectors:  []gax.CallOption{},
-		GetAccountConnector:    []gax.CallOption{},
-		CreateAccountConnector: []gax.CallOption{},
-		UpdateAccountConnector: []gax.CallOption{},
-		DeleteAccountConnector: []gax.CallOption{},
-		FetchAccessToken:       []gax.CallOption{},
-		ListUsers:              []gax.CallOption{},
-		DeleteUser:             []gax.CallOption{},
-		FetchSelf:              []gax.CallOption{},
-		DeleteSelf:             []gax.CallOption{},
-		StartOAuth:             []gax.CallOption{},
-		FinishOAuth:            []gax.CallOption{},
-		GetLocation:            []gax.CallOption{},
-		ListLocations:          []gax.CallOption{},
-		CancelOperation:        []gax.CallOption{},
-		DeleteOperation:        []gax.CallOption{},
-		GetOperation:           []gax.CallOption{},
-		ListOperations:         []gax.CallOption{},
+		FetchGitRefs:                                 []gax.CallOption{},
+		DiffGitRepositoryLinkCommit:                  []gax.CallOption{},
+		FetchGitRepositoryLinkCommit:                 []gax.CallOption{},
+		FetchGitRepositoryLinkCommitList:             []gax.CallOption{},
+		FetchGitRepositoryLinkFileBlame:              []gax.CallOption{},
+		FetchGitRepositoryLinkPullRequest:            []gax.CallOption{},
+		AddGitRepositoryLinkPullRequestComment:       []gax.CallOption{},
+		AddGitRepositoryLinkPullRequestReviewComment: []gax.CallOption{},
+		ModifyGitRepositoryLinkPullRequest:           []gax.CallOption{},
+		FetchGitRepositoryLinkPullRequestList:        []gax.CallOption{},
+		ListAccountConnectors:                        []gax.CallOption{},
+		GetAccountConnector:                          []gax.CallOption{},
+		CreateAccountConnector:                       []gax.CallOption{},
+		UpdateAccountConnector:                       []gax.CallOption{},
+		DeleteAccountConnector:                       []gax.CallOption{},
+		FetchAccessToken:                             []gax.CallOption{},
+		ListUsers:                                    []gax.CallOption{},
+		DeleteUser:                                   []gax.CallOption{},
+		FetchSelf:                                    []gax.CallOption{},
+		DeleteSelf:                                   []gax.CallOption{},
+		StartOAuth:                                   []gax.CallOption{},
+		FinishOAuth:                                  []gax.CallOption{},
+		GetLocation:                                  []gax.CallOption{},
+		ListLocations:                                []gax.CallOption{},
+		CancelOperation:                              []gax.CallOption{},
+		DeleteOperation:                              []gax.CallOption{},
+		GetOperation:                                 []gax.CallOption{},
+		ListOperations:                               []gax.CallOption{},
 	}
 }
 
@@ -380,6 +400,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		OpenGitRepositoryLinkPullRequest: []gax.CallOption{},
 		FetchLinkableGitRepositories: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -402,25 +423,34 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		FetchGitRefs:           []gax.CallOption{},
-		ListAccountConnectors:  []gax.CallOption{},
-		GetAccountConnector:    []gax.CallOption{},
-		CreateAccountConnector: []gax.CallOption{},
-		UpdateAccountConnector: []gax.CallOption{},
-		DeleteAccountConnector: []gax.CallOption{},
-		FetchAccessToken:       []gax.CallOption{},
-		ListUsers:              []gax.CallOption{},
-		DeleteUser:             []gax.CallOption{},
-		FetchSelf:              []gax.CallOption{},
-		DeleteSelf:             []gax.CallOption{},
-		StartOAuth:             []gax.CallOption{},
-		FinishOAuth:            []gax.CallOption{},
-		GetLocation:            []gax.CallOption{},
-		ListLocations:          []gax.CallOption{},
-		CancelOperation:        []gax.CallOption{},
-		DeleteOperation:        []gax.CallOption{},
-		GetOperation:           []gax.CallOption{},
-		ListOperations:         []gax.CallOption{},
+		FetchGitRefs:                                 []gax.CallOption{},
+		DiffGitRepositoryLinkCommit:                  []gax.CallOption{},
+		FetchGitRepositoryLinkCommit:                 []gax.CallOption{},
+		FetchGitRepositoryLinkCommitList:             []gax.CallOption{},
+		FetchGitRepositoryLinkFileBlame:              []gax.CallOption{},
+		FetchGitRepositoryLinkPullRequest:            []gax.CallOption{},
+		AddGitRepositoryLinkPullRequestComment:       []gax.CallOption{},
+		AddGitRepositoryLinkPullRequestReviewComment: []gax.CallOption{},
+		ModifyGitRepositoryLinkPullRequest:           []gax.CallOption{},
+		FetchGitRepositoryLinkPullRequestList:        []gax.CallOption{},
+		ListAccountConnectors:                        []gax.CallOption{},
+		GetAccountConnector:                          []gax.CallOption{},
+		CreateAccountConnector:                       []gax.CallOption{},
+		UpdateAccountConnector:                       []gax.CallOption{},
+		DeleteAccountConnector:                       []gax.CallOption{},
+		FetchAccessToken:                             []gax.CallOption{},
+		ListUsers:                                    []gax.CallOption{},
+		DeleteUser:                                   []gax.CallOption{},
+		FetchSelf:                                    []gax.CallOption{},
+		DeleteSelf:                                   []gax.CallOption{},
+		StartOAuth:                                   []gax.CallOption{},
+		FinishOAuth:                                  []gax.CallOption{},
+		GetLocation:                                  []gax.CallOption{},
+		ListLocations:                                []gax.CallOption{},
+		CancelOperation:                              []gax.CallOption{},
+		DeleteOperation:                              []gax.CallOption{},
+		GetOperation:                                 []gax.CallOption{},
+		ListOperations:                               []gax.CallOption{},
 	}
 }
 
@@ -445,9 +475,19 @@ type internalClient interface {
 	GetGitRepositoryLink(context.Context, *developerconnectpb.GetGitRepositoryLinkRequest, ...gax.CallOption) (*developerconnectpb.GitRepositoryLink, error)
 	FetchReadWriteToken(context.Context, *developerconnectpb.FetchReadWriteTokenRequest, ...gax.CallOption) (*developerconnectpb.FetchReadWriteTokenResponse, error)
 	FetchReadToken(context.Context, *developerconnectpb.FetchReadTokenRequest, ...gax.CallOption) (*developerconnectpb.FetchReadTokenResponse, error)
+	OpenGitRepositoryLinkPullRequest(context.Context, *developerconnectpb.OpenGitRepositoryLinkPullRequestRequest, ...gax.CallOption) (*developerconnectpb.PullRequest, error)
 	FetchLinkableGitRepositories(context.Context, *developerconnectpb.FetchLinkableGitRepositoriesRequest, ...gax.CallOption) *LinkableGitRepositoryIterator
 	FetchGitHubInstallations(context.Context, *developerconnectpb.FetchGitHubInstallationsRequest, ...gax.CallOption) (*developerconnectpb.FetchGitHubInstallationsResponse, error)
 	FetchGitRefs(context.Context, *developerconnectpb.FetchGitRefsRequest, ...gax.CallOption) *StringIterator
+	DiffGitRepositoryLinkCommit(context.Context, *developerconnectpb.DiffGitRepositoryLinkCommitRequest, ...gax.CallOption) (*developerconnectpb.DiffGitRepositoryLinkCommitResponse, error)
+	FetchGitRepositoryLinkCommit(context.Context, *developerconnectpb.FetchGitRepositoryLinkCommitRequest, ...gax.CallOption) (*developerconnectpb.FetchGitRepositoryLinkCommitResponse, error)
+	FetchGitRepositoryLinkCommitList(context.Context, *developerconnectpb.FetchGitRepositoryLinkCommitListRequest, ...gax.CallOption) *SCMCommitIterator
+	FetchGitRepositoryLinkFileBlame(context.Context, *developerconnectpb.FetchGitRepositoryLinkFileBlameRequest, ...gax.CallOption) (*developerconnectpb.FetchGitRepositoryLinkFileBlameResponse, error)
+	FetchGitRepositoryLinkPullRequest(context.Context, *developerconnectpb.FetchGitRepositoryLinkPullRequestRequest, ...gax.CallOption) (*developerconnectpb.PullRequest, error)
+	AddGitRepositoryLinkPullRequestComment(context.Context, *developerconnectpb.AddGitRepositoryLinkPullRequestCommentRequest, ...gax.CallOption) (*developerconnectpb.PullRequestComment, error)
+	AddGitRepositoryLinkPullRequestReviewComment(context.Context, *developerconnectpb.AddGitRepositoryLinkPullRequestReviewCommentRequest, ...gax.CallOption) (*developerconnectpb.PullRequestReviewComment, error)
+	ModifyGitRepositoryLinkPullRequest(context.Context, *developerconnectpb.ModifyGitRepositoryLinkPullRequestRequest, ...gax.CallOption) (*developerconnectpb.PullRequest, error)
+	FetchGitRepositoryLinkPullRequestList(context.Context, *developerconnectpb.FetchGitRepositoryLinkPullRequestListRequest, ...gax.CallOption) *PullRequestIterator
 	ListAccountConnectors(context.Context, *developerconnectpb.ListAccountConnectorsRequest, ...gax.CallOption) *AccountConnectorIterator
 	GetAccountConnector(context.Context, *developerconnectpb.GetAccountConnectorRequest, ...gax.CallOption) (*developerconnectpb.AccountConnector, error)
 	CreateAccountConnector(context.Context, *developerconnectpb.CreateAccountConnectorRequest, ...gax.CallOption) (*CreateAccountConnectorOperation, error)
@@ -603,6 +643,12 @@ func (c *Client) FetchReadToken(ctx context.Context, req *developerconnectpb.Fet
 	return c.internalClient.FetchReadToken(ctx, req, opts...)
 }
 
+// OpenGitRepositoryLinkPullRequest opens a Pull Request in the remote SCM repository associated with a
+// GitRepositoryLink.
+func (c *Client) OpenGitRepositoryLinkPullRequest(ctx context.Context, req *developerconnectpb.OpenGitRepositoryLinkPullRequestRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequest, error) {
+	return c.internalClient.OpenGitRepositoryLinkPullRequest(ctx, req, opts...)
+}
+
 // FetchLinkableGitRepositories fetchLinkableGitRepositories returns a list of git repositories from an SCM
 // that are available to be added to a Connection.
 func (c *Client) FetchLinkableGitRepositories(ctx context.Context, req *developerconnectpb.FetchLinkableGitRepositoriesRequest, opts ...gax.CallOption) *LinkableGitRepositoryIterator {
@@ -620,6 +666,52 @@ func (c *Client) FetchGitHubInstallations(ctx context.Context, req *developercon
 // FetchGitRefs fetch the list of branches or tags for a given repository.
 func (c *Client) FetchGitRefs(ctx context.Context, req *developerconnectpb.FetchGitRefsRequest, opts ...gax.CallOption) *StringIterator {
 	return c.internalClient.FetchGitRefs(ctx, req, opts...)
+}
+
+// DiffGitRepositoryLinkCommit diff commits for a GitRepositoryLink.
+func (c *Client) DiffGitRepositoryLinkCommit(ctx context.Context, req *developerconnectpb.DiffGitRepositoryLinkCommitRequest, opts ...gax.CallOption) (*developerconnectpb.DiffGitRepositoryLinkCommitResponse, error) {
+	return c.internalClient.DiffGitRepositoryLinkCommit(ctx, req, opts...)
+}
+
+// FetchGitRepositoryLinkCommit fetch Commit details from a Git repository link.
+func (c *Client) FetchGitRepositoryLinkCommit(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkCommitRequest, opts ...gax.CallOption) (*developerconnectpb.FetchGitRepositoryLinkCommitResponse, error) {
+	return c.internalClient.FetchGitRepositoryLinkCommit(ctx, req, opts...)
+}
+
+// FetchGitRepositoryLinkCommitList fetch a list of Commits from a Git repository link.
+func (c *Client) FetchGitRepositoryLinkCommitList(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkCommitListRequest, opts ...gax.CallOption) *SCMCommitIterator {
+	return c.internalClient.FetchGitRepositoryLinkCommitList(ctx, req, opts...)
+}
+
+// FetchGitRepositoryLinkFileBlame fetches blame information for a file or line range in a file.
+func (c *Client) FetchGitRepositoryLinkFileBlame(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkFileBlameRequest, opts ...gax.CallOption) (*developerconnectpb.FetchGitRepositoryLinkFileBlameResponse, error) {
+	return c.internalClient.FetchGitRepositoryLinkFileBlame(ctx, req, opts...)
+}
+
+// FetchGitRepositoryLinkPullRequest fetch Pull Request details from a Git repository link.
+func (c *Client) FetchGitRepositoryLinkPullRequest(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkPullRequestRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequest, error) {
+	return c.internalClient.FetchGitRepositoryLinkPullRequest(ctx, req, opts...)
+}
+
+// AddGitRepositoryLinkPullRequestComment add a comment to a Pull Request.
+func (c *Client) AddGitRepositoryLinkPullRequestComment(ctx context.Context, req *developerconnectpb.AddGitRepositoryLinkPullRequestCommentRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequestComment, error) {
+	return c.internalClient.AddGitRepositoryLinkPullRequestComment(ctx, req, opts...)
+}
+
+// AddGitRepositoryLinkPullRequestReviewComment add a review comment (inline on diff) to a Pull Request.
+func (c *Client) AddGitRepositoryLinkPullRequestReviewComment(ctx context.Context, req *developerconnectpb.AddGitRepositoryLinkPullRequestReviewCommentRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequestReviewComment, error) {
+	return c.internalClient.AddGitRepositoryLinkPullRequestReviewComment(ctx, req, opts...)
+}
+
+// ModifyGitRepositoryLinkPullRequest modifies a Pull Request in the remote SCM repository associated with a
+// GitRepositoryLink.
+func (c *Client) ModifyGitRepositoryLinkPullRequest(ctx context.Context, req *developerconnectpb.ModifyGitRepositoryLinkPullRequestRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequest, error) {
+	return c.internalClient.ModifyGitRepositoryLinkPullRequest(ctx, req, opts...)
+}
+
+// FetchGitRepositoryLinkPullRequestList fetches a list of Pull Requests from the remote repository.
+func (c *Client) FetchGitRepositoryLinkPullRequestList(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkPullRequestListRequest, opts ...gax.CallOption) *PullRequestIterator {
+	return c.internalClient.FetchGitRepositoryLinkPullRequestList(ctx, req, opts...)
 }
 
 // ListAccountConnectors lists AccountConnectors in a given project and location.
@@ -840,9 +932,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetGitRepositoryLink = append(client.CallOptions.GetGitRepositoryLink, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchReadWriteToken = append(client.CallOptions.FetchReadWriteToken, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchReadToken = append(client.CallOptions.FetchReadToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.OpenGitRepositoryLinkPullRequest = append(client.CallOptions.OpenGitRepositoryLinkPullRequest, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchLinkableGitRepositories = append(client.CallOptions.FetchLinkableGitRepositories, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchGitHubInstallations = append(client.CallOptions.FetchGitHubInstallations, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchGitRefs = append(client.CallOptions.FetchGitRefs, gax.WithClientMetrics(metrics))
+		client.CallOptions.DiffGitRepositoryLinkCommit = append(client.CallOptions.DiffGitRepositoryLinkCommit, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchGitRepositoryLinkCommit = append(client.CallOptions.FetchGitRepositoryLinkCommit, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchGitRepositoryLinkCommitList = append(client.CallOptions.FetchGitRepositoryLinkCommitList, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchGitRepositoryLinkFileBlame = append(client.CallOptions.FetchGitRepositoryLinkFileBlame, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchGitRepositoryLinkPullRequest = append(client.CallOptions.FetchGitRepositoryLinkPullRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddGitRepositoryLinkPullRequestComment = append(client.CallOptions.AddGitRepositoryLinkPullRequestComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddGitRepositoryLinkPullRequestReviewComment = append(client.CallOptions.AddGitRepositoryLinkPullRequestReviewComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ModifyGitRepositoryLinkPullRequest = append(client.CallOptions.ModifyGitRepositoryLinkPullRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchGitRepositoryLinkPullRequestList = append(client.CallOptions.FetchGitRepositoryLinkPullRequestList, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListAccountConnectors = append(client.CallOptions.ListAccountConnectors, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetAccountConnector = append(client.CallOptions.GetAccountConnector, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateAccountConnector = append(client.CallOptions.CreateAccountConnector, gax.WithClientMetrics(metrics))
@@ -884,9 +986,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetGitRepositoryLink = append(client.CallOptions.GetGitRepositoryLink, gax.WithClientTracing(tracing))
 		client.CallOptions.FetchReadWriteToken = append(client.CallOptions.FetchReadWriteToken, gax.WithClientTracing(tracing))
 		client.CallOptions.FetchReadToken = append(client.CallOptions.FetchReadToken, gax.WithClientTracing(tracing))
+		client.CallOptions.OpenGitRepositoryLinkPullRequest = append(client.CallOptions.OpenGitRepositoryLinkPullRequest, gax.WithClientTracing(tracing))
 		client.CallOptions.FetchLinkableGitRepositories = append(client.CallOptions.FetchLinkableGitRepositories, gax.WithClientTracing(tracing))
 		client.CallOptions.FetchGitHubInstallations = append(client.CallOptions.FetchGitHubInstallations, gax.WithClientTracing(tracing))
 		client.CallOptions.FetchGitRefs = append(client.CallOptions.FetchGitRefs, gax.WithClientTracing(tracing))
+		client.CallOptions.DiffGitRepositoryLinkCommit = append(client.CallOptions.DiffGitRepositoryLinkCommit, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchGitRepositoryLinkCommit = append(client.CallOptions.FetchGitRepositoryLinkCommit, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchGitRepositoryLinkCommitList = append(client.CallOptions.FetchGitRepositoryLinkCommitList, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchGitRepositoryLinkFileBlame = append(client.CallOptions.FetchGitRepositoryLinkFileBlame, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchGitRepositoryLinkPullRequest = append(client.CallOptions.FetchGitRepositoryLinkPullRequest, gax.WithClientTracing(tracing))
+		client.CallOptions.AddGitRepositoryLinkPullRequestComment = append(client.CallOptions.AddGitRepositoryLinkPullRequestComment, gax.WithClientTracing(tracing))
+		client.CallOptions.AddGitRepositoryLinkPullRequestReviewComment = append(client.CallOptions.AddGitRepositoryLinkPullRequestReviewComment, gax.WithClientTracing(tracing))
+		client.CallOptions.ModifyGitRepositoryLinkPullRequest = append(client.CallOptions.ModifyGitRepositoryLinkPullRequest, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchGitRepositoryLinkPullRequestList = append(client.CallOptions.FetchGitRepositoryLinkPullRequestList, gax.WithClientTracing(tracing))
 		client.CallOptions.ListAccountConnectors = append(client.CallOptions.ListAccountConnectors, gax.WithClientTracing(tracing))
 		client.CallOptions.GetAccountConnector = append(client.CallOptions.GetAccountConnector, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateAccountConnector = append(client.CallOptions.CreateAccountConnector, gax.WithClientTracing(tracing))
@@ -929,9 +1041,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetGitRepositoryLink = append(client.CallOptions.GetGitRepositoryLink, gax.WithClientLogging(logging))
 		client.CallOptions.FetchReadWriteToken = append(client.CallOptions.FetchReadWriteToken, gax.WithClientLogging(logging))
 		client.CallOptions.FetchReadToken = append(client.CallOptions.FetchReadToken, gax.WithClientLogging(logging))
+		client.CallOptions.OpenGitRepositoryLinkPullRequest = append(client.CallOptions.OpenGitRepositoryLinkPullRequest, gax.WithClientLogging(logging))
 		client.CallOptions.FetchLinkableGitRepositories = append(client.CallOptions.FetchLinkableGitRepositories, gax.WithClientLogging(logging))
 		client.CallOptions.FetchGitHubInstallations = append(client.CallOptions.FetchGitHubInstallations, gax.WithClientLogging(logging))
 		client.CallOptions.FetchGitRefs = append(client.CallOptions.FetchGitRefs, gax.WithClientLogging(logging))
+		client.CallOptions.DiffGitRepositoryLinkCommit = append(client.CallOptions.DiffGitRepositoryLinkCommit, gax.WithClientLogging(logging))
+		client.CallOptions.FetchGitRepositoryLinkCommit = append(client.CallOptions.FetchGitRepositoryLinkCommit, gax.WithClientLogging(logging))
+		client.CallOptions.FetchGitRepositoryLinkCommitList = append(client.CallOptions.FetchGitRepositoryLinkCommitList, gax.WithClientLogging(logging))
+		client.CallOptions.FetchGitRepositoryLinkFileBlame = append(client.CallOptions.FetchGitRepositoryLinkFileBlame, gax.WithClientLogging(logging))
+		client.CallOptions.FetchGitRepositoryLinkPullRequest = append(client.CallOptions.FetchGitRepositoryLinkPullRequest, gax.WithClientLogging(logging))
+		client.CallOptions.AddGitRepositoryLinkPullRequestComment = append(client.CallOptions.AddGitRepositoryLinkPullRequestComment, gax.WithClientLogging(logging))
+		client.CallOptions.AddGitRepositoryLinkPullRequestReviewComment = append(client.CallOptions.AddGitRepositoryLinkPullRequestReviewComment, gax.WithClientLogging(logging))
+		client.CallOptions.ModifyGitRepositoryLinkPullRequest = append(client.CallOptions.ModifyGitRepositoryLinkPullRequest, gax.WithClientLogging(logging))
+		client.CallOptions.FetchGitRepositoryLinkPullRequestList = append(client.CallOptions.FetchGitRepositoryLinkPullRequestList, gax.WithClientLogging(logging))
 		client.CallOptions.ListAccountConnectors = append(client.CallOptions.ListAccountConnectors, gax.WithClientLogging(logging))
 		client.CallOptions.GetAccountConnector = append(client.CallOptions.GetAccountConnector, gax.WithClientLogging(logging))
 		client.CallOptions.CreateAccountConnector = append(client.CallOptions.CreateAccountConnector, gax.WithClientLogging(logging))
@@ -1067,9 +1189,19 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetGitRepositoryLink = append(callOpts.GetGitRepositoryLink, gax.WithClientMetrics(metrics))
 		callOpts.FetchReadWriteToken = append(callOpts.FetchReadWriteToken, gax.WithClientMetrics(metrics))
 		callOpts.FetchReadToken = append(callOpts.FetchReadToken, gax.WithClientMetrics(metrics))
+		callOpts.OpenGitRepositoryLinkPullRequest = append(callOpts.OpenGitRepositoryLinkPullRequest, gax.WithClientMetrics(metrics))
 		callOpts.FetchLinkableGitRepositories = append(callOpts.FetchLinkableGitRepositories, gax.WithClientMetrics(metrics))
 		callOpts.FetchGitHubInstallations = append(callOpts.FetchGitHubInstallations, gax.WithClientMetrics(metrics))
 		callOpts.FetchGitRefs = append(callOpts.FetchGitRefs, gax.WithClientMetrics(metrics))
+		callOpts.DiffGitRepositoryLinkCommit = append(callOpts.DiffGitRepositoryLinkCommit, gax.WithClientMetrics(metrics))
+		callOpts.FetchGitRepositoryLinkCommit = append(callOpts.FetchGitRepositoryLinkCommit, gax.WithClientMetrics(metrics))
+		callOpts.FetchGitRepositoryLinkCommitList = append(callOpts.FetchGitRepositoryLinkCommitList, gax.WithClientMetrics(metrics))
+		callOpts.FetchGitRepositoryLinkFileBlame = append(callOpts.FetchGitRepositoryLinkFileBlame, gax.WithClientMetrics(metrics))
+		callOpts.FetchGitRepositoryLinkPullRequest = append(callOpts.FetchGitRepositoryLinkPullRequest, gax.WithClientMetrics(metrics))
+		callOpts.AddGitRepositoryLinkPullRequestComment = append(callOpts.AddGitRepositoryLinkPullRequestComment, gax.WithClientMetrics(metrics))
+		callOpts.AddGitRepositoryLinkPullRequestReviewComment = append(callOpts.AddGitRepositoryLinkPullRequestReviewComment, gax.WithClientMetrics(metrics))
+		callOpts.ModifyGitRepositoryLinkPullRequest = append(callOpts.ModifyGitRepositoryLinkPullRequest, gax.WithClientMetrics(metrics))
+		callOpts.FetchGitRepositoryLinkPullRequestList = append(callOpts.FetchGitRepositoryLinkPullRequestList, gax.WithClientMetrics(metrics))
 		callOpts.ListAccountConnectors = append(callOpts.ListAccountConnectors, gax.WithClientMetrics(metrics))
 		callOpts.GetAccountConnector = append(callOpts.GetAccountConnector, gax.WithClientMetrics(metrics))
 		callOpts.CreateAccountConnector = append(callOpts.CreateAccountConnector, gax.WithClientMetrics(metrics))
@@ -1111,9 +1243,19 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetGitRepositoryLink = append(callOpts.GetGitRepositoryLink, gax.WithClientTracing(tracing))
 		callOpts.FetchReadWriteToken = append(callOpts.FetchReadWriteToken, gax.WithClientTracing(tracing))
 		callOpts.FetchReadToken = append(callOpts.FetchReadToken, gax.WithClientTracing(tracing))
+		callOpts.OpenGitRepositoryLinkPullRequest = append(callOpts.OpenGitRepositoryLinkPullRequest, gax.WithClientTracing(tracing))
 		callOpts.FetchLinkableGitRepositories = append(callOpts.FetchLinkableGitRepositories, gax.WithClientTracing(tracing))
 		callOpts.FetchGitHubInstallations = append(callOpts.FetchGitHubInstallations, gax.WithClientTracing(tracing))
 		callOpts.FetchGitRefs = append(callOpts.FetchGitRefs, gax.WithClientTracing(tracing))
+		callOpts.DiffGitRepositoryLinkCommit = append(callOpts.DiffGitRepositoryLinkCommit, gax.WithClientTracing(tracing))
+		callOpts.FetchGitRepositoryLinkCommit = append(callOpts.FetchGitRepositoryLinkCommit, gax.WithClientTracing(tracing))
+		callOpts.FetchGitRepositoryLinkCommitList = append(callOpts.FetchGitRepositoryLinkCommitList, gax.WithClientTracing(tracing))
+		callOpts.FetchGitRepositoryLinkFileBlame = append(callOpts.FetchGitRepositoryLinkFileBlame, gax.WithClientTracing(tracing))
+		callOpts.FetchGitRepositoryLinkPullRequest = append(callOpts.FetchGitRepositoryLinkPullRequest, gax.WithClientTracing(tracing))
+		callOpts.AddGitRepositoryLinkPullRequestComment = append(callOpts.AddGitRepositoryLinkPullRequestComment, gax.WithClientTracing(tracing))
+		callOpts.AddGitRepositoryLinkPullRequestReviewComment = append(callOpts.AddGitRepositoryLinkPullRequestReviewComment, gax.WithClientTracing(tracing))
+		callOpts.ModifyGitRepositoryLinkPullRequest = append(callOpts.ModifyGitRepositoryLinkPullRequest, gax.WithClientTracing(tracing))
+		callOpts.FetchGitRepositoryLinkPullRequestList = append(callOpts.FetchGitRepositoryLinkPullRequestList, gax.WithClientTracing(tracing))
 		callOpts.ListAccountConnectors = append(callOpts.ListAccountConnectors, gax.WithClientTracing(tracing))
 		callOpts.GetAccountConnector = append(callOpts.GetAccountConnector, gax.WithClientTracing(tracing))
 		callOpts.CreateAccountConnector = append(callOpts.CreateAccountConnector, gax.WithClientTracing(tracing))
@@ -1156,9 +1298,19 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetGitRepositoryLink = append(callOpts.GetGitRepositoryLink, gax.WithClientLogging(logging))
 		callOpts.FetchReadWriteToken = append(callOpts.FetchReadWriteToken, gax.WithClientLogging(logging))
 		callOpts.FetchReadToken = append(callOpts.FetchReadToken, gax.WithClientLogging(logging))
+		callOpts.OpenGitRepositoryLinkPullRequest = append(callOpts.OpenGitRepositoryLinkPullRequest, gax.WithClientLogging(logging))
 		callOpts.FetchLinkableGitRepositories = append(callOpts.FetchLinkableGitRepositories, gax.WithClientLogging(logging))
 		callOpts.FetchGitHubInstallations = append(callOpts.FetchGitHubInstallations, gax.WithClientLogging(logging))
 		callOpts.FetchGitRefs = append(callOpts.FetchGitRefs, gax.WithClientLogging(logging))
+		callOpts.DiffGitRepositoryLinkCommit = append(callOpts.DiffGitRepositoryLinkCommit, gax.WithClientLogging(logging))
+		callOpts.FetchGitRepositoryLinkCommit = append(callOpts.FetchGitRepositoryLinkCommit, gax.WithClientLogging(logging))
+		callOpts.FetchGitRepositoryLinkCommitList = append(callOpts.FetchGitRepositoryLinkCommitList, gax.WithClientLogging(logging))
+		callOpts.FetchGitRepositoryLinkFileBlame = append(callOpts.FetchGitRepositoryLinkFileBlame, gax.WithClientLogging(logging))
+		callOpts.FetchGitRepositoryLinkPullRequest = append(callOpts.FetchGitRepositoryLinkPullRequest, gax.WithClientLogging(logging))
+		callOpts.AddGitRepositoryLinkPullRequestComment = append(callOpts.AddGitRepositoryLinkPullRequestComment, gax.WithClientLogging(logging))
+		callOpts.AddGitRepositoryLinkPullRequestReviewComment = append(callOpts.AddGitRepositoryLinkPullRequestReviewComment, gax.WithClientLogging(logging))
+		callOpts.ModifyGitRepositoryLinkPullRequest = append(callOpts.ModifyGitRepositoryLinkPullRequest, gax.WithClientLogging(logging))
+		callOpts.FetchGitRepositoryLinkPullRequestList = append(callOpts.FetchGitRepositoryLinkPullRequestList, gax.WithClientLogging(logging))
 		callOpts.ListAccountConnectors = append(callOpts.ListAccountConnectors, gax.WithClientLogging(logging))
 		callOpts.GetAccountConnector = append(callOpts.GetAccountConnector, gax.WithClientLogging(logging))
 		callOpts.CreateAccountConnector = append(callOpts.CreateAccountConnector, gax.WithClientLogging(logging))
@@ -1546,6 +1698,27 @@ func (c *gRPCClient) FetchReadToken(ctx context.Context, req *developerconnectpb
 	return resp, nil
 }
 
+func (c *gRPCClient) OpenGitRepositoryLinkPullRequest(ctx context.Context, req *developerconnectpb.OpenGitRepositoryLinkPullRequestRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequest, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/OpenGitRepositoryLinkPullRequest")
+	}
+	opts = append((*c.CallOptions).OpenGitRepositoryLinkPullRequest[0:len((*c.CallOptions).OpenGitRepositoryLinkPullRequest):len((*c.CallOptions).OpenGitRepositoryLinkPullRequest)], opts...)
+	var resp *developerconnectpb.PullRequest
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.OpenGitRepositoryLinkPullRequest, req, settings.GRPC, c.logger, "OpenGitRepositoryLinkPullRequest")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) FetchLinkableGitRepositories(ctx context.Context, req *developerconnectpb.FetchLinkableGitRepositoriesRequest, opts ...gax.CallOption) *LinkableGitRepositoryIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "connection", url.QueryEscape(req.GetConnection()))}
 
@@ -1648,6 +1821,251 @@ func (c *gRPCClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.F
 
 		it.Response = resp
 		return resp.GetRefNames(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) DiffGitRepositoryLinkCommit(ctx context.Context, req *developerconnectpb.DiffGitRepositoryLinkCommitRequest, opts ...gax.CallOption) (*developerconnectpb.DiffGitRepositoryLinkCommitResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DiffGitRepositoryLinkCommit")
+	}
+	opts = append((*c.CallOptions).DiffGitRepositoryLinkCommit[0:len((*c.CallOptions).DiffGitRepositoryLinkCommit):len((*c.CallOptions).DiffGitRepositoryLinkCommit)], opts...)
+	var resp *developerconnectpb.DiffGitRepositoryLinkCommitResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DiffGitRepositoryLinkCommit, req, settings.GRPC, c.logger, "DiffGitRepositoryLinkCommit")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FetchGitRepositoryLinkCommit(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkCommitRequest, opts ...gax.CallOption) (*developerconnectpb.FetchGitRepositoryLinkCommitResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkCommit")
+	}
+	opts = append((*c.CallOptions).FetchGitRepositoryLinkCommit[0:len((*c.CallOptions).FetchGitRepositoryLinkCommit):len((*c.CallOptions).FetchGitRepositoryLinkCommit)], opts...)
+	var resp *developerconnectpb.FetchGitRepositoryLinkCommitResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FetchGitRepositoryLinkCommit, req, settings.GRPC, c.logger, "FetchGitRepositoryLinkCommit")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FetchGitRepositoryLinkCommitList(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkCommitListRequest, opts ...gax.CallOption) *SCMCommitIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkCommitList")
+	}
+	opts = append((*c.CallOptions).FetchGitRepositoryLinkCommitList[0:len((*c.CallOptions).FetchGitRepositoryLinkCommitList):len((*c.CallOptions).FetchGitRepositoryLinkCommitList)], opts...)
+	it := &SCMCommitIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.SCMCommit, string, error) {
+		resp := &developerconnectpb.FetchGitRepositoryLinkCommitListResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchGitRepositoryLinkCommitList, req, settings.GRPC, c.logger, "FetchGitRepositoryLinkCommitList")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCommits(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) FetchGitRepositoryLinkFileBlame(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkFileBlameRequest, opts ...gax.CallOption) (*developerconnectpb.FetchGitRepositoryLinkFileBlameResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkFileBlame")
+	}
+	opts = append((*c.CallOptions).FetchGitRepositoryLinkFileBlame[0:len((*c.CallOptions).FetchGitRepositoryLinkFileBlame):len((*c.CallOptions).FetchGitRepositoryLinkFileBlame)], opts...)
+	var resp *developerconnectpb.FetchGitRepositoryLinkFileBlameResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FetchGitRepositoryLinkFileBlame, req, settings.GRPC, c.logger, "FetchGitRepositoryLinkFileBlame")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FetchGitRepositoryLinkPullRequest(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkPullRequestRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequest, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkPullRequest")
+	}
+	opts = append((*c.CallOptions).FetchGitRepositoryLinkPullRequest[0:len((*c.CallOptions).FetchGitRepositoryLinkPullRequest):len((*c.CallOptions).FetchGitRepositoryLinkPullRequest)], opts...)
+	var resp *developerconnectpb.PullRequest
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FetchGitRepositoryLinkPullRequest, req, settings.GRPC, c.logger, "FetchGitRepositoryLinkPullRequest")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) AddGitRepositoryLinkPullRequestComment(ctx context.Context, req *developerconnectpb.AddGitRepositoryLinkPullRequestCommentRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequestComment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/AddGitRepositoryLinkPullRequestComment")
+	}
+	opts = append((*c.CallOptions).AddGitRepositoryLinkPullRequestComment[0:len((*c.CallOptions).AddGitRepositoryLinkPullRequestComment):len((*c.CallOptions).AddGitRepositoryLinkPullRequestComment)], opts...)
+	var resp *developerconnectpb.PullRequestComment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.AddGitRepositoryLinkPullRequestComment, req, settings.GRPC, c.logger, "AddGitRepositoryLinkPullRequestComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) AddGitRepositoryLinkPullRequestReviewComment(ctx context.Context, req *developerconnectpb.AddGitRepositoryLinkPullRequestReviewCommentRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequestReviewComment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/AddGitRepositoryLinkPullRequestReviewComment")
+	}
+	opts = append((*c.CallOptions).AddGitRepositoryLinkPullRequestReviewComment[0:len((*c.CallOptions).AddGitRepositoryLinkPullRequestReviewComment):len((*c.CallOptions).AddGitRepositoryLinkPullRequestReviewComment)], opts...)
+	var resp *developerconnectpb.PullRequestReviewComment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.AddGitRepositoryLinkPullRequestReviewComment, req, settings.GRPC, c.logger, "AddGitRepositoryLinkPullRequestReviewComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ModifyGitRepositoryLinkPullRequest(ctx context.Context, req *developerconnectpb.ModifyGitRepositoryLinkPullRequestRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequest, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ModifyGitRepositoryLinkPullRequest")
+	}
+	opts = append((*c.CallOptions).ModifyGitRepositoryLinkPullRequest[0:len((*c.CallOptions).ModifyGitRepositoryLinkPullRequest):len((*c.CallOptions).ModifyGitRepositoryLinkPullRequest)], opts...)
+	var resp *developerconnectpb.PullRequest
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ModifyGitRepositoryLinkPullRequest, req, settings.GRPC, c.logger, "ModifyGitRepositoryLinkPullRequest")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FetchGitRepositoryLinkPullRequestList(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkPullRequestListRequest, opts ...gax.CallOption) *PullRequestIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkPullRequestList")
+	}
+	opts = append((*c.CallOptions).FetchGitRepositoryLinkPullRequestList[0:len((*c.CallOptions).FetchGitRepositoryLinkPullRequestList):len((*c.CallOptions).FetchGitRepositoryLinkPullRequestList)], opts...)
+	it := &PullRequestIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.PullRequest, string, error) {
+		resp := &developerconnectpb.FetchGitRepositoryLinkPullRequestListResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchGitRepositoryLinkPullRequestList, req, settings.GRPC, c.logger, "FetchGitRepositoryLinkPullRequestList")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPullRequests(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -3007,6 +3425,72 @@ func (c *restClient) FetchReadToken(ctx context.Context, req *developerconnectpb
 	return resp, nil
 }
 
+// OpenGitRepositoryLinkPullRequest opens a Pull Request in the remote SCM repository associated with a
+// GitRepositoryLink.
+func (c *restClient) OpenGitRepositoryLinkPullRequest(ctx context.Context, req *developerconnectpb.OpenGitRepositoryLinkPullRequestRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequest, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:openPullRequest", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/OpenGitRepositoryLinkPullRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:openPullRequest")
+	}
+	opts = append((*c.CallOptions).OpenGitRepositoryLinkPullRequest[0:len((*c.CallOptions).OpenGitRepositoryLinkPullRequest):len((*c.CallOptions).OpenGitRepositoryLinkPullRequest)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.PullRequest{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "OpenGitRepositoryLinkPullRequest")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // FetchLinkableGitRepositories fetchLinkableGitRepositories returns a list of git repositories from an SCM
 // that are available to be added to a Connection.
 func (c *restClient) FetchLinkableGitRepositories(ctx context.Context, req *developerconnectpb.FetchLinkableGitRepositoriesRequest, opts ...gax.CallOption) *LinkableGitRepositoryIterator {
@@ -3219,6 +3703,638 @@ func (c *restClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.F
 		}
 		it.Response = resp
 		return resp.GetRefNames(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DiffGitRepositoryLinkCommit diff commits for a GitRepositoryLink.
+func (c *restClient) DiffGitRepositoryLinkCommit(ctx context.Context, req *developerconnectpb.DiffGitRepositoryLinkCommitRequest, opts ...gax.CallOption) (*developerconnectpb.DiffGitRepositoryLinkCommitResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:diffCommit", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("baseSha", fmt.Sprintf("%v", req.GetBaseSha()))
+	params.Add("headSha", fmt.Sprintf("%v", req.GetHeadSha()))
+	if items := req.GetPathFilters(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("pathFilters", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DiffGitRepositoryLinkCommit")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:diffCommit")
+	}
+	opts = append((*c.CallOptions).DiffGitRepositoryLinkCommit[0:len((*c.CallOptions).DiffGitRepositoryLinkCommit):len((*c.CallOptions).DiffGitRepositoryLinkCommit)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.DiffGitRepositoryLinkCommitResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DiffGitRepositoryLinkCommit")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchGitRepositoryLinkCommit fetch Commit details from a Git repository link.
+func (c *restClient) FetchGitRepositoryLinkCommit(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkCommitRequest, opts ...gax.CallOption) (*developerconnectpb.FetchGitRepositoryLinkCommitResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchCommit", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("commitSha", fmt.Sprintf("%v", req.GetCommitSha()))
+	if items := req.GetPathFilters(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("pathFilters", fmt.Sprintf("%v", item))
+		}
+	}
+	if req.GetView() != 0 {
+		params.Add("view", fmt.Sprintf("%v", req.GetView()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkCommit")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchCommit")
+	}
+	opts = append((*c.CallOptions).FetchGitRepositoryLinkCommit[0:len((*c.CallOptions).FetchGitRepositoryLinkCommit):len((*c.CallOptions).FetchGitRepositoryLinkCommit)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.FetchGitRepositoryLinkCommitResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchGitRepositoryLinkCommit")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchGitRepositoryLinkCommitList fetch a list of Commits from a Git repository link.
+func (c *restClient) FetchGitRepositoryLinkCommitList(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkCommitListRequest, opts ...gax.CallOption) *SCMCommitIterator {
+	it := &SCMCommitIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.SCMCommit, string, error) {
+		resp := &developerconnectpb.FetchGitRepositoryLinkCommitListResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchCommitList", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetRef() != "" {
+			params.Add("ref", fmt.Sprintf("%v", req.GetRef()))
+		}
+		if req.GetView() != 0 {
+			params.Add("view", fmt.Sprintf("%v", req.GetView()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchGitRepositoryLinkCommitList")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetCommits(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// FetchGitRepositoryLinkFileBlame fetches blame information for a file or line range in a file.
+func (c *restClient) FetchGitRepositoryLinkFileBlame(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkFileBlameRequest, opts ...gax.CallOption) (*developerconnectpb.FetchGitRepositoryLinkFileBlameResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchFileBlame", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFirstLine() != 0 {
+		params.Add("firstLine", fmt.Sprintf("%v", req.GetFirstLine()))
+	}
+	if req.GetLastLine() != 0 {
+		params.Add("lastLine", fmt.Sprintf("%v", req.GetLastLine()))
+	}
+	params.Add("path", fmt.Sprintf("%v", req.GetPath()))
+	params.Add("ref", fmt.Sprintf("%v", req.GetRef()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkFileBlame")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchFileBlame")
+	}
+	opts = append((*c.CallOptions).FetchGitRepositoryLinkFileBlame[0:len((*c.CallOptions).FetchGitRepositoryLinkFileBlame):len((*c.CallOptions).FetchGitRepositoryLinkFileBlame)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.FetchGitRepositoryLinkFileBlameResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchGitRepositoryLinkFileBlame")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchGitRepositoryLinkPullRequest fetch Pull Request details from a Git repository link.
+func (c *restClient) FetchGitRepositoryLinkPullRequest(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkPullRequestRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequest, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchPullRequest", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("pullRequestId", fmt.Sprintf("%v", req.GetPullRequestId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRepositoryLinkPullRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchPullRequest")
+	}
+	opts = append((*c.CallOptions).FetchGitRepositoryLinkPullRequest[0:len((*c.CallOptions).FetchGitRepositoryLinkPullRequest):len((*c.CallOptions).FetchGitRepositoryLinkPullRequest)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.PullRequest{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchGitRepositoryLinkPullRequest")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AddGitRepositoryLinkPullRequestComment add a comment to a Pull Request.
+func (c *restClient) AddGitRepositoryLinkPullRequestComment(ctx context.Context, req *developerconnectpb.AddGitRepositoryLinkPullRequestCommentRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequestComment, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:addPullRequestComment", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/AddGitRepositoryLinkPullRequestComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:addPullRequestComment")
+	}
+	opts = append((*c.CallOptions).AddGitRepositoryLinkPullRequestComment[0:len((*c.CallOptions).AddGitRepositoryLinkPullRequestComment):len((*c.CallOptions).AddGitRepositoryLinkPullRequestComment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.PullRequestComment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddGitRepositoryLinkPullRequestComment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AddGitRepositoryLinkPullRequestReviewComment add a review comment (inline on diff) to a Pull Request.
+func (c *restClient) AddGitRepositoryLinkPullRequestReviewComment(ctx context.Context, req *developerconnectpb.AddGitRepositoryLinkPullRequestReviewCommentRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequestReviewComment, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:addPullRequestReviewComment", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/AddGitRepositoryLinkPullRequestReviewComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:addPullRequestReviewComment")
+	}
+	opts = append((*c.CallOptions).AddGitRepositoryLinkPullRequestReviewComment[0:len((*c.CallOptions).AddGitRepositoryLinkPullRequestReviewComment):len((*c.CallOptions).AddGitRepositoryLinkPullRequestReviewComment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.PullRequestReviewComment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddGitRepositoryLinkPullRequestReviewComment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ModifyGitRepositoryLinkPullRequest modifies a Pull Request in the remote SCM repository associated with a
+// GitRepositoryLink.
+func (c *restClient) ModifyGitRepositoryLinkPullRequest(ctx context.Context, req *developerconnectpb.ModifyGitRepositoryLinkPullRequestRequest, opts ...gax.CallOption) (*developerconnectpb.PullRequest, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:modifyPullRequest", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ModifyGitRepositoryLinkPullRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:modifyPullRequest")
+	}
+	opts = append((*c.CallOptions).ModifyGitRepositoryLinkPullRequest[0:len((*c.CallOptions).ModifyGitRepositoryLinkPullRequest):len((*c.CallOptions).ModifyGitRepositoryLinkPullRequest)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.PullRequest{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ModifyGitRepositoryLinkPullRequest")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchGitRepositoryLinkPullRequestList fetches a list of Pull Requests from the remote repository.
+func (c *restClient) FetchGitRepositoryLinkPullRequestList(ctx context.Context, req *developerconnectpb.FetchGitRepositoryLinkPullRequestListRequest, opts ...gax.CallOption) *PullRequestIterator {
+	it := &PullRequestIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.PullRequest, string, error) {
+		resp := &developerconnectpb.FetchGitRepositoryLinkPullRequestListResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchPullRequestList", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchGitRepositoryLinkPullRequestList")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPullRequests(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {

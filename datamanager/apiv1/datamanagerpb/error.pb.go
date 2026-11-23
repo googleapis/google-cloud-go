@@ -79,7 +79,7 @@ const (
 	ErrorReason_INVALID_AUDIENCE_MEMBER ErrorReason = 16
 	// Maximum number of audience members allowed per request is 10,000.
 	ErrorReason_TOO_MANY_AUDIENCE_MEMBERS ErrorReason = 17
-	// Maximum number of user identifiers allowed per audience member is 10.
+	// Maximum number of user identifiers allowed per record is 10.
 	ErrorReason_TOO_MANY_USER_IDENTIFIERS ErrorReason = 18
 	// Maximum number of destinations allowed per request is 10.
 	ErrorReason_TOO_MANY_DESTINATIONS ErrorReason = 19
@@ -104,6 +104,8 @@ const (
 	ErrorReason_INVALID_CONVERSION_ACTION_ID ErrorReason = 28
 	// The conversion action type is not valid.
 	ErrorReason_INVALID_CONVERSION_ACTION_TYPE ErrorReason = 29
+	// Encryption is not supported for this request.
+	ErrorReason_ENCRYPTION_NOT_SUPPORTED ErrorReason = 132
 	// The currency code is not supported.
 	ErrorReason_INVALID_CURRENCY_CODE ErrorReason = 30
 	// This event is not valid.
@@ -312,8 +314,9 @@ const (
 	ErrorReason_BASELINE_LOCATION_AUTO_DETECTION_FAILED ErrorReason = 122
 	// Insights missing for this dimension.
 	ErrorReason_INSIGHTS_MISSING_FOR_DIMENSION ErrorReason = 123
-	// A required prerequisite link (such as a Google Ads link) must exist for
-	// the Google Analytics property to perform this operation.
+	// Deprecated: Error is unused in the Data Manager API.
+	//
+	// Deprecated: Marked as deprecated in google/ads/datamanager/v1/error.proto.
 	ErrorReason_REQUIRED_PREREQUISITE_LINK_MISSING ErrorReason = 124
 	// The remove as of time must be in the past or present. Future timestamps are
 	// not permitted for removing audience members.
@@ -325,13 +328,37 @@ const (
 	ErrorReason_CONVERSION_ACTION_TOO_RECENTLY_CREATED ErrorReason = 127
 	// The ad identifier does not belong to the account.
 	//
-	// For example, the [`gclid`][google.ads.datamanager.v1.AdIdentifiers.gclid]
+	// For example, the [gclid][google.ads.datamanager.v1.AdIdentifiers.gclid]
 	// isn't associated with the
-	// [`operating_account`][google.ads.datamanager.v1.Destination.operating_account]
+	// [operating_account][google.ads.datamanager.v1.Destination.operating_account]
 	// and
-	// [`product_destination_id`][google.ads.datamanager.v1.Destination.product_destination_id]
+	// [product_destination_id][google.ads.datamanager.v1.Destination.product_destination_id]
 	// of the destination.
 	ErrorReason_INVALID_AD_IDENTIFIER_FOR_ACCOUNT ErrorReason = 128
+	// The account type is not a supported `client_account_type` for a
+	// [UserListDirectLicense][google.ads.datamanager.v1.UserListDirectLicense].
+	ErrorReason_UNSUPPORTED_ACCOUNT_TYPE_FOR_USER_LIST_DIRECT_LICENSE ErrorReason = 129
+	// Duplicate elements in a list in the request.
+	ErrorReason_DUPLICATE_ELEMENTS ErrorReason = 130
+	// The baseline location is not supported for generating insights.
+	//
+	// When
+	// [location_auto_detection_enabled][google.ads.datamanager.v1.Baseline.location_auto_detection_enabled]
+	// is set to `true`, this error indicates that the detected majority location
+	// for the audience is not among the supported locations.
+	//
+	// To resolve this, explicitly specify a supported location in
+	// [baseline_location][google.ads.datamanager.v1.Baseline.baseline_location],
+	// or retry once the audience list updates with a supported majority location.
+	// See https://support.google.com/google-ads/answer/11161206 for the list of
+	// supported countries.
+	ErrorReason_UNSUPPORTED_BASELINE_LOCATION ErrorReason = 131
+	// The [event_timestamp][google.ads.datamanager.v1.Event.event_timestamp]
+	// cannot be earlier than the
+	// [start_timestamp][google.ads.datamanager.v1.CallInfo.start_timestamp].
+	ErrorReason_CONVERSION_PRECEDES_CALL ErrorReason = 133
+	// The date is not valid.
+	ErrorReason_INVALID_DATE ErrorReason = 134
 )
 
 // Enum value maps for ErrorReason.
@@ -367,6 +394,7 @@ var (
 		27:  "INVALID_NUMBER_FORMAT",
 		28:  "INVALID_CONVERSION_ACTION_ID",
 		29:  "INVALID_CONVERSION_ACTION_TYPE",
+		132: "ENCRYPTION_NOT_SUPPORTED",
 		30:  "INVALID_CURRENCY_CODE",
 		31:  "INVALID_EVENT",
 		32:  "TOO_MANY_EVENTS",
@@ -466,6 +494,11 @@ var (
 		126: "REQUEST_TOO_OLD",
 		127: "CONVERSION_ACTION_TOO_RECENTLY_CREATED",
 		128: "INVALID_AD_IDENTIFIER_FOR_ACCOUNT",
+		129: "UNSUPPORTED_ACCOUNT_TYPE_FOR_USER_LIST_DIRECT_LICENSE",
+		130: "DUPLICATE_ELEMENTS",
+		131: "UNSUPPORTED_BASELINE_LOCATION",
+		133: "CONVERSION_PRECEDES_CALL",
+		134: "INVALID_DATE",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                              0,
@@ -498,6 +531,7 @@ var (
 		"INVALID_NUMBER_FORMAT":                                 27,
 		"INVALID_CONVERSION_ACTION_ID":                          28,
 		"INVALID_CONVERSION_ACTION_TYPE":                        29,
+		"ENCRYPTION_NOT_SUPPORTED":                              132,
 		"INVALID_CURRENCY_CODE":                                 30,
 		"INVALID_EVENT":                                         31,
 		"TOO_MANY_EVENTS":                                       32,
@@ -597,6 +631,11 @@ var (
 		"REQUEST_TOO_OLD":                                                126,
 		"CONVERSION_ACTION_TOO_RECENTLY_CREATED":                         127,
 		"INVALID_AD_IDENTIFIER_FOR_ACCOUNT":                              128,
+		"UNSUPPORTED_ACCOUNT_TYPE_FOR_USER_LIST_DIRECT_LICENSE":          129,
+		"DUPLICATE_ELEMENTS":                                             130,
+		"UNSUPPORTED_BASELINE_LOCATION":                                  131,
+		"CONVERSION_PRECEDES_CALL":                                       133,
+		"INVALID_DATE":                                                   134,
 	}
 )
 
@@ -631,7 +670,7 @@ var File_google_ads_datamanager_v1_error_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\n" +
-	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\xbf#\n" +
+	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\x8d%\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eINTERNAL_ERROR\x10\x01\x12\x15\n" +
@@ -663,7 +702,8 @@ const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\x1fTERMS_AND_CONDITIONS_NOT_SIGNED\x10\x1a\x12\x19\n" +
 	"\x15INVALID_NUMBER_FORMAT\x10\x1b\x12 \n" +
 	"\x1cINVALID_CONVERSION_ACTION_ID\x10\x1c\x12\"\n" +
-	"\x1eINVALID_CONVERSION_ACTION_TYPE\x10\x1d\x12\x19\n" +
+	"\x1eINVALID_CONVERSION_ACTION_TYPE\x10\x1d\x12\x1d\n" +
+	"\x18ENCRYPTION_NOT_SUPPORTED\x10\x84\x01\x12\x19\n" +
 	"\x15INVALID_CURRENCY_CODE\x10\x1e\x12\x11\n" +
 	"\rINVALID_EVENT\x10\x1f\x12\x13\n" +
 	"\x0fTOO_MANY_EVENTS\x10 \x12B\n" +
@@ -757,12 +797,17 @@ const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\x19CUSTOM_VARIABLE_NOT_FOUND\x10x\x12\x12\n" +
 	"\x0eTOO_MANY_USERS\x10y\x12+\n" +
 	"'BASELINE_LOCATION_AUTO_DETECTION_FAILED\x10z\x12\"\n" +
-	"\x1eINSIGHTS_MISSING_FOR_DIMENSION\x10{\x12&\n" +
-	"\"REQUIRED_PREREQUISITE_LINK_MISSING\x10|\x12\x1d\n" +
+	"\x1eINSIGHTS_MISSING_FOR_DIMENSION\x10{\x12*\n" +
+	"\"REQUIRED_PREREQUISITE_LINK_MISSING\x10|\x1a\x02\b\x01\x12\x1d\n" +
 	"\x19INVALID_REMOVE_AS_OF_TIME\x10}\x12\x13\n" +
 	"\x0fREQUEST_TOO_OLD\x10~\x12*\n" +
 	"&CONVERSION_ACTION_TOO_RECENTLY_CREATED\x10\x7f\x12&\n" +
-	"!INVALID_AD_IDENTIFIER_FOR_ACCOUNT\x10\x80\x01B\xc7\x01\n" +
+	"!INVALID_AD_IDENTIFIER_FOR_ACCOUNT\x10\x80\x01\x12:\n" +
+	"5UNSUPPORTED_ACCOUNT_TYPE_FOR_USER_LIST_DIRECT_LICENSE\x10\x81\x01\x12\x17\n" +
+	"\x12DUPLICATE_ELEMENTS\x10\x82\x01\x12\"\n" +
+	"\x1dUNSUPPORTED_BASELINE_LOCATION\x10\x83\x01\x12\x1d\n" +
+	"\x18CONVERSION_PRECEDES_CALL\x10\x85\x01\x12\x11\n" +
+	"\fINVALID_DATE\x10\x86\x01B\xc7\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\n" +
 	"ErrorProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 

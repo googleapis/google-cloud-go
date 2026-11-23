@@ -351,6 +351,8 @@ const (
 	// Cavium HSM attestation V2 compressed with gzip. This is a new format
 	// introduced in Cavium's version 3.2-08.
 	KeyOperationAttestation_CAVIUM_V2_COMPRESSED KeyOperationAttestation_AttestationFormat = 4
+	// Cavium HSM attestation V209, introduced in Cavium's version 2.09-0702.
+	KeyOperationAttestation_CAVIUM_V209 KeyOperationAttestation_AttestationFormat = 5
 )
 
 // Enum value maps for KeyOperationAttestation_AttestationFormat.
@@ -359,11 +361,13 @@ var (
 		0: "ATTESTATION_FORMAT_UNSPECIFIED",
 		3: "CAVIUM_V1_COMPRESSED",
 		4: "CAVIUM_V2_COMPRESSED",
+		5: "CAVIUM_V209",
 	}
 	KeyOperationAttestation_AttestationFormat_value = map[string]int32{
 		"ATTESTATION_FORMAT_UNSPECIFIED": 0,
 		"CAVIUM_V1_COMPRESSED":           3,
 		"CAVIUM_V2_COMPRESSED":           4,
+		"CAVIUM_V209":                    5,
 	}
 )
 
@@ -2661,7 +2665,7 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x11rotation_schedule\"\xd0\x01\n" +
 	"\x18CryptoKeyVersionTemplate\x12O\n" +
 	"\x10protection_level\x18\x01 \x01(\x0e2$.google.cloud.kms.v1.ProtectionLevelR\x0fprotectionLevel\x12c\n" +
-	"\talgorithm\x18\x03 \x01(\x0e2?.google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithmB\x04\xe2A\x01\x02R\talgorithm\"\x86\x04\n" +
+	"\talgorithm\x18\x03 \x01(\x0e2?.google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithmB\x04\xe2A\x01\x02R\talgorithm\"\x97\x04\n" +
 	"\x17KeyOperationAttestation\x12\\\n" +
 	"\x06format\x18\x04 \x01(\x0e2>.google.cloud.kms.v1.KeyOperationAttestation.AttestationFormatB\x04\xe2A\x01\x03R\x06format\x12\x1e\n" +
 	"\acontent\x18\x05 \x01(\fB\x04\xe2A\x01\x03R\acontent\x12e\n" +
@@ -2670,11 +2674,12 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x11CertificateChains\x12!\n" +
 	"\fcavium_certs\x18\x01 \x03(\tR\vcaviumCerts\x12*\n" +
 	"\x11google_card_certs\x18\x02 \x03(\tR\x0fgoogleCardCerts\x124\n" +
-	"\x16google_partition_certs\x18\x03 \x03(\tR\x14googlePartitionCerts\"k\n" +
+	"\x16google_partition_certs\x18\x03 \x03(\tR\x14googlePartitionCerts\"|\n" +
 	"\x11AttestationFormat\x12\"\n" +
 	"\x1eATTESTATION_FORMAT_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14CAVIUM_V1_COMPRESSED\x10\x03\x12\x18\n" +
-	"\x14CAVIUM_V2_COMPRESSED\x10\x04\"\xb7\x18\n" +
+	"\x14CAVIUM_V2_COMPRESSED\x10\x04\x12\x0f\n" +
+	"\vCAVIUM_V209\x10\x05\"\xb7\x18\n" +
 	"\x10CryptoKeyVersion\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12Q\n" +
 	"\x05state\x18\x03 \x01(\x0e2;.google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionStateR\x05state\x12U\n" +
