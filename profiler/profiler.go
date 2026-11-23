@@ -55,6 +55,7 @@ import (
 	"github.com/google/pprof/profile"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -89,7 +90,6 @@ var (
 )
 
 const (
-	apiAddress       = "cloudprofiler.googleapis.com:443"
 	xGoogAPIMetadata = "x-goog-api-client"
 	zoneNameLabel    = "zone"
 	versionLabel     = "version"
@@ -170,8 +170,8 @@ type Config struct {
 	ProjectID string
 
 	// APIAddr is the HTTP endpoint to use to connect to the profiler
-	// agent API. Defaults to the production environment, overridable
-	// for testing.
+	// agent API. If not specified, normal service resolution occurs.  User-supplied
+	// ClientOptions can override this value (e.g. option.WithEndpoint).
 	APIAddr string
 
 	// Instance is the name of Compute Engine instance the profiler agent runs
@@ -246,12 +246,20 @@ func start(cfg Config, options ...option.ClientOption) error {
 	ctx := context.Background()
 
 	opts := []option.ClientOption{
-		option.WithEndpoint(config.APIAddr),
+		internaloption.WithDefaultEndpoint("cloudprofiler.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudprofiler.UNIVERSE_DOMAIN:443"),
+		internaloption.WithDefaultMTLSEndpoint("cloudprofiler.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithScopes(scope),
 		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", internal.Version)),
 	}
 	if !config.EnableOCTelemetry {
 		opts = append(opts, option.WithTelemetryDisabled())
+	}
+	// Config APIAddr to a WithEndpoint option only if populated.
+	if config.APIAddr != "" {
+		opts = append(opts, option.WithEndpoint(config.APIAddr))
 	}
 	opts = append(opts, options...)
 
@@ -593,10 +601,6 @@ func initializeConfig(cfg Config) error {
 		if config.ProjectID == "" {
 			return fmt.Errorf("project ID must be specified in the configuration if running outside of GCP")
 		}
-	}
-
-	if config.APIAddr == "" {
-		config.APIAddr = apiAddress
 	}
 	return nil
 }
