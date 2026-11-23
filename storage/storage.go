@@ -184,7 +184,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 			// mutates caller-owned credentials passed via WithAuthCredentials.
 			clone := *c
 			creds = &clone
-			opts = append(opts, option.WithAuthCredentials(creds))
+			// The transport prefers WithCredentials over WithAuthCredentials,
+			// so clear it; creds already holds the caller's credentials.
+			opts = append(opts, option.WithAuthCredentials(creds), option.WithCredentials(nil))
 		}
 	} else {
 		var hostURL *url.URL
