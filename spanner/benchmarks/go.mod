@@ -5,11 +5,11 @@ go 1.26.0
 exclude google.golang.org/grpc v1.71.0
 
 require (
-	cloud.google.com/go/spanner v1.96.1
+	cloud.google.com/go/spanner v1.96.2
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.39.0
 	go.opentelemetry.io/otel v1.47.0
 	go.opentelemetry.io/otel/sdk v1.47.0
-	google.golang.org/api v0.315.0
+	google.golang.org/api v0.316.0
 )
 
 require (
