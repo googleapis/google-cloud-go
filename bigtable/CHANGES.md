@@ -1,5 +1,13 @@
 # Changes
 
+## [1.58.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.58.0...bigtable/v1.58.1) (2026-11-23)
+
+
+### Bug Fixes
+
+* **bigtable:** Temporarily disable Direct Access failure investigation ([#20966](https://github.com/googleapis/google-cloud-go/issues/20966)) ([d94b93e](https://github.com/googleapis/google-cloud-go/commit/d94b93e077f47711ce6071b12b4ec3c8a853ff5b))
+* **bigtable:** Update session client Direct Access checker ([7834b63](https://github.com/googleapis/google-cloud-go/commit/7834b63fbb2f6c2ffa9c84d5e30c47bf0b3da5b1))
+
 ## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.57.0...bigtable/v1.58.0) (2026-09-25)
 
 
