@@ -16,7 +16,6 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 	"sync/atomic"
@@ -193,42 +192,10 @@ func (c *sessionClientDirectAccessChecker) reportFailure(reason string) {
 	))
 }
 
-// investigateFailure delegates to the shared precondition walk in
-// investigateDirectAccessFailure, plugging in a GetClientConfiguration-based
-// probeSingleEndpoint so the end-to-end check speaks the same RPC verb the
-// session pool uses in production.
+// investigateFailure delegates to the shared local precondition walk in
+// investigateDirectAccessFailure.
 func (c *sessionClientDirectAccessChecker) investigateFailure(originalErr error) {
-	// Currently disabled. See b/588877681.
-	c.reportFailure("unknown")
-}
-
-// probeSingleEndpoint dials targetEndpoint over ALTS and issues
-// GetClientConfiguration — the direct-endpoint counterpart to the
-// load-balanced probe in CheckCompatibility.
-//
-//lint:ignore U1000 temporarily disabled
-func (c *sessionClientDirectAccessChecker) probeSingleEndpoint(ctx context.Context, targetEndpoint string) error {
-	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Creating ALTS channel to %s...", targetEndpoint)
-
-	btc, cleanup, err := newAltsProbeChannel(ctx, targetEndpoint)
-	if err != nil {
-		return err
-	}
-	defer cleanup()
-
-	probeCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-
-	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Executing GetClientConfiguration() on %s...", targetEndpoint)
-	// Investigation probe response is discarded — this endpoint-isolated
-	// re-probe is diagnostic only; the caller cares about the error, not
-	// the config body.
-	if _, err := c.probeGetClientConfig(probeCtx, btc); err != nil {
-		return fmt.Errorf("GetClientConfiguration() failed: %w", err)
-	}
-
-	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: GetClientConfiguration() SUCCESS on %s!", targetEndpoint)
-	return nil
+	investigateDirectAccessFailure(c.logger, c.reportFailure, originalErr)
 }
 
 // recordProbePeer copies the ALTS + IP-protocol side effects that

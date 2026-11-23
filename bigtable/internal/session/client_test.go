@@ -26,12 +26,16 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/resolver"
+	"google.golang.org/grpc/resolver/manual"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -858,11 +862,17 @@ func TestNewClient_DirectAccessProbeSendsRoutingHeaders(t *testing.T) {
 	t.Cleanup(srv.Stop)
 	go func() { _ = srv.Serve(lis) }()
 
+	dnsResolver := manual.NewBuilderWithScheme("dns")
+	dnsResolver.InitialState(resolver.State{
+		Addresses: []resolver.Address{{Addr: lis.Addr().String()}},
+	})
+
 	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{EnableDirectAccess: true})
 	c, err := NewClient(
 		context.Background(), "p", "i", "profile with spaces", "", metrics.NoopMetricsProvider{}, ff,
-		option.WithEndpoint(lis.Addr().String()),
+		option.WithEndpoint("dns:///bigtable.googleapis.com:443"),
 		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithResolvers(dnsResolver)),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	)
 	if err != nil {
@@ -884,5 +894,89 @@ func TestNewClient_DirectAccessProbeSendsRoutingHeaders(t *testing.T) {
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("timed out waiting for initial GetClientConfiguration probe")
+	}
+}
+
+func TestNewClient_NonGCUEndpointSkipsDirectAccessChecker(t *testing.T) {
+	tests := []struct {
+		name      string
+		extraOpts []option.ClientOption
+	}{
+		{
+			name:      "tpc_universe_domain",
+			extraOpts: []option.ClientOption{option.WithUniverseDomain("apis-tpclp.goog")},
+		},
+		{
+			name:      "tpc_endpoint",
+			extraOpts: []option.ClientOption{option.WithEndpoint("dns:///bigtable.apis-tpclp.goog:443")},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("BIGTABLE_EMULATOR_HOST", "")
+
+			lis, err := net.Listen("tcp", "127.0.0.1:0")
+			if err != nil {
+				t.Fatalf("net.Listen() failed: %v", err)
+			}
+			t.Cleanup(func() { _ = lis.Close() })
+
+			fakeSrv := &configRecordingServer{firstMD: make(chan metadata.MD, 1)}
+			srv := grpc.NewServer()
+			btpb.RegisterBigtableServer(srv, fakeSrv)
+			t.Cleanup(srv.Stop)
+			go func() { _ = srv.Serve(lis) }()
+
+			dnsResolver := manual.NewBuilderWithScheme("dns")
+			dnsResolver.InitialState(resolver.State{
+				Addresses: []resolver.Address{{Addr: lis.Addr().String()}},
+			})
+
+			reader := sdkmetric.NewManualReader()
+			mp := sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader))
+			t.Cleanup(func() { _ = mp.Shutdown(context.Background()) })
+
+			origFactory := newMetricsFactory
+			newMetricsFactory = func(context.Context, string, string, string, string, metrics.MetricsProvider, ...option.ClientOption) (*metrics.Factory, error) {
+				return metrics.NewFactoryForTest("p", "i", "ap", mp)
+			}
+			t.Cleanup(func() { newMetricsFactory = origFactory })
+
+			baseOpts, err := btopt.DefaultClientOptions(
+				"dns:///bigtable.UNIVERSE_DOMAIN:443",
+				"bigtable.mtls.googleapis.com:443",
+				"https://www.googleapis.com/auth/bigtable.data",
+				"test-ua",
+			)
+			if err != nil {
+				t.Fatalf("DefaultClientOptions() failed: %v", err)
+			}
+			opts := append(baseOpts,
+				option.WithoutAuthentication(),
+				option.WithGRPCDialOption(grpc.WithResolvers(dnsResolver)),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			)
+			opts = append(opts, tc.extraOpts...)
+
+			ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{EnableDirectAccess: true})
+			c, err := NewClient(t.Context(), "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff, opts...)
+			if err != nil {
+				t.Fatalf("NewClient(%s) failed: %v", tc.name, err)
+			}
+			t.Cleanup(func() { _ = c.Close() })
+
+			var rm metricdata.ResourceMetrics
+			if err := reader.Collect(t.Context(), &rm); err != nil {
+				t.Fatalf("reader.Collect() failed: %v", err)
+			}
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if m.Name == "direct_access/compatible" {
+						t.Errorf("NewClient(%s) unexpectedly recorded direct_access/compatible metric", tc.name)
+					}
+				}
+			}
+		})
 	}
 }

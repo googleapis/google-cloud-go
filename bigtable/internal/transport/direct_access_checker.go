@@ -16,32 +16,24 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
+	"net/url"
 	"strings"
-	"time"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/grpc"
+	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/alts"
-	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/grpc/status"
 
 	bigtablepb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/directaccess"
 	btopt "cloud.google.com/go/bigtable/internal/option"
-	gcpmetadata "cloud.google.com/go/compute/metadata"
 )
 
-// xdsCdsURITemplate names the Multi-Region AFE frontend pool. We send the
-// request to the same client region.
-//
-//lint:ignore U1000 temporarily disabled
-const xdsCdsURITemplate = "xdstp://traffic-director-c2p.xds.googleapis.com/envoy.config.cluster.v3.Cluster/%s-bigtable.googleapis.com/eds_cluster"
+const defaultUniverseDomain = "googleapis.com"
 
 // DirectAccessChecker decides whether the runtime environment is compatible
 // with Direct Access (DirectPath / DirectPathXds) and provides the dialer used
@@ -49,10 +41,9 @@ const xdsCdsURITemplate = "xdstp://traffic-director-c2p.xds.googleapis.com/envoy
 //
 // Implementations differ in HOW compatibility is determined:
 //   - pingAndWarmDirectAccessChecker probes via a PingAndWarm call at startup
-//     (today's only behavior, used by the classic channel pool factory).
-//   - A future GetClientConfiguration-based checker (for session-based pools)
-//     will derive compatibility from a server-driven configuration response
-//     surfaced by ClientConfigurationManager.
+//     (used by the classic channel pool factory).
+//   - sessionClientDirectAccessChecker probes via GetClientConfiguration at
+//     startup (used by session-based channel pools).
 type DirectAccessChecker interface {
 	// CheckCompatibility reports whether Direct Access is compatible. When
 	// compatible, conn is a primed connection the pool may adopt as its first
@@ -69,12 +60,78 @@ type DirectAccessChecker interface {
 	// LastProbeConfig returns the ClientConfiguration returned by the
 	// most recent CheckCompatibility probe, or nil if the probe never
 	// returned a body. Only the session-flavored checker
-	// (getClientConfigDirectAccessChecker) produces a non-nil value —
+	// (sessionClientDirectAccessChecker) produces a non-nil value —
 	// pingAndWarm probes a warm-only RPC with no ClientConfiguration
 	// body, and the disabled stub never probes. Callers use it to seed
 	// downstream state (e.g., ClientConfigurationManager) without an
 	// extra RPC on client construction.
 	LastProbeConfig() *bigtablepb.ClientConfiguration
+}
+
+// IsGCUEndpoint reports whether the gRPC endpoint and universe domain resolved
+// from opts belong to the Google Cloud Universe ("googleapis.com"). Direct
+// Access is only supported in GCU; callers targeting other universes (such as
+// Trusted Partner Cloud) or custom non-googleapis endpoints must skip the
+// Direct Access compatibility probe.
+func IsGCUEndpoint(opts ...option.ClientOption) bool {
+	uResolver, err := internaloption.NewUnsafeResolver(opts...)
+	if err != nil {
+		return false
+	}
+	endpoint, err := uResolver.ResolvedGRPCEndpoint()
+	if err != nil || !isGCUEndpointHost(endpoint) {
+		return false
+	}
+
+	// Also verify the configured universe domain (via WithUniverseDomain or
+	// GOOGLE_CLOUD_UNIVERSE_DOMAIN) in case WithEndpoint overrode the host.
+	udOpts := make([]option.ClientOption, 0, len(opts)+3)
+	udOpts = append(udOpts, opts...)
+	udOpts = append(udOpts,
+		internaloption.WithDefaultEndpointTemplate("UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint(defaultUniverseDomain),
+		option.WithEndpoint(""),
+	)
+	udResolver, err := internaloption.NewUnsafeResolver(udOpts...)
+	if err != nil {
+		return false
+	}
+	ud, err := udResolver.ResolvedGRPCEndpoint()
+	if err != nil {
+		return false
+	}
+	return strings.TrimSuffix(strings.ToLower(ud), ".") == defaultUniverseDomain
+}
+
+func isGCUEndpointHost(endpoint string) bool {
+	if endpoint == "" {
+		return false
+	}
+	supportedScheme := !strings.Contains(endpoint, "://") || strings.HasPrefix(endpoint, "dns:///") || strings.HasPrefix(endpoint, "google-c2p:///")
+	if !supportedScheme {
+		return false
+	}
+	raw := endpoint
+	if !strings.Contains(raw, "://") {
+		raw = "//" + raw
+	}
+	u, err := url.Parse(raw)
+	if err != nil {
+		return false
+	}
+	target := u.Host
+	if target == "" {
+		target = strings.TrimPrefix(u.Path, "/")
+	}
+	if slashIdx := strings.Index(target, "/"); slashIdx != -1 {
+		target = target[:slashIdx]
+	}
+	host := target
+	if h, _, splitErr := net.SplitHostPort(target); splitErr == nil {
+		host = h
+	}
+	host = strings.TrimSuffix(strings.ToLower(host), ".")
+	return host == defaultUniverseDomain || strings.HasSuffix(host, "."+defaultUniverseDomain)
 }
 
 // newDirectAccessEligibleGauge constructs the direct_access/compatible gauge
@@ -217,38 +274,58 @@ func (c *pingAndWarmDirectAccessChecker) reportFailure(reason string) {
 // to determine why Direct Access was not usable, and reports the specific
 // reason to the metric.
 func (c *pingAndWarmDirectAccessChecker) investigateFailure(originalErr error) {
-	// Currently disabled. See b/588877681.
-	c.reportFailure("unknown")
+	investigateDirectAccessFailure(c.logger, c.reportFailure, originalErr)
 }
 
-// investigateDirectAccessFailure walks the GCE-environment preconditions in
-// order of cheapness — short-circuits as soon as a failing precondition is
-// found — and reports the first failing reason via reportFailure. The final
-// end-to-end check is delegated to probeSingle so each checker (pingAndWarm,
-// GetClientConfiguration) can wire its own RPC verb without duplicating the
-// precondition walk.
-//
-//lint:ignore U1000 temporarily disabled
-func investigateDirectAccessFailure(
-	logger *log.Logger,
-	reportFailure func(reason string),
-	probeSingle func(ctx context.Context, endpoint string) error,
-	originalErr error,
-) {
-	if err := directaccess.IsRunningOnGCP(); err != nil {
+// directAccessEnv groups the local host and GCE metadata checks consulted by
+// investigateDirectAccessFailureWithEnv so unit tests can exercise every
+// precondition branch hermetically.
+type directAccessEnv struct {
+	isRunningOnGCP            func() error
+	checkMetadataReachability func() error
+	fetchIPFromMetadata       func(addrFamily string) (*net.IP, error)
+	checkLoopbackInterfaceUp  func() error
+	checkLocalIPv4Loopback    func() error
+	checkLocalIPv6Loopback    func() error
+	checkLocalIPv4Addresses   func(ip *net.IP) (*net.Interface, error)
+	checkLocalIPv6Addresses   func(ip *net.IP) (*net.Interface, error)
+}
+
+func defaultDirectAccessEnv() directAccessEnv {
+	return directAccessEnv{
+		isRunningOnGCP:            directaccess.IsRunningOnGCP,
+		checkMetadataReachability: directaccess.CheckMetadataServerReachability,
+		fetchIPFromMetadata:       directaccess.FetchIPFromMetadataServer,
+		checkLoopbackInterfaceUp:  directaccess.CheckLoopbackInterfaceUp,
+		checkLocalIPv4Loopback:    directaccess.CheckLocalIPv4LoopbackAddress,
+		checkLocalIPv6Loopback:    directaccess.CheckLocalIPv6LoopbackAddress,
+		checkLocalIPv4Addresses:   directaccess.CheckLocalIPv4Addresses,
+		checkLocalIPv6Addresses:   directaccess.CheckLocalIPv6Addresses,
+	}
+}
+
+// investigateDirectAccessFailure walks the local GCE-environment preconditions
+// in order of cheapness, short-circuiting as soon as a failing precondition is
+// found, and reports the first failing reason via reportFailure.
+func investigateDirectAccessFailure(logger *log.Logger, reportFailure func(reason string), originalErr error) {
+	investigateDirectAccessFailureWithEnv(logger, reportFailure, originalErr, defaultDirectAccessEnv())
+}
+
+func investigateDirectAccessFailureWithEnv(logger *log.Logger, reportFailure func(reason string), originalErr error, env directAccessEnv) {
+	if err := env.isRunningOnGCP(); err != nil {
 		btopt.Debugf(logger, "bigtable_direct_access: investigation: %v. Original error: %v", err, originalErr)
 		reportFailure("not_in_gcp")
 		return
 	}
 
-	if err := directaccess.CheckMetadataServerReachability(); err != nil {
+	if err := env.checkMetadataReachability(); err != nil {
 		btopt.Debugf(logger, "bigtable_direct_access: investigation: Metadata unreachable: %v", err)
 		reportFailure("metadata_unreachable")
 		return
 	}
 
-	ipv4, errV4 := directaccess.FetchIPFromMetadataServer("IPv4")
-	ipv6, errV6 := directaccess.FetchIPFromMetadataServer("IPv6")
+	ipv4, errV4 := env.fetchIPFromMetadata("IPv4")
+	ipv6, errV6 := env.fetchIPFromMetadata("IPv6")
 
 	if errV4 != nil && errV6 != nil {
 		btopt.Debugf(logger, "bigtable_direct_access: investigation: Neither IPv4 nor IPv6 assigned. v4Err: %v, v6Err: %v", errV4, errV6)
@@ -256,14 +333,14 @@ func investigateDirectAccessFailure(
 		return
 	}
 
-	if err := directaccess.CheckLoopbackInterfaceUp(); err != nil {
+	if err := env.checkLoopbackInterfaceUp(); err != nil {
 		btopt.Debugf(logger, "bigtable_direct_access: investigation: Loopback interface down: %v", err)
 		reportFailure("loopback_misconfigured")
 		return
 	}
 
 	if ipv4 != nil {
-		if err := directaccess.CheckLocalIPv4LoopbackAddress(); err != nil {
+		if err := env.checkLocalIPv4Loopback(); err != nil {
 			btopt.Debugf(logger, "bigtable_direct_access: investigation: IPv4 loopback missing: %v", err)
 			reportFailure("loopback_misconfigured_ipv4")
 			return
@@ -271,129 +348,42 @@ func investigateDirectAccessFailure(
 	}
 
 	if ipv6 != nil {
-		if err := directaccess.CheckLocalIPv6LoopbackAddress(); err != nil {
+		if err := env.checkLocalIPv6Loopback(); err != nil {
 			btopt.Debugf(logger, "bigtable_direct_access: investigation: IPv6 loopback missing: %v", err)
 			reportFailure("loopback_misconfigured_ipv6")
 			return
 		}
 	}
 
-	v4Plumbed, v6Plumbed := checkIPPlumbing(logger, ipv4, ipv6)
-
-	// If metadata assigned IPs but the guest OS hasn't plumbed any of them onto
-	// an interface, that's acceptable for GKE pods — fall through to the xDS
-	// check which will rely on kernel default routing.
+	v4Plumbed, v6Plumbed := checkIPPlumbing(logger, ipv4, ipv6, env)
 	if !v4Plumbed && !v6Plumbed {
-		btopt.Debugf(logger, "bigtable_direct_access: investigation: Metadata IPs not plumbed to local interfaces (likely containerized). Relying on kernel default routing.")
+		btopt.Debugf(logger, "bigtable_direct_access: investigation: Metadata IPs not plumbed to local interfaces (likely containerized).")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	zone, zoneErr := gcpmetadata.ZoneWithContext(ctx)
-	instanceID, idErr := gcpmetadata.InstanceIDWithContext(ctx)
-	btopt.Debugf(logger, "bigtable_direct_access: investigation: Metadata fetch - Zone: %q (err: %v), InstanceID: %q (err: %v)", zone, zoneErr, instanceID, idErr)
-
-	if zoneErr != nil || idErr != nil {
-		btopt.Debugf(logger, "bigtable_direct_access: investigation: Skipping xDS checks (failed to fetch zone or instanceID)")
-		reportFailure("metadata_missing")
-		return
-	}
-
-	region := zone
-	if lastDash := strings.LastIndex(zone, "-"); lastDash != -1 {
-		region = zone[:lastDash]
-	}
-
-	cdsURI := fmt.Sprintf(xdsCdsURITemplate, region)
-	btopt.Debugf(logger, "bigtable_direct_access: investigation: Checking xDS reachability for Node %s in region %s using URI: %s", instanceID, region, cdsURI)
-
-	endpoints, failReason, err := directaccess.FetchXdsEndpoints(ctx, instanceID, zone, cdsURI)
-	if err != nil {
-		btopt.Debugf(logger, "bigtable_direct_access: investigation: xDS check failed: %v", err)
-		reportFailure(failReason)
-		return
-	}
-
-	// FetchXdsEndpoints ensures endpoints is non-empty.
-	endpoint := endpoints[0]
-	host, _, err := net.SplitHostPort(endpoint)
-	if err != nil {
-		btopt.Debugf(logger, "bigtable_direct_access: investigation: Failed to split xDS endpoint host/port %q: %v", endpoint, err)
-		reportFailure("xds_malformed_endpoint")
-		return
-	}
-
-	if err := checkKernelRoutes(ipv4, ipv6, v4Plumbed, v6Plumbed, host, endpoint); err != nil {
-		btopt.Debugf(logger, "bigtable_direct_access: investigation: Kernel route check failed to %s: %v", endpoint, err)
-		reportFailure("route_unreachable")
-		return
-	}
-
-	if err := probeSingle(ctx, endpoint); err != nil {
-		btopt.Debugf(logger, "bigtable_direct_access: investigation: End-to-end ALTS probe failed: %v", err)
-		reportFailure("alts_handshake_failed")
-		return
-	}
-
-	btopt.Debugf(logger, "bigtable_direct_access: investigation: All preconditions passed but Direct Access originally failed. Original error: %v", originalErr)
+	btopt.Debugf(logger, "bigtable_direct_access: investigation: All local preconditions passed but Direct Access originally failed. Original error: %v", originalErr)
 	reportFailure("unknown")
 }
 
-// newAltsProbeChannel dials targetEndpoint over ALTS with default Google
-// credentials. Used by the direct-access investigation flow to isolate
-// per-endpoint failures from the load-balancer path. Returns the connection
-// wrapped as *BigtableConn plus a cleanup that closes it.
-//
-//lint:ignore U1000 temporarily disabled
-func newAltsProbeChannel(ctx context.Context, targetEndpoint string) (*BigtableConn, func(), error) {
-	altsCreds := alts.NewClientCreds(alts.DefaultClientOptions())
-	scopes := []string{
-		"https://www.googleapis.com/auth/bigtable.data",
-		"https://www.googleapis.com/auth/cloud-platform",
-	}
-	googleCreds, err := google.FindDefaultCredentials(ctx, scopes...)
-	if err != nil {
-		return nil, func() {}, fmt.Errorf("failed to find default credentials for probe: %w", err)
-	}
-	perRPCCreds := oauth.TokenSource{TokenSource: googleCreds.TokenSource}
+// noopDirectAccessChecker skips Direct Access compatibility probing without
+// recording metrics. It is wired when the target endpoint is outside the GCU
+// ("googleapis.com") universe, where Direct Access is not applicable.
+type noopDirectAccessChecker struct{}
 
-	// ALTS requires an explicit authority because the server name is what it
-	// authenticates against; without it the handshake fails.
-	conn, err := grpc.NewClient(targetEndpoint,
-		grpc.WithTransportCredentials(altsCreds),
-		grpc.WithPerRPCCredentials(perRPCCreds),
-		grpc.WithAuthority("bigtable.googleapis.com"),
-	)
-	if err != nil {
-		return nil, func() {}, fmt.Errorf("grpc.NewClient failed for %s: %w", targetEndpoint, err)
-	}
-	return NewBigtableConn(conn), func() { conn.Close() }, nil
+// NewNoopDirectAccessChecker constructs a DirectAccessChecker that skips
+// compatibility probing and emits no metrics.
+func NewNoopDirectAccessChecker() DirectAccessChecker {
+	return noopDirectAccessChecker{}
 }
 
-// probeSingleEndpoint attempts an ALTS-authenticated Prime() request directly
-// against a specific xDS endpoint, isolating whether the failure was at the
-// load-balancer level vs the endpoint itself.
-//
-//lint:ignore U1000 temporarily disabled
-func (c *pingAndWarmDirectAccessChecker) probeSingleEndpoint(ctx context.Context, targetEndpoint string) error {
-	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Creating ALTS channel to %s...", targetEndpoint)
+func (noopDirectAccessChecker) CheckCompatibility(context.Context) (*BigtableConn, bool) {
+	return nil, false
+}
 
-	btc, cleanup, err := newAltsProbeChannel(ctx, targetEndpoint)
-	if err != nil {
-		return err
-	}
-	defer cleanup()
+func (noopDirectAccessChecker) Dialer() func() (*BigtableConn, error) {
+	return nil
+}
 
-	primeCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-
-	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Executing Prime() on %s...", targetEndpoint)
-	if err := c.primer.Prime(primeCtx, btc); err != nil {
-		return fmt.Errorf("Prime() failed: %w", err)
-	}
-
-	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Prime() SUCCESS on %s!", targetEndpoint)
+func (noopDirectAccessChecker) LastProbeConfig() *bigtablepb.ClientConfiguration {
 	return nil
 }
 
@@ -449,11 +439,9 @@ func (c *disabledDirectAccessChecker) LastProbeConfig() *bigtablepb.ClientConfig
 
 // checkIPPlumbing verifies whether the IPs assigned by the metadata server are
 // actually plumbed onto a local network interface.
-//
-//lint:ignore U1000 temporarily disabled
-func checkIPPlumbing(logger *log.Logger, ipv4, ipv6 *net.IP) (v4Plumbed, v6Plumbed bool) {
+func checkIPPlumbing(logger *log.Logger, ipv4, ipv6 *net.IP, env directAccessEnv) (v4Plumbed, v6Plumbed bool) {
 	if ipv4 != nil {
-		if _, err := directaccess.CheckLocalIPv4Addresses(ipv4); err == nil {
+		if _, err := env.checkLocalIPv4Addresses(ipv4); err == nil {
 			v4Plumbed = true
 		} else {
 			btopt.Debugf(logger, "bigtable_direct_access: investigation: IPv4 assigned by metadata but not found on NIC: %v", err)
@@ -461,7 +449,7 @@ func checkIPPlumbing(logger *log.Logger, ipv4, ipv6 *net.IP) (v4Plumbed, v6Plumb
 	}
 
 	if ipv6 != nil {
-		if _, err := directaccess.CheckLocalIPv6Addresses(ipv6); err == nil {
+		if _, err := env.checkLocalIPv6Addresses(ipv6); err == nil {
 			v6Plumbed = true
 		} else {
 			btopt.Debugf(logger, "bigtable_direct_access: investigation: IPv6 assigned by metadata but not found on NIC: %v", err)
@@ -469,30 +457,4 @@ func checkIPPlumbing(logger *log.Logger, ipv4, ipv6 *net.IP) (v4Plumbed, v6Plumb
 	}
 
 	return v4Plumbed, v6Plumbed
-}
-
-// checkKernelRoutes determines the IP family of the target endpoint and
-// verifies a valid route exists to it — used to detect misconfigured routing
-// tables before blaming the handshake.
-//
-//lint:ignore U1000 temporarily disabled
-func checkKernelRoutes(ipv4, ipv6 *net.IP, v4Plumbed, v6Plumbed bool, host, endpoint string) error {
-	ip := net.ParseIP(host)
-	if ip == nil {
-		return fmt.Errorf("invalid IP format: %s", host)
-	}
-
-	if ip.To4() != nil {
-		var srcIP *net.IP
-		if v4Plumbed {
-			srcIP = ipv4
-		}
-		return directaccess.CheckLocalIPv4Routes(srcIP, endpoint)
-	}
-
-	var srcIP *net.IP
-	if v6Plumbed {
-		srcIP = ipv6
-	}
-	return directaccess.CheckLocalIPv6Routes(srcIP, endpoint)
 }

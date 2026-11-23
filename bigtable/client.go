@@ -200,6 +200,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	retryOption := defaultRetryOption
 	executeQueryRetryOption := defaultExecuteQueryRetryOption
 
+	isGCU := btransport.IsGCUEndpoint(o...)
+
 	// Build feature-flags proto + header MD ONCE. Both are threaded
 	// into session.NewClient below so classic and session ship
 	// byte-identical bigtable-features headers AND session's
@@ -207,7 +209,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// zero drift by construction, no re-marshal in session.
 	featureFlagsProto := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 		ClientSideMetricsEnabled: metricsTracerFactory.Enabled,
-		EnableDirectAccess:       isDirectAccessEnabled(config),
+		EnableDirectAccess:       isDirectAccessEnabled(config) && isGCU,
 	})
 	directAccessMD := btransport.MarshalFeatureFlagsMD(featureFlagsProto)
 
@@ -220,7 +222,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			break
 		}
 	}
-	if !enableBigtableConnPool {
+	if !enableBigtableConnPool && isGCU {
 		// Use the regular ConnPool
 		// For regular ConnPool the Direct Access is off by default so we need to check the env var again.
 		if enabled, _ := strconv.ParseBool(os.Getenv(directAccessEnvVar)); enabled {
