@@ -1250,11 +1250,11 @@ type pcuRecordedPartWrite struct {
 type pcuFakeGRPCServer struct {
 	storagepb.UnimplementedStorageServer
 
-	mu               sync.Mutex
-	nextGen          int64
-	partWrites       []pcuRecordedPartWrite
-	composeReqs      []*storagepb.ComposeObjectRequest
-	deleteReqs       []*storagepb.DeleteObjectRequest
+	mu                    sync.Mutex
+	nextGen               int64
+	partWrites            []pcuRecordedPartWrite
+	composeReqs           []*storagepb.ComposeObjectRequest
+	deleteReqs            []*storagepb.DeleteObjectRequest
 	wantDeletes           int
 	deletesDone           chan struct{}
 	failFirstIntermediate bool
