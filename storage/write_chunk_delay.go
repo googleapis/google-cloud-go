@@ -134,7 +134,8 @@ func (d *writeChunkDelay) recordLatency(latency time.Duration) bool {
 }
 
 // exceeds reports whether latency is strictly greater than the current
-// threshold. It is always false before the first recordLatency call.
+// threshold. It is false until a sample has been recorded since construction
+// or the last resetWarmUp.
 func (d *writeChunkDelay) exceeds(latency time.Duration) bool {
 	if d == nil {
 		return false
@@ -142,11 +143,4 @@ func (d *writeChunkDelay) exceeds(latency time.Duration) bool {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	return d.warmedUp && latency > d.value
-}
-
-// current returns the threshold currently in effect. Intended for tests.
-func (d *writeChunkDelay) current() time.Duration {
-	d.mu.Lock()
-	defer d.mu.Unlock()
-	return d.value
 }

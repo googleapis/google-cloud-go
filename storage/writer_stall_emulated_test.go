@@ -51,10 +51,16 @@ const (
 	stallEmuObjectSize = 5 * 1024 * 1024
 )
 
+// stallFor returns a testbench instruction that stalls the upload for d
+// (in whole seconds) once kib KiB of the object have been received.
+func stallFor(d time.Duration, kib int) string {
+	return fmt.Sprintf("stall-for-%ds-after-%dK", int(d/time.Second), kib)
+}
+
 // stallAfter returns a testbench instruction that stalls the upload for
 // stallEmuStall once kib KiB of the object have been received.
 func stallAfter(kib int) string {
-	return fmt.Sprintf("stall-for-%ds-after-%dK", int(stallEmuStall/time.Second), kib)
+	return stallFor(stallEmuStall, kib)
 }
 
 func isDeadlineErr(err error) bool {
@@ -139,7 +145,7 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			// chunk 1. With 1-chunk pipelining, chunk 3 is already in flight
 			// while chunk 2 is stalling, so rotation happens before chunk 4.
 			name:         "SubWatchdogSlowChunk_RotatesStream",
-			instructions: []string{"stall-for-1s-after-3072K"},
+			instructions: []string{stallFor(time.Second, 3072)},
 			budget:       5 * time.Second,
 			configure:    func(w *Writer) { w.ChunkTransferTimeout = 2500 * time.Millisecond },
 			size:         8 * 1024 * 1024,

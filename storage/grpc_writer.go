@@ -1783,12 +1783,15 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
 						firstSend = false
 					}
-					sendStart := time.Now()
-					if r.flush && !r.finishWrite && s.chunkDelay != nil {
-						select {
-						case cur.flushes <- flushTiming{sentAt: sendStart, chunkSendTotal: chunkSendTotal}:
-						case <-cur.done:
-							return nil
+					var sendStart time.Time
+					if s.chunkDelay != nil && !r.finishWrite {
+						sendStart = time.Now()
+						if r.flush {
+							select {
+							case cur.flushes <- flushTiming{sentAt: sendStart, chunkSendTotal: chunkSendTotal}:
+							case <-cur.done:
+								return nil
+							}
 						}
 					}
 					if err := cur.st.Send(req); err != nil {

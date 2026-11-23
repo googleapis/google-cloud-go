@@ -21,6 +21,13 @@ import (
 
 const testChunk16MiB = 16 * 1024 * 1024
 
+// current returns the threshold currently in effect.
+func (d *writeChunkDelay) current() time.Duration {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	return d.value
+}
+
 func TestNewWriteChunkDelay(t *testing.T) {
 	for _, tc := range []struct {
 		desc      string
@@ -72,7 +79,7 @@ func TestWriteChunkDelay_NilIsDisabled(t *testing.T) {
 
 func TestWriteChunkDelay_ResetWarmUp(t *testing.T) {
 	d := newWriteChunkDelay(testChunk16MiB, 10*time.Second)
-	d.recordLatency(400 * time.Millisecond) // threshold = 800ms
+	d.recordLatency(400 * time.Millisecond) // The threshold is now 800ms.
 
 	// After rotating to a new stream, resetWarmUp prevents a cold first chunk
 	// (2s) on the new stream from immediately triggering another rotation while
@@ -94,7 +101,7 @@ func TestWriteChunkDelay_ResetWarmUp(t *testing.T) {
 }
 
 func TestWriteChunkDelay_WarmUp(t *testing.T) {
-	d := newWriteChunkDelay(testChunk16MiB, 5*time.Second) // floor 210ms
+	d := newWriteChunkDelay(testChunk16MiB, 5*time.Second) // The floor is 50ms + 16*10ms = 210ms.
 
 	if d.exceeds(time.Hour) {
 		t.Fatal("exceeds must be false before the first sample")
@@ -156,7 +163,7 @@ func TestWriteChunkDelay_ThresholdTracksBaseline(t *testing.T) {
 
 func TestWriteChunkDelay_ClampsToTimeout(t *testing.T) {
 	d := newWriteChunkDelay(testChunk16MiB, 3*time.Second)
-	d.recordLatency(2 * time.Second) // 2x would be 4s
+	d.recordLatency(2 * time.Second) // Twice the baseline would be 4s, above the 3s limit.
 	if got, want := d.current(), 3*time.Second; got != want {
 		t.Fatalf("threshold = %v, want clamp to maxDelay %v", got, want)
 	}

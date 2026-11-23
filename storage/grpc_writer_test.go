@@ -3475,7 +3475,7 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		)
 		srv := &adaptiveRotationStorageServer{
 			recvDelay:            map[int]time.Duration{1: 100 * time.Millisecond},
-			recvDelayFromMessage: 5, // first message of chunk 2
+			recvDelayFromMessage: 5, // The first message of chunk 2.
 		}
 		mustRunRotationUpload(t, srv, rotationUploadOpts{
 			chunkTransferTimeout: 5 * time.Second,
@@ -3569,7 +3569,7 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 
 	t.Run("HardStall_ReconnectsWithQueryWriteStatus", func(t *testing.T) {
 		srv := &adaptiveRotationStorageServer{
-			stallStreamAt: map[int]int64{1: 200}, // ack chunk 1 (100), stall on chunk 2 (200)
+			stallStreamAt: map[int]int64{1: 200}, // Ack chunk 1 (offset 100), then stall on chunk 2 (offset 200).
 		}
 		mustRunRotationUpload(t, srv, rotationUploadOpts{
 			chunkTransferTimeout: 500 * time.Millisecond,
