@@ -3573,6 +3573,46 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		assertReceivedOffsets(t, srv, []int64{0, 100, 200, 300, 400, 500})
 	})
 
+	t.Run("SlowAcks_ChunkTransferTimeoutZero_StaysOnOneStream", func(t *testing.T) {
+		srv := &adaptiveRotationStorageServer{
+			flushDelay:     map[int]time.Duration{1: slowAck},
+			delayFromFlush: 2,
+		}
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
+			chunkTransferTimeout: 0,
+			chunks:               3,
+			waitPerChunk:         true,
+		})
+		assertRotationCalls(t, srv, 0, 1)
+		assertReceivedOffsets(t, srv, []int64{0, 100, 200, 300})
+	})
+
+	t.Run("SingleQuantumChunk_SendBackpressure_RotatesFromSenderSide", func(t *testing.T) {
+		// When ChunkSize == writeQuantum, every chunk is a single flush message.
+		// With pipelining (waitPerChunk: false) and a delayed ack on chunk 2,
+		// sender-side backpressure on chunk 2's Send must set rotate immediately
+		// so chunk 3 opens stream 2 rather than waiting for chunk 2's ack.
+		const chunk = 256 << 10
+		srv := &adaptiveRotationStorageServer{
+			recvDelay:            map[int]time.Duration{1: 150 * time.Millisecond},
+			recvDelayFromMessage: 2, // Chunk 2's single flush message.
+			flushDelay:           map[int]time.Duration{1: 150 * time.Millisecond},
+			delayFromFlush:       2,
+		}
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
+			chunkTransferTimeout: 5 * time.Second,
+			chunkSize:            chunk,
+			writeQuantum:         chunk,
+			chunks:               4,
+			serverOpts: []grpc.ServerOption{
+				grpc.InitialWindowSize(64 << 10),
+				grpc.InitialConnWindowSize(64 << 10),
+			},
+		})
+		assertRotationCalls(t, srv, 0, 2)
+		assertReceivedOffsets(t, srv, []int64{0, chunk, 2 * chunk, 3 * chunk, 4 * chunk})
+	})
+
 	t.Run("HardStall_ReconnectsWithQueryWriteStatus", func(t *testing.T) {
 		srv := &adaptiveRotationStorageServer{
 			stallStreamAt: map[int]int64{1: 200}, // Ack chunk 1 (offset 100), then stall on chunk 2 (offset 200).

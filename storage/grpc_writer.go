@@ -515,10 +515,6 @@ func (w *gRPCWriter) isActive() bool {
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if c.resource != nil {
 		w.setObj(newObjectFromProto(c.resource))
-		w.budget.recordProgress(false)
-		if w.watchdog != nil {
-			w.watchdog.pause()
-		}
 	}
 
 	// prevConfirmed is the highest offset GCS had confirmed before this
@@ -545,11 +541,15 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	// Only a completion strictly past prevConfirmed counts as progress: a
 	// reconnect that reports the same persisted size must not reset the retry
 	// budget. The stopwatch restarts only if more data is waiting to be sent.
-	if c.resource == nil && c.flushOffset > prevConfirmed {
+	progressed := c.flushOffset > prevConfirmed || c.resource != nil
+	if progressed {
 		w.budget.recordProgress(w.isActive())
-		if w.watchdog != nil {
-			w.watchdog.reset()
-		}
+	}
+
+	// Restart the stall timer on forward progress. If nothing remains
+	// outstanding, the write loop pauses it before waiting on the application.
+	if progressed && w.watchdog != nil {
+		w.watchdog.reset()
 	}
 }
 
@@ -1689,13 +1689,9 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		}
 		go func() {
 			rs.rErr = func() error {
-				var receivedResource bool
 				for {
 					resp, err := st.Recv()
 					if err != nil {
-						if receivedResource && st.Context().Err() != nil {
-							return io.EOF
-						}
 						return err
 					}
 					c := completion(resp)
@@ -1709,9 +1705,6 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 					}
 					select {
 					case cs.completions <- *c:
-						if c.resource != nil {
-							receivedResource = true
-						}
 					case <-st.Context().Done():
 						return st.Context().Err()
 					}
@@ -1803,25 +1796,17 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						_ = cur.st.CloseSend()
 						return nil
 					}
-					if r.flush {
-						// The receiver goroutine judges this chunk from its ack
-						// (chunkLatency), which already includes the time spent in
-						// Send; nothing more to measure on the sender side.
-						chunkSendTotal = 0
-						unflushedDataSent = false
-						continue
-					}
-					if len(r.buf) > 0 {
-						unflushedDataSent = true
-					}
 					if s.chunkDelay != nil {
-						// Mid-chunk: no ack is coming until the flush, so this is the
-						// only place a stalled stream (Send blocked on HTTP/2 flow
-						// control) can be noticed before the watchdog fires.
 						chunkSendTotal += time.Since(sendStart)
 						if s.chunkDelay.exceeds(chunkSendTotal) {
 							rotate.Store(true)
 						}
+					}
+					if r.flush {
+						chunkSendTotal = 0
+						unflushedDataSent = false
+					} else if len(r.buf) > 0 {
+						unflushedDataSent = true
 					}
 				}
 			}
