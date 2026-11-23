@@ -1514,6 +1514,12 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	}
 
 	remain := rangeReaderRemain(size, startOffset, params.length)
+	readerSize := remain
+	if !finalized && !negativeOffset && params.length > 0 {
+		// For unfinalized objects, obj.GetSize() may be stale (smaller than the
+		// actual object), so bound only by the caller's requested length.
+		readerSize = params.length
+	}
 
 	var chunkCRC uint32
 	var chunkCRCPresent bool
@@ -1542,7 +1548,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			stream: res.stream,
 			reopen: reopen,
 			cancel: cancel,
-			size:   remain,
+			size:   readerSize,
 			// Preserve the decoder to read out object data when Read/WriteTo is called.
 			currMsg:         res.decoder,
 			wantChunkCRC:    chunkCRC,
@@ -1554,6 +1560,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			disableCRCCheck: params.disableCRCCheck,
 			finalized:       finalized,
 			negativeOffset:  negativeOffset,
+			explicitLength:  params.length > 0,
+			rangeEnd:        hasRangeEnd(msg),
 		},
 		checkCRC:    checkCRC,
 		handle:      &handle,
@@ -1716,8 +1724,10 @@ type bidiReadStreamResponse struct {
 type gRPCReader struct {
 	seen, size      int64 // bytes read so far and total bytes expected for this read
 	zeroRange       bool
-	finalized       bool // if we are reading from a finalized object; in this case, remain and size may be inaccurate
+	finalized       bool // if we are reading from a finalized object; when false, object size may be stale
 	negativeOffset  bool
+	explicitLength  bool // true when the caller requested a bounded length > 0
+	rangeEnd        bool // true once BidiReadObjectResponse reported RangeEnd for defaultReadID
 	stream          storagepb.Storage_BidiReadObjectClient
 	reopen          func(seen int64) (*readStreamResponse, context.CancelFunc, error)
 	leftovers       []byte
@@ -1731,6 +1741,27 @@ type gRPCReader struct {
 	gotCRC          uint32 // running crc
 	gotChunkCRC     uint32 // running crc32c of chunk
 	disableCRCCheck bool
+}
+
+func hasRangeEnd(msg *storagepb.BidiReadObjectResponse) bool {
+	for _, r := range msg.GetObjectDataRanges() {
+		if r.GetReadRange().GetReadId() == defaultReadID && r.GetRangeEnd() {
+			return true
+		}
+	}
+	return false
+}
+
+func (r *gRPCReader) hasKnownSize() bool {
+	return r.finalized || r.negativeOffset || r.explicitLength
+}
+
+func (r *gRPCReader) currMsgConsumed() bool {
+	if r.currMsg == nil || r.currMsg.done {
+		return true
+	}
+	_, hasData := r.currMsg.dataOffsets[defaultReadID]
+	return !hasData
 }
 
 // Update the running CRC with the data in the slice, if CRC checking was enabled.
@@ -1766,7 +1797,7 @@ func (r *gRPCReader) checkAndResetChunkCRC() error {
 func (r *gRPCReader) Read(p []byte) (int, error) {
 	// The entire object has been read by this reader, check the checksum if
 	// necessary and return EOF.
-	if (r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange {
+	if r.hasKnownSize() && r.size == r.seen || r.zeroRange {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
@@ -1840,7 +1871,7 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	// The entire object has been read by this reader, check the checksum if
 	// necessary and return nil.
-	if (r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange {
+	if r.hasKnownSize() && r.size == r.seen || r.zeroRange {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
@@ -1918,7 +1949,8 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 // Close drains a completed stream (bounded by defaultStreamDrainTimeout) so
 // the RPC ends cleanly, then cancels the context and frees buffers.
 func (r *gRPCReader) Close() error {
-	if r.stream != nil && ((r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange) {
+	complete := r.hasKnownSize() && r.size == r.seen || r.zeroRange || (r.rangeEnd && r.currMsgConsumed())
+	if r.stream != nil && complete {
 		drainStreamOnCompletion(r.cancel, r.stream)
 	}
 	if r.cancel != nil {
@@ -1927,6 +1959,7 @@ func (r *gRPCReader) Close() error {
 
 	r.stream = nil
 	r.currMsg = nil
+	r.rangeEnd = false
 	return nil
 }
 
@@ -1960,7 +1993,11 @@ func (r *gRPCReader) recv() error {
 	}
 
 	r.currMsg = &readResponseDecoder{databufs: databufs}
-	return r.currMsg.readFullObjectResponse()
+	if err := r.currMsg.readFullObjectResponse(); err != nil {
+		return err
+	}
+	r.rangeEnd = hasRangeEnd(r.currMsg.msg)
+	return nil
 }
 
 // ReadObjectResponse field and subfield numbers.
@@ -2487,7 +2524,8 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 // reopenStream "closes" the existing stream and attempts to reopen a stream and
 // sets the Reader's stream and cancelStream properties in the process.
 func (r *gRPCReader) reopenStream() error {
-	// Close existing stream and initialize new stream with updated offset.
+	// Close existing stream without draining since we are reopening after an error.
+	r.rangeEnd = false
 	r.Close()
 
 	res, cancel, err := r.reopen(r.seen)
@@ -2496,6 +2534,7 @@ func (r *gRPCReader) reopenStream() error {
 	}
 	r.stream = res.stream
 	r.currMsg = res.decoder
+	r.rangeEnd = hasRangeEnd(res.decoder.msg)
 	r.cancel = cancel
 	return nil
 }

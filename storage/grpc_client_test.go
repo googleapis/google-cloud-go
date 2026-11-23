@@ -24,7 +24,9 @@ import (
 	"math/rand"
 	"net"
 	"reflect"
+	"runtime"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -988,60 +990,119 @@ func TestVerifyChecksums(t *testing.T) {
 }
 
 func TestBidiReadStreamSessionGracefulShutdown(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	t.Run("DrainsInFlightMessages", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 
-	fakeStream := &fakeBidiReadObjectClient{
-		closeSendCh:   make(chan struct{}),
-		msgsBeforeEOF: 2,
-		streamCtx:     ctx,
-	}
-	session := &bidiReadStreamSession{
-		reqC:       make(chan *storagepb.BidiReadObjectRequest, 5),
-		ctx:        ctx,
-		managerCtx: ctx,
-		cancel:     cancel,
-		stream:     fakeStream,
-		params:     &newMultiRangeDownloaderParams{disableMRDReadChecksum: true},
-	}
-	session.wg.Add(2)
-	go session.sendLoop()
-	go session.receiveLoop()
-
-	// Initial shutdown should close reqC, set manualShutdown, and drain
-	// remaining messages on the stream until EOF before cancelling ctx.
-	session.Shutdown()
-
-	if !session.manualShutdown {
-		t.Errorf("got session.manualShutdown = false, want true")
-	}
-	if !fakeStream.closeSendCalled {
-		t.Errorf("got fakeStream.closeSendCalled = false, want true")
-	}
-	if got, want := fakeStream.recvCount, 3; got != want {
-		t.Errorf("got fakeStream.recvCount = %d, want %d (2 in-flight messages + EOF)", got, want)
-	}
-	if !fakeStream.eofBeforeCancel {
-		t.Errorf("got fakeStream.eofBeforeCancel = false, want true")
-	}
-
-	select {
-	case _, ok := <-session.reqC:
-		if ok {
-			t.Errorf("expected reqC to be closed")
+		fakeStream := &fakeBidiReadObjectClient{
+			closeSendCh:   make(chan struct{}),
+			msgsBeforeEOF: 2,
+			streamCtx:     ctx,
 		}
-	default:
-		t.Errorf("expected reqC to be closed and readable")
-	}
+		session := &bidiReadStreamSession{
+			reqC:       make(chan *storagepb.BidiReadObjectRequest, 5),
+			shutdownC:  make(chan struct{}),
+			ctx:        ctx,
+			managerCtx: ctx,
+			cancel:     cancel,
+			stream:     fakeStream,
+			params:     &newMultiRangeDownloaderParams{disableMRDReadChecksum: true},
+		}
+		session.wg.Add(2)
+		go session.sendLoop()
+		go session.receiveLoop()
 
-	// Calling Shutdown again should be idempotent and not panic.
-	session.Shutdown()
+		// Initial shutdown should close shutdownC, set manualShutdown, and drain
+		// remaining messages on the stream until EOF before cancelling ctx.
+		session.Shutdown()
+
+		if !session.manualShutdown {
+			t.Errorf("got session.manualShutdown = false, want true")
+		}
+		if !fakeStream.closeSendCalled {
+			t.Errorf("got fakeStream.closeSendCalled = false, want true")
+		}
+		if got, want := fakeStream.recvCount, 3; got != want {
+			t.Errorf("got fakeStream.recvCount = %d, want %d (2 in-flight messages + EOF)", got, want)
+		}
+		if !fakeStream.eofBeforeCancel {
+			t.Errorf("got fakeStream.eofBeforeCancel = false, want true")
+		}
+
+		select {
+		case <-session.shutdownC:
+		default:
+			t.Errorf("expected shutdownC to be closed")
+		}
+
+		// SendRequest and repeated Shutdown after shutdown should be safe no-ops.
+		session.SendRequest(&storagepb.BidiReadObjectRequest{})
+		session.Shutdown()
+	})
+
+	t.Run("UnblocksReceiveLoopBlockedOnRespC", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		firstMsgDelivered := make(chan struct{})
+		fakeStream := &fakeBidiReadObjectClient{
+			closeSendCh:        make(chan struct{}),
+			firstMsgDelivered:  firstMsgDelivered,
+			deliverFirstBefore: true,
+			msgsBeforeEOF:      2,
+			streamCtx:          ctx,
+		}
+		// Unbuffered respC with no reader simulates Shutdown running on the event
+		// loop while receiveLoop is blocked trying to send on sessionResps.
+		session := &bidiReadStreamSession{
+			reqC:       make(chan *storagepb.BidiReadObjectRequest, 5),
+			respC:      make(chan mrdSessionResult),
+			shutdownC:  make(chan struct{}),
+			ctx:        ctx,
+			managerCtx: ctx,
+			cancel:     cancel,
+			stream:     fakeStream,
+			params:     &newMultiRangeDownloaderParams{disableMRDReadChecksum: true},
+		}
+		session.wg.Add(2)
+		go session.sendLoop()
+		go session.receiveLoop()
+
+		<-firstMsgDelivered
+		for range 100 {
+			runtime.Gosched()
+		}
+
+		session.Shutdown()
+
+		if got, want := fakeStream.recvCount, 3; got != want {
+			t.Errorf("got fakeStream.recvCount = %d, want %d (receiveLoop should unblock from respC and drain to EOF)", got, want)
+		}
+		if !fakeStream.eofBeforeCancel {
+			t.Errorf("got fakeStream.eofBeforeCancel = false, want true")
+		}
+	})
 }
 
 type fakeRangeReadServer struct {
 	storagepb.UnimplementedStorageServer
 	data             []byte
 	omitContentRange bool
+	unfinalized      bool
+	reportedSize     int64
+	chunkSize        int
+}
+
+func (s *fakeRangeReadServer) metadata() *storagepb.Object {
+	sz := int64(len(s.data))
+	if s.reportedSize > 0 {
+		sz = s.reportedSize
+	}
+	obj := &storagepb.Object{Size: sz}
+	if !s.unfinalized {
+		obj.FinalizeTime = timestamppb.Now()
+	}
+	return obj
 }
 
 func (s *fakeRangeReadServer) sliceRange(offset, limit int64) (start, end int64, slice []byte) {
@@ -1065,7 +1126,7 @@ func (s *fakeRangeReadServer) ReadObject(req *storagepb.ReadObjectRequest, strea
 	return stream.Send(&storagepb.ReadObjectResponse{
 		ChecksummedData: &storagepb.ChecksummedData{Content: slice},
 		ContentRange:    cr,
-		Metadata:        &storagepb.Object{Size: int64(len(s.data)), FinalizeTime: timestamppb.Now()},
+		Metadata:        s.metadata(),
 	})
 }
 
@@ -1075,15 +1136,31 @@ func (s *fakeRangeReadServer) BidiReadObject(stream storagepb.Storage_BidiReadOb
 		return err
 	}
 	rr := req.GetReadRanges()[0]
-	start, end, slice := s.sliceRange(rr.GetReadOffset(), rr.GetReadLength())
-	return stream.Send(&storagepb.BidiReadObjectResponse{
-		Metadata: &storagepb.Object{Size: int64(len(s.data)), FinalizeTime: timestamppb.Now()},
-		ObjectDataRanges: []*storagepb.ObjectRangeData{{
-			ChecksummedData: &storagepb.ChecksummedData{Content: slice},
-			ReadRange:       &storagepb.ReadRange{ReadOffset: start, ReadLength: end - start, ReadId: rr.GetReadId()},
-			RangeEnd:        true,
-		}},
-	})
+	start, _, slice := s.sliceRange(rr.GetReadOffset(), rr.GetReadLength())
+	step := len(slice)
+	if s.chunkSize > 0 && s.chunkSize < step {
+		step = s.chunkSize
+	}
+	for off := 0; ; off += step {
+		chunkEnd := min(off+step, len(slice))
+		isLast := chunkEnd == len(slice)
+		resp := &storagepb.BidiReadObjectResponse{
+			ObjectDataRanges: []*storagepb.ObjectRangeData{{
+				ChecksummedData: &storagepb.ChecksummedData{Content: slice[off:chunkEnd]},
+				ReadRange:       &storagepb.ReadRange{ReadOffset: start + int64(off), ReadLength: int64(chunkEnd - off), ReadId: rr.GetReadId()},
+				RangeEnd:        isLast,
+			}},
+		}
+		if off == 0 {
+			resp.Metadata = s.metadata()
+		}
+		if err := stream.Send(resp); err != nil {
+			return err
+		}
+		if isLast {
+			return nil
+		}
+	}
 }
 
 func newFakeRangeReadStorageClient(t *testing.T, srv storagepb.StorageServer) *grpcStorageClient {
@@ -1117,6 +1194,8 @@ type rangeDrainTestCase struct {
 	length           int64
 	readBytes        int
 	omitContentRange bool
+	reportedSize     int64
+	chunkSize        int
 	wantDrained      bool
 }
 
@@ -1134,42 +1213,72 @@ func TestGRPCReaderCloseDrainOnCompletion(t *testing.T) {
 	srv := &fakeRangeReadServer{data: data}
 	c := newFakeRangeReadStorageClient(t, srv)
 
-	for _, tc := range rangeDrainTestCases {
-		t.Run(tc.name, func(t *testing.T) {
-			r, err := c.NewRangeReader(context.Background(), &newRangeReaderParams{
-				bucket: "b",
-				object: "o",
-				gen:    -1,
-				offset: tc.offset,
-				length: tc.length,
-			})
-			if err != nil {
-				t.Fatalf("NewRangeReader: %v", err)
-			}
-			gr := r.reader.(*gRPCReader)
-			fakeStream := &fakeBidiReadObjectClient{ClientStream: gr.stream}
-			gr.stream = fakeStream
-			var canceled bool
-			origCancel := gr.cancel
-			gr.cancel = func() {
-				canceled = true
-				origCancel()
-			}
+	for _, unfinalized := range []bool{false, true} {
+		mode := "finalized"
+		cases := append([]rangeDrainTestCase(nil), rangeDrainTestCases...)
+		if unfinalized {
+			mode = "unfinalized"
+			cases = append(cases,
+				rangeDrainTestCase{
+					name:         "bounded range read with stale smaller metadata size",
+					offset:       10,
+					length:       30,
+					readBytes:    30,
+					reportedSize: 10,
+					wantDrained:  true,
+				},
+				rangeDrainTestCase{
+					name:        "multi-chunk incomplete open-ended read",
+					offset:      0,
+					length:      -1,
+					readBytes:   25,
+					chunkSize:   25,
+					wantDrained: false,
+				},
+			)
+		}
+		t.Run(mode, func(t *testing.T) {
+			for _, tc := range cases {
+				t.Run(tc.name, func(t *testing.T) {
+					srv.unfinalized = unfinalized
+					srv.reportedSize = tc.reportedSize
+					srv.chunkSize = tc.chunkSize
+					r, err := c.NewRangeReader(context.Background(), &newRangeReaderParams{
+						bucket: "b",
+						object: "o",
+						gen:    -1,
+						offset: tc.offset,
+						length: tc.length,
+					})
+					if err != nil {
+						t.Fatalf("NewRangeReader: %v", err)
+					}
+					gr := r.reader.(*gRPCReader)
+					fakeStream := &fakeBidiReadObjectClient{ClientStream: gr.stream}
+					gr.stream = fakeStream
+					var canceled atomic.Bool
+					origCancel := gr.cancel
+					gr.cancel = func() {
+						canceled.Store(true)
+						origCancel()
+					}
 
-			if _, err := io.ReadFull(r, make([]byte, tc.readBytes)); err != nil {
-				t.Fatalf("io.ReadFull: %v", err)
-			}
-			if err := r.Close(); err != nil {
-				t.Fatalf("r.Close: %v", err)
-			}
-			if got := fakeStream.recvd; got != tc.wantDrained {
-				t.Errorf("got stream drained = %v, want %v", got, tc.wantDrained)
-			}
-			if !canceled {
-				t.Errorf("got canceled = false, want true")
-			}
-			if gr.stream != nil {
-				t.Errorf("got gr.stream = %v, want nil after Close", gr.stream)
+					if _, err := io.ReadFull(r, make([]byte, tc.readBytes)); err != nil {
+						t.Fatalf("io.ReadFull: %v", err)
+					}
+					if err := r.Close(); err != nil {
+						t.Fatalf("r.Close: %v", err)
+					}
+					if got := fakeStream.recvd; got != tc.wantDrained {
+						t.Errorf("got stream drained = %v, want %v", got, tc.wantDrained)
+					}
+					if !canceled.Load() {
+						t.Errorf("got canceled = false, want true")
+					}
+					if gr.stream != nil {
+						t.Errorf("got gr.stream = %v, want nil after Close", gr.stream)
+					}
+				})
 			}
 		})
 	}
@@ -1203,13 +1312,20 @@ func TestGRPCReadObjectReaderCloseDrainOnCompletion(t *testing.T) {
 			if err != nil {
 				t.Fatalf("NewRangeReaderReadObject: %v", err)
 			}
+			wantStart := tc.offset
+			if wantStart < 0 {
+				wantStart = int64(len(data)) + wantStart
+			}
+			if r.Attrs.StartOffset != wantStart {
+				t.Errorf("got StartOffset = %d, want %d", r.Attrs.StartOffset, wantStart)
+			}
 			gr := r.reader.(*gRPCReadObjectReader)
 			fakeStream := &fakeReadObjectClient{ClientStream: gr.stream}
 			gr.stream = fakeStream
-			var canceled bool
+			var canceled atomic.Bool
 			origCancel := gr.cancel
 			gr.cancel = func() {
-				canceled = true
+				canceled.Store(true)
 				origCancel()
 			}
 
@@ -1222,7 +1338,7 @@ func TestGRPCReadObjectReaderCloseDrainOnCompletion(t *testing.T) {
 			if got := fakeStream.recvd; got != tc.wantDrained {
 				t.Errorf("got stream drained = %v, want %v", got, tc.wantDrained)
 			}
-			if !canceled {
+			if !canceled.Load() {
 				t.Errorf("got canceled = false, want true")
 			}
 			if gr.stream != nil {
@@ -1234,21 +1350,26 @@ func TestGRPCReadObjectReaderCloseDrainOnCompletion(t *testing.T) {
 
 type fakeBidiReadObjectClient struct {
 	grpc.ClientStream
-	recvd           bool
-	recvCount       int
-	msgsBeforeEOF   int
-	closeSendCh     chan struct{}
-	closeSendCalled bool
-	eofBeforeCancel bool
-	streamCtx       context.Context
+	recvd              bool
+	recvCount          int
+	msgsBeforeEOF      int
+	closeSendCh        chan struct{}
+	firstMsgDelivered  chan struct{}
+	deliverFirstBefore bool
+	closeSendCalled    bool
+	eofBeforeCancel    bool
+	streamCtx          context.Context
 }
 
 func (f *fakeBidiReadObjectClient) RecvMsg(m interface{}) error {
 	f.recvd = true
-	if f.closeSendCh != nil {
+	if f.closeSendCh != nil && (!f.deliverFirstBefore || f.recvCount > 0) {
 		<-f.closeSendCh
 	}
 	f.recvCount++
+	if f.recvCount == 1 && f.firstMsgDelivered != nil {
+		close(f.firstMsgDelivered)
+	}
 	if f.recvCount <= f.msgsBeforeEOF {
 		return nil
 	}

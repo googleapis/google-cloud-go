@@ -1250,9 +1250,10 @@ type bidiReadStreamSession struct {
 	params   *newMultiRangeDownloaderParams
 	readSpec *storagepb.BidiReadObjectSpec
 
-	reqC  chan *storagepb.BidiReadObjectRequest
-	respC chan<- mrdSessionResult
-	wg    sync.WaitGroup
+	reqC      chan *storagepb.BidiReadObjectRequest
+	respC     chan<- mrdSessionResult
+	shutdownC chan struct{}
+	wg        sync.WaitGroup
 
 	// To make manualShutdown and streamErr fields thread-safe
 	// as it can be accessed by both event loop and receive loop.
@@ -1276,6 +1277,7 @@ func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessi
 		readSpec:   readSpec,
 		reqC:       make(chan *storagepb.BidiReadObjectRequest, mrdSendChannelSize),
 		respC:      respC,
+		shutdownC:  make(chan struct{}),
 	}
 
 	initialReq := &storagepb.BidiReadObjectRequest{
@@ -1309,7 +1311,15 @@ func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessi
 }
 func (s *bidiReadStreamSession) SendRequest(req *storagepb.BidiReadObjectRequest) {
 	select {
+	case <-s.shutdownC:
+		return
+	case <-s.ctx.Done():
+		return
+	default:
+	}
+	select {
 	case s.reqC <- req:
+	case <-s.shutdownC:
 	case <-s.ctx.Done():
 	}
 }
@@ -1320,10 +1330,8 @@ func (s *bidiReadStreamSession) Shutdown() {
 		return
 	}
 	s.manualShutdown = true
+	close(s.shutdownC)
 	s.mu.Unlock()
-
-	// Close reqC to tell sendLoop to exit cleanly and invoke CloseSend()
-	close(s.reqC)
 
 	done := make(chan struct{})
 	go func() {
@@ -1365,10 +1373,14 @@ func (s *bidiReadStreamSession) sendLoop() {
 	defer s.stream.CloseSend()
 	for {
 		select {
-		case req, ok := <-s.reqC:
-			if !ok {
-				return
-			}
+		case <-s.shutdownC:
+			return
+		case <-s.ctx.Done():
+			return
+		default:
+		}
+		select {
+		case req := <-s.reqC:
 			if err := s.stream.Send(req); err != nil {
 				s.setError(err)
 				if err != io.EOF {
@@ -1376,6 +1388,8 @@ func (s *bidiReadStreamSession) sendLoop() {
 				}
 				return
 			}
+		case <-s.shutdownC:
+			return
 		case <-s.ctx.Done():
 			return
 		}
@@ -1389,6 +1403,9 @@ func (s *bidiReadStreamSession) receiveLoop() {
 		databufs := mem.BufferSlice{}
 		err := s.stream.RecvMsg(&databufs)
 		if s.isManualShutdown() {
+			// During graceful shutdown, discard any remaining in-flight
+			// responses so RecvMsg can drain the stream until io.EOF (or
+			// shutdown timeout) and consume trailers without cancelling.
 			databufs.Free()
 			if err != nil {
 				return
@@ -1430,6 +1447,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 			}
 			select {
 			case s.respC <- result:
+			case <-s.shutdownC:
 			case <-s.managerCtx.Done():
 			}
 			return
@@ -1448,6 +1466,10 @@ func (s *bidiReadStreamSession) receiveLoop() {
 			id:      s.id,
 			session: s,
 		}:
+
+		case <-s.shutdownC:
+			databufs.Free()
+			continue
 
 		case <-s.ctx.Done():
 			if s.isManualShutdown() {
@@ -1470,6 +1492,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 			}
 			select {
 			case s.respC <- mrdSessionResult{id: s.id, session: s, err: err}:
+			case <-s.shutdownC:
 			case <-s.managerCtx.Done():
 			}
 			databufs.Free()
