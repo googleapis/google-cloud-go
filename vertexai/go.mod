@@ -7,8 +7,8 @@ require (
 	cloud.google.com/go/aiplatform v1.127.1
 	github.com/google/go-cmp v0.7.0
 	golang.org/x/text v0.44.0
-	google.golang.org/api v0.315.0
-	google.golang.org/genai v1.77.0
+	google.golang.org/api v0.316.0
+	google.golang.org/genai v1.79.1
 	google.golang.org/genproto v0.0.0-20261012220534-4341edf3f941
 	google.golang.org/protobuf v1.36.12
 )
