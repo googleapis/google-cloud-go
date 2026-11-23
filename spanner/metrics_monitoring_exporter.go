@@ -77,6 +77,9 @@ var (
 		metricLabelKeyDirectPathUsed:        true,
 		metricLabelKeyMethod:                true,
 		metricLabelKeyStatus:                true,
+		metricLabelKeyPoolMode:              true,
+		metricLabelKeyState:                 true,
+		metricLabelKeyLane:                  true,
 	}
 
 	allowedEEFMetricLabels = map[string]bool{

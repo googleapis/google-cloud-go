@@ -147,6 +147,7 @@ func newDynamicChannelPool(
 	sc *sessionClient,
 	cfg DynamicChannelPoolConfig,
 	mp metric.MeterProvider,
+	builtinMetricsCfg channelPoolBuiltinMetricsConfig,
 	dial func(context.Context) (gtransport.ConnPool, error),
 	fallback *directPathFallback,
 ) (*dynamicChannelPool, error) {
@@ -185,14 +186,24 @@ func newDynamicChannelPool(
 		NoEntriesErr:     errDCPNoEntries,
 		PrimeNotReadyErr: errDCPPrimeNotReady,
 	}
+	builtinMetrics := newChannelPoolBuiltinMetrics(sc.logger, builtinMetricsCfg, fallback)
+	if builtinMetrics != nil && builtinMetrics.channelLoad != nil {
+		hooks.OnCallStart = builtinMetrics.recordChannelLoad
+	}
 	if fallback != nil {
-		hooks.OnClose = fallback.close
 		hooks.PenaltyEpoch = func() uint64 { return fallback.current().generation }
+	}
+	if builtinMetrics != nil || fallback != nil {
+		hooks.OnClose = func() {
+			builtinMetrics.close()
+			fallback.close()
+		}
 	}
 	p, err := transport.NewDynamicChannelPool[spannerClient](ctx, tcfg, hooks)
 	if err != nil {
 		return nil, err
 	}
+	builtinMetrics.registerChannelCount(p)
 	if fallback != nil {
 		// Penalties earned on DirectPath say nothing about CloudPath.
 		fallback.addSwitchHook(p.ClearStaleErrorPenalties)
