@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"io"
@@ -41,6 +42,7 @@ import (
 	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/protoadapt"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -1313,4 +1315,307 @@ func TestNewGRPCStorageClient_AuthTracingWithoutAuthentication(t *testing.T) {
 	if got := len(authCredentialsOptions(client.settings.clientOption)); got != 0 {
 		t.Errorf("got %d WithAuthCredentials options, want 0 with WithoutAuthentication", got)
 	}
+}
+
+type trackingBuffer struct {
+	mem.Buffer
+	frees *int
+}
+
+func (b *trackingBuffer) Free() {
+	*b.frees++
+	b.Buffer.Free()
+}
+
+type errWriter struct {
+	err error
+}
+
+func (w errWriter) Write([]byte) (int, error) {
+	return 0, w.err
+}
+
+func TestGRPCReader_WriteToErrorClearsCurrMsg(t *testing.T) {
+	wantErr := errors.New("downstream write failed")
+
+	t.Run("bidi_reader", func(t *testing.T) {
+		var frees int
+		data := []byte("hello world")
+		buf := &trackingBuffer{Buffer: mem.SliceBuffer(data), frees: &frees}
+		dec := &readResponseDecoder{
+			databufs: mem.BufferSlice{buf},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				defaultReadID: {startBuf: 0, startOff: 0, currBuf: 0, currOff: 0, endBuf: 0, endOff: uint64(len(data))},
+			},
+		}
+		r := &gRPCReader{
+			size:      int64(len(data)),
+			finalized: true,
+			stream:    &fakeBidiReadObjectClient{},
+			currMsg:   dec,
+			settings:  &settings{},
+		}
+
+		if _, err := r.WriteTo(errWriter{err: wantErr}); !errors.Is(err, wantErr) {
+			t.Fatalf("WriteTo() err = %v, want %v", err, wantErr)
+		}
+		if r.currMsg != nil {
+			t.Fatal("r.currMsg != nil after WriteTo error")
+		}
+		if frees != 1 {
+			t.Fatalf("buffer Free count = %d, want 1", frees)
+		}
+
+		// Subsequent Read and WriteTo must not touch or double-free the freed buffer.
+		if _, err := r.Read(make([]byte, 8)); !errors.Is(err, io.EOF) {
+			t.Fatalf("subsequent Read() err = %v, want io.EOF", err)
+		}
+		if _, err := r.WriteTo(io.Discard); err != nil {
+			t.Fatalf("subsequent WriteTo() err = %v, want nil", err)
+		}
+		if frees != 1 {
+			t.Fatalf("buffer Free count after subsequent calls = %d, want 1", frees)
+		}
+	})
+
+	t.Run("read_object_reader", func(t *testing.T) {
+		var frees int
+		data := []byte("hello world")
+		buf := &trackingBuffer{Buffer: mem.SliceBuffer(data), frees: &frees}
+		dec := &readObjectResponseDecoder{
+			databufs: mem.BufferSlice{buf},
+			dataOffsets: bufferSliceOffsetsReadObject{
+				startBuf: 0, startOff: 0, currBuf: 0, currOff: 0, endBuf: 0, endOff: uint64(len(data)),
+			},
+		}
+		r := &gRPCReadObjectReader{
+			size:     int64(len(data)),
+			stream:   &fakeReadObjectClient{},
+			currMsg:  dec,
+			settings: &settings{},
+		}
+
+		if _, err := r.WriteTo(errWriter{err: wantErr}); !errors.Is(err, wantErr) {
+			t.Fatalf("WriteTo() err = %v, want %v", err, wantErr)
+		}
+		if r.currMsg != nil {
+			t.Fatal("r.currMsg != nil after WriteTo error")
+		}
+		if frees != 1 {
+			t.Fatalf("buffer Free count = %d, want 1", frees)
+		}
+
+		// Subsequent Read and WriteTo must not panic or double-free the freed buffer.
+		if _, err := r.Read(make([]byte, 8)); !errors.Is(err, io.EOF) {
+			t.Fatalf("subsequent Read() err = %v, want io.EOF", err)
+		}
+		if _, err := r.WriteTo(io.Discard); err != nil {
+			t.Fatalf("subsequent WriteTo() err = %v, want nil", err)
+		}
+		if frees != 1 {
+			t.Fatalf("buffer Free count after subsequent calls = %d, want 1", frees)
+		}
+	})
+}
+
+func TestReadDecoders_ContentEndsAtBufferBoundary(t *testing.T) {
+	// Build a ChecksummedData wire payload where Crc32C precedes Content so Content
+	// terminates at the exact end of the final mem.BufferSlice (endBuf == len(databufs), endOff == 0).
+	buildChecksummedDataWire := func(content []byte, crc uint32) []byte {
+		var inner []byte
+		inner = protowire.AppendTag(inner, checksummedDataCRC32CField, protowire.Fixed32Type)
+		inner = protowire.AppendFixed32(inner, crc)
+		inner = protowire.AppendTag(inner, checksummedDataContentField, protowire.BytesType)
+		inner = protowire.AppendBytes(inner, content)
+		return inner
+	}
+
+	splitIntoTrackedBufs := func(raw []byte, chunkSize int, frees *int) mem.BufferSlice {
+		var slice mem.BufferSlice
+		for i := 0; i < len(raw); i += chunkSize {
+			end := min(i+chunkSize, len(raw))
+			chunk := append([]byte(nil), raw[i:end]...)
+			slice = append(slice, &trackingBuffer{Buffer: mem.SliceBuffer(chunk), frees: frees})
+		}
+		return slice
+	}
+
+	content := []byte("exact-boundary-payload")
+	wantCRC := crc32.Checksum(content, crc32.MakeTable(crc32.Castagnoli))
+
+	// ReadObjectResponse: field 1 = ChecksummedData.
+	var readObjWire []byte
+	readObjWire = protowire.AppendTag(readObjWire, checksummedDataFieldReadObject, protowire.BytesType)
+	readObjWire = protowire.AppendBytes(readObjWire, buildChecksummedDataWire(content, wantCRC))
+
+	// BidiReadObjectResponse: field 1 = ObjectRangeData { field 2 = ReadRange{read_id=1}, field 1 = ChecksummedData }.
+	var rrWire []byte
+	rrWire = protowire.AppendTag(rrWire, 3, protowire.VarintType) // ReadRange.read_id = field 3
+	rrWire = protowire.AppendVarint(rrWire, defaultReadID)
+	var ordWire []byte
+	ordWire = protowire.AppendTag(ordWire, readRangeField, protowire.BytesType)
+	ordWire = protowire.AppendBytes(ordWire, rrWire)
+	ordWire = protowire.AppendTag(ordWire, checksummedDataField, protowire.BytesType)
+	ordWire = protowire.AppendBytes(ordWire, buildChecksummedDataWire(content, wantCRC))
+	var bidiWire []byte
+	bidiWire = protowire.AppendTag(bidiWire, objectRangeDataField, protowire.BytesType)
+	bidiWire = protowire.AppendBytes(bidiWire, ordWire)
+
+	t.Run("readObjectResponseDecoder_Read", func(t *testing.T) {
+		var frees int
+		databufs := splitIntoTrackedBufs(readObjWire, 4, &frees)
+		wantFrees := len(databufs)
+
+		dec := &readObjectResponseDecoder{databufs: databufs}
+		if err := dec.readFullObjectResponse(); err != nil {
+			t.Fatalf("readFullObjectResponse: %v", err)
+		}
+		if dec.dataOffsets.endBuf != len(databufs) || dec.dataOffsets.endOff != 0 {
+			t.Fatalf("unexpected end offsets: got (%d, %d), want (%d, 0)", dec.dataOffsets.endBuf, dec.dataOffsets.endOff, len(databufs))
+		}
+
+		var got []byte
+		var gotCRC uint32
+		tab := crc32.MakeTable(crc32.Castagnoli)
+		buf := make([]byte, 3)
+		for !dec.done {
+			n := dec.readAndUpdateCRC(buf, func(b []byte) { gotCRC = crc32.Update(gotCRC, tab, b) })
+			got = append(got, buf[:n]...)
+		}
+		if !bytes.Equal(got, content) {
+			t.Errorf("content = %q, want %q", got, content)
+		}
+		if gotCRC != wantCRC {
+			t.Errorf("crc = %d, want %d", gotCRC, wantCRC)
+		}
+		if frees != wantFrees {
+			t.Errorf("buffer frees = %d, want %d", frees, wantFrees)
+		}
+	})
+
+	t.Run("readObjectResponseDecoder_WriteTo", func(t *testing.T) {
+		var frees int
+		databufs := splitIntoTrackedBufs(readObjWire, 4, &frees)
+		wantFrees := len(databufs)
+
+		dec := &readObjectResponseDecoder{databufs: databufs}
+		if err := dec.readFullObjectResponse(); err != nil {
+			t.Fatalf("readFullObjectResponse: %v", err)
+		}
+
+		var out bytes.Buffer
+		var gotCRC uint32
+		tab := crc32.MakeTable(crc32.Castagnoli)
+		n, err := dec.writeToAndUpdateCRC(&out, func(b []byte) { gotCRC = crc32.Update(gotCRC, tab, b) })
+		if err != nil {
+			t.Fatalf("writeToAndUpdateCRC: %v", err)
+		}
+		if n != int64(len(content)) || !bytes.Equal(out.Bytes(), content) {
+			t.Errorf("written = %d (%q), want %d (%q)", n, out.Bytes(), len(content), content)
+		}
+		if !dec.done {
+			t.Error("dec.done = false, want true")
+		}
+		if gotCRC != wantCRC {
+			t.Errorf("crc = %d, want %d", gotCRC, wantCRC)
+		}
+		if frees != wantFrees {
+			t.Errorf("buffer frees = %d, want %d", frees, wantFrees)
+		}
+	})
+
+	t.Run("readResponseDecoder_Read", func(t *testing.T) {
+		var frees int
+		databufs := splitIntoTrackedBufs(bidiWire, 4, &frees)
+
+		dec := &readResponseDecoder{databufs: databufs}
+		if err := dec.readFullObjectResponse(); err != nil {
+			t.Fatalf("readFullObjectResponse: %v", err)
+		}
+		off := dec.dataOffsets[defaultReadID]
+		if off.endBuf != len(databufs) || off.endOff != 0 {
+			t.Fatalf("unexpected end offsets: got (%d, %d), want (%d, 0)", off.endBuf, off.endOff, len(databufs))
+		}
+
+		var got []byte
+		var gotCRC uint32
+		tab := crc32.MakeTable(crc32.Castagnoli)
+		buf := make([]byte, 3)
+		for !dec.done {
+			n, found := dec.readAndUpdateCRC(buf, defaultReadID, func(b []byte) { gotCRC = crc32.Update(gotCRC, tab, b) })
+			if !found {
+				t.Fatal("readAndUpdateCRC returned found=false")
+			}
+			got = append(got, buf[:n]...)
+		}
+		if !bytes.Equal(got, content) {
+			t.Errorf("content = %q, want %q", got, content)
+		}
+		if gotCRC != wantCRC {
+			t.Errorf("crc = %d, want %d", gotCRC, wantCRC)
+		}
+		dec.databufs.Free()
+	})
+
+	t.Run("empty_content_at_buffer_end", func(t *testing.T) {
+		var emptyReadObj []byte
+		emptyReadObj = protowire.AppendTag(emptyReadObj, checksummedDataFieldReadObject, protowire.BytesType)
+		emptyReadObj = protowire.AppendBytes(emptyReadObj, buildChecksummedDataWire(nil, 0))
+
+		var readFrees int
+		databufs := splitIntoTrackedBufs(emptyReadObj, 4, &readFrees)
+		dec := &readObjectResponseDecoder{databufs: databufs}
+		if err := dec.readFullObjectResponse(); err != nil {
+			t.Fatalf("readFullObjectResponse: %v", err)
+		}
+		if n := dec.readAndUpdateCRC(make([]byte, 4), func([]byte) {}); n != 0 {
+			t.Errorf("readAndUpdateCRC = %d, want 0", n)
+		}
+		if !dec.done {
+			t.Error("dec.done = false, want true")
+		}
+		if readFrees != len(databufs) {
+			t.Errorf("buffer frees = %d, want %d", readFrees, len(databufs))
+		}
+
+		var writeToFrees int
+		writeToBufs := splitIntoTrackedBufs(emptyReadObj, 4, &writeToFrees)
+		writeToDec := &readObjectResponseDecoder{databufs: writeToBufs}
+		if err := writeToDec.readFullObjectResponse(); err != nil {
+			t.Fatalf("readFullObjectResponse (writeTo): %v", err)
+		}
+		var out bytes.Buffer
+		if n, err := writeToDec.writeToAndUpdateCRC(&out, func([]byte) {}); err != nil || n != 0 {
+			t.Errorf("writeToAndUpdateCRC = (%d, %v), want (0, nil)", n, err)
+		}
+		if !writeToDec.done {
+			t.Error("writeToDec.done = false, want true")
+		}
+		if writeToFrees != len(writeToBufs) {
+			t.Errorf("writeTo buffer frees = %d, want %d", writeToFrees, len(writeToBufs))
+		}
+
+		var emptyORD []byte
+		emptyORD = protowire.AppendTag(emptyORD, readRangeField, protowire.BytesType)
+		emptyORD = protowire.AppendBytes(emptyORD, rrWire)
+		emptyORD = protowire.AppendTag(emptyORD, checksummedDataField, protowire.BytesType)
+		emptyORD = protowire.AppendBytes(emptyORD, buildChecksummedDataWire(nil, 0))
+		var emptyBidi []byte
+		emptyBidi = protowire.AppendTag(emptyBidi, objectRangeDataField, protowire.BytesType)
+		emptyBidi = protowire.AppendBytes(emptyBidi, emptyORD)
+
+		var bidiFrees int
+		bidiBufs := splitIntoTrackedBufs(emptyBidi, 4, &bidiFrees)
+		bidiDec := &readResponseDecoder{databufs: bidiBufs}
+		if err := bidiDec.readFullObjectResponse(); err != nil {
+			t.Fatalf("readFullObjectResponse (bidi): %v", err)
+		}
+		if n, found := bidiDec.readAndUpdateCRC(make([]byte, 4), defaultReadID, func([]byte) {}); n != 0 || !found {
+			t.Errorf("bidi readAndUpdateCRC = (%d, %v), want (0, true)", n, found)
+		}
+		if !bidiDec.done {
+			t.Error("bidiDec.done = false, want true")
+		}
+		bidiDec.databufs.Free()
+	})
 }

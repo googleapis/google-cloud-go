@@ -1824,6 +1824,7 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 			// If we are done reading the current msg, validate chunk checksum and free buffers.
 			if r.currMsg.done {
 				r.currMsg.databufs.Free()
+				r.currMsg = nil
 				if err := r.checkAndResetChunkCRC(); err != nil {
 					return n, err
 				}
@@ -1898,19 +1899,22 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 				r.updateCRC(b)
 			})
 			r.seen += written
-			// We have processed the message, so free the buffer
+			// We have processed the message, so free the buffer and clear currMsg
+			// before checking errors so subsequent calls cannot reuse or double-free
+			// pooled buffers.
 			r.currMsg.databufs.Free()
+			done := r.currMsg.done
+			r.currMsg = nil
 			if err != nil {
 				return r.seen - alreadySeen, err
 			}
-			if r.currMsg.done {
+			if done {
 				if err := r.checkAndResetChunkCRC(); err != nil {
 					return r.seen - alreadySeen, err
 				}
 			}
 			// If no data was found, we still need to fetch the next message.
 			// If data was found, we also need the next message. So we always fall through.
-			r.currMsg = nil
 
 		} else if r.currMsg != nil {
 			if err := r.checkAndResetChunkCRC(); err != nil {
@@ -2121,6 +2125,10 @@ func (d *readResponseDecoder) readAndUpdateCRC(p []byte, readID int64, updateCRC
 		// If the message contains no data for this ID, return 0 bytes read.
 		return 0, false
 	}
+	if offsets.currBuf == offsets.endBuf && offsets.currOff == offsets.endOff {
+		d.done = true
+		return 0, true
+	}
 
 	databuf := d.databufs[offsets.currBuf]
 	startOff := offsets.currOff
@@ -2136,14 +2144,14 @@ func (d *readResponseDecoder) readAndUpdateCRC(p []byte, readID int64, updateCRC
 	}
 	offsets.currOff += uint64(n)
 
-	// We've read all the data for this specific range from this message.
-	if offsets.currBuf == offsets.endBuf && offsets.currOff == offsets.endOff {
-		d.done = true // Mark as done for this read, though the overall message might have more data.
-	}
 	// We are at the end of the current buffer for this range.
 	if offsets.currBuf != offsets.endBuf && offsets.currOff == uint64(databuf.Len()) {
 		offsets.currOff = 0
 		offsets.currBuf++
+	}
+	// We've read all the data for this specific range from this message.
+	if offsets.currBuf == offsets.endBuf && offsets.currOff == offsets.endOff {
+		d.done = true // Mark as done for this read, though the overall message might have more data.
 	}
 
 	// Update the map with the new offsets.

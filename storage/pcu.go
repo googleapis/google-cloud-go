@@ -297,6 +297,8 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	pw.ObjectAttrs.Name = partName
 	pw.ObjectAttrs.Size = task.size
 	pw.ObjectAttrs.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
+	pw.ObjectAttrs.ACL = s.w.ObjectAttrs.ACL
+	pw.ObjectAttrs.PredefinedACL = s.w.ObjectAttrs.PredefinedACL
 	pw.DisableAutoChecksum = s.w.DisableAutoChecksum
 	pw.ChunkSize = 0 // Force single-shot upload for parts.
 
@@ -558,6 +560,8 @@ func (s *pcuState) composeParts() error {
 				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
 				composer := interHandle.Key(s.w.o.encryptionKey).ComposerFrom(finalComps[start:end]...)
 				composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
+				composer.ACL = s.w.ObjectAttrs.ACL
+				composer.PredefinedACL = s.w.ObjectAttrs.PredefinedACL
 				composer.DeleteSourceObjects = true
 
 				interAttrs, err := s.composeFn(s.ctx, composer)

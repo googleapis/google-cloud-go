@@ -164,8 +164,9 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}
 
 	spec := &storagepb.WriteObjectSpec{
-		Resource:   params.attrs.toProtoObject(params.bucket),
-		Appendable: proto.Bool(params.append),
+		Resource:      params.attrs.toProtoObject(params.bucket),
+		PredefinedAcl: params.attrs.PredefinedACL,
+		Appendable:    proto.Bool(params.append),
 	}
 	// WriteObject doesn't support the generation condition, so use default.
 	if err := applyCondsProto("WriteObject", defaultGen, params.conds, spec); err != nil {
