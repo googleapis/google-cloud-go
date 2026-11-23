@@ -505,8 +505,8 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 	if isEmulatorEnvSet() {
 		t.Skip("built-in metrics are off with the emulator")
 	}
-	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
 	isolateChannelPoolEnv(t)
+	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
 	disableDCPDrainIdleFloor(t)
 	monitoringServer := installTestMonitoringExporter(t).server
 
@@ -578,9 +578,9 @@ func TestChannelPoolBuiltinMetricsNotSentToCustomerMeterProviders(t *testing.T) 
 	if isEmulatorEnvSet() {
 		t.Skip("built-in metrics are off with the emulator")
 	}
+	isolateChannelPoolEnv(t)
 	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
 	t.Setenv(disableChannelPoolBuiltinMetricsEnvVar, "")
-	isolateChannelPoolEnv(t)
 	enableOpenTelemetryMetricsForTest(t)
 	disableDCPDrainIdleFloor(t)
 	monitoringServer := installTestMonitoringExporter(t).server
