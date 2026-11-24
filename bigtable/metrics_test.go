@@ -160,7 +160,8 @@ func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientCo
 		return nil, nil, fmt.Errorf("failed to dial test server: %w", err)
 	}
 
-	clientOpts := []option.ClientOption{option.WithGRPCConn(conn)}
+	// Built-in metrics need an explicit universe domain when a custom conn is used.
+	clientOpts := []option.ClientOption{option.WithGRPCConn(conn), option.WithUniverseDomain("googleapis.com")}
 
 	ctx := context.Background()
 	client, err := NewClientWithConfig(ctx, projectID, instanceID, cfg, clientOpts...)

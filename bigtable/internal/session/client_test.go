@@ -644,9 +644,9 @@ func TestNewClient_ForwardsClientOptionsToMetricsFactory(t *testing.T) {
 
 	udOpt := option.WithUniverseDomain("tpc.example.test")
 	epOpt := option.WithEndpoint("127.0.0.1:1")
-	c, err := NewClient(context.Background(), "proj", "inst", "prof", "", nil, &btpb.FeatureFlags{},
-		udOpt, epOpt, option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
+	opts := []option.ClientOption{udOpt, epOpt, option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials()))}
+	c, err := NewClient(context.Background(), "proj", "inst", "prof", "", nil, &btpb.FeatureFlags{}, opts, opts...)
 	if err == nil && c != nil {
 		defer c.Close()
 	}

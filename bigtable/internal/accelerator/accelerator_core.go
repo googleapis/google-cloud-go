@@ -102,7 +102,10 @@ var newSessionClient = func(
 	// this instance exists only to read .Enabled, so shut it down immediately.
 	// The accelerator has no separate classic data path that would use a second
 	// factory, and leaving it running would double-export session's metrics.
-	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, clientName, metricsProvider, opts...)
+	// The daemon's metrics exporters always use Application Default
+	// Credentials: caller credentials are scoped to Bigtable data only.
+	exporterOpts := metrics.WithoutCredentialOptions(opts...)
+	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, clientName, metricsProvider, exporterOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +124,7 @@ var newSessionClient = func(
 		EnableDirectAccess: true,
 	})
 
-	return session.NewClient(ctx, project, instance, appProfile, clientName, metricsProvider, featureFlags, opts...)
+	return session.NewClient(ctx, project, instance, appProfile, clientName, metricsProvider, featureFlags, exporterOpts, opts...)
 }
 
 // Channel is an in-process grpc.ClientConnInterface backed by

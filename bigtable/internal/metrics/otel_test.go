@@ -253,3 +253,38 @@ func TestNewFactory_DisablesMetricsOnEndpointWithoutUniverseDomain(t *testing.T)
 		t.Error("NewFactory enabled metrics with WithEndpoint and no universe domain; want disabled")
 	}
 }
+
+func TestHasCustomTargetWithoutUniverseDomain(t *testing.T) {
+	endpoint := option.WithEndpoint("bigtable.tpc.example.test:443")
+	universe := option.WithUniverseDomain("tpc.example.test")
+	tests := []struct {
+		name   string
+		envVar string
+		opts   []option.ClientOption
+		want   bool
+	}{
+		{name: "no custom target"},
+		{name: "endpoint only", opts: []option.ClientOption{endpoint}, want: true},
+		{name: "grpc conn only", opts: []option.ClientOption{option.WithGRPCConn(nil)}, want: true},
+		{name: "endpoint with empty universe domain", opts: []option.ClientOption{endpoint, option.WithUniverseDomain("")}, want: true},
+		{name: "endpoint with universe domain", opts: []option.ClientOption{endpoint, universe}},
+		{name: "grpc conn with universe domain", opts: []option.ClientOption{option.WithGRPCConn(nil), universe}},
+		{name: "endpoint with universe domain env var", envVar: "tpc.example.test", opts: []option.ClientOption{endpoint}},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.envVar)
+			if got := hasCustomTargetWithoutUniverseDomain(tc.opts); got != tc.want {
+				t.Errorf("hasCustomTargetWithoutUniverseDomain() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestWithoutCredentialOptions(t *testing.T) {
+	universe := option.WithUniverseDomain("tpc.example.test")
+	got := WithoutCredentialOptions(universe, option.WithCredentials(nil), option.WithAPIKey("k"))
+	if len(got) != 1 || got[0] != universe {
+		t.Errorf("WithoutCredentialOptions() = %v, want only the universe domain option", got)
+	}
+}

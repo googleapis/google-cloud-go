@@ -24,8 +24,10 @@ package internal
 import (
 	"context"
 	"errors"
+	"log"
 	"os"
 	"reflect"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -80,12 +82,11 @@ var (
 	}
 
 	endpointOptionType       = reflect.TypeOf(option.WithEndpoint(""))
+	grpcConnOptionType       = reflect.TypeOf(option.WithGRPCConn(nil))
 	universeDomainOptionType = reflect.TypeOf(option.WithUniverseDomain(""))
 
-	// Exporter-relevant client options forwarded to Cloud Monitoring exporters
-	// (universe domain and credentials only; Bigtable-specific options are dropped).
-	exporterOptionTypes = map[reflect.Type]bool{
-		universeDomainOptionType:                                true,
+	// Credential options forwarded to the Cloud Monitoring exporters.
+	credentialOptionTypes = map[reflect.Type]bool{
 		reflect.TypeOf(option.WithCredentials(nil)):             true,
 		reflect.TypeOf(option.WithCredentialsFile("")):          true,
 		reflect.TypeOf(option.WithCredentialsJSON(nil)):         true,
@@ -106,12 +107,17 @@ var (
 	CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
 		filteredOptions := make([]option.ClientOption, 0, len(btOpts))
 		for _, opt := range btOpts {
-			if opt != nil && exporterOptionTypes[reflect.TypeOf(opt)] {
+			if opt == nil {
+				continue
+			}
+			if t := reflect.TypeOf(opt); t == universeDomainOptionType || credentialOptionTypes[t] {
 				filteredOptions = append(filteredOptions, opt)
 			}
 		}
 		return filteredOptions
 	}
+
+	warnMetricsDisabledOnce sync.Once
 )
 
 // Factory holds the OTel meter provider, exporter shutdown hook, and the
@@ -158,10 +164,13 @@ type Factory struct {
 func NewFactory(ctx context.Context, project, instance, appProfile, clientNameOverride string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*Factory, error) {
 	switch metricsProvider.(type) {
 	case nil, DefaultMetricsProvider:
-		// Disable default Cloud Monitoring export when an explicit endpoint is
-		// supplied without a universe domain, so the exporter does not fall back
-		// to monitoring.googleapis.com:443 in endpoint-only TPC configs.
-		if hasEndpointWithoutUniverseDomain(opts) {
+		// Disable default Cloud Monitoring export when a custom endpoint or
+		// connection is supplied without a universe domain, so the exporter
+		// does not fall back to monitoring.googleapis.com:443 in TPC configs.
+		if hasCustomTargetWithoutUniverseDomain(opts) {
+			warnMetricsDisabledOnce.Do(func() {
+				log.Print("bigtable: built-in client metrics are disabled because option.WithEndpoint or option.WithGRPCConn is set without a universe domain; set option.WithUniverseDomain or GOOGLE_CLOUD_UNIVERSE_DOMAIN to enable them")
+			})
 			return disabledMetricsTracerFactory, nil
 		}
 	case NoopMetricsProvider:
@@ -265,23 +274,40 @@ func NewFactoryForTest(project, instance, appProfile string, mp metric.MeterProv
 	return tf, nil
 }
 
-func hasEndpointWithoutUniverseDomain(opts []option.ClientOption) bool {
+// WithoutCredentialOptions returns opts with credential options removed, so
+// the exporters fall back to Application Default Credentials.
+func WithoutCredentialOptions(opts ...option.ClientOption) []option.ClientOption {
+	filtered := make([]option.ClientOption, 0, len(opts))
+	for _, opt := range opts {
+		if opt != nil && !credentialOptionTypes[reflect.TypeOf(opt)] {
+			filtered = append(filtered, opt)
+		}
+	}
+	return filtered
+}
+
+// hasCustomTargetWithoutUniverseDomain reports whether opts point the client
+// at a custom endpoint or connection without naming a universe domain.
+func hasCustomTargetWithoutUniverseDomain(opts []option.ClientOption) bool {
 	if os.Getenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN") != "" {
 		return false
 	}
-	var hasEndpoint, hasUniverseDomain bool
+	var hasCustomTarget, hasUniverseDomain bool
 	for _, opt := range opts {
 		if opt == nil {
 			continue
 		}
 		switch reflect.TypeOf(opt) {
-		case endpointOptionType:
-			hasEndpoint = true
+		case endpointOptionType, grpcConnOptionType:
+			hasCustomTarget = true
 		case universeDomainOptionType:
-			hasUniverseDomain = true
+			// An empty universe domain is the same as not setting one.
+			if reflect.ValueOf(opt).String() != "" {
+				hasUniverseDomain = true
+			}
 		}
 	}
-	return hasEndpoint && !hasUniverseDomain
+	return hasCustomTarget && !hasUniverseDomain
 }
 
 func builtInMeterProviderOptions(project string, exporterOpts ...option.ClientOption) ([]sdkmetric.Option, error) {
