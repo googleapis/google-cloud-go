@@ -46,6 +46,7 @@ import (
 	"github.com/googleapis/gax-go/v2/callctx"
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -3444,10 +3445,26 @@ func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 			instructions     []string
 			grpcInstructions []string
 			httpOnly         bool
+			singleShot       bool
 			config           *retryConfig
 			wantErr          bool
 			wantErrMsg       string
 		}{
+			{
+				name:         "single_shot",
+				instructions: []string{"return-503", "return-503"},
+				singleShot:   true,
+				config:       &retryConfig{maxAttempts: intPointer(2), backoff: backoff},
+				wantErr:      true,
+				wantErrMsg:   "retry failed after 2 attempts",
+			},
+			{
+				name:         "session_init_exhausted",
+				instructions: []string{"return-503", "return-503"},
+				config:       &retryConfig{maxAttempts: intPointer(2), backoff: backoff},
+				wantErr:      true,
+				wantErrMsg:   "retry failed after 2 attempts",
+			},
 			{
 				name:         "resumable_chunk",
 				instructions: []string{"return-503-after-257K", "return-503", "return-503"},
@@ -3490,6 +3507,11 @@ func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 				testID := createRetryTest(t, client, map[string][]string{"storage.objects.insert": instructions})
 				ctx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
 
+				chunkSize := 256 * 1024
+				if tc.singleShot {
+					// The data fits in one chunk, so it is sent in a single request.
+					chunkSize = googleapi.DefaultUploadChunkSize
+				}
 				var writeErr error
 				params := &openWriterParams{
 					attrs: &ObjectAttrs{
@@ -3498,7 +3520,7 @@ func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 						Generation: defaultGen,
 					},
 					bucket:    bucket,
-					chunkSize: 256 * 1024,
+					chunkSize: chunkSize,
 					ctx:       ctx,
 					donec:     make(chan struct{}),
 					setError:  func(err error) { writeErr = err },

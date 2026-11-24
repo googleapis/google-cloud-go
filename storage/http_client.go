@@ -33,7 +33,6 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
-	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -1232,49 +1231,43 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			// call to set up the upload as well as calls to upload individual chunks
 			// for a resumable upload (as long as the chunk size is non-zero). WithRetry
 			// below replaces these defaults when retries are on or for RetryNever.
-
-			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
-			var useRetry bool
-			if (s.retry == nil || s.retry.policy == RetryIdempotent) && s.idempotent {
-				useRetry = true
-			} else if s.retry != nil && s.retry.policy == RetryAlways {
-				useRetry = true
+			// Writers without preconditions under RetryIdempotent keep the defaults,
+			// so maxAttempts doesn't limit their chunk retries. Stall retries under
+			// ChunkTransferTimeout skip WithRetry, so maxAttempts and RetryNever
+			// don't apply to them.
+			retry := s.retry
+			if retry == nil {
+				retry = defaultRetry
 			}
 			attempts := 1
 			var maxAttemptsReached bool
-			if useRetry {
-				var bo *gax.Backoff
-				if s.retry != nil {
-					bo = s.retry.backoff
-				}
-
-				// retryFunc enforces maxAttempts and adapts shouldRetry to WithRetry.
-				retryFunc := func(err error) bool {
+			switch {
+			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
+			case retry.policy == RetryAlways || (retry.policy == RetryIdempotent && s.idempotent):
+				call.WithRetry(retry.backoff, func(err error) bool {
 					if err == nil {
 						// Called after each successful request, so each request gets its own budget.
 						attempts = 1
 						maxAttemptsReached = false
 						return false
 					}
-					if s.retry != nil && s.retry.maxAttempts != nil && attempts >= *s.retry.maxAttempts {
+					if retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
 						maxAttemptsReached = true
 						return false
 					}
-
-					retryable := s.retry.runShouldRetry(err, nil)
-					if retryable {
-						attempts++
+					if !retry.runShouldRetry(err, nil) {
+						return false
 					}
-					return retryable
-				}
-				call.WithRetry(bo, retryFunc)
-			} else if s.retry != nil && s.retry.policy == RetryNever {
+					attempts++
+					return true
+				})
+			case retry.policy == RetryNever:
 				// Without WithRetry, the upload library retries resumable chunks by default.
 				call.WithRetry(nil, func(error) bool { return false })
 			}
 			resp, err = call.Do()
 			if err != nil && maxAttemptsReached {
-				err = fmt.Errorf("storage: retry failed after %d attempts; last error: %w", *s.retry.maxAttempts, err)
+				err = fmt.Errorf("storage: retry failed after %d attempts; last error: %w", *retry.maxAttempts, err)
 			}
 		}
 		if err != nil {
