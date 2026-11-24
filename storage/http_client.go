@@ -1239,10 +1239,8 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			// retry attempt header injection with "client header" injection.
 			setClientHeader(call.Header())
 
-			// The internals that perform call.Do automatically retry both the initial
-			// call to set up the upload as well as calls to upload individual chunks
-			// for a resumable upload (as long as the chunk size is non-zero). Below,
-			// the retry policy overrides these default retries.
+			// By default, call.Do retries the initial request and resumable chunks.
+			// WithRetry below replaces that when retries are on or for RetryNever.
 
 			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
 			var useRetry bool
@@ -1257,7 +1255,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					bo = s.retry.backoff
 				}
 
-				// Wrap shouldRetry to adapt to the googleapi WithRetry signature.
+				// retryFunc enforces maxAttempts and adapts shouldRetry to WithRetry.
 				retryFunc := func(err error) bool {
 					if err == nil {
 						return false
@@ -1275,13 +1273,12 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				}
 				call.WithRetry(bo, retryFunc)
 			} else if s.retry != nil && s.retry.policy == RetryNever {
-				// Without WithRetry, the underlying upload library retries resumable
-				// chunks by default. Disable that to honor RetryNever.
+				// Without WithRetry, the upload library retries resumable chunks by default.
 				call.WithRetry(nil, func(error) bool { return false })
 			}
 			resp, err = call.Do()
-			if err != nil && maxAttemptsReached && s.retry != nil && s.retry.maxAttempts != nil {
-				err = fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *s.retry.maxAttempts, err)
+			if err != nil && maxAttemptsReached {
+				err = fmt.Errorf("storage: retry failed after %d attempts; last error: %w", *s.retry.maxAttempts, err)
 			}
 		}
 		if err != nil {
