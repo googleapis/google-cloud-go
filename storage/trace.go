@@ -193,6 +193,14 @@ func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) 
 	return ctx, span
 }
 
+// withSpanFrom returns a copy of ctx whose active span is the span in spanCtx.
+// Readers use it so that reopens made after NewRangeReader returns are traced
+// under the Object.Reader span, which stays open until Reader.Close, rather
+// than under the already-ended transport span.
+func withSpanFrom(ctx, spanCtx context.Context) context.Context {
+	return trace.ContextWithSpan(ctx, trace.SpanFromContext(spanCtx))
+}
+
 func isNotFoundError(err error) bool {
 	if errors.Is(err, ErrBucketNotExist) {
 		return true

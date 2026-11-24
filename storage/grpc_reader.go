@@ -83,6 +83,7 @@ func (bytesCodecReadObject) Name() string {
 
 // NewRangeReaderReadObject is the legacy (non-bidi) implementation of reads.
 func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
+	parentCtx := ctx
 	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReaderReadObject", rpcSystemGRPCOpt)
 	defer func() { endSpan(ctx, err) }()
 
@@ -109,7 +110,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 
 	// Define a function that initiates a Read with offset and length, assuming
 	// we have already read seen bytes.
-	reopen := func(seen int64) (*readStreamResponseReadObject, context.CancelFunc, error) {
+	openRange := func(ctx context.Context, seen int64) (*readStreamResponseReadObject, context.CancelFunc, error) {
 		// If the context has already expired, return immediately without making
 		// we call.
 		if err := ctx.Err(); err != nil {
@@ -185,8 +186,14 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 
 		return &readStreamResponseReadObject{stream, decoder}, cancel, nil
 	}
+	// Mid-stream reopens happen after this span ends, so trace them under
+	// the reader's span instead.
+	reopenCtx := withSpanFrom(ctx, parentCtx)
+	reopen := func(seen int64) (*readStreamResponseReadObject, context.CancelFunc, error) {
+		return openRange(reopenCtx, seen)
+	}
 
-	res, cancel, err := reopen(0)
+	res, cancel, err := openRange(ctx, 0)
 	if err != nil {
 		return nil, err
 	}
