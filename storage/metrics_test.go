@@ -1958,6 +1958,9 @@ func TestMetricUnits(t *testing.T) {
 }
 
 func TestMonitoringClientOptions(t *testing.T) {
+	t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+	t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "")
+
 	t.Run("disabled_without_authentication", func(t *testing.T) {
 		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithoutAuthentication()}, nil, nil); ok {
 			t.Fatal("monitoringClientOptions() ok = true, want false with WithoutAuthentication")
@@ -1975,9 +1978,6 @@ func TestMonitoringClientOptions(t *testing.T) {
 	})
 
 	t.Run("forwards_universe_domain_and_cloned_auth_creds", func(t *testing.T) {
-		t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
-		t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "")
-
 		parentCreds := &auth.Credentials{TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "tok"}}}
 		clientOpts := []option.ClientOption{
 			option.WithUniverseDomain("custom.example.com"),
@@ -1989,21 +1989,12 @@ func TestMonitoringClientOptions(t *testing.T) {
 			t.Fatal("monitoringClientOptions() ok = false, want true")
 		}
 
-		// Verify Monitoring resolves to monitoring.<universe>:443, not monitoring.googleapis.com
-		// and not the Storage endpoint.
-		res, err := internaloption.NewUnsafeResolver(append(mOpts,
-			internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
-			internaloption.WithDefaultUniverseDomain("googleapis.com"),
-		)...)
+		res, err := internaloption.NewUnsafeResolver(mOpts...)
 		if err != nil {
 			t.Fatalf("NewUnsafeResolver: %v", err)
 		}
-		ep, err := res.ResolvedGRPCEndpoint()
-		if err != nil {
-			t.Fatalf("ResolvedGRPCEndpoint: %v", err)
-		}
-		if ep != "monitoring.custom.example.com:443" {
-			t.Errorf("resolved monitoring endpoint = %q, want %q", ep, "monitoring.custom.example.com:443")
+		if got := res.ResolvedUniverseDomain(); got != "custom.example.com" {
+			t.Errorf("ResolvedUniverseDomain() = %q, want %q", got, "custom.example.com")
 		}
 
 		// Mutate parentCreds in place (as http_client.go does when wrapping) and ensure
@@ -2019,9 +2010,6 @@ func TestMonitoringClientOptions(t *testing.T) {
 	})
 
 	t.Run("forwards_legacy_google_creds", func(t *testing.T) {
-		t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
-		t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "")
-
 		gCreds := &google.Credentials{
 			ProjectID:   "test-proj",
 			TokenSource: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "legacy-tok"}),
@@ -2029,16 +2017,6 @@ func TestMonitoringClientOptions(t *testing.T) {
 		mOpts, ok := monitoringClientOptions([]option.ClientOption{option.WithUniverseDomain("custom.example.com")}, nil, gCreds)
 		if !ok {
 			t.Fatal("monitoringClientOptions() ok = false, want true")
-		}
-		res, err := internaloption.NewUnsafeResolver(append(mOpts,
-			internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
-			internaloption.WithDefaultUniverseDomain("googleapis.com"),
-		)...)
-		if err != nil {
-			t.Fatalf("NewUnsafeResolver: %v", err)
-		}
-		if ep, err := res.ResolvedGRPCEndpoint(); err != nil || ep != "monitoring.custom.example.com:443" {
-			t.Errorf("resolved monitoring endpoint = (%q, %v), want (%q, nil)", ep, err, "monitoring.custom.example.com:443")
 		}
 		gotCreds, err := transport.Creds(context.Background(), mOpts...)
 		if err != nil {

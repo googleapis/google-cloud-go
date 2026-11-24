@@ -51,18 +51,15 @@ type storageMonitoredResource struct {
 }
 
 func (smr *storageMonitoredResource) exporter(monitoringOpts ...option.ClientOption) (metric.Exporter, error) {
-	opts := []mexporter.Option{
+	exporter, err := mexporter.New(
 		mexporter.WithProjectID(smr.project),
 		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
 			return formatMetricWithPrefix(m, metricPrefix)
 		}),
 		mexporter.WithCreateServiceTimeSeries(),
 		mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
-	}
-	if len(monitoringOpts) > 0 {
-		opts = append(opts, mexporter.WithMonitoringClientOptions(monitoringOpts...))
-	}
-	exporter, err := mexporter.New(opts...)
+		mexporter.WithMonitoringClientOptions(monitoringOpts...),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating metrics exporter: %w", err)
 	}

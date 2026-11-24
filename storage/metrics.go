@@ -181,7 +181,7 @@ func monitoringClientOptions(clientOpts []option.ClientOption, authCreds *auth.C
 
 // newMetricsGCMExporter creates a Google Cloud Monitoring exporter.
 func newMetricsGCMExporter(ctx context.Context, projectID string, monitoringOpts ...option.ClientOption) (sdkmetric.Exporter, error) {
-	opts := []mexporter.Option{
+	exporter, err := mexporter.New(
 		mexporter.WithProjectID(projectID),
 		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
 			return formatMetricWithPrefix(m, customMetricPrefix)
@@ -199,11 +199,8 @@ func newMetricsGCMExporter(ctx context.Context, projectID string, monitoringOpts
 		mexporter.WithFilteredResourceAttributes(func(kv attribute.KeyValue) bool {
 			return keepFilteredResourceAttribute(string(kv.Key))
 		}),
-	}
-	if len(monitoringOpts) > 0 {
-		opts = append(opts, mexporter.WithMonitoringClientOptions(monitoringOpts...))
-	}
-	exporter, err := mexporter.New(opts...)
+		mexporter.WithMonitoringClientOptions(monitoringOpts...),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating GCM exporter: %w", err)
 	}
