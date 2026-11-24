@@ -15,13 +15,20 @@
 package main
 
 import (
+	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"golang.org/x/oauth2/google"
+	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
 )
 
 func TestEmailFromCredsJSON(t *testing.T) {
@@ -93,11 +100,25 @@ func TestWriteIdentity_WritesDocNextToSocket(t *testing.T) {
 
 	// Point ADC at a service-account key so resolution is local and
 	// deterministic (no metadata server, no network).
+	privKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatalf("rsa.GenerateKey: %v", err)
+	}
+	pkcs8Bytes, err := x509.MarshalPKCS8PrivateKey(privKey)
+	if err != nil {
+		t.Fatalf("MarshalPKCS8PrivateKey: %v", err)
+	}
+	pemBytes := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: pkcs8Bytes})
+	pemEscaped, err := json.Marshal(string(pemBytes))
+	if err != nil {
+		t.Fatalf("json.Marshal PEM: %v", err)
+	}
+
 	keyPath := filepath.Join(dir, "key.json")
 	const email = "unit@proj.iam.gserviceaccount.com"
 	key := `{"type":"service_account","project_id":"proj","client_email":"` + email + `",` +
 		`"private_key_id":"kid","token_uri":"https://oauth2.googleapis.com/token",` +
-		`"private_key":"-----BEGIN PRIVATE KEY-----\nMIIB\n-----END PRIVATE KEY-----\n"}`
+		`"private_key":` + string(pemEscaped) + `}`
 	if err := os.WriteFile(keyPath, []byte(key), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -105,10 +126,10 @@ func TestWriteIdentity_WritesDocNextToSocket(t *testing.T) {
 
 	scopes := []string{"https://www.googleapis.com/auth/bigtable.data"}
 	// Resolve ADC once (as main.go does) and derive the principal from those same
-	// creds, rather than a second FindDefaultCredentials call inside resolution.
-	creds, err := google.FindDefaultCredentials(t.Context(), scopes...)
+	// creds, rather than a second DetectDefault call inside resolution.
+	creds, err := resolveCredentials(t.Context(), credentials.DetectDefault, scopes)
 	if err != nil {
-		t.Fatalf("FindDefaultCredentials: %v", err)
+		t.Fatalf("resolveCredentials: %v", err)
 	}
 	principal, err := principalFromCreds(t.Context(), creds)
 	if err != nil {
@@ -143,5 +164,85 @@ func TestWriteIdentity_WritesDocNextToSocket(t *testing.T) {
 	// The document must never contain the private key material.
 	if strings.Contains(string(b), "PRIVATE KEY") {
 		t.Errorf("identity doc leaked key material: %s", b)
+	}
+}
+
+type staticTokenProvider struct{}
+
+func (staticTokenProvider) Token(context.Context) (*auth.Token, error) {
+	return &auth.Token{Value: "tok"}, nil
+}
+
+func TestResolveCredentials_FailsClosedOnUniverseDomain(t *testing.T) {
+	staticTP := staticTokenProvider{}
+	scopes := []string{"https://www.googleapis.com/auth/bigtable.data"}
+
+	tests := []struct {
+		name    string
+		detect  func(*credentials.DetectOptions) (*auth.Credentials, error)
+		wantErr bool
+	}{
+		{
+			name: "default GDU succeeds and sets UseSelfSignedJWT",
+			detect: func(opts *credentials.DetectOptions) (*auth.Credentials, error) {
+				if !opts.UseSelfSignedJWT {
+					t.Errorf("DetectOptions.UseSelfSignedJWT = false, want true")
+				}
+				return auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: staticTP,
+				}), nil
+			},
+		},
+		{
+			name: "explicit GDU succeeds",
+			detect: func(*credentials.DetectOptions) (*auth.Credentials, error) {
+				return auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: staticTP,
+					UniverseDomainProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
+						return "googleapis.com", nil
+					}),
+				}), nil
+			},
+		},
+		{
+			name: "TPC universe domain rejected",
+			detect: func(*credentials.DetectOptions) (*auth.Credentials, error) {
+				return auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: staticTP,
+					UniverseDomainProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
+						return "tpc.example.test", nil
+					}),
+				}), nil
+			},
+			wantErr: true,
+		},
+		{
+			name: "metadata lookup error fails closed",
+			detect: func(*credentials.DetectOptions) (*auth.Credentials, error) {
+				return auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: staticTP,
+					UniverseDomainProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
+						return "", errors.New("mds timeout")
+					}),
+				}), nil
+			},
+			wantErr: true,
+		},
+		{
+			name: "detect error fails closed",
+			detect: func(*credentials.DetectOptions) (*auth.Credentials, error) {
+				return nil, errors.New("no ADC")
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := resolveCredentials(t.Context(), tc.detect, scopes)
+			if (err != nil) != tc.wantErr {
+				t.Errorf("resolveCredentials() error = %v, wantErr %v", err, tc.wantErr)
+			}
+		})
 	}
 }

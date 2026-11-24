@@ -22,8 +22,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/compute/metadata"
-	"golang.org/x/oauth2/google"
 )
 
 // identityFilename is the name of the identity document written alongside the
@@ -69,15 +69,15 @@ func writeIdentity(udsPath, principal string, scopes []string) error {
 // impersonated, Workload Identity Federation) and the link-local metadata
 // server for GCE/GKE creds. It takes pre-resolved credentials so the daemon
 // resolves ADC exactly once (the same creds it dials the channel with) rather
-// than calling FindDefaultCredentials a second time here.
+// than calling credentials.DetectDefault a second time here.
 //
 // Returns "" with a nil error when no local principal source exists (e.g. plain
 // user ADC, which exposes no email). A non-nil error means a resolution source
 // was available but failed -- notably a metadata-server lookup that timed out or
 // errored -- which the caller surfaces as a warning rather than swallowing it.
-func principalFromCreds(ctx context.Context, creds *google.Credentials) (string, error) {
+func principalFromCreds(ctx context.Context, creds *auth.Credentials) (string, error) {
 	if creds != nil {
-		if email := emailFromCredsJSON(creds.JSON); email != "" {
+		if email := emailFromCredsJSON(creds.JSON()); email != "" {
 			return email, nil
 		}
 	}
