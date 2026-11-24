@@ -19,14 +19,17 @@ import (
 	"context"
 	"errors"
 	"io"
+	"reflect"
 	"sync"
 	"testing"
 
+	"cloud.google.com/go/auth"
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -1041,6 +1044,21 @@ func TestNewChannel_DisabledForTPC(t *testing.T) {
 		{name: "explicit GDU overrides TPC env", envVar: "tpc.example.test", opts: []option.ClientOption{option.WithUniverseDomain("googleapis.com")}},
 		{name: "TPC option", opts: []option.ClientOption{option.WithUniverseDomain("tpc.example.test")}, wantErr: true},
 		{name: "TPC env var", envVar: "tpc.example.test", wantErr: true},
+		{name: "GDU default endpoint", opts: []option.ClientOption{option.WithEndpoint("bigtable.googleapis.com:443")}},
+		{name: "GDU regional endpoint", opts: []option.ClientOption{option.WithEndpoint("us-east1-bigtable.googleapis.com:443")}},
+		{name: "GDU staging endpoint", opts: []option.ClientOption{option.WithEndpoint("test-bigtable.sandbox.googleapis.com:443")}},
+		{name: "GDU dns scheme endpoint", opts: []option.ClientOption{option.WithEndpoint("dns:///bigtable.googleapis.com:443")}},
+		{name: "GDU https endpoint", opts: []option.ClientOption{option.WithEndpoint("https://bigtable.googleapis.com:443")}},
+		{name: "loopback IPv4 endpoint", opts: []option.ClientOption{option.WithEndpoint("127.0.0.1:12345")}},
+		{name: "loopback IPv6 endpoint", opts: []option.ClientOption{option.WithEndpoint("[::1]:12345")}},
+		{name: "localhost endpoint", opts: []option.ClientOption{option.WithEndpoint("localhost:12345")}},
+		{name: "TPC endpointClearedByTrailingEmpty", opts: []option.ClientOption{option.WithEndpoint("bigtable.tpc.example.test:443"), option.WithEndpoint("")}},
+		{name: "TPC endpoint without universe domain", opts: []option.ClientOption{option.WithEndpoint("bigtable.tpc.example.test:443")}, wantErr: true},
+		{name: "TPC endpoint even with explicit GDU universe domain", opts: []option.ClientOption{option.WithEndpoint("bigtable.tpc.example.test:443"), option.WithUniverseDomain("googleapis.com")}, wantErr: true},
+		{name: "TPC endpoint suffix spoof", opts: []option.ClientOption{option.WithEndpoint("evilgoogleapis.com:443")}, wantErr: true},
+		{name: "TPC https path spoof", opts: []option.ClientOption{option.WithEndpoint("https://bigtable.tpc.example.test:443/bigtable.googleapis.com")}, wantErr: true},
+		{name: "custom dns authority rejected", opts: []option.ClientOption{option.WithEndpoint("dns://127.0.0.1:53/bigtable.tpc.example.test:443")}, wantErr: true},
+		{name: "non-loopback IP rejected", opts: []option.ClientOption{option.WithEndpoint("10.0.0.1:443")}, wantErr: true},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1068,6 +1086,73 @@ func TestNewChannel_DisabledForTPC(t *testing.T) {
 				t.Fatalf("NewChannel() error: %v", err)
 			}
 			_ = ch.Close()
+		})
+	}
+}
+
+func TestNewChannel_EnablesNewAuthAndJwtWithScope(t *testing.T) {
+	var captured []option.ClientOption
+	orig := newSessionClient
+	newSessionClient = func(_ context.Context, _, _, _, _ string, opts ...option.ClientOption) (session.Client, error) {
+		captured = opts
+		return &mockSessionClient{table: &mockSessionTableAPI{}}, nil
+	}
+	t.Cleanup(func() { newSessionClient = orig })
+
+	ch, err := NewChannel(context.Background(), "p", "i", "ap", "")
+	if err != nil {
+		t.Fatalf("NewChannel() error: %v", err)
+	}
+	defer ch.Close()
+
+	wantNewAuth := reflect.TypeOf(internaloption.EnableNewAuthLibrary())
+	wantJwtScope := reflect.TypeOf(internaloption.EnableJwtWithScope())
+	var sawNewAuth, sawJwtScope bool
+	for _, opt := range captured {
+		switch reflect.TypeOf(opt) {
+		case wantNewAuth:
+			sawNewAuth = true
+		case wantJwtScope:
+			sawJwtScope = true
+		}
+	}
+	if !sawNewAuth || !sawJwtScope {
+		t.Errorf("NewChannel() options missing auth flags: EnableNewAuthLibrary=%v, EnableJwtWithScope=%v", sawNewAuth, sawJwtScope)
+	}
+}
+
+type staticTokenProvider struct{}
+
+func (staticTokenProvider) Token(context.Context) (*auth.Token, error) {
+	return &auth.Token{Value: "tok"}, nil
+}
+
+func TestNewSessionClient_CredsUniverseDomainFailsClosed(t *testing.T) {
+	staticTP := staticTokenProvider{}
+	tests := []struct {
+		name string
+		udFn func(context.Context) (string, error)
+	}{
+		{
+			name: "TPC credentials universe domain",
+			udFn: func(context.Context) (string, error) { return "tpc.example.test", nil },
+		},
+		{
+			name: "credentials universe domain error",
+			udFn: func(context.Context) (string, error) { return "", errors.New("mds timeout") },
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			creds := auth.NewCredentials(&auth.CredentialsOptions{
+				TokenProvider:          staticTP,
+				UniverseDomainProvider: auth.CredentialsPropertyFunc(tc.udFn),
+			})
+			sc, err := newSessionClient(context.Background(), "p", "i", "ap", "", option.WithAuthCredentials(creds))
+			if err == nil {
+				_ = sc.Close()
+				t.Fatal("newSessionClient() succeeded; want error")
+			}
 		})
 	}
 }
