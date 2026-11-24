@@ -17,14 +17,20 @@ package transfermanager
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 )
 
 func TestWaitAndClose(t *testing.T) {
@@ -329,23 +335,27 @@ func TestIsSubPath(t *testing.T) {
 				os.Chdir(origWd)
 			})
 			wantErr := (tc.wantErrMsg != "")
+			absLocalDir, err := filepath.Abs(tc.localDirectory)
+			if err != nil {
+				t.Fatalf("filepath.Abs(%q): %v", tc.localDirectory, err)
+			}
 			// induce filepath.Abs() error
 			if wantErr {
 				dir, _ := os.MkdirTemp("", "")
 				os.Chdir(dir)
 				os.RemoveAll(dir)
 			}
-			isSub, err := isSubPath(tc.localDirectory, tc.filePath)
+			_, isSub, err := resolveSubPath(absLocalDir, tc.filePath)
 
 			if (err != nil) != wantErr {
-				t.Fatalf("isSubPath() error = %v, wantErr %v", err, tc.wantErrMsg)
+				t.Fatalf("resolveSubPath() error = %v, wantErr %v", err, tc.wantErrMsg)
 			}
 			if wantErr && !strings.Contains(err.Error(), tc.wantErrMsg) {
-				t.Errorf("isSubPath() error = %s, want err containing %s", err.Error(), tc.wantErrMsg)
+				t.Errorf("resolveSubPath() error = %s, want err containing %s", err.Error(), tc.wantErrMsg)
 				return
 			}
 			if isSub != tc.wantIsSub {
-				t.Errorf("isSubPath() = %v, want %v", isSub, tc.wantIsSub)
+				t.Errorf("resolveSubPath() = %v, want %v", isSub, tc.wantIsSub)
 			}
 		})
 	}
@@ -662,4 +672,237 @@ func TestCalculateCRC32C(t *testing.T) {
 			}
 		})
 	}
+}
+
+func newMockDownloadDirClient(t *testing.T, objects map[string]string) *storage.Client {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodGet && r.URL.Path == "/storage/v1/b/test-bucket/o":
+			type item struct {
+				Name string `json:"name"`
+				Size string `json:"size"`
+			}
+			names := make([]string, 0, len(objects))
+			for name := range objects {
+				names = append(names, name)
+			}
+			sort.Strings(names)
+			items := make([]item, 0, len(names))
+			for _, name := range names {
+				items = append(items, item{Name: name, Size: strconv.Itoa(len(objects[name]))})
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(struct {
+				Items []item `json:"items"`
+			}{Items: items})
+		case r.Method == http.MethodGet && strings.HasPrefix(r.URL.Path, "/test-bucket/"):
+			body, ok := objects[strings.TrimPrefix(r.URL.Path, "/test-bucket/")]
+			if !ok {
+				http.NotFound(w, r)
+				return
+			}
+			_, _ = w.Write([]byte(body))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	t.Cleanup(srv.Close)
+
+	c, err := storage.NewClient(context.Background(),
+		option.WithEndpoint(srv.URL+"/storage/v1/"),
+		option.WithoutAuthentication(),
+		storage.WithDisabledClientMetrics(),
+	)
+	if err != nil {
+		t.Fatalf("storage.NewClient: %v", err)
+	}
+	t.Cleanup(func() { _ = c.Close() })
+	return c
+}
+
+func TestDownloadDirectoryPathConfinement(t *testing.T) {
+	t.Parallel()
+
+	for _, tc := range []struct {
+		name           string
+		opts           []Option
+		objects        map[string]string
+		setup          func(t *testing.T, localDir, outsideDir string)
+		wantSyncErr    error
+		wantSyncErrSub string
+		wantWaitErrSub string
+		wantLocal      map[string]string
+	}{
+		{
+			name: "skips lexical traversal and creates nested dirs",
+			objects: map[string]string{
+				"data/nested/safe.txt":         "safe",
+				"data/../outside/existing.txt": "evil",
+			},
+			setup: func(t *testing.T, _, outsideDir string) {
+				if err := os.WriteFile(filepath.Join(outsideDir, "existing.txt"), []byte("untouched"), 0644); err != nil {
+					t.Fatal(err)
+				}
+			},
+			wantWaitErrSub: "skipping download of object with unsafe path",
+			wantLocal:      map[string]string{"nested/safe.txt": "safe"},
+		},
+		{
+			name:    "rejects symlink directory escape",
+			objects: map[string]string{"data/symdir/escaped.txt": "evil"},
+			setup: func(t *testing.T, localDir, outsideDir string) {
+				if err := os.Symlink(outsideDir, filepath.Join(localDir, "symdir")); err != nil {
+					t.Fatal(err)
+				}
+			},
+			wantSyncErrSub: "failed to make directory",
+		},
+		{
+			name:    "rejects dangling symlink escape",
+			objects: map[string]string{"data/dangling": "evil"},
+			setup: func(t *testing.T, localDir, outsideDir string) {
+				if err := os.Symlink(filepath.Join(outsideDir, "dangling.txt"), filepath.Join(localDir, "dangling")); err != nil {
+					t.Fatal(err)
+				}
+			},
+			wantSyncErrSub: "failed to create file",
+		},
+		{
+			name:    "StripPrefix checks stripped path for ErrExist",
+			objects: map[string]string{"data/foo.txt": "overwritten"},
+			setup: func(t *testing.T, localDir, _ string) {
+				if err := os.WriteFile(filepath.Join(localDir, "foo.txt"), []byte("original"), 0644); err != nil {
+					t.Fatal(err)
+				}
+			},
+			wantSyncErr: os.ErrExist,
+			wantLocal:   map[string]string{"foo.txt": "original"},
+		},
+		{
+			name:    "StripPrefix with SkipIfExists preserves existing stripped file",
+			opts:    []Option{SkipIfExists()},
+			objects: map[string]string{"data/foo.txt": "overwritten", "data/new.txt": "new"},
+			setup: func(t *testing.T, localDir, _ string) {
+				if err := os.WriteFile(filepath.Join(localDir, "foo.txt"), []byte("original"), 0644); err != nil {
+					t.Fatal(err)
+				}
+			},
+			wantLocal: map[string]string{"foo.txt": "original", "new.txt": "new"},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			parent := t.TempDir()
+			localDir := filepath.Join(parent, "local")
+			outsideDir := filepath.Join(parent, "outside")
+			if err := os.MkdirAll(localDir, 0755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.MkdirAll(outsideDir, 0755); err != nil {
+				t.Fatal(err)
+			}
+			if tc.setup != nil {
+				tc.setup(t, localDir, outsideDir)
+			}
+
+			d, err := NewDownloader(newMockDownloadDirClient(t, tc.objects), append([]Option{WithWorkers(2)}, tc.opts...)...)
+			if err != nil {
+				t.Fatalf("NewDownloader: %v", err)
+			}
+			err = d.DownloadDirectory(context.Background(), &DownloadDirectoryInput{
+				Bucket:         "test-bucket",
+				LocalDirectory: localDir,
+				StripPrefix:    "data/",
+			})
+			if tc.wantSyncErr != nil && !errors.Is(err, tc.wantSyncErr) {
+				t.Fatalf("DownloadDirectory err = %v, want %v", err, tc.wantSyncErr)
+			}
+			if tc.wantSyncErrSub != "" && (err == nil || !strings.Contains(err.Error(), tc.wantSyncErrSub)) {
+				t.Fatalf("DownloadDirectory err = %v, want substring %q", err, tc.wantSyncErrSub)
+			}
+			if tc.wantSyncErr == nil && tc.wantSyncErrSub == "" && err != nil {
+				t.Fatalf("DownloadDirectory unexpected err: %v", err)
+			}
+
+			_, waitErr := d.WaitAndClose()
+			if tc.wantWaitErrSub != "" && (waitErr == nil || !strings.Contains(waitErr.Error(), tc.wantWaitErrSub)) {
+				t.Fatalf("WaitAndClose err = %v, want substring %q", waitErr, tc.wantWaitErrSub)
+			}
+			if tc.wantWaitErrSub == "" && waitErr != nil {
+				t.Fatalf("WaitAndClose unexpected err: %v", waitErr)
+			}
+
+			for rel, want := range tc.wantLocal {
+				got, err := os.ReadFile(filepath.Join(localDir, rel))
+				if err != nil || string(got) != want {
+					t.Errorf("%s = (%q, %v), want (%q, nil)", rel, got, err, want)
+				}
+			}
+			entries, _ := os.ReadDir(outsideDir)
+			for _, e := range entries {
+				if e.Name() != "existing.txt" {
+					t.Errorf("unexpected file created in outsideDir: %q", e.Name())
+				}
+			}
+			if b, err := os.ReadFile(filepath.Join(outsideDir, "existing.txt")); err == nil && string(b) != "untouched" {
+				t.Errorf("outside/existing.txt modified to %q", b)
+			}
+		})
+	}
+}
+
+func TestDownloadDirectoryEmptyLocalDirectory(t *testing.T) {
+	origWd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("os.Getwd: %v", err)
+	}
+	tmpDir := t.TempDir()
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatalf("os.Chdir: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(origWd)
+	})
+
+	d, err := NewDownloader(newMockDownloadDirClient(t, map[string]string{"file.txt": "hello"}), WithWorkers(1))
+	if err != nil {
+		t.Fatalf("NewDownloader: %v", err)
+	}
+	if err := d.DownloadDirectory(context.Background(), &DownloadDirectoryInput{
+		Bucket:         "test-bucket",
+		LocalDirectory: "",
+	}); err != nil {
+		t.Fatalf("DownloadDirectory: %v", err)
+	}
+	if _, err := d.WaitAndClose(); err != nil {
+		t.Fatalf("WaitAndClose: %v", err)
+	}
+	got, err := os.ReadFile(filepath.Join(tmpDir, "file.txt"))
+	if err != nil || string(got) != "hello" {
+		t.Fatalf("file.txt = (%q, %v), want (%q, nil)", got, err, "hello")
+	}
+}
+
+func TestDownloadDirectoryCleanupNonExistentDirNoPanic(t *testing.T) {
+	// Place a regular file in the path so os.MkdirAll fails and triggers cleanFiles
+	// on a non-existent LocalDirectory.
+	tmpDir := t.TempDir()
+	blocker := filepath.Join(tmpDir, "blocker")
+	if err := os.WriteFile(blocker, []byte("x"), 0600); err != nil {
+		t.Fatalf("os.WriteFile: %v", err)
+	}
+
+	d, err := NewDownloader(newMockDownloadDirClient(t, map[string]string{"file.txt": "hello"}), WithWorkers(1))
+	if err != nil {
+		t.Fatalf("NewDownloader: %v", err)
+	}
+	err = d.DownloadDirectory(context.Background(), &DownloadDirectoryInput{
+		Bucket:         "test-bucket",
+		LocalDirectory: filepath.Join(blocker, "nested"),
+	})
+	if err == nil {
+		t.Fatal("DownloadDirectory = nil, want error when parent path is a regular file")
+	}
+	_, _ = d.WaitAndClose()
 }
