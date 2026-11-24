@@ -102,7 +102,7 @@ type ReaderObjectAttrs struct {
 // operations, which all use JSON. JSON will become the default in a future
 // release.
 func (o *ObjectHandle) NewReader(ctx context.Context, opts ...ReaderOption) (*Reader, error) {
-	return o.NewRangeReader(ctx, 0, -1, opts...)
+	return o.NewRangeReader(withAPIMethod(ctx, "Object.NewReader"), 0, -1, opts...)
 }
 
 // NewRangeReader reads part of an object, reading at most length bytes
