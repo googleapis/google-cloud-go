@@ -2844,6 +2844,19 @@ func tableByName(t *testing.T, ddl *DDL, name ID) *CreateTable {
 	panic("unreachable")
 }
 
+func TestParseDDLUnclosedPrimaryKey(t *testing.T) {
+	const prefix = "CREATE TABLE T (Id INT64) PRIMARY KEY ("
+	for _, suffix := range []string{"", "Id", "Id,"} {
+		in := prefix + suffix + "\n"
+		if _, err := ParseDDL("schema.sql", in); err == nil || !strings.Contains(err.Error(), "schema.sql:2: unexpected EOF, want \")\"") {
+			t.Errorf("ParseDDL(%q) error = %v, want a positioned EOF error", in, err)
+		}
+		if _, err := ParseDDLStmt(in); err == nil || !strings.Contains(err.Error(), "-:2: unexpected EOF, want \")\"") {
+			t.Errorf("ParseDDLStmt(%q) error = %v, want a positioned EOF error", in, err)
+		}
+	}
+}
+
 func TestParseFailures(t *testing.T) {
 	expr := func(p *parser) error {
 		if _, pe := p.parseExpr(); pe != nil {

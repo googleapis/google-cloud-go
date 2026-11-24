@@ -5330,20 +5330,20 @@ func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *p
 	if err := p.expect(bra); err != nil {
 		return err
 	}
+	var err *parseError
 	for {
 		if p.eat(ket) {
 			return nil
 		}
 
-		err := f(p)
-		if err != nil {
-			return err
+		if err = f(p); err != nil {
+			break
 		}
 
 		// ket or "," should be next.
 		tok := p.next()
-		if tok.err != nil {
-			return err
+		if err = tok.err; err != nil {
+			break
 		}
 		if tok.value == ket {
 			return nil
@@ -5353,6 +5353,11 @@ func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *p
 			return p.errorf(`got %q, want %q or ","`, tok.value, ket)
 		}
 	}
+	if err == eof {
+		p.cur.line, p.cur.offset = p.line, p.offset
+		return p.errorf("unexpected EOF, want %q", ket)
+	}
+	return err
 }
 
 // parseCommaListWithEnds parses a comma-separated list to expected ends,
