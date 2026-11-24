@@ -753,14 +753,14 @@ func TestConfigureDirectPath_Interconnect_FallbackPreservesEndpoint(t *testing.T
 		{
 			name: "non-GDU universe domain preserves original endpoint",
 			opts: &Options{
-				UniverseDomain: "apis-tpclp.goog",
+				UniverseDomain: "example.com",
 				InternalOptions: &InternalOptions{
 					EnableDirectPath:                    true,
 					EnableDirectPathXds:                 true,
 					EnableDirectPathXdsOverInterconnect: true,
 				},
 			},
-			endpoint: "storage.apis-tpclp.goog:443",
+			endpoint: "storage.example.com:443",
 		},
 		{
 			name: "lookalike domain rejected for interconnect DirectPath",
@@ -918,7 +918,7 @@ func TestIsDirectPathEnabled(t *testing.T) {
 			name:     "non-GDU universe domain option returns false",
 			endpoint: "storage.googleapis.com:443",
 			opts: &Options{
-				UniverseDomain:  "apis-tpclp.goog",
+				UniverseDomain:  "example.com",
 				InternalOptions: &InternalOptions{EnableDirectPath: true},
 			},
 			want: false,
@@ -927,18 +927,18 @@ func TestIsDirectPathEnabled(t *testing.T) {
 			name:     "non-GDU universe domain env returns false",
 			endpoint: "storage.googleapis.com:443",
 			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
-			udEnv:    "apis-tpclp.goog",
+			udEnv:    "example.com",
 			want:     false,
 		},
 		{
 			name:     "non-GDU endpoint without universe domain returns false",
-			endpoint: "storage.apis-tpclp.goog:443",
+			endpoint: "storage.example.com:443",
 			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
 			want:     false,
 		},
 		{
 			name:     "non-GDU dns endpoint without universe domain returns false",
-			endpoint: "dns:///storage.apis-tpclp.goog:443",
+			endpoint: "dns:///storage.example.com:443",
 			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
 			want:     false,
 		},
@@ -1097,7 +1097,7 @@ func TestLogDirectPathMisconfig_Interconnect_SpecificWarnings(t *testing.T) {
 
 	t.Run("non-default universe domain warning", func(t *testing.T) {
 		opts := &Options{
-			UniverseDomain: "apis-tpclp.goog",
+			UniverseDomain: "example.com",
 			InternalOptions: &InternalOptions{
 				EnableDirectPath:                    true,
 				EnableDirectPathXds:                 true,
@@ -1110,7 +1110,7 @@ func TestLogDirectPathMisconfig_Interconnect_SpecificWarnings(t *testing.T) {
 			TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 		})
 
-		endpoint := "storage.apis-tpclp.goog:443"
+		endpoint := "storage.example.com:443"
 		reason, _ := canUseDirectPath(t.Context(), endpoint, opts, creds)
 		logDirectPathMisconfig(opts, endpoint, reason)
 		wantMsg := directPathInterconnectUnsupportedUDReason
@@ -1131,7 +1131,7 @@ func TestLogDirectPathMisconfig_Interconnect_SpecificWarnings(t *testing.T) {
 		opts.Logger = slog.New(slog.NewTextHandler(&logOutput, nil))
 		creds := auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider:          &staticTP{tok: &auth.Token{Value: "fakeToken"}},
-			UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog"),
+			UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 		})
 
 		endpoint := "storage-direct.googleapis.com:443"
@@ -1294,9 +1294,9 @@ func TestHasUniverseDomainHost(t *testing.T) {
 		{name: "google_c2p_scheme", endpoint: "google-c2p:///storage.googleapis.com", universeDomain: "googleapis.com", want: true},
 		{name: "google_c2p_scheme_with_query", endpoint: "google-c2p:///storage-direct.googleapis.com?force-xds", universeDomain: "googleapis.com", want: true},
 		{name: "uppercase_host", endpoint: "STORAGE.GOOGLEAPIS.COM:443", universeDomain: "googleapis.com", want: true},
-		{name: "tpc_endpoint", endpoint: "storage.apis-tpclp.goog:443", universeDomain: "googleapis.com", want: false},
-		{name: "tpc_dns_endpoint", endpoint: "dns:///storage.apis-tpclp.goog:443", universeDomain: "googleapis.com", want: false},
-		{name: "tpc_google_c2p_endpoint", endpoint: "google-c2p:///storage-direct.apis-tpclp.goog?force-xds", universeDomain: "googleapis.com", want: false},
+		{name: "tpc_endpoint", endpoint: "storage.example.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "tpc_dns_endpoint", endpoint: "dns:///storage.example.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "tpc_google_c2p_endpoint", endpoint: "google-c2p:///storage-direct.example.com?force-xds", universeDomain: "googleapis.com", want: false},
 		{name: "lookalike_suffix_domain", endpoint: "storage.googleapis.com.evil.com:443", universeDomain: "googleapis.com", want: false},
 		{name: "missing_dot_boundary", endpoint: "evilgoogleapis.com:443", universeDomain: "googleapis.com", want: false},
 		{name: "leading_dot", endpoint: ".googleapis.com:443", universeDomain: "googleapis.com", want: false},
@@ -1405,10 +1405,10 @@ func TestCanUseDirectPath(t *testing.T) {
 			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
 			creds: auth.NewCredentials(&auth.CredentialsOptions{
 				TokenProvider:          defaultComputeTokenProvider(),
-				UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog"),
+				UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 			}),
 			gce:        true,
-			mdsUD:      "apis-tpclp.goog",
+			mdsUD:      "example.com",
 			want:       false,
 			wantReason: directPathUnsupportedUniverseReason,
 		},
@@ -1418,10 +1418,10 @@ func TestCanUseDirectPath(t *testing.T) {
 			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
 			creds: auth.NewCredentials(&auth.CredentialsOptions{
 				TokenProvider:          defaultComputeTokenProvider(),
-				UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog\n"),
+				UniverseDomainProvider: internal.StaticCredentialsProperty("example.com\n"),
 			}),
 			gce:        true,
-			mdsUD:      "apis-tpclp.goog",
+			mdsUD:      "example.com",
 			want:       false,
 			wantReason: directPathUnsupportedUniverseReason,
 		},
@@ -1446,7 +1446,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			opts:       &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
 			creds:      auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
 			gce:        true,
-			mdsUD:      "apis-tpclp.goog",
+			mdsUD:      "example.com",
 			want:       false,
 			wantReason: directPathUnsupportedUniverseReason,
 		},
@@ -1478,13 +1478,13 @@ func TestCanUseDirectPath(t *testing.T) {
 				UniverseDomainProvider: internal.StaticCredentialsProperty("googleapis.com"),
 			}),
 			gce:        true,
-			mdsUD:      "apis-tpclp.goog",
+			mdsUD:      "example.com",
 			want:       false,
 			wantReason: directPathUnsupportedUniverseReason,
 		},
 		{
 			name:     "tpc_endpoint_without_client_universe_domain",
-			endpoint: "storage.apis-tpclp.goog:443",
+			endpoint: "storage.example.com:443",
 			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
 			creds: auth.NewCredentials(&auth.CredentialsOptions{
 				TokenProvider:          defaultComputeTokenProvider(),
@@ -1499,7 +1499,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			name:     "tpc_client_universe_domain_with_gdu_endpoint",
 			endpoint: "storage.googleapis.com:443",
 			opts: &Options{
-				UniverseDomain:  "apis-tpclp.goog",
+				UniverseDomain:  "example.com",
 				InternalOptions: &InternalOptions{EnableDirectPath: true},
 			},
 			creds: auth.NewCredentials(&auth.CredentialsOptions{
@@ -1519,7 +1519,7 @@ func TestCanUseDirectPath(t *testing.T) {
 				TokenProvider:          defaultComputeTokenProvider(),
 				UniverseDomainProvider: internal.StaticCredentialsProperty("googleapis.com"),
 			}),
-			udEnv:      "apis-tpclp.goog",
+			udEnv:      "example.com",
 			gce:        true,
 			mdsUD:      "googleapis.com",
 			want:       false,
@@ -1572,7 +1572,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			},
 			creds: auth.NewCredentials(&auth.CredentialsOptions{
 				TokenProvider:          nonComputeTokenProvider(),
-				UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog"),
+				UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 			}),
 			gce:        true,
 			mdsUD:      "googleapis.com",
@@ -1590,7 +1590,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			},
 			creds:      auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: nonComputeTokenProvider()}),
 			gce:        true,
-			mdsUD:      "apis-tpclp.goog",
+			mdsUD:      "example.com",
 			want:       false,
 			wantReason: directPathUnsupportedUniverseReason,
 		},
@@ -1620,7 +1620,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			},
 			creds: auth.NewCredentials(&auth.CredentialsOptions{
 				TokenProvider:          nonComputeTokenProvider(),
-				UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog"),
+				UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 			}),
 			gce:        false,
 			want:       false,
@@ -1816,11 +1816,11 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 		{
 			name: "tpc_universe_domain_option_blocks_directpath",
 			opts: &Options{
-				UniverseDomain:   "apis-tpclp.goog",
+				UniverseDomain:   "example.com",
 				DisableTelemetry: true,
 				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
 					TokenProvider:          defaultComputeTokenProvider(),
-					UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog"),
+					UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 				}),
 				InternalOptions: &InternalOptions{
 					DefaultEndpointTemplate: "storage.UNIVERSE_DOMAIN:443",
@@ -1828,8 +1828,8 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 					EnableDirectPathXds:     true,
 				},
 			},
-			mdsUD:       "apis-tpclp.goog",
-			wantTarget:  "storage.apis-tpclp.goog:443",
+			mdsUD:       "example.com",
+			wantTarget:  "storage.example.com:443",
 			wantNumOpts: 2,
 		},
 		{
@@ -1846,7 +1846,7 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 					EnableDirectPathXds: true,
 				},
 			},
-			udEnv:       "apis-tpclp.goog",
+			udEnv:       "example.com",
 			mdsUD:       "googleapis.com",
 			wantTarget:  "storage.googleapis.com:443",
 			wantNumOpts: 2,
@@ -1854,7 +1854,7 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 		{
 			name: "tpc_endpoint_without_universe_domain_blocks_directpath",
 			opts: &Options{
-				Endpoint:         "storage.apis-tpclp.goog:443",
+				Endpoint:         "storage.example.com:443",
 				DisableTelemetry: true,
 				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
 					TokenProvider:          defaultComputeTokenProvider(),
@@ -1867,7 +1867,7 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 				},
 			},
 			mdsUD:       "googleapis.com",
-			wantTarget:  "storage.apis-tpclp.goog:443",
+			wantTarget:  "storage.example.com:443",
 			wantNumOpts: 2,
 		},
 		{
@@ -1876,7 +1876,7 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 				DisableTelemetry: true,
 				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
 					TokenProvider:          defaultComputeTokenProvider(),
-					UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog"),
+					UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 				}),
 				InternalOptions: &InternalOptions{
 					DefaultEndpointTemplate: "storage.UNIVERSE_DOMAIN:443",
@@ -1884,7 +1884,7 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 					EnableDirectPathXds:     true,
 				},
 			},
-			mdsUD:       "apis-tpclp.goog",
+			mdsUD:       "example.com",
 			wantTarget:  "storage.googleapis.com:443",
 			wantNumOpts: 2,
 		},
@@ -1894,14 +1894,14 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 				DisableTelemetry: true,
 				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
 					TokenProvider:          defaultComputeTokenProvider(),
-					UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog"),
+					UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 				}),
 				InternalOptions: &InternalOptions{
 					DefaultEndpointTemplate: "storage.UNIVERSE_DOMAIN:443",
 					EnableDirectPath:        true,
 				},
 			},
-			mdsUD:       "apis-tpclp.goog",
+			mdsUD:       "example.com",
 			wantTarget:  "storage.googleapis.com:443",
 			wantNumOpts: 2,
 		},
@@ -1918,7 +1918,7 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 					EnableDirectPathXds:     true,
 				},
 			},
-			mdsUD:       "apis-tpclp.goog",
+			mdsUD:       "example.com",
 			wantTarget:  "storage.googleapis.com:443",
 			wantNumOpts: 2,
 		},
@@ -1945,7 +1945,7 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 				DisableTelemetry: true,
 				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
 					TokenProvider:          nonComputeTokenProvider(),
-					UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog"),
+					UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 				}),
 				InternalOptions: &InternalOptions{
 					DefaultEndpointTemplate:             "storage.UNIVERSE_DOMAIN:443",
@@ -2007,7 +2007,7 @@ func TestFetchMetadataUniverseDomain(t *testing.T) {
 		wantErr    bool
 	}{
 		{name: "gdu_response", statusCode: http.StatusOK, body: "googleapis.com", want: "googleapis.com"},
-		{name: "tpc_response_trimmed", statusCode: http.StatusOK, body: "apis-tpclp.goog\n", want: "apis-tpclp.goog"},
+		{name: "tpc_response_trimmed", statusCode: http.StatusOK, body: "example.com\n", want: "example.com"},
 		{name: "empty_response_defaults_to_gdu", statusCode: http.StatusOK, body: "", want: "googleapis.com"},
 		{name: "not_found_defaults_to_gdu", statusCode: http.StatusNotFound, body: "not found", want: "googleapis.com"},
 		{name: "non_404_error_fails_closed", statusCode: http.StatusForbidden, body: "forbidden", wantErr: true},
@@ -2072,7 +2072,7 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 			name:     "non_gdu_universe_domain_option",
 			endpoint: "storage.googleapis.com:443",
 			opts: &Options{
-				UniverseDomain: "apis-tpclp.goog",
+				UniverseDomain: "example.com",
 				InternalOptions: &InternalOptions{
 					EnableDirectPath:    true,
 					EnableDirectPathXds: true,
@@ -2082,7 +2082,7 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 		},
 		{
 			name:     "non_gdu_endpoint_host",
-			endpoint: "storage.apis-tpclp.goog:443",
+			endpoint: "storage.example.com:443",
 			opts: &Options{
 				InternalOptions: &InternalOptions{
 					EnableDirectPath:    true,
@@ -2102,7 +2102,7 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 			},
 			creds: auth.NewCredentials(&auth.CredentialsOptions{
 				TokenProvider:          defaultComputeTokenProvider(),
-				UniverseDomainProvider: internal.StaticCredentialsProperty("apis-tpclp.goog"),
+				UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 			}),
 		},
 		{
@@ -2131,7 +2131,7 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 				},
 			},
 			creds: auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
-			mdsUD: "apis-tpclp.goog",
+			mdsUD: "example.com",
 		},
 		{
 			name:     "mds_error_without_provider",
@@ -2221,7 +2221,7 @@ func TestDial_DirectPathDoesNotDuplicateLookups(t *testing.T) {
 		wantWarning string
 	}{
 		{name: "healthy_gdu", mdsUD: "googleapis.com"},
-		{name: "rejected_non_gdu_mds", mdsUD: "apis-tpclp.goog", wantWarning: directPathUnsupportedUniverseReason},
+		{name: "rejected_non_gdu_mds", mdsUD: "example.com", wantWarning: directPathUnsupportedUniverseReason},
 	}
 
 	for _, tc := range tests {
