@@ -138,10 +138,11 @@ type metricsConfig struct {
 
 func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsContext, error) {
 	provider := cfg.meterProvider
+	var ownProvider bool
 	if provider == nil {
 		var exporter metric.Exporter
 		meterOpts := []metric.Option{}
-		if cfg.customExporter == nil {
+		if cfg.customExporter == nil || *cfg.customExporter == nil {
 			var ropts []resource.Option
 			if cfg.resourceOpts != nil {
 				ropts = cfg.resourceOpts
@@ -150,15 +151,18 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 			}
 			smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc", ropts...)
 			if err != nil {
-				return nil, err
-			}
-			if !cfg.disableExporter {
-				exporter, err = smr.exporter(cfg.monitoringOpts...)
-				if err != nil {
+				if !cfg.disableExporter {
 					return nil, err
 				}
+			} else {
+				if !cfg.disableExporter {
+					exporter, err = smr.exporter(cfg.monitoringOpts...)
+					if err != nil {
+						return nil, err
+					}
+				}
+				meterOpts = append(meterOpts, metric.WithResource(smr.resource))
 			}
-			meterOpts = append(meterOpts, metric.WithResource(smr.resource))
 		} else {
 			exporter = *cfg.customExporter
 		}
@@ -177,11 +181,12 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 		if cfg.manualReader != nil {
 			meterOpts = append(meterOpts, metric.WithReader(cfg.manualReader))
 		}
-		if !cfg.disableExporter {
+		if exporter != nil {
 			meterOpts = append(meterOpts, metric.WithReader(
 				metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
 		}
 		provider = metric.NewMeterProvider(meterOpts...)
+		ownProvider = true
 	}
 	mo := opentelemetry.MetricsOptions{
 		MeterProvider: provider,
@@ -213,7 +218,11 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 		clientOpts: opts,
 		provider:   provider,
 		close: func() {
-			provider.Shutdown(ctx)
+			if ownProvider {
+				shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+				defer cancel()
+				_ = provider.Shutdown(shutdownCtx)
+			}
 		},
 	}, nil
 }

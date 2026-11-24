@@ -1967,13 +1967,19 @@ func TestMonitoringClientOptions(t *testing.T) {
 		}
 	})
 
-	t.Run("disabled_on_custom_transport_even_with_ambient_creds", func(t *testing.T) {
+	t.Run("disabled_on_custom_transport_or_api_key_or_nil_creds", func(t *testing.T) {
 		ambientCreds := &auth.Credentials{TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "ambient"}}}
 		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithHTTPClient(http.DefaultClient)}, ambientCreds, nil); ok {
 			t.Fatal("monitoringClientOptions() ok = true, want false with custom HTTP client")
 		}
 		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithGRPCConn(&grpc.ClientConn{})}, ambientCreds, nil); ok {
 			t.Fatal("monitoringClientOptions() ok = true, want false with custom gRPC conn")
+		}
+		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithAPIKey("test-api-key")}, ambientCreds, nil); ok {
+			t.Fatal("monitoringClientOptions() ok = true, want false with API key")
+		}
+		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithUniverseDomain("custom.example.com")}, nil, nil); ok {
+			t.Fatal("monitoringClientOptions() ok = true, want false when resolved credentials are nil")
 		}
 	})
 
@@ -2040,5 +2046,62 @@ func TestInitMetrics_EmptyProjectIDReturnsError(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "project is required") {
 		t.Errorf("initMetrics() error = %q, want substring %q", err.Error(), "project is required")
+	}
+}
+
+func TestNewClient_PreservesDefaultHTTPMonitoringOptions(t *testing.T) {
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
+	t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+	ctx := context.Background()
+
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider:     &staticAuthTokenProvider{token: &auth.Token{Value: "tok"}},
+		ProjectIDProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) { return "test-proj", nil }),
+	})
+
+	// Standard NewClient (without caller-supplied WithHTTPClient) must NOT treat
+	// its own internal htransport.NewClient as a custom HTTP client: exportOK
+	// must be true so default OTel metrics initialize with monitoringOpts.
+	c, err := NewClient(ctx,
+		option.WithAuthCredentials(creds),
+		option.WithUniverseDomain("custom.example.com"),
+		withOtelMetrics(),
+	)
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer func() { _ = c.Close() }()
+
+	msc, ok := c.tc.(*metricsStorageClient)
+	if !ok {
+		t.Fatalf("c.tc = %T, want *metricsStorageClient", c.tc)
+	}
+	hsc, ok := msc.storageClient.(*httpStorageClient)
+	if !ok {
+		t.Fatalf("msc.storageClient = %T, want *httpStorageClient", msc.storageClient)
+	}
+	if len(hsc.config.monitoringOpts) == 0 {
+		t.Fatal("expected NewClient to populate monitoringOpts on default HTTP transport, got empty")
+	}
+	res, err := internaloption.NewUnsafeResolver(hsc.config.monitoringOpts...)
+	if err != nil {
+		t.Fatalf("NewUnsafeResolver: %v", err)
+	}
+	if got := res.ResolvedUniverseDomain(); got != "custom.example.com" {
+		t.Errorf("ResolvedUniverseDomain() = %q, want %q", got, "custom.example.com")
+	}
+
+	// Conversely, when the caller explicitly passes option.WithHTTPClient,
+	// default Cloud Monitoring export must be skipped (c.tc stays unwrapped).
+	customHC, err := NewClient(ctx,
+		option.WithHTTPClient(&http.Client{}),
+		withOtelMetrics(),
+	)
+	if err != nil {
+		t.Fatalf("NewClient(WithHTTPClient): %v", err)
+	}
+	defer func() { _ = customHC.Close() }()
+	if _, wrapped := customHC.tc.(*metricsStorageClient); wrapped {
+		t.Error("expected default OTel metrics to be skipped when caller supplies option.WithHTTPClient")
 	}
 }

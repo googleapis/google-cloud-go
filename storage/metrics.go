@@ -156,14 +156,17 @@ func isOtelDebugMetricsEnabled(config *storageConfig) bool {
 
 // monitoringClientOptions extracts safe Cloud Monitoring client options from
 // the parent Storage client's options. It returns ok=false when Cloud
-// Monitoring export should be skipped (unauthenticated clients, custom
-// HTTP/gRPC transports, or invalid options).
+// Monitoring export should be skipped (unauthenticated/API-key clients, custom
+// HTTP/gRPC transports, missing resolved credentials, or invalid options).
 func monitoringClientOptions(clientOpts []option.ClientOption, authCreds *auth.Credentials, googleCreds *google.Credentials) (opts []option.ClientOption, ok bool) {
 	res, err := internaloption.NewUnsafeResolver(clientOpts...)
 	if err != nil {
 		return nil, false
 	}
-	if res.ResolvedWithoutAuthentication() || res.ResolvedGRPCConnIsCustom() || res.ResolvedHTTPClientIsCustom() {
+	if res.ResolvedWithoutAuthentication() || res.ResolvedWithAPIKeyIsCustom() || res.ResolvedGRPCConnIsCustom() || res.ResolvedHTTPClientIsCustom() {
+		return nil, false
+	}
+	if authCreds == nil && googleCreds == nil {
 		return nil, false
 	}
 
@@ -173,7 +176,7 @@ func monitoringClientOptions(clientOpts []option.ClientOption, authCreds *auth.C
 		// client's credentials does not affect the Cloud Monitoring exporter.
 		credsCopy := *authCreds
 		opts = append(opts, option.WithAuthCredentials(&credsCopy))
-	} else if googleCreds != nil {
+	} else {
 		opts = append(opts, option.WithCredentials(googleCreds))
 	}
 	return opts, true

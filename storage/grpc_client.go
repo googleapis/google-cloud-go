@@ -144,14 +144,15 @@ type grpcStorageClient struct {
 	configFeatureAttributes uint32
 }
 
-func enableClientMetrics(ctx context.Context, project string, config storageConfig, mOpts []option.ClientOption, disableExporter bool) (*metricsContext, error) {
+func enableClientMetrics(ctx context.Context, project string, config storageConfig, disableExporter bool) (*metricsContext, error) {
 	metricsContext, err := newGRPCMetricContext(ctx, metricsConfig{
 		project:         project,
 		interval:        config.metricInterval,
+		customExporter:  config.metricExporter,
 		manualReader:    config.manualReader,
 		meterProvider:   config.meterProvider,
 		disableExporter: disableExporter,
-		monitoringOpts:  mOpts,
+		monitoringOpts:  config.monitoringOpts,
 	},
 	)
 	if err != nil {
@@ -190,16 +191,15 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	var authCreds *auth.Credentials
 	var googleCreds *google.Credentials
 	var project string
-	var mOpts []option.ClientOption
 	var exportOK bool
 	if !config.disableClientMetrics || tracingEnabled {
 		authCreds, googleCreds, project = resolveGRPCAuthCredentials(ctx, s)
-		mOpts, exportOK = monitoringClientOptions(s.clientOption, authCreds, googleCreds)
+		config.monitoringOpts, exportOK = monitoringClientOptions(s.clientOption, authCreds, googleCreds)
 	}
 
-	if !config.disableClientMetrics && (exportOK || config.meterProvider != nil || config.manualReader != nil) {
+	if !config.disableClientMetrics && (exportOK || config.meterProvider != nil || config.manualReader != nil || config.metricExporter != nil) {
 		// Do not fail client creation if enabling metrics fails.
-		if metricsContext, err := enableClientMetrics(ctx, project, config, mOpts, !exportOK); err == nil {
+		if metricsContext, err := enableClientMetrics(ctx, project, config, !exportOK); err == nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
 		} else {
@@ -212,7 +212,6 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	if metricsEnabled || tracingEnabled {
 		if metricsEnabled {
 			if exportOK || config.meterProvider != nil || config.metricExporter != nil {
-				config.monitoringOpts = mOpts
 				clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
 			}
 			if clientMetrics != nil {
@@ -300,11 +299,17 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 
 func resolveGRPCAuthCredentials(ctx context.Context, s *settings) (*auth.Credentials, *google.Credentials, string) {
 	if res, err := internaloption.NewUnsafeResolver(s.clientOption...); err == nil {
-		if res.ResolvedGRPCConnIsCustom() || res.ResolvedWithoutAuthentication() {
+		if res.ResolvedGRPCConnIsCustom() || res.ResolvedWithoutAuthentication() || res.ResolvedWithAPIKeyIsCustom() {
 			return nil, nil, ""
 		}
 	}
-	credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
+	credsOpts := append([]option.ClientOption{
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://storage.googleapis.com/"),
+		internaloption.WithDefaultScopes(gapic.DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
+	}, s.clientOption...)
 	if c, err := internaloption.AuthCreds(ctx, credsOpts); err == nil && c != nil {
 		project, _ := c.ProjectID(ctx)
 		return c, nil, project
