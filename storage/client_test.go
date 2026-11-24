@@ -3443,6 +3443,7 @@ func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 			name             string
 			instructions     []string
 			grpcInstructions []string
+			httpOnly         bool
 			config           *retryConfig
 			wantErr          bool
 			wantErrMsg       string
@@ -3458,6 +3459,14 @@ func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 				wantErrMsg:       "retry failed after 3 attempts",
 			},
 			{
+				// Session init retries must not use up chunk 1's retry budget.
+				name:         "session_init_retry_does_not_consume_chunk_budget",
+				instructions: []string{"return-503", "return-503-after-128K"},
+				config:       &retryConfig{maxAttempts: intPointer(2), backoff: backoff},
+				// gRPC resets attempts only on persisted progress, so this is HTTP only.
+				httpOnly: true,
+			},
+			{
 				name:         "resumable_chunk_progress_resets_attempts",
 				instructions: []string{"return-503-after-257K", "return-503-after-513K"},
 				config:       &retryConfig{maxAttempts: intPointer(2), backoff: backoff},
@@ -3470,8 +3479,12 @@ func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 			},
 		} {
 			t.Run(tc.name, func(t *testing.T) {
+				_, isHTTP := client.(*httpStorageClient)
+				if tc.httpOnly && !isHTTP {
+					t.Skip("HTTP only")
+				}
 				instructions := tc.instructions
-				if _, isHTTP := client.(*httpStorageClient); !isHTTP && len(tc.grpcInstructions) > 0 {
+				if !isHTTP && len(tc.grpcInstructions) > 0 {
 					instructions = tc.grpcInstructions
 				}
 				testID := createRetryTest(t, client, map[string][]string{"storage.objects.insert": instructions})

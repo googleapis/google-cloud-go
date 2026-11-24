@@ -1205,18 +1205,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			Projection("full").
 			Context(uploadCtx).
 			Name(params.attrs.Name)
-		attempts := 1
-		var maxAttemptsReached bool
-		var lastProgress int64
-		call.ProgressUpdater(func(n, _ int64) {
-			if n > lastProgress {
-				// Reset the per-chunk retry budget on strict forward progress, matching gRPC.
-				lastProgress = n
-				attempts = 1
-				maxAttemptsReached = false
-			}
-			progress(n)
-		})
+		call.ProgressUpdater(func(n, _ int64) { progress(n) })
 
 		if attrs.KMSKeyName != "" {
 			call.KmsKeyName(attrs.KMSKeyName)
@@ -1251,6 +1240,8 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			} else if s.retry != nil && s.retry.policy == RetryAlways {
 				useRetry = true
 			}
+			attempts := 1
+			var maxAttemptsReached bool
 			if useRetry {
 				var bo *gax.Backoff
 				if s.retry != nil {
@@ -1260,6 +1251,9 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				// retryFunc enforces maxAttempts and adapts shouldRetry to WithRetry.
 				retryFunc := func(err error) bool {
 					if err == nil {
+						// Called after each successful request, so each request gets its own budget.
+						attempts = 1
+						maxAttemptsReached = false
 						return false
 					}
 					if s.retry != nil && s.retry.maxAttempts != nil && attempts >= *s.retry.maxAttempts {
