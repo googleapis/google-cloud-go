@@ -1758,6 +1758,11 @@ func TestDefaultSignBlob_UniverseDomain(t *testing.T) {
 			wantErrSubstr: "does not match",
 		},
 		{
+			desc:          "unset universe domain fails closed on non-default creds universe",
+			credsUD:       "universe.example.com",
+			wantErrSubstr: "does not match",
+		},
+		{
 			desc:     "defaults to iamcredentials.googleapis.com when unset",
 			wantHost: "iamcredentials.googleapis.com",
 		},
