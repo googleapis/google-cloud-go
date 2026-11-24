@@ -69,6 +69,67 @@ func (ct CreateTable) SQL() string {
 	return str
 }
 
+func (cq CreateQueue) SQL() string {
+	var sb strings.Builder
+	sb.WriteString("CREATE QUEUE ")
+	if cq.IfNotExists {
+		sb.WriteString("IF NOT EXISTS ")
+	}
+	sb.WriteString(cq.Name.SQL() + " (\n")
+	for i, col := range cq.Columns {
+		if i > 0 {
+			sb.WriteString(",\n")
+		}
+		sb.WriteString("  " + col.SQL())
+	}
+	sb.WriteString("\n) PRIMARY KEY(")
+	for i, key := range cq.PrimaryKey {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(key.SQL())
+	}
+	sb.WriteString(")")
+	if il := cq.Interleave; il != nil {
+		sb.WriteString(",\n  INTERLEAVE IN ")
+		if il.InParent {
+			sb.WriteString("PARENT " + il.Table.SQL())
+		} else if strings.EqualFold(string(il.Table), "PARENT") {
+			// PARENT is a contextual keyword in this clause.
+			sb.WriteString("`" + string(il.Table) + "`")
+		} else {
+			sb.WriteString(il.Table.SQL())
+		}
+		if il.OnDelete != nil {
+			sb.WriteString(" ON DELETE " + il.OnDelete.SQL())
+		}
+	}
+	if cq.RowDeletionPolicy != nil {
+		sb.WriteString(",\n  " + cq.RowDeletionPolicy.SQL())
+	}
+	if cq.Options != (QueueOptions{}) {
+		sb.WriteString(",\n  " + cq.Options.SQL())
+	}
+	return sb.String()
+}
+
+func (qo QueueOptions) SQL() string {
+	var options []string
+	if qo.ReceiveMode != nil {
+		options = append(options, "receive_mode = "+StringLiteral(*qo.ReceiveMode).SQL())
+	}
+	if qo.DisableSend != nil {
+		options = append(options, "disable_send = "+strconv.FormatBool(*qo.DisableSend))
+	}
+	if qo.DisableDelivery != nil {
+		options = append(options, "disable_delivery = "+strconv.FormatBool(*qo.DisableDelivery))
+	}
+	if qo.LocalityGroup != nil {
+		options = append(options, "locality_group = "+StringLiteral(*qo.LocalityGroup).SQL())
+	}
+	return "OPTIONS (" + strings.Join(options, ", ") + ")"
+}
+
 func (ci CreateIndex) SQL() string {
 	str := "CREATE"
 	if ci.Unique {
@@ -731,6 +792,23 @@ func (cd ColumnDef) SQL() string {
 		} else {
 			str += " STORED"
 		}
+	}
+	if cd.Options != (ColumnOptions{}) {
+		str += " " + cd.Options.SQL()
+	}
+	return str
+}
+
+func (cd QueueColumnDef) SQL() string {
+	str := cd.Name.SQL() + " " + cd.Type.SQL()
+	if cd.NotNull {
+		str += " NOT NULL"
+	}
+	if cd.Generated != nil {
+		str += " AS (" + cd.Generated.SQL() + ") STORED"
+	}
+	if cd.Hidden {
+		str += " HIDDEN"
 	}
 	if cd.Options != (ColumnOptions{}) {
 		str += " " + cd.Options.SQL()
