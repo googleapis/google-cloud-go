@@ -15,6 +15,7 @@
 package spanner
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -30,13 +31,13 @@ import (
 	"cloud.google.com/go/spanner/internal"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"cloud.google.com/go/spanner/internal/transport"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/alts"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
@@ -50,9 +51,7 @@ const (
 	recoveryProbeMinDur = 10 * time.Millisecond
 )
 
-// stubPool is an in-process ConnPool for recovery unit tests that counts calls,
-// captures outgoing metadata on GetSession probes, and runs an optional hook
-// without spinning up a gRPC server.
+// stubPool is an in-process ConnPool that counts calls and captures GetSession probe metadata.
 type stubPool struct {
 	closeCountingPool
 	conn  *grpc.ClientConn
@@ -176,30 +175,23 @@ func TestDirectPathFallbackRecoveryEnvGateAndPeriod(t *testing.T) {
 		t.Fatalf("directPathFallbackPeriod = %v, want 3m", directPathFallbackPeriod)
 	}
 	for _, tt := range []struct {
-		val        string
-		want       bool
-		wantPeriod time.Duration
+		val  string
+		want bool
 	}{
-		{"", false, directPathFallbackPeriod},
-		{"not-a-bool", false, directPathFallbackPeriod},
-		{"true", true, time.Minute},
+		{"", false},
+		{"not-a-bool", false},
+		{"true", true},
 	} {
 		t.Setenv(directPathFallbackRecoveryEnv, tt.val)
 		f := newPoolFallback(true, recoveryTestDB, ClientConfig{Logger: log.New(io.Discard, "", 0)}, transport.PoolConfig{}, nil, func(gtransport.ConnPool) bool { return false })
 		f.close()
-		if isDirectPathFallbackRecoveryEnabled() != tt.want || f.recovery.enabled != tt.want || f.period != tt.wantPeriod {
-			t.Fatalf("env=%q: got enabled=%v period=%v, want %v %v", tt.val, f.recovery.enabled, f.period, tt.want, tt.wantPeriod)
+		if isDirectPathFallbackRecoveryEnabled() != tt.want || f.recovery.enabled != tt.want || f.period != directPathFallbackPeriod {
+			t.Fatalf("env=%q: got enabled=%v period=%v, want %v %v", tt.val, f.recovery.enabled, f.period, tt.want, directPathFallbackPeriod)
 		}
 	}
 
-	// Recovery disabled: registers no eef.probe_result counter, ignores
-	// setProbeSession, registers no slots, and starts no probe loop.
-	strictMP := &failingDCPMeterProvider{meter: &failingDCPMeter{failCounterName: metricNameEEFProbeResult}}
-	f := newDirectPathFallback(strictMP, log.New(io.Discard, "", 0), nil, time.Hour, directPathFallbackRecoveryConfig{})
+	f := newDirectPathFallback(nil, log.New(io.Discard, "", 0), nil, time.Hour, directPathFallbackRecoveryConfig{})
 	t.Cleanup(f.close)
-	if f.metrics == nil {
-		t.Fatal("newDirectPathFallback registered eef.probe_result when recovery is disabled")
-	}
 	slot := newChannelSlot(nil, f)
 	t.Cleanup(func() { slot.Close() })
 	f.setProbeSession(recoveryTestSess)
@@ -221,8 +213,7 @@ func TestDirectPathFallbackRecoveryThresholdsAndJitter(t *testing.T) {
 		)
 		var jitterCalls, probeCalls atomic.Int32
 		var firstProbeAt atomic.Int64
-		f := newTestRecoveryFallback(t, nil, nil, interval, minProbes, minProbes*interval)
-		// Set probeJitter before creating slots / entering fallback so probeLoop reads it without racing.
+		f := newTestRecoveryFallback(t, nil, nil, interval, minProbes, 0)
 		f.recovery.probeJitter = func(time.Duration) time.Duration {
 			jitterCalls.Add(1)
 			return jitter
@@ -251,12 +242,29 @@ func TestDirectPathFallbackRecoveryThresholdsAndJitter(t *testing.T) {
 		}
 	})
 
-	t.Run("duration boundary blocks recovery after minProbes successes", func(t *testing.T) {
+	t.Run("duration boundary anchors at first passing probe and blocks until minDur elapses", func(t *testing.T) {
 		const minDur = time.Hour
 		f := newTestRecoveryFallback(t, nil, nil, time.Hour, 2, minDur)
-		_, slot := newStubSlot(t, f)
+		direct, slot := newStubSlot(t, f)
 		forceDirectPathFallback(t, f)
 
+		slot.mu.Lock()
+		startBeforePass := slot.probeStreakStart
+		slot.mu.Unlock()
+		if !startBeforePass.IsZero() {
+			t.Fatalf("probeStreakStart after enterFallback = %v, want zero", startBeforePass)
+		}
+
+		direct.setErr(status.Error(codes.Unavailable, "still down"))
+		slot.probeOnce(context.Background())
+		slot.mu.Lock()
+		startAfterFail := slot.probeStreakStart
+		slot.mu.Unlock()
+		if !startAfterFail.IsZero() {
+			t.Fatalf("probeStreakStart after failure = %v, want zero", startAfterFail)
+		}
+
+		direct.setErr(nil)
 		for range 3 {
 			slot.probeOnce(context.Background())
 		}
@@ -264,6 +272,10 @@ func TestDirectPathFallbackRecoveryThresholdsAndJitter(t *testing.T) {
 			t.Fatal("slot recovered before minRecoveryDuration elapsed")
 		}
 		slot.mu.Lock()
+		if slot.probeStreakStart.IsZero() {
+			slot.mu.Unlock()
+			t.Fatal("probeStreakStart was not anchored on first passing probe")
+		}
 		slot.probeStreakStart = time.Now().Add(-minDur - time.Second)
 		slot.mu.Unlock()
 		slot.probeOnce(context.Background())
@@ -286,19 +298,18 @@ func TestDirectPathFallbackRecoveryResetsPostRecoveryWindow(t *testing.T) {
 	f.addSwitchHook(func() {
 		reFallbackAt.CompareAndSwap(0, time.Now().UnixNano())
 	})
-	allowed, reset := f.tryRecoverWindow(f.current().generation)
+	allowed, reset := f.tryRecoverSlot(nil, f.current().generation)
 	recoveredAt := time.Now()
 	if !allowed || !reset || f.current().fallback {
-		t.Fatalf("tryRecoverWindow() = (%v, %v), fallback=%v; want (true, true), false", allowed, reset, f.current().fallback)
+		t.Fatalf("tryRecoverSlot() = (%v, %v), fallback=%v; want (true, true), false", allowed, reset, f.current().fallback)
 	}
 
-	// A tick timestamp predating the recovered window start must not close it.
 	f.recordSlotAttempt(context.Background(), f.current(), false, status.Error(codes.Unavailable, "transient"))
 	if res := f.closeWindow(f.current().start.Add(-time.Millisecond)); res.switched || f.current().fallback {
 		t.Fatalf("closeWindow before w.start switched: res=%+v fallback=%v", res, f.current().fallback)
 	}
 
-	// The live timer must wait a full period from recovery rather than firing on the ~50ms remaining from the prior tick.
+	// The post-recovery window must receive a full period rather than the ~50ms remaining from the prior tick.
 	waitFor(t, func() error {
 		if !f.current().fallback || reFallbackAt.Load() == 0 {
 			return errors.New("waiting for full post-recovery window to close")
@@ -310,26 +321,23 @@ func TestDirectPathFallbackRecoveryResetsPostRecoveryWindow(t *testing.T) {
 	}
 }
 
-func TestDirectPathFallbackRecoveryProbeFailuresAndMetrics(t *testing.T) {
+func TestDirectPathFallbackRecoveryProbeFailures(t *testing.T) {
 	skipDialectRerun(t)
 	var altsOK atomic.Bool
 	setRecoveryTestPeerCheck(t, func(*peer.Peer) bool { return altsOK.Load() })
 
-	reader, provider := newTestMetricsReader(t)
-	f := newTestRecoveryFallback(t, provider, nil, time.Hour, 3, 0)
+	f := newTestRecoveryFallback(t, nil, nil, time.Hour, 3, 0)
 	f.probeSession.Store("")
 	direct, slot := newStubSlot(t, f)
 
 	forceDirectPathFallback(t, f)
 	fallbackGen := f.current().generation
 
-	// Missing session ID -> FailedPrecondition.
 	slot.probeOnce(context.Background())
 	if !slot.isInFallback() {
 		t.Fatal("slot left fallback without a session ID")
 	}
 
-	// Each fault resets consecutive progress; proved black-box by 2 non-recovering probes after each reset.
 	f.setProbeSession(recoveryTestSess)
 	altsOK.Store(true)
 	for _, applyFault := range []func(bool){
@@ -364,25 +372,9 @@ func TestDirectPathFallbackRecoveryProbeFailuresAndMetrics(t *testing.T) {
 		t.Fatal("slot did not recover on 3rd consecutive success")
 	}
 
-	// Stale enterFallback(oldGen) must not re-enter fallback.
 	slot.enterFallback(fallbackGen)
 	if slot.isInFallback() {
 		t.Fatal("stale enterFallback(oldGen) re-entered fallback on recovered slot")
-	}
-
-	if m := requireTestMetric(t, collectTestMetrics(t, reader), metricNameEEFProbeResult); m.Unit != "{result}" {
-		t.Fatalf("%s unit = %q, want {result}", metricNameEEFProbeResult, m.Unit)
-	}
-	metrics := collectInt64Metrics(t, reader)
-	for _, wantKey := range []string{
-		metricNameEEFProbeResult + "|channel_name=primary,reason=FailedPrecondition,success=false",
-		metricNameEEFProbeResult + "|channel_name=primary,reason=NOT_DIRECTPATH,success=false",
-		metricNameEEFProbeResult + "|channel_name=primary,reason=Unavailable,success=false",
-		metricNameEEFProbeResult + "|channel_name=primary,reason=,success=true",
-	} {
-		if metrics[wantKey] == 0 {
-			t.Fatalf("missing expected metric %q; got %v", wantKey, metrics)
-		}
 	}
 }
 
@@ -426,7 +418,9 @@ func TestDirectPathFallbackRecoveryMultiSlotAndReFallback(t *testing.T) {
 	skipDialectRerun(t)
 	setRecoveryTestPeerCheck(t, func(*peer.Peer) bool { return true })
 
-	reader, provider := newTestMetricsReader(t)
+	reader := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader))
+	t.Cleanup(func() { provider.Shutdown(context.Background()) })
 	cloud := newStubPool()
 	f := newTestRecoveryFallback(t, provider, stubCloudDial(cloud), time.Hour, 3, 0)
 
@@ -436,7 +430,6 @@ func TestDirectPathFallbackRecoveryMultiSlotAndReFallback(t *testing.T) {
 	direct2, slot2 := newStubSlot(t, f)
 	direct2.setErr(status.Error(codes.Unavailable, "slot2 down"))
 
-	// Phase 1: gen 1 fallback -> slot1 recovers (gen 2) while slot2 stays in fallback.
 	forceDirectPathFallback(t, f)
 	for range 3 {
 		slot2.probeOnce(context.Background())
@@ -447,8 +440,6 @@ func TestDirectPathFallbackRecoveryMultiSlotAndReFallback(t *testing.T) {
 			slot1.isInFallback(), slot2.isInFallback(), f.current().fallback, switchHooks.Load())
 	}
 
-	// Unrecovered slot2 routes over CloudPath under channel_name=fallback;
-	// CloudPath Unavailable errors must not pollute the re-armed DirectPath window.
 	stubInvoke(t, slot2)
 	if cloud.calls.Load() != 1 || slot2.Conn() != cloud.Conn() {
 		t.Fatalf("slot2 CloudPath calls=%d connMatch=%v", cloud.calls.Load(), slot2.Conn() == cloud.Conn())
@@ -462,14 +453,12 @@ func TestDirectPathFallbackRecoveryMultiSlotAndReFallback(t *testing.T) {
 		t.Fatalf("CloudPath calls polluted DirectPath window: (%d, %d)", failures, successes)
 	}
 
-	// Recovered slot1 routes over DirectPath and counts in the DirectPath window.
 	direct1Before := direct1.calls.Load()
 	stubInvoke(t, slot1)
 	if failures, successes := unpackFallbackOutcomes(f.current().outcomes.Load()); direct1.calls.Load() != direct1Before+1 || failures != 0 || successes != 1 {
 		t.Fatalf("slot1 DirectPath calls=%d outcomes=(%d, %d)", direct1.calls.Load()-direct1Before, failures, successes)
 	}
 
-	// Phase 2: slot2 builds a 2/3 probe streak, then slot1 triggers gen-3 re-fallback.
 	direct2.setErr(nil)
 	slot2.probeOnce(context.Background())
 	slot2.probeOnce(context.Background())
@@ -479,8 +468,11 @@ func TestDirectPathFallbackRecoveryMultiSlotAndReFallback(t *testing.T) {
 	slot2.mu.Lock()
 	streakStartBefore := slot2.probeStreakStart
 	slot2.mu.Unlock()
+	if streakStartBefore.IsZero() {
+		t.Fatal("slot2 probeStreakStart was not anchored before re-fallback")
+	}
 
-	f.closeWindow(time.Now()) // start fresh window before 100% failure
+	f.closeWindow(time.Now())
 	direct1.setErr(status.Error(codes.Unavailable, "outage 2"))
 	if err := slot1.Invoke(context.Background(), createSessionMethod, nil, nil); status.Code(err) != codes.Unavailable {
 		t.Fatalf("slot1 Invoke() err = %v, want Unavailable", err)
@@ -489,21 +481,17 @@ func TestDirectPathFallbackRecoveryMultiSlotAndReFallback(t *testing.T) {
 		t.Fatalf("second fallback failed: res=%+v slot1=%v slot2=%v", res, slot1.isInFallback(), slot2.isInFallback())
 	}
 
-	// Re-fallback resets in-progress probe counters of already-in-fallback slot2
-	// and advances fallbackGen; stale tryRecoverWindow(1) is rejected.
 	slot2.mu.Lock()
 	gotConsec, gotStart, gotGen := slot2.consecutiveProbes, slot2.probeStreakStart, slot2.fallbackGen
 	slot2.mu.Unlock()
-	if gotConsec != 0 || gotStart.Before(streakStartBefore) || gotGen != f.current().generation {
-		t.Fatalf("slot2 after re-fallback = (%d, %v, gen=%d), want (0, >=%v, gen=%d)",
-			gotConsec, gotStart, gotGen, streakStartBefore, f.current().generation)
+	if gotConsec != 0 || !gotStart.IsZero() || gotGen != f.current().generation {
+		t.Fatalf("slot2 after re-fallback = (%d, %v, gen=%d), want (0, zero, gen=%d)",
+			gotConsec, gotStart, gotGen, f.current().generation)
 	}
-	if allowed, reset := f.tryRecoverWindow(1); allowed || reset || !f.current().fallback {
-		t.Fatalf("tryRecoverWindow(1) = (%v, %v), fallback=%v; want (false, false), true", allowed, reset, f.current().fallback)
+	if allowed, reset := f.tryRecoverSlot(nil, 1); allowed || reset || !f.current().fallback {
+		t.Fatalf("tryRecoverSlot(nil, 1) = (%v, %v), fallback=%v; want (false, false), true", allowed, reset, f.current().fallback)
 	}
 
-	// Slot2 must complete a fresh 3 consecutive probes after re-fallback before recovering (gen 4);
-	// slot1 recovers later without double-counting fallback_count.
 	slot2.probeOnce(context.Background())
 	slot2.probeOnce(context.Background())
 	if !slot2.isInFallback() || !f.current().fallback {
@@ -513,6 +501,7 @@ func TestDirectPathFallbackRecoveryMultiSlotAndReFallback(t *testing.T) {
 	if slot2.isInFallback() || f.current().fallback {
 		t.Fatal("slot2 did not recover on 3rd fresh consecutive probe after re-fallback")
 	}
+	stubInvoke(t, slot2)
 	direct1.setErr(nil)
 	for range 3 {
 		slot1.probeOnce(context.Background())
@@ -521,7 +510,16 @@ func TestDirectPathFallbackRecoveryMultiSlotAndReFallback(t *testing.T) {
 		t.Fatal("slot1 did not recover after healing")
 	}
 
-	metrics := collectInt64Metrics(t, reader)
+	metrics := map[string]int64{}
+	for _, sm := range collectTestMetrics(t, reader).ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if sum, ok := m.Data.(metricdata.Sum[int64]); ok {
+				for _, p := range sum.DataPoints {
+					metrics[m.Name+"|"+attrString(p.Attributes)] += p.Value
+				}
+			}
+		}
+	}
 	for k, want := range map[string]int64{
 		metricNameEEFCallStatus + "|channel_name=fallback,status_code=OK":                  1,
 		metricNameEEFCallStatus + "|channel_name=fallback,status_code=Unavailable":         1,
@@ -534,6 +532,167 @@ func TestDirectPathFallbackRecoveryMultiSlotAndReFallback(t *testing.T) {
 	}
 }
 
+func TestDirectPathFallbackRecoveryCanaryGate(t *testing.T) {
+	skipDialectRerun(t)
+	setRecoveryTestPeerCheck(t, func(*peer.Peer) bool { return true })
+
+	t.Run("holds remaining slots until canary DirectPath RPC succeeds without resetting streak", func(t *testing.T) {
+		cloud := newStubPool()
+		f := newTestRecoveryFallback(t, nil, stubCloudDial(cloud), time.Hour, 3, 0)
+		direct1, slot1 := newStubSlot(t, f)
+		_, slot2 := newStubSlot(t, f)
+		_, slot3 := newStubSlot(t, f)
+
+		preFallbackWin := f.current()
+		forceDirectPathFallback(t, f)
+
+		var failData1 atomic.Bool
+		failData1.Store(true)
+		direct1.setInvoke(func(_ context.Context, method string) error {
+			if method != getSessionMethod && failData1.Load() {
+				return status.Error(codes.Unavailable, "data plane still broken")
+			}
+			return nil
+		})
+		for range 3 {
+			slot1.probeOnce(context.Background())
+		}
+		if slot1.isInFallback() || f.current().fallback {
+			t.Fatalf("slot1 canary did not recover: slot1=%v window=%v", slot1.isInFallback(), f.current().fallback)
+		}
+
+		if err := slot1.Invoke(context.Background(), createSessionMethod, nil, nil); status.Code(err) != codes.Unavailable {
+			t.Fatalf("slot1 data RPC err = %v, want Unavailable", err)
+		}
+
+		for range 4 {
+			slot2.probeOnce(context.Background())
+		}
+		if !slot2.isInFallback() {
+			t.Fatal("slot2 recovered while canary gen 2 had zero DirectPath successes")
+		}
+		slot2.mu.Lock()
+		gotConsec, gotStart := slot2.consecutiveProbes, slot2.probeStreakStart
+		slot2.mu.Unlock()
+		if gotConsec < 3 || gotStart.IsZero() {
+			t.Fatalf("slot2 streak was reset while waiting for canary: consecutiveProbes=%d start=%v", gotConsec, gotStart)
+		}
+		stubInvoke(t, slot2)
+		if cloud.calls.Load() != 1 {
+			t.Fatalf("slot2 CloudPath calls = %d, want 1", cloud.calls.Load())
+		}
+
+		f.recordSlotAttempt(context.Background(), preFallbackWin, false, nil)
+		slot2.probeOnce(context.Background())
+		if !slot2.isInFallback() {
+			t.Fatal("stale pre-fallback generation success unlocked slot2")
+		}
+
+		failData1.Store(false)
+		stubInvoke(t, slot1)
+		slot2.probeOnce(context.Background())
+		if slot2.isInFallback() {
+			t.Fatal("slot2 did not recover on next probe after canary DirectPath success")
+		}
+
+		if res := f.closeWindow(time.Now()); res.switched {
+			t.Fatalf("unexpected switch on verified window rollover: %+v", res)
+		}
+		for range 3 {
+			slot3.probeOnce(context.Background())
+		}
+		if slot3.isInFallback() {
+			t.Fatal("slot3 did not recover after non-fallback window rollover on verified generation")
+		}
+	})
+
+	t.Run("re-fallback before canary success never routes remaining slots to DirectPath", func(t *testing.T) {
+		cloud := newStubPool()
+		f := newTestRecoveryFallback(t, nil, stubCloudDial(cloud), time.Hour, 3, 0)
+		direct1, slot1 := newStubSlot(t, f)
+		direct2, slot2 := newStubSlot(t, f)
+
+		var slot2DirectDataCalls atomic.Int32
+		direct1.setInvoke(func(_ context.Context, method string) error {
+			if method != getSessionMethod {
+				return status.Error(codes.Unavailable, "data plane broken")
+			}
+			return nil
+		})
+		direct2.setInvoke(func(_ context.Context, method string) error {
+			if method != getSessionMethod {
+				slot2DirectDataCalls.Add(1)
+			}
+			return nil
+		})
+
+		forceDirectPathFallback(t, f)
+
+		for range 3 {
+			slot1.probeOnce(context.Background())
+		}
+		if slot1.isInFallback() || f.current().fallback {
+			t.Fatalf("slot1 canary did not recover: slot1=%v window=%v", slot1.isInFallback(), f.current().fallback)
+		}
+		for range 4 {
+			slot2.probeOnce(context.Background())
+		}
+		if !slot2.isInFallback() {
+			t.Fatal("slot2 left CloudPath before canary verified DirectPath")
+		}
+		stubInvoke(t, slot2)
+		if cloud.calls.Load() != 1 {
+			t.Fatalf("slot2 CloudPath calls = %d, want 1", cloud.calls.Load())
+		}
+
+		if err := slot1.Invoke(context.Background(), createSessionMethod, nil, nil); status.Code(err) != codes.Unavailable {
+			t.Fatalf("slot1 Invoke() err = %v, want Unavailable", err)
+		}
+		if res := f.closeWindow(time.Now()); !res.switched || !slot1.isInFallback() || !slot2.isInFallback() {
+			t.Fatalf("re-fallback failed: res=%+v slot1=%v slot2=%v", res, slot1.isInFallback(), slot2.isInFallback())
+		}
+		if slot2DirectDataCalls.Load() != 0 {
+			t.Fatalf("slot2 sent %d data RPCs to DirectPath before re-fallback, want 0", slot2DirectDataCalls.Load())
+		}
+	})
+
+	t.Run("closing unverified canary promotes next slot without deadlock", func(t *testing.T) {
+		cloud := newStubPool()
+		f := newTestRecoveryFallback(t, nil, stubCloudDial(cloud), time.Hour, 2, 0)
+		_, slot1 := newStubSlot(t, f)
+		_, slot2 := newStubSlot(t, f)
+		_, slot3 := newStubSlot(t, f)
+
+		forceDirectPathFallback(t, f)
+
+		for range 2 {
+			slot1.probeOnce(context.Background())
+		}
+		if slot1.isInFallback() || f.current().fallback {
+			t.Fatalf("slot1 canary did not recover: slot1=%v window=%v", slot1.isInFallback(), f.current().fallback)
+		}
+		if err := slot1.Close(); err != nil {
+			t.Fatalf("slot1.Close() failed: %v", err)
+		}
+
+		for range 2 {
+			slot2.probeOnce(context.Background())
+			slot3.probeOnce(context.Background())
+		}
+		if slot2.isInFallback() {
+			t.Fatal("slot2 was not promoted as replacement canary after slot1 closed")
+		}
+		if !slot3.isInFallback() {
+			t.Fatal("slot3 recovered before replacement canary verified DirectPath")
+		}
+		stubInvoke(t, slot2)
+		slot3.probeOnce(context.Background())
+		if slot3.isInFallback() {
+			t.Fatal("slot3 did not recover after replacement canary DirectPath success")
+		}
+	})
+}
+
 func TestDirectPathFallbackRecoverySlotEdgeCases(t *testing.T) {
 	skipDialectRerun(t)
 	setRecoveryTestPeerCheck(t, func(*peer.Peer) bool { return true })
@@ -543,7 +702,6 @@ func TestDirectPathFallbackRecoverySlotEdgeCases(t *testing.T) {
 		f := newTestRecoveryFallback(t, nil, stubCloudDial(cloud), time.Hour, 1, 0)
 		forceDirectPathFallback(t, f)
 
-		// CloudPath-only slot without a direct dialer stays in fallback with no probe loop.
 		noDialer := newCloudPathSlot(nil, f, nil, f.current().generation)
 		t.Cleanup(func() { noDialer.Close() })
 		if !noDialer.isInFallback() || hasProbeLoop(noDialer) {
@@ -666,7 +824,6 @@ func TestDirectPathFallbackRecoveryEndToEndFixedAndDCPClients(t *testing.T) {
 				t.Fatal("probe session ID was not set on client startup")
 			}
 
-			// Concurrent RW transactions across two fallback/recovery cycles under -race.
 			var wg sync.WaitGroup
 			ctx, cancel := context.WithCancel(context.Background())
 			defer wg.Wait()
@@ -714,7 +871,6 @@ func TestDirectPathFallbackRecoveryEndToEndFixedAndDCPClients(t *testing.T) {
 				t.Fatalf("post-recovery query counts: direct=%d cloud=%d", paths.direct.count(executeStreamingSQLMethod), paths.cloud.count(executeStreamingSQLMethod))
 			}
 
-			// Verify a post-recovery multi-RPC read-write transaction stays on a single non-zero slot channel ID on DirectPath.
 			directRecBefore, cloudRecBefore := len(paths.direct.recorded()), len(paths.cloud.recorded())
 			if _, err := client.ReadWriteTransaction(context.Background(), func(txCtx context.Context, tx *ReadWriteTransaction) error {
 				if _, err := tx.Update(txCtx, NewStatement(UpdateBarSetFoo)); err != nil {
@@ -861,37 +1017,98 @@ func TestDirectPathFallbackRecoveryRejectsNonALTSPeer(t *testing.T) {
 	}
 }
 
-func newTestMetricsReader(t *testing.T) (*sdkmetric.ManualReader, *sdkmetric.MeterProvider) {
-	t.Helper()
-	reader := sdkmetric.NewManualReader()
-	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader))
-	t.Cleanup(func() { provider.Shutdown(context.Background()) })
-	return reader, provider
+func TestDirectPathFallbackRecoveryStaleInFlightProbeDiscarded(t *testing.T) {
+	skipDialectRerun(t)
+	setRecoveryTestPeerCheck(t, func(*peer.Peer) bool { return true })
+
+	f := newTestRecoveryFallback(t, nil, nil, time.Hour, 1, 0)
+	_, slot1 := newStubSlot(t, f)
+	direct2, slot2 := newStubSlot(t, f)
+	forceDirectPathFallback(t, f)
+
+	slot1.probeOnce(context.Background())
+	if slot1.isInFallback() || f.current().fallback {
+		t.Fatalf("slot1 did not recover: slot1=%v window=%v", slot1.isInFallback(), f.current().fallback)
+	}
+
+	inProbe := make(chan struct{})
+	releaseProbe := make(chan struct{})
+	direct2.setInvoke(func(context.Context, string) error {
+		close(inProbe)
+		<-releaseProbe
+		return nil
+	})
+	probeDone := make(chan struct{})
+	go func() {
+		defer close(probeDone)
+		slot2.probeOnce(context.Background())
+	}()
+	<-inProbe
+
+	forceDirectPathFallback(t, f)
+	close(releaseProbe)
+	<-probeDone
+
+	if !slot2.isInFallback() || !f.current().fallback {
+		t.Fatalf("stale in-flight probe recovered slot2 in newer generation: slot2=%v window=%v", slot2.isInFallback(), f.current().fallback)
+	}
 }
 
-func collectInt64Metrics(t *testing.T, reader *sdkmetric.ManualReader) map[string]int64 {
-	t.Helper()
-	got := map[string]int64{}
-	for _, sm := range collectTestMetrics(t, reader).ScopeMetrics {
-		for _, m := range sm.Metrics {
-			if sum, ok := m.Data.(metricdata.Sum[int64]); ok {
-				for _, p := range sum.DataPoints {
-					got[m.Name+"|"+recoveryAttrString(p.Attributes)] += p.Value
-				}
-			}
-		}
+func TestDirectPathFallbackRecoveryLogsProbeFailureOnTransition(t *testing.T) {
+	skipDialectRerun(t)
+	setRecoveryTestPeerCheck(t, func(*peer.Peer) bool { return true })
+
+	var buf bytes.Buffer
+	f := newDirectPathFallback(nil, log.New(&buf, "", 0), nil, time.Hour, directPathFallbackRecoveryConfig{
+		enabled:             true,
+		probeInterval:       time.Hour,
+		probeRPCTimeout:     time.Second,
+		minRecoveryProbes:   2,
+		minRecoveryDuration: 0,
+	})
+	t.Cleanup(f.close)
+	f.setProbeSession(recoveryTestSess)
+	direct, slot := newStubSlot(t, f)
+	forceDirectPathFallback(t, f)
+
+	direct.setErr(status.Error(codes.PermissionDenied, "denied"))
+	slot.probeOnce(context.Background())
+	slot.probeOnce(context.Background())
+	if got := strings.Count(buf.String(), "PermissionDenied"); got != 1 {
+		t.Fatalf("PermissionDenied log count = %d, want 1; log=%q", got, buf.String())
 	}
-	return got
+
+	direct.setErr(status.Error(codes.Unavailable, "down"))
+	slot.probeOnce(context.Background())
+	slot.probeOnce(context.Background())
+	if got := strings.Count(buf.String(), "Unavailable"); got != 1 {
+		t.Fatalf("Unavailable log count = %d, want 1; log=%q", got, buf.String())
+	}
+
+	direct.setErr(nil)
+	slot.probeOnce(context.Background())
+	direct.setErr(status.Error(codes.Unavailable, "down again"))
+	slot.probeOnce(context.Background())
+	if got := strings.Count(buf.String(), "Unavailable"); got != 2 {
+		t.Fatalf("Unavailable log count after success = %d, want 2; log=%q", got, buf.String())
+	}
 }
 
-func recoveryAttrString(set attribute.Set) string {
-	var s string
-	for iter := set.Iter(); iter.Next(); {
-		kv := iter.Attribute()
-		if s != "" {
-			s += ","
-		}
-		s += string(kv.Key) + "=" + kv.Value.Emit()
+type fakeALTSAuthInfo struct {
+	alts.AuthInfo
+}
+
+func (fakeALTSAuthInfo) AuthType() string { return "alts" }
+
+func TestIsDirectPathPeerFn(t *testing.T) {
+	skipDialectRerun(t)
+	if isDirectPathPeerFn(nil) {
+		t.Fatal("expected nil peer to return false")
 	}
-	return s
+	if isDirectPathPeerFn(&peer.Peer{}) {
+		t.Fatal("expected peer without AuthInfo to return false")
+	}
+	if !isDirectPathPeerFn(&peer.Peer{AuthInfo: fakeALTSAuthInfo{}}) {
+		t.Fatal("expected peer with alts.AuthInfo to return true")
+	}
 }

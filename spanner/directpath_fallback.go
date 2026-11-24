@@ -77,6 +77,9 @@ var (
 			return 0
 		},
 	}
+	// isDirectPathPeerFn verifies fail-closed that a probe RPC used DirectPath ALTS.
+	// DirectPath-over-Interconnect negotiates TLS rather than ALTS, so probes
+	// intentionally fail closed with NOT_DIRECTPATH and stay on CloudPath.
 	isDirectPathPeerFn = func(p *peer.Peer) bool {
 		if p == nil {
 			return false
@@ -147,9 +150,14 @@ type directPathFallback struct {
 	onSwitch []func()
 
 	// Recovery configuration and state.
-	recovery        directPathFallbackRecoveryConfig
-	probeSession    atomic.Value // string
-	probingDisabled atomic.Bool
+	recovery            directPathFallbackRecoveryConfig
+	probeSession        atomic.Value // string
+	probingDisabled     atomic.Bool
+	recoveryVerifiedGen atomic.Uint64
+	// Guarded by closeMu; tracks the single canary slot testing an unverified
+	// post-recovery generation so another slot can take over if it closes.
+	recoveryCanaryGen  uint64
+	recoveryCanarySlot *channelSlot
 
 	slotsMu sync.Mutex
 	slots   map[*channelSlot]struct{}
@@ -246,6 +254,8 @@ func (f *directPathFallback) registerSlot(s *channelSlot) {
 
 	if w := f.current(); w.fallback {
 		s.enterFallback(w.generation)
+	} else if w.generation > 1 && s.inFallback.Load() {
+		s.enterFallback(w.generation - 1)
 	}
 }
 
@@ -256,12 +266,22 @@ func (f *directPathFallback) unregisterSlot(s *channelSlot) {
 	f.slotsMu.Lock()
 	delete(f.slots, s)
 	f.slotsMu.Unlock()
+
+	f.closeMu.Lock()
+	if f.recoveryCanarySlot == s {
+		f.recoveryCanaryGen = 0
+		f.recoveryCanarySlot = nil
+	}
+	f.closeMu.Unlock()
 }
 
-// tryRecoverWindow resets the shared window out of fallback on the first slot
-// recovery for fallbackGen. Returns allowed=false if a newer pool-wide fallback
-// cycle already started. Callers may hold channelSlot.mu (closeMu is a leaf lock).
-func (f *directPathFallback) tryRecoverWindow(fallbackGen uint64) (allowed, reset bool) {
+// tryRecoverSlot resets the shared window out of fallback on the first slot
+// recovery for fallbackGen. Once the first slot recovers as a canary, remaining
+// slots stay on CloudPath until at least one non-fallback DirectPath RPC
+// succeeds in the post-recovery generation. Returns allowed=false if a newer
+// fallback cycle started or the post-recovery generation is still unverified.
+// Callers may hold channelSlot.mu (closeMu is a leaf lock).
+func (f *directPathFallback) tryRecoverSlot(s *channelSlot, fallbackGen uint64) (allowed, reset bool) {
 	f.closeMu.Lock()
 	defer f.closeMu.Unlock()
 	w := f.window.Load()
@@ -269,13 +289,29 @@ func (f *directPathFallback) tryRecoverWindow(fallbackGen uint64) (allowed, rese
 		if w.generation != fallbackGen {
 			return false, false
 		}
+		nextGen := w.generation + 1
 		f.window.Store(&fallbackWindow{
-			generation: w.generation + 1,
+			generation: nextGen,
 			fallback:   false,
 			start:      time.Now(),
 		})
+		f.recoveryCanaryGen = nextGen
+		f.recoveryCanarySlot = s
 		return true, true
 	}
+	if w.generation != fallbackGen+1 {
+		return false, false
+	}
+	if f.recoveryVerifiedGen.Load() >= w.generation {
+		return true, false
+	}
+	if f.recoveryCanaryGen == w.generation {
+		return false, false
+	}
+	// The previous canary slot closed before any DirectPath RPC succeeded;
+	// promote this slot to test the post-recovery generation.
+	f.recoveryCanaryGen = w.generation
+	f.recoveryCanarySlot = s
 	return true, false
 }
 
@@ -327,15 +363,13 @@ func newPoolFallback(enabled bool, database string, clientCfg ClientConfig, cfg 
 		return nil
 	}
 	dialCloud := newCloudPathDialer(cfg, opts, isDirect)
-	period := directPathFallbackPeriod
 	var recovery directPathFallbackRecoveryConfig
 	if isDirectPathFallbackRecoveryEnabled() {
-		period = min(directPathFallbackPeriod, time.Minute)
 		recovery = defaultDirectPathRecoveryConfig
 		recovery.enabled = true
 		recovery.probeMD = newDirectPathProbeMetadata(database, clientCfg.DisableRouteToLeader)
 	}
-	return newDirectPathFallback(cfg.MeterProvider, clientCfg.Logger, dialCloud, period, recovery)
+	return newDirectPathFallback(cfg.MeterProvider, clientCfg.Logger, dialCloud, directPathFallbackPeriod, recovery)
 }
 
 func suppliesGRPCConn(opts []option.ClientOption) bool {
@@ -406,15 +440,10 @@ func sameConnPool(a, b gtransport.ConnPool) bool {
 // caller cancelled.
 var errStreamStoppedByReader = errors.New("spanner: the stream's reader stopped it")
 
-// recordAttempt records the outcome of an attempt that was sent under w with
-// ctx. An attempt the caller cancelled says nothing about the path, so it is
-// not counted and not reported in eef.call_status.
-func (f *directPathFallback) recordAttempt(ctx context.Context, w *fallbackWindow, err error) {
-	f.recordSlotAttempt(ctx, w, w.fallback, err)
-}
-
 // recordSlotAttempt records an attempt's outcome over CloudPath (usedFallback=true) or DirectPath.
-// Explicit usedFallback keeps unrecovered CloudPath calls out of DirectPath error-rate accounting.
+// An attempt the caller cancelled says nothing about the path, so it is not counted and not
+// reported in eef.call_status. Explicit usedFallback keeps unrecovered CloudPath calls out of
+// DirectPath error-rate accounting.
 func (f *directPathFallback) recordSlotAttempt(ctx context.Context, w *fallbackWindow, usedFallback bool, err error) {
 	if ctx.Value(fallbackAccountingOffKey{}) != nil {
 		return
@@ -424,7 +453,7 @@ func (f *directPathFallback) recordSlotAttempt(ctx context.Context, w *fallbackW
 		return
 	}
 	f.metrics.recordCall(ctx, usedFallback, code)
-	if !usedFallback && !w.fallback {
+	if !usedFallback {
 		f.record(w.generation, isDirectPathFallbackFailure(code))
 	}
 }
@@ -451,6 +480,9 @@ func (f *directPathFallback) record(gen uint64, failed bool) {
 			return
 		}
 		if w.outcomes.Add(delta)&fallbackWindowSealed == 0 {
+			if !failed && gen > 0 {
+				f.markGenerationVerified(gen)
+			}
 			return
 		}
 		// The window was sealed first, so its decision did not see this
@@ -459,6 +491,18 @@ func (f *directPathFallback) record(gen uint64, failed bool) {
 		f.closeMu.Lock()
 		w = f.window.Load()
 		f.closeMu.Unlock()
+	}
+}
+
+func (f *directPathFallback) markGenerationVerified(gen uint64) {
+	for {
+		cur := f.recoveryVerifiedGen.Load()
+		if cur >= gen {
+			return
+		}
+		if f.recoveryVerifiedGen.CompareAndSwap(cur, gen) {
+			return
+		}
 	}
 }
 
@@ -476,6 +520,8 @@ func (f *directPathFallback) closeWindow(now time.Time) fallbackWindowResult {
 	if switched {
 		next.generation++
 		next.fallback = true
+		f.recoveryCanaryGen = 0
+		f.recoveryCanarySlot = nil
 	}
 	f.window.Store(next)
 	f.closeMu.Unlock()
@@ -519,13 +565,12 @@ func isDirectPathFallbackFailure(code codes.Code) bool {
 	return false
 }
 
-// directPathFallbackMetrics records eef.fallback_count, eef.call_status, and
-// eef.probe_result under grpc-gcp-go's meter scope, names, and attributes to
-// match grpc-gcp-go's exported series.
+// directPathFallbackMetrics records eef.fallback_count and eef.call_status
+// under grpc-gcp-go's meter scope, names, and attributes to match
+// grpc-gcp-go's exported series.
 type directPathFallbackMetrics struct {
 	fallbackCount metric.Int64Counter
 	callStatus    metric.Int64Counter
-	probeResult   metric.Int64Counter
 	// callAttrs caches the call_status attributes by [fallback][code].
 	callAttrs    [2][codes.Unauthenticated + 1]metric.AddOption
 	switchAttr   metric.AddOption
@@ -562,15 +607,6 @@ func newDirectPathFallbackMetrics(mp metric.MeterProvider, recoveryEnabled bool)
 		)),
 	}
 	if recoveryEnabled {
-		probeResult, err := meter.Int64Counter(
-			metricNameEEFProbeResult,
-			metric.WithDescription("Results of probing functions execution."),
-			metric.WithUnit("{result}"),
-		)
-		if err != nil {
-			return nil, err
-		}
-		m.probeResult = probeResult
 		m.recoveryAttr = metric.WithAttributeSet(attribute.NewSet(
 			attribute.String(metricLabelKeyFromChannelName, directPathFallbackFallbackChannelName),
 			attribute.String(metricLabelKeyToChannelName, directPathFallbackPrimaryChannelName),
@@ -620,15 +656,4 @@ func (m *directPathFallbackMetrics) recordFallback(ctx context.Context, recovery
 		attr = m.recoveryAttr
 	}
 	m.fallbackCount.Add(ctx, 1, attr)
-}
-
-func (m *directPathFallbackMetrics) recordProbe(ctx context.Context, channelName, reason string) {
-	if m == nil || m.probeResult == nil {
-		return
-	}
-	m.probeResult.Add(ctx, 1, metric.WithAttributeSet(attribute.NewSet(
-		attribute.String(metricLabelKeyChannelName, channelName),
-		attribute.Bool(metricLabelKeySuccess, reason == ""),
-		attribute.String(metricLabelKeyReason, reason),
-	)))
 }

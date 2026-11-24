@@ -50,12 +50,7 @@ const (
 // choosing the channel pool.
 func isolateChannelPoolEnv(t *testing.T) {
 	t.Helper()
-	for _, k := range []string{
-		directAccessEnv,
-		gcpFallbackEnv,
-		legacyStaticChannelPoolEnv,
-		directPathFallbackRecoveryEnv,
-	} {
+	for _, k := range []string{directAccessEnv, gcpFallbackEnv, legacyStaticChannelPoolEnv, directPathFallbackRecoveryEnv} {
 		t.Setenv(k, "")
 	}
 }

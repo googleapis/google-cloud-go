@@ -449,3 +449,7 @@ func TestDirectPathFallbackCountsHungAttemptInTheWindowItEnds(t *testing.T) {
 		t.Fatalf("hung attempt did not count in the window it ended in: %+v", res)
 	}
 }
+
+func (f *directPathFallback) recordAttempt(ctx context.Context, w *fallbackWindow, err error) {
+	f.recordSlotAttempt(ctx, w, w.fallback, err)
+}

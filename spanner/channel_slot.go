@@ -51,12 +51,13 @@ type channelSlot struct {
 	closed  bool
 
 	// Recovery probing state.
-	inFallback        atomic.Bool
-	fallbackGen       uint64
-	consecutiveProbes int
-	probeStreakStart  time.Time
-	probeCancel       context.CancelFunc
-	probeWG           sync.WaitGroup
+	inFallback             atomic.Bool
+	fallbackGen            uint64
+	consecutiveProbes      int
+	probeStreakStart       time.Time
+	lastProbeFailureReason string
+	probeCancel            context.CancelFunc
+	probeWG                sync.WaitGroup
 
 	closeConnsOnce sync.Once
 }
@@ -127,15 +128,23 @@ func dialChannelSlot(ctx context.Context, dial func(context.Context) (gtransport
 	return newChannelSlot(direct, fallback), nil
 }
 
-func (s *channelSlot) isInFallback() bool {
+// effectiveFallback returns the current fallback window and whether the slot
+// should route over CloudPath. Loading inFallback before window ensures a
+// caller that observes inFallback=false also observes the post-recovery window.
+func (s *channelSlot) effectiveFallback() (*fallbackWindow, bool) {
 	if s.fallback == nil {
-		return false
+		return nil, false
 	}
 	inFallback := s.inFallback.Load()
 	w := s.fallback.current()
 	if !s.fallback.recovery.enabled || w.fallback {
-		return w.fallback
+		return w, w.fallback
 	}
+	return w, inFallback
+}
+
+func (s *channelSlot) isInFallback() bool {
+	_, inFallback := s.effectiveFallback()
 	return inFallback
 }
 
@@ -143,20 +152,12 @@ func (s *channelSlot) isInFallback() bool {
 // attempt is sent under, and whether the attempt uses CloudPath fallback. The
 // window is nil when fallback is off.
 func (s *channelSlot) route(ctx context.Context) (gtransport.ConnPool, *fallbackWindow, bool, error) {
-	if s.fallback == nil {
+	w, inFallback := s.effectiveFallback()
+	if w == nil {
 		if d := s.direct.Load(); d != nil {
 			return d.ConnPool, nil, false, nil
 		}
 		return nil, nil, false, nil
-	}
-	// Read inFallback before loading the window: tryRecoverWindow publishes
-	// the post-recovery window before the slot clears inFallback. When w.fallback
-	// is true, route to CloudPath atomically at f.window.Store(next) before
-	// switch hooks (e.g., DCP ClearStaleErrorPenalties) run.
-	inFallback := s.inFallback.Load()
-	w := s.fallback.current()
-	if !s.fallback.recovery.enabled || w.fallback {
-		inFallback = w.fallback
 	}
 	if !inFallback {
 		if d := s.direct.Load(); d != nil {
@@ -178,7 +179,8 @@ func (s *channelSlot) enterFallback(gen uint64) {
 	}
 	s.fallbackGen = gen
 	s.consecutiveProbes = 0
-	s.probeStreakStart = time.Now()
+	s.probeStreakStart = time.Time{}
+	s.lastProbeFailureReason = ""
 	s.inFallback.Store(true)
 	if s.fallback.probingDisabled.Load() || s.fallback.ctx.Err() != nil || (s.direct.Load() == nil && s.dialDirect == nil) {
 		return
@@ -229,8 +231,10 @@ func (s *channelSlot) probeOnce(ctx context.Context) {
 		s.mu.Unlock()
 		return
 	}
+	probeGen := s.fallbackGen
 	s.mu.Unlock()
 
+	probeStart := time.Now()
 	var reason string
 	if sid, _ := s.fallback.probeSession.Load().(string); sid == "" {
 		reason = codes.FailedPrecondition.String()
@@ -257,27 +261,36 @@ func (s *channelSlot) probeOnce(ctx context.Context) {
 	}
 
 	s.mu.Lock()
-	if ctx.Err() != nil || s.closed || s.fallback.probingDisabled.Load() || !s.inFallback.Load() {
+	if ctx.Err() != nil || s.closed || s.fallback.probingDisabled.Load() || !s.inFallback.Load() || s.fallbackGen != probeGen {
 		s.mu.Unlock()
 		return
 	}
-	defer s.fallback.metrics.recordProbe(ctx, directPathFallbackPrimaryChannelName, reason)
-	now := time.Now()
 	if reason != "" {
 		s.consecutiveProbes = 0
-		s.probeStreakStart = now
+		s.probeStreakStart = time.Time{}
+		shouldLog := reason != s.lastProbeFailureReason
+		if shouldLog {
+			s.lastProbeFailureReason = reason
+		}
 		s.mu.Unlock()
+		if shouldLog {
+			logf(s.fallback.logger, "spanner: DirectPath recovery probe failed (%s); staying on CloudPath", reason)
+		}
 		return
 	}
+	s.lastProbeFailureReason = ""
 	s.consecutiveProbes++
-	if s.consecutiveProbes < s.fallback.recovery.minRecoveryProbes || now.Sub(s.probeStreakStart) < s.fallback.recovery.minRecoveryDuration {
+	if s.consecutiveProbes == 1 {
+		s.probeStreakStart = probeStart
+	}
+	if s.consecutiveProbes < s.fallback.recovery.minRecoveryProbes || probeStart.Sub(s.probeStreakStart) < s.fallback.recovery.minRecoveryDuration {
 		s.mu.Unlock()
 		return
 	}
 
-	// Hold s.mu across tryRecoverWindow (closeMu is a leaf lock) so a closing
-	// slot cannot reset the shared fallback window.
-	allowed, reset := s.fallback.tryRecoverWindow(s.fallbackGen)
+	// Hold s.mu across tryRecoverSlot (closeMu is a leaf lock) so a closing
+	// slot cannot reset the shared fallback window or become a dangling canary.
+	allowed, reset := s.fallback.tryRecoverSlot(s, s.fallbackGen)
 	if !allowed {
 		s.mu.Unlock()
 		return
