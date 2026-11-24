@@ -245,30 +245,6 @@ func isGoogleC2PEndpoint(endpoint string) bool {
 	return strings.HasPrefix(strings.ToLower(endpoint), "google-c2p:")
 }
 
-// validateGoogleC2PEndpoint ensures an explicit google-c2p endpoint is never
-// dialed outside verified GDU or when DirectPath is disabled.
-func validateGoogleC2PEndpoint(ctx context.Context, endpoint string, opts *Options) error {
-	if !isGoogleC2PEndpoint(endpoint) {
-		return nil
-	}
-	if reason, ok := checkDirectPathEnabled(endpoint, opts); !ok {
-		if reason != "" {
-			return fmt.Errorf("grpctransport: %s", reason)
-		}
-		return fmt.Errorf("grpctransport: DirectPath is disabled for endpoint %q", endpoint)
-	}
-	if onComputeEngine() {
-		mdUD, err := metadataUniverseDomain(ctx)
-		if err != nil {
-			return fmt.Errorf("grpctransport: %s: %w", directPathUDLookupErrReason, err)
-		}
-		if strings.TrimSpace(mdUD) != internal.DefaultUniverseDomain {
-			return fmt.Errorf("grpctransport: %s", directPathUnsupportedUniverseReason)
-		}
-	}
-	return nil
-}
-
 func hasUniverseDomainHost(endpoint, universeDomain string) bool {
 	if universeDomain == "" {
 		return false

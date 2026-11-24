@@ -2302,36 +2302,6 @@ func TestDial_ExplicitGoogleC2PEndpointGating(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "disable_authentication_on_tpc_vm_rejected",
-			opts: &Options{
-				Endpoint:              "google-c2p:///storage.googleapis.com",
-				DisableTelemetry:      true,
-				DisableAuthentication: true,
-				InternalOptions: &InternalOptions{
-					EnableDirectPath:    true,
-					EnableDirectPathXds: true,
-				},
-			},
-			gce:     true,
-			mdsUD:   "example.com",
-			wantErr: true,
-		},
-		{
-			name: "api_key_on_tpc_vm_rejected",
-			opts: &Options{
-				Endpoint:         "google-c2p:///storage.googleapis.com",
-				DisableTelemetry: true,
-				APIKey:           "fake-api-key",
-				InternalOptions: &InternalOptions{
-					EnableDirectPath:    true,
-					EnableDirectPathXds: true,
-				},
-			},
-			gce:     true,
-			mdsUD:   "example.com",
-			wantErr: true,
-		},
-		{
 			name: "uppercase_scheme_on_tpc_vm_rejected",
 			opts: &Options{
 				Endpoint:         "GOOGLE-C2P:///storage.googleapis.com",

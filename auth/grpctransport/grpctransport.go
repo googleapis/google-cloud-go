@@ -330,9 +330,6 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	}
 
 	if opts.APIKey != "" {
-		if err := validateGoogleC2PEndpoint(ctx, transportCreds.Endpoint, opts); err != nil {
-			return nil, err
-		}
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcKeyProvider{
 				apiKey:   opts.APIKey,
@@ -391,10 +388,6 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		// Attempt Direct Path
 		grpcOpts, transportCreds.Endpoint, err = configureDirectPath(ctx, grpcOpts, opts, transportCreds.Endpoint, creds, metadata)
 		if err != nil {
-			return nil, err
-		}
-	} else {
-		if err := validateGoogleC2PEndpoint(ctx, transportCreds.Endpoint, opts); err != nil {
 			return nil, err
 		}
 	}
