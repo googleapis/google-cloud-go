@@ -121,18 +121,7 @@ var newSessionClient = func(
 		EnableDirectAccess: true,
 	})
 
-	// session.NewClient forwards dial opts straight to gtransport.Dial
-	// without supplying a default endpoint, so establish the standard
-	// Bigtable data-plane endpoint, scope, and user agent first, while
-	// passing raw caller opts to metrics exporters so Bigtable defaults
-	// do not overwrite Cloud Monitoring defaults.
-	defaultOpts, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, DataScope, userAgent)
-	if err != nil {
-		return nil, err
-	}
-	dialOpts := append(defaultOpts, opts...)
-
-	return session.NewClient(ctx, project, instance, appProfile, clientName, metricsProvider, featureFlags, opts, dialOpts...)
+	return session.NewClient(ctx, project, instance, appProfile, clientName, metricsProvider, featureFlags, opts...)
 }
 
 // Channel is an in-process grpc.ClientConnInterface backed by
@@ -169,6 +158,18 @@ func NewChannel(
 	project, instance, appProfile, clientName string,
 	opts ...option.ClientOption,
 ) (*Channel, error) {
+	// session.NewClient forwards opts straight to gtransport.Dial
+	// without supplying a default endpoint, so without these the dial target
+	// is empty ("received empty target in Build()"). Establish the standard
+	// Bigtable data-plane endpoint, scope, and user agent first, then let the
+	// caller's opts override. Mirrors bigtable.NewClient's use of
+	// btopt.DefaultClientOptions.
+	defaultOpts, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, DataScope, userAgent)
+	if err != nil {
+		return nil, err
+	}
+	opts = append(defaultOpts, opts...)
+
 	sc, err := newSessionClient(ctx, project, instance, appProfile, clientName, opts...)
 	if err != nil {
 		return nil, err

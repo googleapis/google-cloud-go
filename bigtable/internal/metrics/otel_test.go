@@ -237,3 +237,19 @@ func TestOtelExporterForwardsMonitoringClientOptions(t *testing.T) {
 	}
 	_ = exp.Shutdown(context.Background())
 }
+
+func TestNewFactory_DisablesMetricsOnEndpointWithoutUniverseDomain(t *testing.T) {
+	t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+
+	f, err := NewFactory(context.Background(), "proj", "inst", "prof", "", nil,
+		option.WithEndpoint("bigtable.tpc.example.test:443"),
+		option.WithoutAuthentication(),
+	)
+	if err != nil {
+		t.Fatalf("NewFactory: %v", err)
+	}
+	if f.Enabled {
+		f.Shutdown()
+		t.Error("NewFactory enabled metrics with WithEndpoint and no universe domain; want disabled")
+	}
+}

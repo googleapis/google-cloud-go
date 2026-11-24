@@ -773,27 +773,23 @@ func TestToOtelMetricAttrs(t *testing.T) {
 }
 
 func TestCreateExporterOptionsFiltering(t *testing.T) {
-	endpointOpt := option.WithEndpoint("test.endpoint")
 	universeDomainOpt := option.WithUniverseDomain("tpc.example.test")
 	apiKeyOpt := option.WithAPIKey("test.apikey")
-	audiencesOpt := option.WithAudiences("test.audience")
 
 	inputOpts := []option.ClientOption{
+		option.WithEndpoint("test.endpoint"),
+		option.WithAudiences("test.audience"),
 		option.WithScopes(Scope),
 		option.WithGRPCConnectionPool(10),
-		endpointOpt,
 		universeDomainOpt,
 		apiKeyOpt,
-		audiencesOpt,
 	}
 
 	filteredOpts := metrics.CreateExporterOptions(inputOpts...)
 
 	wantTypes := map[reflect.Type]string{
-		reflect.TypeOf(endpointOpt):       "option.WithEndpoint",
 		reflect.TypeOf(universeDomainOpt): "option.WithUniverseDomain",
 		reflect.TypeOf(apiKeyOpt):         "option.WithAPIKey",
-		reflect.TypeOf(audiencesOpt):      "option.WithAudiences",
 	}
 	found := make(map[reflect.Type]bool)
 	for _, opt := range filteredOpts {

@@ -79,22 +79,34 @@ var (
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
 
-	scopesOptionType       = reflect.TypeOf(option.WithScopes())
-	grpcConnPoolOptionType = reflect.TypeOf(option.WithGRPCConnectionPool(0))
+	endpointOptionType       = reflect.TypeOf(option.WithEndpoint(""))
+	universeDomainOptionType = reflect.TypeOf(option.WithUniverseDomain(""))
 
-	// CreateExporterOptions takes Bigtable client options and returns exporter
-	// options for Cloud Monitoring, filtering out Bigtable-specific scopes and
-	// connection pool sizing while preserving TPC options (WithUniverseDomain,
-	// WithEndpoint) and credentials. Overridden in tests to redirect the
-	// exporter to a fake Cloud Monitoring server.
+	// Exporter-relevant client options forwarded to Cloud Monitoring exporters
+	// (universe domain and credentials only; Bigtable-specific options are dropped).
+	exporterOptionTypes = map[reflect.Type]bool{
+		universeDomainOptionType:                                true,
+		reflect.TypeOf(option.WithCredentials(nil)):             true,
+		reflect.TypeOf(option.WithCredentialsFile("")):          true,
+		reflect.TypeOf(option.WithCredentialsJSON(nil)):         true,
+		reflect.TypeOf(option.WithAuthCredentials(nil)):         true,
+		reflect.TypeOf(option.WithAuthCredentialsFile("", "")):  true,
+		reflect.TypeOf(option.WithAuthCredentialsJSON("", nil)): true,
+		reflect.TypeOf(option.WithTokenSource(nil)):             true,
+		reflect.TypeOf(option.WithAPIKey("")):                   true,
+		reflect.TypeOf(option.WithQuotaProject("")):             true,
+		reflect.TypeOf(option.WithoutAuthentication()):          true,
+		reflect.TypeOf(option.WithClientCertSource(nil)):        true,
+		reflect.TypeOf(option.ImpersonateCredentials("")):       true,
+	}
+
+	// CreateExporterOptions takes Bigtable client options and returns only
+	// universe domain and credential options for Cloud Monitoring exporters.
+	// Overridden in tests to redirect the exporter to a fake Cloud Monitoring server.
 	CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
 		filteredOptions := make([]option.ClientOption, 0, len(btOpts))
 		for _, opt := range btOpts {
-			if opt == nil {
-				continue
-			}
-			t := reflect.TypeOf(opt)
-			if t != scopesOptionType && t != grpcConnPoolOptionType {
+			if opt != nil && exporterOptionTypes[reflect.TypeOf(opt)] {
 				filteredOptions = append(filteredOptions, opt)
 			}
 		}
@@ -146,7 +158,12 @@ type Factory struct {
 func NewFactory(ctx context.Context, project, instance, appProfile, clientNameOverride string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*Factory, error) {
 	switch metricsProvider.(type) {
 	case nil, DefaultMetricsProvider:
-		// fall through to the enabled path
+		// Disable default Cloud Monitoring export when an explicit endpoint is
+		// supplied without a universe domain, so the exporter does not fall back
+		// to monitoring.googleapis.com:443 in endpoint-only TPC configs.
+		if hasEndpointWithoutUniverseDomain(opts) {
+			return disabledMetricsTracerFactory, nil
+		}
 	case NoopMetricsProvider:
 		return disabledMetricsTracerFactory, nil
 	default:
@@ -246,6 +263,25 @@ func NewFactoryForTest(project, instance, appProfile string, mp metric.MeterProv
 		return nil, err
 	}
 	return tf, nil
+}
+
+func hasEndpointWithoutUniverseDomain(opts []option.ClientOption) bool {
+	if os.Getenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN") != "" {
+		return false
+	}
+	var hasEndpoint, hasUniverseDomain bool
+	for _, opt := range opts {
+		if opt == nil {
+			continue
+		}
+		switch reflect.TypeOf(opt) {
+		case endpointOptionType:
+			hasEndpoint = true
+		case universeDomainOptionType:
+			hasUniverseDomain = true
+		}
+	}
+	return hasEndpoint && !hasUniverseDomain
 }
 
 func builtInMeterProviderOptions(project string, exporterOpts ...option.ClientOption) ([]sdkmetric.Option, error) {
